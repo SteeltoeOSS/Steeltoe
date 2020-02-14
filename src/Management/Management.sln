@@ -73,8 +73,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTel
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase", "src\TracingBase\Steeltoe.Management.TracingBase.csproj", "{96267423-D9EF-4058-80CA-8E537A32DA99}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fortune-Teller-Service", "..\..\..\..\Samples\Management\src\AspDotNetCore\Tracing\Fortune-Teller-Service\Fortune-Teller-Service.csproj", "{1D241FEE-907A-48E0-ADF0-F021F31101E2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase.Test", "test\TracingBase.Test\Steeltoe.Management.TracingBase.Test.csproj", "{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D}"
@@ -181,10 +179,6 @@ Global
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1D241FEE-907A-48E0-ADF0-F021F31101E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1D241FEE-907A-48E0-ADF0-F021F31101E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1D241FEE-907A-48E0-ADF0-F021F31101E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1D241FEE-907A-48E0-ADF0-F021F31101E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU

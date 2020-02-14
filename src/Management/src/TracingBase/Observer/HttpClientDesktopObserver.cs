@@ -125,11 +125,11 @@ namespace Steeltoe.Management.Tracing.Observer
             TelemetrySpan started;
             if (parentSpan != null)
             {
-                Tracer.StartActiveSpan(spanName, parentSpan, out started);
+                Tracer.StartActiveSpan(spanName, parentSpan, SpanKind.Client, out started);
             }
             else
             {
-                Tracer.StartActiveSpan(spanName, out started);
+                Tracer.StartActiveSpan(spanName, SpanKind.Client, out started);
             }
 
             var existing = Pending.GetOrAdd(request, started);
@@ -139,8 +139,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 Logger?.LogWarning("Existing span context existed for web request");
             }
 
-            started.PutClientSpanKindAttribute()
-                .PutHttpRawUrlAttribute(request.RequestUri.ToString())
+            started.PutHttpRawUrlAttribute(request.RequestUri.ToString())
                 .PutHttpMethodAttribute(request.Method.ToString())
                 .PutHttpHostAttribute(request.RequestUri.Host, request.RequestUri.Port)
                 .PutHttpPathAttribute(request.RequestUri.AbsolutePath);

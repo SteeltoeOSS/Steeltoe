@@ -12,20 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Configuration;
+using System;
+using System.Runtime.Serialization;
 
-namespace Steeltoe.Management.OpenTelemetry.Trace
+namespace Steeltoe.Management.Tracing.Test
 {
-    public interface ITracing
+    [Serializable]
+    internal class TestSamplerException : Exception
     {
-        Tracer Tracer { get; }
+        public TestSamplerException()
+        {
+        }
 
-        ITextFormat TextFormat { get; }
+        public TestSamplerException(string message)
+            : base(message)
+        {
+        }
 
-        TracerConfiguration TracerConfiguration { get; }
+        public TestSamplerException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
 
-        Sampler ConfiguredSampler { get; }
+        protected TestSamplerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 }

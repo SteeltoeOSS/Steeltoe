@@ -21,6 +21,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin;
 using Steeltoe.Management.Tracing.Observer;
 using System;
 
@@ -50,6 +51,11 @@ namespace Steeltoe.Management.Tracing
                 return new TracingOptions(appInstanceInfo, config);
             });
 
+            services.TryAddSingleton<ITraceExporterOptions>((p) =>
+            {
+                return new TraceExporterOptions(appInstanceInfo, config);
+            });
+
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreMvcActionObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreMvcViewObserver>());
@@ -59,6 +65,18 @@ namespace Steeltoe.Management.Tracing
 
             services.TryAddSingleton<ITracing>((p) => { return new OpenTelemetryTracing(p.GetService<ITracingOptions>(), configureTracer); });
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
+        }
+
+        public static void UseZipkinWithTraceOptions(this TracerBuilder builder, IServiceCollection services)
+        {
+            var options = services.BuildServiceProvider().GetService<ITraceExporterOptions>();
+            builder.UseZipkin(zipkinOptions =>
+            {
+                zipkinOptions.Endpoint = new Uri(options.Endpoint);
+                zipkinOptions.ServiceName = options.ServiceName;
+                zipkinOptions.TimeoutSeconds = new TimeSpan(0, 0, options.TimeoutSeconds);
+                zipkinOptions.UseShortTraceIds = options.UseShortTraceIds;
+            });
         }
     }
 }

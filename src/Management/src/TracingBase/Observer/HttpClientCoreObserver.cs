@@ -120,23 +120,22 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            string spanName = ExtractSpanName(request);
-
+            var spanName = ExtractSpanName(request);
             var parentSpan = GetCurrentSpan();
+
             TelemetrySpan started;
             if (parentSpan != null)
             {
-                Tracer.StartActiveSpan(spanName, parentSpan, out started);
+                Tracer.StartActiveSpan(spanName, parentSpan, SpanKind.Client, out started);
             }
             else
             {
-                Tracer.StartActiveSpan(spanName, out started);
+                Tracer.StartActiveSpan(spanName, SpanKind.Client, out started);
             }
 
             request.Properties.Add(SPANCONTEXT_KEY, started);
 
-            started.PutClientSpanKindAttribute()
-                .PutHttpRawUrlAttribute(request.RequestUri.ToString())
+            started.PutHttpRawUrlAttribute(request.RequestUri.ToString())
                 .PutHttpMethodAttribute(request.Method.ToString())
                 .PutHttpHostAttribute(request.RequestUri.Host, request.RequestUri.Port)
                 .PutHttpPathAttribute(request.RequestUri.AbsolutePath)

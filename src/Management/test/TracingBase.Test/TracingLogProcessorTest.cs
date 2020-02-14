@@ -71,7 +71,6 @@ namespace Steeltoe.Management.Tracing.Test
             var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
             var tracing = new OpenTelemetryTracing(opts);
-            //tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out var span);
             tracing.Tracer.StartActiveSpan("spanName", out var span);
 
             var processor = new TracingLogProcessor(opts, tracing);
@@ -84,9 +83,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains(span.Context.SpanId.ToHexString(), result);
             Assert.Contains("foobar", result);
 
-            //tracing.Tracer.SpanBuilderWithExplicitParent("spanName2", span).StartScopedSpan(out var childSpan);
             tracing.Tracer.StartActiveSpan("spanName2", span, out var childSpan);
-
 
             result = processor.Process("InputLogMessage2");
 
@@ -95,7 +92,8 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains("]", result);
             Assert.Contains(childSpan.Context.TraceId.ToHexString(), result);
             Assert.Contains(childSpan.Context.SpanId.ToHexString(), result);
-   //         Assert.Contains(span.Context.SpanId.ToHexString(), result);
+
+            // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
             Assert.Contains("foobar", result);
         }
 
@@ -120,7 +118,6 @@ namespace Steeltoe.Management.Tracing.Test
             var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
             var tracing = new OpenTelemetryTracing(opts);
-            //tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out var span);
             tracing.Tracer.StartActiveSpan("spanName", out var span);
 
             var processor = new TracingLogProcessor(opts, tracing);

@@ -16,8 +16,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Management.TracingBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.TracingCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.ExporterCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.ExporterBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Tracing.Observer.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.OpenTelemetryTracingBase.Test")]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

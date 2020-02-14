@@ -22,46 +22,60 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public class OpenTelemetryTracing : ITracing
     {
-        private const int DefaultSpanMaxNumAttributes = 32;
+        private const int DefaultMaxAttributes = 32;
 
-        private const int DefaultSpanMaxNumEvents = 128;
+        private const int DefaultMaxEvents = 128;
 
-        private const int DefaultSpanMaxNumLinks = 32;
+        private const int DefaultMaxLinks = 32;
 
         public OpenTelemetryTracing(ITracingOptions options, Action<TracerBuilder> configureTracer = null)
         {
-            var factory = TracerFactory.Create(builder =>
+            var maxAttributes = options.MaxNumberOfAttributes > 0 ? options.MaxNumberOfAttributes : DefaultMaxAttributes;
+            var maxEvents = options.MaxNumberOfMessageEvents > 0 ? options.MaxNumberOfMessageEvents : DefaultMaxEvents;
+            var maxLinks = options.MaxNumberOfLinks > 0 ? options.MaxNumberOfLinks : DefaultMaxLinks;
+
+            TracerConfiguration = new TracerConfiguration(maxAttributes, maxEvents, maxLinks);
+
+            var factory = TracerFactory.Create(ConfigureOptions(options, configureTracer));
+
+            Tracer = factory.GetTracer(options.Name);
+        }
+
+        private Action<TracerBuilder> ConfigureOptions(ITracingOptions options, Action<TracerBuilder> configureTracer)
+        {
+            return builder =>
             {
+                Sampler sampler = null;
                 if (options.AlwaysSample)
                 {
-                    builder.SetSampler(new AlwaysSampleSampler());
+                    sampler = new AlwaysSampleSampler();
                 }
                 else if (options.NeverSample)
                 {
-                    builder.SetSampler(new NeverSampleSampler());
+                    sampler = new NeverSampleSampler();
                 }
 
-                var tracerConfig = new TracerConfiguration();
-                if (options.MaxNumberOfAttributes > 0 ||
-                    options.MaxNumberOfLinks > 0 ||
-                    options.MaxNumberOfMessageEvents > 0)
+                builder.SetTracerOptions(TracerConfiguration);
+
+                if (sampler != null)
                 {
-                    var maxAttributes = options.MaxNumberOfAttributes > 0 ? options.MaxNumberOfAttributes : DefaultSpanMaxNumAttributes;
-                    var maxEvents = options.MaxNumberOfMessageEvents > 0 ? options.MaxNumberOfMessageEvents : DefaultSpanMaxNumEvents;
-                    var maxLinks = options.MaxNumberOfLinks > 0 ? options.MaxNumberOfLinks : DefaultSpanMaxNumLinks;
-                    tracerConfig = new TracerConfiguration(maxAttributes, maxEvents, maxLinks);
+                    ConfiguredSampler = sampler;
+                    builder.SetSampler(sampler);
                 }
-
-                builder.SetTracerOptions(tracerConfig);
 
                 configureTracer?.Invoke(builder);
-            });
-
-            Tracer = factory.GetTracer(options.Name);
+            };
         }
 
         public Tracer Tracer { get; }
 
         public ITextFormat TextFormat { get; } = new B3Format();
+
+        public TracerConfiguration TracerConfiguration { get; }
+
+        /// <summary>
+        /// Gets sampler configured from Options. If a sampler is setup in the builder this property will not reflect it.
+        /// </summary>
+        public Sampler ConfiguredSampler { get; private set; }
     }
 }

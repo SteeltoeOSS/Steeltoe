@@ -53,12 +53,13 @@ namespace Steeltoe.Management.Tracing
                 sb.Append(context.SpanId.ToHexString());
                 sb.Append(",");
 
+                // TODO: Currently OTel doesnt support getting parentId from Active spans.
                 /*
                 //if (currentSpan.ParentSpanId != null)
                 //{
                 //    sb.Append(currentSpan.ParentSpanId.ToLowerBase16());
                 //}
-
+                //
                 //sb.Append(",");
                 */
 

@@ -1,33 +1,47 @@
-﻿using OpenTelemetry.Trace;
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using OpenTelemetry.Trace;
 using OpenTelemetry.Trace.Export;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Management.OpenTelemetryTracingBase.Test
 {
-    public class SpanSdkHelper
+    public static class SpanSdkHelper
     {
-        public static SpanInfo GetSpanData(TelemetrySpan span)
+        public static SpanData ToSpanData(this TelemetrySpan span)
         {
-
-            var assembly = Assembly.Load("OpenTelemetry");
-            var spanSdk = assembly.GetType("OpenTelemetry.Trace.SpanSdk");
-            var spanData = (SpanData)spanSdk.GetField("spanData", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(span);
-            var hasEnded = (bool)spanSdk.GetField("hasEnded", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(span);
-            return new SpanInfo
-            {
-                SpanData = spanData,
-                HasEnded = hasEnded
-            };
+            var spanData = (SpanData)GetGetSpanSdkType().GetField("spanData", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(span);
+            return spanData;
         }
 
-        public class SpanInfo
+        public static bool HasEnded(this TelemetrySpan span)
         {
-            public SpanData SpanData { get; set; }
+            var hasEnded = (bool)GetGetSpanSdkType().GetField("hasEnded", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(span);
+            return hasEnded;
+        }
 
-            public bool HasEnded { get; set; }
+        private static Lazy<Type> _spanSdk = new Lazy<Type>(() =>
+        {
+            Console.WriteLine("test");
+            return Assembly.Load("OpenTelemetry").GetType("OpenTelemetry.Trace.SpanSdk");
+        });
+
+        private static Type GetGetSpanSdkType()
+        {
+            return _spanSdk.Value;
         }
     }
 }

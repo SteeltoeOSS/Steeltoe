@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Context.Propagation;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Trace.Configuration;
-
-namespace Steeltoe.Management.OpenTelemetry.Trace
+namespace Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin
 {
-    public interface ITracing
+    public interface ITraceExporterOptions
     {
-        Tracer Tracer { get; }
+        string Endpoint { get; }
 
-        ITextFormat TextFormat { get; }
+        bool ValidateCertificates { get; }
 
-        TracerConfiguration TracerConfiguration { get; }
+        int TimeoutSeconds { get; }
 
-        Sampler ConfiguredSampler { get; }
+        string ServiceName { get; }
+
+        bool UseShortTraceIds { get; }
     }
 }

@@ -103,13 +103,7 @@ namespace Steeltoe.Management.Tracing.Observer
         protected internal void HandleExceptionEvent(HttpContext context, Exception exception)
         {
             var span = ActiveValue.Value;
-            //if (spanContext == null)
-            //{
-            //    Logger?.LogDebug("HandleExceptionEvent: Missing span context, {exception}", exception);
-            //    return;
-            //}
 
-        //    var span = spanContext.Active;
             if (span == null)
             {
                 Logger?.LogDebug("HandleExceptionEvent: Active span missing, {exception}", exception);
@@ -135,28 +129,21 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            SpanContext traceContext = ExtractTraceContext(context);
+            var traceContext = ExtractTraceContext(context);
             string spanName = ExtractSpanName(context);
 
             TelemetrySpan span;
-            //IScope scope;
-            if (traceContext != null)
+            if (!traceContext.IsValid)
             {
                 Logger?.LogDebug("HandleStartEvent: Found parent span {parent}", traceContext.ToString());
-                //scope = Tracer.SpanBuilderWithRemoteParent(spanName, traceContext)
-                //    .StartScopedSpan(out span);
-                //Tracer.StartActiveSpan()
                 Tracer.StartActiveSpan(spanName, traceContext, SpanKind.Server, out span);
             }
             else
             {
-                //scope = Tracer.SpanBuilder(spanName)
-                //   .StartScopedSpan(out span);
                 Tracer.StartActiveSpan(spanName, SpanKind.Server, out span);
             }
 
-            span//.PutServerSpanKindAttribute()
-                .PutHttpRawUrlAttribute(context.Request.GetDisplayUrl())
+            span.PutHttpRawUrlAttribute(context.Request.GetDisplayUrl())
                 .PutHttpMethodAttribute(context.Request.Method.ToString())
                 .PutHttpPathAttribute(context.Request.Path.ToString())
                 .PutHttpHostAttribute(context.Request.Host.Host, context.Request.Host.Port ?? 80);
@@ -166,7 +153,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 span.PutHttpRequestHeadersAttribute(AsList(context.Request.Headers));
             }
 
-            ActiveValue.Value = span; // new SpanContext(span, scope);
+            ActiveValue.Value = span;
         }
 
         protected internal void HandleStopEvent(HttpContext context)
@@ -177,9 +164,6 @@ namespace Steeltoe.Management.Tracing.Observer
                 Logger?.LogDebug("HandleStopEvent: Missing span");
                 return;
             }
-
-            //ISpan span = spanContext.Active;
-            // IScope scope = spanContext.ActiveScope;
 
             span.PutHttpStatusCodeAttribute(context.Response.StatusCode);
 
@@ -201,7 +185,6 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             span.End();
-         //   scope.Dispose();
             ActiveValue.Value = null;
         }
 
@@ -213,19 +196,11 @@ namespace Steeltoe.Management.Tracing.Observer
         protected internal SpanContext ExtractTraceContext(HttpContext context)
         {
             var request = context.Request;
-            //try
-            //{
-                return Propagation.Extract(request.Headers, (d, k) =>
-                {
-                    d.TryGetValue(k, out var result);
-                    return result;
-                });
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw ex; // Temporarily to catch better exception
-            //    // Ignore
-            //}
+            return Propagation.Extract(request.Headers, (d, k) =>
+                 {
+                     d.TryGetValue(k, out var result);
+                     return result;
+                 });
         }
 
         protected internal virtual long? ExtractRequestSize(HttpContext context)

@@ -20,6 +20,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public static class SpanExtensions
     {
+        /*
         public static TelemetrySpan PutClientSpanKindAttribute(this TelemetrySpan span)
         {
             span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ClientSpanKind);
@@ -32,7 +33,6 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
             return span;
         }
 
-        /*
         //public static ISpan PutHttpUrlAttribute(this ISpan span, string url)
         //{
         //    span.PutAttribute(SpanAttributeConstants.HttpUrlKey, AttributeValue.StringAttributeValue(url));

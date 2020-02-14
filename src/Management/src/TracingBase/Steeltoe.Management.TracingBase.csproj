@@ -8,10 +8,6 @@
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
-  <ItemGroup>
-    <PackageReference Include="OpenTelemetry" Version="0.2.0-alpha.185" />
-  </ItemGroup>
-  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
@@ -20,7 +16,7 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Logging.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.OpenTelemetryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>
