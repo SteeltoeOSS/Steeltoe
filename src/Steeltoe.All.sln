@@ -239,6 +239,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Base",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Base.Test", "Integration\test\Base.Test\Steeltoe.Integration.Base.Test.csproj", "{7525F9CC-A6C6-442D-86C5-72ED9BD1388F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryBase", "Management\src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj", "{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -601,6 +603,10 @@ Global
 		{7525F9CC-A6C6-442D-86C5-72ED9BD1388F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7525F9CC-A6C6-442D-86C5-72ED9BD1388F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7525F9CC-A6C6-442D-86C5-72ED9BD1388F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -695,6 +701,7 @@ Global
 		{AAA88EFE-706E-4DF6-830B-F7AAFB59FC26} = {EA583B9C-D8C6-422A-9FF8-157CF6A4A61E}
 		{5EC74778-06F5-4E07-B7BC-23605C06BBCA} = {EA583B9C-D8C6-422A-9FF8-157CF6A4A61E}
 		{7525F9CC-A6C6-442D-86C5-72ED9BD1388F} = {EA583B9C-D8C6-422A-9FF8-157CF6A4A61E}
+		{2F09DF68-B128-469E-83F1-2CFDD1A39BB8} = {8BD7D5E5-D887-4BD7-9F42-725A8714F7BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

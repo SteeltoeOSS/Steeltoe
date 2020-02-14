@@ -21,17 +21,20 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
     public static class SpanExtensions
     {
         /*
-        public static TelemetrySpan PutClientSpanKindAttribute(this TelemetrySpan span)
-        {
-            span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ClientSpanKind);
-            return span;
-        }
+         * Some of these original extensions are deprecated in favor other parameters in OTel API like SpanKind or
+         * are provided by the OTel Api
 
-        public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
-        {
-            span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
-            return span;
-        }
+        //public static TelemetrySpan PutClientSpanKindAttribute(this TelemetrySpan span)
+        //{
+        //    span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ClientSpanKind);
+        //    return span;
+        //}
+
+        //public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
+        //{
+        //    span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
+        //    return span;
+        //}
 
         //public static ISpan PutHttpUrlAttribute(this ISpan span, string url)
         //{
