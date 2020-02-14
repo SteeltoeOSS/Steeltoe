@@ -2,25 +2,22 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
+    <RootNamespace>Steeltoe.Management.OpenTelemetryTracing</RootNamespace>
     <Description>Base package for enabling request tracing in distributed systems</Description>
     <PackageTags>management;monitoring;distributed trace</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
-  <ItemGroup>
-    <PackageReference Include="OpenCensus" Version="$(OpenCensusVersion)" />
-  </ItemGroup>
-  
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
+    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Logging.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.OpenTelemetryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
+
 </Project>

@@ -12,16 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Trace;
-
-namespace Steeltoe.Management.Tracing.Observer.Test
+namespace Steeltoe.Management.OpenTelemetry.Trace.Propagation
 {
-    public abstract class AbstractObserverTest
+    public static class B3Constants
     {
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-        {
-            var span = tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
-        }
+        public const string XB3TraceId = "X-B3-TraceId";
+        public const string XB3SpanId = "X-B3-SpanId";
+        public const string XB3ParentSpanId = "X-B3-ParentSpanId";
+        public const string XB3Sampled = "X-B3-Sampled";
+        public const string XB3Flags = "X-B3-Flags";
     }
 }

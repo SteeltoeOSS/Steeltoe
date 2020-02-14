@@ -12,16 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Trace;
-
-namespace Steeltoe.Management.Tracing.Observer.Test
+namespace Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin
 {
-    public abstract class AbstractObserverTest
+    public interface ITraceExporterOptions
     {
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-        {
-            var span = tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
-        }
+        string Endpoint { get; }
+
+        bool ValidateCertificates { get; }
+
+        int TimeoutSeconds { get; }
+
+        string ServiceName { get; }
+
+        bool UseShortTraceIds { get; }
     }
 }

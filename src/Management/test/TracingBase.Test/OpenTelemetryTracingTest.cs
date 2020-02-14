@@ -14,17 +14,35 @@
 
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
-using Steeltoe.Common;
+using OpenTelemetry.Trace.Samplers;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test
 {
-    public class TracingLogProcessorTest
+    public class OpenTelemetryTracingTest
     {
         [Fact]
-        public void Process_NoCurrentSpan_DoesNothing()
+        public void InitializedWithDefaults()
+        {
+            var builder = new ConfigurationBuilder();
+            var opts = new TracingOptions(null, builder.Build());
+
+            var tracing = new OpenTelemetryTracing(opts);
+            Assert.NotNull(tracing.Tracer);
+            Assert.NotNull(tracing.TracerConfiguration);
+            var p = tracing.TracerConfiguration;
+            Assert.Equal(32, p.MaxNumberOfAttributes);
+            Assert.Equal(32, p.MaxNumberOfLinks);
+            Assert.Equal(128, p.MaxNumberOfEvents);
+            Assert.NotEqual(tracing.ConfiguredSampler, new AlwaysSampleSampler());
+            Assert.NotEqual(tracing.ConfiguredSampler, new NeverSampleSampler());
+        }
+
+        [Fact]
+        public void BindsConfigurationCorrectly()
         {
             var appsettings = new Dictionary<string, string>()
             {
@@ -45,15 +63,15 @@ namespace Steeltoe.Management.Tracing.Test
             var opts = new TracingOptions(null, builder.Build());
 
             var tracing = new OpenTelemetryTracing(opts);
-            var processor = new TracingLogProcessor(opts, tracing);
-            var result = processor.Process("InputLogMessage");
-            Assert.Equal("InputLogMessage", result);
-        }
 
-        [Fact]
-        public void Process_CurrentSpan_ReturnsExpected()
-        {
-            var appsettings = new Dictionary<string, string>()
+            Assert.NotNull(tracing.Tracer);
+            Assert.NotNull(tracing.TracerConfiguration);
+            var p = tracing.TracerConfiguration;
+            Assert.Equal(100, p.MaxNumberOfAttributes);
+            Assert.Equal(100, p.MaxNumberOfLinks);
+            Assert.Equal(100, p.MaxNumberOfEvents);
+
+            appsettings = new Dictionary<string, string>()
             {
                 ["management:tracing:name"] = "foobar",
                 ["management:tracing:ingressIgnorePattern"] = "pattern",
@@ -63,78 +81,58 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:maxNumberOfMessageEvents"] = "100",
                 ["management:tracing:maxNumberOfLinks"] = "100",
                 ["management:tracing:alwaysSample"] = "true",
-                ["management:tracing:neverSample"] = "false",
-                ["management:tracing:useShortTraceIds"] = "false",
-            };
-
-            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
-
-            var tracing = new OpenTelemetryTracing(opts);
-            tracing.Tracer.StartActiveSpan("spanName", out var span);
-
-            var processor = new TracingLogProcessor(opts, tracing);
-            var result = processor.Process("InputLogMessage");
-
-            Assert.Contains("InputLogMessage", result);
-            Assert.Contains("[", result);
-            Assert.Contains("]", result);
-            Assert.Contains(span.Context.TraceId.ToHexString(), result);
-            Assert.Contains(span.Context.SpanId.ToHexString(), result);
-            Assert.Contains("foobar", result);
-
-            tracing.Tracer.StartActiveSpan("spanName2", span, out var childSpan);
-
-            result = processor.Process("InputLogMessage2");
-
-            Assert.Contains("InputLogMessage2", result);
-            Assert.Contains("[", result);
-            Assert.Contains("]", result);
-            Assert.Contains(childSpan.Context.TraceId.ToHexString(), result);
-            Assert.Contains(childSpan.Context.SpanId.ToHexString(), result);
-
-            // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
-            Assert.Contains("foobar", result);
-        }
-
-        [Fact]
-        public void Process_UseShortTraceIds()
-        {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:tracing:name"] = "foobar",
-                ["management:tracing:ingressIgnorePattern"] = "pattern",
-                ["management:tracing:egressIgnorePattern"] = "pattern",
-                ["management:tracing:maxNumberOfAttributes"] = "100",
-                ["management:tracing:maxNumberOfAnnotations"] = "100",
-                ["management:tracing:maxNumberOfMessageEvents"] = "100",
-                ["management:tracing:maxNumberOfLinks"] = "100",
-                ["management:tracing:alwaysSample"] = "true",
-                ["management:tracing:neverSample"] = "false",
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
+            builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(appsettings);
+            opts = new TracingOptions(null, builder.Build());
 
-            var tracing = new OpenTelemetryTracing(opts);
-            tracing.Tracer.StartActiveSpan("spanName", out var span);
+            tracing = new OpenTelemetryTracing(opts);
+            Assert.NotNull(tracing.Tracer);
+            Assert.NotNull(tracing.TracerConfiguration);
+            p = tracing.TracerConfiguration;
+            Assert.Equal(100, p.MaxNumberOfAttributes);
+            Assert.Equal(100, p.MaxNumberOfLinks);
+            Assert.Equal(100, p.MaxNumberOfEvents);
+            Assert.IsType<AlwaysSampleSampler>(tracing.ConfiguredSampler);
+        }
 
-            var processor = new TracingLogProcessor(opts, tracing);
-            var result = processor.Process("InputLogMessage");
+        [Fact]
+        public void BindsCorrectSampler()
+        {
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:tracing:name"] = "foobar",
+                ["management:tracing:ingressIgnorePattern"] = "pattern",
+                ["management:tracing:egressIgnorePattern"] = "pattern",
+                ["management:tracing:maxNumberOfAttributes"] = "100",
+                ["management:tracing:maxNumberOfAnnotations"] = "100",
+                ["management:tracing:maxNumberOfMessageEvents"] = "100",
+                ["management:tracing:maxNumberOfLinks"] = "100",
+                ["management:tracing:alwaysSample"] = "true",
+                ["management:tracing:neverSample"] = "true",
+                ["management:tracing:useShortTraceIds"] = "true",
+            };
 
-            Assert.Contains("InputLogMessage", result);
-            Assert.Contains("[", result);
-            Assert.Contains("]", result);
+            var builder = new ConfigurationBuilder();
+            builder.AddInMemoryCollection(appsettings);
+            var opts = new TracingOptions(null, builder.Build());
 
-            var full = span.Context.TraceId.ToHexString();
-            var shorty = full.Substring(full.Length - 16, 16);
+            var tracing = new OpenTelemetryTracing(opts, builder => builder.SetSampler(new TestSampler()));
 
-            Assert.Contains(shorty, result);
-            Assert.DoesNotContain(full, result);
+            Assert.Throws<TestSamplerException>(
+                () => tracing.Tracer.StartActiveSpan("mySpan", out var span));
+        }
 
-            Assert.Contains(span.Context.SpanId.ToHexString(), result);
-            Assert.Contains("foobar", result);
+        private class TestSampler : Sampler
+        {
+            public override string Description => throw new System.NotImplementedException();
+
+            public override Decision ShouldSample(in SpanContext parentContext, in ActivityTraceId traceId, in ActivitySpanId spanId, string name, SpanKind spanKind, IDictionary<string, object> attributes, IEnumerable<Link> links)
+            {
+                throw new TestSamplerException();
+            }
         }
     }
 }

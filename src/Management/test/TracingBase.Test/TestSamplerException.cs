@@ -12,16 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Trace;
+using System;
+using System.Runtime.Serialization;
 
-namespace Steeltoe.Management.Tracing.Observer.Test
+namespace Steeltoe.Management.Tracing.Test
 {
-    public abstract class AbstractObserverTest
+    [Serializable]
+    internal class TestSamplerException : Exception
     {
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
+        public TestSamplerException()
         {
-            var span = tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
+        }
+
+        public TestSamplerException(string message)
+            : base(message)
+        {
+        }
+
+        public TestSamplerException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+        }
+
+        protected TestSamplerException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
     }
 }

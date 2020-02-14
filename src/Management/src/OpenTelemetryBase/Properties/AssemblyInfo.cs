@@ -12,16 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenTelemetry.Trace;
+using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Management.Tracing.Observer.Test
-{
-    public abstract class AbstractObserverTest
-    {
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-        {
-            var span = tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
-        }
-    }
-}
+[assembly: InternalsVisibleTo("Steeltoe.Management.TracingBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Management.TracingCore.Test")]

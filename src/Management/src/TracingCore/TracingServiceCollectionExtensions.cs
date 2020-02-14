@@ -16,10 +16,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Trace.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin;
 using Steeltoe.Management.Tracing.Observer;
 using System;
 
@@ -27,7 +29,7 @@ namespace Steeltoe.Management.Tracing
 {
     public static class TracingServiceCollectionExtensions
     {
-        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config)
+        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config, Action<TracerBuilder> configureTracer = null)
         {
             if (services == null)
             {
@@ -49,14 +51,32 @@ namespace Steeltoe.Management.Tracing
                 return new TracingOptions(appInstanceInfo, config);
             });
 
+            services.TryAddSingleton<ITraceExporterOptions>((p) =>
+            {
+                return new TraceExporterOptions(appInstanceInfo, config);
+            });
+
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreMvcActionObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreMvcViewObserver>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-            services.TryAddSingleton<ITracing, OpenCensusTracing>();
+
+            services.TryAddSingleton<ITracing>((p) => { return new OpenTelemetryTracing(p.GetService<ITracingOptions>(), configureTracer); });
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
+        }
+
+        public static void UseZipkinWithTraceOptions(this TracerBuilder builder, IServiceCollection services)
+        {
+            var options = services.BuildServiceProvider().GetService<ITraceExporterOptions>();
+            builder.UseZipkin(zipkinOptions =>
+            {
+                zipkinOptions.Endpoint = new Uri(options.Endpoint);
+                zipkinOptions.ServiceName = options.ServiceName;
+                zipkinOptions.TimeoutSeconds = new TimeSpan(0, 0, options.TimeoutSeconds);
+                zipkinOptions.UseShortTraceIds = options.UseShortTraceIds;
+            });
         }
     }
 }

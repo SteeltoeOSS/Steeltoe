@@ -12,16 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Trace.Configuration;
 
-namespace Steeltoe.Management.Tracing.Observer.Test
+namespace Steeltoe.Management.OpenTelemetry.Trace
 {
-    public abstract class AbstractObserverTest
+    public interface ITracing
     {
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-        {
-            var span = tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
-        }
+        Tracer Tracer { get; }
+
+        ITextFormat TextFormat { get; }
+
+        TracerConfiguration TracerConfiguration { get; }
+
+        Sampler ConfiguredSampler { get; }
     }
 }
