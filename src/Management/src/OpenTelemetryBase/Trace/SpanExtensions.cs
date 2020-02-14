@@ -20,52 +20,6 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public static class SpanExtensions
     {
-        /*
-         * Some of these original extensions are deprecated in favor other parameters in OTel API like SpanKind or
-         * are provided by the OTel Api
-
-        //public static TelemetrySpan PutClientSpanKindAttribute(this TelemetrySpan span)
-        //{
-        //    span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ClientSpanKind);
-        //    return span;
-        //}
-
-        //public static TelemetrySpan PutServerSpanKindAttribute(this TelemetrySpan span)
-        //{
-        //    span.SetAttribute(SpanAttributeConstants.SpanKindKey, SpanAttributeConstants.ServerSpanKind);
-        //    return span;
-        //}
-
-        //public static ISpan PutHttpUrlAttribute(this ISpan span, string url)
-        //{
-        //    span.PutAttribute(SpanAttributeConstants.HttpUrlKey, AttributeValue.StringAttributeValue(url));
-        //    return span;
-        //}
-
-        //public static ISpan PutHttpMethodAttribute(this ISpan span, string method)
-        //{
-        //    span.PutAttribute(SpanAttributeConstants.HttpMethodKey, AttributeValue.StringAttributeValue(method));
-        //    return span;
-        //}
-
-        //public static ISpan PutHttpStatusCodeAttribute(this ISpan span, int statusCode)
-        //{
-        //    span.PutAttribute(SpanAttributeConstants.HttpStatusCodeKey, AttributeValue.LongAttributeValue(statusCode));
-        //    return span;
-        //}
-
-        //public static ISpan PutHttpHostAttribute(this ISpan span, string hostName)
-        //{
-        //    span.PutAttribute(SpanAttributeConstants.HttpHostKey, AttributeValue.StringAttributeValue(hostName));
-        //    return span;
-        //}
-
-        //public static ISpan PutHttpPathAttribute(this ISpan span, string path)
-        //{
-        //    span.PutAttribute(SpanAttributeConstants.HttpPathKey, AttributeValue.StringAttributeValue(path));
-        //    return span;
-        //}
-        */
         public static TelemetrySpan PutHttpResponseSizeAttribute(this TelemetrySpan span, long size)
         {
             span.SetAttribute(SpanAttributeConstants.HttpResponseSizeKey, size);
