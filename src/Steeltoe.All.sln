@@ -240,6 +240,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Base.Test", "Integration\test\Base.Test\Steeltoe.Integration.Base.Test.csproj", "{7525F9CC-A6C6-442D-86C5-72ED9BD1388F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryBase", "Management\src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj", "{2F09DF68-B128-469E-83F1-2CFDD1A39BB8}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Stream", "Stream", "{4F1EA720-AA18-4955-A854-016B26F6CED1}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Abstractions", "Stream\src\Abstractions\Steeltoe.Stream.Abstractions.csproj", "{807BCEA5-2EBC-4075-8EDC-E4281A751FFC}"
