@@ -11,6 +11,7 @@
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
+    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
@@ -19,7 +20,4 @@
     <PackageReference Include="Steeltoe.Management.OpenTelemetryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
-  </ItemGroup>
 </Project>

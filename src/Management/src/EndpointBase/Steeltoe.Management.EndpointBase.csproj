@@ -31,6 +31,7 @@
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\Diagnostics\Steeltoe.Management.Diagnostics.csproj" />
+    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
@@ -40,9 +41,5 @@
     <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.Diagnostics" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensusBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj" />
   </ItemGroup>
 </Project>
