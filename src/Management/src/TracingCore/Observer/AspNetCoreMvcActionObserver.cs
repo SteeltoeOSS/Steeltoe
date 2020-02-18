@@ -98,14 +98,12 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             string spanName = ExtractSpanName(descriptor);
-            //  IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
             Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
-  
+
             span.PutMvcControllerClass(ExtractControllerName(descriptor))
-             //   .PutServerSpanKindAttribute()
                 .PutMvcControllerAction(ExtractActionName(descriptor));
 
-            ActiveValue.Value = span;// new SpanContext(span, scope);
+            ActiveValue.Value = span;
         }
 
         protected internal virtual void HandleAfterActionEvent()
@@ -117,11 +115,6 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            //IScope scope = spanContext.ActiveScope;
-            //if (scope != null)
-            //{
-            //    scope.Dispose();
-            //}
             span.End();
 
             ActiveValue.Value = null;

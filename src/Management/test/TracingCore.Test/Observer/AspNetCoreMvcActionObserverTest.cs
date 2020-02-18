@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_IgnoresNulls()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
             obs.ProcessEvent(null, null);
         }
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_IgnoresUnknownEvent()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
             obs.ProcessEvent(string.Empty, new { HttpContext = GetHttpRequestMessage() });
         }
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ShouldIgnore_ReturnsExpected()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
 
             Assert.True(obs.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_BeforeAction_NoArgs()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_BEFOREACTION_EVENT, new { });
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_BeforeAction_NoCurrentSpan()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             var descriptor = GetActionDescriptor();
@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_BeforeAction()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var hostobs = new AspNetCoreHostingObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_START_EVENT, new { HttpContext = request });
@@ -115,7 +115,6 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var hostSpanContext = hostobs.Active;
             Assert.NotNull(hostSpanContext);
             Assert.Equal(hostspan, hostSpanContext);
-            //Assert.NotNull(hostSpanContext.ActiveScope);
 
             var actionobs = new AspNetCoreMvcActionObserver(opts, tracing);
             var descriptor = GetActionDescriptor();
@@ -127,8 +126,8 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var actionSpanContext = actionobs.Active;
             Assert.NotNull(actionSpanContext);
             Assert.Equal(actionspan, actionSpanContext);
-          //  Assert.Equal(actionspan.ParentSpanId, hostspan.Context.SpanId);
 
+            // Assert.Equal(actionspan.ParentSpanId, hostspan.Context.SpanId);
             Assert.Equal("action:" + descriptor.ControllerName + "/" + descriptor.ActionName, actionspan.ToSpanData().Name);
 
             var actionSpanData = actionspan.ToSpanData();
@@ -142,7 +141,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_AfterAction_NoBeforeAction()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_AFTERACTION_EVENT, new { httpContext = request });
@@ -158,7 +157,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_AfterAction()
         {
             var opts = GetOptions();
-            var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var hostobs = new AspNetCoreHostingObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_START_EVENT, new { HttpContext = request });
@@ -179,7 +178,8 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var actionSpanContext = actionobs.Active;
             Assert.NotNull(actionSpanContext);
             Assert.Equal(actionSpan, actionSpanContext);
-            //Assert.Equal(actionSpan.ParentSpanId, hostSpan.Context.SpanId);
+
+            // Assert.Equal(actionSpan.ParentSpanId, hostSpan.Context.SpanId);
             Assert.Equal("action:" + descriptor.ControllerName + "/" + descriptor.ActionName, actionSpan.ToSpanData().Name);
 
             actionobs.ProcessEvent(AspNetCoreMvcActionObserver.MVC_AFTERACTION_EVENT, new { httpContext = request });
@@ -190,7 +190,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var actionSpanContextAfter = actionobs.Active;
             Assert.Null(actionSpanContextAfter);
-            Assert.True(actionSpan.hasEnded());
+            Assert.True(actionSpan.HasEnded());
 
             var actionSpanData = actionSpan.ToSpanData();
             var actionAttributes = actionSpanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -200,7 +200,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             hostobs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_STOP_EVENT, new { HttpContext = request });
 
-            Assert.True(hostSpan.hasEnded());
+            Assert.True(hostSpan.HasEnded());
             Assert.Null(GetCurrentSpan(tracing.Tracer));
             Assert.Null(hostobs.Active);
 
@@ -220,7 +220,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ExtractSpanName()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
 
             var cdesc = GetActionDescriptor();
@@ -239,7 +239,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ExtractControllerName()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
 
             var cdesc = GetActionDescriptor();
@@ -258,7 +258,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ExtractActionName()
         {
             var opts = GetOptions();
-           var tracing  = new OpenTelemetryTracing(opts, null);
+            var tracing = new OpenTelemetryTracing(opts, null);
             var obs = new AspNetCoreMvcActionObserver(opts, tracing);
 
             var cdesc = GetActionDescriptor();

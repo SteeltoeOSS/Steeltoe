@@ -22,76 +22,60 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public class OpenTelemetryTracing : ITracing
     {
-        private readonly ITracingOptions options;
+        private const int DefaultMaxAttributes = 32;
 
-        public OpenTelemetryTracing(ITracingOptions options, Sampler sampler = null, Action<TracerBuilder> configureExporter = null)
+        private const int DefaultMaxEvents = 128;
+
+        private const int DefaultMaxLinks = 32;
+
+        public OpenTelemetryTracing(ITracingOptions options, Action<TracerBuilder> configureTracer = null)
         {
-            this.options = options;
+            var maxAttributes = options.MaxNumberOfAttributes > 0 ? options.MaxNumberOfAttributes : DefaultMaxAttributes;
+            var maxEvents = options.MaxNumberOfMessageEvents > 0 ? options.MaxNumberOfMessageEvents : DefaultMaxEvents;
+            var maxLinks = options.MaxNumberOfLinks > 0 ? options.MaxNumberOfLinks : DefaultMaxLinks;
 
-            var factory = TracerFactory.Create(builder =>
+            TracerConfiguration = new TracerConfiguration(maxAttributes, maxEvents, maxLinks);
+
+            var factory = TracerFactory.Create(ConfigureOptions(options, configureTracer));
+
+            Tracer = factory.GetTracer(options.Name);
+        }
+
+        private Action<TracerBuilder> ConfigureOptions(ITracingOptions options, Action<TracerBuilder> configureTracer)
+        {
+            return builder =>
             {
-                if (sampler != null)
+                Sampler sampler = null;
+                if (options.AlwaysSample)
                 {
-                    builder.SetSampler(sampler);
-                }
-                else if (options.AlwaysSample)
-                {
-                    builder.SetSampler(new AlwaysSampleSampler());
+                    sampler = new AlwaysSampleSampler();
                 }
                 else if (options.NeverSample)
                 {
-                    builder.SetSampler(new NeverSampleSampler());
+                    sampler = new NeverSampleSampler();
                 }
 
-                if (options.MaxNumberOfAttributes > 0 &&
-                    options.MaxNumberOfLinks > 0 &&
-                    options.MaxNumberOfMessageEvents > 0)
+                builder.SetTracerOptions(TracerConfiguration);
+
+                if (sampler != null)
                 {
-                    builder.SetTracerOptions(new TracerConfiguration(
-                     options.MaxNumberOfAttributes,
-                     options.MaxNumberOfMessageEvents,
-                     options.MaxNumberOfLinks));
+                    ConfiguredSampler = sampler;
+                    builder.SetSampler(sampler);
                 }
 
-                if (configureExporter != null)
-                {
-                    configureExporter(builder);
-                    //builder.AddExporter(configureExporter);
-                }
-
-            });
-
-            _tracer = factory.GetTracer("SteeltoeTracer"); //TODO;: Read from options
+                configureTracer?.Invoke(builder);
+            };
         }
 
-        //   private readonly ITraceComponent traceComponent = new TraceComponent();
-
-        private Tracer _tracer;
-
-        public Tracer Tracer
-        {
-            get
-            {
-                return _tracer;// traceComponent.Tracer;
-            }
-        }
+        public Tracer Tracer { get; }
 
         public ITextFormat TextFormat { get; } = new B3Format();
 
-        //public IExportComponent ExportComponent
-        //{
-        //    get
-        //    {
-        //        return traceComponent.ExportComponent;
-        //    }
-        //}
+        public TracerConfiguration TracerConfiguration { get; }
 
-        //public TraceConfig TraceConfig
-        //{
-        //    get
-        //    {
-        //        return traceComponent.TraceConfig;
-        //    }
-        //}
+        /// <summary>
+        /// Gets sampler configured from Options. If a sampler is setup in the builder this property will not reflect it.
+        /// </summary>
+        public Sampler ConfiguredSampler { get; private set; }
     }
 }

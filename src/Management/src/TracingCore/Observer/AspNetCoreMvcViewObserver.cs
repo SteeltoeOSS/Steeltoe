@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreMvcViewDiagnosticObserver";
 
-        private static readonly AsyncLocal<TelemetrySpan>ActiveContext = new AsyncLocal<TelemetrySpan>();
+        private static readonly AsyncLocal<TelemetrySpan> ActiveContext = new AsyncLocal<TelemetrySpan>();
 
         public AspNetCoreMvcViewObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreMvcViewObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
@@ -96,13 +96,11 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             string spanName = ExtractSpanName(viewContext);
-            // IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
             Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
 
             span.PutMvcViewExecutingFilePath(ExtractViewPath(viewContext));
-               // .PutServerSpanKindAttribute();
 
-            ActiveContext.Value = span;// new SpanContext(span, scope);
+            ActiveContext.Value = span;
         }
 
         protected internal virtual void HandleAfterViewEvent()
@@ -114,11 +112,6 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            //IScope scope = spanContext.ActiveScope;
-            //if (scope != null)
-            //{
-            //    scope.Dispose();
-            //}
             span.End();
 
             ActiveContext.Value = null;

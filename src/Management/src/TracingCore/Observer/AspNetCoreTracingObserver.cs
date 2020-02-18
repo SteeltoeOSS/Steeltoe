@@ -79,18 +79,5 @@ namespace Steeltoe.Management.Tracing.Observer
 
             return span.Context.IsValid ? span : null;
         }
-
-        //public class SpanContext
-        //{
-        //    public SpanContext(ISpan active, IScope activeScope)
-        //    {
-        //        Active = active;
-        //        ActiveScope = activeScope;
-        //    }
-
-        //    public ISpan Active { get; }
-
-        //    public IScope ActiveScope { get; }
-        //}
     }
 }

@@ -148,9 +148,9 @@ namespace Steeltoe.Integration.Channel.Test
             handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
             {
                 var e = new Exception();
-                allDone.Signal();
                 failed = 1;
                 exceptionRegistry.Object.Add(e);
+                allDone.Signal();
                 throw e;
             });
             var dispatcher = channel.Dispatcher;

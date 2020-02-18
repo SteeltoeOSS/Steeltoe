@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Steeltoe Stream Test Binder</Description>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>Steeltoe.Stream.TestBinder</RootNamespace>
+    <AssemblyName>Steeltoe.Stream.TestBinder</AssemblyName>
+    <PackageId>Steeltoe.Stream.TestBinder</PackageId>
+    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Base\Steeltoe.Stream.Base.csproj" />
+  </ItemGroup>
+
+</Project>

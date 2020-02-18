@@ -14,6 +14,7 @@
 
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
+using OpenTelemetry.Trace.Configuration;
 
 namespace Steeltoe.Management.OpenTelemetry.Trace
 {
@@ -23,8 +24,8 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 
         ITextFormat TextFormat { get; }
 
-      //  IExportComponent ExportComponent { get; }
+        TracerConfiguration TracerConfiguration { get; }
 
-      //  TraceConfig TraceConfig { get; }
+        Sampler ConfiguredSampler { get; }
     }
 }

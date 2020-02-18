@@ -20,6 +20,7 @@ using Steeltoe.Management.OpenTelemetry.Trace.Propagation;
 using Steeltoe.Management.Tracing.Test;
 using Steeltoe.Management.TracingCore;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,13 +32,8 @@ namespace Steeltoe.Management.Tracing.Observer.Test
     public class AspNetCoreHostingObserverTest : TestBase
     {
         private static readonly string TRACE_ID_BASE16 = "ff000000000000000000000000000041";
-        //private static readonly ITraceId TRACE_ID = TraceId.FromLowerBase16(TRACE_ID_BASE16);
         private static readonly string TRACE_ID_BASE16_EIGHT_BYTES = "0000000000000041";
-        //private static readonly ITraceId TRACE_ID_EIGHT_BYTES = TraceId.FromLowerBase16("0000000000000000" + TRACE_ID_BASE16_EIGHT_BYTES);
         private static readonly string SPAN_ID_BASE16 = "ff00000000000041";
-        //private static readonly ISpanId SPAN_ID = SpanId.FromLowerBase16(SPAN_ID_BASE16);
-        private static readonly byte[] TRACE_OPTIONS_BYTES = new byte[] { 1 };
-        //private static readonly TraceOptions TRACE_OPTIONS = TraceOptions.FromBytes(TRACE_OPTIONS_BYTES);
 
         [Fact]
         public void ProcessEvent_IgnoresNulls()
@@ -109,7 +105,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         [Fact]
         public void ProcessEvent_Stop_PreviousStarted()
         {
-            var opts = GetOptions(); 
+            var opts = GetOptions();
             var tracing = new OpenTelemetryTracing(opts, null);
 
             var obs = new AspNetCoreHostingObserver(opts, tracing);
@@ -118,23 +114,18 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-          //  var span = obs.Active;
-         //   Assert.NotNull(span);
-
-            //Assert.Equal(span, spanContext.Active);
-            //Assert.NotNull(spanContext.ActiveScope);
             var spanData = span.ToSpanData();
             Assert.Equal("http:/", spanData.Name);
 
             request.Response.StatusCode = (int)HttpStatusCode.OK;
             obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_STOP_EVENT, new { HttpContext = request });
 
-            Assert.True(span.hasEnded());
+            Assert.True(span.HasEnded());
             Assert.Null(GetCurrentSpan(tracing.Tracer));
             Assert.Null(obs.Active);
 
             spanData = span.ToSpanData();
-            var attributes = spanData.Attributes.ToDictionary( kv => kv.Key, kv=> kv.Value);
+            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
             Assert.Equal(SpanKind.Server, spanData.Kind);
             Assert.Equal("http://localhost:5555/", attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(HttpMethod.Get.ToString(), attributes[SpanAttributeConstants.HttpMethodKey]);
@@ -206,11 +197,6 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-            //   var span = obs.Active;
-            // Assert.NotNull(span);
-
-            //       Assert.Equal(span, spanContext.Active);
-            //     Assert.NotNull(spanContext.ActiveScope);
             var spanData = span.ToSpanData();
             Assert.Equal("http:/", spanData.Name);
 
@@ -220,13 +206,13 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             request.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_STOP_EVENT, new { HttpContext = request });
 
-            Assert.True(span.hasEnded());
+            Assert.True(span.HasEnded());
 
             Assert.Null(GetCurrentSpan(tracing.Tracer));
             Assert.Null(obs.Active);
 
-             spanData = span.ToSpanData();
-            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value); 
+            spanData = span.ToSpanData();
+            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
             Assert.Equal(SpanKind.Server, spanData.Kind);
             Assert.Equal("http://localhost:5555/", attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(HttpMethod.Get.ToString(), attributes[SpanAttributeConstants.HttpMethodKey]);
@@ -252,15 +238,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
 
-            //var spanContext = obs.Active;
-            //Assert.NotNull(spanContext);
-
-            //Assert.Equal(span, spanContext.Active);
-            //Assert.NotNull(spanContext.ActiveScope);
-
             Assert.Equal("http:/", span.ToSpanData().Name);
 
-            Assert.False(span.hasEnded());
+            Assert.False(span.HasEnded());
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -289,13 +269,12 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(contextSpan);
 
             Assert.Equal(span, contextSpan);
-            //Assert.NotNull(spanContext.ActiveScope);
             Assert.Equal("http:/", span.ToSpanData().Name);
 
-            Assert.False(span.hasEnded());
+            Assert.False(span.HasEnded());
 
             var spanData = span.ToSpanData();
-            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value); 
+            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
             Assert.Equal(SpanKind.Server, spanData.Kind);
             Assert.Equal("http://localhost:5555/", attributes[SpanAttributeConstants.HttpUrlKey]);
             Assert.Equal(HttpMethod.Get.ToString(), attributes[SpanAttributeConstants.HttpMethodKey]);
@@ -313,10 +292,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.NotNull(contextSpan);
 
             Assert.Equal(span, contextSpan);
-       //     Assert.NotNull(spanContext.ActiveScope);
             Assert.Equal("http:/", span.ToSpanData().Name);
 
-            Assert.False(span.hasEnded());
+            Assert.False(span.HasEnded());
         }
 
         [Fact]
@@ -365,7 +343,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var context = obs.ExtractTraceContext(request);
             Assert.Equal(TRACE_ID_BASE16, context.TraceId.ToHexString());
             Assert.Equal(SPAN_ID_BASE16, context.SpanId.ToHexString());
-        //    Assert.True(context.TraceOptions.IsSampled);
+            Assert.True(context.TraceOptions.IsSampled());
 
             request = GetHttpRequestMessage();
             request.Request.Headers.Add(B3Constants.XB3TraceId, new StringValues(TRACE_ID_BASE16_EIGHT_BYTES));
@@ -375,7 +353,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             context = obs.ExtractTraceContext(request);
             Assert.Equal("0000000000000000" + TRACE_ID_BASE16_EIGHT_BYTES, context.TraceId.ToHexString());
             Assert.Equal(SPAN_ID_BASE16, context.SpanId.ToHexString());
-         //   Assert.True(context.TraceOptions.IsSampled);
+            Assert.True(context.TraceOptions.IsSampled());
         }
 
         private HttpContext GetHttpRequestMessage()
