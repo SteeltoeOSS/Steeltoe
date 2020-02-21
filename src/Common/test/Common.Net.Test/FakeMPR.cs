@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Net.Test
 
         public int CancelConnection(string name, int flags, bool force)
         {
-            throw new NotImplementedException();
+            return -1;
         }
 
         public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)

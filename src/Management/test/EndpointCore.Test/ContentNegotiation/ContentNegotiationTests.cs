@@ -67,16 +67,15 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                 {
                     foreach (var negotation in negotations)
                     {
-                        yield return new object[] { endpoint.epName, endpoint.epPath, negotation.version, negotation.accepts, negotation.contentType, negotation.name };
+                        yield return new object[] { endpoint.epName, endpoint.epPath, negotation.accepts, negotation.contentType };
                     }
                 }
             }
         }
 
-        /// <param name="version">For now there is no way to configure version - defined for future use</param>
         [Theory]
         [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
-        public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, MediaTypeVersion version, string[] accepts, string contentType, string name)
+        public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
