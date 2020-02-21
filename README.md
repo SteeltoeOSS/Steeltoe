@@ -109,3 +109,4 @@ As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steelto
 ## Licenses
 
 The Steeltoe project uses the [Apache License Version 2.0](https://github.com/SteeltoeOSS/.github/blob/master/LICENSE.md) license for all of its code.  See the [contribution licensing](https://github.com/SteeltoeOSS/.github/blob/master/contributing-docs/contributing-license.md) document for more details.
+
