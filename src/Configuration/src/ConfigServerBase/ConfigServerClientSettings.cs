@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -138,7 +139,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// </summary>
         /// <remarks>Initialize Config Server client settings with defaults</remarks>
         public ConfigServerClientSettings()
-            : base()
         {
             ValidateCertificates = DEFAULT_CERTIFICATE_VALIDATION;
             FailFast = DEFAULT_FAILFAST;
@@ -298,6 +298,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Gets or sets client secret used by provider to obtain a OAuth Access Token
         /// </summary>
         public virtual string ClientSecret { get; set; } = DEFAULT_CLIENT_SECRET;
+
+        public virtual X509Certificate2 ClientCertificate { get; set; }
 
         /// <summary>
         /// Gets or sets vault token Time to Live setting in Millisecoonds

@@ -18,19 +18,18 @@ using Xunit;
 
 namespace Steeltoe.Common.Security.Test
 {
-    public class PemConfigureCertificateOptionsTest
+    public class Pkcs12ConfigureCertificateOptionsTest
     {
-        [Fact]
-        public void AddPemFiles_ReadsFiles_CreatesCertificate()
+        [Fact(Skip = "Need a valid .p12 file")]
+        public void AddPkcs12Files_ReadsFiles_CreatesCertificate()
         {
             var config = new ConfigurationBuilder()
-                .AddPemFiles("instance.crt", "instance.key")
+                .AddPkcs12File("instance.p12")
                 .Build();
             Assert.NotNull(config["certificate"]);
-            Assert.NotNull(config["privateKey"]);
-            var pemConfig = new PemConfigureCertificateOptions(config);
+            var pkcs12Config = new Pkcs12ConfigureCertificateOptions(config);
             var opts = new CertificateOptions();
-            pemConfig.Configure(opts);
+            pkcs12Config.Configure(opts);
             Assert.NotNull(opts.Certificate);
             Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
             Assert.True(opts.Certificate.HasPrivateKey);

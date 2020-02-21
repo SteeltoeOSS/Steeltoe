@@ -7,12 +7,19 @@
   <Import Project="..\..\..\..\sharedtest.props" />
 
   <ItemGroup>
+    <None Update="instance.crt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="instance.key">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
     <ProjectReference Include="..\..\src\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj" />
     <ProjectReference Include="..\..\src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />

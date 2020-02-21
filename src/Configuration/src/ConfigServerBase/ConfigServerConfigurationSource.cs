@@ -14,8 +14,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common;
+using Steeltoe.Common.Options;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -126,6 +130,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                 // Create configuration
                 Configuration = configBuilder.Build();
+            }
+
+            var certificateSource = _sources.FirstOrDefault(cSource => cSource is ICertificateSource);
+            if (certificateSource != null && DefaultSettings.ClientCertificate == null)
+            {
+                var logger = LogFactory?.CreateLogger("CertificateOptionsConfigurer");
+                var certConfigurer = Activator.CreateInstance((certificateSource as ICertificateSource).OptionsConfigurer, Configuration, logger) as IConfigureNamedOptions<CertificateOptions>;
+                var certOptions = new CertificateOptions();
+                certConfigurer.Configure(certOptions);
+                DefaultSettings.ClientCertificate = certOptions.Certificate;
             }
 
             return new ConfigServerConfigurationProvider(this);

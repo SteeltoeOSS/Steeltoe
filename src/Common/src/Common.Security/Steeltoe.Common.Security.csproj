@@ -17,10 +17,10 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
-    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

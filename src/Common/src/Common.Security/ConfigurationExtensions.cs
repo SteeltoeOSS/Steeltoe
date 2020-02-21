@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Common.Security
 {
-    public static class PemConfigurationExtensions
+    public static class ConfigurationExtensions
     {
         public static IConfigurationBuilder AddPemFiles(this IConfigurationBuilder builder, string certFilePath, string keyFilePath)
         {
@@ -37,6 +37,22 @@ namespace Steeltoe.Common.Security
             }
 
             builder.Add(new PemCertificateSource(certFilePath, keyFilePath));
+            return builder;
+        }
+
+        public static IConfigurationBuilder AddPkcs12File(this IConfigurationBuilder builder, string certFilePath)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (string.IsNullOrEmpty(certFilePath))
+            {
+                throw new ArgumentException(nameof(certFilePath));
+            }
+
+            builder.Add(new Pkcs12CertificateSource(certFilePath));
             return builder;
         }
     }

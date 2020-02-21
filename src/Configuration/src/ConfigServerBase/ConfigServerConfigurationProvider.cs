@@ -904,7 +904,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// <returns>The HttpClient used by the provider</returns>
         protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
         {
-            return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, settings.Timeout);
+            var clientHandler = new HttpClientHandler();
+            if (settings.ClientCertificate != null)
+            {
+                clientHandler.ClientCertificates.Add(settings.ClientCertificate);
+            }
+
+            return HttpClientHelper.GetHttpClient(settings.ValidateCertificates, clientHandler, settings.Timeout);
         }
 
         private IConfiguration WrapWithPlaceholderResolver(IConfiguration configuration)

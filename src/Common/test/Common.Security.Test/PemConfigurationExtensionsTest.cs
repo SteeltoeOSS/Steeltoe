@@ -25,9 +25,9 @@ namespace Steeltoe.Common.Security.Test
         [Fact]
         public void AddPemFiles_ThrowsOnNulls()
         {
-            Assert.Throws<ArgumentNullException>(() => PemConfigurationExtensions.AddPemFiles(null, null, null));
-            Assert.Throws<ArgumentException>(() => PemConfigurationExtensions.AddPemFiles(new ConfigurationBuilder(), null, null));
-            Assert.Throws<ArgumentException>(() => PemConfigurationExtensions.AddPemFiles(new ConfigurationBuilder(), "foobar", null));
+            Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddPemFiles(null, null, null));
+            Assert.Throws<ArgumentException>(() => ConfigurationExtensions.AddPemFiles(new ConfigurationBuilder(), null, null));
+            Assert.Throws<ArgumentException>(() => ConfigurationExtensions.AddPemFiles(new ConfigurationBuilder(), "foobar", null));
         }
 
         [Fact]
