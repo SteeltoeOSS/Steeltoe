@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.EndpointBase;
@@ -48,24 +49,14 @@ namespace Steeltoe.Management.EndpointCore.ContentNegotiation
 
         public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger, MediaTypeVersion version = MediaTypeVersion.V2)
         {
-            var acceptMediaTypes = new List<string>();
-            if (requestHeaders.TryGetValue("Accept", out var acceptHeader))
-            {
-                acceptMediaTypes = acceptHeader.ToString().Split(';').ToList();
-            }
+            var headers = new RequestHeaders(requestHeaders);
+            var acceptMediaTypes = headers.Accept?.Select(x => x.MediaType.Value).ToList();
 
             var contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 
             responseHeaders.Add("Content-Type", contentType);
 
             logger?.LogContentType(requestHeaders, contentType);
-        }
-
-        public static bool HasSupportedAcceptHeaders(this IHeaderDictionary requestHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
-        {
-            var acceptHeaders = requestHeaders["Accept"].ToList();
-            return acceptHeaders.Count == 0
-                || ActuatorMediaTypes.AllowedAcceptHeaders(version).Intersect(acceptHeaders).Any();
         }
     }
 }
