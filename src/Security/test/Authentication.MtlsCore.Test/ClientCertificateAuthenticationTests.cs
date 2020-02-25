@@ -557,7 +557,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             {
                 if (configureOptions != null)
                 {
-                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificateST(options =>
+                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddMutualTls(options =>
                     {
                         options.AllowedCertificateTypes = configureOptions.AllowedCertificateTypes;
                         options.Events = configureOptions.Events;
@@ -569,7 +569,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
                 }
                 else
                 {
-                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificateST();
+                    services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddMutualTls();
                 }
 
                 if (wireUpHeaderMiddleware && !string.IsNullOrEmpty(headerName))

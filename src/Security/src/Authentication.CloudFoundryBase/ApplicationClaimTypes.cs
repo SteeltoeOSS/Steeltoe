@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication.Certificate;
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-
-namespace Steeltoe.Security.Authentication.Mtls
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class STCertificateAuthenticationOptions : CertificateAuthenticationOptions
+    public static class ApplicationClaimTypes
     {
-        /// <summary>
-        /// Gets or sets partial or full certificate chain for validation
-        /// </summary>
-        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
+        public const string CloudFoundryOrgId = "CloudFoundryOrgId";
+        public const string CloudFoundrySpaceId = "CloudFoundrySpaceId";
+        public const string CloudFoundryAppId = "CloudFoundryAppId";
+        public const string CloudFoundryInstanceId = "CloudFoundryContainerInstanceId";
     }
 }

@@ -17,12 +17,10 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Build
+namespace Steeltoe.Common.Security
 {
-    public class CertificateWriter
+    public class LocalCertificateWriter
     {
-        public string PfxPassword { get; set; } = "St33ltoe5";
-
         public static readonly string AppBasePath = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf(Path.DirectorySeparatorChar + "bin"));
 
         public string RootCAPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
@@ -34,25 +32,26 @@ namespace Steeltoe.Common.Build
             var appId = Guid.NewGuid();
             var instanceId = Guid.NewGuid();
 
-            var subject = $"CN={instanceId}, OU=organization:{orgId ?? Guid.NewGuid().ToString()} + OU=space:{spaceId ?? Guid.NewGuid().ToString()} + OU=app:{appId}";
+            // Certificates provided by Diego will have a subject that doesn't comply with standards, but CertificateRequest would re-order these components anyway
+            // Diego subjects will look like this: "CN=<instanceId>, OU=organization:<organizationId> + OU=space:<spaceId> + OU=app:<appId>"
+            var subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId ?? Guid.NewGuid().ToString()} + OU=organization:{orgId ?? Guid.NewGuid().ToString()}";
 
             X509Certificate2 caCertificate;
 
             // Create Root CA and intermediate cert PFX with private key (if not already there)
             if (!Directory.Exists(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates")))
             {
-                Console.WriteLine("Creating directory to hold signing certs");
                 Directory.CreateDirectory(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates"));
             }
 
             if (!File.Exists(RootCAPfxPath))
             {
                 caCertificate = CreateRoot("CN=SteeltoeGeneratedCA");
-                File.WriteAllBytes(RootCAPfxPath, caCertificate.Export(X509ContentType.Pfx, PfxPassword));
+                File.WriteAllBytes(RootCAPfxPath, caCertificate.Export(X509ContentType.Pfx));
             }
             else
             {
-                caCertificate = new X509Certificate2(RootCAPfxPath, PfxPassword);
+                caCertificate = new X509Certificate2(RootCAPfxPath);
             }
 
             X509Certificate2 intermediateCertificate;
@@ -61,17 +60,16 @@ namespace Steeltoe.Common.Build
             if (!File.Exists(IntermediatePfxPath))
             {
                 intermediateCertificate = CreateIntermediate("CN=SteeltoeGeneratedIntermediate", caCertificate);
-                File.WriteAllBytes(IntermediatePfxPath, intermediateCertificate.Export(X509ContentType.Pfx, PfxPassword));
+                File.WriteAllBytes(IntermediatePfxPath, intermediateCertificate.Export(X509ContentType.Pfx));
             }
             else
             {
-                intermediateCertificate = new X509Certificate2(IntermediatePfxPath, PfxPassword);
+                intermediateCertificate = new X509Certificate2(IntermediatePfxPath);
             }
 
             var clientCertificate = CreateClient(subject, intermediateCertificate, new SubjectAlternativeNameBuilder());
 
-            // File.WriteAllBytes(Path.Combine("..", "GeneratedCertificates", "clientcert.pfx"), clientCertificate.Export(X509ContentType.Pfx))
-            // Create Base 64 encoded CER (public key only)
+            // Create a folder inside the project to store generated certificate files
             if (!Directory.Exists(Path.Combine(AppBasePath, "GeneratedCertificates")))
             {
                 Directory.CreateDirectory(Path.Combine(AppBasePath, "GeneratedCertificates"));
@@ -108,10 +106,8 @@ namespace Steeltoe.Common.Build
             request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
 
             var serialNumber = new byte[8];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(serialNumber);
-            }
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(serialNumber);
 
             return request.Create(issuer, DateTimeOffset.UtcNow, issuer.NotAfter, serialNumber).CopyWithPrivateKey(key);
         }

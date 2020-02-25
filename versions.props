@@ -1,6 +1,5 @@
 <Project>
   <PropertyGroup>
-    <MSFTBuildVersion>16.4.0</MSFTBuildVersion>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
     <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>

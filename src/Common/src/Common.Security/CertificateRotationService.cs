@@ -18,14 +18,12 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class CertificateRotationService : IDisposable, ICertificateRotationService
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
+        private readonly bool _isStarted = false;
         private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
         private readonly IDisposable _subscription;
         private CertificateOptions _lastValue;
-        private bool _isStarted = false;
 
         public CertificateRotationService(IOptionsMonitor<CertificateOptions> optionsMonitor)
         {
@@ -46,7 +44,16 @@ namespace Steeltoe.Common.Security
 
         public void Dispose()
         {
-            _subscription.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _subscription.Dispose();
+            }
         }
 
         private void RotateCert(CertificateOptions newCert)

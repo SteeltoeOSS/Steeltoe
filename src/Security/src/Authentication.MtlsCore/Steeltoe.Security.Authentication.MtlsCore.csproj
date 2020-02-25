@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.Authentication.Mtls</RootNamespace>
-    <Description></Description>
-    <PackageTags></PackageTags>
+    <Description>ASP.NET Core middleware that enables an application to support certificate authentication.</Description>
+    <PackageTags>aspnetcore;authentication;security;x509;certificate;mtls</PackageTags>
   </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Certificate" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
@@ -21,8 +21,5 @@
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common.Security" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 </Project>

@@ -34,35 +34,35 @@ namespace Steeltoe.Security.Authentication.Mtls
         /// Adds certificate authentication.
         /// </summary>
         /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder)
-            => builder.AddCertificateST(CertificateAuthenticationDefaults.AuthenticationScheme);
+        public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder)
+            => builder.AddMutualTls(CertificateAuthenticationDefaults.AuthenticationScheme);
 
         /// <summary>
         /// Adds certificate authentication.
         /// </summary>
         /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-        /// <param name="authenticationScheme"></param>
-        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder, string authenticationScheme)
-            => builder.AddCertificateST(authenticationScheme, configureOptions: null);
+        /// <param name="authenticationScheme">Scheme identifier</param>
+        public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, string authenticationScheme)
+            => builder.AddMutualTls(authenticationScheme, configureOptions: null);
 
         /// <summary>
         /// Adds certificate authentication.
         /// </summary>
         /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-        /// <param name="configureOptions"></param>
-        public static AuthenticationBuilder AddCertificateST(this AuthenticationBuilder builder, Action<STCertificateAuthenticationOptions> configureOptions)
-            => builder.AddCertificateST(CertificateAuthenticationDefaults.AuthenticationScheme, configureOptions);
+        /// <param name="configureOptions">Additional options configuration</param>
+        public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, Action<MutualTlsAuthenticationOptions> configureOptions)
+            => builder.AddMutualTls(CertificateAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
         /// <summary>
         /// Adds certificate authentication.
         /// </summary>
         /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-        /// <param name="authenticationScheme"></param>
-        /// <param name="configureOptions"></param>
-        public static AuthenticationBuilder AddCertificateST(
+        /// <param name="authenticationScheme">Scheme identifier</param>
+        /// <param name="configureOptions">Additional options configuration</param>
+        public static AuthenticationBuilder AddMutualTls(
             this AuthenticationBuilder builder,
             string authenticationScheme,
-            Action<STCertificateAuthenticationOptions> configureOptions)
-            => builder.AddScheme<STCertificateAuthenticationOptions, STCertificateAuthenticationHandler>(authenticationScheme, configureOptions);
+            Action<MutualTlsAuthenticationOptions> configureOptions)
+            => builder.AddScheme<MutualTlsAuthenticationOptions, MutualTlsAuthenticationHandler>(authenticationScheme, configureOptions);
     }
 }

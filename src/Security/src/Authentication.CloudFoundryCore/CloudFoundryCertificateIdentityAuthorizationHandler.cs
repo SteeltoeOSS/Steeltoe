@@ -17,7 +17,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
-using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -42,19 +41,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public async Task HandleAsync(AuthorizationHandlerContext context)
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
         {
-            HandleCertRequirement<SameOrgRequirement>(context, CloudFoundryClaimTypes.CloudFoundryOrgId, _cloudFoundryCertificate?.OrgId);
-            HandleCertRequirement<SameSpaceRequirement>(context, CloudFoundryClaimTypes.CloudFoundrySpaceId, _cloudFoundryCertificate?.SpaceId);
+            HandleCertRequirement<SameOrgRequirement>(context, ApplicationClaimTypes.CloudFoundryOrgId, _cloudFoundryCertificate?.OrgId);
+            HandleCertRequirement<SameSpaceRequirement>(context, ApplicationClaimTypes.CloudFoundrySpaceId, _cloudFoundryCertificate?.SpaceId);
         }
 
         private void OnCertRefresh(CertificateOptions cert)
         {
-            if (CloudFoundryInstanceCertificate.TryParse(cert.Certificate, out var cfCert))
+            if (CloudFoundryInstanceCertificate.TryParse(cert.Certificate, out var cfCert, _logger))
             {
                 _cloudFoundryCertificate = cfCert;
-            }
-            else
-            {
-                _logger?.LogWarning("Application identity certificate parsing failed! Subject was: {0}", cert.Certificate.Subject);
             }
         }
 

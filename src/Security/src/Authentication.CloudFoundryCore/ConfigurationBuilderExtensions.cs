@@ -13,17 +13,29 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Security;
 using System;
+using System.IO;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryIdentityCertificateConfigurationExtensions
+    public static class ConfigurationBuilderExtensions
     {
-        public static IConfigurationBuilder AddCloudFoundryContainerIdentity(this IConfigurationBuilder builder)
+        public static IConfigurationBuilder AddCloudFoundryContainerIdentity(this IConfigurationBuilder builder, string orgId = null, string spaceId = null)
         {
+            if (!Platform.IsCloudFoundry)
+            {
+                var task = new LocalCertificateWriter();
+                task.Write(orgId, spaceId);
+
+                Environment.SetEnvironmentVariable("CF_INSTANCE_CERT", Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"));
+                Environment.SetEnvironmentVariable("CF_INSTANCE_KEY", Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"));
+            }
+
             var certFile = Environment.GetEnvironmentVariable("CF_INSTANCE_CERT");
             var keyFile = Environment.GetEnvironmentVariable("CF_INSTANCE_KEY");
+
             if (certFile == null || keyFile == null)
             {
                 return builder;

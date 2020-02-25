@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
@@ -24,12 +25,10 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using B = Org.BouncyCastle.X509;
-using M = System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryServicesExtensions
+    public static class ServiceCollectionExtensions
     {
         public static IServiceCollection AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
         {
@@ -40,47 +39,29 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             services.AddOptions();
             services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
-            services.AddSingleton<IPostConfigureOptions<STCertificateAuthenticationOptions>, CertificateAuthenticationOptionsPostConfigureOptions>();
+            services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, CertificateOptionsPostConfigurer>();
             services.Configure<CertificateOptions>(configuration);
             services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
             services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
-            return services.AddCertificateForwarding(opt => {
-                opt.CertificateHeader = "X-Forwarded-Client-Cert";
-                opt.HeaderConverter = (headerValue) =>
-                {
-                    var certBytes = Convert.FromBase64String(headerValue);
-
-                    // this is the default... works fine on Windows
-                    var cert = new M.X509Certificate2(certBytes);
-
-                    if (string.IsNullOrEmpty(cert.Subject))
-                    {
-                        var bCert = new B.X509CertificateParser().ReadCertificate(certBytes);
-
-                        // this still results in a blank subject on linux b/c its the same parsing mechanism 
-                        cert = new M.X509Certificate2(bCert.GetEncoded());
-                    }
-
-                    return cert;
-                };
-            });
+            return services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
         }
 
         public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
         {
-            builder.AddCertificateST(options =>
+            var logger = builder.Services.BuildServiceProvider().GetService<ILogger<CloudFoundryInstanceCertificate>>();
+            builder.AddMutualTls(options =>
             {
                 options.Events = new CertificateAuthenticationEvents()
                 {
                     OnCertificateValidated = context =>
                     {
                         var claims = new List<Claim>(context.Principal.Claims);
-                        if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert))
+                        if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, logger))
                         {
-                            claims.Add(new Claim(CloudFoundryClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(CloudFoundryClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(CloudFoundryClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(CloudFoundryClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
                         }
 
                         var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);

@@ -25,7 +25,7 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryExtensions
+    public static class AuthenticationBuilderExtensions
     {
         /// <summary>
         /// Adds OAuth middleware and configuration for using UAA or Pivotal SSO for user authentication

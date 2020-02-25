@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 
@@ -20,13 +20,15 @@ namespace Steeltoe.Security.Authentication.Mtls
 {
     public class CloudFoundryInstanceCertificate
     {
+        // This pattern is found on certificates issued by Diego
         private const string CloudFoundryInstanceCertSubjectRegex =
             @"^CN=(?<instance>[0-9a-f-]+),\sOU=organization:(?<org>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=app:(?<app>[0-9a-f-]+)$";
 
-        private const string FallbackInstanceCertSubjectRegex =
+        // This pattern is found on certificates created in .NET
+        private const string ValidInstanceCertSubjectRegex =
             @"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$";
 
-        public static bool TryParse(X509Certificate2 certificate, out CloudFoundryInstanceCertificate cloudFoundryInstanceCertificate)
+        public static bool TryParse(X509Certificate2 certificate, out CloudFoundryInstanceCertificate cloudFoundryInstanceCertificate, ILogger logger = null)
         {
             cloudFoundryInstanceCertificate = null;
             if (certificate == null)
@@ -36,15 +38,13 @@ namespace Steeltoe.Security.Authentication.Mtls
 
             var cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), CloudFoundryInstanceCertSubjectRegex);
 
-            // TODO: handle differently - certs generated locally get the OUs in a different order
             if (!cfInstanceMatch.Success)
             {
-                cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), FallbackInstanceCertSubjectRegex);
+                cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), ValidInstanceCertSubjectRegex);
             }
 
             if (cfInstanceMatch.Success)
             {
-                Console.WriteLine("Subject matched an expected OU pattern: {0}", certificate.Subject);
                 cloudFoundryInstanceCertificate = new CloudFoundryInstanceCertificate
                 {
                     OrgId = cfInstanceMatch.Groups["org"].Value,
@@ -56,7 +56,7 @@ namespace Steeltoe.Security.Authentication.Mtls
             }
             else
             {
-                Console.WriteLine("Subject failed to match an expected OU pattern: {0}", certificate.Subject);
+                logger?.LogWarning("Identity certificate did not match an expected pattern! Subject was: {0}", certificate.Subject);
             }
 
             return cfInstanceMatch.Success;

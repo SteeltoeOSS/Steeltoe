@@ -12,13 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Common.Security
+using Microsoft.AspNetCore.Authorization;
+
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryClaimTypes
+    public static class AuthorizationPolicyBuilderExtensions
     {
-        public const string CloudFoundryOrgId = "CloudFoundryOrgId";
-        public const string CloudFoundrySpaceId = "CloudFoundrySpaceId";
-        public const string CloudFoundryAppId = "CloudFoundryAppId";
-        public const string CloudFoundryInstanceId = "CloudFoundryContainerInstanceId";
+        public static AuthorizationPolicyBuilder SameOrg(this AuthorizationPolicyBuilder builder)
+        {
+            builder.Requirements.Add(new SameOrgRequirement());
+            return builder;
+        }
+
+        public static AuthorizationPolicyBuilder SameSpace(this AuthorizationPolicyBuilder builder)
+        {
+            builder.Requirements.Add(new SameSpaceRequirement());
+            return builder;
+        }
     }
 }

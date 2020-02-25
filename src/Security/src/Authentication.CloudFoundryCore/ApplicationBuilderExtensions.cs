@@ -18,7 +18,7 @@ using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryApplicationExtensions
+    public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseCloudFoundryContainerIdentity(this IApplicationBuilder app)
         {
