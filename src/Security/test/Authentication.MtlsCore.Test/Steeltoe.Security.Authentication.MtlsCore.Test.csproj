@@ -7,45 +7,6 @@
   <Import Project="..\..\..\..\sharedtest.props" />
 
   <ItemGroup>
-    <None Update="TestCertificates\rootedClientEku.inf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedNoEku.inf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedRevoked.inf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedServerEku.inf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="xunit.runner.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(AspNetCoreVersion)" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="TestCertificates\rootCA.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedClientEku.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedNoEku.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedRevoked.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="TestCertificates\rootedServerEku.cer">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="TestCertificates\selfSignedNoEkuCertificateExpired.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -58,8 +19,27 @@
     <None Update="TestCertificates\validSelfSignedNoEkuCertificate.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestCertificates\validSelfSignedPrimaryRootCertificate.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestCertificates\validSelfSignedServerEkuCertificate.cer">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="TestCertificates\validSignedClientCertificate.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestCertificates\validSignedSecondaryRootCertificate.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
   </ItemGroup>
 </Project>

@@ -174,7 +174,7 @@ namespace Steeltoe.Security.Authentication.Mtls
                 x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
             {
                 Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
-                isValid = Options.IssuerChain.Union(chain.ChainElements.Cast<X509ChainElement>().Select(c => c.Certificate)).Any();
+                isValid = Options.IssuerChain.Intersect(chain.ChainElements.Cast<X509ChainElement>().Select(c => c.Certificate)).Any();
             }
 
             return isValid;
