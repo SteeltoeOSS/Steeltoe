@@ -153,6 +153,12 @@ namespace Steeltoe.Security.Authentication.Mtls
 
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
+            if (Context.User.Claims.Any())
+            {
+                Context.Response.StatusCode = 401;
+                return Task.CompletedTask;
+            }
+
             // Certificate authentication takes place at the connection level. We can't prompt once we're in
             // user code, so the best thing to do is Forbid, not Challenge.
             return HandleForbiddenAsync(properties);

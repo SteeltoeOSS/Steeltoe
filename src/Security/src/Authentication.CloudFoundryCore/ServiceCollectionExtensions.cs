@@ -12,66 +12,72 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
 using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
+        /// <summary>
+        /// Adds options and services to use Cloud Foundry container identity certificates
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="configuration">Application Configuration</param>
+        public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            if (configuration is null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
             services.AddOptions();
             services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
-            services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, CertificateOptionsPostConfigurer>();
+            services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
             services.Configure<CertificateOptions>(configuration);
             services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
             services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
-            return services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
+            services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
         }
 
-        public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
+        /// <summary>
+        /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization
+        /// </summary>
+        /// <param name="services">Service collection</param>
+        /// <param name="configuration">Application Configuration</param>
+        public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration)
         {
-            var logger = builder.Services.BuildServiceProvider().GetService<ILogger<CloudFoundryInstanceCertificate>>();
-            builder.AddMutualTls(options =>
+            if (services is null)
             {
-                options.Events = new CertificateAuthenticationEvents()
-                {
-                    OnCertificateValidated = context =>
-                    {
-                        var claims = new List<Claim>(context.Principal.Claims);
-                        if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, logger))
-                        {
-                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
-                        }
+                throw new ArgumentNullException(nameof(services));
+            }
 
-                        var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
-                        context.Principal = new ClaimsPrincipal(identity);
-                        context.Success();
-                        return Task.CompletedTask;
-                    }
-                };
+            if (configuration is null)
+            {
+                throw new ArgumentNullException(nameof(configuration));
+            }
+
+            services.AddCloudFoundryContainerIdentity(configuration);
+            services
+                .AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme)
+                .AddCloudFoundryIdentityCertificate();
+
+            services.AddAuthorization(cfg =>
+            {
+                cfg.AddPolicy(CloudFoundryDefaults.SameOrganizationAuthorizationPolicy, builder => builder.SameOrg());
+                cfg.AddPolicy(CloudFoundryDefaults.SameSpaceAuthorizationPolicy, builder => builder.SameSpace());
             });
-            return builder;
         }
     }
 }

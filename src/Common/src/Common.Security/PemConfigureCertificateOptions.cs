@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -60,7 +59,7 @@ namespace Steeltoe.Common.Security
                .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value)))
                .ToList();
 
-            options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadKeyFromString(pemKey));
+            options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadRsaKeyFromString(pemKey));
 
             options.IssuerChain = certChain
                .Skip(1)
@@ -73,7 +72,8 @@ namespace Steeltoe.Common.Security
             Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
         }
 
-        private static RSA ReadKeyFromString(string pemContents)
+        // source: https://stackoverflow.com/a/53439332/761468
+        internal static RSA ReadRsaKeyFromString(string pemContents)
         {
             const string RsaPrivateKeyHeader = "-----BEGIN RSA PRIVATE KEY-----";
             const string RsaPrivateKeyFooter = "-----END RSA PRIVATE KEY-----";
@@ -93,11 +93,6 @@ namespace Steeltoe.Common.Security
                 return rsa;
             }
 
-            // "BEGIN PRIVATE KEY" (ImportPkcs8PrivateKey),
-            // "BEGIN ENCRYPTED PRIVATE KEY" (ImportEncryptedPkcs8PrivateKey),
-            // "BEGIN PUBLIC KEY" (ImportSubjectPublicKeyInfo),
-            // "BEGIN RSA PUBLIC KEY" (ImportRSAPublicKey)
-            // could any/all be handled here.
             throw new InvalidOperationException();
         }
     }

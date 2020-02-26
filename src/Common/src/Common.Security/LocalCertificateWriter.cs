@@ -21,6 +21,8 @@ namespace Steeltoe.Common.Security
 {
     public class LocalCertificateWriter
     {
+        internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
+
         public static readonly string AppBasePath = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf(Path.DirectorySeparatorChar + "bin"));
 
         public string RootCAPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
@@ -83,8 +85,8 @@ namespace Steeltoe.Common.Security
                 Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) +
                 "\r\n-----END CERTIFICATE-----\r\n";
 
-            File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem"), certContents);
-            File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"), "-----BEGIN RSA PRIVATE KEY-----\r\n" + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey().ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END RSA PRIVATE KEY-----");
+            File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Cert.pem"), certContents);
+            File.WriteAllText(Path.Combine(AppBasePath, "GeneratedCertificates", CertificateFilenamePrefix + "Key.pem"), "-----BEGIN RSA PRIVATE KEY-----\r\n" + Convert.ToBase64String(clientCertificate.GetRSAPrivateKey().ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) + "\r\n-----END RSA PRIVATE KEY-----");
 
             return true;
         }

@@ -18,11 +18,11 @@ using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class CertificateOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
+    public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOptions<MutualTlsAuthenticationOptions>
     {
-        private readonly IOptionsMonitor<MutualTlsAuthenticationOptions> _containerIdentityOptions;
+        private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
 
-        public CertificateOptionsPostConfigurer(IOptionsMonitor<MutualTlsAuthenticationOptions> containerIdentityOptions)
+        public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions)
         {
             _containerIdentityOptions = containerIdentityOptions;
         }
