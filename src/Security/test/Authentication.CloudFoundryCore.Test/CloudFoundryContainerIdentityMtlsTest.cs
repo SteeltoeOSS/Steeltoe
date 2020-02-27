@@ -102,7 +102,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         private IHostBuilder GetHostBuilder()
         {
             return new HostBuilder()
-                .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(fixture.ServerOrgId, fixture.ServerSpaceId))
+                .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(fixture.ServerOrgId.ToString(), fixture.ServerSpaceId.ToString()))
                 .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>())
                 .ConfigureWebHost(webBuilder =>
                 {

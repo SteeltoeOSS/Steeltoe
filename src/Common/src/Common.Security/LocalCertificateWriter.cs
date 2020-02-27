@@ -29,14 +29,14 @@ namespace Steeltoe.Common.Security
 
         public string IntermediatePfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
 
-        public bool Write(string orgId = null, string spaceId = null)
+        public bool Write(Guid orgId, Guid spaceId)
         {
             var appId = Guid.NewGuid();
             var instanceId = Guid.NewGuid();
 
             // Certificates provided by Diego will have a subject that doesn't comply with standards, but CertificateRequest would re-order these components anyway
             // Diego subjects will look like this: "CN=<instanceId>, OU=organization:<organizationId> + OU=space:<spaceId> + OU=app:<appId>"
-            var subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId ?? Guid.NewGuid().ToString()} + OU=organization:{orgId ?? Guid.NewGuid().ToString()}";
+            var subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId} + OU=organization:{orgId}";
 
             X509Certificate2 caCertificate;
 

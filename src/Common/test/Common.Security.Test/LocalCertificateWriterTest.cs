@@ -25,8 +25,8 @@ namespace Steeltoe.Common.Security.Test
         public void CertificatesIncludeParams()
         {
             // arrange
-            var orgId = Guid.NewGuid().ToString();
-            var spaceId = Guid.NewGuid().ToString();
+            var orgId = Guid.NewGuid();
+            var spaceId = Guid.NewGuid();
             var certWriter = new LocalCertificateWriter();
 
             // act

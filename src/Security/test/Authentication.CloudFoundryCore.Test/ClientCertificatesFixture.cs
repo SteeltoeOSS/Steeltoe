@@ -19,8 +19,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class ClientCertificatesFixture : IDisposable
     {
-        public readonly string ServerOrgId = "a8fef16f-94c0-49e3-aa0b-ced7c3da6229";
-        public readonly string ServerSpaceId = "122b942a-d7b9-4839-b26e-836654b9785f";
+        public readonly Guid ServerOrgId = new Guid("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");
+        public readonly Guid ServerSpaceId = new Guid("122b942a-d7b9-4839-b26e-836654b9785f");
         public readonly LocalCertificateWriter CertificateWriter = new LocalCertificateWriter();
 
         public ClientCertificatesFixture()
@@ -29,10 +29,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             CertificateWriter.Write(ServerOrgId, ServerSpaceId);
 
             CertificateWriter.CertificateFilenamePrefix = "SpaceMatch";
-            CertificateWriter.Write(Guid.NewGuid().ToString(), ServerSpaceId);
+            CertificateWriter.Write(Guid.NewGuid(), ServerSpaceId);
 
             CertificateWriter.CertificateFilenamePrefix = "OrgMatch";
-            CertificateWriter.Write(ServerOrgId, Guid.NewGuid().ToString());
+            CertificateWriter.Write(ServerOrgId, Guid.NewGuid());
         }
 
         #region IDisposable Support
