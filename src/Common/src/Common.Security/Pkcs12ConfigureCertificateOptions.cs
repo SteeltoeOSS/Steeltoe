@@ -25,9 +25,8 @@ namespace Steeltoe.Common.Security
     public class Pkcs12ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
     {
         private readonly IConfiguration _config;
-        private readonly ILogger _logger;
 
-        public Pkcs12ConfigureCertificateOptions(IConfiguration config, ILogger logger = null)
+        public Pkcs12ConfigureCertificateOptions(IConfiguration config)
         {
             if (config == null)
             {
@@ -35,7 +34,6 @@ namespace Steeltoe.Common.Security
             }
 
             _config = config;
-            _logger = logger;
         }
 
         public void Configure(string name, CertificateOptions options)
@@ -47,14 +45,14 @@ namespace Steeltoe.Common.Security
 
             options.Name = name;
 
-            var pemCert = _config["certificate"];
+            var certContents = _config["certificate"];
 
-            if (string.IsNullOrEmpty(pemCert))
+            if (string.IsNullOrEmpty(certContents))
             {
                 return;
             }
 
-            options.Certificate = new X509Certificate2(Encoding.UTF8.GetBytes(pemCert));
+            options.Certificate = new X509Certificate2(Encoding.UTF8.GetBytes(certContents));
         }
 
         public void Configure(CertificateOptions options)

@@ -14,9 +14,9 @@
 
 using System.Net.Http;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Common
 {
-    public interface IEurekaDiscoveryClientHandlerProvider
+    public interface IHttpClientHandlerProvider
     {
         HttpClientHandler GetHttpClientHandler();
     }

@@ -135,8 +135,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             var certificateSource = _sources.FirstOrDefault(cSource => cSource is ICertificateSource);
             if (certificateSource != null && DefaultSettings.ClientCertificate == null)
             {
-                var logger = LogFactory?.CreateLogger("CertificateOptionsConfigurer");
-                var certConfigurer = Activator.CreateInstance((certificateSource as ICertificateSource).OptionsConfigurer, Configuration, logger) as IConfigureNamedOptions<CertificateOptions>;
+                var certConfigurer = Activator.CreateInstance((certificateSource as ICertificateSource).OptionsConfigurer, Configuration) as IConfigureNamedOptions<CertificateOptions>;
                 var certOptions = new CertificateOptions();
                 certConfigurer.Configure(certOptions);
                 DefaultSettings.ClientCertificate = certOptions.Certificate;

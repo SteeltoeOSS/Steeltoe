@@ -14,12 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.IO;
 
 namespace Steeltoe.Common.Security
 {
     public static class ConfigurationExtensions
     {
-        public static IConfigurationBuilder AddPemFiles(this IConfigurationBuilder builder, string certFilePath, string keyFilePath)
+        public static IConfigurationBuilder AddPemFiles(this IConfigurationBuilder builder, string certFilePath, string keyFilePath, bool optional = false)
         {
             if (builder == null)
             {
@@ -36,11 +37,16 @@ namespace Steeltoe.Common.Security
                 throw new ArgumentException(nameof(keyFilePath));
             }
 
+            if (optional && (!File.Exists(certFilePath) || !File.Exists(keyFilePath)))
+            {
+                return builder;
+            }
+
             builder.Add(new PemCertificateSource(certFilePath, keyFilePath));
             return builder;
         }
 
-        public static IConfigurationBuilder AddPkcs12File(this IConfigurationBuilder builder, string certFilePath)
+        public static IConfigurationBuilder AddPkcs12File(this IConfigurationBuilder builder, string certFilePath, bool optional = false)
         {
             if (builder == null)
             {
@@ -50,6 +56,11 @@ namespace Steeltoe.Common.Security
             if (string.IsNullOrEmpty(certFilePath))
             {
                 throw new ArgumentException(nameof(certFilePath));
+            }
+
+            if (optional && !File.Exists(certFilePath))
+            {
+                return builder;
             }
 
             builder.Add(new Pkcs12CertificateSource(certFilePath));

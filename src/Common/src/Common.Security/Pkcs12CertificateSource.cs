@@ -31,6 +31,11 @@ namespace Steeltoe.Common.Security
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
+            if (!File.Exists(_certFilePath))
+            {
+                throw new InvalidOperationException("Required certificate file not found:" + _certFilePath);
+            }
+
             var certSource = new FileSource("certificate")
             {
                 FileProvider = null,
