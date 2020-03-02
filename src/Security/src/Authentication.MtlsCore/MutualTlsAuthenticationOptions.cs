@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.AspNetCore.Authentication.Certificate;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Security.Authentication.Mtls
 {
-    public class CertificateOptions
+    public class MutualTlsAuthenticationOptions : CertificateAuthenticationOptions
     {
-        public string Name { get; set; }
-
-        public X509Certificate2 Certificate { get; set; }
-
+        /// <summary>
+        /// Gets or sets partial or full certificate chain for validation
+        /// </summary>
         public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
     }
 }

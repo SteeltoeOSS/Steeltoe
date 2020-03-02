@@ -13,19 +13,24 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Security.Authentication.Mtls;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public static class CloudFoundryExtensions
+    public static class AuthenticationBuilderExtensions
     {
         /// <summary>
         /// Adds OAuth middleware and configuration for using UAA or Pivotal SSO for user authentication
@@ -269,6 +274,39 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             builder.AddJwtBearer(authenticationScheme, displayName, (jwtoptions) =>
             {
                 configurer(jwtoptions, config);
+            });
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Certificate authentication middleware and configuration to use platform identity certificates
+        /// </summary>
+        /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
+        /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
+        public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
+        {
+            var logger = builder.Services.BuildServiceProvider().GetService<ILogger<CloudFoundryInstanceCertificate>>();
+            builder.AddMutualTls(options =>
+            {
+                options.Events = new CertificateAuthenticationEvents()
+                {
+                    OnCertificateValidated = context =>
+                    {
+                        var claims = new List<Claim>(context.Principal.Claims);
+                        if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, logger))
+                        {
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                            claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                        }
+
+                        var identity = new ClaimsIdentity(claims, CertificateAuthenticationDefaults.AuthenticationScheme);
+                        context.Principal = new ClaimsPrincipal(identity);
+                        context.Success();
+                        return Task.CompletedTask;
+                    }
+                };
             });
             return builder;
         }

@@ -1,4 +1,4 @@
-﻿// Copyright 2017 the original author or authors.
+// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,17 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Authorization;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Security.Authentication.CloudFoundry
 {
-    public class CertificateOptions
+    public class SameOrgRequirement : IAuthorizationRequirement
     {
-        public string Name { get; set; }
-
-        public X509Certificate2 Certificate { get; set; }
-
-        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
     }
 }

@@ -20,10 +20,7 @@ namespace Steeltoe.Common.Security.Test
 {
     public class PemConfigureCertificateOptionsTest
     {
-        // possibly related https://github.com/dotnet/corefx/issues/11046
         [Fact]
-        [Trait("Category", "SkipOnLinux")]
-        [Trait("Category", "SkipOnMacOS")]
         public void AddPemFiles_ReadsFiles_CreatesCertificate()
         {
             var config = new ConfigurationBuilder()
@@ -32,10 +29,10 @@ namespace Steeltoe.Common.Security.Test
             Assert.NotNull(config["certificate"]);
             Assert.NotNull(config["privateKey"]);
             var pemConfig = new PemConfigureCertificateOptions(config);
-            CertificateOptions opts = new CertificateOptions();
+            var opts = new CertificateOptions();
             pemConfig.Configure(opts);
             Assert.NotNull(opts.Certificate);
-            Assert.Equal(Options.DefaultName, opts.Name);
+            Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
             Assert.True(opts.Certificate.HasPrivateKey);
         }
     }

@@ -43,5 +43,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public const string ParamsGrantType = "grant_type";
         public const string ParamsTokenFormat = "token_format";
         public const string ParamsCode = "code";
+
+        public const string SameOrganizationAuthorizationPolicy = "sameorg";
+        public const string SameSpaceAuthorizationPolicy = "samespace";
     }
 }
