@@ -16,11 +16,12 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test
 {
-    public class PemConfigurationExtensionsTest
+    public class ConfigurationExtensionsTest
     {
         [Fact]
         public void AddPemFiles_ThrowsOnNulls()
@@ -41,10 +42,10 @@ namespace Steeltoe.Common.Security.Test
         }
 
         [Fact]
-        public void AddPemFiles_ReloadsOnChange()
+        public async Task AddPemFiles_ReloadsOnChange()
         {
-            var tempFile1 = CreateTempFile("cert");
-            var tempFile2 = CreateTempFile("key");
+            var tempFile1 = await CreateTempFileAsync("cert");
+            var tempFile2 = await CreateTempFileAsync("key");
 
             var config = new ConfigurationBuilder()
                 .AddPemFiles(tempFile1, tempFile2)
@@ -53,29 +54,29 @@ namespace Steeltoe.Common.Security.Test
             Assert.Equal("cert", config["certificate"]);
             Assert.Equal("key", config["privateKey"]);
 
-            File.WriteAllText(tempFile1, "cert2");
+            await File.WriteAllTextAsync(tempFile1, "cert2");
             Thread.Sleep(2000);
             Assert.Equal("cert2", config["certificate"]);
             Assert.Equal("key", config["privateKey"]);
         }
 
         [Fact]
-        public void AddPemFiles_NotifiesOnChange()
+        public async Task AddPemFiles_NotifiesOnChange()
         {
-            var tempFile1 = CreateTempFile("cert1");
-            var tempFile2 = CreateTempFile("key1");
+            var tempFile1 = await CreateTempFileAsync("cert1");
+            var tempFile2 = await CreateTempFileAsync("key1");
 
             var config = new ConfigurationBuilder()
                 .AddPemFiles(tempFile1, tempFile2)
                 .Build();
 
-            bool changeCalled = false;
+            var changeCalled = false;
             var token = config.GetReloadToken();
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
             Assert.Equal("cert1", config["certificate"]);
             Assert.Equal("key1", config["privateKey"]);
 
-            File.WriteAllText(tempFile1, "barfoo");
+            await File.WriteAllTextAsync(tempFile1, "barfoo");
             Thread.Sleep(2000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("key1", config["privateKey"]);
@@ -85,17 +86,61 @@ namespace Steeltoe.Common.Security.Test
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
 
             changeCalled = false;
-            File.WriteAllText(tempFile2, "barbar");
+            await File.WriteAllTextAsync(tempFile2, "barbar");
             Thread.Sleep(2000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("barbar", config["privateKey"]);
             Assert.True(changeCalled);
         }
 
-        private string CreateTempFile(string contents)
+        [Fact]
+        public void AddCertificateFile_ThrowsOnNulls()
+        {
+            Assert.Throws<ArgumentNullException>(() => ConfigurationExtensions.AddCertificateFile(null, null));
+            Assert.Throws<ArgumentException>(() => ConfigurationExtensions.AddCertificateFile(new ConfigurationBuilder(), null));
+        }
+
+        [Fact]
+        public void AddCertificateFile_HoldsPath()
+        {
+            var config = new ConfigurationBuilder()
+                .AddCertificateFile("instance.p12")
+                .Build();
+            Assert.Equal("instance.p12", config["certificate"]);
+        }
+
+        [Fact]
+        public async Task AddCertificateFile_NotifiesOnChange()
+        {
+            // arrange
+            var filename = "fakeCertificate.p12";
+            await File.WriteAllTextAsync(filename, "cert1");
+
+            var config = new ConfigurationBuilder()
+                .AddCertificateFile(filename)
+                .Build();
+
+            var changeCalled = false;
+            var token = config.GetReloadToken();
+            token.RegisterChangeCallback((o) => changeCalled = true, "state");
+            Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
+
+            // act
+            await File.WriteAllTextAsync(filename, "barfoo");
+            Thread.Sleep(2000);
+
+            // assert
+            Assert.Equal("barfoo", await File.ReadAllTextAsync(config["certificate"]));
+            Assert.True(changeCalled);
+
+            // cleanup
+            File.Delete(filename);
+        }
+
+        private async Task<string> CreateTempFileAsync(string contents)
         {
             var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
+            await File.WriteAllTextAsync(tempFile, contents);
             return tempFile;
         }
     }

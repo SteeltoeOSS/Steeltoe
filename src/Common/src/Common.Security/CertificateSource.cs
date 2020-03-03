@@ -18,11 +18,11 @@ using System.IO;
 
 namespace Steeltoe.Common.Security
 {
-    public class Pkcs12CertificateSource : ICertificateSource
+    public class CertificateSource : ICertificateSource
     {
         private readonly string _certFilePath;
 
-        public Pkcs12CertificateSource(string certFilePath)
+        public CertificateSource(string certFilePath)
         {
             _certFilePath = Path.GetFullPath(certFilePath);
         }
@@ -50,7 +50,7 @@ namespace Steeltoe.Common.Security
                 .Add(certSource)
                 .Build();
 
-            return new Pkcs12CertificateProvider(certProvider);
+            return new CertificateProvider(certProvider);
         }
     }
 }

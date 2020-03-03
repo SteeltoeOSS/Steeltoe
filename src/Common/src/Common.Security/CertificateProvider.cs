@@ -14,17 +14,21 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security
 {
-    public class Pkcs12CertificateProvider : ConfigurationProvider
+    public class CertificateProvider : ConfigurationProvider
     {
-        private IConfigurationRoot _certFileProvider;
+        private readonly IConfigurationRoot _certFileProvider;
+        private string _certPath;
 
-        public Pkcs12CertificateProvider(IConfigurationRoot certFileProvider)
+        public CertificateProvider(IConfigurationRoot certFileProvider)
         {
             _certFileProvider = certFileProvider;
             _certFileProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
+            _certPath = (_certFileProvider.Providers.First() as FileProvider).Source.Path;
         }
 
         public override void Load()
@@ -39,7 +43,7 @@ namespace Steeltoe.Common.Security
 
         public override bool TryGet(string key, out string value)
         {
-            value = _certFileProvider[key];
+            value = _certPath;
             if (!string.IsNullOrEmpty(value))
             {
                 return true;

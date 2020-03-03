@@ -13,20 +13,18 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using System;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace Steeltoe.Common.Security
 {
-    public class Pkcs12ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+    public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
     {
         private readonly IConfiguration _config;
 
-        public Pkcs12ConfigureCertificateOptions(IConfiguration config)
+        public ConfigureCertificateOptions(IConfiguration config)
         {
             if (config == null)
             {
@@ -45,14 +43,14 @@ namespace Steeltoe.Common.Security
 
             options.Name = name;
 
-            var certContents = _config["certificate"];
+            var certPath = _config["certificate"];
 
-            if (string.IsNullOrEmpty(certContents))
+            if (string.IsNullOrEmpty(certPath))
             {
                 return;
             }
 
-            options.Certificate = new X509Certificate2(Encoding.UTF8.GetBytes(certContents));
+            options.Certificate = new X509Certificate2(certPath);
         }
 
         public void Configure(CertificateOptions options)
