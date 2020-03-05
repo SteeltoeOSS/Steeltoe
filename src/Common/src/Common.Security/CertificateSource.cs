@@ -27,7 +27,7 @@ namespace Steeltoe.Common.Security
             _certFilePath = Path.GetFullPath(certFilePath);
         }
 
-        public Type OptionsConfigurer => throw new NotImplementedException();
+        public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
