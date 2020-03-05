@@ -1,4 +1,4 @@
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,47 +14,31 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System;
+using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Http
 {
-    public class CertificateRotationService : IDisposable, ICertificateRotationService
+    public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
     {
-        private readonly bool _isStarted = false;
-        private readonly IOptionsMonitor<CertificateOptions> _optionsMonitor;
-        private readonly IDisposable _subscription;
+        private readonly IOptionsMonitor<CertificateOptions> certificateOptions;
         private CertificateOptions _lastValue;
 
-        public CertificateRotationService(IOptionsMonitor<CertificateOptions> optionsMonitor)
+        public ClientCertificateHttpHandlerProvider(IOptionsMonitor<CertificateOptions> certOptions)
         {
-            _optionsMonitor = optionsMonitor;
-            _subscription = _optionsMonitor.OnChange(RotateCert);
+            certificateOptions = certOptions;
+            certificateOptions.OnChange(RotateCert);
         }
 
-        public void Start()
+        public HttpClientHandler GetHttpClientHandler()
         {
-            if (_isStarted)
+            var handler = new HttpClientHandler();
+            if (certificateOptions?.CurrentValue?.Certificate != null)
             {
-                return;
+                handler.ClientCertificates.Add(_lastValue.Certificate);
             }
 
-            RotateCert(_optionsMonitor.CurrentValue);
-            _lastValue = _optionsMonitor.CurrentValue;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _subscription.Dispose();
-            }
+            return handler;
         }
 
         private void RotateCert(CertificateOptions newCert)
@@ -71,20 +55,13 @@ namespace Steeltoe.Common.Security
             if (_lastValue != null)
             {
                 personalCertStore.Certificates.Remove(_lastValue.Certificate);
-                foreach (var cert in _lastValue.IssuerChain)
-                {
-                    personalCertStore.Certificates.Remove(cert);
-                }
             }
 
             personalCertStore.Certificates.Add(newCert.Certificate);
-            foreach (var cert in newCert.IssuerChain)
-            {
-                personalCertStore.Certificates.Add(cert);
-            }
 
             personalCertStore.Close();
             authorityCertStore.Close();
+            _lastValue = certificateOptions.CurrentValue;
         }
     }
 }

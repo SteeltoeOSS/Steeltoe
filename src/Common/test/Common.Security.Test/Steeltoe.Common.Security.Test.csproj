@@ -13,6 +13,9 @@
     <None Update="instance.key">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="instance.p12">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

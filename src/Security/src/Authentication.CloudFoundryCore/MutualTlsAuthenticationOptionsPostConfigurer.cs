@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.Security;
+using Steeltoe.Common.Options;
 using Steeltoe.Security.Authentication.Mtls;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test
