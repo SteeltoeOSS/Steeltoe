@@ -106,7 +106,7 @@ namespace Steeltoe.Common.Security.Test
             var config = new ConfigurationBuilder()
                 .AddCertificateFile("instance.p12")
                 .Build();
-            Assert.Equal("instance.p12", config["certificate"]);
+            Assert.Equal(Path.GetFullPath("instance.p12"), config["certificate"]);
         }
 
         [Fact]

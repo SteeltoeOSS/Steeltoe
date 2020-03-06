@@ -50,7 +50,7 @@ namespace Steeltoe.Common.Security
                 return;
             }
 
-            options.Certificate = new X509Certificate2(certPath);
+            options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
         }
 
         public void Configure(CertificateOptions options)

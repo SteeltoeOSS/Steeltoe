@@ -28,6 +28,7 @@ namespace Steeltoe.Common.Http
         {
             certificateOptions = certOptions;
             certificateOptions.OnChange(RotateCert);
+            RotateCert(certificateOptions.CurrentValue);
         }
 
         public HttpClientHandler GetHttpClientHandler()
