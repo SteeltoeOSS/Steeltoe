@@ -42,15 +42,11 @@ namespace Steeltoe.Common.Security
                 Path = Path.GetFileName(_certFilePath),
                 Optional = false,
                 ReloadOnChange = true,
-                ReloadDelay = 1000
+                ReloadDelay = 1000,
+                BasePath = Path.GetDirectoryName(_certFilePath)
             };
 
-            var certProvider = new ConfigurationBuilder()
-                .SetBasePath(Path.GetDirectoryName(_certFilePath))
-                .Add(certSource)
-                .Build();
-
-            return new CertificateProvider(certProvider);
+            return new CertificateProvider(certSource);
         }
     }
 }

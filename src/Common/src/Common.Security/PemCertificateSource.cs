@@ -68,6 +68,8 @@ namespace Steeltoe.Common.Security
 #pragma warning disable SA1402 // File may only contain a single class
     internal class FileSource : FileConfigurationSource
     {
+        internal string BasePath { get; set; }
+
         internal string Key { get; }
 
         public FileSource(string key)

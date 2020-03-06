@@ -14,21 +14,20 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
+using System.IO;
 
 namespace Steeltoe.Common.Security
 {
     public class CertificateProvider : ConfigurationProvider
     {
-        private readonly IConfigurationRoot _certFileProvider;
-        private string _certPath;
+        private readonly IConfigurationProvider _certificateProvider;
+        private readonly string _certificatePath;
 
-        public CertificateProvider(IConfigurationRoot certFileProvider)
+        internal CertificateProvider(FileSource certificateSource)
         {
-            _certFileProvider = certFileProvider;
-            _certFileProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
-            _certPath = (_certFileProvider.Providers.First() as FileProvider).Source.Path;
+            _certificateProvider = certificateSource.Build(new ConfigurationBuilder());
+            _certificateProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
+            _certificatePath = Path.Combine(certificateSource.BasePath, certificateSource.Path);
         }
 
         public override void Load()
@@ -43,7 +42,13 @@ namespace Steeltoe.Common.Security
 
         public override bool TryGet(string key, out string value)
         {
-            value = _certPath;
+            value = null;
+
+            if (key == "certificate")
+            {
+                value = _certificatePath;
+            }
+
             if (!string.IsNullOrEmpty(value))
             {
                 return true;
@@ -55,7 +60,7 @@ namespace Steeltoe.Common.Security
         private void NotifyCertChanged(object state)
         {
             OnReload();
-            _certFileProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
+            _certificateProvider.GetReloadToken().RegisterChangeCallback(NotifyCertChanged, null);
         }
     }
 }
