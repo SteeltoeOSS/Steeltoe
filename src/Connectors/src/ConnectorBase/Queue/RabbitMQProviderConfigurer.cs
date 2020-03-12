@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using System.Net;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     public class RabbitMQProviderConfigurer
     {

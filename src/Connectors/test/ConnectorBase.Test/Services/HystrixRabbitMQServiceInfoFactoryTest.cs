@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     public class HystrixRabbitMQServiceInfoFactoryTest
     {

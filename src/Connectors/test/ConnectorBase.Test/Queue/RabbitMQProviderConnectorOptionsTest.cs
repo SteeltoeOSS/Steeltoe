@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
+namespace Steeltoe.Connector.RabbitMQ.Test
 {
     public class RabbitMQProviderConnectorOptionsTest
     {

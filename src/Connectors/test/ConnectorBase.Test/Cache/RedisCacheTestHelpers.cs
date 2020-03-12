@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+using System.Collections.Generic;
+
+namespace Steeltoe.Connector.Redis.Test
 {
     public static class RedisCacheTestHelpers
     {
@@ -71,5 +73,14 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                     ]
                 }]
             }";
+
+        public static Dictionary<string, string> SingleServerAsDictionary = new Dictionary<string, string>
+            {
+                { "services:p-redis:0:name", "myRedisService" },
+                { "services:p-redis:0:tags:0", "redis" },
+                { "services:p-redis:0:credentials:host", "192.168.0.103" },
+                { "services:p-redis:0:credentials:password", "133de7c8-9f3a-4df1-8a10-676ba7ddaa10" },
+                { "services:p-redis:0:credentials:port", "60287" },
+            };
     }
 }

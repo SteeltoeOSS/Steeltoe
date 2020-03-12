@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Connector.CloudFoundry;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test
+namespace Steeltoe.Connector.Test
 {
     public class CloudFoundryServiceInfoCreatorTest
     {

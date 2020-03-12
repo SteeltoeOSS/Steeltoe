@@ -15,7 +15,7 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.Connector.PostgreSql
 {
     /// <summary>
     /// Assemblies and types used for interacting with PostgreSQL

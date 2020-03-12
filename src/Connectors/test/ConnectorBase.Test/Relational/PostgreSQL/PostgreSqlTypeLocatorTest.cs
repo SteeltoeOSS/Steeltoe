@@ -15,7 +15,7 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.Connector.PostgreSql.Test
 {
     public class PostgreSqlTypeLocatorTest
     {

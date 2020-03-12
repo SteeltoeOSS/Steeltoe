@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using System.Net;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.Connector.PostgreSql
 {
     public class PostgresProviderConfigurer
     {

@@ -15,7 +15,7 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public class MongoDbTypeLocatorTest
     {

@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6
+namespace Steeltoe.Connector.Oracle.EF6
 {
     public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
     {

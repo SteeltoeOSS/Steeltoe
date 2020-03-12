@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #if NET461
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
+namespace Steeltoe.Connector.MySql.EF6.Test
 {
     public class MySqlDbContextConnectorFactoryTest
     {

@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
+namespace Steeltoe.Connector.EFCore.Test
 {
     public class EntityFrameworkCoreTypeLocatorTest
     {

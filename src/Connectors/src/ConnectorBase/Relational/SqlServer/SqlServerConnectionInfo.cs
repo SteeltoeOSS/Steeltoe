@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer
 {
     public class SqlServerConnectionInfo : IConnectionInfo
     {

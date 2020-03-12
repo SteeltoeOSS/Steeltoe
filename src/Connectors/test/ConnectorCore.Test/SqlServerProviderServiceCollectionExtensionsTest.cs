@@ -14,16 +14,15 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Relational;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
+namespace Steeltoe.Connector.SqlServer.Test
 {
     /// <summary>
     /// Tests for the extension method that adds both the DbConnection and the health check

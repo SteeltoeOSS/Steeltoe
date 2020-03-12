@@ -15,7 +15,7 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer
 {
     /// <summary>
     /// Assemblies and types used for interacting with Microsoft SQL Server

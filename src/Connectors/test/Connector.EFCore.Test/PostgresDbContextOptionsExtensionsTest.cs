@@ -16,14 +16,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
-using Steeltoe.CloudFoundry.Connector.EFCore.Test;
-using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Connector.EFCore.Test;
+using Steeltoe.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
+namespace Steeltoe.Connector.PostgreSql.EFCore.Test
 {
     public class PostgresDbContextOptionsExtensionsTest
     {

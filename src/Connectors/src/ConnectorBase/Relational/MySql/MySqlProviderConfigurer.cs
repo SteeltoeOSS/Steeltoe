@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using System.Net;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql
+namespace Steeltoe.Connector.MySql
 {
     public class MySqlProviderConfigurer
     {

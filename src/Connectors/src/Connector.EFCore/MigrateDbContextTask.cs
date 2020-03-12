@@ -18,7 +18,7 @@ using Steeltoe.Common;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore
+namespace Steeltoe.Connector.EFCore
 {
     /// <summary>
     /// Applies code first migrations for the specified Entity Framework DB Context

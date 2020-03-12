@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
+namespace Steeltoe.Connector.MySql.EF6
 {
     public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
     {

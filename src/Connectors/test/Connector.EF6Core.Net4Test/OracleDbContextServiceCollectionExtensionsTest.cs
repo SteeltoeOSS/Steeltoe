@@ -14,11 +14,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.EF6Core;
+using Steeltoe.Connector.EF6Core;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
+namespace Steeltoe.Connector.Oracle.EF6.Test
 {
     public class OracleDbContextServiceCollectionExtensionsTest
     {

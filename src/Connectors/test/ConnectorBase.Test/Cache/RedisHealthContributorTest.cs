@@ -14,13 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Redis;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Cache
+namespace Steeltoe.Connector.Cache.Test
 {
     public class RedisHealthContributorTest
     {

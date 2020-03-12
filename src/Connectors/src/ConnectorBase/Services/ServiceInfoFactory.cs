@@ -12,19 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     [ServiceInfoFactory]
     public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
-        private static List<string> _userList = new List<string>() { "user", "username", "uid" };
-        private static List<string> _passwordList = new List<string>() { "password", "pw" };
-        private static List<string> _hostList = new List<string>() { "hostname", "host" };
+        private static readonly List<string> _userList = new List<string>() { "user", "username", "uid" };
+        private static readonly List<string> _passwordList = new List<string>() { "password", "pw" };
+        private static readonly List<string> _hostList = new List<string>() { "hostname", "host" };
 
         public ServiceInfoFactory(Tags tags, string scheme)
             : this(tags, new string[] { scheme })

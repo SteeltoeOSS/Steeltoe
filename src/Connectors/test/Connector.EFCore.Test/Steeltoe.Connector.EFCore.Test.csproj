@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreTestVersion)" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreTestVersion)" />
 
@@ -27,5 +23,9 @@
     <!--<PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlV6)" />-->
     <!--<PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlV8)" />-->
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEFCoreVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />
   </ItemGroup>
 </Project>

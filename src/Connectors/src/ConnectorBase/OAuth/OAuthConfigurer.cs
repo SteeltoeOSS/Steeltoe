@@ -15,7 +15,7 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.Connector.OAuth
 {
     public class OAuthConfigurer
     {

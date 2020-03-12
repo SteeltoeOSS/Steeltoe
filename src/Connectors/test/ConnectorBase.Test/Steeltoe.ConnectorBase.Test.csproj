@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsRedisVersion)" />
@@ -28,5 +24,10 @@
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
     <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
   </ItemGroup>
 </Project>

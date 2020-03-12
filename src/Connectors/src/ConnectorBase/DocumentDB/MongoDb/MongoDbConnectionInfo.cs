@@ -13,11 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.MongoDb;
-using Steeltoe.Connector;
+using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector
+namespace Steeltoe.Connector
 {
     public class MongoDbConnectionInfo : IConnectionInfo
     {

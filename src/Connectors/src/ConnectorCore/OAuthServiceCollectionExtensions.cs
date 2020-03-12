@@ -18,7 +18,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.Connector.OAuth
 {
     public static class OAuthServiceCollectionExtensions
     {

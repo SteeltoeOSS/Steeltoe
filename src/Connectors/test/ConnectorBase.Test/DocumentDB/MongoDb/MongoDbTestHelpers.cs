@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public static class MongoDbTestHelpers
     {

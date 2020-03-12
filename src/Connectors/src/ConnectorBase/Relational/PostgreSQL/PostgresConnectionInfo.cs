@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.Connector.PostgreSql
 {
     public class PostgresConnectionInfo : IConnectionInfo
     {

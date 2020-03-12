@@ -17,7 +17,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public static class RedisCacheConfigurationExtensions
     {

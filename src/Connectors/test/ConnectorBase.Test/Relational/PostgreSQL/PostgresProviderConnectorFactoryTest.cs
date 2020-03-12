@@ -17,7 +17,7 @@ using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
+namespace Steeltoe.Connector.PostgreSql.Test
 {
     public class PostgresProviderConnectorFactoryTest
     {

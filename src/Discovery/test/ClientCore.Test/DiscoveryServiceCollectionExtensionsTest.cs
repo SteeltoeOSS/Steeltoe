@@ -13,16 +13,15 @@
 // limitations under the License.
 
 using Consul;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Connector;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;

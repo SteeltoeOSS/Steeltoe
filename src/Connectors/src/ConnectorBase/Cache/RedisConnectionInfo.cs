@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public class RedisConnectionInfo : IConnectionInfo
     {

@@ -17,7 +17,7 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     public class RabbitMQProviderConnectorFactory
     {
