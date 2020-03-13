@@ -130,7 +130,7 @@ namespace Steeltoe.Connector.Relational.Test
             Assert.Contains(status.Details.Keys, k => k == "error");
         }
 
-        [Fact]
+        [Fact(Skip = "Integration test - requires local db server")]
         public void Sql_Is_Connected_Returns_Up_Status()
         {
             // arrange

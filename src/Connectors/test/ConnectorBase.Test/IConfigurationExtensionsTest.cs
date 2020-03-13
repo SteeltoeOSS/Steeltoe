@@ -44,6 +44,8 @@ namespace Steeltoe.Connector.Test
         public void GetServiceInfos_GetsRedisServiceInfos()
         {
             // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
             var config = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
 
             // act

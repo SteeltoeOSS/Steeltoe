@@ -12,38 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Azure.Cosmos;
 using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.MongoDb.Test
+namespace Steeltoe.Connector.CosmosDb.Test
 {
-    public class MongoDbConnectorFactoryTest
+    public class CosmosDbConnectorFactoryTest
     {
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
             // Arrange
-            MongoDbConnectorOptions config = null;
-            MongoDbServiceInfo si = null;
+            CosmosDbConnectorOptions config = null;
+            CosmosDbServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorFactory(si, config, MongoDbTypeLocator.MongoClient));
+            var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(CosmosClient)));
             Assert.Contains(nameof(config), ex.Message);
         }
 
         [Fact]
-        public void Create_ReturnsMongoDbConnection()
+        public void Create_ReturnsCosmosDbConnection()
         {
-            var config = new MongoDbConnectorOptions()
+            var si = new CosmosDbServiceInfo("MyId")
             {
-                Server = "localhost",
-                Port = 27016,
-                Password = "password",
-                Username = "username",
+                Host = "https://someHost:443/",
+                MasterKey = "lXYMGIE4mYITjXaHwQjkh0U07lwF513NdbTfeyGndeqjVXzwKQ3ZalKXQNYeIZovoyl57IY1J0KnJUH36EPufA==",
+                ReadOnlyKey = "hy5XZOdVnBeMmbB9FGcD54tttGKExad9XkGhn5Esc4jAM60OF2U7TcCXgffqBtBRuPAp0uFqKvz1l13OX8auPw==",
+                DatabaseId = "databaseId",
+                DatabaseLink = "databaseLink"
             };
-            var si = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
-            var factory = new MongoDbConnectorFactory(si, config, MongoDbTypeLocator.MongoClient);
+
+            var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(CosmosClient));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }

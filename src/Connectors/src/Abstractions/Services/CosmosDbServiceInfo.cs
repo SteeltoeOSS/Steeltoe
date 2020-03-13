@@ -12,23 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Extensions.Configuration;
-
 namespace Steeltoe.Connector.Services
 {
-    public class MongoDbServiceInfoFactory : ServiceInfoFactory
+    public class CosmosDbServiceInfo : ServiceInfo
     {
-        public MongoDbServiceInfoFactory()
-            : base(new Tags("mongodb"), MongoDbServiceInfo.MONGODB_SCHEME)
+        public CosmosDbServiceInfo(string id)
+            : base(id)
         {
-            // add the uri property used by the Microsoft Azure Service Broker with CosmosDb
-            UriKeys.Add("cosmosdb_connection_string");
         }
 
-        public override IServiceInfo Create(Service binding)
-        {
-            var uri = GetUriFromCredentials(binding.Credentials);
-            return new MongoDbServiceInfo(binding.Name, uri);
-        }
+        public string Host { get; set; }
+
+        public string MasterKey { get; set; }
+
+        public string ReadOnlyKey { get; set; }
+
+        public string DatabaseId { get; set; }
+
+        public string DatabaseLink { get; set; }
     }
 }
