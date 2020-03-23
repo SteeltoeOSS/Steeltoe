@@ -91,7 +91,7 @@ namespace Steeltoe.Common.Configuration
                 {
                     string placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
 
-                    // Replace Spring period delimiters with MS-friendly delimiters so spring placeholders can also be resolved
+                    // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
                     placeholder = placeholder.Replace(".", ":");
 
                     string originalPlaceholder = placeholder;
