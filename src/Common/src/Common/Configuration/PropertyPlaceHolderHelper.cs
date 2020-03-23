@@ -90,6 +90,10 @@ namespace Steeltoe.Common.Configuration
                 if (endIndex != -1)
                 {
                     string placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
+
+                    // Replace Spring period delimiters with MS-friendly delimiters so spring placeholders can also be resolved
+                    placeholder = placeholder.Replace(".", ":");
+
                     string originalPlaceholder = placeholder;
 
                     if (!visitedPlaceHolders.Add(originalPlaceholder))
