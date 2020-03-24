@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
     {

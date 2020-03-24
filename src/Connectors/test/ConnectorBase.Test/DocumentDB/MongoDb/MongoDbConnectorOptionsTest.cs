@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public class MongoDbConnectorOptionsTest
     {
@@ -124,7 +123,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         }
 
         [Fact]
-        public void ConnectionString_Overridden_By_A9sinCloudFoundryConfig()
+        public void ConnectionString_OverriddenByVCAP()
         {
             // arrange
             var appsettings = new Dictionary<string, string>()
@@ -139,34 +138,6 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             // add settings to config
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
-            configurationBuilder.AddEnvironmentVariables();
-            configurationBuilder.AddCloudFoundry();
-            var config = configurationBuilder.Build();
-
-            // act
-            var sconfig = new MongoDbConnectorOptions(config);
-
-            // assert
-            Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
-        }
-
-        [Fact]
-        public void ConnectionString_Overridden_By_EnterpriseMongoInCloudFoundryConfig()
-        {
-            // arrange
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
-            };
-
-            // add environment variables as Cloud Foundry would
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleServer_Enterprise_VCAP);
-
-            // add settings to config
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            configurationBuilder.AddEnvironmentVariables();
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 

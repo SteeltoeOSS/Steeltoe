@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
+namespace Steeltoe.Connector.SqlServer.EFCore.Test
 {
     public class SqlServerTestHelpers
     {

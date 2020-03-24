@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.Connector.OAuth
 {
     public class OAuthServiceOptions
     {

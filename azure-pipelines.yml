@@ -12,6 +12,9 @@ trigger:
     - README.md
     - project-docs/*
     - roadmaps/*
+pr:
+- master
+- 2.x
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true

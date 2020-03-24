@@ -14,17 +14,17 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.MySql;
-using Steeltoe.CloudFoundry.Connector.Oracle;
-using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.MySql;
+using Steeltoe.Connector.Oracle;
+using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
 using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Relational.Test
+namespace Steeltoe.Connector.Relational.Test
 {
     public class RelationalHealthContributorTest
     {
@@ -116,7 +116,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         {
             // arrange
             var implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
+            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 10 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -135,8 +135,8 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
         {
             // arrange
             var implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
-            var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=master", "steeltoe", "steeltoe");
+            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1, ConnectionString = "Server=(localdb)\\MSSQLLocalDB;Integrated Security=true" };
+            var sInfo = new SqlServerServiceInfo("MyId", string.Empty);
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());

@@ -15,12 +15,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Oracle;
-using Steeltoe.CloudFoundry.Connector.Oracle.EF6;
+using Steeltoe.Connector.Oracle;
+using Steeltoe.Connector.Oracle.EF6;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6Core
+namespace Steeltoe.Connector.EF6Core
 {
     public static class OracleDbContextServiceCollectionExtensions
     {

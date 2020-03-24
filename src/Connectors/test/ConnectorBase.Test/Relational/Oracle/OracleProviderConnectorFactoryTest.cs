@@ -17,7 +17,7 @@ using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test
 {
     public class OracleProviderConnectorFactoryTest
     {

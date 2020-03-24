@@ -13,20 +13,20 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.MongoDb.Test;
-using Steeltoe.CloudFoundry.Connector.MySql.Test;
-using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.PostgreSql.Test;
-using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.CloudFoundry.Connector.Redis;
-using Steeltoe.CloudFoundry.Connector.Redis.Test;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.CloudFoundry.Connector.SqlServer.Test;
+using Steeltoe.Connector.MongoDb.Test;
+using Steeltoe.Connector.MySql.Test;
+using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connector.PostgreSql.Test;
+using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connector.Redis;
+using Steeltoe.Connector.Redis.Test;
+using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connector.SqlServer.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test
+namespace Steeltoe.Connector.Test
 {
     public class ConnectionStringManagerTest
     {
@@ -44,6 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void MysqlConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
             var config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
@@ -68,6 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void PostgresConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
             var connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
@@ -90,6 +92,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void SqlServerConnectionInfo_ByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
@@ -113,6 +116,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void RedisConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
@@ -147,6 +151,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void MongoDbConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());

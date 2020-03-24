@@ -14,7 +14,7 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     internal class TestUriServiceInfo : UriServiceInfo
     {

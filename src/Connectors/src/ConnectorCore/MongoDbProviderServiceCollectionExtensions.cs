@@ -22,7 +22,7 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     public static class MongoDbProviderServiceCollectionExtensions
     {

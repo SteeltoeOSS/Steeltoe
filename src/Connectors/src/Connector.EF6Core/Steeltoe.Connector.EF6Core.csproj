@@ -1,12 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>CloudFoundry Connector Extensions for Entity Framework</Description>
+    <Description>Connector Extensions for Entity Framework</Description>
     <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CloudFoundry.Connector.EF6Core</AssemblyName>
-    <PackageId>Steeltoe.CloudFoundry.Connector.EF6Core</PackageId>
-    <PackageTags>connectors;EntityFramework;aspnetcore;CloudFoundry;vcap</PackageTags>
+    <AssemblyName>Steeltoe.Connector.EF6Core</AssemblyName>
+    <PackageId>Steeltoe.Connector.EF6Core</PackageId>
+    <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
@@ -14,12 +15,12 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
-    <ProjectReference Include="..\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

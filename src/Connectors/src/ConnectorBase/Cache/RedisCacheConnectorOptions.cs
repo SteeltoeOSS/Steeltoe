@@ -19,7 +19,7 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     {

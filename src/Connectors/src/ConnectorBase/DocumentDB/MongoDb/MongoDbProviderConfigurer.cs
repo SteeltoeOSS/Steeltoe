@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using System.Net;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     public class MongoDbProviderConfigurer
     {

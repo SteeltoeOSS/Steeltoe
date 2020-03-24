@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Text;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql
+namespace Steeltoe.Connector.MySql
 {
     /// <summary>
     /// Currently enabling properties supported by BOTH of these connectors:

@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
+namespace Steeltoe.Connector.SqlServer.Test
 {
     public class SqlServerProviderConfigurerTest
     {

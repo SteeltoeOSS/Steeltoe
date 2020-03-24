@@ -15,7 +15,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     public class Tags
     {

@@ -14,13 +14,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
+namespace Steeltoe.Connector.SqlServer.EFCore
 {
     public static class SqlServerDbContextOptionsExtensions
     {

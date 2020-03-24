@@ -14,13 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.RabbitMQ;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Queue
+namespace Steeltoe.Connector.Queue.Test
 {
     public class RabbitMQHealthContributorTest
     {

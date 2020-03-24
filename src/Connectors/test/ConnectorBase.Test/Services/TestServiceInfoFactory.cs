@@ -16,7 +16,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     internal class TestServiceInfoFactory : ServiceInfoFactory
     {

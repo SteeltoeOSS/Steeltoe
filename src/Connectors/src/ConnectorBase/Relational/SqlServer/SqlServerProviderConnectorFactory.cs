@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer
 {
     public class SqlServerProviderConnectorFactory
     {

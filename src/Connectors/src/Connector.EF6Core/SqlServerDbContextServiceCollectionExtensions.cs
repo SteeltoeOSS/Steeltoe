@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
+namespace Steeltoe.Connector.SqlServer.EF6
 {
     public static class SqlServerDbContextServiceCollectionExtensions
     {

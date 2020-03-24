@@ -15,13 +15,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Relational;
 using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql
+namespace Steeltoe.Connector.MySql
 {
     public static class MySqlServiceCollectionExtensions
     {

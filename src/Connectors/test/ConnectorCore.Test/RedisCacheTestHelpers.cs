@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     public static class RedisCacheTestHelpers
     {

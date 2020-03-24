@@ -21,7 +21,7 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     public static class RabbitMQProviderServiceCollectionExtensions
     {

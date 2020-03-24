@@ -17,7 +17,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.Connector.OAuth.Test
 {
     public class OAuthConnectorOptionsTest
     {

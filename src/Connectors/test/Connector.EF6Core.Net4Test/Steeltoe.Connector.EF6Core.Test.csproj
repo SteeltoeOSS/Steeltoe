@@ -13,10 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
@@ -24,5 +20,8 @@
     <!--<PackageReference Include="MySql.Data.Entity" Version="$(MySqlV6)" />-->
     <!-- Oracle changed the name + namespaces for v8. Old is above, new is below -->
     <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj" />
   </ItemGroup>
 </Project>

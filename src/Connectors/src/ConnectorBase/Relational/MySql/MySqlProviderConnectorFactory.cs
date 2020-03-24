@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql
+namespace Steeltoe.Connector.MySql
 {
     public class MySqlProviderConnectorFactory
     {

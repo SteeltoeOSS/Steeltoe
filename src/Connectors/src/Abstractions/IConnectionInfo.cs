@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Connector
 {
@@ -26,5 +27,7 @@ namespace Steeltoe.Connector
         public string ConnectionString { get; set; }
 
         public string Name { get; set; }
+
+        public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
     }
 }

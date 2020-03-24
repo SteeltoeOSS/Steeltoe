@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Hystrix
+namespace Steeltoe.Connector.Hystrix
 {
     public class HystrixProviderConnectorOptions : AbstractServiceConnectorOptions
     {

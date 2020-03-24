@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
+namespace Steeltoe.Connector.Hystrix.Test
 {
     public class HystrixProviderConfigurerTest
     {

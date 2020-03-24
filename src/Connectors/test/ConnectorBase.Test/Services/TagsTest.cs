@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     public class TagsTest
     {
