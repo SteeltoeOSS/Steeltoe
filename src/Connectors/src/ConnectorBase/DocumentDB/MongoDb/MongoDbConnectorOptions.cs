@@ -42,11 +42,6 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
             var section = config.GetSection(MONGODB_CLIENT_SECTION_PREFIX);
             section.Bind(this);
 
-            Options = config
-                .GetSection(MONGODB_CLIENT_SECTION_PREFIX + ":options")
-                .GetChildren()
-                .ToDictionary(x => x.Key, x => x.Value);
-
             cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
@@ -62,9 +57,9 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
         public string Database { get; set; }
 
-        internal string Uri { get; set; }
+        public Dictionary<string, string> Options { get; set; }
 
-        internal Dictionary<string, string> Options { get; set; }
+        internal string Uri { get; set; }
 
         public override string ToString()
         {
