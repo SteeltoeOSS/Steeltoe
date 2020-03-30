@@ -1,4 +1,4 @@
-// Copyright 2017 the original author or authors.
+﻿// Copyright 2017 the original author or authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,22 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
-
-namespace Steeltoe.CloudFoundry.Connector
+namespace Steeltoe.CloudFoundry.Connector.Services
 {
-    public interface IConnectionInfo
+    public class CosmosDbServiceInfo : ServiceInfo
     {
-        Connection Get(IConfiguration configuration, string serviceName);
-    }
+        public CosmosDbServiceInfo(string id)
+            : base(id)
+        {
+        }
 
-    public class Connection
-    {
-        public string ConnectionString { get; set; }
+        public string Host { get; set; }
 
-        public string Name { get; set; }
+        public string MasterKey { get; set; }
 
-        public Dictionary<string, string> Properties { get; } = new Dictionary<string, string>();
+        public string ReadOnlyKey { get; set; }
+
+        public string DatabaseId { get; set; }
+
+        public string DatabaseLink { get; set; }
     }
 }
