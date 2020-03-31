@@ -264,7 +264,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
-                            IDictionary<string, string> newData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                            var newData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                             if (!string.IsNullOrEmpty(env.State))
                             {
@@ -287,6 +287,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             }
 
                             Data = newData;
+
+                            // Adds client settings (e.g spring:cloud:config:uri, etc) back to the (new) Data dictionary
+                            AddConfigServerClientSettings();
                         }
 
                         return env;
