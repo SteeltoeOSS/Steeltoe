@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var opts = new MetricsEndpointOptions();
             SetupStats(out var exporter);
-           
+
             var ep = new MetricsEndpoint(opts, exporter);
             var result = ep.Invoke(null);
             Assert.NotNull(result);
@@ -103,8 +103,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             resp = ep.Invoke(req) as MetricsResponse;
             Assert.Null(resp);
         }
-
-
 
         /*
         [Fact]

@@ -23,6 +23,9 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 {
+    /// <summary>
+    /// An Exporter that publishes to multiple Exporters.
+    /// </summary>
     public class MultiExporter : MetricExporter
     {
         private readonly IEnumerable<MetricExporter> _exporters;
@@ -41,6 +44,5 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 
             return ExportResult.Success;
         }
-
     }
 }

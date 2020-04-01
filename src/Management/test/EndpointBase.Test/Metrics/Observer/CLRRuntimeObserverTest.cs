@@ -57,7 +57,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleHeapEvent_RecordsValues()
         {
-
             var options = new MetricsEndpointOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new CLRRuntimeObserver(options, stats, null);
@@ -68,7 +67,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             factory.CollectAllMetrics();
 
             var processor = stats.Processor;
-
 
             var metricName = "clr.memory.used";
             var summary = processor.GetMetricByName<long>(metricName);

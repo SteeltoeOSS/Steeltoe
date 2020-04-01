@@ -55,18 +55,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
-            services.TryAddSingleton<MultiExporter>();
-            services.TryAddSingleton((provider) =>
-            {
-                var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10));
-            });
-
-            services.TryAddSingleton<IStats>((provider) =>
-            {
-                var processor = provider.GetService<SteeltoeProcessor>();
-                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(10));
-            });
+            services.AddOpenTelemetry();
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
@@ -100,21 +89,25 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
+            services.AddOpenTelemetry();
+
+            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
+            services.TryAddSingleton<PrometheusScraperEndpoint>();
+        }
+
+        private static void AddOpenTelemetry(this IServiceCollection services)
+        {
             services.TryAddSingleton<MultiExporter>();
             services.TryAddSingleton((provider) =>
             {
                 var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10));
+                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10)); // TODO: Capture from options when OTel Configuration is finalized
             });
             services.TryAddSingleton<IStats>((provider) =>
             {
                 var processor = provider.GetService<SteeltoeProcessor>();
                 return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(10));
             });
-
-            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
-            services.TryAddSingleton<PrometheusScraperEndpoint>();
-
         }
     }
 }

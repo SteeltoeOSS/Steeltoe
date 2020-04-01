@@ -65,10 +65,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-
             var options = new MetricsEndpointOptions();
             var stats = new TestOpenTelemetryMetrics();
-            var observer  = new HttpClientCoreObserver(options, stats, null);
+            var observer = new HttpClientCoreObserver(options, stats, null);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
