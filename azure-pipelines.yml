@@ -29,8 +29,10 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
-      command: restore
+      command: 'restore'
       projects: 'src/Steeltoe.All.sln'
+      feedsToUse: 'config'
+      nugetConfigPath: 'nuget.config'
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
