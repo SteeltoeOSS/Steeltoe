@@ -14,9 +14,9 @@
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Exporter.Prometheus;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
-using PrometheusExporter = Steeltoe.Management.Endpoint.Metrics.Prometheus.PrometheusExporter;
+using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {

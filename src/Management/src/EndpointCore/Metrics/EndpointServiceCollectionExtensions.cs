@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Metrics.Export;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -24,6 +25,7 @@ using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -52,17 +54,21 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
-            services.TryAddSingleton<SteeltoeExporter>(new SteeltoeExporter());
-            services.TryAddSingleton<SteeltoeProcessor>((provider)=> {
-                var exporter = provider.GetService<SteeltoeExporter>();
-                return new SteeltoeProcessor(exporter);
-            });
-            services.AddSingleton<IStats>((provider) =>
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
+            services.TryAddSingleton<MultiExporter>();
+            services.TryAddSingleton((provider) =>
             {
-                var processor = provider.GetService<SteeltoeProcessor>();
-                return new OpenTelemetryMetrics(processor);
+                var exporter = provider.GetService<MultiExporter>();
+                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10));
             });
 
+            services.TryAddSingleton<IStats>((provider) =>
+            {
+                var processor = provider.GetService<SteeltoeProcessor>();
+                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(10));
+            });
+
+            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
         }
 
@@ -93,7 +99,22 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
+            services.TryAddSingleton<MultiExporter>();
+            services.TryAddSingleton((provider) =>
+            {
+                var exporter = provider.GetService<MultiExporter>();
+                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10));
+            });
+            services.TryAddSingleton<IStats>((provider) =>
+            {
+                var processor = provider.GetService<SteeltoeProcessor>();
+                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(10));
+            });
+
+            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
             services.TryAddSingleton<PrometheusScraperEndpoint>();
+
         }
     }
 }

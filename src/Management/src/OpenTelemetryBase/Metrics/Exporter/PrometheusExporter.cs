@@ -19,7 +19,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Prometheus
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 {
     public class PrometheusExporter : MetricExporter
     {

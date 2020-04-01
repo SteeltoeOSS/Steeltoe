@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 
@@ -66,10 +67,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return new MetricsResponse(request.MetricName, measurements, availTags);
         }
 
-        private void GetMetricsCollection(out Dictionary<string, List<MetricSample>> measurements, out Dictionary<string, List<MetricTag>> availTags)
+        private void GetMetricsCollection(out MetricDictionary<List<MetricSample>> measurements, out MetricDictionary<List<MetricTag>> availTags)
         {
-            measurements = new Dictionary<string, List<MetricSample>>();
-            availTags = new Dictionary<string, List<MetricTag>>();
+            measurements = new MetricDictionary<List<MetricSample>>();
+            availTags = new MetricDictionary<List<MetricTag>>();
 
             var doubleMetrics = _exporter.GetAndClearDoubleMetrics();
             for (int i = 0; i < doubleMetrics.Count; i++)
@@ -82,22 +83,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
                         {
                             var doubleSum = metric.Data as SumData<double>;
                             var doubleValue = doubleSum.Sum;
-                            if (!measurements.ContainsKey(metric.MetricName))
-                            {
-                                measurements[metric.MetricName] = new List<MetricSample>();
-                            }
 
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleValue));
 
-                            if (!availTags.ContainsKey(metric.MetricName))
-                            {
-                                availTags[metric.MetricName] = new List<MetricTag>();
-                            }
-
-                            foreach (var label in labels)
-                            {
-                                availTags[metric.MetricName].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
-                            }
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
@@ -105,23 +94,11 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     case AggregationType.Summary:
                         {
                             var doubleSummary = metric.Data as SummaryData<double>;
-                            if (!measurements.ContainsKey(metric.MetricName))
-                            {
-                                measurements[metric.MetricName] = new List<MetricSample>();
-                            }
 
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
 
-                            if (!availTags.ContainsKey(metric.MetricName))
-                            {
-                                availTags[metric.MetricName] = new List<MetricTag>();
-                            }
-
-                            foreach (var label in labels)
-                            {
-                                availTags[metric.MetricName].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
-                            }
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
@@ -135,24 +112,11 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 {
                     case AggregationType.DoubleSum:
                         {
-                            var doubleSum = metric.Data as SumData<long>;
-                            var doubleValue = doubleSum.Sum;
-                            if (measurements[metric.MetricName] == null)
-                            {
-                                measurements[metric.MetricName] = new List<MetricSample>();
-                            }
+                            var longSum = metric.Data as SumData<long>;
+                            var doubleValue = longSum.Sum;
 
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleValue));
-
-                            if (availTags[metric.MetricName] == null)
-                            {
-                                availTags[metric.MetricName] = new List<MetricTag>();
-                            }
-
-                            foreach (var label in labels)
-                            {
-                                availTags[metric.MetricName].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
-                            }
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
@@ -160,21 +124,43 @@ namespace Steeltoe.Management.Endpoint.Metrics
                     case AggregationType.Summary:
                         {
                             var doubleSummary = metric.Data as SummaryData<long>;
-                            if (measurements[metric.MetricName] == null)
-                            {
-                                measurements[metric.MetricName] = new List<MetricSample>();
-                            }
 
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
                             measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
-
-                            foreach (var label in labels)
-                            {
-                                availTags[metric.MetricName].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
-                            }
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
+                }
+            }
+        }
+
+        private void AddLabelsToTags(MetricDictionary<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
+        {
+            foreach (var label in labels)
+            {
+                availTags[name].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
+            }
+        }
+
+        private class MetricDictionary<T>
+            : Dictionary<string, T>
+            where T : new()
+        {
+            public MetricDictionary()
+            {
+            }
+
+            public new T this[string key]
+            {
+                get
+                {
+                    if (!ContainsKey(key))
+                    {
+                        base[key] = new T();
+                    }
+
+                    return base[key];
                 }
             }
         }

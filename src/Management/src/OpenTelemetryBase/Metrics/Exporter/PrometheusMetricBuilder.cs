@@ -22,7 +22,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Prometheus
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 {
     internal class PrometheusMetricBuilder
     {

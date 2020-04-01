@@ -15,6 +15,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Configuration;
 using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Stats
@@ -37,6 +38,12 @@ namespace Steeltoe.Management.OpenTelemetry.Stats
         public OpenTelemetryMetrics(MetricProcessor processor = null)
         {
             _meter = MeterFactory.Create(processor).GetMeter("Steeltoe");
+        }
+
+        public OpenTelemetryMetrics(MetricProcessor processor, TimeSpan timeSpan)
+        {
+            var factory = new AutoCollectingMeterFactory(processor, timeSpan);
+            _meter = factory.GetMeter("Steeltoe");
         }
     }
 }

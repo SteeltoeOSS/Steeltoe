@@ -16,7 +16,7 @@ using OpenTelemetry.Metrics.Export;
 using System.IO;
 using System.Text;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Prometheus
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 {
     /// <summary>
     /// Helper to write metrics collection from exporter in Prometheus format.
