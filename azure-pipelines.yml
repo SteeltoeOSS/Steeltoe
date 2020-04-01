@@ -26,16 +26,6 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.0 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.0.101
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.1 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -57,16 +47,6 @@ jobs:
   pool:
     vmImage: 'macOS-latest'
   steps:
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.0 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.0.101
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.1 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -103,20 +83,10 @@ jobs:
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.0 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.0.101
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.1 SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.100
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
-      command: 'restore'
+      command: restore
       projects: 'src/Steeltoe.All.sln'
   - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
     displayName: 'Prepare analysis on SonarCloud'
@@ -128,11 +98,17 @@ jobs:
         sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
         sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
   - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: 'src/Steeltoe.All.sln'
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+  - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
-      command: 'pack'
-      feedsToUse: 'select'
-      arguments: '--no-restore -c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+      command: pack
+      feedsToUse: select
+      arguments: '--no-build -c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
       packagesToPack: 'src/Steeltoe.All.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageVersion
