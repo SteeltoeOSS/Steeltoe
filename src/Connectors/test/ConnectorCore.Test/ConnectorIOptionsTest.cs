@@ -14,7 +14,7 @@
 
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test
+namespace Steeltoe.Connector.Test
 {
     public class ConnectorIOptionsTest
     {

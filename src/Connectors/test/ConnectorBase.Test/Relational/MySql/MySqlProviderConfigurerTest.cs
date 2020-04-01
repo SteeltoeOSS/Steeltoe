@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.Connector.MySql.Test
 {
     public class MySqlProviderConfigurerTest
     {

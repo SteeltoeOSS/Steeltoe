@@ -17,7 +17,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public static class RedisTypeLocator
     {

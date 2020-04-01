@@ -14,13 +14,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Relational;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test
 {
     public class OracleProviderServiceCollectionExtensionsTest
     {

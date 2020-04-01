@@ -14,13 +14,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
+namespace Steeltoe.Connector.MySql.EFCore
 {
     public static class MySqlDbContextOptionsExtensions
     {

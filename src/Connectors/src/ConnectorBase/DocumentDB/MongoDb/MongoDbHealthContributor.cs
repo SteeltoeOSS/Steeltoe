@@ -21,7 +21,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     public class MongoDbHealthContributor : IHealthContributor
     {

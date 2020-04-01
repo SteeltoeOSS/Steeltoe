@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
+namespace Steeltoe.Connector.MySql.EF6.Test
 {
     public static class MySqlTestHelpers
     {

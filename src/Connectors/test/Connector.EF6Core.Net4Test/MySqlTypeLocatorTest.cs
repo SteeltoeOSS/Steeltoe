@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #if NET461
-using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6Core.MySql.Test
+namespace Steeltoe.Connector.EF6Core.MySql.Test
 {
     /// <summary>
     /// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.

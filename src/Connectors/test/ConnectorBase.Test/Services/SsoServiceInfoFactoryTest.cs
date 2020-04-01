@@ -12,13 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Services
+namespace Steeltoe.Connector.Services.Test
 {
     public class SsoServiceInfoFactoryTest
     {

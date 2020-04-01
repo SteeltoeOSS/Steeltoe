@@ -17,7 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
+namespace Steeltoe.Connector.MySql.EF6
 {
     public static class MySqlDbContextServiceCollectionExtensions
     {

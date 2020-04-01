@@ -14,13 +14,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
+namespace Steeltoe.Connector.Oracle.EFCore
 {
     public static class OracleDbContextOptionsExtensions
     {

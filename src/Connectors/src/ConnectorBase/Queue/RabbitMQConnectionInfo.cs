@@ -13,10 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     public class RabbitMQConnectionInfo : IConnectionInfo
     {

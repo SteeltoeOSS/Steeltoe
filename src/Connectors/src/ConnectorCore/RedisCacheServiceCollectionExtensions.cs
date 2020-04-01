@@ -21,7 +21,7 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public static class RedisCacheServiceCollectionExtensions
     {

@@ -16,7 +16,7 @@ using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
+namespace Steeltoe.Connector.SqlServer.EF6.Test
 {
     public class SqlServerDbContextConnectorFactoryTest
     {

@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     /// <summary>
     /// Assemblies and types used for interacting with RabbitMQ

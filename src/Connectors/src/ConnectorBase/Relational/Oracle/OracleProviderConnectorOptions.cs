@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle
+namespace Steeltoe.Connector.Oracle
 {
     public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
     {

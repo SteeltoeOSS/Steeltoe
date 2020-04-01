@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
+namespace Steeltoe.Connector.RabbitMQ
 {
     public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
     {

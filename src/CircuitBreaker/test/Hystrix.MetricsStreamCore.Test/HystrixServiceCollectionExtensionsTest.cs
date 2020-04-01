@@ -16,7 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
+using Steeltoe.Connector.Hystrix;
 using System;
 
 using Xunit;

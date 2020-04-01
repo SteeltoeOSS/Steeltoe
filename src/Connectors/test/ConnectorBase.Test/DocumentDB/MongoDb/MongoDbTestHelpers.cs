@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public static class MongoDbTestHelpers
     {
@@ -122,6 +122,32 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                     ""tags"": [
                         ""mongodb""
                     ]
+                }]
+            }";
+
+        /// <summary>
+        /// Sample VCAP_SERVICES entry for Azure's CosmoDB via MongoDB API
+        /// </summary>
+        public static string SingleServer_CosmosDb_VCAP = @"
+            {
+                ""azure-cosmosdb"": [{
+                    ""label"": ""azure-cosmosdb"",
+                    ""provider"": null,
+                    ""plan"": ""standard"",
+                    ""name"": ""mongoCosmos"",
+                    ""tags"": [],
+                    ""instance_name"": ""mongoCosmos"",
+                    ""binding_name"": """",
+                    ""credentials"": {
+                        ""cosmosdb_host_endpoint"": ""https://u83bde2c09fd.documents.azure.com:10255/"",
+                        ""cosmosdb_username"": ""u83bde2c09fd"",
+                        ""cosmosdb_password"": ""36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
+                        ""cosmosdb_readonly_password"": ""36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w=="",
+                        ""cosmosdb_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.azure.com:10255/?ssl=true&replicaSet=globaldb"",
+                        ""cosmosdb_readonly_connection_string"": ""mongodb://u83bde2c09fd:36SWUyZbIyuu4AwLWMbAal9QngyVbZJjyoH9m0kILXIiEA9fCUhb34JHOovSNk2jpbXEQDuGnsBrYj1vTlu41w==@u83bde2c09fd.documents.azure.com:10255/?ssl=true&replicaSet=globaldb""
+                    },
+                    ""syslog_drain_url"": null,
+                    ""volume_mounts"": []
                 }]
             }";
     }

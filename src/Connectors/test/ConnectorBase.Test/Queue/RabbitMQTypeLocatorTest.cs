@@ -15,7 +15,7 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
+namespace Steeltoe.Connector.RabbitMQ.Test
 {
     public class RabbitMQTypeLocatorTest
     {

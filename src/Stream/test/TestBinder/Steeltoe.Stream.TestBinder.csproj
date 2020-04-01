@@ -7,6 +7,7 @@
     <AssemblyName>Steeltoe.Stream.TestBinder</AssemblyName>
     <PackageId>Steeltoe.Stream.TestBinder</PackageId>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>False</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />

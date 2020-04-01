@@ -14,17 +14,17 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.MySql;
-using Steeltoe.CloudFoundry.Connector.Oracle;
-using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.MySql;
+using Steeltoe.Connector.Oracle;
+using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
 using System;
 using System.Data;
 
-namespace Steeltoe.CloudFoundry.Connector.Relational
+namespace Steeltoe.Connector.Relational
 {
     public class RelationalHealthContributor : IHealthContributor
     {

@@ -15,12 +15,12 @@
 #if NET461
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
+namespace Steeltoe.Connector.MySql.EF6.Test
 {
     public class MySqlDbContextServiceCollectionExtensionsTest
     {

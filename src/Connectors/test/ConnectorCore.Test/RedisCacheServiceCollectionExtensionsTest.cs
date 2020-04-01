@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     public class RedisCacheServiceCollectionExtensionsTest
     {

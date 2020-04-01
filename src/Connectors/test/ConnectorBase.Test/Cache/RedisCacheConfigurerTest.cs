@@ -18,7 +18,7 @@ using Steeltoe.Connector.Services;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     [Collection("Redis")]
     public class RedisCacheConfigurerTest

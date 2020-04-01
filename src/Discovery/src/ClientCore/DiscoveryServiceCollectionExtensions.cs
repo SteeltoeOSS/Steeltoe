@@ -17,11 +17,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Options;
+using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -256,6 +258,14 @@ namespace Steeltoe.Discovery.Client
 
             services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<EurekaDiscoveryClient>());
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
+
+            var serviceProvider = services.BuildServiceProvider();
+            var certOptions = serviceProvider.GetService<IOptions<CertificateOptions>>();
+            var existingHandler = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            if (certOptions != null && existingHandler is null)
+            {
+                services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
+            }
         }
 
         #endregion Eureka

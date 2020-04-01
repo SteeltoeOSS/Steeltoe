@@ -15,7 +15,7 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.Connector.OAuth.Test
 {
     public class OAuthConnectorFactoryTest
     {

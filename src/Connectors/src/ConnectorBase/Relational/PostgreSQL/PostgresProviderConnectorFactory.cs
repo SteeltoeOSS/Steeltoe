@@ -16,7 +16,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql
+namespace Steeltoe.Connector.PostgreSql
 {
     public class PostgresProviderConnectorFactory
     {

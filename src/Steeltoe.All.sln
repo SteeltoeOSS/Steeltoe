@@ -119,17 +119,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.RandomValueBase.Test", "Configuration\test\RandomValuesBase.Test\Steeltoe.Extensions.Configuration.RandomValueBase.Test.csproj", "{98489BC4-B03B-4703-B25D-A89D617E761F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore", "Connectors\src\Connector.EFCore\Steeltoe.CloudFoundry.Connector.EFCore.csproj", "{B1B7522F-6EF2-4935-BE9F-66B6DB974303}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EFCore", "Connectors\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj", "{B1B7522F-6EF2-4935-BE9F-66B6DB974303}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase", "Connectors\src\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj", "{34891C2A-FAF2-466A-90A6-F25DBD8283E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorBase", "Connectors\src\ConnectorBase\Steeltoe.ConnectorBase.csproj", "{34891C2A-FAF2-466A-90A6-F25DBD8283E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore", "Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj", "{00D036A2-5680-4D25-9197-FEC070E13AF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorCore", "Connectors\src\ConnectorCore\Steeltoe.ConnectorCore.csproj", "{00D036A2-5680-4D25-9197-FEC070E13AF6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EFCore.Test", "Connectors\test\Connector.EFCore.Test\Steeltoe.CloudFoundry.Connector.EFCore.Test.csproj", "{72C7AD35-98E4-478E-B594-06A3DB2E61D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EFCore.Test", "Connectors\test\Connector.EFCore.Test\Steeltoe.Connector.EFCore.Test.csproj", "{72C7AD35-98E4-478E-B594-06A3DB2E61D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorBase.Test", "Connectors\test\ConnectorBase.Test\Steeltoe.CloudFoundry.ConnectorBase.Test.csproj", "{5EA81C0F-8513-4A49-A90E-ABD616ABED36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorBase.Test", "Connectors\test\ConnectorBase.Test\Steeltoe.ConnectorBase.Test.csproj", "{5EA81C0F-8513-4A49-A90E-ABD616ABED36}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.ConnectorCore.Test", "Connectors\test\ConnectorCore.Test\Steeltoe.CloudFoundry.ConnectorCore.Test.csproj", "{B5605C83-922A-4D0C-A7EA-D7CB79085BC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorCore.Test", "Connectors\test\ConnectorCore.Test\Steeltoe.ConnectorCore.Test.csproj", "{B5605C83-922A-4D0C-A7EA-D7CB79085BC8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientCore", "Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj", "{44DCBDB9-C766-499E-AA72-16EC400CC995}"
 EndProject
@@ -197,9 +197,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProte
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.DataProtection.RedisCore.Test", "Security\test\DataProtection.RedisCore.Test\Steeltoe.Security.DataProtection.RedisCore.Test.csproj", "{6D09B0D3-AF28-4FC4-A67D-424E7746682B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core", "Connectors\src\Connector.EF6Core\Steeltoe.CloudFoundry.Connector.EF6Core.csproj", "{C98FC8E6-2CD8-45E7-9453-92340A0129DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EF6Core", "Connectors\src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj", "{C98FC8E6-2CD8-45E7-9453-92340A0129DF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CloudFoundry.Connector.EF6Core.Test", "Connectors\test\Connector.EF6Core.Net4Test\Steeltoe.CloudFoundry.Connector.EF6Core.Test.csproj", "{66367BC6-62BD-4332-80FB-7AFF04689C1E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.EF6Core.Test", "Connectors\test\Connector.EF6Core.Net4Test\Steeltoe.Connector.EF6Core.Test.csproj", "{66367BC6-62BD-4332-80FB-7AFF04689C1E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.TestResources", "Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj", "{65CF716D-9215-475C-B37F-CA943F5CD6A3}"
 EndProject
@@ -220,6 +220,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.CircuitBreaker.Abstractions", "CircuitBreaker\src\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj", "{7CDEDE64-B3FC-46C0-B264-8CBE973CD705}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstractions", "Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj", "{0FEEB397-0A2B-4E24-A5AE-B91A56303C98}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore", "Security\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj", "{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Security.Authentication.MtlsCore.Test", "Security\test\Authentication.MtlsCore.Test\Steeltoe.Security.Authentication.MtlsCore.Test.csproj", "{0134F5C0-7595-497E-91BE-CCCD2290CF8E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Messaging", "Messaging", "{283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}"
 EndProject
@@ -589,6 +593,14 @@ Global
 		{0FEEB397-0A2B-4E24-A5AE-B91A56303C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FEEB397-0A2B-4E24-A5AE-B91A56303C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FEEB397-0A2B-4E24-A5AE-B91A56303C98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0134F5C0-7595-497E-91BE-CCCD2290CF8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{082FF7F6-EC5B-4AC1-9B66-C4A6ED955371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{082FF7F6-EC5B-4AC1-9B66-C4A6ED955371}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{082FF7F6-EC5B-4AC1-9B66-C4A6ED955371}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -732,6 +744,8 @@ Global
 		{86FBBCC7-97F5-4795-A61E-FA7E0CE0514D} = {DDB99068-891F-4937-98B0-E72CC3F4964B}
 		{7CDEDE64-B3FC-46C0-B264-8CBE973CD705} = {43870F18-E788-433B-A41D-7C98174BA402}
 		{0FEEB397-0A2B-4E24-A5AE-B91A56303C98} = {3CBE0336-C3C8-4DC2-AE45-86FC1D1B3C25}
+		{BC84AEA9-31BB-4D19-BC55-1B6EF6AD53FC} = {5128206A-242E-4069-AD30-910EDC40B165}
+		{0134F5C0-7595-497E-91BE-CCCD2290CF8E} = {5128206A-242E-4069-AD30-910EDC40B165}
 		{082FF7F6-EC5B-4AC1-9B66-C4A6ED955371} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 		{F49866A5-8F5A-4AE9-B6FA-6671805BABAD} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 		{37A6CC65-B066-4739-8B65-ABB50E74438D} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}

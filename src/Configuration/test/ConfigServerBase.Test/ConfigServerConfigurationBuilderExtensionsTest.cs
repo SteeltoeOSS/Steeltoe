@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Security;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.IO;
@@ -46,6 +47,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
+        }
+
+        [Fact]
+        public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder();
+            var settings = new ConfigServerClientSettings();
+
+            // Act and Assert
+            configurationBuilder
+                .AddPemFiles("instance.crt", "instance.key")
+                .AddConfigServer(settings);
+            configurationBuilder.Build();
+
+            var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+            Assert.NotNull(configServerSource);
+            Assert.NotNull(configServerSource.DefaultSettings.ClientCertificate);
         }
 
         [Fact]

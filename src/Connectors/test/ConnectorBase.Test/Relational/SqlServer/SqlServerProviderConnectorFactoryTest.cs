@@ -17,7 +17,7 @@ using System;
 using System.Data.SqlClient;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
+namespace Steeltoe.Connector.SqlServer.Test
 {
     public class SqlServerProviderConnectorFactoryTest
     {

@@ -17,7 +17,7 @@ using Steeltoe.Common.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth
+namespace Steeltoe.Connector.OAuth
 {
     public class OAuthConnectorOptions : AbstractServiceConnectorOptions
     {

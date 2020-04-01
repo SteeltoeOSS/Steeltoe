@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer
 {
     public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     {
@@ -105,7 +105,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
             AddKeyValue(sb, "User Id", Username);
             AddKeyValue(sb, "Password", Password);
             AddKeyValue(sb, "Integrated Security", IntegratedSecurity);
-            AddKeyValue(sb, nameof(Timeout), Timeout);
+            AddKeyValue(sb, "Connection Timeout", Timeout);
 
             if (Options != null && Options.Any())
             {

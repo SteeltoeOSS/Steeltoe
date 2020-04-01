@@ -17,7 +17,7 @@ using System;
 using System.Reflection;
 using System.Threading;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     /// <summary>
     /// Assemblies and types used for interacting with MongoDB

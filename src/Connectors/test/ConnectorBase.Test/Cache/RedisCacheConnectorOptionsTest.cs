@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     [Collection("Redis")]
     public class RedisCacheConnectorOptionsTest

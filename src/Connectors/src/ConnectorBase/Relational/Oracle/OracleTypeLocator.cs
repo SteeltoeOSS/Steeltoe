@@ -15,7 +15,7 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle
+namespace Steeltoe.Connector.Oracle
 {
     /// <summary>
     /// Assemblies and types used for interacting with Oracle

@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Hystrix
+namespace Steeltoe.Connector.Hystrix
 {
     public class HystrixConnectionFactory
     {

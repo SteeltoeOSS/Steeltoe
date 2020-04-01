@@ -13,19 +13,21 @@
 // limitations under the License.
 
 using Consul;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Options;
+using Steeltoe.Common.Security;
+using Steeltoe.Connector;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using Xunit;
@@ -136,6 +138,36 @@ namespace Steeltoe.Discovery.Client.Test
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                { "spring:application:name", "myName" },
+                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
+            };
+            var config = new ConfigurationBuilder()
+                .AddInMemoryCollection(appsettings)
+                .AddPemFiles("instance.crt", "instance.key")
+                .Build();
+
+            var services = new ServiceCollection();
+            services.AddOptions();
+            services.Configure<CertificateOptions>(config);
+            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
+            services.AddDiscoveryClient(config);
+
+            // act
+            var serviceProvider = services.BuildServiceProvider();
+            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>();
+            var handlerProvider = serviceProvider.GetService<IHttpClientHandlerProvider>();
+
+            // assert
+            Assert.NotNull(discoveryClient);
+            Assert.NotNull(handlerProvider);
         }
 
         [Fact]
@@ -293,7 +325,7 @@ namespace Steeltoe.Discovery.Client.Test
 
             // Add provider to be injected into HttpClient
             var hprovider = new TestClientHandlerProvider();
-            services.AddSingleton<IEurekaDiscoveryClientHandlerProvider>(hprovider);
+            services.AddSingleton<IHttpClientHandlerProvider>(hprovider);
 
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(options);
@@ -467,7 +499,7 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.NotNull(service6);
         }
 
-        public class TestClientHandlerProvider : IEurekaDiscoveryClientHandlerProvider
+        public class TestClientHandlerProvider : IHttpClientHandlerProvider
         {
             public bool Called { get; set; } = false;
 

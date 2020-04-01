@@ -90,6 +90,7 @@ namespace Steeltoe.Common.Configuration
                 if (endIndex != -1)
                 {
                     string placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
+
                     string originalPlaceholder = placeholder;
 
                     if (!visitedPlaceHolders.Add(originalPlaceholder))
@@ -122,6 +123,14 @@ namespace Steeltoe.Common.Configuration
                         {
                             propVal = string.Empty;
                         }
+                    }
+
+                    // Attempt to resolve as a spring-compatible placeholder
+                    if (propVal == null)
+                    {
+                        // Replace Spring delimiters ('.') with MS-friendly delimiters (':') so Spring placeholders can also be resolved
+                        lookup = placeholder.Replace(".", ":");
+                        propVal = config[lookup];
                     }
 
                     if (propVal != null)

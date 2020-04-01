@@ -16,15 +16,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Relational;
 using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle
+namespace Steeltoe.Connector.Oracle
 {
     public static class OracleProviderServiceCollectionExtensions
     {

@@ -15,7 +15,7 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore
+namespace Steeltoe.Connector.EFCore
 {
     /// <summary>
     /// Assemblies and types for interacting with Entity Framework Core

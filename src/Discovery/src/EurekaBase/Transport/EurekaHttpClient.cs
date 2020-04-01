@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -42,7 +43,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected IDictionary<string, string> _headers;
 
         protected IEurekaClientConfig _config;
-        protected IEurekaDiscoveryClientHandlerProvider _handlerProvider;
+        protected IHttpClientHandlerProvider _handlerProvider;
 
         private const int DEFAULT_NUMBER_OF_RETRIES = 3;
         private const string HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-Discovery-AllowRedirect";
@@ -66,7 +67,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
         private IOptionsMonitor<EurekaClientOptions> _configOptions;
 
-        public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IEurekaDiscoveryClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
+        public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
         {
             _config = null;
             _configOptions = config ?? throw new ArgumentNullException(nameof(config));
@@ -77,12 +78,12 @@ namespace Steeltoe.Discovery.Eureka.Transport
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
             : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
 
-        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
+        public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
             : this(config, new Dictionary<string, string>(), logFactory, handlerProvider)
         {
         }
 
-        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
+        public EurekaHttpClient(IEurekaClientConfig config, IDictionary<string, string> headers, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
             _handlerProvider = handlerProvider;
