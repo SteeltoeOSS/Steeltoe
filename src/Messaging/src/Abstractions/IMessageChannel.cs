@@ -36,7 +36,7 @@ namespace Steeltoe.Messaging
         ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send a message to this channel. If the message is sent successfully,
+        /// Send a message to this channel. If the message is sent successfuly,
         /// the method returns true. If the message cannot be sent due to a
         /// non-fatal reason, the method returns false. The method may also
         /// throw a Exception in case of non-recoverable errors.

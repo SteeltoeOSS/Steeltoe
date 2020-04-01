@@ -54,9 +54,8 @@ namespace Steeltoe.Messaging.Support
         public static T GetAccessor<T>(IMessageHeaders messageHeaders, Type requiredType)
                  where T : MessageHeaderAccessor
         {
-            if (messageHeaders is MutableMessageHeaders)
+            if (messageHeaders is MutableMessageHeaders mutableHeaders)
             {
-                var mutableHeaders = (MutableMessageHeaders)messageHeaders;
                 var headerAccessor = mutableHeaders.Accessor;
                 if (requiredType == null || requiredType.IsInstanceOfType(headerAccessor))
                 {
@@ -69,9 +68,8 @@ namespace Steeltoe.Messaging.Support
 
         public static MessageHeaderAccessor GetMutableAccessor(IMessage message)
         {
-            if (message.Headers is MutableMessageHeaders)
+            if (message.Headers is MutableMessageHeaders mutableHeaders)
             {
-                var mutableHeaders = (MutableMessageHeaders)message.Headers;
                 var accessor = mutableHeaders.Accessor;
                 return accessor.IsMutable ? accessor : accessor.CreateAccessor(message);
             }
@@ -364,9 +362,8 @@ namespace Steeltoe.Messaging.Support
                     " payload=" + payloadText :
                     " payload=" + payloadText.Substring(0, 80) + "...(truncated)";
             }
-            else if (payload is byte[])
+            else if (payload is byte[] bytes)
             {
-                var bytes = (byte[])payload;
                 if (IsReadableContentType())
                 {
                     return (bytes.Length < 80) ?
@@ -393,9 +390,8 @@ namespace Steeltoe.Messaging.Support
             {
                 return " payload=" + payload;
             }
-            else if (payload is byte[])
+            else if (payload is byte[] bytes)
             {
-                var bytes = (byte[])payload;
                 if (IsReadableContentType())
                 {
                     return " payload=" + new string(Encoding.GetChars(bytes));

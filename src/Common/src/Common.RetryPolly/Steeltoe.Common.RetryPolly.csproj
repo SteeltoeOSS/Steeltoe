@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <PropertyGroup>
+    <Description>Steeltoe Library for handling retries</Description>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <AssemblyName>Steeltoe.Common.RetryPolly</AssemblyName>
+    <PackageId>Steeltoe.Common.Retry</PackageId>
+    <PackageTags>NET Core;Retru;</PackageTags>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Polly" Version="$(PollyVersion)" />
+    <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribVersion)" />
+  </ItemGroup>
+</Project>

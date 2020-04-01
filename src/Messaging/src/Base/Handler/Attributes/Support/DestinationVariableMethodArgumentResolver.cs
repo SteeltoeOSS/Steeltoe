@@ -48,9 +48,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         {
             var headers = message.Headers;
             headers.TryGetValue(DESTINATION_TEMPLATE_VARIABLES_HEADER, out var obj);
-            var vars = obj as IDictionary<string, object>;
             object result = null;
-            if (vars != null)
+            if (obj is IDictionary<string, object> vars)
             {
                 vars.TryGetValue(name, out result);
             }

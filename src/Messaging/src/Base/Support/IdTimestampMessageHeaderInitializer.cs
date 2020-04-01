@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.Support
 
         public void InitHeaders(IMessageHeaderAccessor headerAccessor)
         {
-            IIDGenerator idGenerator = IdGenerator;
+            var idGenerator = IdGenerator;
             if (idGenerator != null)
             {
                 headerAccessor.IdGenerator = idGenerator;
