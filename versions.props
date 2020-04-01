@@ -11,7 +11,7 @@
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
+    <SystemDiagnosticsVersion>4.6.0</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>

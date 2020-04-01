@@ -20,6 +20,8 @@ using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 
@@ -50,8 +52,16 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
-        //    services.TryAddSingleton<IStats, OpenCensusStats>();
-          //  services.TryAddSingleton<ITags, OpenCensusTags>();
+            services.TryAddSingleton<SteeltoeExporter>(new SteeltoeExporter());
+            services.TryAddSingleton<SteeltoeProcessor>((provider)=> {
+                var exporter = provider.GetService<SteeltoeExporter>();
+                return new SteeltoeProcessor(exporter);
+            });
+            services.AddSingleton<IStats>((provider) =>
+            {
+                var processor = provider.GetService<SteeltoeProcessor>();
+                return new OpenTelemetryMetrics(processor);
+            });
 
             services.TryAddSingleton<MetricsEndpoint>();
         }
@@ -82,9 +92,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.RegisterEndpointOptions(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
-
-            services.TryAddSingleton<IStats, OpenCensusStats>();
-            services.TryAddSingleton<ITags, OpenCensusTags>();
 
             services.TryAddSingleton<PrometheusScraperEndpoint>();
         }

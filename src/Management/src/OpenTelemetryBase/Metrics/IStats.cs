@@ -12,15 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using OpenTelemetry.Metrics;
 
-namespace Steeltoe.Management.OpenTelemetry.Trace
+namespace Steeltoe.Management.OpenTelemetry.Stats
 {
-    public interface ITags
+    public interface IStats
     {
-        //Tagger Tagger { get; }
-
-        //ITagPropagationComponent TagPropagationComponent { get; }
-
-        //TaggingState State { get; }
+        Meter Meter { get; }
     }
 }

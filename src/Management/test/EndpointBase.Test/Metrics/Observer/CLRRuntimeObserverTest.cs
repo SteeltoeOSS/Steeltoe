@@ -12,40 +12,42 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
     public class CLRRuntimeObserverTest : BaseTest
     {
+        // TODO: Bring back views when available
+        /*
         [Fact]
         public void Constructor_RegistersExpectedViews()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new CLRRuntimeObserver(options, stats, tags, null);
+            var meter = new TestMeter();
+            var observer = new CLRRuntimeObserver(options, meter, null);
 
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("clr.memory.used")));
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("clr.gc.collections")));
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("clr.threadpool.active")));
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("clr.threadpool.avail")));
         }
+        */
 
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new CLRRuntimeObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new CLRRuntimeObserver(options, stats, null);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(CLRRuntimeObserver.HEAP_EVENT, null);
@@ -55,98 +57,130 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleHeapEvent_RecordsValues()
         {
+
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new CLRRuntimeObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new CLRRuntimeObserver(options, stats, null);
+            var factory = stats.Factory;
 
-            CLRRuntimeSource.HeapMetrics metrics = new CLRRuntimeSource.HeapMetrics(1000, new List<long>() { 10, 20, 30 });
+            var metrics = new CLRRuntimeSource.HeapMetrics(1000, new List<long>() { 10, 20, 30 });
             observer.HandleHeapEvent(metrics);
+            factory.CollectAllMetrics();
 
-            var memUsedViewData = stats.ViewManager.GetView(ViewName.Create("clr.memory.used"));
-            var aggData = MetricsHelpers.SumWithTags(memUsedViewData) as IMeanData;
-            Assert.Equal(1000, aggData.Mean);
-            Assert.Equal(1000, aggData.Max);
-            Assert.Equal(1000, aggData.Min);
+            var processor = stats.Processor;
 
-            var gcViewData = stats.ViewManager.GetView(ViewName.Create("clr.gc.collections"));
-            var aggData2 = MetricsHelpers.SumWithTags(gcViewData) as ISumDataLong;
-            Assert.Equal(60, aggData2.Sum);
 
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
-            Assert.Equal(10, aggData2.Sum);
+            var metricName = "clr.memory.used";
+            var summary = processor.GetMetricByName<long>(metricName);
+            Assert.NotNull(summary);
+            var mean = summary.Sum / summary.Count;
+            Assert.Equal(1000, mean);
+            Assert.Equal(1000, summary.Min);
+            Assert.Equal(1000, summary.Max);
 
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
-            Assert.Equal(20, aggData2.Sum);
+            metricName = "clr.gc.collections";
+            var gen0Label = new Dictionary<string, string>() { { "generation", "gen0" } }.ToList();
+            summary = processor.GetMetricByName<long>(metricName, gen0Label);
+            Assert.NotNull(summary);
+            Assert.Equal(10, summary.Sum);
 
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
-            Assert.Equal(30, aggData2.Sum);
+            var gen1Label = new Dictionary<string, string>() { { "generation", "gen1" } }.ToList();
+            summary = processor.GetMetricByName<long>(metricName, gen1Label);
+            Assert.NotNull(summary);
+            Assert.Equal(20, summary.Sum);
 
+            var gen2Label = new Dictionary<string, string>() { { "generation", "gen2" } }.ToList();
+            summary = processor.GetMetricByName<long>(metricName, gen2Label);
+            Assert.NotNull(summary);
+            Assert.Equal(30, summary.Sum);
+
+            processor.Clear();
+            observer = new CLRRuntimeObserver(options, stats, null);
+
+            metrics = new CLRRuntimeSource.HeapMetrics(1000, new List<long>() { 10, 20, 30 });
+            observer.HandleHeapEvent(metrics);
             metrics = new CLRRuntimeSource.HeapMetrics(5000, new List<long>() { 15, 25, 30 });
             observer.HandleHeapEvent(metrics);
+            factory.CollectAllMetrics();
 
-            memUsedViewData = stats.ViewManager.GetView(ViewName.Create("clr.memory.used"));
-            aggData = MetricsHelpers.SumWithTags(memUsedViewData) as IMeanData;
-            Assert.Equal((5000 + 1000) / 2, aggData.Mean);
-            Assert.Equal(5000, aggData.Max);
-            Assert.Equal(1000, aggData.Min);
+            metricName = "clr.memory.used";
+            summary = processor.GetMetricByName<long>(metricName);
+            Assert.Equal(5000 + 1000, summary.Sum);
+            Assert.Equal(5000, summary.Max);
+            Assert.Equal(1000, summary.Min);
 
-            gcViewData = stats.ViewManager.GetView(ViewName.Create("clr.gc.collections"));
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData) as ISumDataLong;
-            Assert.Equal(70, aggData2.Sum);
+            metricName = "clr.gc.collections";
+            summary = processor.GetMetricByName<long>(metricName, gen0Label);
+            Assert.Equal(15, summary.Sum);
 
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen0") }) as ISumDataLong;
-            Assert.Equal(15, aggData2.Sum);
+            summary = processor.GetMetricByName<long>(metricName, gen1Label);
+            Assert.NotNull(summary);
+            Assert.Equal(25, summary.Sum);
 
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen1") }) as ISumDataLong;
-            Assert.Equal(25, aggData2.Sum);
-
-            aggData2 = MetricsHelpers.SumWithTags(gcViewData, new List<ITagValue>() { TagValue.Create("gen2") }) as ISumDataLong;
-            Assert.Equal(30, aggData2.Sum);
+            summary = processor.GetMetricByName<long>(metricName, gen2Label);
+            Assert.NotNull(summary);
+            Assert.Equal(30, summary.Sum);
         }
 
         [Fact]
         public void HandleThreadsEvent_RecordsValues()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new CLRRuntimeObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var factory = stats.Factory;
+            var processor = stats.Processor;
+            var observer = new CLRRuntimeObserver(options, stats, null);
 
-            CLRRuntimeSource.ThreadMetrics metrics = new CLRRuntimeSource.ThreadMetrics(100, 100, 200, 200);
+            var metrics = new CLRRuntimeSource.ThreadMetrics(100, 100, 200, 200);
             observer.HandleThreadsEvent(metrics);
 
-            var live = stats.ViewManager.GetView(ViewName.Create("clr.threadpool.active"));
-            var aggData = MetricsHelpers.SumWithTags(live) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            factory.CollectAllMetrics();
 
-            aggData = MetricsHelpers.SumWithTags(live, new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            var metricName = "clr.threadpool.active";
+            var summary = processor.GetMetricByName<long>(metricName);
+            Assert.NotNull(summary);
+            var mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
 
-            aggData = MetricsHelpers.SumWithTags(live, new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            var workerLabel = new Dictionary<string, string>() { { "kind", "worker" } }.ToList();
+            summary = processor.GetMetricByName<long>(metricName, workerLabel);
+            Assert.NotNull(summary);
+            mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
 
-            var avail = stats.ViewManager.GetView(ViewName.Create("clr.threadpool.avail"));
-            aggData = MetricsHelpers.SumWithTags(avail) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            var comportLabel = new Dictionary<string, string>() { { "kind", "completionPort" } }.ToList();
+            summary = processor.GetMetricByName<long>(metricName, comportLabel);
+            Assert.NotNull(summary);
+            mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
 
-            aggData = MetricsHelpers.SumWithTags(avail, new List<ITagValue>() { TagValue.Create("worker") }) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            metricName = "clr.threadpool.avail";
+            summary = processor.GetMetricByName<long>(metricName);
+            Assert.NotNull(summary);
+            mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
 
-            aggData = MetricsHelpers.SumWithTags(avail, new List<ITagValue>() { TagValue.Create("completionPort") }) as IMeanData;
-            Assert.Equal(100, aggData.Mean);
-            Assert.Equal(100, aggData.Min);
-            Assert.Equal(100, aggData.Max);
+            summary = processor.GetMetricByName<long>(metricName, workerLabel);
+            Assert.NotNull(summary);
+            mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
+
+            summary = processor.GetMetricByName<long>(metricName, comportLabel);
+            Assert.NotNull(summary);
+            mean = summary.Sum / summary.Count;
+            Assert.Equal(100, mean);
+            Assert.Equal(100, summary.Min);
+            Assert.Equal(100, summary.Max);
         }
     }
 }

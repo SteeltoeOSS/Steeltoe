@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
@@ -23,23 +24,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     {
         protected Meter Meter { get; }
 
-        //protected IViewManager ViewManager { get; }
-
-        //protected IStatsRecorder StatsRecorder { get; }
-
-        //protected ITagger Tagger { get; }
-
         protected IMetricsOptions Options { get; }
 
         protected Regex PathMatcher { get; set; }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, /* IStats censusStats, ITags censusTags,*/ Meter meter, ILogger logger = null)
+        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats stats, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
-            //ViewManager = censusStats.ViewManager;
-            //StatsRecorder = censusStats.StatsRecorder;
-            //Tagger = censusTags.Tagger;
-            Meter = meter;
+            Meter = stats.Meter;
             Options = options;
         }
 

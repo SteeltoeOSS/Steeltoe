@@ -16,8 +16,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -351,45 +349,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Prometheus
                 return this;
             }
 
-            public PrometheusMetricValueBuilder WithValue(IAggregationData metric)
-            {
-                // TODO: review conversions
-                // counter, gauge, histogram, summary, or untyped
-                if (metric is ISumDataDouble doubleSum)
-                {
-                    this.Value = doubleSum.Sum;
-                }
-                else if (metric is ISumDataLong longSum)
-                {
-                    this.Value = longSum.Sum;
-                }
-                else if (metric is ICountData count)
-                {
-                    this.Value = count.Count;
-                }
-                else if (metric is IMeanData mean)
-                {
-                    // TODO: do more with this
-                    this.Value = mean.Mean;
-                }
-                else if (metric is IDistributionData dist)
-                {
-                    // TODO: do more with this
-                    this.Value = dist.Mean;
-                }
-                else if (metric is ILastValueDataDouble lastDoubleValue)
-                {
-                    this.Value = lastDoubleValue.LastValue;
-                }
-                else if (metric is ILastValueDataLong lastLongValue)
-                {
-                    this.Value = lastLongValue.LastValue;
-                }
-                else if (metric is IAggregationData aggregationData)
-                {
-                    // TODO: report an error
-                }
 
+            public PrometheusMetricValueBuilder WithValue(long metricValue)
+            {
+                this.Value = metricValue;
+                return this;
+            }
+
+            public PrometheusMetricValueBuilder WithValue(double metricValue)
+            {
+                this.Value = metricValue;
                 return this;
             }
         }

@@ -15,13 +15,14 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
+    <ProjectReference Include="..\TracingBase\Steeltoe.Management.TracingBase.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
+    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Extensions.Logging.DynamicLogger" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.TracingBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
-    <ProjectReference Include="..\OpenTelemetryTracingBase\Steeltoe.Management.OpenTelemetryTracingBase.csproj" />
+    <PackageReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Management.OpenTelemetryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

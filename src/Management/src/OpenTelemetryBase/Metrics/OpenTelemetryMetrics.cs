@@ -13,16 +13,30 @@
 // limitations under the License.
 
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Metrics.Configuration;
+using OpenTelemetry.Metrics.Export;
+using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Stats
 {
-    public interface IStats
+    public class OpenTelemetryMetrics : IStats
     {
-        Meter Meter { get; }
-        //IStatsRecorder StatsRecorder { get; }
+        private static readonly Lazy<OpenTelemetryMetrics> AsSingleton = new Lazy<OpenTelemetryMetrics>(() => new OpenTelemetryMetrics());
+        private Meter _meter = null;
 
-        //IViewManager ViewManager { get; }
+        public static OpenTelemetryMetrics Instance => AsSingleton.Value;
 
-        //StatsCollectionState State { get; set; }
+        public Meter Meter
+        {
+            get
+            {
+                return _meter;
+            }
+        }
+
+        public OpenTelemetryMetrics(MetricProcessor processor = null)
+        {
+            _meter = MeterFactory.Create(processor).GetMeter("Steeltoe");
+        }
     }
 }

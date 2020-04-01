@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
@@ -33,9 +34,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var listener = source.Source as DiagnosticListener;
 
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new TestObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new TestObserver(options, stats, null);
 
             listener.Subscribe(observer);
 
@@ -65,8 +65,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             public List<object> Args { get; set; } = new List<object>();
 
-            public TestObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger logger)
-                : base("TestObserver", DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
+            public TestObserver(IMetricsOptions options, IStats stats, ILogger logger)
+                : base("TestObserver", DIAGNOSTIC_NAME, options, stats, logger)
             {
             }
 

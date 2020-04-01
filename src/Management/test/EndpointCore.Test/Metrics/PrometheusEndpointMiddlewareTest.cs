@@ -13,16 +13,20 @@
 // limitations under the License.
 
 using Microsoft.AspNetCore.Http;
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
+using OpenTelemetry.Exporter.Prometheus;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
+using Steeltoe.Management.Endpoint.Metrics.Prometheus;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
+using PrometheusExporter = Steeltoe.Management.Endpoint.Metrics.Prometheus.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
@@ -33,9 +37,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var opts = new PrometheusEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
-            SetupTestView(stats);
-            var ep = new PrometheusScraperEndpoint(opts, stats);
+            var exporter = new PrometheusExporter();
+            var processor = new SteeltoeProcessor(exporter);
+            var factory = AutoCollectingMeterFactory.Create(processor);
+            var meter = factory.GetMeter("Test");
+            SetupTestView(meter);
+            factory.CollectAllMetrics();
+            processor.ExportMetrics();
+
+            Task.Delay(1000).Wait();
+
+            var ep = new PrometheusScraperEndpoint(opts, exporter);
             var middle = new PrometheusScraperEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/actuator/prometheus");
@@ -44,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var rdr = new StreamReader(context.Response.Body);
             var text = await rdr.ReadToEndAsync();
-            Assert.Equal("# HELP test_test test\n# TYPE test_test gauge\ntest_test{a=\"v1\",b=\"v1\",c=\"v1\"} 45\n", text);
+            Assert.Equal("# HELP test Testtest\n# TYPE test counter\ntest{a=\"v1\",b=\"v1\",c=\"v1\"} 45\n", text);
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
@@ -66,9 +78,22 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return context;
         }
 
-        private void SetupTestView(OpenCensusStats stats)
+        private void SetupTestView(Meter meter)
         {
-            var tagsComponent = new TagsComponent();
+            var measure = meter.CreateDoubleCounter("test");
+            var labels = new Dictionary<string, string>()
+            {
+                { "a", "v1" },
+                { "b", "v1" },
+                { "c", "v1" }
+            }.ToList();
+
+            for (int i = 0; i < 10; i++)
+            {
+                measure.Add(default(SpanContext), i, labels);
+            }
+
+            /*var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
 
             ITagKey aKey = TagKey.Create("a");
@@ -99,6 +124,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             {
                 stats.StatsRecorder.NewMeasureMap().Put(measure, i).Record(context1);
             }
+
+        */
         }
     }
 }

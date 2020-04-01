@@ -28,6 +28,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
+using SpanAttributeConstants = Steeltoe.Management.OpenTelemetry.Trace.SpanAttributeConstants;
 
 namespace Steeltoe.Management.Tracing.Observer.Test
 {
