@@ -7,6 +7,7 @@
     <AssemblyName>Steeltoe.Stream.StubBinder2</AssemblyName>
     <PackageId>Steeltoe.Stream.StubBinder2</PackageId>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>False</IsPackable>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
