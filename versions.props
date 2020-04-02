@@ -38,6 +38,7 @@
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>5.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
+    <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
     <OpenTelemetryVersion>0.2.0-alpha.220</OpenTelemetryVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
