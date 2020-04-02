@@ -6,9 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B86A4082-6F42-4BFC-A1F2-83CC422AD493}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{8B4CE682-9C0B-4849-813B-E43BE098FCE2}"
-	ProjectSection(SolutionItems) = preProject
-		src\TracingCore\TracingServiceCollectionExtensions.cs = src\TracingCore\TracingServiceCollectionExtensions.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{9764636B-4C42-4F38-8074-99C086B8FB74}"
 	ProjectSection(SolutionItems) = preProject
