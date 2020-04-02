@@ -114,9 +114,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
         {
             object result = null;
-            if (_converter is ISmartMessageConverter)
+            if (_converter is ISmartMessageConverter smartConverter)
             {
-                var smartConverter = (ISmartMessageConverter)_converter;
                 result = smartConverter.FromMessage(message, targetPayloadType, parameter);
             }
             else if (_converter != null)

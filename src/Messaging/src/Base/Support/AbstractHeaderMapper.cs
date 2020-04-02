@@ -12,13 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Support
 {
     public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
     {
+        protected readonly ILogger _logger;
+
+        protected AbstractHeaderMapper(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
         private string _inboundPrefix = string.Empty;
 
         private string _outboundPrefix = string.Empty;
@@ -87,11 +94,7 @@ namespace Steeltoe.Messaging.Support
 
             if (!type.IsAssignableFrom(value.GetType()))
             {
-                // if (logger.isDebugEnabled())
-                // {
-                //    logger.debug("Skipping header '" + name + "': expected type [" + type + "], but got [" +
-                //            value.getClass() + "]");
-                // }
+                _logger?.LogDebug("Skipping header '" + name + "': expected type [" + type + "], but got [" + value.GetType() + "]");
                 return default;
             }
             else

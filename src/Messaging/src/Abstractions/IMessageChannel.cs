@@ -31,12 +31,12 @@ namespace Steeltoe.Messaging
         /// Send a message to this channel.
         /// </summary>
         /// <param name="message">the message to send</param>
-        /// <param name="cancellationToken">token used to signal cancelation</param>
+        /// <param name="cancellationToken">token used to signal cancellation</param>
         /// <returns>a task to signal completion</returns>
         ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
-        /// Send a message to this channel. If the message is sent successfully,
+        /// Send a message to this channel. If the message is sent successfuly,
         /// the method returns true. If the message cannot be sent due to a
         /// non-fatal reason, the method returns false. The method may also
         /// throw a Exception in case of non-recoverable errors.

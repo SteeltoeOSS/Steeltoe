@@ -32,8 +32,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual IMessageChannel ResolveDestination(string name)
         {
-            var result = Registry.Lookup(name) as IMessageChannel;
-            if (result != null)
+            if (Registry.Lookup(name) is IMessageChannel result)
             {
                 return result;
             }

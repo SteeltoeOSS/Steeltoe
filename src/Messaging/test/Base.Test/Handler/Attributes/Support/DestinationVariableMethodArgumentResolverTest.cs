@@ -17,7 +17,6 @@ using Steeltoe.Messaging.Handler.Attributes.Test;
 using Steeltoe.Messaging.Handler.Invocation.Test;
 using Steeltoe.Messaging.Support;
 using System.Collections.Generic;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
