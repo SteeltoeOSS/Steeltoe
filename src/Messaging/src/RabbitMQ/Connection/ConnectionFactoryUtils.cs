@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 channel = ConsumerChannelRegistry.GetConsumerChannel(connectionFactory);
                 if (channel == null && connection == null)
                 {
-                    connection = resourceFactory.CreateConnection();
+                    connection = resourceFactory.CreateConnection2();
                     if (resourceHolder == null)
                     {
                         /*
@@ -184,7 +184,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             IConnection GetConnection(RabbitResourceHolder holder);
 
-            IConnection CreateConnection();
+            IConnection CreateConnection2();
 
             IModel CreateChannel(IConnection connection);
 
@@ -211,7 +211,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 return connection.CreateChannel(IsSynchedLocalTransactionAllowed);
             }
 
-            public IConnection CreateConnection()
+            public IConnection CreateConnection2()
             {
                 return ConnectionFactoryUtils.CreateConnection(ConnectionFactory, PublisherConnectionIfPossible);
             }
