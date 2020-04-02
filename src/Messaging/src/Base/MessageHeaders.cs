@@ -21,13 +21,13 @@ namespace Steeltoe.Messaging
 {
     public class MessageHeaders : IMessageHeaders
     {
-        public static readonly Guid ID_VALUE_NONE = Guid.Empty;
-        public static readonly string ID = "id";
-        public static readonly string TIMESTAMP = "timestamp";
-        public static readonly string CONTENT_TYPE = "contentType";
-        public static readonly string REPLY_CHANNEL = "replyChannel";
-        public static readonly string ERROR_CHANNEL = "errorChannel";
+        public const string ID = "id";
+        public const string TIMESTAMP = "timestamp";
+        public const string CONTENT_TYPE = "contentType";
+        public const string REPLY_CHANNEL = "replyChannel";
+        public const string ERROR_CHANNEL = "errorChannel";
 
+        public static readonly Guid ID_VALUE_NONE = Guid.Empty;
         protected readonly IDictionary<string, object> headers;
 
         private static readonly IIDGenerator _defaultIdGenerator = new DefaultIdGenerator();

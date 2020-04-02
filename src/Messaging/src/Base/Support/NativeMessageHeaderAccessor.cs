@@ -54,16 +54,12 @@ namespace Steeltoe.Messaging.Support
         public static string GetFirstNativeHeader(string headerName, IDictionary<string, object> headers)
         {
             headers.TryGetValue(NATIVE_HEADERS, out var obj);
-            if (obj != null)
+            if (obj is IDictionary<string, List<string>> map)
             {
-                var map = obj as IDictionary<string, List<string>>;
-                if (map != null)
+                map.TryGetValue(headerName, out var values);
+                if (values != null)
                 {
-                    map.TryGetValue(headerName, out var values);
-                    if (values != null)
-                    {
-                        return values[0];
-                    }
+                    return values[0];
                 }
             }
 

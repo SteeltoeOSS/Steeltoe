@@ -19,8 +19,8 @@ public class Program
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        GenericMessage message = new GenericMessage("test");
-        for (int i = 0; i < 10_000_000; i++)
+        var message = new GenericMessage("test");
+        for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -33,8 +33,8 @@ public class Program
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        GenericMessage message = new GenericMessage("test");
-        for (int i = 0; i < 10_000_000; i++)
+        var message = new GenericMessage("test");
+        for (var i = 0; i < 10_000_000; i++)
         {
             await channel.Writer.WriteAsync(message);
         }

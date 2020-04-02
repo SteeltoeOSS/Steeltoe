@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Reflection;
+
 namespace Steeltoe.Messaging.Handler.Invocation
 {
     /// <summary>
@@ -19,6 +21,10 @@ namespace Steeltoe.Messaging.Handler.Invocation
     /// </summary>
     public interface IInvocableHandlerMethod
     {
+        object Bean { get; }
+
+        MethodInfo Method { get; }
+
         /// <summary>
         /// Gets a value indicating whether the return type of the method is void
         /// </summary>

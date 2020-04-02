@@ -42,7 +42,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         private static IEnumerable<MethodInfo> GetExceptionHandlerMethods(Type handlerType)
         {
-            List<MethodInfo> results = new List<MethodInfo>();
+            var results = new List<MethodInfo>();
             var methods = handlerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
             foreach (var method in methods)
             {

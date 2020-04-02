@@ -98,9 +98,8 @@ namespace Steeltoe.Messaging.Converter
 
         protected internal Type GetTargetType(Type targetClass, object conversionHint)
         {
-            if (conversionHint is ParameterInfo)
+            if (conversionHint is ParameterInfo info)
             {
-                var info = (ParameterInfo)conversionHint;
                 var paramType = info.ParameterType;
                 var messageType = GetIMessageGenericType(paramType);
                 if (messageType != null)
