@@ -3,7 +3,9 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
-    <Description>Base package for enabling request tracing in distributed systems</Description>
+    <Description>Base package for enabling request tracing in distributed systems.
+      **PLEASE NOTE** This package depends on a pre-release version of OpenTelemetry. You may need to add "https://www.myget.org/F/opentelemetry/api/v3/index.json" to your nuget.config if the package is not found.
+    </Description>
     <PackageTags>management;monitoring;distributed trace</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
