@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging
         /// Send a message to this channel.
         /// </summary>
         /// <param name="message">the message to send</param>
-        /// <param name="cancellationToken">token used to signal cancelation</param>
+        /// <param name="cancellationToken">token used to signal cancellation</param>
         /// <returns>a task to signal completion</returns>
         ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken = default);
 

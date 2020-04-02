@@ -95,7 +95,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         {
             var result = ExchangeName != null ? ExchangeName.GetHashCode() : 0;
             var prime = 31; // NOSONAR magic #
-            result = prime * result + (RoutingKey != null ? RoutingKey.GetHashCode() : 0);
+            result = (prime * result) + (RoutingKey != null ? RoutingKey.GetHashCode() : 0);
             return result;
         }
 

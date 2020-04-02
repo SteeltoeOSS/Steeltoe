@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
             var prime = 31;
             var result = 1;
-            result = prime * result + (Name == null ? 0 : Name.GetHashCode());
+            result = (prime * result) + (Name == null ? 0 : Name.GetHashCode());
             return result;
         }
 
