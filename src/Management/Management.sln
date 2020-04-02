@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{976463
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D0A3F62-46FA-4317-BDEB-BE9433B9EBBE}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.CloudFoundryCore", "src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj", "{B886C97F-548C-4FEF-8E95-950A3EBFE901}"
