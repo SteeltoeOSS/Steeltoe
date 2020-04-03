@@ -6,6 +6,7 @@
 * [Project Management](#project-management)
 * [Project Repositories](#project-repositories)
 * [Roadmaps](#roadmaps)
+* [Release Types](#release-types)
 * [Getting Started](#getting-started)
 * [Getting the Code](#getting-the-code)
 * [Contributing](#contributing)
@@ -85,7 +86,7 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 * [2.1.0](roadmaps/2.1.0.md) - Released (8/2018)
 * [2.0.0](roadmaps/2.0.0.md) - Released (2/2018)
 
-## Versioning of Releases
+## Release Types
 
 * **Milestone** (i.e. M1, M2 ...) - A milestone is a release that contains a subset of the full features planned for a release. Milestone releases allow major features to be tested earlier in the release cycle.  A milestone release is not meant for production environments.
 * **Release Candidate** (i.e. RC1, RC2, ...) - Similar to a beta release.  A release candidate contains a full feature set and is available to the community for finding any major issues before the GA version is released.  There could still be source code changes to fix defects, changes to documentation, and test cases, but these releases are considered code complete. Typically, these are not meant for production environments.
