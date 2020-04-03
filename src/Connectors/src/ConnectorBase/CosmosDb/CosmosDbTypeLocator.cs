@@ -25,14 +25,14 @@ namespace Steeltoe.Connector.CosmosDb
         /// <summary>
         /// Gets a list of supported CosmosDbDB assemblies
         /// </summary>
-        public static string[] Assemblies { get; internal set; } = new string[] { "Azure.Cosmos" };
+        public static string[] Assemblies { get; internal set; } = new string[] { "Azure.Cosmos", "Microsoft.Azure.Cosmos.Client" };
 
         /// <summary>
         /// Gets a list of supported CosmosDbDB client types
         /// </summary>
-        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClient" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClient", "Microsoft.Azure.Cosmos.CosmosClient" };
 
-        public static string[] ClientOptionsTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClientOptions" };
+        public static string[] ClientOptionsTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClientOptions", "Microsoft.Azure.Cosmos.CosmosClientOptions" };
 
         /// <summary>
         /// Gets CosmosDbClient from CosmosDbDB Library
