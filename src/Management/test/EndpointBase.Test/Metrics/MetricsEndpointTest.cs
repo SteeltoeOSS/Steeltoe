@@ -12,14 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Metrics.Export;
+using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
@@ -37,10 +42,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void Invoke_WithNullMetricsRequest_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            SetupStats(stats);
+            SetupStats(out var exporter);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, exporter);
             var result = ep.Invoke(null);
             Assert.NotNull(result);
             Assert.IsType<MetricsListNamesResponse>(result);
@@ -51,9 +55,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(2, resp.Names.Count);
 
             opts = new MetricsEndpointOptions();
-            stats = new OpenCensusStats();
-
-            ep = new MetricsEndpoint(opts, stats);
+            exporter = new SteeltoeExporter();
+            ep = new MetricsEndpoint(opts, exporter);
             result = ep.Invoke(null);
             Assert.NotNull(result);
 
@@ -66,115 +69,48 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void Invoke_WithMetricsRequest_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
-
-            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
-            SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
-
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
-
+            var stats = new TestOpenTelemetryMetrics();
+            var ep = new MetricsEndpoint(opts, stats.Exporter);
+            var testMeasure = stats.Meter.CreateDoubleMeasure("test.test1");
             long allKeyssum = 0;
+            var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+
             for (var i = 0; i < 10; i++)
             {
                 allKeyssum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
+                testMeasure.Record(default(SpanContext), i, labels);
             }
 
-            var alltags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
-            };
+            stats.Factory.CollectAllMetrics();
+            stats.Processor.ExportMetrics();
 
-            var req = new MetricsRequest("test.test1", alltags);
+            var req = new MetricsRequest("test.test1", labels);
             var resp = ep.Invoke(req) as MetricsResponse;
             Assert.NotNull(resp);
 
             Assert.Equal("test.test1", resp.Name);
 
             Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
-            var sample = resp.Measurements[0];
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+            Assert.Equal(2, resp.Measurements.Count);
+            var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.TOTAL);
+            Assert.NotNull(sample);
             Assert.Equal(allKeyssum, sample.Value);
 
             Assert.NotNull(resp.AvailableTags);
             Assert.Equal(3, resp.AvailableTags.Count);
 
-            req = new MetricsRequest("foo.bar", alltags);
+            req = new MetricsRequest("foo.bar", labels);
             resp = ep.Invoke(req) as MetricsResponse;
             Assert.Null(resp);
         }
 
-        [Fact]
-        public void GetTagValuesInColumnOrder_ReturnsExpected()
-        {
-            var tags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("foo", "bar"),
-                new KeyValuePair<string, string>("aaa", "bbb")
-            };
-
-            var columns = new List<ITagKey>()
-            {
-                TagKey.Create("foo"),
-                TagKey.Create("aaa")
-            };
-
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
-            var result = ep.GetTagValuesInColumnOrder(columns, tags);
-
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-            Assert.Equal(TagValue.Create("bar"), result[0]);
-            Assert.Equal(TagValue.Create("bbb"), result[1]);
-
-            // Invalid tagkey provided
-            columns = new List<ITagKey>()
-            {
-                TagKey.Create("bar"),
-                TagKey.Create("aaa")
-            };
-
-            result = ep.GetTagValuesInColumnOrder(columns, tags);
-            Assert.Null(result);
-
-            // aaa column not provided
-            columns = new List<ITagKey>()
-            {
-                TagKey.Create("foo"),
-                TagKey.Create("aaa"),
-                TagKey.Create("bbb"),
-            };
-            tags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("foo", "bar"),
-                new KeyValuePair<string, string>("bbb", "bbb")
-            };
-            result = ep.GetTagValuesInColumnOrder(columns, tags);
-            Assert.Equal(3, result.Count);
-            Assert.Equal(TagValue.Create("bar"), result[0]);
-            Assert.Null(result[1]);
-            Assert.Equal(TagValue.Create("bbb"), result[2]);
-        }
-
+        /*
         [Fact]
         public void GetStatistic_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
+            var exporter = new SteeltoeExporter();
+            var ep = new MetricsEndpoint(opts, exporter);
 
             var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
             var result = ep.GetStatistic(Sum.Create(), m1);
@@ -205,7 +141,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void GetMetricSamples_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
+            // var stats = new OpenCensusStats();
             var ep = new MetricsEndpoint(opts, stats);
 
             SetupTestView(stats, Sum.Create(), null, "test.test1");
@@ -504,36 +440,30 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void GetMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
+            var exporter = new SteeltoeExporter();
+            var ep = new MetricsEndpoint(opts, exporter);
 
-            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
-            SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
+            var meter = AutoCollectingMeterFactory.Create(
+             new SteeltoeProcessor(
+                 exporter,
+                 new TimeSpan(100)))
+             .GetMeter("Test");
 
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
+            //var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = meter.CreateDoubleMeasure("test.total");
+            var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+            //SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
             long allKeyssum = 0;
             for (var i = 0; i < 10; i++)
             {
                 allKeyssum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
+                testMeasure.Record(default(SpanContext), i, labels);
             }
 
-            var alltags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
-            };
+            Task.Delay(2000).Wait();
 
-            var req = new MetricsRequest("test.test1", alltags);
+            var req = new MetricsRequest("test.test1", labels);
             var resp = ep.GetMetric(req);
             Assert.NotNull(resp);
 
@@ -548,62 +478,44 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.NotNull(resp.AvailableTags);
             Assert.Equal(3, resp.AvailableTags.Count);
         }
+        */
 
-        private void SetupStats(OpenCensusStats stats)
+        private void SetupStats(out SteeltoeExporter exporter)
         {
-            var exceptionKey = TagKey.Create("exception");
-            var methodKey = TagKey.Create("method");
-            var uriKey = TagKey.Create("uri");
-            var statusKey = TagKey.Create("status");
+            var stats = new TestOpenTelemetryMetrics();
+            var meter = stats.Meter;
+            exporter = stats.Exporter;
 
-            var httpServerRquestMeasure = MeasureDouble.Create("server.totalTime", "server request times", MeasureUnit.MilliSeconds);
+            var httpServerRquestMeasure = meter.CreateDoubleMeasure("http.server.requests");
+            httpServerRquestMeasure.Record(default(SpanContext), 10, GetServerLabels());
 
-            var httpServerRequestsViewName = ViewName.Create("http.server.requests");
-            var httpServerRequestsView = View.Create(
-                                        httpServerRequestsViewName,
-                                        "server request times",
-                                        httpServerRquestMeasure,
-                                        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 2.0 })),
-                                        new List<ITagKey>() { exceptionKey, methodKey, uriKey, statusKey });
+            var memoryUsageMeasure = meter.CreateDoubleMeasure("jvm.memory.used");
+            memoryUsageMeasure.Record(default(SpanContext), 10, GetMemoryLabels());
 
-            stats.ViewManager.RegisterView(httpServerRequestsView);
-
-            var area = TagKey.Create("area");
-            var id = TagKey.Create("id");
-
-            var memoryUsageMeasure = MeasureDouble.Create("memory.value", "memory usage", MeasureUnit.Bytes);
-
-            var memoryUsageName = ViewName.Create("jvm.memory.used");
-            var memoryUsageView = View.Create(
-                                        memoryUsageName,
-                                        "memory usage",
-                                        memoryUsageMeasure,
-                                        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0 })),
-                                        new List<ITagKey>() { area, id });
-
-            stats.ViewManager.RegisterView(memoryUsageView);
+            stats.Factory.CollectAllMetrics();
+            stats.Processor.ExportMetrics();
         }
 
-        private void SetupTestView(OpenCensusStats stats, IAggregation agg,  IMeasure measure = null, string viewName = "test.test")
+        private List<KeyValuePair<string, string>> GetMemoryLabels()
         {
-            var aKey = TagKey.Create("a");
-            var bKey = TagKey.Create("b");
-            var cKey = TagKey.Create("c");
+            var labels = new List<KeyValuePair<string, string>>();
 
-            if (measure == null)
-            {
-                measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.MilliSeconds);
-            }
+            labels.Add(KeyValuePair.Create("area", string.Empty));
+            labels.Add(KeyValuePair.Create("id", string.Empty));
 
-            var testViewName = ViewName.Create(viewName);
-            var testView = View.Create(
-                                        testViewName,
-                                        "test",
-                                        measure,
-                                        agg,
-                                        new List<ITagKey>() { aKey, bKey, cKey });
+            return labels;
+        }
 
-            stats.ViewManager.RegisterView(testView);
+        private List<KeyValuePair<string, string>> GetServerLabels()
+        {
+            var labels = new List<KeyValuePair<string, string>>();
+
+            labels.Add(KeyValuePair.Create("exception", string.Empty));
+            labels.Add(KeyValuePair.Create("method", string.Empty));
+            labels.Add(KeyValuePair.Create("uri", string.Empty));
+            labels.Add(KeyValuePair.Create("status", string.Empty));
+
+            return labels;
         }
     }
 }

@@ -13,9 +13,10 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Stats;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 
@@ -23,13 +24,13 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>
     {
+        private readonly SteeltoeExporter _exporter;
         private readonly ILogger<MetricsEndpoint> _logger;
-        private readonly IStats _stats;
 
-        public MetricsEndpoint(IMetricsOptions options, IStats stats,  ILogger<MetricsEndpoint> logger = null)
+        public MetricsEndpoint(IMetricsOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
-            _stats = stats ?? throw new ArgumentNullException(nameof(stats));
+            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
             _logger = logger;
         }
 
@@ -43,231 +44,125 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override IMetricsResponse Invoke(MetricsRequest request)
         {
-            var names = GetMetricNames();
+            GetMetricsCollection(out var measurements, out var availTags);
 
+            var metricNames = new HashSet<string>(measurements.Keys);
             if (request == null)
             {
-                return new MetricsListNamesResponse(names);
+                return new MetricsListNamesResponse(new HashSet<string>(measurements.Keys));
             }
             else
             {
-                if (names.Contains(request.MetricName))
+                if (metricNames.Contains(request.MetricName))
                 {
-                    return GetMetric(request);
+                    return GetMetric(request, measurements[request.MetricName], availTags[request.MetricName]);
                 }
             }
 
             return null;
         }
 
-        protected internal MetricsResponse GetMetric(MetricsRequest request)
+        protected internal MetricsResponse GetMetric(MetricsRequest request, List<MetricSample> measurements, List<MetricTag> availTags)
         {
-            var viewData = _stats.ViewManager.GetView(ViewName.Create(request.MetricName));
-            if (viewData == null)
-            {
-                return null;
-            }
-
-            List<MetricSample> measurements = GetMetricMeasurements(viewData, request.Tags);
-            List<MetricTag> availTags = GetAvailableTags(viewData);
-
             return new MetricsResponse(request.MetricName, measurements, availTags);
         }
 
-        protected internal List<MetricTag> GetAvailableTags(IViewData viewData)
+        private void GetMetricsCollection(out MetricDictionary<List<MetricSample>> measurements, out MetricDictionary<List<MetricTag>> availTags)
         {
-            return GetAvailableTags(viewData.View.Columns, viewData.AggregationMap);
-        }
+            measurements = new MetricDictionary<List<MetricSample>>();
+            availTags = new MetricDictionary<List<MetricTag>>();
 
-        protected internal List<MetricTag> GetAvailableTags(IList<ITagKey> columns, IDictionary<TagValues, IAggregationData> aggMap)
-        {
-            List<MetricTag> results = new List<MetricTag>();
-
-            for (int i = 0; i < columns.Count; i++)
+            var doubleMetrics = _exporter.GetAndClearDoubleMetrics();
+            for (int i = 0; i < doubleMetrics.Count; i++)
             {
-                string tag = columns[i].Name;
-                HashSet<string> set = new HashSet<string>();
-
-                foreach (var agg in aggMap)
+                var metric = doubleMetrics[i];
+                var labels = metric.Labels;
+                switch (metric.AggregationType)
                 {
-                    var tagValue = agg.Key.Values[i];
-                    if (tagValue != null)
-                    {
-                        set.Add(tagValue.AsString);
-                    }
+                    case AggregationType.DoubleSum:
+                        {
+                            var doubleSum = metric.Data as SumData<double>;
+                            var doubleValue = doubleSum.Sum;
+
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleValue));
+
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
+
+                            break;
+                        }
+
+                    case AggregationType.Summary:
+                        {
+                            var doubleSummary = metric.Data as SummaryData<double>;
+
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
+
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
+
+                            break;
+                        }
                 }
-
-                results.Add(new MetricTag(tag, set));
             }
 
-            return results;
-        }
-
-        protected internal List<MetricSample> GetMetricMeasurements(IViewData viewData, List<KeyValuePair<string, string>> tags)
-        {
-            var tagValues = GetTagValuesInColumnOrder(viewData.View.Columns, tags);
-            if (tagValues == null)
+            foreach (var metric in _exporter.GetAndClearLongMetrics())
             {
-                // One or more of tag keys are invalid
-                return new List<MetricSample>();
-            }
-
-            IAggregationData agg = MetricsHelpers.SumWithTags(viewData, tagValues);
-            return GetMetricSamples(agg, viewData);
-        }
-
-        protected internal List<MetricSample> GetMetricSamples(IAggregationData agg, IViewData viewData)
-        {
-            List<MetricSample> results = new List<MetricSample>();
-            MetricStatistic statistic = GetStatistic(viewData.View.Aggregation, viewData.View.Measure);
-
-            agg.Match<object>(
-                (arg) =>
+                var labels = metric.Labels;
+                switch (metric.AggregationType)
                 {
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.TOTAL;
-                    }
+                    case AggregationType.DoubleSum:
+                        {
+                            var longSum = metric.Data as SumData<long>;
+                            var doubleValue = longSum.Sum;
 
-                    results.Add(new MetricSample(statistic, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.TOTAL;
-                    }
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleValue));
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
-                    results.Add(new MetricSample(statistic, arg.Sum));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.COUNT;
-                    }
+                            break;
+                        }
 
-                    results.Add(new MetricSample(statistic, arg.Count));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.Add(new MetricSample(MetricStatistic.COUNT, arg.Count));
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.TOTAL;
-                    }
+                    case AggregationType.Summary:
+                        {
+                            var doubleSummary = metric.Data as SummaryData<long>;
 
-                    results.Add(new MetricSample(statistic, arg.Mean * arg.Count));
-                    return null;
-                },
-                (arg) =>
-                {
-                    results.Add(new MetricSample(MetricStatistic.COUNT, arg.Count));
-                    results.Add(new MetricSample(MetricStatistic.MAX, arg.Max));
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.TOTAL;
-                    }
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
+                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
+                            AddLabelsToTags(availTags, metric.MetricName, labels);
 
-                    results.Add(new MetricSample(statistic, arg.Mean * arg.Count));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.VALUE;
-                    }
-
-                    results.Add(new MetricSample(statistic, arg.LastValue));
-                    return null;
-                },
-                (arg) =>
-                {
-                    if (statistic == MetricStatistic.UNKNOWN)
-                    {
-                        statistic = MetricStatistic.VALUE;
-                    }
-
-                    results.Add(new MetricSample(statistic, arg.LastValue));
-                    return null;
-                },
-                (arg) =>
-                {
-                    return null;
-                });
-
-            return results;
-        }
-
-        protected internal MetricStatistic GetStatistic(IAggregation agg, IMeasure measure)
-        {
-            var result = agg.Match<MetricStatistic>(
-                (arg) =>
-                {
-                    return MetricStatistic.TOTAL;
-                },
-                (arg) =>
-                {
-                    return MetricStatistic.COUNT;
-                },
-                (arg) =>
-                {
-                    return MetricStatistic.TOTAL;
-                },
-                (arg) =>
-                {
-                    return MetricStatistic.TOTAL;
-                },
-                (arg) =>
-                {
-                    return MetricStatistic.VALUE;
-                },
-                (arg) =>
-                {
-                    return MetricStatistic.UNKNOWN;
-                });
-
-            if (MeasureUnit.IsTimeUnit(measure.Unit) && result == MetricStatistic.TOTAL)
-            {
-                result = MetricStatistic.TOTALTIME;
-            }
-
-            return result;
-        }
-
-        protected internal List<ITagValue> GetTagValuesInColumnOrder(IList<ITagKey> columns, List<KeyValuePair<string, string>> tags)
-        {
-            ITagValue[] tagValues = new ITagValue[columns.Count];
-            foreach (var kvp in tags)
-            {
-                var key = TagKey.Create(kvp.Key);
-                var value = TagValue.Create(kvp.Value);
-                int indx = columns.IndexOf(key);
-                if (indx < 0)
-                {
-                    return null;
+                            break;
+                        }
                 }
-
-                tagValues[indx] = value;
             }
-
-            return new List<ITagValue>(tagValues);
         }
 
-        protected internal ISet<string> GetMetricNames()
+        private void AddLabelsToTags(MetricDictionary<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
         {
-            var allViews = _stats.ViewManager.AllExportedViews;
-            HashSet<string> names = new HashSet<string>();
-            foreach (var view in allViews)
+            foreach (var label in labels)
             {
-                names.Add(view.Name.AsString);
+                availTags[name].Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
+            }
+        }
+
+        private class MetricDictionary<T>
+            : Dictionary<string, T>
+            where T : new()
+        {
+            public MetricDictionary()
+            {
             }
 
-            return names;
+            public new T this[string key]
+            {
+                get
+                {
+                    if (!ContainsKey(key))
+                    {
+                        base[key] = new T();
+                    }
+
+                    return base[key];
+                }
+            }
         }
     }
 }

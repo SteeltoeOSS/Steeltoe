@@ -48,11 +48,11 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
                 Sampler sampler = null;
                 if (options.AlwaysSample)
                 {
-                    sampler = new AlwaysSampleSampler();
+                    sampler = new AlwaysOnSampler();
                 }
                 else if (options.NeverSample)
                 {
-                    sampler = new NeverSampleSampler();
+                    sampler = new AlwaysOffSampler();
                 }
 
                 builder.SetTracerOptions(TracerConfiguration);

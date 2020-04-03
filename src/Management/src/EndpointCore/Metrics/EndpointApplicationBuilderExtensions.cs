@@ -32,5 +32,15 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             builder.UseMiddleware<MetricsEndpointMiddleware>();
         }
+
+        public static void UsePrometheusActuator(this IApplicationBuilder builder)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.UseMiddleware<PrometheusScraperEndpointMiddleware>();
+        }
     }
 }

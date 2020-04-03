@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         [JsonProperty("availableTags")]
         public List<MetricTag> AvailableTags { get; }
 
-        public MetricsResponse(string name, List<MetricSample> measurements,  List<MetricTag> availableTags)
+        public MetricsResponse(string name, List<MetricSample> measurements, List<MetricTag> availableTags)
         {
             Name = name;
             Measurements = measurements;

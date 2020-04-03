@@ -12,30 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Trace.Propagation;
+using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Census.Trace.Propagation
+namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public sealed class B3PropagationComponent : PropagationComponentBase
+    public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusOptions
     {
-        private readonly ThrowsBinaryFormat binaryFormat = new ThrowsBinaryFormat();
-        private readonly B3Format textFormat = new B3Format();
+        internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
 
-        /// <inheritdoc/>
-        public override IBinaryFormat BinaryFormat
+        public PrometheusEndpointOptions()
+            : base()
         {
-            get
-            {
-                return this.binaryFormat;
-            }
+            Id = "prometheus";
         }
 
-        /// <inheritdoc/>
-        public override ITextFormat TextFormat
+        public PrometheusEndpointOptions(IConfiguration config)
+            : base(MANAGEMENT_INFO_PREFIX, config)
         {
-            get
+            if (string.IsNullOrEmpty(Id))
             {
-                return this.textFormat;
+                Id = "prometheus";
             }
         }
     }

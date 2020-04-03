@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -30,7 +30,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
     public class HttpClientDesktopObserverTest : BaseTest
     {
-        [Fact]
+       // Bring back with Views API
+       /* [Fact]
         public void Constructor_RegistersExpectedViews()
         {
             var options = new MetricsEndpointOptions();
@@ -40,30 +41,28 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time")));
             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count")));
-        }
+        }*/
 
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var obs = new HttpClientDesktopObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new HttpClientDesktopObserver(options, stats, null);
 
-            Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
-            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
-            Assert.True(obs.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
-            Assert.False(obs.ShouldIgnoreRequest("/api/test"));
-            Assert.False(obs.ShouldIgnoreRequest("/v2/apps"));
+            Assert.True(observer.ShouldIgnoreRequest("/api/v2/spans"));
+            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/foobar/permissions"));
+            Assert.True(observer.ShouldIgnoreRequest("/v2/apps/barfoo/permissions"));
+            Assert.False(observer.ShouldIgnoreRequest("/api/test"));
+            Assert.False(observer.ShouldIgnoreRequest("/v2/apps"));
         }
 
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new HttpClientDesktopObserver(options, stats, null);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
@@ -79,26 +78,25 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         public void GetTagContext_ReturnsExpected()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new HttpClientDesktopObserver(options, stats, null);
 
             var req = GetHttpRequestMessage();
-            var tagContext = observer.GetTagContext(req, HttpStatusCode.InternalServerError);
-            var tagValues = tagContext.ToList();
-            tagValues.Contains(Tag.Create(TagKey.Create("clientName"), TagValue.Create("localhost:5555")));
-            tagValues.Contains(Tag.Create(TagKey.Create("uri"), TagValue.Create("/foo/bar")));
-            tagValues.Contains(Tag.Create(TagKey.Create("status"), TagValue.Create("500")));
-            tagValues.Contains(Tag.Create(TagKey.Create("method"), TagValue.Create("GET")));
+            var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError);
+            labels.Contains(KeyValuePair.Create("clientName", "localhost:5555"));
+            labels.Contains(KeyValuePair.Create("uri", "/foo/bar"));
+            labels.Contains(KeyValuePair.Create("status", "500"));
+            labels.Contains(KeyValuePair.Create("method", "GET"));
         }
 
         [Fact]
         public void HandleStopEvent_RecordsStats()
         {
             var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new HttpClientDesktopObserver(options, stats, null);
+            var factory = stats.Factory;
+            var processor = stats.Processor;
 
             var req = GetHttpRequestMessage();
 
@@ -110,14 +108,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, req, HttpStatusCode.InternalServerError);
             observer.HandleStopEvent(act, req, HttpStatusCode.OK);
 
-            var reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time"));
-            var aggData1 = MetricsHelpers.SumWithTags(reqData) as IDistributionData;
-            Assert.InRange(aggData1.Mean, 950.0, 1500.0);
-            Assert.InRange(aggData1.Max, 950.0, 1500.0);
+            factory.CollectAllMetrics();
 
-            reqData = stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count"));
-            var aggData2 = MetricsHelpers.SumWithTags(reqData) as ISumDataLong;
-            Assert.Equal(2, aggData2.Sum);
+            var requestTime = processor.GetMetricByName<double>("http.desktop.client.request.time");
+            Assert.NotNull(requestTime);
+            Assert.InRange(requestTime.Min, 950.0, 1500.0);
+            Assert.InRange(requestTime.Max, 950.0, 1500.0);
+
+            var requestCount = processor.GetMetricByName<long>("http.desktop.client.request.count");
+            Assert.NotNull(requestCount);
+            Assert.Equal(2, requestCount.Sum);
 
             act.Stop();
         }

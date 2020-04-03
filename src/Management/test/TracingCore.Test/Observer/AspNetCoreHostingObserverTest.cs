@@ -26,6 +26,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using Xunit;
+using SpanAttributeConstants = Steeltoe.Management.OpenTelemetry.Trace.SpanAttributeConstants;
 
 namespace Steeltoe.Management.Tracing.Observer.Test
 {
@@ -114,7 +115,6 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-
             var spanData = span.ToSpanData();
             Assert.Equal("http:/", spanData.Name);
 
@@ -198,7 +198,6 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-
             var spanData = span.ToSpanData();
             Assert.Equal("http:/", spanData.Name);
 

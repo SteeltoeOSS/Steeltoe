@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using OpenCensus.Stats;
-using OpenCensus.Tags;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +19,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     internal static class MetricsHelpers
     {
-        internal static IAggregationData SumWithTags(IViewData viewData, IList<ITagValue> tagValues = null)
+       // TODO: Pending Views API
+       /* internal static IAggregationData SumWithTags(IViewData viewData, IList<ITagValue> tagValues = null)
         {
             var withTags = viewData.AggregationMap.WithTags(tagValues);
             return StatsExtensions.Sum(withTags, viewData.View);
@@ -74,6 +73,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
 
             return true;
-        }
+        }*/
     }
 }

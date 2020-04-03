@@ -19,8 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{976463
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2D0A3F62-46FA-4317-BDEB-BE9433B9EBBE}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
+	ProjectSection(SolutionItems) = preProject	
+		README.md = README.md	
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore", "src\EndpointCore\Steeltoe.Management.EndpointCore.csproj", "{D544C805-F83B-46D8-9F64-AA783F924DB5}"
@@ -72,8 +72,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenTelemetryBase", "src\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj", "{C5A54146-778D-44EE-9F84-38E57963E30A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase", "src\TracingBase\Steeltoe.Management.TracingBase.csproj", "{96267423-D9EF-4058-80CA-8E537A32DA99}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.OpenCensusBase", "src\OpenCensusBase\Steeltoe.Management.OpenCensusBase.csproj", "{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.TracingBase.Test", "test\TracingBase.Test\Steeltoe.Management.TracingBase.Test.csproj", "{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D}"
 EndProject
@@ -181,10 +179,6 @@ Global
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96267423-D9EF-4058-80CA-8E537A32DA99}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -222,7 +216,6 @@ Global
 		{282B2292-7D12-48DF-A25D-509B79B9FDE1} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
 		{C5A54146-778D-44EE-9F84-38E57963E30A} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{96267423-D9EF-4058-80CA-8E537A32DA99} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
-		{F4AF1EBF-B32D-455F-A055-E47FA2983D4E} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{908E5C78-2BB9-41E6-B3D5-68FD539D7A2D} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 	EndGlobalSection

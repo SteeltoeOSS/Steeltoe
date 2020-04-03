@@ -103,7 +103,6 @@ namespace Steeltoe.Management.Tracing.Observer
         protected internal void HandleExceptionEvent(HttpContext context, Exception exception)
         {
             var span = ActiveValue.Value;
-
             if (span == null)
             {
                 Logger?.LogDebug("HandleExceptionEvent: Active span missing, {exception}", exception);

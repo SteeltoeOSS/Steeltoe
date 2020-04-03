@@ -37,8 +37,8 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(32, p.MaxNumberOfAttributes);
             Assert.Equal(32, p.MaxNumberOfLinks);
             Assert.Equal(128, p.MaxNumberOfEvents);
-            Assert.NotEqual(tracing.ConfiguredSampler, new AlwaysSampleSampler());
-            Assert.NotEqual(tracing.ConfiguredSampler, new NeverSampleSampler());
+            Assert.NotEqual(tracing.ConfiguredSampler, new AlwaysOnSampler());
+            Assert.NotEqual(tracing.ConfiguredSampler, new AlwaysOffSampler());
         }
 
         [Fact]
@@ -95,7 +95,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(100, p.MaxNumberOfAttributes);
             Assert.Equal(100, p.MaxNumberOfLinks);
             Assert.Equal(100, p.MaxNumberOfEvents);
-            Assert.IsType<AlwaysSampleSampler>(tracing.ConfiguredSampler);
+            Assert.IsType<AlwaysOnSampler>(tracing.ConfiguredSampler);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace Steeltoe.Management.Tracing.Test
         {
             public override string Description => throw new System.NotImplementedException();
 
-            public override Decision ShouldSample(in SpanContext parentContext, in ActivityTraceId traceId, in ActivitySpanId spanId, string name, SpanKind spanKind, IDictionary<string, object> attributes, IEnumerable<Link> links)
+            public override SamplingResult ShouldSample(in SpanContext parentContext, in ActivityTraceId traceId, in ActivitySpanId spanId, string name, SpanKind spanKind, IDictionary<string, object> attributes, IEnumerable<Link> links)
             {
                 throw new TestSamplerException();
             }

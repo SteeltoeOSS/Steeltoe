@@ -11,7 +11,7 @@
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>4.5.0</SystemDiagnosticsVersion>
+    <SystemDiagnosticsVersion>4.6.0</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
@@ -39,7 +39,7 @@
     <MockHttpVersion>5.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
-    <OpenTelemetryVersion>0.2.0-alpha.179</OpenTelemetryVersion>
+    <OpenTelemetryVersion>0.2.0-alpha.220</OpenTelemetryVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <TestSdkVersion>16.3.0</TestSdkVersion>

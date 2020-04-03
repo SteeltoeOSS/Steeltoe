@@ -12,28 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Management.Census.Trace
+using OpenTelemetry.Metrics;
+
+namespace Steeltoe.Management.OpenTelemetry.Stats
 {
-    public interface ITracingOptions
+    public interface IStats
     {
-        string Name { get; }
-
-        string IngressIgnorePattern { get; }
-
-        string EgressIgnorePattern { get; }
-
-        int MaxNumberOfAttributes { get; }
-
-        int MaxNumberOfAnnotations { get; }
-
-        int MaxNumberOfMessageEvents { get; }
-
-        int MaxNumberOfLinks { get; }
-
-        bool AlwaysSample { get; }
-
-        bool NeverSample { get;  }
-
-        bool UseShortTraceIds { get; }
+        Meter Meter { get; }
     }
 }

@@ -13,33 +13,25 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Stats;
-using OpenCensus.Tags;
+using OpenTelemetry.Metrics;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
     public abstract class MetricsObserver : DiagnosticObserver
     {
-        protected IViewManager ViewManager { get; }
-
-        protected IStatsRecorder StatsRecorder { get; }
-
-        protected ITagger Tagger { get; }
+        protected Meter Meter { get; }
 
         protected IMetricsOptions Options { get; }
 
         protected Regex PathMatcher { get; set; }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger logger = null)
+        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats stats, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
-            ViewManager = censusStats.ViewManager;
-            StatsRecorder = censusStats.StatsRecorder;
-            Tagger = censusTags.Tagger;
+            Meter = stats.Meter;
             Options = options;
         }
 

@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         public long Timestamp { get; }
 
-        public Principal Principal { get;  }
+        public Principal Principal { get; }
 
         public Session Session { get; }
 

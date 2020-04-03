@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <Description>Steeltoe Management OpenTelemetry</Description>
+    <Description>Steeltoe Management OpenTelemetry.
+      **PLEASE NOTE** This package depends on a pre-release version of OpenTelemetry. You may need to add "https://www.myget.org/F/opentelemetry/api/v3/index.json" to your nuget.config if the package is not found.
+    </Description>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Steeltoe.Management.OpenTelemetryBase</AssemblyName>
     <PackageId>Steeltoe.Management.OpenTelemetryBase</PackageId>
@@ -17,10 +19,12 @@
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <ProjectReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <ProjectReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
 </Project>
