@@ -2,13 +2,15 @@
   <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Extensions.Configuration.CloudFoundry</RootNamespace>
+    <RootNamespace>Steeltoe.Extensions.Configuration.Kubernetes</RootNamespace>
     <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
-    <PackageTags>configuration;CloudFoundry;vcap</PackageTags>
+    <PackageTags>configuration;Kubernetes;vcap</PackageTags>
   </PropertyGroup>
   <Import Project="..\..\..\..\sharedproject.props" />
   
   <ItemGroup>
+    <PackageReference Include="KubernetesClient" Version="1.6.28" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 

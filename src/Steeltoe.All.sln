@@ -259,6 +259,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StubBinder1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.StubBinder2", "Stream\test\StubBinder2\Steeltoe.Stream.StubBinder2.csproj", "{5AE1F2D6-0D9B-4F9B-A47F-6063CD964805}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.KubernetesBase", "Configuration\src\KubernetesBase\Steeltoe.Extensions.Configuration.KubernetesBase.csproj", "{75A0CE2D-9343-40DC-8542-3CE07C3913B9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.KubernetesBase.Test", "Configuration\test\KubernetesBase.Test\Steeltoe.Extensions.Configuration.KubernetesBase.Test.csproj", "{382B0AC3-5475-485B-81F6-27658570530C}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.RabbitMQ", "Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj", "{5D878BBC-85BA-487A-B451-15D5D0DEB52B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.RabbitMQ.Test", "Messaging\test\RabbitMQ.Test\Steeltoe.Messaging.RabbitMQ.Test.csproj", "{1B49DE9E-9A9F-42C3-BEE9-85B5D8418F94}"
@@ -665,6 +669,14 @@ Global
 		{5AE1F2D6-0D9B-4F9B-A47F-6063CD964805}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AE1F2D6-0D9B-4F9B-A47F-6063CD964805}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AE1F2D6-0D9B-4F9B-A47F-6063CD964805}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75A0CE2D-9343-40DC-8542-3CE07C3913B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75A0CE2D-9343-40DC-8542-3CE07C3913B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75A0CE2D-9343-40DC-8542-3CE07C3913B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75A0CE2D-9343-40DC-8542-3CE07C3913B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{382B0AC3-5475-485B-81F6-27658570530C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{382B0AC3-5475-485B-81F6-27658570530C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{382B0AC3-5475-485B-81F6-27658570530C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{382B0AC3-5475-485B-81F6-27658570530C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5D878BBC-85BA-487A-B451-15D5D0DEB52B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5D878BBC-85BA-487A-B451-15D5D0DEB52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5D878BBC-85BA-487A-B451-15D5D0DEB52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -788,6 +800,8 @@ Global
 		{1B49DE9E-9A9F-42C3-BEE9-85B5D8418F94} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 		{5E65AD10-2CAD-4F01-936B-2AE05C0116CC} = {59874241-E276-4035-B31D-14924889A1C9}
 		{8C016D91-60FE-4BB7-93BA-1250089D1130} = {59874241-E276-4035-B31D-14924889A1C9}
+		{75A0CE2D-9343-40DC-8542-3CE07C3913B9} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
+		{382B0AC3-5475-485B-81F6-27658570530C} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

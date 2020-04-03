@@ -13,29 +13,13 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using System;
-using System.IO;
+using System.Linq;
+using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 {
-    internal class JsonStreamConfigurationSource : JsonConfigurationSource
+    public class KubernetesApplicationOptionsTest
     {
-        internal JsonStreamConfigurationSource(MemoryStream stream)
-        {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            Stream = stream;
-        }
-
-        internal MemoryStream Stream { get; }
-
-        public override IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return new JsonStreamConfigurationProvider(this);
-        }
     }
 }

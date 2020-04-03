@@ -12,29 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration.Json;
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.IO;
+using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 {
-    internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
+    public class KubernetesConfigMapProviderTest
     {
-        private readonly JsonStreamConfigurationSource _source;
-
-        internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
-            : base(source)
-        {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            _source = source;
-        }
-
-        public override void Load()
-        {
-            Load(_source.Stream);
-        }
     }
 }
