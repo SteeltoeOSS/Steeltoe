@@ -79,10 +79,17 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 * [2.4.0](roadmaps/2.4.0.md) - Released (11/2019)
    * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.1) - Released (1/2020)
    * [2.4.2](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.2) - Released (2/2020)
+   * [2.4.3](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.3) - Released (4/2020)
 * [2.3.0](roadmaps/2.3.0.md) - Released (8/2019)
 * [2.2.0](roadmaps/2.2.0.md) - Released (3/2019)
 * [2.1.0](roadmaps/2.1.0.md) - Released (8/2018)
 * [2.0.0](roadmaps/2.0.0.md) - Released (2/2018)
+
+## Versioning of Releases
+
+* **Milestone** (i.e. M1, M2 ...) - A milestone is a release that contains a subset of the full features planned for a release. Milestone releases allow major features to be tested earlier in the release cycle.  A milestone release is not meant for production environments.
+* **Release Candidate** (i.e. RC1, RC2, ...) - Similar to a beta release.  A release candidate contains a full feature set and is available to the community for finding any major issues before the GA version is released.  There could still be source code changes to fix defects, changes to documentation, and test cases, but these releases are considered code complete. Typically, these are not meant for production environments.
+* **General Availability** (i.e. GA) - This is the full featured and fully tested release that is available to the public for use in production environments.
 
 ## Getting Started
 
