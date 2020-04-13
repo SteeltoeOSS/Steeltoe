@@ -30,25 +30,25 @@ namespace Steeltoe.Connector.GemFire
 
         public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.DotNetCore.RegionFactory" };
 
-        public static Type CacheFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the Pivotal GemFire dll");
+        public static Type CacheFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the GemfireDotNet dll");
 
         public static MethodInfo CacheInitializer => ReflectionHelpers.FindMethod(CacheFactory, "Create");
 
         public static MethodInfo CachePropertySetter => ReflectionHelpers.FindMethod(CacheFactory, "Set", new Type[] { typeof(string), typeof(string) });
 
-        public static Type Cache => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheTypeNames, "Cache", "the Pivotal GemFire dll");
+        public static Type Cache => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheTypeNames, "Cache", "the GemfireDotNet dll");
 
         public static MethodInfo PoolFactoryInitializer => ReflectionHelpers.FindMethod(Cache, "GetPoolFactory");
 
-        public static Type PoolFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, PoolFactoryTypeNames, "PoolFactory", "the Pivotal GemFire dll");
+        public static Type PoolFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, PoolFactoryTypeNames, "PoolFactory", "the GemfireDotNet dll");
 
         public static MethodInfo AddLocatorToPoolFactory => ReflectionHelpers.FindMethod(PoolFactory, "AddLocator", new Type[] { typeof(string), typeof(int) });
 
-        public static Type RegionFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, RegionFactoryTypeNames, "RegionFactory", "the Pivotal GemFire dll");
+        public static Type RegionFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, RegionFactoryTypeNames, "RegionFactory", "the GemfireDotNet dll");
 
         public static MethodInfo GetCacheAuthInitializer(Type authInitializer)
         {
-            return ReflectionHelpers.FindMethod(CacheFactory, "set_AuthInitialize", new Type[] { authInitializer.GetInterface("IAuthInitialize") });
+            return ReflectionHelpers.FindMethod(CacheFactory, CacheFactory.GetProperty("AuthInitialize").ToString(), new Type[] { authInitializer.GetInterface("IAuthInitialize") });
         }
     }
 }
