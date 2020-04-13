@@ -48,7 +48,7 @@ namespace Steeltoe.Connector.GemFire.Test
             var exception = Assert.Throws<TypeLoadException>(() => GemFireTypeLocator.CacheFactory);
 
             // assert
-            Assert.Equal($"Unable to find CacheFactory, are you missing the Pivotal GemFire dll?", exception.Message);
+            Assert.Equal($"Unable to find CacheFactory, are you missing the GemfireDotNet dll?", exception.Message);
 
             // reset
             GemFireTypeLocator.Assemblies = msftAssemblies;
