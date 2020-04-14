@@ -32,13 +32,13 @@ namespace Steeltoe.Connector.GemFire
 
         public static Type CacheFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the GemfireDotNet dll");
 
-        public static MethodInfo CacheInitializer => ReflectionHelpers.FindMethod(CacheFactory, "Create");
+        public static MethodInfo CacheInitializer => ReflectionHelpers.FindMethod(CacheFactory, "CreateCache");
 
         public static MethodInfo CachePropertySetter => ReflectionHelpers.FindMethod(CacheFactory, "Set", new Type[] { typeof(string), typeof(string) });
 
         public static Type Cache => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheTypeNames, "Cache", "the GemfireDotNet dll");
 
-        public static MethodInfo PoolFactoryInitializer => ReflectionHelpers.FindMethod(Cache, "GetPoolFactory");
+        public static PropertyInfo GetPoolFactoryInitializer => GemFireTypeLocator.Cache.GetProperty("PoolFactory");
 
         public static Type PoolFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, PoolFactoryTypeNames, "PoolFactory", "the GemfireDotNet dll");
 
@@ -46,9 +46,9 @@ namespace Steeltoe.Connector.GemFire
 
         public static Type RegionFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, RegionFactoryTypeNames, "RegionFactory", "the GemfireDotNet dll");
 
-        public static MethodInfo GetCacheAuthInitializer(Type authInitializer)
+        public static PropertyInfo GetCacheAuthInitializer(Type authInitializer)
         {
-            return ReflectionHelpers.FindMethod(CacheFactory, CacheFactory.GetProperty("AuthInitialize").ToString(), new Type[] { authInitializer.GetInterface("IAuthInitialize") });
+            return GemFireTypeLocator.CacheFactory.GetProperty("AuthInitialize");
         }
     }
 }

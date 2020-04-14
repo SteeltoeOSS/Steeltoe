@@ -68,7 +68,6 @@ namespace Steeltoe.Connector.GemFire
             services.Add(new ServiceDescriptor(cacheFactory, c => connectorFactory.CreateCacheFactory(c, authInitializer), contextLifetime));
             services.Add(new ServiceDescriptor(cache, c => connectorFactory.CreateCache(c.GetRequiredService(cacheFactory)), contextLifetime));
             services.Add(new ServiceDescriptor(poolFactory, c => connectorFactory.CreatePoolFactory(c.GetRequiredService(cache)), contextLifetime));
-
             return services;
         }
     }

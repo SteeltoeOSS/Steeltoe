@@ -63,7 +63,8 @@ namespace Steeltoe.Connector.GemFire
                     throw new ConnectorException("Failed to create an instance of Apache.Geode.Client.IAuthInitializer. Make sure you have a constructor that takes two strings (username and password) as parameters", e);
                 }
 
-                return GemFireTypeLocator.GetCacheAuthInitializer(authInitializer).Invoke(factory, new object[] { authInitializerInstance });
+                GemFireTypeLocator.GetCacheAuthInitializer(authInitializer).SetValue(factory, authInitializerInstance, null);
+                return factory;
             }
 
             return factory;
@@ -76,7 +77,7 @@ namespace Steeltoe.Connector.GemFire
 
         public object CreatePoolFactory(object cache)
         {
-            var poolFactory = GemFireTypeLocator.PoolFactoryInitializer.Invoke(cache, null);
+            var poolFactory = GemFireTypeLocator.GetPoolFactoryInitializer.GetValue(cache);
             foreach (var locator in _config.ParsedLocators())
             {
                 _logger?.LogTrace("Adding GemFire locator {GemFireLocator} to pool factory", locator.Key + ":" + locator.Value);

@@ -18,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.GemFire;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.Test
@@ -57,14 +58,23 @@ namespace Steeltoe.Connector.Test
         public void AddGemFireConnection_NoVCAPs_Adds()
         {
             // Arrange
-            IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var credentials = new Dictionary<string, string>
+            {
+                { "gemfire:client:Username", "user" },
+                { "gemfire:client:Password", "password" }
+            };
+
+            var configBuilder = new ConfigurationBuilder();
+
+            configBuilder.AddInMemoryCollection(credentials);
+            var config = configBuilder.Build();
 
             // Act
-            services.AddGemFireConnection(config, typeof(BasicAuthInitialize));
-            var cacheFactory = services.BuildServiceProvider().GetService<CacheFactory>();
-            var cache = services.BuildServiceProvider().GetService<Cache>();
-            var poolFactory = services.BuildServiceProvider().GetService<PoolFactory>();
+            var serviceCollection = new ServiceCollection();
+            GemFireServiceCollectionExtensions.AddGemFireConnection(serviceCollection, config, typeof(BasicAuthInitialize));
+            var cacheFactory = serviceCollection.BuildServiceProvider().GetService<CacheFactory>();
+            var cache = serviceCollection.BuildServiceProvider().GetService<Cache>();
+            var poolFactory = serviceCollection.BuildServiceProvider().GetService<PoolFactory>();
 
             // Assert
             Assert.NotNull(cacheFactory);
