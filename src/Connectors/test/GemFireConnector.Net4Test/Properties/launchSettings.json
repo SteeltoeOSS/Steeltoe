@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Steeltoe.CloudFoundry.GemFireConnector.Test": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

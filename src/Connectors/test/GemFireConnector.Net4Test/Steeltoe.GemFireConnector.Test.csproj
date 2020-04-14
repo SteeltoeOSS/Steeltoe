@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <Reference Include="GemfireDotNet">
-      <HintPath>..\..\GemfireDotNet.dll</HintPath>
+      <HintPath>..\..\..\..\..\gemfire-dotnet-core\GemfireDotNet\bin\Debug\netcoreapp3.1\GemfireDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

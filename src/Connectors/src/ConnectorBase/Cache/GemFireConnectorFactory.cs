@@ -16,6 +16,10 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Steeltoe.Connector.GemFire
 {
@@ -85,6 +89,15 @@ namespace Steeltoe.Connector.GemFire
             }
 
             return poolFactory;
+        }
+
+        public object CreateRegionFactory(object cache)
+        {
+            var regionTypeNames = GemFireTypeLocator.RegionShortcutType.GetEnumNames();
+            // TODO: Extract the configured Region type instead of hardcoding Proxy
+            var index = Array.IndexOf(regionTypeNames, "Proxy");
+
+            return GemFireTypeLocator.RegionFactoryInitializer.Invoke(cache, new object[] { GemFireTypeLocator.RegionShortcutType.GetEnumValues().GetValue(index) });
         }
     }
 }

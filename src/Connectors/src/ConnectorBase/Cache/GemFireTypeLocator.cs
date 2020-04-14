@@ -30,6 +30,8 @@ namespace Steeltoe.Connector.GemFire
 
         public static string[] RegionFactoryTypeNames { get; internal set; } = new string[] { "Apache.Geode.DotNetCore.RegionFactory" };
 
+        public static string[] RegionShortcutTypeNames { get; internal set; } = new string[] { "Apache.Geode.DotNetCore.RegionShortcut" };
+
         public static Type CacheFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, CacheFactoryTypeNames, "CacheFactory", "the GemfireDotNet dll");
 
         public static MethodInfo CacheInitializer => ReflectionHelpers.FindMethod(CacheFactory, "CreateCache");
@@ -45,6 +47,10 @@ namespace Steeltoe.Connector.GemFire
         public static MethodInfo AddLocatorToPoolFactory => ReflectionHelpers.FindMethod(PoolFactory, "AddLocator", new Type[] { typeof(string), typeof(int) });
 
         public static Type RegionFactory => ReflectionHelpers.FindTypeOrThrow(Assemblies, RegionFactoryTypeNames, "RegionFactory", "the GemfireDotNet dll");
+        public static MethodInfo RegionFactoryInitializer => ReflectionHelpers.FindMethod(Cache, "CreateRegionFactory");
+
+        public static Type RegionShortcutType => ReflectionHelpers.FindTypeOrThrow(Assemblies, RegionShortcutTypeNames, "RegionShortcut", "the GemfireDotNet dll");
+
 
         public static PropertyInfo GetCacheAuthInitializer(Type authInitializer)
         {

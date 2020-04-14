@@ -56,8 +56,7 @@ namespace Steeltoe.Connector.GemFire
             Type cacheFactory = GemFireTypeLocator.CacheFactory;
             Type cache = GemFireTypeLocator.Cache;
             Type poolFactory = GemFireTypeLocator.PoolFactory;
-
-            //// Type regionFactory = GemFireTypeLocator.RegionFactory;
+            Type regionFactory = GemFireTypeLocator.RegionFactory;
 
             var gemFireConfig = new GemFireConnectorOptions(config);
             var connectorFactory = new GemFireConnectorFactory(gemFireConfig, info, loggerFactory?.CreateLogger<GemFireConnectorFactory>());
@@ -68,6 +67,7 @@ namespace Steeltoe.Connector.GemFire
             services.Add(new ServiceDescriptor(cacheFactory, c => connectorFactory.CreateCacheFactory(c, authInitializer), contextLifetime));
             services.Add(new ServiceDescriptor(cache, c => connectorFactory.CreateCache(c.GetRequiredService(cacheFactory)), contextLifetime));
             services.Add(new ServiceDescriptor(poolFactory, c => connectorFactory.CreatePoolFactory(c.GetRequiredService(cache)), contextLifetime));
+            services.Add(new ServiceDescriptor(regionFactory, c => connectorFactory.CreateRegionFactory(c.GetRequiredService(cache)), contextLifetime));
             return services;
         }
     }

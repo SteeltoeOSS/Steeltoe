@@ -58,15 +58,16 @@ namespace Steeltoe.Connector.Test
         public void AddGemFireConnection_NoVCAPs_Adds()
         {
             // Arrange
-            var credentials = new Dictionary<string, string>
+            var userConfig = new Dictionary<string, string>
             {
                 { "gemfire:client:Username", "user" },
-                { "gemfire:client:Password", "password" }
+                { "gemfire:client:Password", "password" },
+                { "gemfire:client:ProxyType", "Proxy" }
             };
 
             var configBuilder = new ConfigurationBuilder();
 
-            configBuilder.AddInMemoryCollection(credentials);
+            configBuilder.AddInMemoryCollection(userConfig);
             var config = configBuilder.Build();
 
             // Act
@@ -75,11 +76,13 @@ namespace Steeltoe.Connector.Test
             var cacheFactory = serviceCollection.BuildServiceProvider().GetService<CacheFactory>();
             var cache = serviceCollection.BuildServiceProvider().GetService<Cache>();
             var poolFactory = serviceCollection.BuildServiceProvider().GetService<PoolFactory>();
+            var regionFactory = serviceCollection.BuildServiceProvider().GetService<RegionFactory>();
 
             // Assert
             Assert.NotNull(cacheFactory);
             Assert.NotNull(cache);
             Assert.NotNull(poolFactory);
+            Assert.NotNull(regionFactory);
         }
 
         [Fact]
@@ -98,11 +101,13 @@ namespace Steeltoe.Connector.Test
             var cacheFactory = services.BuildServiceProvider().GetService<CacheFactory>();
             var cache = services.BuildServiceProvider().GetService<Cache>();
             var poolFactory = services.BuildServiceProvider().GetService<PoolFactory>();
+            var regionFactory = services.BuildServiceProvider().GetService<RegionFactory>();
 
             // Assert
             Assert.NotNull(cacheFactory);
             Assert.NotNull(cache);
             Assert.NotNull(poolFactory);
+            Assert.NotNull(regionFactory);
         }
 
         [Fact]
@@ -150,11 +155,13 @@ namespace Steeltoe.Connector.Test
             var cacheFactory = services.BuildServiceProvider().GetService<CacheFactory>();
             var cache = services.BuildServiceProvider().GetService<Cache>();
             var poolFactory = services.BuildServiceProvider().GetService<PoolFactory>();
+            var regionFactory = services.BuildServiceProvider().GetService<RegionFactory>();
 
             // Assert
             Assert.NotNull(cacheFactory);
             Assert.NotNull(cache);
             Assert.NotNull(poolFactory);
+            Assert.NotNull(regionFactory);
         }
     }
 }

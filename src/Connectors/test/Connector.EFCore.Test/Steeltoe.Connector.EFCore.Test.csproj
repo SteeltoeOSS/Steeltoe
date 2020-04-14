@@ -27,5 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" />
+    <ProjectReference Include="..\Connector.EF6Core.Net4Test\Steeltoe.Connector.EF6Core.Test.csproj" />
   </ItemGroup>
 </Project>
