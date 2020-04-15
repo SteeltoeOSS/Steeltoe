@@ -25,7 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
-    public class CLRRuntimeObserverTest : BaseTest
+    public class EventCounterListenerTest : BaseTest
     {
         // TODO: Bring back views when available
         /*
@@ -182,6 +182,23 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             Assert.Equal(100, summary.Max);
         }
 
-       
+        [Fact]
+        public void EventCounterListenerGetsMetricsTest()
+        {
+            var options = new MetricsEndpointOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var factory = stats.Factory;
+            var processor = stats.Processor;
+            using var listener = new EventCounterListener( stats);
+           
+            Task.Delay(2000).Wait();
+
+            factory.CollectAllMetrics();
+            
+            var summary = processor.GetMetricByName<double>("System.Runtime.System.Runtime.time-in-gc");
+            Assert.NotNull(summary);
+            Assert.True(summary.Count > 0);
+
+        }
     }
 }

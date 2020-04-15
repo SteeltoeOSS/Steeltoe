@@ -32,25 +32,25 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         private readonly MetricExporter exporter;
         private readonly Task worker;
-        private readonly TimeSpan aggregationInterval;
+        private readonly TimeSpan exportInterval;
         private CancellationTokenSource cts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SteeltoeProcessor"/> class.
         /// </summary>
         /// <param name="exporter">Metric exporter instance.</param>
-        /// <param name="aggregationInterval">Interval at which metrics are pushed to Exporter.</param>
-        public SteeltoeProcessor(MetricExporter exporter, TimeSpan aggregationInterval)
+        /// <param name="exportInterval">Interval at which metrics are pushed to Exporter.</param>
+        public SteeltoeProcessor(MetricExporter exporter, TimeSpan exportInterval)
         {
             this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             // TODO make this thread safe.
             this.LongMetrics = new List<Metric<long>>();
             this.DoubleMetrics = new List<Metric<double>>();
-            this.aggregationInterval = aggregationInterval;
+            this.exportInterval = exportInterval;
             this.cts = new CancellationTokenSource();
 
-            if (exporter == null || aggregationInterval < TimeSpan.MaxValue)
+            if (exporter == null || exportInterval < TimeSpan.MaxValue)
             {
                 this.worker = Task.Factory.StartNew(
                     s => this.Worker((CancellationToken)s), this.cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
                                     Count = aData.Count + bData.Count,
                                     Max = Comparer<T>.Default.Compare(aData.Max, bData.Max) > 0 ? aData.Max : bData.Max,
                                     Min = Comparer<T>.Default.Compare(aData.Max, bData.Max) < 0 ? aData.Min : bData.Min,
-                                    Sum = Unsafe.As<long, T>(ref cLongSum)
+                                    Sum = Unsafe.As<long, T>(ref cLongSum),
                                 };
                                 break;
                             default:
@@ -119,8 +119,36 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             }
             else
             {
-                var filtered = labels == null ? DoubleMetrics : DoubleMetrics.FindAll(m => m.Labels.Any(label => labels.Contains(label))).ToList();
-                processedMetric = filtered.FirstOrDefault(m => m.MetricName == name) as ProcessedMetric<T>;
+                var filtered = DoubleMetrics.Where(m => m.MetricName == name).Select(m => m as ProcessedMetric<T>);
+                filtered = labels == null ? filtered : filtered.Where(m => m.Labels.Any(label => labels.Contains(label))).ToList();
+                processedMetric = filtered.Aggregate(
+                    (a, b) =>
+                    {
+                        var c = new ProcessedMetric<T>(a.MetricNamespace, name, a.MetricDescription, a.Labels, a.AggregationType);
+                        switch (a.AggregationType)
+                        {
+                            case AggregationType.Summary:
+                                var aData = a.Data as SummaryData<T>;
+                                var bData = b.Data as SummaryData<T>;
+                                var aSum = aData.Sum;
+                                var bSum = bData.Sum;
+                                var aDoubleSum = Unsafe.As<T, double>(ref aSum);
+                                var bDoubleSum = Unsafe.As<T, double>(ref bSum);
+                                var cDoubleSum = aDoubleSum + bDoubleSum;
+                                c.Data = new SummaryData<T>()
+                                {
+                                    Count = aData.Count + bData.Count,
+                                    Max = Comparer<T>.Default.Compare(aData.Max, bData.Max) > 0 ? aData.Max : bData.Max,
+                                    Min = Comparer<T>.Default.Compare(aData.Max, bData.Max) < 0 ? aData.Min : bData.Min,
+                                    Sum = Unsafe.As<double, T>(ref cDoubleSum),
+                                };
+                                break;
+                            default:
+                                break;
+                        }
+
+                        return c;
+                    });
             }
 
             return processedMetric.Data as SummaryData<T>;
@@ -158,7 +186,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         {
             try
             {
-                await Task.Delay(this.aggregationInterval, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(this.exportInterval, cancellationToken).ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var sw = Stopwatch.StartNew();
@@ -170,7 +198,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
                         return;
                     }
 
-                    var remainingWait = this.aggregationInterval - sw.Elapsed;
+                    var remainingWait = this.exportInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);

@@ -25,7 +25,9 @@ using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -51,11 +53,18 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var options = new MetricsEndpointOptions(config);
             services.TryAddSingleton<IMetricsOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
-
+          //  services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
+           // services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+            
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
             services.AddOpenTelemetry();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            // services.TryAddSingleton((provider) =>
+            // {
+            //     var stats = provider.GetService<IStats>();
+            //     var logger = provider.GetService<ILogger<EventCounterListener>>();
+            //     return new EventCounterListener(stats, logger);
+            // });
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
@@ -86,7 +95,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<IPrometheusOptions>(options);
             services.RegisterEndpointOptions(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
             services.AddOpenTelemetry();
@@ -101,12 +111,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton((provider) =>
             {
                 var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10)); // TODO: Capture from options when OTel Configuration is finalized
+                return new SteeltoeProcessor(exporter); // TODO: Capture from options when OTel Configuration is finalized
             });
             services.TryAddSingleton<IStats>((provider) =>
             {
                 var processor = provider.GetService<SteeltoeProcessor>();
-                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(10));
+                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(60));
             });
         }
     }

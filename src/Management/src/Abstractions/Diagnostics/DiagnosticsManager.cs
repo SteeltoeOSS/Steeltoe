@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading;
 
@@ -24,6 +25,7 @@ namespace Steeltoe.Common.Diagnostics
     public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
     {
         internal IDisposable _listenersSubscription;
+        private readonly IEnumerable<EventListener> _eventListeners;
         internal ILogger<DiagnosticsManager> _logger;
         internal IList<IDiagnosticObserver> _observers;
         internal IList<IPolledDiagnosticSource> _sources;
@@ -33,11 +35,14 @@ namespace Steeltoe.Common.Diagnostics
 
         private const int POLL_DELAY_MILLI = 15000;
 
-        private static readonly Lazy<DiagnosticsManager> AsSingleton = new Lazy<DiagnosticsManager>(() => new DiagnosticsManager());
+       // private static readonly Lazy<DiagnosticsManager> AsSingleton = new Lazy<DiagnosticsManager>(() => new DiagnosticsManager());
 
-        public static DiagnosticsManager Instance => AsSingleton.Value;
+      //  public static DiagnosticsManager Instance => AsSingleton.Value;
 
-        public DiagnosticsManager(IEnumerable<IPolledDiagnosticSource> polledSources, IEnumerable<IDiagnosticObserver> observers, ILogger<DiagnosticsManager> logger = null)
+        public DiagnosticsManager(IEnumerable<IPolledDiagnosticSource> polledSources,
+            IEnumerable<IDiagnosticObserver> observers,
+            IEnumerable<EventListener> eventListeners,
+            ILogger<DiagnosticsManager> logger = null)
         {
             if (polledSources == null)
             {
@@ -49,6 +54,7 @@ namespace Steeltoe.Common.Diagnostics
                 throw new ArgumentNullException(nameof(observers));
             }
 
+            this._eventListeners = eventListeners;
             this._logger = logger;
             this._observers = observers.ToList();
             this._sources = polledSources.ToList();

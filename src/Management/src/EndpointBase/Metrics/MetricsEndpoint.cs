@@ -26,6 +26,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly SteeltoeExporter _exporter;
         private readonly ILogger<MetricsEndpoint> _logger;
+        
+        private List<ProcessedMetric<long>> LongMetrics { get; set; }
+        
+        private List<ProcessedMetric<double>> DoubleMetrics { get; set; }
 
         public MetricsEndpoint(IMetricsOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
             : base(options)
@@ -73,13 +77,24 @@ namespace Steeltoe.Management.Endpoint.Metrics
             availTags = new MetricDictionary<List<MetricTag>>();
 
             var doubleMetrics = _exporter.GetAndClearDoubleMetrics();
-            for (int i = 0; i < doubleMetrics.Count; i++)
+            if (doubleMetrics == null || doubleMetrics.Count <= 0)
             {
-                var metric = doubleMetrics[i];
-                var labels = metric.Labels;
-                switch (metric.AggregationType)
+                doubleMetrics = DoubleMetrics;
+            }
+            else
+            {
+                DoubleMetrics = doubleMetrics;
+            }
+
+            if (doubleMetrics != null)
+            {
+                for (int i = 0; i < doubleMetrics.Count; i++)
                 {
-                    case AggregationType.DoubleSum:
+                    var metric = doubleMetrics[i];
+                    var labels = metric.Labels;
+                    switch (metric.AggregationType)
+                    {
+                        case AggregationType.DoubleSum:
                         {
                             var doubleSum = metric.Data as SumData<double>;
                             var doubleValue = doubleSum.Sum;
@@ -91,26 +106,41 @@ namespace Steeltoe.Management.Endpoint.Metrics
                             break;
                         }
 
-                    case AggregationType.Summary:
+                        case AggregationType.Summary:
                         {
                             var doubleSummary = metric.Data as SummaryData<double>;
 
-                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
-                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
+                            measurements[metric.MetricName]
+                                .Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
+                            measurements[metric.MetricName]
+                                .Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
 
                             AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
+                    }
                 }
             }
 
-            foreach (var metric in _exporter.GetAndClearLongMetrics())
+            var longMetrics = _exporter.GetAndClearLongMetrics();
+            if (longMetrics == null || longMetrics.Count <= 0)
             {
-                var labels = metric.Labels;
-                switch (metric.AggregationType)
+                longMetrics = LongMetrics;
+            }
+            else
+            {
+                LongMetrics = longMetrics;
+            }
+
+            if (longMetrics != null)
+            {
+                foreach (var metric in longMetrics)
                 {
-                    case AggregationType.DoubleSum:
+                    var labels = metric.Labels;
+                    switch (metric.AggregationType)
+                    {
+                        case AggregationType.DoubleSum:
                         {
                             var longSum = metric.Data as SumData<long>;
                             var doubleValue = longSum.Sum;
@@ -121,16 +151,19 @@ namespace Steeltoe.Management.Endpoint.Metrics
                             break;
                         }
 
-                    case AggregationType.Summary:
+                        case AggregationType.Summary:
                         {
                             var doubleSummary = metric.Data as SummaryData<long>;
 
-                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
-                            measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
+                            measurements[metric.MetricName]
+                                .Add(new MetricSample(MetricStatistic.COUNT, doubleSummary.Count));
+                            measurements[metric.MetricName]
+                                .Add(new MetricSample(MetricStatistic.TOTAL, doubleSummary.Sum));
                             AddLabelsToTags(availTags, metric.MetricName, labels);
 
                             break;
                         }
+                    }
                 }
             }
         }

@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
 {
@@ -31,12 +32,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
         private readonly Task _worker;
 
         private MeterFactory _meterFactory;
+        private readonly MetricProcessor _processor;
         private TimeSpan _collectionInterval;
 
         public AutoCollectingMeterFactory(MetricProcessor processor, TimeSpan timeSpan)
             : base()
         {
             _meterFactory = MeterFactory.Create(processor);
+
+            _processor = processor;
             _collectionInterval = timeSpan;
 
             if (processor != null && timeSpan < TimeSpan.MaxValue)
@@ -80,6 +84,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
                     var sw = Stopwatch.StartNew();
 
                     CollectAllMetrics();
+                    (_processor as SteeltoeProcessor)?.ExportMetrics();
 
                     if (cancellationToken.IsCancellationRequested)
                     {
