@@ -161,6 +161,7 @@ namespace Steeltoe.Discovery.Client
             }
 
             services.TryAddTransient<DiscoveryHttpMessageHandler>();
+            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
         }
 
         #region Consul
@@ -197,7 +198,6 @@ namespace Steeltoe.Discovery.Client
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
             services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
-            services.AddSingleton<IServiceInstanceProvider, ConsulDiscoveryClient>();
             services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
         }
         #endregion Consul
@@ -256,7 +256,6 @@ namespace Steeltoe.Discovery.Client
                 return eurekaService;
             });
 
-            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<EurekaDiscoveryClient>());
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
             var serviceProvider = services.BuildServiceProvider();
