@@ -69,6 +69,12 @@ namespace Steeltoe.Common.Hosting
                     urls.Add($"http://*:{port}");
                 }
             }
+            else if (Platform.IsKubernetes)
+            {
+                var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+                var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
+                urls.Add($"http://*:{foundPort ?? "80"}");
+            }
             else
             {
                 if (runLocalHttpPort != null)

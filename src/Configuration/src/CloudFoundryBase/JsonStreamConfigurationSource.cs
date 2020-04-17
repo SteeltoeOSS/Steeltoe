@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using System;
+using System.IO;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
-    internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
+    internal class JsonStreamConfigurationSource : JsonConfigurationSource
     {
-        private readonly JsonStreamConfigurationSource _source;
-
-        internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
-            : base(source)
+        internal JsonStreamConfigurationSource(MemoryStream stream)
         {
-            if (source == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentNullException(nameof(stream));
             }
 
-            _source = source;
+            Stream = stream;
         }
 
-        public override void Load()
+        internal MemoryStream Stream { get; }
+
+        public override IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            Load(_source.Stream);
+            return new JsonStreamConfigurationProvider(this);
         }
     }
 }

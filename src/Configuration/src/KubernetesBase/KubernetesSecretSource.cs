@@ -21,9 +21,24 @@ namespace Steeltoe.Extensions.Configuration
 {
     public class KubernetesSecretSource : IConfigurationSource
     {
+        private KubernetesApplicationOptions applicationOptions { get; set; }
+
+        public List<string> Secrets { get; set; }
+
+        public KubernetesSecretSource(KubernetesApplicationOptions appOptions)
+        {
+            applicationOptions = appOptions;
+        }
+
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            throw new NotImplementedException();
+            Secrets ??= new List<string>
+                {
+                    { applicationOptions.ApplicationName.ToLowerInvariant() },
+                    { $"{applicationOptions.ApplicationName.ToLowerInvariant()}{applicationOptions.NameEnvironmentSeparator}{applicationOptions.EnvironmentName.ToLowerInvariant()}" }
+                };
+
+            return new KubernetesSecretProvider();
         }
     }
 }

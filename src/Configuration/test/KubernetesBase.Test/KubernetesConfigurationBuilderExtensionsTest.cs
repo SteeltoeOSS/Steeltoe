@@ -27,7 +27,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             IConfigurationBuilder configurationBuilder = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => KubernetesConfigurationBuilderExtensions.AddKubernetes(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => KubernetesConfigurationBuilderExtensions.AddKubernetesConfiguration(configurationBuilder));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
         }
 
@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var configurationBuilder = new ConfigurationBuilder();
 
             // Act and Assert
-            configurationBuilder.AddKubernetes();
+            configurationBuilder.AddKubernetesConfiguration();
 
             KubernetesConfigMapSource cloudSource = null;
             foreach (var source in configurationBuilder.Sources)

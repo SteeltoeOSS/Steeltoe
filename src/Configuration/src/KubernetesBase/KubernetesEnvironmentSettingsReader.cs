@@ -16,7 +16,7 @@ using System;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public class KubernetesEnvironmentSettingsReader : IKubernetesSettingsReader
+    public class KubernetesEnvironmentSettingsReader // : IKubernetesSettingsReader
     {
         private const string CF_INSTANCE_GUID = "CF_INSTANCE_GUID";
 

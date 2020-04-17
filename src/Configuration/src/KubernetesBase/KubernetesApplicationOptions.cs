@@ -20,55 +20,31 @@ namespace Steeltoe.Extensions.Configuration
 {
     public class KubernetesApplicationOptions : ApplicationInstanceInfo
     {
+        public static string PlatformConfigRoot => "kubernetes";
+
+        protected override string PlatformRoot => PlatformConfigRoot;
+
+
         public KubernetesApplicationOptions()
         {
         }
 
         public KubernetesApplicationOptions(IConfiguration config)
-            : base(config)
+            : base(config, PlatformConfigRoot)
         {
+            Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes) ?? System.Reflection.Assembly.GetEntryAssembly().FullName;
         }
 
         public string Name { get; set; }
 
-        public override string ApplicationName => Name;
+        public string NameSpace { get; set; } = "default";
 
-        public string Start { get; set; }
+        public IEnumerable<string> ApplicationUris { get; set; }
 
-        public IEnumerable<string> Application_Uris { get; set; }
+        public override string InstanceIP { get; set; }
 
-        public IEnumerable<string> ApplicationUris => Application_Uris;
+        public override string InternalIP { get; set; }
 
-        public string Application_Version { get; set; }
-
-        public override string ApplicationVersion => Application_Version;
-
-        public int Instance_Index { get; set; } = -1;
-
-        public override int InstanceIndex => Instance_Index;
-
-        public string Space_Id { get; set; }
-
-        public string SpaceId => Space_Id;
-
-        public string Space_Name { get; set; }
-
-        public string SpaceName => Space_Name;
-
-        public string Instance_IP { get; set; }
-
-        public override string InstanceIP => Instance_IP;
-
-        public string Internal_IP { get; set; }
-
-        public override string InternalIP => Internal_IP;
-
-        public Limits Limits { get; set; }
-
-        public override int DiskLimit => Limits == null ? -1 : Limits.Disk;
-
-        public override int MemoryLimit => Limits == null ? -1 : Limits.Mem;
-
-        public override int FileDescriptorLimit => Limits == null ? -1 : Limits.Fds;
+        public string NameEnvironmentSeparator { get; set; } = ".";
     }
 }

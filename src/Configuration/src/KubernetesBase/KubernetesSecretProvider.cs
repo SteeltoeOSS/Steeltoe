@@ -12,13 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Steeltoe.Extensions.Configuration
 {
-    public class KubernetesSecretProvider
+    public class KubernetesSecretProvider : ConfigurationProvider
     {
+        public override void Load()
+        {
+            // throw new NotImplementedException();
+        }
     }
 }

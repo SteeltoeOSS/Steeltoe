@@ -24,7 +24,7 @@ namespace Steeltoe.Extensions.Configuration
     {
         private List<string> ConfigMapNames { get; set; }
 
-        private string Namespace { get; set; } = string.Empty;
+        private string Namespace { get; set; } = "default";
 
         public KubernetesConfigMapProvider(List<string> configmapNames)
         {
@@ -37,23 +37,38 @@ namespace Steeltoe.Extensions.Configuration
         {
             var kubeconfig = KubernetesClientConfiguration.BuildDefaultConfig();
             IKubernetes client = new Kubernetes(kubeconfig);
-            var configmaps = client.ListConfigMapForAllNamespacesWithHttpMessagesAsync(true);
-            using (configmaps.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
-            {
-                // when a config map is added or updated, make sure it fits expected namespace and name
-                if ((!string.IsNullOrEmpty(Namespace) && !item.Metadata.NamespaceProperty.Equals(Namespace)) || !ConfigMapNames.Contains(item.Metadata.Name))
-                {
-                    return;
-                }
+            var configmaps = client.ListNamespacedConfigMapAsync(Namespace).GetAwaiter().GetResult();
 
-                foreach (var data in item.Data)
-                {
-                    Properties[data.Key] = data.Value;
-                }
-            }))
+            // add the items now
+            if (configmaps.Items != null && configmaps.Items.Any())
             {
-                // idk?
+                foreach (var i in configmaps.Items.Where(cm => ConfigMapNames.Contains(cm.Metadata.Name)))
+                {
+                    foreach (var key in i.Data.Keys)
+                    {
+                        Properties[key] = Data[key];
+                    }
+                }
             }
+
+            // watch the configmaps for future changes
+            //using (var watch = configmaps.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
+            //    {
+            //        // when a config map is added or updated, make sure it fits expected namespace and name
+            //        if ((!string.IsNullOrEmpty(Namespace) && !item.Metadata.NamespaceProperty.Equals(Namespace)) || !ConfigMapNames.Contains(item.Metadata.Name))
+            //        {
+            //            return;
+            //        }
+
+            //        foreach (var data in item.Data)
+            //        {
+            //            Properties[data.Key] = data.Value;
+            //        }
+            //    }))
+            //{
+            //}
+
+            //var now = client.ListNamespacedConfigMap()
         }
     }
 }

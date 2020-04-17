@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Options;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -28,6 +29,7 @@ namespace Steeltoe.Common
         public readonly string EurekaRoot = "eureka";
         public readonly string ConfigServerRoot = "spring:cloud:config";
         public readonly string ConsulRoot = "consul";
+        public readonly string KubernetesRoot = "spring:cloud:kubernetes";
         public readonly string ManagementRoot = "management";
 
         public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
@@ -41,6 +43,8 @@ namespace Steeltoe.Common
         public string ConsulInstanceNameKey => ConsulRoot + ":serviceName";
 
         public string EurekaInstanceNameKey => EurekaRoot + ":instance:appName";
+
+        public string KubernetesNameKey => KubernetesRoot + ":name";
 
         public string ManagementNameKey => ManagementRoot + ":name";
 
@@ -107,12 +111,15 @@ namespace Steeltoe.Common
             {
                 SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, ConfigServerNameKey, PlatformNameKey, AppNameKey),
                 SteeltoeComponent.Discovery => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, EurekaInstanceNameKey, ConsulInstanceNameKey, PlatformNameKey, AppNameKey),
+                SteeltoeComponent.Kubernetes => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, KubernetesNameKey, PlatformNameKey, AppNameKey),
                 SteeltoeComponent.Management => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, ManagementNameKey, PlatformNameKey, AppNameKey),
                 _ => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, PlatformNameKey, AppNameKey)
             };
         }
 
         public virtual string ApplicationVersion { get; set; }
+
+        public virtual string EnvironmentName { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")) ? "Production" : Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         public virtual int InstanceIndex { get; set; } = -1;
 

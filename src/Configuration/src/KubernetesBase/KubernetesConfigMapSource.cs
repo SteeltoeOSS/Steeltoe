@@ -20,13 +20,23 @@ namespace Steeltoe.Extensions.Configuration
     public class KubernetesConfigMapSource : IConfigurationSource
     {
         // public IKubernetesSettingsReader SettingsReader { get; set; }
+        private KubernetesApplicationOptions applicationOptions { get; set; }
+
         public List<string> ConfigMaps { get; set; }
+
+        public KubernetesConfigMapSource(KubernetesApplicationOptions appOptions)
+        {
+            applicationOptions = appOptions;
+        }
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            ConfigMaps ??= new List<string> { { "AppName" } };
+            ConfigMaps ??= new List<string>
+                {
+                    { applicationOptions.ApplicationName.ToLowerInvariant() },
+                    { $"{applicationOptions.ApplicationName.ToLowerInvariant()}{applicationOptions.NameEnvironmentSeparator}{applicationOptions.EnvironmentName.ToLowerInvariant()}" }
+                };
 
-            // todo: have a list of configmap names that includes Spring.AppName
             return new KubernetesConfigMapProvider(ConfigMaps);
         }
     }
