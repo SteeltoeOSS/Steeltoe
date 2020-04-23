@@ -12,19 +12,67 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using k8s;
+using k8s.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Primitives;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     public class KubernetesSecretProvider : ConfigurationProvider
     {
+        private IKubernetes K8sClient { get; set; }
+
+        private string SecretName { get; set; }
+
+        private string Namespace { get; set; }
+
+        private Watcher<V1Secret> SecretWatcher { get; set; }
+
+        public KubernetesSecretProvider(IKubernetes kubernetes, string secretName, string @namespace = "default")
+        {
+            K8sClient = kubernetes;
+            SecretName = secretName;
+            Namespace = @namespace;
+        }
+
+        internal IDictionary<string, string> Properties => Data;
+
         public override void Load()
         {
-            // throw new NotImplementedException();
+            var configMapWatch = K8sClient.ListNamespacedSecretWithHttpMessagesAsync(Namespace, fieldSelector: $"metadata.name={SecretName},metadata.namespace={Namespace}").GetAwaiter().GetResult();
+            SecretWatcher = configMapWatch.Watch<V1Secret, V1SecretList>((type, item) =>
+            {
+                if (item?.Data?.Any() == true)
+                {
+                    foreach (var data in item.Data)
+                    {
+                        Properties[data.Key] = Encoding.UTF8.GetString(data.Value);
+                    }
+                }
+                else
+                {
+                    Properties.Clear();
+                }
+            });
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                SecretWatcher.Dispose();
+                SecretWatcher = null;
+                K8sClient.Dispose();
+                K8sClient = null;
+            }
         }
     }
 }

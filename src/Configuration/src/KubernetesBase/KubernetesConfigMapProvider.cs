@@ -15,60 +15,61 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesConfigMapProvider : ConfigurationProvider
+    internal class KubernetesConfigMapProvider : ConfigurationProvider, IDisposable
     {
-        private List<string> ConfigMapNames { get; set; }
+        private IKubernetes K8sClient { get; set; }
 
-        private string Namespace { get; set; } = "default";
+        private KubernetesConfigSourceSettings Settings { get; set; }
 
-        public KubernetesConfigMapProvider(List<string> configmapNames)
+        private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
+
+        internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings)
         {
-            ConfigMapNames = configmapNames;
+            K8sClient = kubernetes;
+            Settings = settings;
         }
 
         internal IDictionary<string, string> Properties => Data;
 
         public override void Load()
         {
-            var kubeconfig = KubernetesClientConfiguration.BuildDefaultConfig();
-            IKubernetes client = new Kubernetes(kubeconfig);
-            var configmaps = client.ListNamespacedConfigMapAsync(Namespace).GetAwaiter().GetResult();
-
-            // add the items now
-            if (configmaps.Items != null && configmaps.Items.Any())
-            {
-                foreach (var i in configmaps.Items.Where(cm => ConfigMapNames.Contains(cm.Metadata.Name)))
+            var configMapWatch = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name},metadata.namespace={Settings.Namespace}", watch: Settings.Watch).GetAwaiter().GetResult();
+            ConfigMapWatcher = configMapWatch.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
                 {
-                    foreach (var key in i.Data.Keys)
+                    if (item?.Data?.Any() == true)
                     {
-                        Properties[key] = Data[key];
+                        foreach (var data in item.Data)
+                        {
+                            Properties[data.Key] = data.Value;
+                        }
                     }
-                }
+                    else
+                    {
+                        Properties.Clear();
+                    }
+                });
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ConfigMapWatcher.Dispose();
+                ConfigMapWatcher = null;
+                K8sClient.Dispose();
+                K8sClient = null;
             }
-
-            // watch the configmaps for future changes
-            //using (var watch = configmaps.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
-            //    {
-            //        // when a config map is added or updated, make sure it fits expected namespace and name
-            //        if ((!string.IsNullOrEmpty(Namespace) && !item.Metadata.NamespaceProperty.Equals(Namespace)) || !ConfigMapNames.Contains(item.Metadata.Name))
-            //        {
-            //            return;
-            //        }
-
-            //        foreach (var data in item.Data)
-            //        {
-            //            Properties[data.Key] = data.Value;
-            //        }
-            //    }))
-            //{
-            //}
-
-            //var now = client.ListNamespacedConfigMap()
         }
     }
 }

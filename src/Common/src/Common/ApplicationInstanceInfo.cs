@@ -44,7 +44,7 @@ namespace Steeltoe.Common
 
         public string EurekaInstanceNameKey => EurekaRoot + ":instance:appName";
 
-        public string KubernetesNameKey => KubernetesRoot + ":name";
+        public string KubernetesNameKey => KubernetesRoot + ":config:name";
 
         public string ManagementNameKey => ManagementRoot + ":name";
 
@@ -80,7 +80,14 @@ namespace Steeltoe.Common
             SecondChanceSetIdProperties();
         }
 
-        public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix = "")
+        public ApplicationInstanceInfo(IConfiguration configuration)
+            : base(configuration)
+        {
+            this.configuration = configuration;
+            SecondChanceSetIdProperties(this.configuration);
+        }
+
+        public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
             : base(configuration, BuildConfigString(configPrefix, "application"))
         {
             this.configuration = configuration;

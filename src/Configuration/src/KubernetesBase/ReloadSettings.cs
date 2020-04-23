@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Steeltoe.Extensions.Configuration
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class Limits
+    public class ReloadSettings
     {
-        public int Disk { get; set; } = -1;
-
-        public int Fds { get; set; } = -1;
-
-        public int Mem { get; set; } = -1;
+        public bool Enabled { get; set; } = false;
     }
 }

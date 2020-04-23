@@ -12,32 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using k8s;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesConfigMapSource : IConfigurationSource
+    internal class KubernetesConfigMapSource : IConfigurationSource
     {
-        // public IKubernetesSettingsReader SettingsReader { get; set; }
-        private KubernetesApplicationOptions applicationOptions { get; set; }
+        private IKubernetes K8sClient { get; set; }
 
-        public List<string> ConfigMaps { get; set; }
+        private KubernetesConfigSourceSettings ConfigSettings { get; set; }
 
-        public KubernetesConfigMapSource(KubernetesApplicationOptions appOptions)
+
+        internal KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
         {
-            applicationOptions = appOptions;
+            K8sClient = kubernetesClient;
+            ConfigSettings = settings;
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            ConfigMaps ??= new List<string>
-                {
-                    { applicationOptions.ApplicationName.ToLowerInvariant() },
-                    { $"{applicationOptions.ApplicationName.ToLowerInvariant()}{applicationOptions.NameEnvironmentSeparator}{applicationOptions.EnvironmentName.ToLowerInvariant()}" }
-                };
-
-            return new KubernetesConfigMapProvider(ConfigMaps);
-        }
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesConfigMapProvider(K8sClient, ConfigSettings);
     }
 }

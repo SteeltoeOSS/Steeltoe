@@ -12,29 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesServicesOptions : ServicesOptions
+    public class NamespacedResource
     {
-        public static string ServicesConfigRoot => "helm ????";
+        public string Name { get; set; }
 
-        public override string CONFIGURATION_PREFIX { get; protected set; } = ServicesConfigRoot;
-
-        // This constructor is for use with IOptions
-        public KubernetesServicesOptions()
-        {
-        }
-
-        public KubernetesServicesOptions(IConfigurationRoot root)
-            : base(root, ServicesConfigRoot)
-        {
-        }
-
-        public KubernetesServicesOptions(IConfiguration config)
-            : base(config, ServicesConfigRoot)
-        {
-        }
+        public string NameSpace { get; set; }
     }
 }

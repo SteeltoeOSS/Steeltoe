@@ -12,29 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesServicesOptions : ServicesOptions
+    public class WatchableResource
     {
-        public static string ServicesConfigRoot => "helm ????";
+        public bool Enabled { get; set; } = true;
 
-        public override string CONFIGURATION_PREFIX { get; protected set; } = ServicesConfigRoot;
-
-        // This constructor is for use with IOptions
-        public KubernetesServicesOptions()
-        {
-        }
-
-        public KubernetesServicesOptions(IConfigurationRoot root)
-            : base(root, ServicesConfigRoot)
-        {
-        }
-
-        public KubernetesServicesOptions(IConfiguration config)
-            : base(config, ServicesConfigRoot)
-        {
-        }
+        public List<NamespacedResource> Sources { get; set; } = new List<NamespacedResource>();
     }
 }

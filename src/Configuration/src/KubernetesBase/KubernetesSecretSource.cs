@@ -12,33 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using k8s;
 using Microsoft.Extensions.Configuration;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     public class KubernetesSecretSource : IConfigurationSource
     {
-        private KubernetesApplicationOptions applicationOptions { get; set; }
+        private IKubernetes K8sClient { get; set; }
 
-        public List<string> Secrets { get; set; }
+        private string SecretName { get; set; }
 
-        public KubernetesSecretSource(KubernetesApplicationOptions appOptions)
+        private string Namespace { get; set; }
+
+        public KubernetesSecretSource(IKubernetes kubernetesClient, string secretName, string @namespace = null)
         {
-            applicationOptions = appOptions;
+            K8sClient = kubernetesClient;
+            SecretName = secretName;
+            Namespace = @namespace;
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            Secrets ??= new List<string>
-                {
-                    { applicationOptions.ApplicationName.ToLowerInvariant() },
-                    { $"{applicationOptions.ApplicationName.ToLowerInvariant()}{applicationOptions.NameEnvironmentSeparator}{applicationOptions.EnvironmentName.ToLowerInvariant()}" }
-                };
-
-            return new KubernetesSecretProvider();
-        }
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesSecretProvider(K8sClient, SecretName, Namespace);
     }
 }

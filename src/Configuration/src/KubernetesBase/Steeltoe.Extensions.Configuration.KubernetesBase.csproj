@@ -10,7 +10,6 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="KubeClient.Extensions.Configuration" Version="2.3.11" />
     <PackageReference Include="KubernetesClient" Version="1.6.28" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />

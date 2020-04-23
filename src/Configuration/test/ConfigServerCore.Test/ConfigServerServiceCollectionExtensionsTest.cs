@@ -39,7 +39,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
-        public void ConfigureConfigServerClientOptions_ThrowsIfConfigurtionNull()
+        public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();

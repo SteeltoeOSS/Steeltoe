@@ -16,34 +16,41 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     public class KubernetesApplicationOptions : ApplicationInstanceInfo
     {
-        public static string PlatformConfigRoot => "kubernetes";
+        public static string PlatformConfigRoot => "spring:cloud:kubernetes";
 
         protected override string PlatformRoot => PlatformConfigRoot;
-
 
         public KubernetesApplicationOptions()
         {
         }
 
         public KubernetesApplicationOptions(IConfiguration config)
-            : base(config, PlatformConfigRoot)
+            : base(config.GetSection(PlatformConfigRoot))
         {
-            Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes) ?? System.Reflection.Assembly.GetEntryAssembly().FullName;
+            Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
+            Config ??= new WatchableResource();
+            Secrets ??= new WatchableResource();
         }
 
         public string Name { get; set; }
 
         public string NameSpace { get; set; } = "default";
 
-        public IEnumerable<string> ApplicationUris { get; set; }
+        public ReloadSettings Reload { get; set; }
 
-        public override string InstanceIP { get; set; }
+        /// <summary>
+        /// List of name/namespace of additional configmaps to retrieve
+        /// </summary>
+        public WatchableResource Config { get; set; }
 
-        public override string InternalIP { get; set; }
+        /// <summary>
+        /// List of name/namespace of additional secrets to retrieve
+        /// </summary>
+        public WatchableResource Secrets { get; set; }
 
         public string NameEnvironmentSeparator { get; set; } = ".";
     }

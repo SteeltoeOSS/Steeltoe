@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using Moq;
 using System;
 using Xunit;
 
@@ -32,7 +33,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         }
 
         [Fact]
-        public void AddKubernetes_AddsKubernetesSourceToSourcesList()
+        public void AddKubernetes_AddsConfigMapAndSecretsToSourcesList()
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
@@ -40,17 +41,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             // Act and Assert
             configurationBuilder.AddKubernetesConfiguration();
 
-            KubernetesConfigMapSource cloudSource = null;
-            foreach (var source in configurationBuilder.Sources)
-            {
-                cloudSource = source as KubernetesConfigMapSource;
-                if (cloudSource != null)
-                {
-                    break;
-                }
-            }
-
-            Assert.NotNull(cloudSource);
+            Assert.Contains(It.IsAny<KubernetesConfigMapSource>(), configurationBuilder.Sources);
+            Assert.Contains(It.IsAny<KubernetesSecretSource>(), configurationBuilder.Sources);
         }
     }
 }
