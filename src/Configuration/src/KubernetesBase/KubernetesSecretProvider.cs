@@ -15,46 +15,39 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesSecretProvider : ConfigurationProvider
+    internal class KubernetesSecretProvider : ConfigurationProvider
     {
         private IKubernetes K8sClient { get; set; }
-
-        private string SecretName { get; set; }
-
-        private string Namespace { get; set; }
+        private KubernetesConfigSourceSettings Settings { get; set; }
 
         private Watcher<V1Secret> SecretWatcher { get; set; }
 
-        public KubernetesSecretProvider(IKubernetes kubernetes, string secretName, string @namespace = "default")
+        internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings)
         {
             K8sClient = kubernetes;
-            SecretName = secretName;
-            Namespace = @namespace;
+            Settings = settings;
         }
-
-        internal IDictionary<string, string> Properties => Data;
 
         public override void Load()
         {
-            var configMapWatch = K8sClient.ListNamespacedSecretWithHttpMessagesAsync(Namespace, fieldSelector: $"metadata.name={SecretName},metadata.namespace={Namespace}").GetAwaiter().GetResult();
+            var configMapWatch = K8sClient.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name}").GetAwaiter().GetResult();
             SecretWatcher = configMapWatch.Watch<V1Secret, V1SecretList>((type, item) =>
             {
                 if (item?.Data?.Any() == true)
                 {
                     foreach (var data in item.Data)
                     {
-                        Properties[data.Key] = Encoding.UTF8.GetString(data.Value);
+                        Data[data.Key] = Encoding.UTF8.GetString(data.Value);
                     }
                 }
                 else
                 {
-                    Properties.Clear();
+                    Data.Clear();
                 }
             });
         }

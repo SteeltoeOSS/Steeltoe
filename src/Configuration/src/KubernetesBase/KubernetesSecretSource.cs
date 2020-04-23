@@ -14,25 +14,21 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    public class KubernetesSecretSource : IConfigurationSource
+    internal class KubernetesSecretSource : IConfigurationSource
     {
         private IKubernetes K8sClient { get; set; }
 
-        private string SecretName { get; set; }
+        private KubernetesConfigSourceSettings ConfigSettings { get; set; }
 
-        private string Namespace { get; set; }
-
-        public KubernetesSecretSource(IKubernetes kubernetesClient, string secretName, string @namespace = null)
+        internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
         {
             K8sClient = kubernetesClient;
-            SecretName = secretName;
-            Namespace = @namespace;
+            ConfigSettings = settings;
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesSecretProvider(K8sClient, SecretName, Namespace);
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesSecretProvider(K8sClient, ConfigSettings);
     }
 }

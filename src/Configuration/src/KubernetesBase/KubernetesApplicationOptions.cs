@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -34,7 +33,10 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
             Config ??= new WatchableResource();
             Secrets ??= new WatchableResource();
+            Reload ??= new ReloadSettings();
         }
+
+        public bool Enabled { get; set; } = true;
 
         public string Name { get; set; }
 

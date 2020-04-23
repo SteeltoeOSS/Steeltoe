@@ -16,7 +16,6 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
@@ -35,23 +34,21 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             Settings = settings;
         }
 
-        internal IDictionary<string, string> Properties => Data;
-
         public override void Load()
         {
-            var configMapWatch = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name},metadata.namespace={Settings.Namespace}", watch: Settings.Watch).GetAwaiter().GetResult();
+            var configMapWatch = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name}", watch: Settings.Watch).GetAwaiter().GetResult();
             ConfigMapWatcher = configMapWatch.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
                 {
                     if (item?.Data?.Any() == true)
                     {
                         foreach (var data in item.Data)
                         {
-                            Properties[data.Key] = data.Value;
+                            Data[data.Key] = data.Value;
                         }
                     }
                     else
                     {
-                        Properties.Clear();
+                        Data.Clear();
                     }
                 });
         }

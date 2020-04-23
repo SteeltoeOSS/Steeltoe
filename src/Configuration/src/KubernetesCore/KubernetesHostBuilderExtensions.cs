@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using k8s;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -23,12 +25,13 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// Add Kubernetes Configuration Providers for configmaps and secrets
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder)
+        /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
+        public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.AddKubernetesConfiguration();
+                    config.AddKubernetes(kubernetesClientConfiguration);
                 })
                 .ConfigureServices(serviceCollection => serviceCollection.RegisterKubernetesApplicationInstanceInfo());
 
@@ -39,12 +42,13 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// Add Kubernetes Configuration Providers for configmaps and secrets
         /// </summary>
         /// <param name="hostBuilder">Your WebHostBuilder</param>
-        public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder)
+        /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
+        public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    config.AddKubernetesConfiguration();
+                    config.AddKubernetes(kubernetesClientConfiguration);
                 })
                 .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterKubernetesApplicationInstanceInfo());
 
