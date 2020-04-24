@@ -12,26 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    internal class KubernetesConfigSourceSettings
+    public class KubernetesConfiguration : WatchableResource
     {
-        internal KubernetesConfigSourceSettings(string @namespace, string name, bool watch = false, ILogger logger = null)
-        {
-            Namespace = @namespace ?? "default";
-            Name = name;
-            Watch = watch;
-            Logger = logger;
-        }
-
-        internal string Name { get; set; }
-
-        internal string Namespace { get; set; }
-
-        internal bool Watch { get; set; } = false;
-
-        internal ILogger Logger { get; set; }
+        public List<string> Paths { get; set; } = new List<string>();
     }
 }

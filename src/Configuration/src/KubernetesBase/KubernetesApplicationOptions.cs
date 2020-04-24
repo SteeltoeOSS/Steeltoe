@@ -31,7 +31,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             : base(config.GetSection(PlatformConfigRoot))
         {
             Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
-            Config ??= new WatchableResource();
+            Config ??= new KubernetesConfiguration();
             Secrets ??= new WatchableResource();
             Reload ??= new ReloadSettings();
         }
@@ -47,7 +47,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <summary>
         /// List of name/namespace of additional configmaps to retrieve
         /// </summary>
-        public WatchableResource Config { get; set; }
+        public KubernetesConfiguration Config { get; set; }
 
         /// <summary>
         /// List of name/namespace of additional secrets to retrieve

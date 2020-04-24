@@ -15,8 +15,11 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using System;
 using System.Linq;
+using System.Net;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -36,21 +39,42 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         public override void Load()
         {
-            var configMapWatch = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name}", watch: Settings.Watch).GetAwaiter().GetResult();
-            ConfigMapWatcher = configMapWatch.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
+            try
+            {
+                var configMapResponse = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace ?? "default", fieldSelector: $"metadata.name={Settings.Name}", watch: Settings.Watch).GetAwaiter().GetResult();
+                ProcessData(configMapResponse.Body.Items?.FirstOrDefault());
+                if (Settings.Watch)
                 {
-                    if (item?.Data?.Any() == true)
+                    ConfigMapWatcher = configMapResponse.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
                     {
-                        foreach (var data in item.Data)
-                        {
-                            Data[data.Key] = data.Value;
-                        }
-                    }
-                    else
-                    {
-                        Data.Clear();
-                    }
-                });
+                        Settings.Logger?.LogInformation("Reading {entries} configuration values from Config Map", item?.Data?.Count);
+                        ProcessData(item);
+                    });
+                }
+            }
+            catch (HttpOperationException e)
+            {
+                if (e.Response.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    Settings.Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                }
+                throw;
+            }
+        }
+
+        private void ProcessData(V1ConfigMap item)
+        {
+            if (item?.Data?.Any() == true)
+            {
+                foreach (var data in item.Data)
+                {
+                    Data[data.Key] = data.Value;
+                }
+            }
+            else
+            {
+                Data.Clear();
+            }
         }
 
         public void Dispose()

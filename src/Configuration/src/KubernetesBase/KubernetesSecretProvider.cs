@@ -15,7 +15,10 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
@@ -35,21 +38,42 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         public override void Load()
         {
-            var configMapWatch = K8sClient.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace, fieldSelector: $"metadata.name={Settings.Name}").GetAwaiter().GetResult();
-            SecretWatcher = configMapWatch.Watch<V1Secret, V1SecretList>((type, item) =>
+            try
             {
-                if (item?.Data?.Any() == true)
+                var secretResponse = K8sClient.ListNamespacedSecretWithHttpMessagesAsync(Settings.Namespace ?? "default", fieldSelector: $"metadata.name={Settings.Name}").GetAwaiter().GetResult();
+                ProcessData(secretResponse.Body.Items?.FirstOrDefault());
+                if (Settings.Watch)
                 {
-                    foreach (var data in item.Data)
+                    SecretWatcher = secretResponse.Watch<V1Secret, V1SecretList>((type, item) =>
                     {
-                        Data[data.Key] = Encoding.UTF8.GetString(data.Value);
-                    }
+                        Settings.Logger?.LogInformation("Reading {entries} configuration values from Secret", item?.Data?.Count);
+                        ProcessData(item);
+                    });
                 }
-                else
+            }
+            catch (HttpOperationException e)
+            {
+                if (e.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
-                    Data.Clear();
+                    Settings.Logger?.LogCritical(e, "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
                 }
-            });
+                throw;
+            }
+        }
+
+        private void ProcessData(V1Secret item)
+        {
+            if (item?.Data?.Any() == true)
+            {
+                foreach (var data in item.Data)
+                {
+                    Data[data.Key] = Encoding.UTF8.GetString(data.Value);
+                }
+            }
+            else
+            {
+                Data.Clear();
+            }
         }
 
         public void Dispose()
