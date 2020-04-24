@@ -45,7 +45,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
             services.AddOptions();
 
-            var appSection = config.GetSection(CloudFoundryApplicationOptions.PlatformConfigRoot);
+            var appSection = config.GetSection(CloudFoundryApplicationOptions.PlatformConfigRoot + ":" + CloudFoundryApplicationOptions.ApplicationRoot);
             services.Configure<CloudFoundryApplicationOptions>(appSection);
 
             var serviceSection = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
