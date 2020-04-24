@@ -32,7 +32,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
 
         bool AlwaysSample { get; }
 
-        bool NeverSample { get;  }
+        bool NeverSample { get; }
 
         bool UseShortTraceIds { get; }
     }

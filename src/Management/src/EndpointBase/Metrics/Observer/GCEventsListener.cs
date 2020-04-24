@@ -12,46 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Tracing;
-using System.Globalization;
-using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Text.Json;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Stats;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Tracing;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-
-    internal class GCEventsListener : EventSourceListener
+    public class GCEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
         private const string GCHeapStats = "GCHeapStats_V1";
-        private const EventKeywords GCEvents = (EventKeywords) 0x1;
-        private readonly ILogger<EventCounterListener> _logger;
-        private readonly MeasureMetric<long> collectionCount;
-        private readonly MeasureMetric<long> memoryUsed;
-        private List<long> previousCollectionCounts = null;
-
-        private readonly string generationKey = "generation";
+        private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
         private const string GENERATION_TAGVALUE_NAME = "gen";
 
-        private readonly IEnumerable<KeyValuePair<string, string>> memoryLabels =
-            new List<KeyValuePair<string, string>>() {new KeyValuePair<string, string>("area", "heap")};
+        private static string[] _ignorePayloadNames = new string[]
+        {
+                "ClrInstanceID"
+        };
 
-        public GCEventsListener(IStats stats, ILogger<EventCounterListener> logger = null)
-            : base(stats, EventSourceName, GCEvents, new[] { GCHeapStats }.ToList(), logger)
+        private readonly string generationKey = "generation";
+        private readonly ILogger<EventSourceListener> _logger;
+        private readonly MeasureMetric<long> collectionCount;
+        private readonly MeasureMetric<long> memoryUsed;
+        private readonly Dictionary<string, string> memoryLabels = new Dictionary<string, string>() { { "area", "heap" } };
+
+        private List<long> previousCollectionCounts = null;
+
+        public GCEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
+            : base(stats, logger)
         {
             _logger = logger;
 
@@ -59,35 +52,43 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             collectionCount = Meter.CreateInt64Measure("clr.gc.collections");
         }
 
-        // protected override void OnEventWritten(EventWrittenEventArgs eventData)
-        // {
-        //     if (eventData == null)
-        //     {
-        //         throw new ArgumentNullException(nameof(eventData));
-        //     }
-        //
-        //     try
-        //     {
-        //         base.OnEventWritten(eventData);
-        //         if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture))
-        //         {
-        //             RecordAdditionalMetrics();
-        //         }
-        //     }
-        //     catch (Exception ex)
-        //     {
-        //         _logger.LogError(ex.Message);
-        //     }
-        // }
+        protected override void OnEventWritten(EventWrittenEventArgs eventData)
+        {
+            if (eventData == null)
+            {
+                throw new ArgumentNullException(nameof(eventData));
+            }
 
-        protected override void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
+            try
+            {
+                if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture))
+                {
+                    ExtractAndRecordMetric(EventSourceName, eventData, memoryLabels, _ignorePayloadNames);
+                    RecordAdditionalMetrics(eventData);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+        }
+
+        protected override void OnEventSourceCreated(EventSource eventSource)
+        {
+            if (eventSource.Name == EventSourceName)
+            {
+                EnableEvents(eventSource, EventLevel.Verbose, GCEventsKeywords);
+            }
+        }
+
+        private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
         {
             long totalMemory = GC.GetTotalMemory(false);
             memoryUsed.Record(default(SpanContext), totalMemory, memoryLabels);
             List<long> counts = new List<long>(GC.MaxGeneration);
             for (int i = 0; i < GC.MaxGeneration; i++)
             {
-                var count = (long) GC.CollectionCount(i);
+                var count = (long)GC.CollectionCount(i);
                 counts.Add(count);
                 if (previousCollectionCounts != null && i < previousCollectionCounts.Count &&
                     previousCollectionCounts[i] <= count)
@@ -102,6 +103,5 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             previousCollectionCounts = counts;
         }
-
     }
 }

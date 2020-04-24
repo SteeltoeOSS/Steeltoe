@@ -19,6 +19,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using Xunit;
 
@@ -63,11 +64,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var observers = serviceProvider.GetServices<IDiagnosticObserver>();
             var list = observers.ToList();
-            Assert.Equal(2, list.Count);
+            Assert.Single(list);
 
-            var polled = serviceProvider.GetServices<IPolledDiagnosticSource>();
+            var polled = serviceProvider.GetServices<EventListener>();
             var list2 = polled.ToList();
-            Assert.Single(list2);
+            Assert.Equal(3, list2.Count);
 
             var ep = serviceProvider.GetService<MetricsEndpoint>();
             Assert.NotNull(ep);

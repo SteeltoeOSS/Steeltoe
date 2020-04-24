@@ -77,12 +77,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tracing
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore.Test", "test\EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj", "{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFoundry", "..\..\..\Samples\Management\src\AspDotNetCore\CloudFoundry\CloudFoundry.csproj", "{A3DA3A9F-BFA0-4E7C-A6AA-5AA94FA6994C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetry", "..\..\..\..\opentelemetry-dotnet\src\OpenTelemetry\OpenTelemetry.csproj", "{2E5CAC23-CD57-40B8-ACEC-00463030F326}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenTelemetry.Api", "..\..\..\..\opentelemetry-dotnet\src\OpenTelemetry.Api\OpenTelemetry.Api.csproj", "{B5DACD09-9D14-4292-A30D-40F0F32FFDEA}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -193,18 +187,6 @@ Global
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A3DA3A9F-BFA0-4E7C-A6AA-5AA94FA6994C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3DA3A9F-BFA0-4E7C-A6AA-5AA94FA6994C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A3DA3A9F-BFA0-4E7C-A6AA-5AA94FA6994C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A3DA3A9F-BFA0-4E7C-A6AA-5AA94FA6994C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E5CAC23-CD57-40B8-ACEC-00463030F326}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E5CAC23-CD57-40B8-ACEC-00463030F326}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E5CAC23-CD57-40B8-ACEC-00463030F326}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E5CAC23-CD57-40B8-ACEC-00463030F326}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5DACD09-9D14-4292-A30D-40F0F32FFDEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5DACD09-9D14-4292-A30D-40F0F32FFDEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5DACD09-9D14-4292-A30D-40F0F32FFDEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5DACD09-9D14-4292-A30D-40F0F32FFDEA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

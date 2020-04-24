@@ -44,19 +44,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
             // at its own schedule.
             if (typeof(T) == typeof(double))
             {
-                var doubleList = metrics
+                DoubleMetrics = metrics
                 .Select(x => (x as ProcessedMetric<double>))
                 .ToList();
-
-                DoubleMetrics.AddRange(doubleList);
             }
             else
             {
-                var longList = metrics
+                LongMetrics = metrics
                 .Select(x => (x as ProcessedMetric<long>))
                 .ToList();
-
-                LongMetrics.AddRange(longList);
             }
 
             return Task.FromResult(ExportResult.Success);

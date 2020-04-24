@@ -153,7 +153,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             StreamReader rdr = new StreamReader(context.Response.Body);
             string json = await rdr.ReadToEndAsync();
-            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"COUNT\",\"value\":10.0},{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
         [Fact]

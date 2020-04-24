@@ -25,6 +25,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class CLRRuntimeObserverTest : BaseTest
     {
         // TODO: Bring back views when available
@@ -181,7 +182,5 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             Assert.Equal(100, summary.Min);
             Assert.Equal(100, summary.Max);
         }
-
-       
     }
 }

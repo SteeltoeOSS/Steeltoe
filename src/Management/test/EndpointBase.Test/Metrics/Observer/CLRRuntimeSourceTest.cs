@@ -17,12 +17,14 @@ using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
 using Steeltoe.Management.OpenTelemetry.Stats;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class CLRRuntimeSourceTest : BaseTest
     {
         private const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";

@@ -13,7 +13,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-<!--    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />-->
+    <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" />
   </ItemGroup>
 
@@ -25,10 +25,6 @@
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <ProjectReference Include="Steeltoe.Common.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <ProjectReference Include="Steeltoe.Management.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\opentelemetry-dotnet\src\OpenTelemetry\OpenTelemetry.csproj" />
   </ItemGroup>
 
 </Project>

@@ -15,13 +15,13 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Configuration;
 using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
 {
@@ -30,9 +30,9 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
         private readonly HashSet<(string, string)> _meterRegistryKeySet = new HashSet<(string, string)>();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly Task _worker;
+        private readonly MetricProcessor _processor;
 
         private MeterFactory _meterFactory;
-        private readonly MetricProcessor _processor;
         private TimeSpan _collectionInterval;
 
         public AutoCollectingMeterFactory(MetricProcessor processor, TimeSpan timeSpan)
@@ -86,6 +86,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
                     CollectAllMetrics();
                     (_processor as SteeltoeProcessor)?.ExportMetrics();
 
+                    // (_processor as SteeltoeProcessor)?.Clear();
                     if (cancellationToken.IsCancellationRequested)
                     {
                         return;
