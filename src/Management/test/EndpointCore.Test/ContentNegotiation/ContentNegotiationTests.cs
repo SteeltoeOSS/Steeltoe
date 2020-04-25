@@ -33,19 +33,49 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             ["management:endpoints:actuator:exposure:include:0"] = "*"
         };
 
-        [Theory]
-        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
-        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
-        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
-        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
-        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
-        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
-        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
-        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
+        public static IEnumerable<object[]> EndpointMiddleware_ContentNegotiation_TestCases
+        {
+            get
+            {
+                var endpoints = new[]
+                {
+                    new { epName = EndpointNames.Hypermedia, epPath = "http://localhost/actuator" },
+                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/actuator" },
+                    new { epName = EndpointNames.Info, epPath = "http://localhost/actuator/info" },
+                    new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
+                    new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },
+                    new { epName = EndpointNames.Health, epPath = "http://localhost/actuator/health" },
+                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/trace" },
+                    new { epName = EndpointNames.Env, epPath = "http://localhost/actuator/env" },
+                    new { epName = EndpointNames.Mappings, epPath = "http://localhost/actuator/mappings" },
+                    new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }
+                };
 
-        public async void EndpointMiddleware_AcceptAppJson_ReturnsExpected(EndpointNames epName, string epPath)
+                var negotations = new[]
+                {
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptAppJson_RetrunsAppJson" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { "foo" }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptInvalid_RetrunsAppJson" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.V1_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.ANY }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.APP_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
+                    new { version = MediaTypeVersion.V2, accepts = new string[] { ActuatorMediaTypes.V2_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
+                };
+
+                foreach (var endpoint in endpoints)
+                {
+                    foreach (var negotation in negotations)
+                    {
+                        yield return new object[] { endpoint.epName, endpoint.epPath, negotation.version, negotation.accepts, negotation.contentType, negotation.name };
+                    }
+                }
+            }
+        }
+
+        /// <param name="version">For now there is no way to configure version - defined for future use</param>
+        [Theory]
+        [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
+        public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, MediaTypeVersion version, string[] accepts, string contentType, string name)
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
@@ -60,161 +90,17 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains("application/json; charset=UTF-8", contentHeaders);
-            }
-        }
-
-        [Theory]
-        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
-        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
-        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
-        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
-        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
-        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
-        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
-        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void EndpointMiddleware_AcceptV1_JSON_WhenNotConfigured_ReturnsAppJson(EndpointNames epName, string epPath)
-        {
-            // arrange a server and client
-            var builder = new WebHostBuilder()
-                .StartupByEpName(epName)
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                foreach (var accept in accepts)
                 {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ActuatorMediaTypes.V1_JSON));
+                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
+                }
 
                 // send the request
                 var result = await client.GetAsync(epPath);
                 var json = await result.Content.ReadAsStringAsync();
 
                 var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains("application/json; charset=UTF-8", contentHeaders);
-            }
-        }
-
-        [Theory]
-        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
-        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
-        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
-        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
-        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
-        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
-        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
-        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void EndpointMiddleware_AcceptInvalid_ReturnsAppJson(EndpointNames epName, string epPath)
-        {
-            // arrange a server and client
-            var builder = new WebHostBuilder()
-               .StartupByEpName(epName)
-               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-               .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "foo");
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains("application/json; charset=UTF-8", contentHeaders);
-            }
-        }
-
-        [Theory]
-        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
-        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
-        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
-        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
-        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
-        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
-        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
-        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void EndpointMiddleware_AcceptV2_JSON_ReturnsExpected(EndpointNames epName, string epPath)
-        {
-            // arrange a server and client
-            var builder = new WebHostBuilder()
-                .StartupByEpName(epName)
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ActuatorMediaTypes.V2_JSON));
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains(contentHeaders, (header) => header.StartsWith(ActuatorMediaTypes.V2_JSON));
-            }
-        }
-
-        [Theory]
-        [InlineData(EndpointNames.Hypermedia, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Cloudfoundry, "http://localhost/actuator")]
-        [InlineData(EndpointNames.Info, "http://localhost/actuator/info")]
-        [InlineData(EndpointNames.Metrics, "http://localhost/actuator/metrics")]
-        [InlineData(EndpointNames.Loggers, "http://localhost/actuator/loggers")]
-        [InlineData(EndpointNames.Health, "http://localhost/actuator/health")]
-        [InlineData(EndpointNames.Trace, "http://localhost/actuator/trace")]
-        [InlineData(EndpointNames.Env, "http://localhost/actuator/env")]
-        [InlineData(EndpointNames.Mappings, "http://localhost/actuator/mappings")]
-        [InlineData(EndpointNames.Refresh, "http://localhost/actuator/refresh")]
-        public async void EndpointMiddleware_Accept_ANY_Returns_MostSpecific(EndpointNames epName, string epPath)
-        {
-            // arrange a server and client
-            var builder = new WebHostBuilder()
-                .StartupByEpName(epName)
-                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
-                .ConfigureLogging((webhostContext, loggingBuilder) =>
-                {
-                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
-                    loggingBuilder.AddDynamicConsole();
-                });
-
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ActuatorMediaTypes.ANY));
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains(contentHeaders, (header) => header.StartsWith(ActuatorMediaTypes.V2_JSON));
+                Assert.Contains(contentHeaders, (header) => header.StartsWith(contentType));
             }
         }
     }
