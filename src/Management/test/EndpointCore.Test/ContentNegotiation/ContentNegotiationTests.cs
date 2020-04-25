@@ -75,7 +75,9 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         /// <param name="version">For now there is no way to configure version - defined for future use</param>
         [Theory]
         [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
         public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, MediaTypeVersion version, string[] accepts, string contentType, string name)
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
