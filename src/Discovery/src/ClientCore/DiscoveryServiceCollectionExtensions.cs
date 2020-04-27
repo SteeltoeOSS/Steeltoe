@@ -224,7 +224,13 @@ namespace Steeltoe.Discovery.Client
             services.Configure<EurekaInstanceOptions>(instSection);
             services.PostConfigure<EurekaInstanceOptions>((options) =>
             {
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+                IApplicationInstanceInfo appInfo = null;
+                if (einfo?.ApplicationInfo == null)
+                {
+                    appInfo = services.BuildServiceProvider().GetService<IApplicationInstanceInfo>() ?? new ApplicationInstanceInfo(config);
+                }
+
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
             });
         }
 

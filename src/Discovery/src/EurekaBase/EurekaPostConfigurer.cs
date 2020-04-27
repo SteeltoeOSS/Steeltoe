@@ -111,14 +111,14 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions)
+        public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions, IApplicationInstanceInfo appInfo)
         {
             if (instOptions == null)
             {
                 return;
             }
 
-            UpdateConfiguration(config, instOptions, si?.ApplicationInfo);
+            UpdateConfiguration(config, instOptions, appInfo);
 
             if (si == null)
             {

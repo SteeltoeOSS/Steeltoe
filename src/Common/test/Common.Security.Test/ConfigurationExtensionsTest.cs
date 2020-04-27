@@ -134,7 +134,16 @@ namespace Steeltoe.Common.Security.Test
             Assert.True(changeCalled);
 
             // cleanup
-            File.Delete(filename);
+            try
+            {
+                File.Delete(filename);
+            }
+            catch
+            {
+                // give it a second, try again
+                await Task.Delay(1000);
+                File.Delete(filename);
+            }
         }
 
         private async Task<string> CreateTempFileAsync(string contents)
