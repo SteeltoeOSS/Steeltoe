@@ -24,12 +24,15 @@ using System.Text;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    internal class KubernetesSecretProvider : ConfigurationProvider
+    internal class KubernetesSecretProvider : ConfigurationProvider, IDisposable
     {
         private IKubernetes K8sClient { get; set; }
+
         private KubernetesConfigSourceSettings Settings { get; set; }
 
         private Watcher<V1Secret> SecretWatcher { get; set; }
+
+        private bool disposed = false;
 
         internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings)
         {
@@ -58,7 +61,30 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     Settings.Logger?.LogCritical(e, "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
                 }
+
                 throw;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposed)
+            {
+                if (disposing)
+                {
+                    SecretWatcher.Dispose();
+                    SecretWatcher = null;
+                    K8sClient.Dispose();
+                    K8sClient = null;
+                }
+
+                disposed = true;
             }
         }
 
@@ -74,23 +100,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             else
             {
                 Data.Clear();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                SecretWatcher.Dispose();
-                SecretWatcher = null;
-                K8sClient.Dispose();
-                K8sClient = null;
             }
         }
     }
