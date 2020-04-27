@@ -58,7 +58,25 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     Settings.Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
                 }
+
                 throw;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                ConfigMapWatcher.Dispose();
+                ConfigMapWatcher = null;
+                K8sClient.Dispose();
+                K8sClient = null;
             }
         }
 
@@ -74,22 +92,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             else
             {
                 Data.Clear();
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                ConfigMapWatcher.Dispose();
-                ConfigMapWatcher = null;
-                K8sClient.Dispose();
-                K8sClient = null;
             }
         }
     }

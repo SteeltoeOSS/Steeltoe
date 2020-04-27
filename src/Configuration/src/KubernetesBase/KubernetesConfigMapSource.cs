@@ -23,7 +23,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         private KubernetesConfigSourceSettings ConfigSettings { get; set; }
 
-
         internal KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
         {
             K8sClient = kubernetesClient;

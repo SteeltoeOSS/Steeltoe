@@ -42,18 +42,24 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         public string NameSpace { get; set; } = "default";
 
+        /// <summary>
+        /// Gets or sets properties for if/how reloading config data
+        /// </summary>
         public ReloadSettings Reload { get; set; }
 
         /// <summary>
-        /// List of name/namespace of additional configmaps to retrieve
+        /// Gets or sets Kubernetes Configuration properties
         /// </summary>
         public KubernetesConfiguration Config { get; set; }
 
         /// <summary>
-        /// List of name/namespace of additional secrets to retrieve
+        /// Gets or sets configuration properties of secrets
         /// </summary>
         public WatchableResource Secrets { get; set; }
 
+        /// <summary>
+        /// Gets or sets the character used to separate the app and environment names when used for retrieving config maps or secrets
+        /// </summary>
         public string NameEnvironmentSeparator { get; set; } = ".";
     }
 }

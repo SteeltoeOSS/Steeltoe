@@ -17,8 +17,6 @@ using k8s.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -59,6 +57,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                             {
                                 logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration from file at {path}", appInfo.Config.Paths[i]);
                             }
+
                             i++;
                         }
                         else
@@ -82,10 +81,10 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     k8sClient = new k8s.Kubernetes(k8sConfig);
                 }
-                catch(KubeConfigException e)
+                catch (KubeConfigException e)
                 {
-                    logger?.LogCritical("Failed to create Kubernetes client");
-                    throw new Exception("Failed to create Kubernetes client", e);
+                    logger?.LogCritical(e, "Failed to create Kubernetes client");
+                    throw;
                 }
 
                 // ---------------------------------------------------------------------------------------

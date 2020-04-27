@@ -17,6 +17,7 @@ using k8s.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using System;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -79,6 +80,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
