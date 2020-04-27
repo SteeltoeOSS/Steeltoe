@@ -6,11 +6,11 @@
     <PackageTags>configuration;Kubernetes;vcap</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+   <Import Project="..\..\..\..\versions.props" />
+   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="KubernetesClient" Version="1.6.28" />
+    <PackageReference Include="KubernetesClient" Version="2.0.16" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="$(ExtensionsVersion)" />
   </ItemGroup>

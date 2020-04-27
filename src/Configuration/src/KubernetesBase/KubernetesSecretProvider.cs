@@ -36,6 +36,16 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings)
         {
+            if (kubernetes is null)
+            {
+                throw new ArgumentNullException(nameof(kubernetes));
+            }
+
+            if (settings is null)
+            {
+                throw new ArgumentNullException(nameof(settings));
+            }
+
             K8sClient = kubernetes;
             Settings = settings;
         }

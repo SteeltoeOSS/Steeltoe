@@ -27,6 +27,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <param name="serviceCollection">Collection of configured services</param>
         public static IServiceCollection RegisterKubernetesApplicationInstanceInfo(this IServiceCollection serviceCollection)
         {
+            if (serviceCollection is null)
+            {
+                throw new System.ArgumentNullException(nameof(serviceCollection));
+            }
+
             var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
             if (appInfo != null)
             {

@@ -16,7 +16,9 @@ using k8s;
 using k8s.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -44,32 +46,18 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
                 try
                 {
-                    var i = 0;
-                    while (k8sConfig == null && i <= appInfo.Config.Paths.Count)
+                    if (appInfo.Config.Paths.Any())
                     {
-                        if (i < appInfo.Config.Paths.Count)
-                        {
-                            try
-                            {
-                                k8sConfig = KubernetesClientConfiguration.BuildConfigFromConfigFile(appInfo.Config.Paths[i]);
-                            }
-                            catch (KubeConfigException e)
-                            {
-                                logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration from file at {path}", appInfo.Config.Paths[i]);
-                            }
-
-                            i++;
-                        }
-                        else
-                        {
-                            logger?.LogTrace("Building Default KubernetesClientConfiguration");
-                            k8sConfig = KubernetesClientConfiguration.BuildDefaultConfig();
-                        }
+                        var delimiter = Platform.IsWindows ? ';' : ':';
+                        var joinedPaths = appInfo.Config.Paths.Aggregate((i, j) => i + delimiter + j);
+                        Environment.SetEnvironmentVariable("KUBECONFIG", joinedPaths);
                     }
+
+                    k8sConfig = KubernetesClientConfiguration.BuildDefaultConfig();
                 }
                 catch (KubeConfigException e)
                 {
-                    // probably couldn't locate .kube\config, just go with an empty config object and fall back on user-defined Action to set the configuration
+                    // couldn't locate .kube\config or user-identified files. use an empty config object and fall back on user-defined Action to set the configuration
                     logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration using files at configured or default location, creating an empty config...");
                 }
 
