@@ -70,6 +70,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.KubernetesBase.Test", "test\KubernetesBase.Test\Steeltoe.Extensions.Configuration.KubernetesBase.Test.csproj", "{6615411E-9FDB-4D54-97C8-6330213DC240}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.KubernetesCore", "src\KubernetesCore\Steeltoe.Extensions.Configuration.KubernetesCore.csproj", "{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.KubernetesCore.Test", "test\KubernetesCore.Test\Steeltoe.Extensions.Configuration.KubernetesCore.Test.csproj", "{83E6F364-36C7-4FAC-B43A-771FD6E60EEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Abstractions", "..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj", "{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "..\Common\src\Common.Security\Steeltoe.Common.Security.csproj", "{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +178,26 @@ Global
 		{6615411E-9FDB-4D54-97C8-6330213DC240}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6615411E-9FDB-4D54-97C8-6330213DC240}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6615411E-9FDB-4D54-97C8-6330213DC240}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83E6F364-36C7-4FAC-B43A-771FD6E60EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83E6F364-36C7-4FAC-B43A-771FD6E60EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83E6F364-36C7-4FAC-B43A-771FD6E60EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83E6F364-36C7-4FAC-B43A-771FD6E60EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -196,6 +226,11 @@ Global
 		{E4ECFA96-F9C1-4097-9FD4-4C818C8867CD} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{796D483D-19B5-473B-A88C-C28E470ECEE4} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
 		{6615411E-9FDB-4D54-97C8-6330213DC240} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{AD7090F3-3118-4B8A-9CB6-32ECDF0D8815} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
+		{83E6F364-36C7-4FAC-B43A-771FD6E60EEC} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{752FCD11-DC90-4F83-AA04-CA6BEEAAAE3E} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{A5FE676F-2C5A-40F2-BEA2-D03C8D5C05AB} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
+		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF622C8D-0862-46BD-806B-1624BEC226E5}

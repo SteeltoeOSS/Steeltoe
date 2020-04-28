@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -26,6 +27,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerConfigurationBuilderExtensionsCoreTest
     {
+        private readonly Dictionary<string, string> quickTests = new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } };
+
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
@@ -54,7 +57,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_AddsConfigServerProviderToProvidersList()
         {
             // Arrange
-            var configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
             var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
@@ -70,7 +73,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_WithLoggerFactorySucceeds()
         {
             // Arrange
-            var configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
             var loggerFactory = new LoggerFactory();
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
@@ -167,7 +170,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     ""spring"": {
                       ""cloud"": {
                         ""config"": {
-                            ""validateCertificates"": false
+                            ""validateCertificates"": false,
+                            ""timeout"": 0
                         }
                       }
                     }
@@ -193,6 +197,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.False(settings.ValidateCertificates);
         }
 
+
         [Fact]
         public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
         {
@@ -202,7 +207,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     ""spring"": {
                       ""cloud"": {
                         ""config"": {
-                            ""validate_certificates"": false
+                            ""validate_certificates"": false,
+                            ""timeout"": 0
                         }
                       }
                     }
