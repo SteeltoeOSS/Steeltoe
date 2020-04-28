@@ -32,11 +32,9 @@ namespace Steeltoe.Connector.MongoDb
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
             var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
-
-            var rabbitMQConfig = new MongoDbConnectorOptions(configuration);
-            var factory = new MongoDbConnectorFactory(info, rabbitMQConfig, mongoDbImplementationType);
+            var mongoOptions = new MongoDbConnectorOptions(configuration);
+            var factory = new MongoDbConnectorFactory(info, mongoOptions, MongoDbTypeLocator.MongoClient);
             return new MongoDbHealthContributor(factory, logger);
         }
 
@@ -57,7 +55,7 @@ namespace Steeltoe.Connector.MongoDb
             var result = new HealthCheckResult();
             try
             {
-                var databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000) });
+                var databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000).Token });
 
                 if (databases == null)
                 {
