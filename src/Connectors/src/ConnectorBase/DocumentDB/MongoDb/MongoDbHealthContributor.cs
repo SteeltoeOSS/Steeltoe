@@ -31,11 +31,9 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type mongoDbImplementationType = MongoDbTypeLocator.MongoClient;
             var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
-
-            MongoDbConnectorOptions rabbitMQConfig = new MongoDbConnectorOptions(configuration);
-            MongoDbConnectorFactory factory = new MongoDbConnectorFactory(info, rabbitMQConfig, mongoDbImplementationType);
+            var mongoOptions = new MongoDbConnectorOptions(configuration);
+            var factory = new MongoDbConnectorFactory(info, mongoOptions, MongoDbTypeLocator.MongoClient);
             return new MongoDbHealthContributor(factory, logger);
         }
 
