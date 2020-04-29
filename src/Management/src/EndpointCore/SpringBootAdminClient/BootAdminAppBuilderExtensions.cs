@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
     public static class BootAdminAppBuilderExtensions
     {
+        private const int ConnectionTimeoutMs = 100000;
         private static RegistrationResult registrationResult;
 
         internal static RegistrationResult RegistrationResult { get => registrationResult; }
@@ -60,7 +62,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
             lifetime.ApplicationStarted.Register(() =>
             {
-                var httpClient = testClient ?? new HttpClient();
+                var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
 
                 var content = JsonConvert.SerializeObject(app);
                 var buffer = System.Text.Encoding.UTF8.GetBytes(content);

@@ -48,13 +48,18 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
     public class MyMiddleware : IMiddleware
 #pragma warning restore SA1402 // File may only contain a single type
     {
-        public MyMiddleware()
-        {
-        }
-
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            await context.Response.WriteAsync("{\"Id\":\"1234567\"}");
+            if (context.Request.Path.Value.EndsWith("instances"))
+            {
+                // Registration response
+                await context.Response.WriteAsync("{\"Id\":\"1234567\"}");
+            }
+            else
+            {
+                // Unregister response
+                await context.Response.WriteAsync("Ok!");
+            }
         }
     }
 }

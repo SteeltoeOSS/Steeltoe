@@ -30,7 +30,7 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
     public class SpringBootAdminClientExtensionTests
     {
         [Fact]
-        public void AppBuilderExtensionRegistersCorrectHandlers()
+        public void BootAdminClient_Endtoend()
         {
             var appsettings = new Dictionary<string, string>()
             {
@@ -59,11 +59,12 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
                 var client = server.CreateClient();
                 appBuilder.RegisterSpringBootAdmin(config, client);
 
-                appLifeTime.AppStartTokenSource.Cancel();
+                appLifeTime.AppStartTokenSource.Cancel(); // Trigger application lifetime start
+
                 Assert.NotNull(BootAdminAppBuilderExtensions.RegistrationResult);
                 Assert.Equal("1234567", BootAdminAppBuilderExtensions.RegistrationResult.Id);
 
-                appLifeTime.AppStopTokenSource.Cancel();
+                appLifeTime.AppStopTokenSource.Cancel(); // Trigger application lifetime stop
             }
         }
 

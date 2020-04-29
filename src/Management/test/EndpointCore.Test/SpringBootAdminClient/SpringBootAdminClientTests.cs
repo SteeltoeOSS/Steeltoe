@@ -73,18 +73,14 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
         [Fact]
         public void Constructor_BindsFallBack()
         {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["ApplicationName"] = "OtherApplicationName"
-            };
-
+            var appsettings = new Dictionary<string, string>();
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var opts = new BootAdminClientOptions(config);
             Assert.NotNull(opts);
-            Assert.Equal("OtherApplicationName", opts.ApplicationName);
+            Assert.NotEmpty(opts.ApplicationName);
         }
     }
 }
