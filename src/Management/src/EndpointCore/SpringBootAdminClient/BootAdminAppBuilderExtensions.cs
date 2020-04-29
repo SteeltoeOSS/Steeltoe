@@ -18,6 +18,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
+using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
@@ -46,7 +47,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var options = new BootAdminClientOptions(configuration);
+            var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
+            var options = new BootAdminClientOptions(configuration, appInfo);
             var mgmtOptions = new ManagementEndpointOptions(configuration);
             var healthOptions = new HealthEndpointOptions(configuration);
             var basePath = options.BasePath;

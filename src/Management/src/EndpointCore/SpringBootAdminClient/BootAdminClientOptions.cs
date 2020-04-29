@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         public string BasePath { get; set; }
 
-        public BootAdminClientOptions(IConfiguration config)
+        public BootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo = null)
         {
             if (config == null)
             {
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             }
 
             BasePath ??= GetBasePath(config);
-            var appInfo = new ApplicationInstanceInfo(config);
+            appInfo ??= new ApplicationInstanceInfo(config);
             ApplicationName ??= appInfo.ApplicationName;
         }
 
