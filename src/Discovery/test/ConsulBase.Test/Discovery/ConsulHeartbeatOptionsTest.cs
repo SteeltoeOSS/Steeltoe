@@ -30,21 +30,23 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             Assert.Equal("30s", opts.Ttl);
         }
 
-        [Fact]
-        public void ComputeHeartbeatIntervalWorks()
+        [Theory]
+        [InlineData(30, "s", 2.0 / 3.0, 20000)]
+        [InlineData(30, "s", 1.0 / 3.0, 10000)]
+        [InlineData(10, "m", 0.1, 60000)]
+        [InlineData(1, "h", 0.1, 360000)]
+        [InlineData(2, "s", 2.0 / 3.0, 1000)]
+        [InlineData(1, "s", 2.0 / 3.0, 0)]
+        [InlineData(0, "s", 2.0 / 3.0, -1000)]
+        public void ComputeHeartbeatIntervalWorks(int ttl, string unit, double ratio, int expected)
         {
             ConsulHeartbeatOptions opts = new ConsulHeartbeatOptions();
-            var period = opts.ComputeHearbeatInterval();
-            Assert.Equal(TimeSpan.FromSeconds(20), period);
-        }
+            opts.TtlValue = ttl;
+            opts.TtlUnit = unit;
+            opts.IntervalRatio = ratio;
 
-        [Fact]
-        public void ComputeShortHeartbeat()
-        {
-            ConsulHeartbeatOptions opts = new ConsulHeartbeatOptions();
-            opts.TtlValue = 2;
             var period = opts.ComputeHearbeatInterval();
-            Assert.Equal(TimeSpan.FromSeconds(1), period);
+            Assert.Equal(TimeSpan.FromMilliseconds(expected), period);
         }
     }
 }
