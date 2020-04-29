@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Discovery.Consul.Util;
 using System;
 
 namespace Steeltoe.Discovery.Consul.Discovery
@@ -54,14 +55,16 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         internal TimeSpan ComputeHearbeatInterval()
         {
+            var second = TimeSpan.FromSeconds(1);
+            var ttl = DateTimeConversions.ToTimeSpan(TtlValue, TtlUnit);
+
             // heartbeat rate at ratio * ttl, but no later than ttl -1s and, (under lesser priority),
             // no sooner than 1s from now
-            double interval = TtlValue * IntervalRatio;
-            double max = Math.Max(interval, 1);
-            int ttlMinus1 = TtlValue - 1;
-            double min = Math.Min(ttlMinus1, max);
-            double heartbeatInterval = (int)Math.Round(1000 * min);
-            return TimeSpan.FromMilliseconds(heartbeatInterval);
+            var interval = ttl * IntervalRatio;
+            var max = interval > second ? interval : second;
+            var ttlMinus1sec = ttl - second;
+            var min = ttlMinus1sec < max ? ttlMinus1sec : max;
+            return min;
         }
     }
 }
