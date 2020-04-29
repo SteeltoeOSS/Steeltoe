@@ -54,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
             var result = new HealthCheckResult();
             try
             {
-                var databases = ConnectorHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000) });
+                var databases = ConnectorHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000).Token });
 
                 if (databases == null)
                 {
