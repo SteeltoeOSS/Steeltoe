@@ -44,10 +44,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private List<long> previousCollectionCounts = null;
 
         public GCEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
-            : base(stats, logger)
+            : base(stats)
         {
             _logger = logger;
-
             memoryUsed = Meter.CreateInt64Measure("clr.memory.used");
             collectionCount = Meter.CreateInt64Measure("clr.gc.collections");
         }
