@@ -77,6 +77,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Tracing
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.EndpointCore.Test", "test\EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj", "{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudFoundry", "..\..\..\Samples\Management\src\AspDotNetCore\CloudFoundry\CloudFoundry.csproj", "{29552DC3-F8D8-419D-9359-63AC0DFC3D48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -187,6 +189,10 @@ Global
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30D9BE15-45C2-40E3-8C23-F6467F1DDB9B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29552DC3-F8D8-419D-9359-63AC0DFC3D48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29552DC3-F8D8-419D-9359-63AC0DFC3D48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29552DC3-F8D8-419D-9359-63AC0DFC3D48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29552DC3-F8D8-419D-9359-63AC0DFC3D48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

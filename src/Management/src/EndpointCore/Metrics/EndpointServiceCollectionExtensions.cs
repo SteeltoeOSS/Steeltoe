@@ -52,13 +52,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var options = new MetricsEndpointOptions(config);
             services.TryAddSingleton<IMetricsOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
+           // services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
             services.AddOpenTelemetry();
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+         //   services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, HystrixEventsListener>());
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
@@ -87,14 +88,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var options = new PrometheusEndpointOptions(config);
             services.TryAddSingleton<IPrometheusOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
             services.AddOpenTelemetry();
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
-
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, HystrixEventsListener>());
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
             services.TryAddSingleton<PrometheusScraperEndpoint>();
         }
