@@ -31,12 +31,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         protected ConcurrentDictionary<string, MeasureMetric<long>> MeasureMetrics { get; set; }
 
         private readonly IStats _stats;
-        private readonly ILogger<EventSourceListener> _logger;
 
-        internal EventSourceListener(IStats stats, ILogger<EventSourceListener> logger = null)
+        internal EventSourceListener(IStats stats)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
-            _logger = logger;
             MeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
         }
 
@@ -61,8 +59,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                 var actualValue = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
                 currentMetric.Record(default(SpanContext), actualValue, labels.ToList());
-
-             // _logger.LogDebug($"MetricName= {metricName} value = {actualValue}");
             }
         }
     }

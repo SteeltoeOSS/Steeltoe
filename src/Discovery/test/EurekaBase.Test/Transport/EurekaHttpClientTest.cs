@@ -68,7 +68,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         {
             var config = new EurekaClientConfig()
             {
-                EurekaServerServiceUrls = "http://localhost:9999/"
+                EurekaServerServiceUrls = "http://localhost:9999/",
+                EurekaServerRetryCount = 0
             };
             var client = new EurekaHttpClient(config);
             EurekaTransportException ex = await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));

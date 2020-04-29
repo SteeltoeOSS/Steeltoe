@@ -11,15 +11,19 @@
 
   <ItemGroup>
     <PackageReference Include="Consul" Version="$(ConsulVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\..\Common\src\Common.Net\Steeltoe.Common.Net.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Common.Net" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+    <PackageReference Include="Steeltoe.Connector.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

@@ -219,7 +219,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
             instSection.Bind(instOpts);
 
-            EurekaPostConfigurer.UpdateConfiguration(config, null, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(config, null, instOpts, null);
 
             var ro = instOpts;
 
@@ -427,7 +427,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
             instSection.Bind(instOpts);
 
-            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
             var ro = instOpts;
 
@@ -632,7 +632,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
             instSection.Bind(instOpts);
 
-            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
             var ro = instOpts;
 
@@ -839,7 +839,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
             instSection.Bind(instOpts);
 
-            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts);
+            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
             var ro = instOpts;
 

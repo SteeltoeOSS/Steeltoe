@@ -144,8 +144,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var timeSummary = processor.GetMetricByName<double>("http.client.request.time");
             Assert.NotNull(timeSummary);
             var average = timeSummary.Sum / timeSummary.Count;
-            Assert.InRange(average, 995.0, 1200.0);
-            Assert.InRange(timeSummary.Max, 995.0, 1200.0);
+            Assert.InRange(average, 975.0, 1200.0);
+            Assert.InRange(timeSummary.Max, 975.0, 1200.0);
 
             var countSummary = processor.GetMetricByName<long>("http.client.request.count");
             Assert.Equal(2, countSummary.Count);
