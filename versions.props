@@ -15,6 +15,7 @@
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
+    <KubernetesClientVersion>2.0.16</KubernetesClientVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
 
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>

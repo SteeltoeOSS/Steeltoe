@@ -59,18 +59,21 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             Assert.Equal(HttpStatusCode.Forbidden, ex.Response.StatusCode);
         }
 
-        [Fact(Skip = "Server response not mocked yet")]
+        [Fact]
         public void KubernetesSecretProvider_AddsToDictionaryOnSuccess()
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"SecretList\",\"apiVersion\":\"v1\",\"metadata\":{\"selfLink\":\"/api/v1/namespaces/default/secrets\",\"resourceVersion\":\"3007004\"},\"items\":[{\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}]}\n"));
 
             var client = new k8s.Kubernetes(new KubernetesClientConfiguration() { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "test");
+            var settings = new KubernetesConfigSourceSettings("default", "testsecret", true);
             var provider = new KubernetesSecretProvider(client, settings);
 
             // act
-            Assert.Throws<HttpOperationException>(() => provider.Load());
+            provider.Load();
 
             // assert
             Assert.True(provider.TryGet("testKey", out var testValue));

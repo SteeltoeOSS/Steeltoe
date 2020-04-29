@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes
+namespace Steeltoe.Common.Kubernetes
 {
     public class KubernetesApplicationOptions : ApplicationInstanceInfo
     {
@@ -30,6 +29,9 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         public KubernetesApplicationOptions(IConfiguration config)
             : base(config.GetSection(PlatformConfigRoot))
         {
+            // override base class's use of config sub-section so that we can find spring:application:name
+            configuration = config;
+
             Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
             Config ??= new KubernetesConfiguration();
             Secrets ??= new WatchableResource();
@@ -48,7 +50,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         public ReloadSettings Reload { get; set; }
 
         /// <summary>
-        /// Gets or sets Kubernetes Configuration properties
+        /// Gets or sets general Kubernetes and ConfigMap configuration properties
         /// </summary>
         public KubernetesConfiguration Config { get; set; }
 

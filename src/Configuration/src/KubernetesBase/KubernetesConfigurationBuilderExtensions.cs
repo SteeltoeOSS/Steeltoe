@@ -13,12 +13,10 @@
 // limitations under the License.
 
 using k8s;
-using k8s.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Steeltoe.Common.Kubernetes;
 using System;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -35,48 +33,15 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
             var appInfo = new KubernetesApplicationOptions(configurationBuilder.Build());
 
-            if (appInfo.Enabled)
+            if (appInfo.Enabled && (appInfo.Config.Enabled || appInfo.Secrets.Enabled))
             {
                 logger?.LogTrace("Steeltoe Kubernetes is enabled");
 
                 var lowercaseAppName = appInfo.ApplicationName.ToLowerInvariant();
                 var lowercaseAppEnvName = (appInfo.ApplicationName + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
 
-                KubernetesClientConfiguration k8sConfig = null;
+                var k8sClient = KubernetesClientHelpers.GetKubernetesClient(configurationBuilder.Build(), appInfo, kubernetesClientConfiguration, logger);
 
-                try
-                {
-                    if (appInfo.Config.Paths.Any())
-                    {
-                        var delimiter = Platform.IsWindows ? ';' : ':';
-                        var joinedPaths = appInfo.Config.Paths.Aggregate((i, j) => i + delimiter + j);
-                        Environment.SetEnvironmentVariable("KUBECONFIG", joinedPaths);
-                    }
-
-                    k8sConfig = KubernetesClientConfiguration.BuildDefaultConfig();
-                }
-                catch (KubeConfigException e)
-                {
-                    // couldn't locate .kube\config or user-identified files. use an empty config object and fall back on user-defined Action to set the configuration
-                    logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration using files at configured or default location, creating an empty config...");
-                }
-
-                kubernetesClientConfiguration?.Invoke(k8sConfig ?? new KubernetesClientConfiguration());
-
-                IKubernetes k8sClient;
-
-                try
-                {
-                    k8sClient = new k8s.Kubernetes(k8sConfig);
-                }
-                catch (KubeConfigException e)
-                {
-                    logger?.LogCritical(e, "Failed to create Kubernetes client");
-                    throw;
-                }
-
-                // ---------------------------------------------------------------------------------------
-                // use KubernetesClient (official) with our own providers
                 if (appInfo.Config.Enabled)
                 {
                     var configMapProviderLogger = loggerFactory?.CreateLogger<KubernetesConfigMapProvider>();
@@ -87,7 +52,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
                     foreach (var configmap in appInfo.Config.Sources)
                     {
-                        configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.NameSpace, configmap.Name, appInfo.Reload.Enabled, configMapProviderLogger)));
+                        configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.Namespace, configmap.Name, appInfo.Reload.Enabled, configMapProviderLogger)));
                     }
                 }
 
@@ -100,7 +65,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                         .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload.Enabled, secretProviderLogger)));
                     foreach (var secret in appInfo.Secrets.Sources)
                     {
-                        configurationBuilder.Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(secret.NameSpace, secret.Name, appInfo.Reload.Enabled, secretProviderLogger)));
+                        configurationBuilder.Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload.Enabled, secretProviderLogger)));
                     }
                 }
             }

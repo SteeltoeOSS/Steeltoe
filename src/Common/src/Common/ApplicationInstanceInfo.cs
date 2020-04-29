@@ -73,7 +73,7 @@ namespace Steeltoe.Common
             }
         }
 
-        private readonly IConfiguration configuration;
+        protected IConfiguration configuration;
 
         public ApplicationInstanceInfo()
         {

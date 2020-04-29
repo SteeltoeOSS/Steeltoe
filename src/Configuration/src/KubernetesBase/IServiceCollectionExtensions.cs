@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
+using Steeltoe.Common.Kubernetes;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes

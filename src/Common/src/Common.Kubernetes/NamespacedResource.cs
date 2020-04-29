@@ -12,14 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections.Generic;
-
-namespace Steeltoe.Extensions.Configuration.Kubernetes
+namespace Steeltoe.Common.Kubernetes
 {
-    public class WatchableResource
+    public class NamespacedResource
     {
-        public bool Enabled { get; set; } = true;
+        public string Name { get; set; }
 
-        public List<NamespacedResource> Sources { get; set; } = new List<NamespacedResource>();
+        public string Namespace { get; set; }
     }
 }

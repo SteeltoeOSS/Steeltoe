@@ -14,7 +14,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes
+namespace Steeltoe.Common.Kubernetes
 {
     public class KubernetesConfiguration : WatchableResource
     {

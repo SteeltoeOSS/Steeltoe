@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.Forbidden);
 
-            var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
             var settings = new KubernetesConfigSourceSettings("default", "test");
             var provider = new KubernetesConfigMapProvider(client, settings);
 
@@ -59,22 +59,25 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             Assert.Equal(HttpStatusCode.Forbidden, ex.Response.StatusCode);
         }
 
-        [Fact(Skip = "Server response not mocked yet")]
+        [Fact]
         public void KubernetesConfigMapProvider_AddsToDictionaryOnSuccess()
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"ConfigMapList\",\"apiVersion\":\"v1\",\"metadata\":{\"selfLink\":\"/api/v1/namespaces/default/configmaps\",\"resourceVersion\":\"3001217\"},\"items\":[{\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"TestValue\"}}]}\n"));
 
-            var client = new k8s.Kubernetes(new KubernetesClientConfiguration() { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "test");
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", true);
             var provider = new KubernetesConfigMapProvider(client, settings);
 
             // act
-            Assert.Throws<HttpOperationException>(() => provider.Load());
+            provider.Load();
 
             // assert
-            Assert.True(provider.TryGet("testKey", out var testValue));
-            Assert.Equal("testValue", testValue);
+            Assert.True(provider.TryGet("TestKey", out var testValue));
+            Assert.Equal("TestValue", testValue);
         }
     }
 }

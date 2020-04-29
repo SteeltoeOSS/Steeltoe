@@ -197,7 +197,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             Assert.False(settings.ValidateCertificates);
         }
 
-
         [Fact]
         public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
         {

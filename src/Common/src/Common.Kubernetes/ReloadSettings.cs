@@ -12,14 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Linq;
-using Xunit;
-
-namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
+namespace Steeltoe.Common.Kubernetes
 {
-    public class KubernetesApplicationOptionsTest
+    public class ReloadSettings
     {
+        public bool Enabled { get; set; } = false;
     }
 }
