@@ -47,7 +47,7 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             var services = new ServiceCollection();
             var appLifeTime = new MyAppLifeTime();
             services.TryAddSingleton<IHostApplicationLifetime>(appLifeTime);
-
+            services.TryAddSingleton<IConfiguration>(config);
             var provider = services.BuildServiceProvider();
             var appBuilder = new ApplicationBuilder(provider);
 
