@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading;
 
@@ -27,6 +28,8 @@ namespace Steeltoe.Common.Diagnostics
         internal ILogger<DiagnosticsManager> _logger;
         internal IList<IDiagnosticObserver> _observers;
         internal IList<IPolledDiagnosticSource> _sources;
+        internal IList<EventListener> _eventListeners;
+
         internal Thread _workerThread;
         internal bool _workerThreadShutdown = false;
         internal int _started = 0;
@@ -37,7 +40,11 @@ namespace Steeltoe.Common.Diagnostics
 
         public static DiagnosticsManager Instance => AsSingleton.Value;
 
-        public DiagnosticsManager(IEnumerable<IPolledDiagnosticSource> polledSources, IEnumerable<IDiagnosticObserver> observers, ILogger<DiagnosticsManager> logger = null)
+        public DiagnosticsManager(
+            IEnumerable<IPolledDiagnosticSource> polledSources,
+            IEnumerable<IDiagnosticObserver> observers,
+            IEnumerable<EventListener> eventListeners,
+            ILogger<DiagnosticsManager> logger = null)
         {
             if (polledSources == null)
             {
@@ -52,6 +59,7 @@ namespace Steeltoe.Common.Diagnostics
             this._logger = logger;
             this._observers = observers.ToList();
             this._sources = polledSources.ToList();
+            this._eventListeners = eventListeners.ToList();
         }
 
         internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics.Export;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
@@ -25,6 +26,7 @@ using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
@@ -45,17 +47,18 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
             var options = new MetricsEndpointOptions(config);
             services.TryAddSingleton<IMetricsOptions>(options);
             services.RegisterEndpointOptions(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
-
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
             services.AddOpenTelemetry();
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
@@ -75,7 +78,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
@@ -86,10 +88,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<IPrometheusOptions>(options);
             services.RegisterEndpointOptions(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
             services.AddOpenTelemetry();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadpoolEventsListener>());
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
             services.TryAddSingleton<PrometheusScraperEndpoint>();
@@ -101,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton((provider) =>
             {
                 var exporter = provider.GetService<MultiExporter>();
-                return new SteeltoeProcessor(exporter, TimeSpan.FromSeconds(10)); // TODO: Capture from options when OTel Configuration is finalized
+                return new SteeltoeProcessor(exporter); // TODO: Capture from options when OTel Configuration is finalized
             });
             services.TryAddSingleton<IStats>((provider) =>
             {

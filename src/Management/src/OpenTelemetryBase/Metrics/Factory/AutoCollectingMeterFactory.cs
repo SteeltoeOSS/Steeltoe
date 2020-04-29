@@ -15,6 +15,7 @@
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Configuration;
 using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
         private readonly HashSet<(string, string)> _meterRegistryKeySet = new HashSet<(string, string)>();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly Task _worker;
+        private readonly MetricProcessor _processor;
 
         private MeterFactory _meterFactory;
         private TimeSpan _collectionInterval;
@@ -37,6 +39,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             : base()
         {
             _meterFactory = MeterFactory.Create(processor);
+
+            _processor = processor;
             _collectionInterval = timeSpan;
 
             if (processor != null && timeSpan < TimeSpan.MaxValue)
@@ -80,7 +84,9 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
                     var sw = Stopwatch.StartNew();
 
                     CollectAllMetrics();
+                    (_processor as SteeltoeProcessor)?.ExportMetrics();
 
+                    // (_processor as SteeltoeProcessor)?.Clear();
                     if (cancellationToken.IsCancellationRequested)
                     {
                         return;

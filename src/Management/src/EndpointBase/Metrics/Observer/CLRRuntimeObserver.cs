@@ -16,12 +16,13 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Stats;
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
+    [Obsolete("Use EventListeners instead")]
     public class CLRRuntimeObserver : MetricsObserver
     {
         internal const string OBSERVER_NAME = "CLRRuntimeObserver";

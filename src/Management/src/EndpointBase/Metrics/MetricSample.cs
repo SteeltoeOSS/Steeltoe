@@ -14,6 +14,7 @@
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -26,10 +27,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
         [JsonProperty("value")]
         public double Value { get; }
 
-        public MetricSample(MetricStatistic statistic, double value)
+        [JsonIgnore]
+        public IEnumerable<KeyValuePair<string, string>> Tags { get; set; }
+
+        public MetricSample(MetricStatistic statistic, double value, IEnumerable<KeyValuePair<string, string>> tags = null)
         {
             Statistic = statistic;
             Value = value;
+            Tags = tags;
         }
 
         public override string ToString()

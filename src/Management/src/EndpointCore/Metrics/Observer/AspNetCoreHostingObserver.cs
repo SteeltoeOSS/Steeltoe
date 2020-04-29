@@ -109,8 +109,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var labelSets = GetLabelSets(arg); // Todo: Used bound labelsets
 
-                responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
                 serverCountMeasure.Add(default(SpanContext), 1, labelSets);
+                labelSets.Add(new KeyValuePair<string, string>("TimeUnit", "ms"));
+                responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
             }
         }
 
