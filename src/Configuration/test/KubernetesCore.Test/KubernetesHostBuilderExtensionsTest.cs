@@ -32,17 +32,18 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public void AddKubernetesConfiguration_DefaultWebHost_AddsConfig()
         {
             // Arrange
+            using var server = new MockKubeApiServer();
             var hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestServerStartup>();
 
             // Act
-            hostBuilder.AddKubernetesConfiguration(FakeClientSetup);
+            hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
             var serviceProvider = hostBuilder.Build().Services;
             var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
             var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
             // Assert
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider)));
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider)));
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))).Count() == 2);
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))).Count() == 2);
             Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
         }
 
@@ -50,17 +51,18 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public void AddKubernetesConfiguration_WebHostBuilder_AddsConfig()
         {
             // Arrange
+            using var server = new MockKubeApiServer();
             var hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>();
 
             // Act
-            hostBuilder.AddKubernetesConfiguration(FakeClientSetup);
+            hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
             var serviceProvider = hostBuilder.Build().Services;
             var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
             var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
             // Assert
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider)));
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider)));
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))).Count() == 2);
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))).Count() == 2);
             Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
         }
 
@@ -68,17 +70,18 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public void AddKubernetesConfiguration_DefaultHost_AddsConfig()
         {
             // Arrange
+            using var server = new MockKubeApiServer();
             var hostBuilder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerStartup>());
 
             // Act
-            hostBuilder.AddKubernetesConfiguration(FakeClientSetup);
+            hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
             var serviceProvider = hostBuilder.Build().Services;
             var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
             var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
             // Assert
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider)));
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider)));
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))).Count() == 2);
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))).Count() == 2);
             Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
         }
 
@@ -86,7 +89,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public void AddKubernetesConfiguration_HostBuilder_AddsConfig()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().AddKubernetesConfiguration(FakeClientSetup);
+            using var server = new MockKubeApiServer();
+            var hostBuilder = new HostBuilder().AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
 
             // Act
             var serviceProvider = hostBuilder.Build().Services;
@@ -94,12 +98,17 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
             // Assert
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider)));
-            Assert.Contains(config.Providers, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider)));
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))).Count() == 2);
+            Assert.True(config.Providers.Where(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))).Count() == 2);
             Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
         }
 
         // TODO: need some kind of action here for tests to pass if no kube config is found
-        private Action<KubernetesClientConfiguration> FakeClientSetup => (fakeClient) => fakeClient.Namespace = "default"; // fakeClient.Host = "http://127.0.0.1";
+        private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host) =>
+            (fakeClient) =>
+            {
+                fakeClient.Namespace = "default";
+                fakeClient.Host = host;
+            };
     }
 }
