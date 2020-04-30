@@ -16,6 +16,7 @@ using k8s;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Kubernetes;
 using System;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
@@ -35,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     config.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
                 })
-                .ConfigureServices(serviceCollection => serviceCollection.RegisterKubernetesApplicationInstanceInfo());
+                .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesApplicationInstanceInfo());
 
             return hostBuilder;
         }
@@ -53,7 +54,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     config.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
                 })
-                .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterKubernetesApplicationInstanceInfo());
+                .ConfigureServices((context, serviceCollection) => serviceCollection.AddKubernetesApplicationInstanceInfo());
 
             return hostBuilder;
         }

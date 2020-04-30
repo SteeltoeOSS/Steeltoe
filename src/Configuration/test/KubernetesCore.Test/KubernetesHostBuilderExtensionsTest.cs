@@ -103,7 +103,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
         }
 
-        // TODO: need some kind of action here for tests to pass if no kube config is found
         private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host) =>
             (fakeClient) =>
             {
