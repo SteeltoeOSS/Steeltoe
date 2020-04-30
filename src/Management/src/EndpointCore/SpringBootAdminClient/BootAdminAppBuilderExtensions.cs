@@ -85,7 +85,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                     return;
                 }
 
-                var httpClient = testClient ?? new HttpClient();
+                var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
                 var result = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").Result;
             });
         }
