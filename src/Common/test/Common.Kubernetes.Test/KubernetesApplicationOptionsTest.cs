@@ -40,6 +40,7 @@ namespace Steeltoe.Common.Kubernetes.Test
                             ""name"": ""testapp"",
                             ""namespace"": ""not-default"",
                             ""config"": {
+                                ""enabled"": false,
                                 ""paths"": [
                                     ""some/local/path""
                                 ],
@@ -51,6 +52,7 @@ namespace Steeltoe.Common.Kubernetes.Test
                                 ]
                             },
                             ""secrets"": {
+                                ""enabled"": false,
                                 ""sources"": [
                                     {
                                         ""name"": ""testapp.extrasecret"",
@@ -59,7 +61,10 @@ namespace Steeltoe.Common.Kubernetes.Test
                                 ]
                             },
                             ""reload"": {
-                                ""enabled"": true
+                                ""secrets"": true,
+                                ""configmaps"": true,
+                                ""mode"": ""event"",
+                                ""period"": 30
                             }
                         }
                     }
@@ -76,14 +81,17 @@ namespace Steeltoe.Common.Kubernetes.Test
             Assert.Single(appInfo.Config.Paths);
             Assert.Equal("some/local/path", appInfo.Config.Paths.First());
             Assert.Single(appInfo.Config.Sources);
-            Assert.True(appInfo.Config.Enabled);
+            Assert.False(appInfo.Config.Enabled);
             Assert.Equal("testapp.extra", appInfo.Config.Sources.First().Name);
             Assert.Equal("not-default1", appInfo.Config.Sources.First().Namespace);
-            Assert.True(appInfo.Secrets.Enabled);
+            Assert.False(appInfo.Secrets.Enabled);
             Assert.Single(appInfo.Secrets.Sources);
             Assert.Equal("testapp.extrasecret", appInfo.Secrets.Sources.First().Name);
             Assert.Equal("not-default2", appInfo.Secrets.Sources.First().Namespace);
-            Assert.True(appInfo.Reload.Enabled);
+            Assert.True(appInfo.Reload.Secrets);
+            Assert.True(appInfo.Reload.ConfigMaps);
+            Assert.Equal(ReloadMethods.Event, appInfo.Reload.Mode);
+            Assert.Equal(30, appInfo.Reload.Period);
         }
 
         [Fact]
