@@ -14,6 +14,7 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,9 +57,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     while (Polling)
                     {
                         Thread.Sleep(TimeSpan.FromSeconds(interval));
+                        Settings.Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
                         Load();
                         if (CancellationToken.IsCancellationRequested)
                         {
+                            Settings.Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
                             break;
                         }
                     }

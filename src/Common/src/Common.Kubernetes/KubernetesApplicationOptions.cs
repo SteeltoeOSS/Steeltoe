@@ -42,6 +42,8 @@ namespace Steeltoe.Common.Kubernetes
 
         public string Name { get; set; }
 
+        public override string ApplicationName => Name;
+
         public string NameSpace { get; set; } = "default";
 
         /// <summary>

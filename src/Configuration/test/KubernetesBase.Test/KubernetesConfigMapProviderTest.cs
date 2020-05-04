@@ -106,13 +106,13 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             provider.Load();
 
             // assert
-            Assert.True(provider.TryGet("TestKey", out var testValue));
+            Assert.True(provider.TryGet("TestKey", out var testValue), "TryGet TestKey x1");
             Assert.Equal("TestValue", testValue);
             await Task.Delay(1100);
-            Assert.True(provider.TryGet("TestKey", out var testValue2));
+            Assert.True(provider.TryGet("TestKey", out var testValue2), "TryGet TestKey x2");
             Assert.Equal("UpdatedValue", testValue2);
             await Task.Delay(1100);
-            Assert.True(provider.TryGet("TestKey", out var testValue3));
+            Assert.True(provider.TryGet("TestKey", out var testValue3), "TryGet TestKey x3");
             Assert.Equal("UpdatedAgain", testValue3);
         }
     }

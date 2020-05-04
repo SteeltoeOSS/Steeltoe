@@ -37,8 +37,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 logger?.LogTrace("Steeltoe Kubernetes is enabled");
 
-                var lowercaseAppName = appInfo.ApplicationName.ToLowerInvariant();
-                var lowercaseAppEnvName = (appInfo.ApplicationName + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
+                var lowercaseAppName = appInfo.Name.ToLowerInvariant();
+                var lowercaseAppEnvName = (appInfo.Name + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
 
                 var k8sClient = KubernetesClientHelpers.GetKubernetesClient(configurationBuilder.Build(), appInfo, kubernetesClientConfiguration, logger);
 

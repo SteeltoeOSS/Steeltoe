@@ -68,7 +68,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         {
             if (disposing)
             {
-                ConfigMapWatcher.Dispose();
+                ConfigMapWatcher?.Dispose();
                 ConfigMapWatcher = null;
                 K8sClient.Dispose();
                 K8sClient = null;
@@ -77,7 +77,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         private void EnableReloading()
         {
-            if (Settings.ReloadSettings.ConfigMaps)
+            if (Settings.ReloadSettings.ConfigMaps && !Polling)
             {
                 switch (Settings.ReloadSettings.Mode)
                 {
@@ -107,11 +107,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                             onClosed: () => { Settings.Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
                         break;
                     case ReloadMethods.Polling:
-                        if (!Polling)
-                        {
-                            StartPolling(Settings.ReloadSettings.Period);
-                        }
-
+                        StartPolling(Settings.ReloadSettings.Period);
                         break;
                     default:
                         Settings.Logger?.LogError("Unsupported reload method!");
@@ -129,9 +125,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
 
             var configMapContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var data in item?.Data)
+            if (item?.Data != null)
             {
-                configMapContents[data.Key] = data.Value;
+                foreach (var data in item?.Data)
+                {
+                    configMapContents[data.Key] = data.Value;
+                }
             }
 
             Data = configMapContents;

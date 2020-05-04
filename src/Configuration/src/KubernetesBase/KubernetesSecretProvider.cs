@@ -54,6 +54,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 else if (e.Response.StatusCode == HttpStatusCode.NotFound)
                 {
                     EnableReloading();
+                    return;
                 }
 
                 throw;
@@ -72,7 +73,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 if (disposing)
                 {
-                    SecretWatcher.Dispose();
+                    SecretWatcher?.Dispose();
                     SecretWatcher = null;
                     K8sClient.Dispose();
                     K8sClient = null;
@@ -136,9 +137,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
 
             var secretContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
-            foreach (var data in item.Data)
+            if (item?.Data != null)
             {
-                secretContents[data.Key] = Encoding.UTF8.GetString(data.Value);
+                foreach (var data in item.Data)
+                {
+                    secretContents[data.Key] = Encoding.UTF8.GetString(data.Value);
+                }
             }
 
             Data = secretContents;
