@@ -34,13 +34,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
             : base(kubernetes, settings, cancellationToken)
         {
+            Settings.Namespace ??= "default";
         }
 
         public override void Load()
         {
             try
             {
-                var secretResponse = K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace ?? "default").GetAwaiter().GetResult();
+                var secretResponse = K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
                 ProcessData(secretResponse.Body);
                 EnableReloading();
             }
@@ -90,7 +91,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     case ReloadMethods.Event:
                         SecretWatcher = K8sClient.WatchNamespacedSecretAsync(
                             Settings.Name,
-                            Settings.Namespace ?? "default",
+                            Settings.Namespace,
                             onEvent: (eventType, item) =>
                             {
                                 Settings.Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);

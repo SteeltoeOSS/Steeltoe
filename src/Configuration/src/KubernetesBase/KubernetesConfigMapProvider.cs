@@ -31,13 +31,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
             : base(kubernetes, settings, cancellationToken)
         {
+            settings.Namespace ??= "default";
         }
 
         public override void Load()
         {
             try
             {
-                var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace ?? "default").GetAwaiter().GetResult();
+                var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
                 ProcessData(configMapResponse.Body);
                 EnableReloading();
             }
@@ -83,7 +84,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     case ReloadMethods.Event:
                         ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
                             Settings.Name,
-                            Settings.Namespace ?? "default",
+                            Settings.Namespace,
                             onEvent: (eventType, item) =>
                             {
                                 Settings.Logger?.LogInformation("Receved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
