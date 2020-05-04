@@ -16,9 +16,11 @@ using k8s;
 using Microsoft.Rest;
 using Moq;
 using RichardSzalay.MockHttp;
+using Steeltoe.Common.Kubernetes;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
@@ -30,7 +32,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         {
             // arrange
             var client = new Mock<k8s.Kubernetes>();
-            var settings = new KubernetesConfigSourceSettings("default", "test");
+            var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
 
             // act
             var ex1 = Assert.Throws<ArgumentNullException>(() => new KubernetesSecretProvider(null, settings));
@@ -49,7 +51,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.Forbidden);
 
             var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "test");
+            var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings());
             var provider = new KubernetesSecretProvider(client, settings);
 
             // act
@@ -66,10 +68,10 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
-                .Respond(new StringContent("{\"kind\":\"SecretList\",\"apiVersion\":\"v1\",\"metadata\":{\"selfLink\":\"/api/v1/namespaces/default/secrets\",\"resourceVersion\":\"3007004\"},\"items\":[{\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}]}\n"));
+                .Respond(new StringContent("{\"kind\":\"Secret\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}\n"));
 
             var client = new k8s.Kubernetes(new KubernetesClientConfiguration() { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
-            var settings = new KubernetesConfigSourceSettings("default", "testsecret", true);
+            var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings());
             var provider = new KubernetesSecretProvider(client, settings);
 
             // act
@@ -78,6 +80,39 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             // assert
             Assert.True(provider.TryGet("testKey", out var testValue));
             Assert.Equal("testValue", testValue);
+        }
+
+        [Fact]
+        public async Task KubernetesSecretProvider_ReloadsDictionaryOnInterval()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"Secret\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"testKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}\n"));
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"Secret\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"updatedKey\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}\n"));
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"Secret\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testsecret\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/secrets/testsecret\",\"uid\":\"04a256d5-5480-4e6a-ab1a-81b1df2b1f15\",\"resourceVersion\":\"724153\",\"creationTimestamp\":\"2020-04-17T14:32:42Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"testKey\\\":\\\"dGVzdFZhbHVl\\\"},\\\"kind\\\":\\\"Secret\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"testsecret\\\",\\\"namespace\\\":\\\"default\\\"},\\\"type\\\":\\\"Opaque\\\"}\\n\"}},\"data\":{\"updatedAgain\":\"dGVzdFZhbHVl\"},\"type\":\"Opaque\"}\n"));
+
+            var client = new k8s.Kubernetes(new KubernetesClientConfiguration() { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings() { Period = 1, Secrets = true });
+            var provider = new KubernetesSecretProvider(client, settings);
+
+            // act
+            provider.Load();
+
+            // assert
+            Assert.True(provider.TryGet("testKey", out var testValue1));
+            Assert.Equal("testValue", testValue1);
+            await Task.Delay(1100);
+            Assert.True(provider.TryGet("updatedKey", out var testValue2));
+            Assert.Equal("testValue", testValue2);
+            await Task.Delay(1100);
+            Assert.True(provider.TryGet("updatedAgain", out var testValue3));
+            Assert.Equal("testValue", testValue3);
         }
     }
 }

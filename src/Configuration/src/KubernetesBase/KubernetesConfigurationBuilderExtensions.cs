@@ -47,12 +47,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     var configMapProviderLogger = loggerFactory?.CreateLogger<KubernetesConfigMapProvider>();
 
                     configurationBuilder
-                        .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload.Enabled, configMapProviderLogger)))
-                        .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload.Enabled, configMapProviderLogger)));
+                        .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, configMapProviderLogger)))
+                        .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, configMapProviderLogger)));
 
                     foreach (var configmap in appInfo.Config.Sources)
                     {
-                        configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.Namespace, configmap.Name, appInfo.Reload.Enabled, configMapProviderLogger)));
+                        configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.Namespace, configmap.Name, appInfo.Reload, configMapProviderLogger)));
                     }
                 }
 
@@ -61,11 +61,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     var secretProviderLogger = loggerFactory?.CreateLogger<KubernetesSecretProvider>();
 
                     configurationBuilder
-                        .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload.Enabled, secretProviderLogger)))
-                        .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload.Enabled, secretProviderLogger)));
+                        .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, secretProviderLogger)))
+                        .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, secretProviderLogger)));
                     foreach (var secret in appInfo.Secrets.Sources)
                     {
-                        configurationBuilder.Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload.Enabled, secretProviderLogger)));
+                        configurationBuilder.Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload, secretProviderLogger)));
                     }
                 }
             }

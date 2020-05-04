@@ -14,6 +14,7 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
@@ -23,12 +24,15 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         private KubernetesConfigSourceSettings ConfigSettings { get; set; }
 
-        internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
+        private CancellationToken CancelToken { get; set; }
+
+        internal KubernetesSecretSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
         {
             K8sClient = kubernetesClient;
             ConfigSettings = settings;
+            CancelToken = cancellationToken;
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesSecretProvider(K8sClient, ConfigSettings);
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => new KubernetesSecretProvider(K8sClient, ConfigSettings, CancelToken);
     }
 }

@@ -14,59 +14,43 @@
 
 using k8s;
 using k8s.Models;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using Steeltoe.Common.Kubernetes;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
-    internal class KubernetesConfigMapProvider : ConfigurationProvider, IDisposable
+    internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
     {
-        private IKubernetes K8sClient { get; set; }
-
-        private KubernetesConfigSourceSettings Settings { get; set; }
-
         private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
 
-        internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings)
+        internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
+            : base(kubernetes, settings, cancellationToken)
         {
-            if (kubernetes is null)
-            {
-                throw new ArgumentNullException(nameof(kubernetes));
-            }
-
-            if (settings is null)
-            {
-                throw new ArgumentNullException(nameof(settings));
-            }
-
-            K8sClient = kubernetes;
-            Settings = settings;
         }
 
         public override void Load()
         {
             try
             {
-                var configMapResponse = K8sClient.ListNamespacedConfigMapWithHttpMessagesAsync(Settings.Namespace ?? "default", fieldSelector: $"metadata.name={Settings.Name}", watch: Settings.Watch).GetAwaiter().GetResult();
-                ProcessData(configMapResponse.Body.Items?.FirstOrDefault());
-                if (Settings.Watch)
-                {
-                    ConfigMapWatcher = configMapResponse.Watch<V1ConfigMap, V1ConfigMapList>((type, item) =>
-                    {
-                        Settings.Logger?.LogInformation("Reading {entries} configuration values from Config Map", item?.Data?.Count);
-                        ProcessData(item);
-                    });
-                }
+                var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace ?? "default").GetAwaiter().GetResult();
+                ProcessData(configMapResponse.Body);
+                EnableReloading();
             }
             catch (HttpOperationException e)
             {
                 if (e.Response.StatusCode == HttpStatusCode.Forbidden)
                 {
                     Settings.Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                }
+                else if (e.Response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    EnableReloading();
+                    return;
                 }
 
                 throw;
@@ -90,19 +74,66 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
         }
 
-        private void ProcessData(V1ConfigMap item)
+        private void EnableReloading()
         {
-            if (item?.Data?.Any() == true)
+            if (Settings.ReloadSettings.ConfigMaps)
             {
-                foreach (var data in item.Data)
+                switch (Settings.ReloadSettings.Mode)
                 {
-                    Data[data.Key] = data.Value;
+                    case ReloadMethods.Event:
+                        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
+                            Settings.Name,
+                            Settings.Namespace ?? "default",
+                            onEvent: (eventType, item) =>
+                            {
+                                Settings.Logger?.LogInformation("Receved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                                switch (eventType)
+                                {
+                                    case WatchEventType.Added:
+                                    case WatchEventType.Modified:
+                                    case WatchEventType.Deleted:
+                                        ProcessData(item);
+                                        break;
+                                    default:
+                                        Settings.Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                                        break;
+                                }
+                            },
+                            onError: (exception) =>
+                            {
+                                Settings.Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name);
+                            },
+                            onClosed: () => { Settings.Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name); }).GetAwaiter().GetResult();
+                        break;
+                    case ReloadMethods.Polling:
+                        if (!Polling)
+                        {
+                            StartPolling(Settings.ReloadSettings.Period);
+                        }
+
+                        break;
+                    default:
+                        Settings.Logger?.LogError("Unsupported reload method!");
+                        break;
                 }
             }
-            else
+        }
+
+        private void ProcessData(V1ConfigMap item)
+        {
+            if (item is null)
             {
-                Data.Clear();
+                Settings.Logger?.LogWarning("ConfigMap response is null, no data could be processed");
+                return;
             }
+
+            var configMapContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+            foreach (var data in item?.Data)
+            {
+                configMapContents[data.Key] = data.Value;
+            }
+
+            Data = configMapContents;
         }
     }
 }

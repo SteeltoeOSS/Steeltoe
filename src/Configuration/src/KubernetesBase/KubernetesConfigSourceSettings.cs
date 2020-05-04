@@ -13,16 +13,17 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     internal class KubernetesConfigSourceSettings
     {
-        internal KubernetesConfigSourceSettings(string @namespace, string name, bool watch = false, ILogger logger = null)
+        internal KubernetesConfigSourceSettings(string @namespace, string name, ReloadSettings reloadSettings, ILogger logger = null)
         {
             Namespace = @namespace ?? "default";
             Name = name;
-            Watch = watch;
+            ReloadSettings = reloadSettings;
             Logger = logger;
         }
 
@@ -30,7 +31,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         internal string Namespace { get; set; }
 
-        internal bool Watch { get; set; } = false;
+        internal ReloadSettings ReloadSettings { get; set; }
 
         internal ILogger Logger { get; set; }
     }
