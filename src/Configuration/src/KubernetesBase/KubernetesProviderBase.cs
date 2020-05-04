@@ -23,11 +23,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     internal class KubernetesProviderBase : ConfigurationProvider
     {
+        internal bool Polling { get; private set; }
+
         protected IKubernetes K8sClient { get; set; }
 
         protected KubernetesConfigSourceSettings Settings { get; set; }
-
-        protected bool Polling { get; set; }
 
         protected CancellationToken CancellationToken { get; set; }
 

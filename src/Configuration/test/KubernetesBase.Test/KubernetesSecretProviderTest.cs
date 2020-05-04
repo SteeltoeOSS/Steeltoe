@@ -20,6 +20,7 @@ using Steeltoe.Common.Kubernetes;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -62,6 +63,25 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         }
 
         [Fact]
+        public async Task KubernetesSecretProvider_ContinuesOn404()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            mockHttpMessageHandler.Expect(HttpMethod.Get, "*").Respond(HttpStatusCode.NotFound);
+
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "test", new ReloadSettings() { ConfigMaps = true, Period = 0 });
+            var provider = new KubernetesConfigMapProvider(client, settings);
+
+            // act
+            provider.Load();
+            await Task.Delay(500);
+
+            // assert
+            Assert.True(provider.Polling, "Provider has begun polling");
+        }
+
+        [Fact]
         public void KubernetesSecretProvider_AddsToDictionaryOnSuccess()
         {
             // arrange
@@ -99,7 +119,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 
             var client = new k8s.Kubernetes(new KubernetesClientConfiguration() { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
             var settings = new KubernetesConfigSourceSettings("default", "testsecret", new ReloadSettings() { Period = 1, Secrets = true });
-            var provider = new KubernetesSecretProvider(client, settings);
+            var provider = new KubernetesSecretProvider(client, settings, new CancellationTokenSource(20000).Token);
 
             // act
             provider.Load();
