@@ -106,16 +106,17 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public async Task KubernetesConfigMapProvider_ReloadsDictionaryOnInterval()
         {
             // arrange
+            var foundKey = false;
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
                 .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"TestValue\"}}\n"));
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
-                .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"UpdatedValue\"}}\n"));
+                .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey2\":\"UpdatedValue\"}}\n"));
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
-                .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey\":\"UpdatedAgain\"}}\n"));
+                .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"TestKey3\":\"UpdatedAgain\"}}\n"));
 
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
             var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings() { Period = 1, ConfigMaps = true });
@@ -125,14 +126,32 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             provider.Load();
 
             // assert
-            Assert.True(provider.TryGet("TestKey", out var testValue), "TryGet TestKey x1");
+            Assert.True(provider.TryGet("TestKey", out var testValue), "TryGet TestKey");
             Assert.Equal("TestValue", testValue);
-            await Task.Delay(1100);
-            Assert.True(provider.TryGet("TestKey", out var testValue2), "TryGet TestKey x2");
-            Assert.Equal("UpdatedValue", testValue2);
-            await Task.Delay(1100);
-            Assert.True(provider.TryGet("TestKey", out var testValue3), "TryGet TestKey x3");
-            Assert.Equal("UpdatedAgain", testValue3);
+
+            while (!foundKey)
+            {
+                await Task.Delay(100);
+                foundKey = provider.TryGet("TestKey2", out var testValue2);
+                if (foundKey)
+                {
+                    Assert.Equal("UpdatedValue", testValue2);
+                }
+            }
+
+            foundKey = false;
+            while (!foundKey)
+            {
+                await Task.Delay(100);
+                foundKey = provider.TryGet("TestKey3", out var testValue3);
+                if (foundKey)
+                {
+                    Assert.Equal("UpdatedAgain", testValue3);
+                }
+            }
+
+            Assert.False(provider.TryGet("TestKey", out _), "TryGet TestKey after update");
+            Assert.False(provider.TryGet("TestKey2", out _), "TryGet TestKey2 after update");
         }
     }
 }

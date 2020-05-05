@@ -75,7 +75,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 
             // act
             provider.Load();
-            await Task.Delay(500);
+            await Task.Delay(50);
 
             // assert
             Assert.True(provider.Polling, "Provider has begun polling");
@@ -106,6 +106,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         public async Task KubernetesSecretProvider_ReloadsDictionaryOnInterval()
         {
             // arrange
+            var foundKey = false;
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
@@ -125,14 +126,31 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             provider.Load();
 
             // assert
-            Assert.True(provider.TryGet("testKey", out var testValue1), "TryGet testKey");
-            Assert.Equal("testValue", testValue1);
-            await Task.Delay(1100);
-            Assert.True(provider.TryGet("updatedKey", out var testValue2), "TryGet updatedKey");
-            Assert.Equal("testValue", testValue2);
-            await Task.Delay(1100);
-            Assert.True(provider.TryGet("updatedAgain", out var testValue3), "TryGet updatedAgain");
-            Assert.Equal("testValue", testValue3);
+            Assert.True(provider.TryGet("testKey", out var testValue), "TryGet testKey");
+            Assert.Equal("testValue", testValue);
+            while (!foundKey)
+            {
+                await Task.Delay(100);
+                foundKey = provider.TryGet("updatedKey", out testValue);
+                if (foundKey)
+                {
+                    Assert.Equal("testValue", testValue);
+                }
+            }
+
+            foundKey = false;
+            while (!foundKey)
+            {
+                await Task.Delay(100);
+                foundKey = provider.TryGet("updatedAgain", out testValue);
+                if (foundKey)
+                {
+                    Assert.Equal("testValue", testValue);
+                }
+            }
+
+            Assert.False(provider.TryGet("testKey", out _), "TryGet testKey after update");
+            Assert.False(provider.TryGet("updatedKey", out _), "TryGet updatedKey after update");
         }
     }
 }
