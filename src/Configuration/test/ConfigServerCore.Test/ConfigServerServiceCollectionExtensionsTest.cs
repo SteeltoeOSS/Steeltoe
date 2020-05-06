@@ -20,6 +20,7 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Steeltoe.Extensions.Configuration.ConfigServer.Test;
 using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
@@ -39,7 +40,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         }
 
         [Fact]
-        public void ConfigureConfigServerClientOptions_ThrowsIfConfigurtionNull()
+        public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
@@ -98,7 +99,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
-            var builder = new ConfigurationBuilder().AddConfigServer(environment);
+            var builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } }).AddConfigServer(environment);
             var config = builder.Build();
             services.ConfigureConfigServerClientOptions(config);
 

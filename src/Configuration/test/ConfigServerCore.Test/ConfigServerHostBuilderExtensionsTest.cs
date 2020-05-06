@@ -14,14 +14,12 @@
 
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server.Features;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
-using System;
+using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
@@ -29,11 +27,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerHostBuilderExtensionsTest
     {
+        private readonly Dictionary<string, string> quickTests = new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } };
+
         [Fact]
         public void AddConfigServer_DefaultWebHost_AddsConfigServer()
         {
             // Arrange
-            var hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestConfigServerStartup>();
+            var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
             // Act
             hostBuilder.AddConfigServer();
@@ -48,7 +48,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
         {
             // Arrange
-            var hostBuilder = new WebHostBuilder().UseStartup<TestConfigServerStartup>();
+            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
             // Act
             hostBuilder.AddConfigServer();
@@ -63,7 +63,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_IHostBuilder_AddsConfigServer()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().AddConfigServer();
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).AddConfigServer();
 
             // Act
             var host = hostBuilder.Build();

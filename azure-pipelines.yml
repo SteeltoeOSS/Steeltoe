@@ -108,7 +108,7 @@ jobs:
     inputs:
       command: build
       projects: 'src/Steeltoe.All.sln'
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
   - task: DotNetCoreCLI@2
     displayName: dotnet pack
     inputs:
