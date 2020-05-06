@@ -54,7 +54,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             // Arrange
             var configurationBuilder = new ConfigurationBuilder();
-            var settings = new ConfigServerClientSettings();
+            var settings = new ConfigServerClientSettings() { Timeout = 10 };
 
             // Act and Assert
             configurationBuilder
@@ -409,7 +409,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 }";
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-            var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings" };
+            var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
             // Act
             configurationBuilder
@@ -440,7 +440,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 Label = "testConfigLabel",
                 Environment = "testEnv",
                 Username = "testUser",
-                Password = "testPassword"
+                Password = "testPassword",
+                Timeout = 10,
+                RetryEnabled = false
             };
             var builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 

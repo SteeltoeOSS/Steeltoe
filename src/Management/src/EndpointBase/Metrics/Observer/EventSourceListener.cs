@@ -14,7 +14,6 @@
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Export;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Stats;
@@ -24,7 +23,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {

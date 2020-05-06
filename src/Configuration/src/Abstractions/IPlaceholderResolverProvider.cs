@@ -19,8 +19,8 @@ namespace Steeltoe.Extensions.Configuration
 {
     public interface IPlaceholderResolverProvider : IConfigurationProvider
     {
-        public IList<IConfigurationProvider> Providers { get; }
+        IList<IConfigurationProvider> Providers { get; }
 
-        public IList<string> ResolvedKeys { get; }
+        IList<string> ResolvedKeys { get; }
     }
 }

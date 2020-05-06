@@ -50,10 +50,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly MeasureMetric<long> availableThreads;
 
         public ThreadpoolEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
-            : base(stats, logger)
+            : base(stats)
         {
             _logger = logger;
-
             availableThreads = Meter.CreateInt64Measure($"clr.threadpool.available");
         }
 
@@ -74,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger?.LogError(ex.Message);
             }
         }
 

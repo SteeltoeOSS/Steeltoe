@@ -55,7 +55,13 @@ namespace Steeltoe.Common.Security.Test
             Assert.Equal("key", config["privateKey"]);
 
             await File.WriteAllTextAsync(tempFile1, "cert2");
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
+            if (config["certificate"] == null)
+            {
+                // wait a little longer
+                await Task.Delay(2000);
+            }
+
             Assert.Equal("cert2", config["certificate"]);
             Assert.Equal("key", config["privateKey"]);
         }
@@ -127,14 +133,23 @@ namespace Steeltoe.Common.Security.Test
 
             // act
             await File.WriteAllTextAsync(filename, "barfoo");
-            Thread.Sleep(2000);
+            await Task.Delay(2000);
 
             // assert
             Assert.Equal("barfoo", await File.ReadAllTextAsync(config["certificate"]));
             Assert.True(changeCalled);
 
             // cleanup
-            File.Delete(filename);
+            try
+            {
+                File.Delete(filename);
+            }
+            catch
+            {
+                // give it a second, try again
+                await Task.Delay(1000);
+                File.Delete(filename);
+            }
         }
 
         private async Task<string> CreateTempFileAsync(string contents)

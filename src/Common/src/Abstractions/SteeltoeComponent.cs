@@ -20,6 +20,7 @@ namespace Steeltoe.Common
         CircuitBreaker,
         Configuration,
         Connectors,
+        Kubernetes,
         Management,
         Security
     }

@@ -50,7 +50,16 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
     {
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
-            await context.Response.WriteAsync("{\"Id\":\"1234567\"}");
+            if (context.Request.Path.Value.EndsWith("instances"))
+            {
+                // Registration response
+                await context.Response.WriteAsync("{\"Id\":\"1234567\"}");
+            }
+            else
+            {
+                // Unregister response
+                await context.Response.WriteAsync("Ok!");
+            }
         }
     }
 }

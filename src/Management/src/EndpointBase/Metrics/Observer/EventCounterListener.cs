@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger?.LogError(ex.Message);
             }
         }
 
