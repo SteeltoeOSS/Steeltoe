@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Authors>Pivotal,dtillman</Authors>
+    <Authors>Steeltoe,VMware</Authors>
     <VersionPrefix>$(VersionPrefix)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
