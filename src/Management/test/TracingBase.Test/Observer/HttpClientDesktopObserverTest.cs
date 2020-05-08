@@ -112,8 +112,10 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var spanData = span.ToSpanData();
             Assert.Equal("httpclient:/", spanData.Name);
 
-            var respHeaders = new WebHeaderCollection();
-            respHeaders.Add("TEST", "Header");
+            var respHeaders = new WebHeaderCollection
+            {
+                { "TEST", "Header" }
+            };
 
             obs.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, new { Request = request, StatusCode = HttpStatusCode.OK, Headers = respHeaders });
 

@@ -121,11 +121,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             var statusCode = arg.Response.StatusCode.ToString();
             var exception = GetException(arg);
 
-            var tagValues = new List<KeyValuePair<string, string>>();
-            tagValues.Add(new KeyValuePair<string, string>(uriTagKey, uri));
-            tagValues.Add(new KeyValuePair<string, string>(statusTagKey, statusCode));
-            tagValues.Add(new KeyValuePair<string, string>(exceptionTagKey, exception));
-            tagValues.Add(new KeyValuePair<string, string>(methodTagKey, arg.Request.Method));
+            var tagValues = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>(uriTagKey, uri),
+                new KeyValuePair<string, string>(statusTagKey, statusCode),
+                new KeyValuePair<string, string>(exceptionTagKey, exception),
+                new KeyValuePair<string, string>(methodTagKey, arg.Request.Method)
+            };
 
             return tagValues;
         }

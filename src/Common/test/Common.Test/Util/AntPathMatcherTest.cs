@@ -310,9 +310,11 @@ namespace Steeltoe.Common.Util.Test
             Assert.Equal(new Dictionary<string, string>() { { "hotel", "1" } }, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
-            IDictionary<string, string> expected = new Dictionary<string, string>();
-            expected.Add("hotel", "1");
-            expected.Add("booking", "2");
+            IDictionary<string, string> expected = new Dictionary<string, string>
+            {
+                { "hotel", "1" },
+                { "booking", "2" }
+            };
             Assert.Equal(expected, result);
 
             result = pathMatcher.ExtractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
@@ -485,10 +487,11 @@ namespace Steeltoe.Common.Util.Test
         {
             var comparator = pathMatcher.GetPatternComparer("/hotels/new");
 
-            var paths = new List<string>(3);
-
-            paths.Add(null);
-            paths.Add("/hotels/new");
+            var paths = new List<string>(3)
+            {
+                null,
+                "/hotels/new"
+            };
             paths.Sort(comparator);
             Assert.Equal("/hotels/new", paths[0]);
             Assert.Null(paths[1]);

@@ -66,9 +66,10 @@ namespace Steeltoe.Common.Retry
         {
             var policy = BuildPolicy<T>();
             var retryContext = new RetryContext();
-            var context = new Context();
-
-            context.Add(RETRYCONTEXT_KEY, retryContext);
+            var context = new Context
+            {
+                { RETRYCONTEXT_KEY, retryContext }
+            };
             if (recoveryCallback != null)
             {
                 retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);
@@ -104,9 +105,10 @@ namespace Steeltoe.Common.Retry
         {
             var policy = BuildPolicy<object>();
             var retryContext = new RetryContext();
-            var context = new Context();
-
-            context.Add(RETRYCONTEXT_KEY, retryContext);
+            var context = new Context
+            {
+                { RETRYCONTEXT_KEY, retryContext }
+            };
             if (recoveryCallback != null)
             {
                 retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);

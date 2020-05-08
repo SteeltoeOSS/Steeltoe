@@ -197,10 +197,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var measure = stats.Meter.CreateDoubleMeasure("test");
 
-            var labels = new List<KeyValuePair<string, string>>();
-            labels.Add(KeyValuePair.Create("a", "v1"));
-            labels.Add(KeyValuePair.Create("b", "v1"));
-            labels.Add(KeyValuePair.Create("c", "v1"));
+            var labels = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create("a", "v1"),
+                KeyValuePair.Create("b", "v1"),
+                KeyValuePair.Create("c", "v1")
+            };
 
             for (int i = 0; i < 10; i++)
             {

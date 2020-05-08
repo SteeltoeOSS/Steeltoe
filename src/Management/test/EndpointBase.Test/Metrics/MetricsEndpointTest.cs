@@ -540,22 +540,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private List<KeyValuePair<string, string>> GetMemoryLabels()
         {
-            var labels = new List<KeyValuePair<string, string>>();
-
-            labels.Add(KeyValuePair.Create("area", string.Empty));
-            labels.Add(KeyValuePair.Create("id", string.Empty));
+            var labels = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create("area", string.Empty),
+                KeyValuePair.Create("id", string.Empty)
+            };
 
             return labels;
         }
 
         private List<KeyValuePair<string, string>> GetServerLabels()
         {
-            var labels = new List<KeyValuePair<string, string>>();
-
-            labels.Add(KeyValuePair.Create("exception", string.Empty));
-            labels.Add(KeyValuePair.Create("method", string.Empty));
-            labels.Add(KeyValuePair.Create("uri", string.Empty));
-            labels.Add(KeyValuePair.Create("status", string.Empty));
+            var labels = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create("exception", string.Empty),
+                KeyValuePair.Create("method", string.Empty),
+                KeyValuePair.Create("uri", string.Empty),
+                KeyValuePair.Create("status", string.Empty)
+            };
 
             return labels;
         }

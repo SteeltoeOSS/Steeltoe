@@ -1945,9 +1945,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     }
                 }
 
-                var shards = new List<ICollection<ICollapsedRequest<string, string>>>();
-                shards.Add(typeA);
-                shards.Add(typeB);
+                var shards = new List<ICollection<ICollapsedRequest<string, string>>>
+                {
+                    typeA,
+                    typeB
+                };
                 return shards;
             }
         }
@@ -2106,8 +2108,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine("*** execution (this shouldn't happen)");
 
                 // this won't ever get called as we're forcing short-circuiting
-                var values = new List<string>();
-                values.Add("hello");
+                var values = new List<string>
+                {
+                    "hello"
+                };
                 return values;
             }
 

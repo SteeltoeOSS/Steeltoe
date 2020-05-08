@@ -134,11 +134,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             var uri = request.RequestUri.ToString();
             var statusCode = GetStatusCode(response, taskStatus);
-            var labels = new List<KeyValuePair<string, string>>();
-            labels.Add(KeyValuePair.Create(uriTagKey, uri));
-            labels.Add(KeyValuePair.Create(statusTagKey, statusCode));
-            labels.Add(KeyValuePair.Create(clientTagKey, request.RequestUri.Host));
-            labels.Add(KeyValuePair.Create(methodTagKey, request.Method.ToString()));
+            var labels = new List<KeyValuePair<string, string>>
+            {
+                KeyValuePair.Create(uriTagKey, uri),
+                KeyValuePair.Create(statusTagKey, statusCode),
+                KeyValuePair.Create(clientTagKey, request.RequestUri.Host),
+                KeyValuePair.Create(methodTagKey, request.Method.ToString())
+            };
             return labels;
         }
 
