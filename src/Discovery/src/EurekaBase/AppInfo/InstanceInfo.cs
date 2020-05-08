@@ -282,9 +282,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 info.AppGroupName = json.AppGroupName;
                 info.IpAddr = json.IpAddr;
                 info.Port = (json.Port == null) ? 0 : json.Port.Port;
-                info.IsUnsecurePortEnabled = (json.Port == null) ? false : json.Port.Enabled;
+                info.IsUnsecurePortEnabled = json.Port != null && json.Port.Enabled;
                 info.SecurePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
-                info.IsSecurePortEnabled = (json.SecurePort == null) ? false : json.SecurePort.Enabled;
+                info.IsSecurePortEnabled = json.SecurePort != null && json.SecurePort.Enabled;
                 info.HomePageUrl = json.HomePageUrl;
                 info.StatusPageUrl = json.StatusPageUrl;
                 info.HealthCheckUrl = json.HealthCheckUrl;

@@ -25,12 +25,14 @@ namespace Steeltoe.Connector.Oracle
         /// <summary>
         /// Gets a list of supported Oracle Client assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "Oracle.ManagedDataAccess" };
 
         /// <summary>
         /// Gets a list of Oracle types that implement IDbConnection
         /// </summary>
         public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Oracle.ManagedDataAccess.Client.OracleConnection" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets SqlConnection from a Oracle Library

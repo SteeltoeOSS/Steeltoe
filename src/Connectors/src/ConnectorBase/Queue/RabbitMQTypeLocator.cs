@@ -26,6 +26,7 @@ namespace Steeltoe.Connector.RabbitMQ
         /// <summary>
         /// Gets a list of supported RabbitMQ assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "RabbitMQ.Client" };
 
         /// <summary>
@@ -37,6 +38,7 @@ namespace Steeltoe.Connector.RabbitMQ
         /// Gets a list of RabbitMQ Implementation types
         /// </summary>
         public static string[] ConnectionImplementationTypeNames { get; internal set; } = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets IConnectionFactory from a RabbitMQ Library

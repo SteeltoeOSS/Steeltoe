@@ -25,6 +25,7 @@ namespace Steeltoe.Connector.CosmosDb
         /// <summary>
         /// Gets a list of supported CosmosDbDB assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "Azure.Cosmos", "Microsoft.Azure.Cosmos.Client" };
 
         /// <summary>
@@ -33,6 +34,7 @@ namespace Steeltoe.Connector.CosmosDb
         public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClient", "Microsoft.Azure.Cosmos.CosmosClient" };
 
         public static string[] ClientOptionsTypeNames { get; internal set; } = new string[] { "Azure.Cosmos.CosmosClientOptions", "Microsoft.Azure.Cosmos.CosmosClientOptions" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets CosmosDbClient from CosmosDbDB Library

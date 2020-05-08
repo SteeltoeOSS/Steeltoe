@@ -31,11 +31,13 @@ namespace Steeltoe.Connector.SqlServer
         /// <summary>
         /// Gets the list of supported SQL Server Client assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "System.Data.SqlClient" };
 
         /// <summary>
         /// Gets the list of SQL Server types that implement IDbConnection
         /// </summary>
         public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "System.Data.SqlClient.SqlConnection" };
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

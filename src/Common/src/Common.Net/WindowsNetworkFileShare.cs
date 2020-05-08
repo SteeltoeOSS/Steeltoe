@@ -235,7 +235,8 @@ namespace Steeltoe.Common.Net
         /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
         /// </summary>
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public class NetResource
+        [StructLayout(LayoutKind.Sequential)]
+        internal class NetResource
         {
             public ResourceScope Scope;
             public ResourceType ResourceType;

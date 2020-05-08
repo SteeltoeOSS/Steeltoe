@@ -21,6 +21,7 @@ namespace Steeltoe.Connector.Redis
 {
     public static class RedisTypeLocator
     {
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] MicrosoftAssemblies { get; internal set; } = new string[] { "Microsoft.Extensions.Caching.Abstractions", "Microsoft.Extensions.Caching.Redis", "Microsoft.Extensions.Caching.StackExchangeRedis" };
 
         public static string[] MicrosoftInterfaceTypeNames { get; internal set; } = new string[] { "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
@@ -38,6 +39,7 @@ namespace Steeltoe.Connector.Redis
         public static string[] StackExchangeOptionNames { get; internal set; } = new string[] { "StackExchange.Redis.ConfigurationOptions" };
 
         public static string[] StackExchangeCommandFlagsNamesValue { get; internal set; } = new string[] { "StackExchange.Redis.CommandFlags" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets IDistributedCache from a Microsoft Cache library

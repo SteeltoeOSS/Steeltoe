@@ -321,7 +321,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type clazz)
         {
-            if (fromConstructor == null || fromConstructor.Name.Trim().Equals(string.Empty))
+            if (string.IsNullOrEmpty(fromConstructor?.Name))
             {
                 var keyName = clazz.Name;
                 return HystrixCommandKeyDefault.AsKey(keyName);

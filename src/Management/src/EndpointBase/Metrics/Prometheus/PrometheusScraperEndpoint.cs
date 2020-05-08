@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             get
             {
-                return options as IEndpointOptions;
+                return options;
             }
         }
 

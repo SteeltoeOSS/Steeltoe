@@ -25,12 +25,14 @@ namespace Steeltoe.Connector.PostgreSql
         /// <summary>
         /// Gets a list of supported PostgreSQL assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "Npgsql" };
 
         /// <summary>
         /// Gets a list of PostgreSQL types that implement IDbConnection
         /// </summary>
         public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "Npgsql.NpgsqlConnection" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets NpgsqlConnection from a PostgreSQL Library

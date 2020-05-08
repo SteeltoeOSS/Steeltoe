@@ -43,9 +43,9 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         protected virtual Dictionary<string, object> CreateDictionary(string prefix, bool keepPrefix)
         {
+            var result = new Dictionary<string, object>();
             if (_config != null)
             {
-                var result = new Dictionary<string, object>();
                 var dict = result;
 
                 var section = _config.GetSection(prefix);

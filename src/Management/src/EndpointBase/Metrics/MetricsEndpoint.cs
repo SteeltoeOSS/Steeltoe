@@ -73,36 +73,36 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             IEnumerable<MetricSample> filtered = measurements[metricName];
             var sampleList = new List<MetricSample>();
-            if (tags != null && tags.Count() > 0)
+            if (tags != null && tags.Any())
             {
                 filtered = filtered.Where(sample => tags.All(rt => sample.Tags.Any(sampleTag => rt.Key == sampleTag.Key && rt.Value == sampleTag.Value)));
             }
 
-            Func<MetricSample, MetricSample, MetricSample> sumAggregator = (current, next) => new MetricSample(current.Statistic, current.Value + next.Value, current.Tags);
+            static MetricSample SumAggregator(MetricSample current, MetricSample next) => new MetricSample(current.Statistic, current.Value + next.Value, current.Tags);
 
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
             {
-               var sample = valueSamples.Aggregate(sumAggregator);
+               var sample = valueSamples.Aggregate(SumAggregator);
                sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
             }
 
             var totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL);
             if (totalSamples.Any())
             {
-                sampleList.Add(totalSamples.Aggregate(sumAggregator));
+                sampleList.Add(totalSamples.Aggregate(SumAggregator));
             }
 
             var totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTALTIME);
             if (totalTimeSamples.Any())
             {
-                sampleList.Add(totalTimeSamples.Aggregate(sumAggregator));
+                sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
             }
 
             var countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.COUNT);
             if (countSamples.Any())
             {
-                sampleList.Add(countSamples.Aggregate(sumAggregator));
+                sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
             return sampleList;

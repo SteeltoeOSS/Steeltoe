@@ -27,6 +27,7 @@ namespace Steeltoe.Connector.MongoDb
         /// <summary>
         /// Gets a list of supported MongoDB assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "MongoDB.Driver" };
 
         /// <summary>
@@ -43,6 +44,7 @@ namespace Steeltoe.Connector.MongoDb
         /// Gets the class used for describing MongoDB connection information
         /// </summary>
         public static string[] MongoConnectionInfo { get; internal set; } = new string[] { "MongoDB.Driver.MongoUrl" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets IMongoClient from MongoDB Library

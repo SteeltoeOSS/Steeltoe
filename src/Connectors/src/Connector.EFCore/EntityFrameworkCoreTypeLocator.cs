@@ -25,6 +25,7 @@ namespace Steeltoe.Connector.EFCore
         /// <summary>
         /// Gets a list of supported MySQL Entity Framework Core Assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] MySqlEntityAssemblies { get; internal set; } = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
 
         /// <summary>
@@ -79,6 +80,7 @@ namespace Steeltoe.Connector.EFCore
         /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
         public static string[] OracleEntityTypeNames { get; internal set; } = new string[] { "Microsoft.EntityFrameworkCore.OracleDbContextOptionsExtensions", "Devart.Data.Oracle.Entity.OracleOptionsExtension" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets the type used to configure EntityFramework Core with Oracle

@@ -25,12 +25,14 @@ namespace Steeltoe.Connector.MySql
         /// <summary>
         /// Gets a list of supported MySQL assemblies
         /// </summary>
+#pragma warning disable CA1819 // Properties should not return arrays
         public static string[] Assemblies { get; internal set; } = new string[] { "MySql.Data", "MySqlConnector" };
 
         /// <summary>
         /// Gets a list of MySQL types that implement IDbConnection
         /// </summary>
         public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
+#pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
         /// Gets MySqlConnection from a MySQL Library

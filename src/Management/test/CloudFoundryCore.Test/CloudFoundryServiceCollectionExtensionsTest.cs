@@ -71,11 +71,11 @@ namespace Steeltoe.Management.CloudFoundry.Test
         public void AddCloudFoundryActuators_ConfiguresCorsCustom()
         {
             // arrange
-            Action<CorsPolicyBuilder> customCors = (myPolicy) => myPolicy.WithOrigins("http://google.com");
+            static void CustomCors(CorsPolicyBuilder myPolicy) => myPolicy.WithOrigins("http://google.com");
             var hostBuilder = new WebHostBuilder().Configure(config => { });
 
             // act
-            var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration, customCors)).Build();
+            var host = hostBuilder.ConfigureServices((context, services) => services.AddCloudFoundryActuators(context.Configuration, CustomCors)).Build();
             var options = new ApplicationBuilder(host.Services)
                                 .ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
