@@ -28,7 +28,7 @@ namespace Steeltoe.Discovery.Eureka
     {
         private class EurekaHttpClientInternal : EurekaHttpClient
         {
-            private IOptionsMonitor<EurekaClientOptions> _configOptions;
+            private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
             protected override IEurekaClientConfig Config
             {
@@ -47,8 +47,8 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        private IOptionsMonitor<EurekaClientOptions> _configOptions;
-        private IServiceInstance _thisInstance;
+        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+        private readonly IServiceInstance _thisInstance;
 
         public override IEurekaClientConfig ClientConfig
         {

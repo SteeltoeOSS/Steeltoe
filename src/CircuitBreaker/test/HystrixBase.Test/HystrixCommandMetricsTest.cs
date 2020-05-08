@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixCommandMetricsTest : HystrixTestBase, IDisposable
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixCommandMetricsTest(ITestOutputHelper output)
             : base()
@@ -209,9 +209,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class Command : HystrixCommand<bool>
         {
-            private bool shouldFail;
-            private bool shouldFailWithBadRequest;
-            private int latencyToAdd;
+            private readonly bool shouldFail;
+            private readonly bool shouldFailWithBadRequest;
+            private readonly int latencyToAdd;
 
             public Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd)
                 : base(GetUnitTestSettings(commandKey))

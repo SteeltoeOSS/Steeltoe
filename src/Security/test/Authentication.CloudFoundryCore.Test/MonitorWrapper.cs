@@ -19,7 +19,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class MonitorWrapper<T> : IOptionsMonitor<T>
     {
-        private T _options;
+        private readonly T _options;
 
         public MonitorWrapper(T options)
         {

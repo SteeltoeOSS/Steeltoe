@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Http.Test
 {
     internal class TestServiceInstance : IServiceInstance
     {
-        private Uri _uri;
+        private readonly Uri _uri;
 
         public TestServiceInstance(Uri uri)
         {

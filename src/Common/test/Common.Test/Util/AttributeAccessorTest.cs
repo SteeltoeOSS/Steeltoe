@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Util.Test
 
         private const string VALUE = "bar";
 
-        private SimpleAttributeAccessor attributeAccessor = new SimpleAttributeAccessor();
+        private readonly SimpleAttributeAccessor attributeAccessor = new SimpleAttributeAccessor();
 
         [Fact]
         public void SetAndGet()

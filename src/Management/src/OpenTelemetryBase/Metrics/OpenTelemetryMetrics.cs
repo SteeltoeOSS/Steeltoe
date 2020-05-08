@@ -23,7 +23,7 @@ namespace Steeltoe.Management.OpenTelemetry.Stats
     public class OpenTelemetryMetrics : IStats
     {
         private static readonly Lazy<OpenTelemetryMetrics> AsSingleton = new Lazy<OpenTelemetryMetrics>(() => new OpenTelemetryMetrics());
-        private Meter _meter = null;
+        private readonly Meter _meter = null;
 
         public static OpenTelemetryMetrics Instance => AsSingleton.Value;
 

@@ -27,7 +27,7 @@ namespace Steeltoe.Discovery.Eureka
         protected static readonly ApplicationInfoManager _instance = new ApplicationInfoManager();
         protected ILogger _logger;
 
-        private object _statusChangedLock = new object();
+        private readonly object _statusChangedLock = new object();
 
         public static ApplicationInfoManager Instance => _instance;
 

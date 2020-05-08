@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {
     internal class HystrixOptionsStrategyDefault : HystrixOptionsStrategy
     {
-        private static HystrixOptionsStrategyDefault instance = new HystrixOptionsStrategyDefault();
+        private static readonly HystrixOptionsStrategyDefault instance = new HystrixOptionsStrategyDefault();
 
         private HystrixOptionsStrategyDefault()
         {

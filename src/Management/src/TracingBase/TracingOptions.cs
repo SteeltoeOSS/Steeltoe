@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Tracing
         internal const string CONFIG_PREFIX = "management:tracing";
         internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
         internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
-        private IApplicationInstanceInfo applicationInstanceInfo;
+        private readonly IApplicationInstanceInfo applicationInstanceInfo;
 
         public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
         {

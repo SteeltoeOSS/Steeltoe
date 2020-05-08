@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
         private const string GENERATION_TAGVALUE_NAME = "gen";
 
-        private static string[] _ignorePayloadNames = new string[]
+        private static readonly string[] _ignorePayloadNames = new string[]
         {
                 "ClrInstanceID"
         };

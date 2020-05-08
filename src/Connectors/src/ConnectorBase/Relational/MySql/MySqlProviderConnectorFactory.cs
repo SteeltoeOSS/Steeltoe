@@ -20,9 +20,9 @@ namespace Steeltoe.Connector.MySql
 {
     public class MySqlProviderConnectorFactory
     {
-        private MySqlServiceInfo _info;
-        private MySqlProviderConnectorOptions _config;
-        private MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
+        private readonly MySqlServiceInfo _info;
+        private readonly MySqlProviderConnectorOptions _config;
+        private readonly MySqlProviderConfigurer _configurer = new MySqlProviderConfigurer();
 
         public MySqlProviderConnectorFactory()
         {

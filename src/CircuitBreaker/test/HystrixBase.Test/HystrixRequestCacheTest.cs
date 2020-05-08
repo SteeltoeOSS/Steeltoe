@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixRequestCacheTest : HystrixTestBase
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixRequestCacheTest(ITestOutputHelper output)
             : base()

@@ -39,7 +39,7 @@ namespace Steeltoe.Management.TracingCore
             return (activityTraceFlags & ActivityTraceFlags.Recorded) != 0;
         }
 
-        private static Lazy<Type> _spanSdk = new Lazy<Type>(() =>
+        private static readonly Lazy<Type> _spanSdk = new Lazy<Type>(() =>
         {
             Console.WriteLine("test");
             return Assembly.Load("OpenTelemetry").GetType("OpenTelemetry.Trace.SpanSdk");

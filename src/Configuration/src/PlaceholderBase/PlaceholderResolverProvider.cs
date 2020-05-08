@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
     {
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
-        private IList<string> _resolvedKeys = new List<string>();
+        private readonly IList<string> _resolvedKeys = new List<string>();
 
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps

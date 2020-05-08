@@ -18,7 +18,7 @@ namespace Steeltoe.Connector.Services.Test
 {
     public class TagsTest
     {
-        private static Tags emptyTags = new Tags();
+        private static readonly Tags emptyTags = new Tags();
 
         [Fact]
         public void ContainsOne()

@@ -22,10 +22,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
         private readonly HystrixCommandMetrics metrics;
 
         /* track whether this circuit is open/closed at any given point in time (default to false==closed) */
-        private AtomicBoolean circuitOpen = new AtomicBoolean(false);
+        private readonly AtomicBoolean circuitOpen = new AtomicBoolean(false);
 
         /* when the circuit was marked open or was last allowed to try a 'singleTest' */
-        private AtomicLong circuitOpenedOrLastTestedTime = new AtomicLong();
+        private readonly AtomicLong circuitOpenedOrLastTestedTime = new AtomicLong();
 
         protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {

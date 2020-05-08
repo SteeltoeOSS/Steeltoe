@@ -21,7 +21,7 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class ThisServiceInstance : IServiceInstance
     {
-        private IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+        private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
         private EurekaInstanceOptions InstConfig
         {

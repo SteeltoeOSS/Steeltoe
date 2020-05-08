@@ -20,9 +20,9 @@ namespace Steeltoe.Connector.OAuth
 {
     public class OAuthConnectorFactory
     {
-        private SsoServiceInfo _info;
-        private OAuthConnectorOptions _config;
-        private OAuthConfigurer _configurer = new OAuthConfigurer();
+        private readonly SsoServiceInfo _info;
+        private readonly OAuthConnectorOptions _config;
+        private readonly OAuthConfigurer _configurer = new OAuthConfigurer();
 
         public OAuthConnectorFactory(SsoServiceInfo sinfo, OAuthConnectorOptions config)
         {

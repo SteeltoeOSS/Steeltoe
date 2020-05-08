@@ -20,10 +20,10 @@ namespace Steeltoe.Connector.PostgreSql
 {
     public class PostgresProviderConnectorFactory
     {
-        private PostgresServiceInfo _info;
-        private PostgresProviderConnectorOptions _config;
-        private PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
-        private Type _type;
+        private readonly PostgresServiceInfo _info;
+        private readonly PostgresProviderConnectorOptions _config;
+        private readonly PostgresProviderConfigurer _configurer = new PostgresProviderConfigurer();
+        private readonly Type _type;
 
         public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
         {

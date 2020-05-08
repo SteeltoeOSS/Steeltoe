@@ -79,7 +79,7 @@ namespace Steeltoe.Common.Net
         };
 
         private readonly string _networkName;
-        private IMPR _mpr;
+        private readonly IMPR _mpr;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.

@@ -28,7 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
             return ThreadPools.GetOrAddEx(key, (k) => new HystrixThreadPoolDefault(threadPoolKey, propertiesBuilder));
         }
 
-        private static object shutdownLock = new object();
+        private static readonly object shutdownLock = new object();
 
         internal static ConcurrentDictionary<string, IHystrixThreadPool> ThreadPools { get; } = new ConcurrentDictionary<string, IHystrixThreadPool>();
 

@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 {
     public class HystrixRollingNumberTest
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixRollingNumberTest(ITestOutputHelper output)
         {

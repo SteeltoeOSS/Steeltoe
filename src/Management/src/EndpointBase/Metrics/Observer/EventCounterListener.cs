@@ -31,8 +31,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly ILogger<EventCounterListener> _logger;
         private readonly string _eventSourceName = "System.Runtime";
 
-        private ConcurrentDictionary<string, MeasureMetric<double>> doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
-        private ConcurrentDictionary<string, MeasureMetric<long>> longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
+        private readonly ConcurrentDictionary<string, MeasureMetric<double>> doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
+        private readonly ConcurrentDictionary<string, MeasureMetric<long>> longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
 
         public EventCounterListener(IStats stats, ILogger<EventCounterListener> logger = null)
         {

@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected ILogger _logger;
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
-        private IOptionsMonitor<EurekaClientOptions> _configOptions;
+        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
         public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IHttpClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
         {

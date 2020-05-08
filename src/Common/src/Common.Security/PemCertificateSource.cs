@@ -20,8 +20,8 @@ namespace Steeltoe.Common.Security
 {
     public class PemCertificateSource : ICertificateSource
     {
-        private string _certFilePath;
-        private string _keyFilePath;
+        private readonly string _certFilePath;
+        private readonly string _keyFilePath;
 
         public PemCertificateSource(string certFilePath, string keyFilePath)
         {

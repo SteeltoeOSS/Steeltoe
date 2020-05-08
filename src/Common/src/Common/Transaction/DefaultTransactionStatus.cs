@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Transaction
 {
     public class DefaultTransactionStatus : AbstractTransactionStatus
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public DefaultTransactionStatus(object transaction, bool newTransaction, bool newSynchronization, bool readOnly, object suspendedResources, ILogger logger)
         {

@@ -332,7 +332,7 @@ namespace Steeltoe.Discovery.Client
 
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
         {
-            private T _option;
+            private readonly T _option;
 
             public OptionsMonitorWrapper(T option)
             {

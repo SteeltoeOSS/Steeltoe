@@ -30,10 +30,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class HealthCountsStreamTest : CommandStreamTest, IDisposable
     {
-        private static IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HealthCounts");
+        private static readonly IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("HealthCounts");
         private HealthCountsStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<HealthCounts>
         {

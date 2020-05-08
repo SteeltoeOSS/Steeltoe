@@ -30,12 +30,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
     /// </summary>
     public class SerilogDynamicProvider : IDynamicLoggerProvider
     {
-        private Logger _globalLogger;
-        private ISerilogOptions _serilogOptions;
+        private readonly Logger _globalLogger;
+        private readonly ISerilogOptions _serilogOptions;
 
         private ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
         private ConcurrentDictionary<string, LoggingLevelSwitch> _loggerSwitches = new ConcurrentDictionary<string, LoggingLevelSwitch>();
-        private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
+        private readonly ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
 

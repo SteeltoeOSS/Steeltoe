@@ -42,7 +42,7 @@ namespace Steeltoe.Connector.RabbitMQ
 
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
-        private object _connFactory;
+        private readonly object _connFactory;
 
         public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {

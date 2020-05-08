@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {
     public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
     {
-        private IConfiguration configSource;
+        private readonly IConfiguration configSource;
 
         public HystrixDynamicOptionsDefault(IConfiguration configSource)
         {

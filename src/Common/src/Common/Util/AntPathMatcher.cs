@@ -710,9 +710,9 @@ namespace Steeltoe.Common.Util
 
                 private int doubleWildcards;
 
-                private bool catchAllPattern;
+                private readonly bool catchAllPattern;
 
-                private bool prefixPattern;
+                private readonly bool prefixPattern;
 
                 private int? length;
 
@@ -820,7 +820,7 @@ namespace Steeltoe.Common.Util
             private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
             private static readonly Regex GLOB_PATTERN = new Regex("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
             private readonly List<string> _variableNames = new List<string>();
-            private Regex pattern;
+            private readonly Regex pattern;
 
             public AntPathStringMatcher(string pattern)
             : this(pattern, true)

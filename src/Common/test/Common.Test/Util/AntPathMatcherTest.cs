@@ -581,7 +581,7 @@ namespace Steeltoe.Common.Util.Test
             paths.Clear();
         }
 
-        private static Random rng = new Random();
+        private static readonly Random rng = new Random();
 
         private static void Shuffle<T>(List<T> list)
         {

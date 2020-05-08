@@ -28,14 +28,14 @@ namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryHostBuilderExtensionsTest
     {
-        private static Dictionary<string, string> eurekaSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> eurekaSettings = new Dictionary<string, string>()
         {
             ["eureka:client:shouldRegister"] = "true",
             ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
             ["eureka:client:eurekaServer:retryCount"] = "0",
         };
 
-        private static Dictionary<string, string> consulSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> consulSettings = new Dictionary<string, string>()
         {
             ["consul:discovery:serviceName"] = "testhost",
             ["consul:discovery:enabled"] = "true",

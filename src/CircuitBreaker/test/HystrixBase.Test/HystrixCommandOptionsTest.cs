@@ -323,7 +323,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class JsonStreamConfigurationProvider : JsonConfigurationProvider
         {
-            private MemoryStream _stream;
+            private readonly MemoryStream _stream;
 
             internal JsonStreamConfigurationProvider(JsonConfigurationSource source, MemoryStream stream)
                 : base(source)
@@ -339,7 +339,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class JsonStreamConfigurationSource : JsonConfigurationSource
         {
-            private MemoryStream _stream;
+            private readonly MemoryStream _stream;
 
             internal JsonStreamConfigurationSource(MemoryStream stream)
             {

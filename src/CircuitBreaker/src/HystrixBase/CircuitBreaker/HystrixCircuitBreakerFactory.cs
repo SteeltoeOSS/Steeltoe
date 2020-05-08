@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
     public static class HystrixCircuitBreakerFactory
     {
-        private static ConcurrentDictionary<string, ICircuitBreaker> circuitBreakersByCommand = new ConcurrentDictionary<string, ICircuitBreaker>();
+        private static readonly ConcurrentDictionary<string, ICircuitBreaker> circuitBreakersByCommand = new ConcurrentDictionary<string, ICircuitBreaker>();
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {

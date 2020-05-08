@@ -34,7 +34,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
 {
     public class CloudFoundryHostBuilderExtensionsTest
     {
-        private static Dictionary<string, string> managementSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> managementSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:path"] = "/testing",
         };

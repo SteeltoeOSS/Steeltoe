@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class TestSink : ILogEventSink
     {
-        private List<string> logs = new List<string>();
+        private readonly List<string> logs = new List<string>();
 
         public void Emit(LogEvent logEvent)
         {

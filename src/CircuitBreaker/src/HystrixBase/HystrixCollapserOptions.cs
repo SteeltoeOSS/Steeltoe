@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal const int DEFAULT_METRICS_ROLLING_PERCENTILE_BUCKET_SIZE = 100; // default to 100 values max per bucket
 
         protected const string HYSTRIX_COLLAPSER_PREFIX = "hystrix:collapser";
-        private IHystrixCollapserOptions defaults;
+        private readonly IHystrixCollapserOptions defaults;
 
         public HystrixCollapserOptions(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions defaults = null, IHystrixDynamicOptions dynamic = null)
             : this(collapserKey, RequestCollapserScope.REQUEST, defaults, dynamic)

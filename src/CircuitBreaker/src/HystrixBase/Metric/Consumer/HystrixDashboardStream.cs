@@ -39,7 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         }
 
         // The data emission interval is looked up on startup only
-        private static HystrixDashboardStream instance =
+        private static readonly HystrixDashboardStream instance =
                 new HystrixDashboardStream(Default_Dashboard_IntervalInMilliseconds);
 
         public static HystrixDashboardStream GetInstance()

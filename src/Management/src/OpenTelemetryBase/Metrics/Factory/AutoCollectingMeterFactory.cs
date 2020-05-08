@@ -32,7 +32,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
         private readonly Task _worker;
         private readonly MetricProcessor _processor;
 
-        private MeterFactory _meterFactory;
+        private readonly MeterFactory _meterFactory;
         private TimeSpan _collectionInterval;
 
         public AutoCollectingMeterFactory(MetricProcessor processor, TimeSpan timeSpan)

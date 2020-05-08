@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
         private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
 
-        private static string[] _allowedEvents = new string[]
+        private static readonly string[] _allowedEvents = new string[]
         {
             "ThreadPoolWorkerThreadStart",
             "ThreadPoolWorkerThreadWait",
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             "IOThreadTerminate"
         };
 
-        private static string[] _ignorePayloadNames = new string[]
+        private static readonly string[] _ignorePayloadNames = new string[]
         {
             "ClrInstanceID"
         };

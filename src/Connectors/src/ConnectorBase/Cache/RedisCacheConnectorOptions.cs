@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.Redis
         private const string Default_Host = "localhost";
         private const int Default_Port = 6379;
         private const string RedisClientSectionPrefix = "redis:client";
-        private bool cloudFoundryConfigFound = false;
+        private readonly bool cloudFoundryConfigFound = false;
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)

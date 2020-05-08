@@ -27,7 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     {
         protected BehaviorSubject<Output> counterSubject;
         private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
-        private IObservable<Output> sourceStream;
+        private readonly IObservable<Output> sourceStream;
 
         protected BucketedRollingCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, appendRawEventToBucket)

@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier
 {
     public class HystrixEventNotifierDefault : HystrixEventNotifier
     {
-        private static HystrixEventNotifierDefault instance = new HystrixEventNotifierDefault();
+        private static readonly HystrixEventNotifierDefault instance = new HystrixEventNotifierDefault();
 
         private HystrixEventNotifierDefault()
         {

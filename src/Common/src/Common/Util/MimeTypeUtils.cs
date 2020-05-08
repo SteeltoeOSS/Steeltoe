@@ -53,7 +53,7 @@ namespace Steeltoe.Common.Util
 
         private static volatile Random _random;
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public static MimeType ParseMimeType(string mimeType)
         {

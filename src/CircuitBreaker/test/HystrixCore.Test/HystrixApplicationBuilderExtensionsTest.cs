@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixApplicationBuilderExtensionsTest
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixApplicationBuilderExtensionsTest(ITestOutputHelper output)
             : base()

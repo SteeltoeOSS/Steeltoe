@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaApplicationInfoManager : ApplicationInfoManager
     {
-        private IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+        private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
         public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory logFactory = null)
         {

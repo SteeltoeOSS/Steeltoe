@@ -27,7 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     {
         private const int NUM_CONCURRENT_COMMANDS = 30;
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
             : base()

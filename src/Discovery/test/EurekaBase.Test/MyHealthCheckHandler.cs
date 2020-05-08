@@ -18,7 +18,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class MyHealthCheckHandler : IHealthCheckHandler
     {
-        private InstanceStatus _status;
+        private readonly InstanceStatus _status;
 
         public bool Called { get; set; }
 

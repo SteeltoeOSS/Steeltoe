@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal readonly int _bucketSizeInMilliseconds;
         internal readonly bool _enabled;
 
-        private static ITime actual_time = new ActualTime();
+        private static readonly ITime actual_time = new ActualTime();
         private readonly ITime time;
 
         /*
@@ -137,7 +137,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         private PercentileSnapshot CurrentPercentileSnapshot => currentPercentileSnapshot;
 
-        private object newBucketLock = new object();
+        private readonly object newBucketLock = new object();
 
         private Bucket GetCurrentBucket()
         {
@@ -309,7 +309,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             private readonly int[] data;
             private readonly int length;
-            private int mean;
+            private readonly int mean;
 
             /* package for testing */
             public PercentileSnapshot(Bucket[] buckets)

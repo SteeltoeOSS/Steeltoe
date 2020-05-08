@@ -38,13 +38,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
         private static HttpClientHandler _httpClientHandler;
         private static ILogger _logger;
         private static string _baseCredHubUrl;
-        private JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
+        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
         {
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             NullValueHandling = NullValueHandling.Ignore
         };
 
-        private bool _validateCertificates;
+        private readonly bool _validateCertificates;
 
         public CredHubClient(bool validateCertificates = true)
         {

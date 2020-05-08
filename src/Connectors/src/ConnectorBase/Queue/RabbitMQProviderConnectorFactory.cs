@@ -21,10 +21,10 @@ namespace Steeltoe.Connector.RabbitMQ
 {
     public class RabbitMQProviderConnectorFactory
     {
-        private RabbitMQServiceInfo _info;
-        private RabbitMQProviderConnectorOptions _config;
-        private RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
-        private MethodInfo _setUri;
+        private readonly RabbitMQServiceInfo _info;
+        private readonly RabbitMQProviderConnectorOptions _config;
+        private readonly RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
+        private readonly MethodInfo _setUri;
 
         public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo sinfo, RabbitMQProviderConnectorOptions config, Type connectFactory)
         {

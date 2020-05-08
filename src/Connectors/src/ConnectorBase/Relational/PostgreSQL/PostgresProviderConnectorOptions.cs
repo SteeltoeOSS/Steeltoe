@@ -23,7 +23,7 @@ namespace Steeltoe.Connector.PostgreSql
         public const string Default_Host = "localhost";
         public const int Default_Port = 5432;
         private const string POSTGRES_CLIENT_SECTION_PREFIX = "postgres:client";
-        private bool cloudFoundryConfigFound = false;
+        private readonly bool cloudFoundryConfigFound = false;
 
         public PostgresProviderConnectorOptions()
         {

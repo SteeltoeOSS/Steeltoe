@@ -24,7 +24,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin
         internal const string DEFAULT_ENDPOINT = "http://localhost:9411/api/v2/spans";
 
         private const string CONFIG_PREFIX = "management:tracing:exporter:zipkin";
-        private IApplicationInstanceInfo applicationInstanceInfo;
+        private readonly IApplicationInstanceInfo applicationInstanceInfo;
 
         public TraceExporterOptions()
         {

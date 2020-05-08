@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             return jsonList;
         }
 
-        private static string contextId = Guid.NewGuid().ToString();
+        private static readonly string contextId = Guid.NewGuid().ToString();
 
         private static void WriteLocalService(JsonTextWriter writer, IServiceInstance localService)
         {

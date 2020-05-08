@@ -33,7 +33,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         private readonly MetricExporter exporter;
         private readonly Task worker;
         private readonly TimeSpan exportInterval;
-        private CancellationTokenSource cts;
+        private readonly CancellationTokenSource cts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SteeltoeProcessor"/> class.

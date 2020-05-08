@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-        private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
+        private readonly IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
 
         [Fact]
         public async void HandleEnvRequestAsync_ReturnsExpected()

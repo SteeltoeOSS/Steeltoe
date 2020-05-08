@@ -53,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         }
 
         // The data emission interval is looked up on startup only
-        private static HystrixUtilizationStream instance =
+        private static readonly HystrixUtilizationStream instance =
                     new HystrixUtilizationStream(DataEmissionIntervalInMs);
 
         public static HystrixUtilizationStream GetInstance()

@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
     {
-        private T _opt;
+        private readonly T _opt;
 
         public TestOptionMonitorWrapper(T opt)
         {

@@ -26,8 +26,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
 {
     public class CredHubClientTests
     {
-        private Uri tokenUri = new Uri("http://uaa-server/oauth/token");
-        private string credHubBase = "http://credhubServer/api/";
+        private readonly Uri tokenUri = new Uri("http://uaa-server/oauth/token");
+        private readonly string credHubBase = "http://credhubServer/api/";
 
         [Fact]
         public async void CreateAsync_RequestsToken_Once()

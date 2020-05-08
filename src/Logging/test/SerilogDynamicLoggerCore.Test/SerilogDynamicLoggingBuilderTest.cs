@@ -25,7 +25,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class SerilogDynamicLoggingBuilderTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> appsettings = new Dictionary<string, string>()
         {
             { "Serilog:MinimumLevel:Default", "Verbose" }, // Sets level of root logger so has to be higher than any sub logger
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
