@@ -149,7 +149,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
             async Task<IList<IServiceInstance>> GetAllInstancesAsync()
             {
-                queryOptions = queryOptions ?? QueryOptions.Default;
+                queryOptions ??= QueryOptions.Default;
                 var instances = new List<IServiceInstance>();
                 var result = await GetServicesAsync().ConfigureAwait(false);
                 foreach (var serviceId in result)
@@ -168,7 +168,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <returns>the list of services</returns>
         public IList<string> GetServices(QueryOptions queryOptions = null)
         {
-            queryOptions = queryOptions ?? QueryOptions.Default;
+            queryOptions ??= QueryOptions.Default;
             return GetServicesAsync(queryOptions).GetAwaiter().GetResult();
         }
 
@@ -181,7 +181,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         internal async Task<IList<string>> GetServicesAsync(QueryOptions queryOptions = null)
         {
-            queryOptions = queryOptions ?? QueryOptions.Default;
+            queryOptions ??= QueryOptions.Default;
             var result = await _client.Catalog.Services(queryOptions).ConfigureAwait(false);
             var response = result.Response;
             return response.Keys.ToList();

@@ -88,14 +88,13 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleExceptionEvent(HttpRequestMessage request, Exception exception)
         {
-            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out var context))
             {
                 Logger?.LogDebug("HandleExceptionEvent: Missing span context");
                 return;
             }
 
-            var span = context as TelemetrySpan;
-            if (span == null)
+            if (!(context is TelemetrySpan span))
             {
                 Logger?.LogDebug("HandleExceptionEvent: Active span missing, {exception}", exception);
                 return;
@@ -114,7 +113,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (request.Properties.TryGetValue(SPANCONTEXT_KEY, out var context))
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;
@@ -146,14 +145,13 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleStopEvent(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
         {
-            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out var context))
             {
                 Logger?.LogDebug("HandleStopEvent: Missing span context");
                 return;
             }
 
-            var span = context as TelemetrySpan;
-            if (span != null)
+            if (context is TelemetrySpan span)
             {
                 if (response != null)
                 {

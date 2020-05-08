@@ -21,7 +21,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Constructor_InitsDefaults()
         {
-            ConsulRetryOptions opts = new ConsulRetryOptions();
+            var opts = new ConsulRetryOptions();
             Assert.False(opts.Enabled);
             Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_ATTEMPTS, opts.MaxAttempts);
             Assert.Equal(ConsulRetryOptions.DEFAULT_INITIAL_RETRY_INTERVAL, opts.InitialInterval);

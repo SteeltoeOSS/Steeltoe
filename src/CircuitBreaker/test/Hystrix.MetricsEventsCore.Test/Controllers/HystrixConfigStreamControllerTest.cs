@@ -77,12 +77,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
             Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
             var reader = new StreamReader(result);
-            string data = reader.ReadLine();
+            var data = reader.ReadLine();
             reader.Dispose();
 
             Assert.False(string.IsNullOrEmpty(data));
             Assert.StartsWith("data: ", data);
-            string jsonObject = data.Substring(6);
+            var jsonObject = data.Substring(6);
             var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObject);
             Assert.NotNull(dict);
 
@@ -90,7 +90,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
             Assert.Equal("HystrixConfig", dict["type"]);
             Assert.NotNull(dict["commands"]);
             Assert.NotNull(dict["threadpools"]);
-            JObject cmds = (JObject)dict["commands"];
+            var cmds = (JObject)dict["commands"];
             Assert.NotNull(cmds["MyCommand"]);
         }
     }

@@ -581,7 +581,7 @@ namespace Steeltoe.Common.Util.Test
             paths.Clear();
         }
 
-        private static readonly Random rng = new Random();
+        private static readonly Random Rng = new Random();
 
         private static void Shuffle<T>(List<T> list)
         {
@@ -589,7 +589,7 @@ namespace Steeltoe.Common.Util.Test
             while (n > 1)
             {
                 n--;
-                var k = rng.Next(n + 1);
+                var k = Rng.Next(n + 1);
                 var value = list[k];
                 list[k] = list[n];
                 list[n] = value;

@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             IHystrixCommandGroupKey groupKey,
             IHystrixCommandOptions commandProperties)
         {
-            HystrixCommandExecutionConfig executionConfig = new HystrixCommandExecutionConfig(
+            var executionConfig = new HystrixCommandExecutionConfig(
                     commandProperties.ExecutionIsolationSemaphoreMaxConcurrentRequests,
                     commandProperties.ExecutionIsolationStrategy,
                     false,
@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                     commandProperties.RequestCacheEnabled,
                     commandProperties.RequestLogEnabled);
 
-            HystrixCommandCircuitBreakerConfig circuitBreakerConfig = new HystrixCommandCircuitBreakerConfig(
+            var circuitBreakerConfig = new HystrixCommandCircuitBreakerConfig(
                     commandProperties.CircuitBreakerEnabled,
                     commandProperties.CircuitBreakerErrorThresholdPercentage,
                     commandProperties.CircuitBreakerForceClosed,
@@ -60,7 +60,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
                     commandProperties.CircuitBreakerRequestVolumeThreshold,
                     commandProperties.CircuitBreakerSleepWindowInMilliseconds);
 
-            HystrixCommandMetricsConfig metricsConfig = new HystrixCommandMetricsConfig(
+            var metricsConfig = new HystrixCommandMetricsConfig(
                     commandProperties.MetricsHealthSnapshotIntervalInMilliseconds,
                     commandProperties.MetricsRollingPercentileEnabled,
                     commandProperties.MetricsRollingPercentileWindowBuckets,

@@ -62,7 +62,7 @@ namespace Steeltoe.Management.Endpoint.Info
 
         private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)
         {
-            List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
+            var descriptors = new List<ServiceDescriptor>();
             foreach (var instance in contributors)
             {
                 descriptors.Add(ServiceDescriptor.Singleton<IInfoContributor>(instance));

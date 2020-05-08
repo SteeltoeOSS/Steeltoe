@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             var context = default(SpanContext);
             memoryUsed.Record(context, metrics.TotalMemory, memoryLabels);
-            for (int i = 0; i < metrics.CollectionCounts.Count; i++)
+            for (var i = 0; i < metrics.CollectionCounts.Count; i++)
             {
                 var count = metrics.CollectionCounts[i];
                 if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count && previous.CollectionCounts[i] <= count)

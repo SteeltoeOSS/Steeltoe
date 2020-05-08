@@ -99,8 +99,7 @@ namespace Steeltoe.Common.Util
 
             foreach (var kvp in _attributes)
             {
-                object value2;
-                if (!accessor._attributes.TryGetValue(kvp.Key, out value2))
+                if (!accessor._attributes.TryGetValue(kvp.Key, out var value2))
                 {
                     return false;
                 }

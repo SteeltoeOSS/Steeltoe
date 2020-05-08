@@ -52,13 +52,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public async Task<HttpResponseMessage> ExchangeCodeForToken(string code, string targetUrl, CancellationToken cancellationToken)
         {
             var requestParameters = AuthCodeTokenRequestParameters(code);
-            HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
+            var requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
             _logger?.LogDebug("Exchanging code {code} for token at {accessTokenUrl}", code, targetUrl);
 
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
-                out SecurityProtocolType protocolType,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var protocolType,
+                out var prevValidator);
 
             HttpResponseMessage response;
             try
@@ -80,7 +80,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>The user's ClaimsIdentity</returns>
         public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
         {
-            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
+            var response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -90,7 +90,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);
 #endif
-                JwtSecurityToken securityToken = new JwtSecurityToken(tokens.IdentityToken);
+                var securityToken = new JwtSecurityToken(tokens.IdentityToken);
 
                 return BuildIdentityWithClaims(securityToken.Claims, tokens.Scope, tokens.AccessToken);
             }
@@ -111,9 +111,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>HttpResponse from the auth server</returns>
         public async Task<HttpResponseMessage> GetAccessTokenWithClientCredentials(string targetUrl)
         {
-            HttpRequestMessage requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
+            var requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
 
-            HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out var protocolType, out var prevValidator);
 
             HttpResponseMessage response;
             try
@@ -198,9 +198,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             // raw dump of claims, exclude mapped typedClaimNames
             var claimsId = new ClaimsIdentity(typedClaims, _options.SignInAsAuthenticationType);
 
-            string userName = claims.First(c => c.Type == "user_name").Value;
-            string email = claims.First(c => c.Type == "email").Value;
-            string userId = claims.First(c => c.Type == "user_id").Value;
+            var userName = claims.First(c => c.Type == "user_name").Value;
+            var email = claims.First(c => c.Type == "email").Value;
+            var userId = claims.First(c => c.Type == "user_id").Value;
 
             claimsId.AddClaims(new List<Claim>
                     {

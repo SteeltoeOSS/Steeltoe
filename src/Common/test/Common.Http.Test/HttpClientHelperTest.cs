@@ -36,7 +36,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = null;
 
-            HttpClientHelper.ConfigureCertificateValidation(false, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(false, out var protocolType, out var prevValidator);
 
             if (Platform.IsNetCore)
             {
@@ -57,7 +57,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls;
             ServicePointManager.ServerCertificateValidationCallback = null;
 
-            HttpClientHelper.ConfigureCertificateValidation(true, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(true, out var protocolType, out var prevValidator);
 
             if (Platform.IsNetCore)
             {
@@ -79,7 +79,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
             RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType protocolType = SecurityProtocolType.Tls;
+            var protocolType = SecurityProtocolType.Tls;
 
             HttpClientHelper.RestoreCertificateValidation(false, protocolType, prevValidator);
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Common.Http.Test
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
 
             RemoteCertificateValidationCallback prevValidator = null;
-            SecurityProtocolType protocolType = SecurityProtocolType.Tls;
+            var protocolType = SecurityProtocolType.Tls;
 
             HttpClientHelper.RestoreCertificateValidation(true, protocolType, prevValidator);
 
@@ -123,20 +123,20 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void GetEncodedUserPassword_Nulls()
         {
-            string result = HttpClientHelper.GetEncodedUserPassword(null, null);
+            var result = HttpClientHelper.GetEncodedUserPassword(null, null);
             Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Empty + ":" + string.Empty)), result);
 
-            string result2 = HttpClientHelper.GetEncodedUserPassword("foo", null);
+            var result2 = HttpClientHelper.GetEncodedUserPassword("foo", null);
             Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + string.Empty)), result2);
 
-            string result3 = HttpClientHelper.GetEncodedUserPassword(null, "bar");
+            var result3 = HttpClientHelper.GetEncodedUserPassword(null, "bar");
             Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Empty + ":" + "bar")), result3);
         }
 
         [Fact]
         public void GetEncodedUserPassword_NotNulls()
         {
-            string result = HttpClientHelper.GetEncodedUserPassword("foo", "bar");
+            var result = HttpClientHelper.GetEncodedUserPassword("foo", "bar");
             Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar")), result);
         }
 

@@ -111,8 +111,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             await middle.HandleMetricsRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"names\":[]}", json);
         }
 
@@ -151,8 +151,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal(200, context.Response.StatusCode);
 
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
@@ -204,7 +204,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 KeyValuePair.Create("c", "v1")
             };
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 measure.Record(default(SpanContext), i, labels);
             }

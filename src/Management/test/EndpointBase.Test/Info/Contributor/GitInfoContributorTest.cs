@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void ReadEmptyGitPropertiesFile()
         {
-            string path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "empty.git.properties";
+            var path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "empty.git.properties";
             var config = new GitInfoContributor().ReadGitProperties(path);
             Assert.Null(config);
         }
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void ReadMalformedGitPropertiesFile()
         {
-            string path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "garbage.git.properties";
+            var path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "garbage.git.properties";
             var config = new GitInfoContributor().ReadGitProperties(path);
             Assert.NotNull(config);
             Assert.Null(config["git"]);
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void ReadGoodPropertiesFile()
         {
-            string path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "git.properties";
+            var path = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "git.properties";
             var config = new GitInfoContributor().ReadGitProperties(path);
             Assert.NotNull(config);
             Assert.Equal("true", config["git:dirty"]);

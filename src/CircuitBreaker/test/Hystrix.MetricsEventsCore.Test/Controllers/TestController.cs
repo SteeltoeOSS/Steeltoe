@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
         [HttpGet]
         public async Task<IActionResult> RunCommand()
         {
-            MyCommand cmd = new MyCommand();
+            var cmd = new MyCommand();
             await cmd.ExecuteAsync();
             return Ok();
         }

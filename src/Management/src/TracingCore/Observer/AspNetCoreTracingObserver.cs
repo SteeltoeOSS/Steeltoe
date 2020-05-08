@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal virtual bool ShouldIgnoreRequest(PathString pathString)
         {
-            string path = pathString.Value;
+            var path = pathString.Value;
             if (string.IsNullOrEmpty(path))
             {
                 return false;

@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             };
 
             IList<Bucket> emptyEventCountsToStart = new List<Bucket>();
-            for (int i = 0; i < numBuckets; i++)
+            for (var i = 0; i < numBuckets; i++)
             {
                 emptyEventCountsToStart.Add(EmptyBucketSummary);
             }
@@ -68,7 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public void Unsubscribe()
         {
-            IDisposable s = subscription.Value;
+            var s = subscription.Value;
             if (s != null)
             {
                 s.Dispose();

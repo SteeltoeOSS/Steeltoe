@@ -29,8 +29,8 @@ namespace Steeltoe.Management.Endpoint
 
         public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
         {
-            string contentHeader = APP_JSON;
-            string versionContentHeader = GetContentTypeHeaderForVersion(version);
+            var contentHeader = APP_JSON;
+            var versionContentHeader = GetContentTypeHeaderForVersion(version);
 
             if (acceptHeaders != null && acceptHeaders.Any(x => x == ANY || x == versionContentHeader))
             {

@@ -78,7 +78,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void TryGet_ReturnsResolvedValues()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -92,7 +92,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             var holder = new PlaceholderResolverProvider(providers);
 
-            Assert.False(holder.TryGet("nokey", out string val));
+            Assert.False(holder.TryGet("nokey", out var val));
             Assert.True(holder.TryGet("key1", out val));
             Assert.Equal("value1", val);
             Assert.True(holder.TryGet("key2", out val));
@@ -106,7 +106,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Set_SetsValues_ReturnsResolvedValues()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -120,7 +120,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             var holder = new PlaceholderResolverProvider(providers);
 
-            Assert.False(holder.TryGet("nokey", out string val));
+            Assert.False(holder.TryGet("nokey", out var val));
             Assert.True(holder.TryGet("key1", out val));
             Assert.Equal("value1", val);
             Assert.True(holder.TryGet("key2", out val));
@@ -170,9 +170,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings1);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName, false, true);
@@ -185,7 +185,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.NotNull(token);
             Assert.False(token.HasChanged);
 
-            Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
+            Assert.True(holder.TryGet("spring:cloud:config:name", out var val));
             Assert.Equal("myName", val);
 
             File.WriteAllText(path, appsettings2);
@@ -202,7 +202,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Load_CreatesConfiguration()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -254,9 +254,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings1);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName, false, true);
@@ -265,7 +265,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var config = configurationBuilder.Build();
 
             var holder = new PlaceholderResolverProvider(config);
-            Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
+            Assert.True(holder.TryGet("spring:cloud:config:name", out var val));
             Assert.Equal("myName", val);
 
             File.WriteAllText(path, appsettings2);
@@ -280,7 +280,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void GetChildKeys_ReturnsResolvableSection()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "spring:bar:name", "myName" },
                 { "spring:cloud:name", "${spring:bar:name?noname}" },

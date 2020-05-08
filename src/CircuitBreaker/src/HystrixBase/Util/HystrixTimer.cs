@@ -36,10 +36,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public static void Reset()
         {
-            HystrixTimer timer = GetInstance();
+            var timer = GetInstance();
             lock (timer._lock)
             {
-                foreach (TimerReference refr in timer.timerList)
+                foreach (var refr in timer.timerList)
                 {
                     refr.Dispose();
                 }
@@ -48,7 +48,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public TimerReference AddTimerListener(ITimerListener listener)
         {
-            TimerReference refr = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
+            var refr = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
             refr.Start();
 
             lock (_lock)

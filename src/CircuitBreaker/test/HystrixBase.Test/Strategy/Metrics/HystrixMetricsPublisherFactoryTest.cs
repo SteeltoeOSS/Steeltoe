@@ -35,11 +35,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
         [Fact]
         public void TestSingleInitializePerKey()
         {
-            TestHystrixMetricsPublisher publisher = new TestHystrixMetricsPublisher();
+            var publisher = new TestHystrixMetricsPublisher();
             HystrixPlugins.RegisterMetricsPublisher(publisher);
-            HystrixMetricsPublisherFactory factory = new HystrixMetricsPublisherFactory();
-            List<Task> threads = new List<Task>();
-            for (int i = 0; i < 20; i++)
+            var factory = new HystrixMetricsPublisherFactory();
+            var threads = new List<Task>();
+            for (var i = 0; i < 20; i++)
             {
                 threads.Add(new Task(
                     () =>
@@ -53,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             }
 
             // start them
-            foreach (Task t in threads)
+            foreach (var t in threads)
             {
                 t.Start();
             }
@@ -75,13 +75,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
             // precondition: HystrixMetricsPublisherFactory class is not loaded. Calling HystrixPlugins.reset() here should be good enough to run this with other tests.
 
             // set first custom publisher
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("key");
+            var key = HystrixCommandKeyDefault.AsKey("key");
             IHystrixMetricsPublisherCommand firstCommand = new HystrixMetricsPublisherCommandDefault(key, null, null, null, null);
             HystrixMetricsPublisher firstPublisher = new CustomPublisher(firstCommand);
             HystrixPlugins.RegisterMetricsPublisher(firstPublisher);
 
             // ensure that first custom publisher is used
-            IHystrixMetricsPublisherCommand cmd = HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(key, null, null, null, null);
+            var cmd = HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(key, null, null, null, null);
             Assert.True(firstCommand == cmd);
 
             // reset, then change to second custom publisher

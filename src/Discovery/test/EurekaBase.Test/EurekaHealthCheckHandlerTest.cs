@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void MapToInstanceStatus_ReturnsExpected()
         {
-            EurekaHealthCheckHandler handler = new EurekaHealthCheckHandler();
+            var handler = new EurekaHealthCheckHandler();
             Assert.Equal(InstanceStatus.DOWN, handler.MapToInstanceStatus(HealthStatus.DOWN));
             Assert.Equal(InstanceStatus.UP, handler.MapToInstanceStatus(HealthStatus.UP));
             Assert.Equal(InstanceStatus.UNKNOWN, handler.MapToInstanceStatus(HealthStatus.WARNING));
@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void DoHealthChecks_ReturnsExpected()
         {
-            EurekaHealthCheckHandler handler = new EurekaHealthCheckHandler();
+            var handler = new EurekaHealthCheckHandler();
             var result = handler.DoHealthChecks(new List<IHealthContributor>());
             Assert.Empty(result);
 
@@ -48,9 +48,9 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void AggregateStatus_ReturnsExpected()
         {
-            EurekaHealthCheckHandler handler = new EurekaHealthCheckHandler();
+            var handler = new EurekaHealthCheckHandler();
 
-            List<HealthCheckResult> results = new List<HealthCheckResult>();
+            var results = new List<HealthCheckResult>();
             Assert.Equal(HealthStatus.UNKNOWN, handler.AggregateStatus(results));
 
             results = new List<HealthCheckResult>()

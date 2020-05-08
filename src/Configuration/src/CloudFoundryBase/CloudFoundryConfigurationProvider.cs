@@ -74,11 +74,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         private void Process()
         {
-            string appJson = _settingsReader.ApplicationJson;
+            var appJson = _settingsReader.ApplicationJson;
             if (!string.IsNullOrEmpty(appJson))
             {
                 var memStream = GetMemoryStream(appJson);
-                ConfigurationBuilder builder = new ConfigurationBuilder();
+                var builder = new ConfigurationBuilder();
                 builder.Add(new JsonStreamConfigurationSource(memStream));
                 var applicationData = builder.Build();
 
@@ -89,11 +89,11 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 }
             }
 
-            string appServicesJson = _settingsReader.ServicesJson;
+            var appServicesJson = _settingsReader.ServicesJson;
             if (!string.IsNullOrEmpty(appServicesJson))
             {
                 var memStream = GetMemoryStream(appServicesJson);
-                ConfigurationBuilder builder = new ConfigurationBuilder();
+                var builder = new ConfigurationBuilder();
                 builder.Add(new JsonStreamConfigurationSource(memStream));
                 var servicesData = builder.Build();
 
@@ -111,7 +111,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 return;
             }
 
-            foreach (IConfigurationSection section in sections)
+            foreach (var section in sections)
             {
                 LoadSection(prefix, section);
                 LoadData(prefix, section.GetChildren());

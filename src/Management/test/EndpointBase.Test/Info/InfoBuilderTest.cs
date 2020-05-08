@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         public void WithInfoDictionaryAddsValues()
         {
             var builder = new InfoBuilder();
-            Dictionary<string, object> items = new Dictionary<string, object>()
+            var items = new Dictionary<string, object>()
             {
                 { "foo", "bar" },
                 { "bar", 100 }

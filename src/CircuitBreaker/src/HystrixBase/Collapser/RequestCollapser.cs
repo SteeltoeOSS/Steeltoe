@@ -55,13 +55,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             // loop until succeed (compare-and-set spin-loop)
             while (true)
             {
-                RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType> b = Batch.Value;
+                var b = Batch.Value;
                 if (b == null)
                 {
                     throw new InvalidOperationException("Submitting requests after collapser is shutdown");
                 }
 
-                CollapsedRequest<RequestResponseType, RequestArgumentType> response = b.Offer(arg, token);
+                var response = b.Offer(arg, token);
 
                 // it will always get an CollapsedRequest unless we hit the max batch size
                 if (response != null)
@@ -78,7 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         public void Shutdown()
         {
-            RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType> currentBatch = Batch.GetAndSet(null);
+            var currentBatch = Batch.GetAndSet(null);
             if (currentBatch != null)
             {
                 currentBatch.Shutdown();

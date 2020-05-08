@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                 return;
             }
 
-            Activity current = Activity.Current;
+            var current = Activity.Current;
             if (current == null)
             {
                 return;
@@ -67,11 +67,11 @@ namespace Steeltoe.Management.Endpoint.Trace
                 return;
             }
 
-            GetProperty(value, out HttpContext context);
+            GetProperty(value, out var context);
 
             if (context != null)
             {
-                HttpTrace trace = MakeTrace(context, current.Duration);
+                var trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
@@ -95,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - BaseTime.Ticks;
+            var javaTicks = ticks - BaseTime.Ticks;
             return javaTicks / 10000;
         }
 
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal string GetTimeTaken(TimeSpan duration)
         {
-            long timeInMilli = (long)duration.TotalMilliseconds;
+            var timeInMilli = (long)duration.TotalMilliseconds;
             return timeInMilli.ToString();
         }
 
@@ -133,7 +133,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
         {
-            Dictionary<string, string[]> result = new Dictionary<string, string[]>();
+            var result = new Dictionary<string, string[]>();
             foreach (var h in headers)
             {
                 // Add filtering

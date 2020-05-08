@@ -153,8 +153,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return false;
             }
 
-            InstanceInfo other = obj as InstanceInfo;
-            if (other == null)
+            if (!(obj is InstanceInfo other))
             {
                 return false;
             }
@@ -175,7 +174,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("Instance[");
+            var sb = new StringBuilder("Instance[");
             sb.Append("InstanceId=" + InstanceId);
             sb.Append(",");
             sb.Append("HostName=" + HostName);
@@ -219,7 +218,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
         {
-            InstanceInfo info = new InstanceInfo
+            var info = new InstanceInfo
             {
                 LeaseInfo = LeaseInfo.FromConfig(instanceConfig),
                 InstanceId = instanceConfig.InstanceId
@@ -229,7 +228,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 info.InstanceId = instanceConfig.GetHostName(false);
             }
 
-            string defaultAddress = instanceConfig.GetHostName(false);
+            var defaultAddress = instanceConfig.GetHostName(false);
             if (instanceConfig.PreferIpAddress || string.IsNullOrEmpty(defaultAddress))
             {
                 defaultAddress = instanceConfig.IpAddress;
@@ -258,7 +257,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
             if (!string.IsNullOrEmpty(info.InstanceId))
             {
-                InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
+                var me = ApplicationInfoManager.Instance.InstanceInfo;
                 if (me != null && info.InstanceId.Equals(me.InstanceId))
                 {
                     info.IsCoordinatingDiscoveryServer = true;
@@ -275,7 +274,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
         {
-            InstanceInfo info = new InstanceInfo();
+            var info = new InstanceInfo();
             if (json != null)
             {
                 info._sid = json.Sid ?? "na";
@@ -312,7 +311,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal JsonInstanceInfo ToJsonInstance()
         {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo
+            var jinfo = new JsonInstanceInfo
             {
                 InstanceId = InstanceId,
                 Sid = Sid ?? "na",
@@ -351,7 +350,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return new Dictionary<string, string>();
             }
 
-            if (json.TryGetValue("@class", out string value) && value.Equals("java.util.Collections$EmptyMap"))
+            if (json.TryGetValue("@class", out var value) && value.Equals("java.util.Collections$EmptyMap"))
             {
                 return new Dictionary<string, string>();
             }
@@ -368,7 +367,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                     return null;
                 }
 
-                if (metaData.TryGetValue("instanceId", out string mid))
+                if (metaData.TryGetValue("instanceId", out var mid))
                 {
                     return jinfo.HostName + ":" + mid;
                 }

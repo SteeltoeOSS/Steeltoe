@@ -64,8 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 try
                 {
                     var tostring = value.ToString();
-                    var array = value as Array;
-                    if (array != null)
+                    if (value is Array array)
                     {
                         tostring = Join(",", array);
                     }
@@ -81,7 +80,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private string Join(string v, Array array)
         {
-            StringBuilder sb = new StringBuilder("[");
+            var sb = new StringBuilder("[");
             foreach (var val in array)
             {
                 sb.Append(val.ToString());

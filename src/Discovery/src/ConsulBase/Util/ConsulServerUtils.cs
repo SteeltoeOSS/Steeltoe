@@ -43,14 +43,14 @@ namespace Steeltoe.Discovery.Consul.Util
 
         public static string FixIPv6Address(string address)
         {
-            if (IPAddress.TryParse(address, out IPAddress parsed) &&
+            if (IPAddress.TryParse(address, out var parsed) &&
                 parsed.AddressFamily == AddressFamily.InterNetworkV6)
             {
                 var bytes = parsed.GetAddressBytes();
-                StringBuilder sb = new StringBuilder("[");
-                for (int i = 0; i < bytes.Length; i = i + 2)
+                var sb = new StringBuilder("[");
+                for (var i = 0; i < bytes.Length; i += 2)
                 {
-                    ushort num = (ushort)((bytes[i] << 8) | bytes[i + 1]);
+                    var num = (ushort)((bytes[i] << 8) | bytes[i + 1]);
                     sb.Append(num.ToString("x") + ":");
                 }
 

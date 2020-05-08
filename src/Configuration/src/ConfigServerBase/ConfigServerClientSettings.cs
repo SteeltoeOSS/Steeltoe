@@ -325,7 +325,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 if (!string.IsNullOrEmpty(Uri))
                 {
-                    System.Uri uri = new System.Uri(Uri);
+                    var uri = new System.Uri(Uri);
                     return uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
                 }
             }
@@ -340,7 +340,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             try
             {
-                System.Uri ri = new System.Uri(uri);
+                var ri = new System.Uri(uri);
                 return ri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
             }
             catch (UriFormatException)
@@ -354,10 +354,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             if (!string.IsNullOrEmpty(Uri))
             {
-                string[] uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < uris.Length; i++)
+                var uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+                for (var i = 0; i < uris.Length; i++)
                 {
-                    string uri = GetRawUri(uris[i]);
+                    var uri = GetRawUri(uris[i]);
                     if (string.IsNullOrEmpty(uri))
                     {
                         return Array.Empty<string>();
@@ -416,7 +416,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             if (!string.IsNullOrEmpty(uri))
             {
-                Uri u = new Uri(uri);
+                var u = new Uri(uri);
                 return u.UserInfo;
             }
 
@@ -431,10 +431,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             string result = null;
-            string userInfo = GetUserInfo(uri);
+            var userInfo = GetUserInfo(uri);
             if (!string.IsNullOrEmpty(userInfo))
             {
-                string[] info = userInfo.Split(COLON_DELIMIT);
+                var info = userInfo.Split(COLON_DELIMIT);
                 if (info.Length > index)
                 {
                     result = info[index];

@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             : base(options, stream, logger, discoveryClient)
         {
             Factory = factory.ConnectionFactory as ConnectionFactory;
-            SslOption sslOption = Factory.Ssl;
+            var sslOption = Factory.Ssl;
             if (sslOption != null && sslOption.Enabled)
             {
                 logger?.LogInformation("Hystrix Metrics using TLS");

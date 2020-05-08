@@ -41,12 +41,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void AddCloudFoundryActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 

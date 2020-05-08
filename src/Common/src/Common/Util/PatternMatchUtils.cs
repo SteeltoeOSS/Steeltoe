@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            int firstIndex = pattern.IndexOf('*');
+            var firstIndex = pattern.IndexOf('*');
             if (firstIndex == -1)
             {
                 return pattern.Equals(str);
@@ -36,19 +36,19 @@ namespace Steeltoe.Common.Util
                     return true;
                 }
 
-                int nextIndex = pattern.IndexOf('*', firstIndex + 1);
+                var nextIndex = pattern.IndexOf('*', firstIndex + 1);
                 if (nextIndex == -1)
                 {
                     return str.EndsWith(pattern.Substring(1));
                 }
 
-                string part = pattern.Substring(1, nextIndex - 1);
+                var part = pattern.Substring(1, nextIndex - 1);
                 if (string.IsNullOrEmpty(part))
                 {
                     return SimpleMatch(pattern.Substring(nextIndex), str);
                 }
 
-                int partIndex = str.IndexOf(part);
+                var partIndex = str.IndexOf(part);
                 while (partIndex != -1)
                 {
                     if (SimpleMatch(pattern.Substring(nextIndex), str.Substring(partIndex + part.Length)))
@@ -71,7 +71,7 @@ namespace Steeltoe.Common.Util
         {
             if (patterns != null)
             {
-                foreach (string pattern in patterns)
+                foreach (var pattern in patterns)
                 {
                     if (SimpleMatch(pattern, str))
                     {

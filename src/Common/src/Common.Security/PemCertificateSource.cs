@@ -95,9 +95,9 @@ namespace Steeltoe.Common.Security
         public override void Load(Stream stream)
         {
             var source = Source as FileSource;
-            string key = source.Key;
+            var key = source.Key;
             using var reader = new StreamReader(stream);
-            string value = reader.ReadToEnd();
+            var value = reader.ReadToEnd();
             Data[key] = value;
         }
     }

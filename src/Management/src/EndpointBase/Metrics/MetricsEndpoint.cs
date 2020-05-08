@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             if (doubleMetrics != null)
             {
-                for (int i = 0; i < doubleMetrics.Count; i++)
+                for (var i = 0; i < doubleMetrics.Count; i++)
                 {
                     var metric = doubleMetrics[i];
                     var labels = metric.Labels;

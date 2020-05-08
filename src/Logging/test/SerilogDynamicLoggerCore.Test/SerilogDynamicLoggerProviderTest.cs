@@ -28,10 +28,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void Create_CreatesCorrectLogger()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Information));
             Assert.False(logger.IsEnabled(LogLevel.Debug));
@@ -41,10 +41,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void SetLogLevel_UpdatesLogger()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Critical));
             Assert.True(logger.IsEnabled(LogLevel.Error));
@@ -146,10 +146,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void GetLoggerConfigurations_ReturnsExpected()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
@@ -166,11 +166,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
             // act I
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             var logConfig = provider.GetLoggerConfigurations();
 
             // assert I
@@ -201,7 +201,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
@@ -219,7 +219,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
@@ -240,9 +240,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
              var provider = new SerilogDynamicProvider(GetConfiguration());
-             LoggerFactory fac = new LoggerFactory();
+             var fac = new LoggerFactory();
              fac.AddProvider(provider);
-             ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+             var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
              using (var unConsole = new ConsoleOutputBorrower())

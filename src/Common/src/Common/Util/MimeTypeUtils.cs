@@ -84,10 +84,10 @@ namespace Steeltoe.Common.Util
                 return new List<string>();
             }
 
-            List<string> tokens = new List<string>();
-            bool inQuotes = false;
-            int startIndex = 0;
-            int i = 0;
+            var tokens = new List<string>();
+            var inQuotes = false;
+            var startIndex = 0;
+            var i = 0;
             while (i < mimeTypes.Length)
             {
                 switch (mimeTypes[i])
@@ -117,14 +117,14 @@ namespace Steeltoe.Common.Util
 
         public static string Tostring(ICollection<MimeType> mimeTypes)
         {
-            StringBuilder builder = new StringBuilder();
+            var builder = new StringBuilder();
             foreach (var mimeType in mimeTypes)
             {
                 mimeType.AppendTo(builder);
                 builder.Append(", ");
             }
 
-            string built = builder.ToString();
+            var built = builder.ToString();
             if (built.EndsWith(", "))
             {
                 built = built.Substring(0, built.Length - 2);
@@ -148,10 +148,10 @@ namespace Steeltoe.Common.Util
 
         public static char[] GenerateMultipartBoundary()
         {
-            Random randomToUse = InitRandom();
-            int size = randomToUse.Next(11) + 30;
-            char[] boundary = new char[size];
-            for (int i = 0; i < boundary.Length; i++)
+            var randomToUse = InitRandom();
+            var size = randomToUse.Next(11) + 30;
+            var boundary = new char[size];
+            for (var i = 0; i < boundary.Length; i++)
             {
                 boundary[i] = BOUNDARY_CHARS[randomToUse.Next(BOUNDARY_CHARS.Length)];
             }
@@ -171,8 +171,8 @@ namespace Steeltoe.Common.Util
                 throw new ArgumentException("'mimeType' must not be empty");
             }
 
-            int index = mimeType.IndexOf(';');
-            string fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
+            var index = mimeType.IndexOf(';');
+            var fullType = (index >= 0 ? mimeType.Substring(0, index) : mimeType).Trim();
             if (string.IsNullOrEmpty(fullType))
             {
                 throw new ArgumentException(mimeType, "'mimeType' must not be empty");
@@ -183,7 +183,7 @@ namespace Steeltoe.Common.Util
                 fullType = "*/*";
             }
 
-            int subIndex = fullType.IndexOf('/');
+            var subIndex = fullType.IndexOf('/');
             if (subIndex == -1)
             {
                 throw new ArgumentException(mimeType + " does not contain '/'");
@@ -194,8 +194,8 @@ namespace Steeltoe.Common.Util
                 throw new ArgumentException(mimeType + " does not contain subtype after '/'");
             }
 
-            string type = fullType.Substring(0, subIndex);
-            string subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
+            var type = fullType.Substring(0, subIndex);
+            var subtype = fullType.Substring(subIndex + 1, fullType.Length - type.Length - 1);
             if (MimeType.WILDCARD_TYPE.Equals(type) && !MimeType.WILDCARD_TYPE.Equals(subtype))
             {
                 throw new ArgumentException(mimeType + " wildcard type is legal only in '*/*' (all mime types)");
@@ -204,11 +204,11 @@ namespace Steeltoe.Common.Util
             Dictionary<string, string> parameters = null;
             do
             {
-                int nextIndex = index + 1;
-                bool quoted = false;
+                var nextIndex = index + 1;
+                var quoted = false;
                 while (nextIndex < mimeType.Length)
                 {
-                    char ch = mimeType[nextIndex];
+                    var ch = mimeType[nextIndex];
                     if (ch == ';')
                     {
                         if (!quoted)
@@ -224,7 +224,7 @@ namespace Steeltoe.Common.Util
                     nextIndex++;
                 }
 
-                string parameter = mimeType.Substring(index + 1, nextIndex - index - 1).Trim();
+                var parameter = mimeType.Substring(index + 1, nextIndex - index - 1).Trim();
                 if (parameter.Length > 0)
                 {
                     if (parameters == null)
@@ -232,11 +232,11 @@ namespace Steeltoe.Common.Util
                         parameters = new Dictionary<string, string>(4);
                     }
 
-                    int eqIndex = parameter.IndexOf('=');
+                    var eqIndex = parameter.IndexOf('=');
                     if (eqIndex >= 0)
                     {
-                        string attribute = parameter.Substring(0, eqIndex).Trim();
-                        string value = parameter.Substring(eqIndex + 1, parameter.Length - eqIndex - 1).Trim();
+                        var attribute = parameter.Substring(0, eqIndex).Trim();
+                        var value = parameter.Substring(eqIndex + 1, parameter.Length - eqIndex - 1).Trim();
                         parameters[attribute] = value;
                     }
                 }
@@ -257,7 +257,7 @@ namespace Steeltoe.Common.Util
 
         private static Random InitRandom()
         {
-            Random randomToUse = _random;
+            var randomToUse = _random;
             if (randomToUse == null)
             {
                 lock (_lock)

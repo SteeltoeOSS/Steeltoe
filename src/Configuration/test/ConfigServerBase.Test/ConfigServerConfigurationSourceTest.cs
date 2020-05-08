@@ -41,7 +41,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Constructors__InitializesProperties()
         {
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            var settings = new ConfigServerClientSettings();
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
             ILoggerFactory factory = new LoggerFactory();
@@ -70,7 +70,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Build__ReturnsProvider()
         {
             // Arrange
-            ConfigServerClientSettings settings = new ConfigServerClientSettings();
+            var settings = new ConfigServerClientSettings();
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
             ILoggerFactory factory = new LoggerFactory();

@@ -67,9 +67,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors, ISecurityContext securityContext, IOptionsMonitor<HealthCheckServiceOptions> svcOptions, IServiceProvider provider)
         {
-            var registrationAggregator = _aggregator as IHealthRegistrationsAggregator;
-
-            var result = registrationAggregator == null
+            var result = !(_aggregator is IHealthRegistrationsAggregator registrationAggregator)
                 ? _aggregator.Aggregate(contributors)
                 : registrationAggregator.Aggregate(contributors, svcOptions, provider);
 

@@ -62,8 +62,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesEmptyDistributions()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-A");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-A");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
 
@@ -76,16 +76,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public async void TestSingleBucketGetsStored()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
+            var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            var cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
             await cmd1.Observe();
             await cmd2.Observe();
 
@@ -108,18 +108,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public async void TestSingleBucketWithMultipleEventTypes()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-C");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-C");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 30);
-            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST, 40);
+            var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            var cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
+            var cmd3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 30);
+            var cmd4 = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST, 40);
 
             await cmd1.Observe();
             await cmd3.Observe();
@@ -135,8 +135,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public async void TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
@@ -145,15 +145,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // 3 failures is enough to trigger short-circuit.  execute those, then wait for bucket to roll
             // next command should be a short-circuit
-            List<Command> commands = new List<Command>();
-            for (int i = 0; i < 3; i++)
+            var commands = new List<Command>();
+            for (var i = 0; i < 3; i++)
             {
                 commands.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0));
             }
 
-            Command shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+            var shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
 
-            foreach (Command cmd in commands)
+            foreach (var cmd in commands)
             {
                 await cmd.Observe();
             }
@@ -180,8 +180,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
@@ -190,16 +190,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // 10 commands with latency should occupy the entire threadpool.  execute those, then wait for bucket to roll
             // next command should be a thread-pool rejection
-            List<Command> commands = new List<Command>();
-            for (int i = 0; i < 10; i++)
+            var commands = new List<Command>();
+            for (var i = 0; i < 10; i++)
             {
                 commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500));
             }
 
-            Command threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+            var threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
 
-            List<Task> satTasks = new List<Task>();
-            foreach (Command cmd in commands)
+            var satTasks = new List<Task>();
+            foreach (var cmd in commands)
             {
                 satTasks.Add(cmd.ExecuteAsync());
             }
@@ -217,8 +217,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
@@ -227,15 +227,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
             // 10 commands with latency should occupy all semaphores.  execute those, then wait for bucket to roll
             // next command should be a semaphore rejection
-            List<Command> commands = new List<Command>();
-            for (int i = 0; i < 10; i++)
+            var commands = new List<Command>();
+            for (var i = 0; i < 10; i++)
             {
                 commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
 
-            Command semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-            List<Task> satTasks = new List<Task>();
-            foreach (Command saturator in commands)
+            var semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+            var satTasks = new List<Task>();
+            foreach (var saturator in commands)
             {
                 satTasks.Add(Task.Run(() => saturator.Execute()));
             }
@@ -256,8 +256,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestResponseFromCacheDoesNotGetLatencyTracked()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-G");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-G");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
@@ -265,9 +265,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // should get 1 SUCCESS and 1 RESPONSE_FROM_CACHE
-            List<Command> commands = Command.GetCommandsWithResponseFromCache(GroupKey, key);
+            var commands = Command.GetCommandsWithResponseFromCache(GroupKey, key);
 
-            foreach (Command cmd in commands)
+            foreach (var cmd in commands)
             {
                 _ = cmd.ExecuteAsync();
             }
@@ -281,20 +281,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async void TestMultipleBucketsBothGetStored()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
+            var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
 
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-            Command cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
+            var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
+            var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
+            var cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
 
             await cmd1.Observe();
             await cmd2.Observe();
@@ -314,20 +314,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public async void TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
             latchSubscription = stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-            Command cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-            Command cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
+            var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+            var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
 
-            Command cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-            Command cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-            Command cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
+            var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
+            var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
+            var cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
 
             await cmd1.Observe();
             await cmd2.Observe();

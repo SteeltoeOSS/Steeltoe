@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor.Test
                 ["management:endpoints:health:diskspace:path"] = "foobar",
                 ["management:endpoints:health:diskspace:threshold"] = "5"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

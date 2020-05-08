@@ -60,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue
 
             if (!prefix.EndsWith(":"))
             {
-                prefix = prefix + ":";
+                prefix += ":";
             }
 
             var resolver = new RandomValueSource(prefix, loggerFactory);

@@ -55,8 +55,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var context = CreateRequest("GET", "/health");
             await middle.HandleHealthRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
         }
 

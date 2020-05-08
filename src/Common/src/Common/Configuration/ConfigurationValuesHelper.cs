@@ -88,8 +88,7 @@ namespace Steeltoe.Common.Configuration
             var val = GetString(key, config, resolve, null);
             if (!string.IsNullOrEmpty(val))
             {
-                int result;
-                if (int.TryParse(val, out result))
+                if (int.TryParse(val, out var result))
                 {
                     return result;
                 }
@@ -103,8 +102,7 @@ namespace Steeltoe.Common.Configuration
             var val = GetString(key, config, resolve, null);
             if (!string.IsNullOrEmpty(val))
             {
-                double result;
-                if (double.TryParse(val, out result))
+                if (double.TryParse(val, out var result))
                 {
                     return result;
                 }
@@ -118,8 +116,7 @@ namespace Steeltoe.Common.Configuration
             var val = GetString(key, config, resolve, null);
             if (!string.IsNullOrEmpty(val))
             {
-                bool result;
-                if (bool.TryParse(val, out result))
+                if (bool.TryParse(val, out var result))
                 {
                     return result;
                 }

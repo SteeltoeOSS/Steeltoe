@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Converter
 
         public override bool Matches(Type sourceType, Type targetType)
         {
-            Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
+            var targetCheck = ConversionUtils.GetNullableElementType(targetType);
             var pair = (sourceType, targetCheck);
             return _convertableTypes.Contains(pair);
         }

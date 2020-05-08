@@ -45,7 +45,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public CloudFoundryOAuthOptions()
         {
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             ClientId = CloudFoundryDefaults.ClientId;
             ClientSecret = CloudFoundryDefaults.ClientSecret;

@@ -26,9 +26,9 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void Construtor_ThrowsOnNulls()
         {
-            IConsulServiceRegistry registry = new Mock<IConsulServiceRegistry>().Object;
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration();
+            var registry = new Mock<IConsulServiceRegistry>().Object;
+            var options = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration();
 
             Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistrar(null, options, registration));
             Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistrar(registry, (ConsulDiscoveryOptions)null, registration));
@@ -39,8 +39,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Register_CallsRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration();
+            var options = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration();
 
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Register();
@@ -51,8 +51,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Deregister_CallsRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration();
+            var options = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration();
 
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Deregister();
@@ -63,11 +63,11 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Register_DoesNotCallRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 Register = false
             };
-            ConsulRegistration registration = new ConsulRegistration();
+            var registration = new ConsulRegistration();
 
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Register();
@@ -78,11 +78,11 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Deregister_DoesNotCallRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 Deregister = false
             };
-            ConsulRegistration registration = new ConsulRegistration();
+            var registration = new ConsulRegistration();
 
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Deregister();
@@ -93,11 +93,11 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Start_DoesNotStart()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 Enabled = false
             };
-            ConsulRegistration registration = new ConsulRegistration();
+            var registration = new ConsulRegistration();
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Start();
             Assert.Equal(0, reg._running);
@@ -107,8 +107,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Start_CallsRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration();
+            var options = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration();
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Start();
             Assert.Equal(1, reg._running);
@@ -119,8 +119,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         public void Dispose_CallsRegistry()
         {
             var regMoq = new Mock<IConsulServiceRegistry>();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration();
+            var options = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration();
             var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
             reg.Start();
             Assert.Equal(1, reg._running);

@@ -55,13 +55,13 @@ namespace Steeltoe.Management.Endpoint.Env
         public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
         {
             IList<string> activeProfiles = new List<string>() { _env.EnvironmentName };
-            IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
+            var propertySources = GetPropertySources(configuration);
             return new EnvironmentDescriptor(activeProfiles, propertySources);
         }
 
         public virtual IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
         {
-            List<PropertySourceDescriptor> results = new List<PropertySourceDescriptor>();
+            var results = new List<PropertySourceDescriptor>();
             if (configuration is IConfigurationRoot root)
             {
                 var providers = root.Providers.ToList();
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
         {
-            Dictionary<string, PropertyValueDescriptor> properties = new Dictionary<string, PropertyValueDescriptor>();
+            var properties = new Dictionary<string, PropertyValueDescriptor>();
             var sourceName = GetPropertySourceName(provider);
 
             foreach (var key in GetFullKeyNames(provider, null, new HashSet<string>()))
@@ -118,7 +118,7 @@ namespace Steeltoe.Management.Endpoint.Env
         {
             foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                string surrogateKey = key;
+                var surrogateKey = key;
                 if (rootKey != null)
                 {
                     surrogateKey = rootKey + ":" + key;

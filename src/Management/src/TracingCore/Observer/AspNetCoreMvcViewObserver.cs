@@ -95,7 +95,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            string spanName = ExtractSpanName(viewContext);
+            var spanName = ExtractSpanName(viewContext);
             Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
 
             span.PutMvcViewExecutingFilePath(ExtractViewPath(viewContext));

@@ -22,7 +22,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Constructor_InitsDefaults()
         {
-            ConsulHeartbeatOptions opts = new ConsulHeartbeatOptions();
+            var opts = new ConsulHeartbeatOptions();
             Assert.Equal(30, opts.TtlValue);
             Assert.True(opts.Enabled);
             Assert.Equal("s", opts.TtlUnit);
@@ -40,7 +40,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [InlineData(0, "s", 2.0 / 3.0, -1000)]
         public void ComputeHeartbeatIntervalWorks(int ttl, string unit, double ratio, int expected)
         {
-            ConsulHeartbeatOptions opts = new ConsulHeartbeatOptions();
+            var opts = new ConsulHeartbeatOptions();
             opts.TtlValue = ttl;
             opts.TtlUnit = unit;
             opts.IntervalRatio = ratio;

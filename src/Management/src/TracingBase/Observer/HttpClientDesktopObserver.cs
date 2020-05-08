@@ -118,7 +118,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            string spanName = ExtractSpanName(request);
+            var spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
 

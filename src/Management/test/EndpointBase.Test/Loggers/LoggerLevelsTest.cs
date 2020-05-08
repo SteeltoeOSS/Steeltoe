@@ -48,10 +48,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void Constructor_SetsProperties()
         {
-            LoggerLevels lv1 = new LoggerLevels(null, LogLevel.Warning);
+            var lv1 = new LoggerLevels(null, LogLevel.Warning);
             Assert.Null(lv1.ConfiguredLevel);
             Assert.Equal("WARN", lv1.EffectiveLevel);
-            LoggerLevels lv2 = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
+            var lv2 = new LoggerLevels(LogLevel.Information, LogLevel.Warning);
             Assert.Equal("INFO", lv2.ConfiguredLevel);
             Assert.Equal("WARN", lv2.EffectiveLevel);
         }

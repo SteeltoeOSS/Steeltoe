@@ -21,9 +21,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void DefaultConstructor_SetsupDefaultOptions()
         {
-            CloudFoundryJwtBearerOptions opts = new CloudFoundryJwtBearerOptions();
+            var opts = new CloudFoundryJwtBearerOptions();
 
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
             Assert.Equal(authURL + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);
             Assert.True(opts.SaveToken);

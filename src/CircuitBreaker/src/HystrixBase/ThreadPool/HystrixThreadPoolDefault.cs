@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
         {
             properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
             properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
-            HystrixConcurrencyStrategy concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
+            var concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
             queueSize = properties.MaxQueueSize;
             metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
             taskScheduler = metrics.TaskScheduler;

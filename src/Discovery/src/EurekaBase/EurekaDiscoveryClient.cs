@@ -97,15 +97,15 @@ namespace Steeltoe.Discovery.Eureka
 
         public IList<string> GetServices()
         {
-            Applications applications = Applications;
+            var applications = Applications;
             if (applications == null)
             {
                 return new List<string>();
             }
 
-            IList<Application> registered = applications.GetRegisteredApplications();
-            List<string> names = new List<string>();
-            foreach (Application app in registered)
+            var registered = applications.GetRegisteredApplications();
+            var names = new List<string>();
+            foreach (var app in registered)
             {
                 if (app.Instances.Count == 0)
                 {
@@ -120,9 +120,9 @@ namespace Steeltoe.Discovery.Eureka
 
         public IList<IServiceInstance> GetInstances(string serviceId)
         {
-            IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
-            List<IServiceInstance> instances = new List<IServiceInstance>();
-            foreach (InstanceInfo info in infos)
+            var infos = GetInstancesByVipAddress(serviceId, false);
+            var instances = new List<IServiceInstance>();
+            foreach (var info in infos)
             {
                 _logger?.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));

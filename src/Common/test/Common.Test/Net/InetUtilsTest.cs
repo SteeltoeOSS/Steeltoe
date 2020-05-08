@@ -22,41 +22,41 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestGetFirstNonLoopbackHostInfo()
         {
-            InetUtils utils = new InetUtils(new InetOptions());
+            var utils = new InetUtils(new InetOptions());
             Assert.NotNull(utils.FindFirstNonLoopbackHostInfo());
         }
 
         [Fact]
         public void TestGetFirstNonLoopbackAddress()
         {
-            InetUtils utils = new InetUtils(new InetOptions());
+            var utils = new InetUtils(new InetOptions());
             Assert.NotNull(utils.FindFirstNonLoopbackAddress());
         }
 
         [Fact]
         public void TestConvert()
         {
-            InetUtils utils = new InetUtils(new InetOptions());
+            var utils = new InetUtils(new InetOptions());
             Assert.NotNull(utils.ConvertAddress(Dns.GetHostEntry("localhost").AddressList[0]));
         }
 
         [Fact]
         public void TestHostInfo()
         {
-            InetUtils utils = new InetUtils(new InetOptions());
-            HostInfo info = utils.FindFirstNonLoopbackHostInfo();
+            var utils = new InetUtils(new InetOptions());
+            var info = utils.FindFirstNonLoopbackHostInfo();
             Assert.NotNull(info.IpAddress);
         }
 
         [Fact]
         public void TestIgnoreInterface()
         {
-            InetOptions properties = new InetOptions()
+            var properties = new InetOptions()
             {
                 IgnoredInterfaces = "docker0,veth.*"
             };
 
-            InetUtils inetUtils = new InetUtils(properties);
+            var inetUtils = new InetUtils(properties);
 
             Assert.True(inetUtils.IgnoreInterface("docker0"));
             Assert.True(inetUtils.IgnoreInterface("vethAQI2QT"));
@@ -66,19 +66,19 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestDefaultIgnoreInterface()
         {
-            InetUtils inetUtils = new InetUtils(new InetOptions());
+            var inetUtils = new InetUtils(new InetOptions());
             Assert.False(inetUtils.IgnoreInterface("docker0"));
         }
 
         [Fact]
         public void TestSiteLocalAddresses()
         {
-            InetOptions properties = new InetOptions()
+            var properties = new InetOptions()
             {
                 UseOnlySiteLocalInterfaces = true
             };
 
-            InetUtils utils = new InetUtils(properties);
+            var utils = new InetUtils(properties);
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
             Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
         }
@@ -86,12 +86,12 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestPreferredNetworksRegex()
         {
-            InetOptions properties = new InetOptions()
+            var properties = new InetOptions()
             {
                 PreferredNetworks = "192.168.*,10.0.*"
             };
 
-            InetUtils utils = new InetUtils(properties);
+            var utils = new InetUtils(properties);
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
             Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.0.10.1")));
@@ -101,12 +101,12 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestPreferredNetworksSimple()
         {
-            InetOptions properties = new InetOptions()
+            var properties = new InetOptions()
             {
                 PreferredNetworks = "192,10.0"
             };
 
-            InetUtils utils = new InetUtils(properties);
+            var utils = new InetUtils(properties);
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
             Assert.False(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
             Assert.False(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));
@@ -116,9 +116,9 @@ namespace Steeltoe.Common.Net.Test
         [Fact]
         public void TestPreferredNetworksListIsEmpty()
         {
-            InetOptions properties = new InetOptions();
+            var properties = new InetOptions();
 
-            InetUtils utils = new InetUtils(properties);
+            var utils = new InetUtils(properties);
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("192.168.0.1")));
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("5.5.8.1")));
             Assert.True(utils.IsPreferredAddress(IPAddress.Parse("10.255.10.1")));

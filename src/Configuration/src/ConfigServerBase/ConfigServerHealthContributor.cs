@@ -72,7 +72,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return health;
             }
 
-            IList<PropertySource> sources = GetPropertySources();
+            var sources = GetPropertySources();
             if (sources == null || sources.Count == 0)
             {
                 Logger?.LogDebug("No property sources found");
@@ -90,7 +90,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             Logger?.LogDebug("Config server health check returning UP");
 
             health.Status = HealthStatus.UP;
-            List<string> names = new List<string>();
+            var names = new List<string>();
             foreach (var source in sources)
             {
                 Logger?.LogDebug("Returning property source: {propertySource}", source.Name);
@@ -102,7 +102,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal IList<PropertySource> GetPropertySources()
         {
-            long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             if (IsCacheStale(currentTime))
             {
                 LastAccess = currentTime;

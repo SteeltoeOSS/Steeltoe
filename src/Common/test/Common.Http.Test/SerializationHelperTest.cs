@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void Deserialize_ReturnsNullOnException()
         {
-            MemoryStream s = new MemoryStream();
+            var s = new MemoryStream();
             var result = SerializationHelper.Deserialize<Test>(s);
             Assert.Null(result);
         }

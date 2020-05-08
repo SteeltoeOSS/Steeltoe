@@ -22,7 +22,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Trait("Category", "SkipOnMacOS")]
         public void Constructor_InitsDefaults()
         {
-            ConsulDiscoveryOptions opts = new ConsulDiscoveryOptions();
+            var opts = new ConsulDiscoveryOptions();
             Assert.True(opts.Register);
             Assert.True(opts.RegisterHealthCheck);
             Assert.Null(opts.DefaultQueryTag);

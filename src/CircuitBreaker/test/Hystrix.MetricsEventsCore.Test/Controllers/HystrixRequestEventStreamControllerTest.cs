@@ -76,16 +76,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
             Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
             var reader = new StreamReader(result);
-            string data = reader.ReadLine();
+            var data = reader.ReadLine();
             reader.Dispose();
 
             Assert.False(string.IsNullOrEmpty(data));
             Assert.StartsWith("data: ", data);
-            string jsonObject = data.Substring(6);
+            var jsonObject = data.Substring(6);
             var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonObject);
             Assert.NotNull(list);
             Assert.Single(list);
-            Dictionary<string, object> dict = list[0];
+            var dict = list[0];
 
             Assert.NotNull(dict["name"]);
             Assert.Equal("MyCommand", dict["name"]);

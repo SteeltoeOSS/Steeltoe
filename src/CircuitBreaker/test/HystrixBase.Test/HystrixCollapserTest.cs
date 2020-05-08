@@ -908,8 +908,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<string>> peek = null;
-            commands.TryPeek(out peek);
+            commands.TryPeek(out var peek);
             Assert.Contains(HystrixEventType.SUCCESS, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 
@@ -957,8 +956,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<string>> peek = null;
-            commands.TryPeek(out peek);
+            commands.TryPeek(out var peek);
 
             Assert.Contains(HystrixEventType.FAILURE, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
@@ -1015,8 +1013,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // it should have executed 1 command
             Assert.Single(commands);
-            HystrixCommand<List<string>> peek = null;
-            commands.TryPeek(out peek);
+            commands.TryPeek(out var peek);
             Assert.Contains(HystrixEventType.TIMEOUT, peek.ExecutionEvents);
             Assert.Contains(HystrixEventType.COLLAPSED, peek.ExecutionEvents);
 

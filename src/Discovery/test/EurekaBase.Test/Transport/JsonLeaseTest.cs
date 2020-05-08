@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     'evictionTimestamp':0,
     'serviceUpTimestamp':1457714988223
 }";
-            Stream stream = TestHelpers.StringToStream(json);
+            var stream = TestHelpers.StringToStream(json);
             var leaseInfo = JsonLeaseInfo.Deserialize(stream);
             Assert.NotNull(leaseInfo);
             Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);

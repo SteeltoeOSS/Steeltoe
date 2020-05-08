@@ -41,10 +41,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             // Scheduler to test
             var scheduler = new HystrixSyncTaskScheduler(options);
 
-            TaskActionClass tc1 = new TaskActionClass(output, 1);
-            TaskActionClass tc2 = new TaskActionClass(output, 2);
-            Task<int> t1 = new Task<int>((o) => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            Task<int> t2 = new Task<int>((o) => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var tc1 = new TaskActionClass(output, 1);
+            var tc2 = new TaskActionClass(output, 2);
+            var t1 = new Task<int>((o) => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t2 = new Task<int>((o) => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 
             // Fill up to CoreSize
             t1.Start(scheduler);

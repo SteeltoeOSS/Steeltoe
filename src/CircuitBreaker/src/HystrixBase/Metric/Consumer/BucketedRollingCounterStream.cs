@@ -74,7 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             if (subscription.Value == null)
             {
                 // the stream is not yet started
-                IDisposable candidateSubscription = Observe().Subscribe(counterSubject);
+                var candidateSubscription = Observe().Subscribe(counterSubject);
                 if (subscription.CompareAndSet(null, candidateSubscription))
                 {
                 }
@@ -91,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             get
             {
-                if (counterSubject.TryGetValue(out Output v))
+                if (counterSubject.TryGetValue(out var v))
                 {
                     return v;
                 }

@@ -138,11 +138,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             var time = new MockedTime();
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
-            int previousTime = 0;
-            for (int i = 0; i < SampleDataHolder1.Data.Length; i++)
+            var previousTime = 0;
+            for (var i = 0; i < SampleDataHolder1.Data.Length; i++)
             {
-                int timeInMillisecondsSinceStart = SampleDataHolder1.Data[i][0];
-                int latency = SampleDataHolder1.Data[i][1];
+                var timeInMillisecondsSinceStart = SampleDataHolder1.Data[i][0];
+                var latency = SampleDataHolder1.Data[i][1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);
@@ -162,7 +162,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             /*
              * In a loop as a use case was found where very different values were calculated in subsequent requests.
              */
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 if (p.GetPercentile(50) > 5)
                 {
@@ -181,12 +181,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         {
             output.WriteLine("\n\n***************************** testSampleDataOverTime2 \n");
             var time = new MockedTime();
-            int previousTime = 0;
+            var previousTime = 0;
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
-            for (int i = 0; i < SampleDataHolder2.Data.Length; i++)
+            for (var i = 0; i < SampleDataHolder2.Data.Length; i++)
             {
-                int timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
-                int latency = SampleDataHolder2.Data[i][1];
+                var timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
+                var latency = SampleDataHolder2.Data[i][1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);
@@ -307,12 +307,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         public void TestDoesNothingWhenDisabled()
         {
             var time = new MockedTime();
-            int previousTime = 0;
+            var previousTime = 0;
             var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, false);
-            for (int i = 0; i < SampleDataHolder2.Data.Length; i++)
+            for (var i = 0; i < SampleDataHolder2.Data.Length; i++)
             {
-                int timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
-                int latency = SampleDataHolder2.Data[i][1];
+                var timeInMillisecondsSinceStart = SampleDataHolder2.Data[i][0];
+                var latency = SampleDataHolder2.Data[i][1];
                 time.Increment(timeInMillisecondsSinceStart - previousTime);
                 previousTime = timeInMillisecondsSinceStart;
                 p.AddValue(latency);
@@ -329,8 +329,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var time = new MockedTime();
             var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-            int num_threads = 1000;  // .NET Core StackOverflow
-            int num_iterations = 1000000;
+            var num_threads = 1000;  // .NET Core StackOverflow
+            var num_iterations = 1000000;
 
             var latch = new CountdownEvent(num_threads);
 
@@ -346,14 +346,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 }
             });
 
-            for (int i = 0; i < num_threads; i++)
+            for (var i = 0; i < num_threads; i++)
             {
-                int threadId = i;
+                var threadId = i;
                 Task.Run(() =>
                 {
-                    for (int j = 1; j < (num_iterations / num_threads) + 1; j++)
+                    for (var j = 1; j < (num_iterations / num_threads) + 1; j++)
                     {
-                        int nextInt = r.Next(100);
+                        var nextInt = r.Next(100);
                         p.AddValue(nextInt);
                         if (threadId == 0)
                         {
@@ -385,8 +385,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             var time = new MockedTime();
             var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-            int num_threads = 10;
-            int num_iterations = 1000;
+            var num_threads = 10;
+            var num_iterations = 1000;
 
             var latch = new CountdownEvent(num_threads);
 
@@ -394,14 +394,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
             var added = new AtomicInteger(0);
 
-            for (int i = 0; i < num_threads; i++)
+            for (var i = 0; i < num_threads; i++)
             {
                 var t = new Task(
                     () =>
                     {
-                        for (int j = 1; j < (num_iterations / num_threads) + 1; j++)
+                        for (var j = 1; j < (num_iterations / num_threads) + 1; j++)
                         {
-                            int nextInt = r.Next(100);
+                            var nextInt = r.Next(100);
                             p.AddValue(nextInt);
                             added.GetAndIncrement();
                         }
@@ -427,7 +427,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestThreadSafetyMulti()
         {
-            for (int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 TestThreadSafety();
             }

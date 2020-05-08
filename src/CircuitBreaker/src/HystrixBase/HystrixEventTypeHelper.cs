@@ -27,9 +27,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_MISSING);
             ExceptionProducingEventTypes.Add(HystrixEventType.FALLBACK_REJECTION);
 
-            foreach (string evName in Enum.GetNames(typeof(HystrixEventType)))
+            foreach (var evName in Enum.GetNames(typeof(HystrixEventType)))
             {
-                HystrixEventType e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
+                var e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
                 if (e.IsTerminal())
                 {
                     TerminalEventTypes.Add(e);

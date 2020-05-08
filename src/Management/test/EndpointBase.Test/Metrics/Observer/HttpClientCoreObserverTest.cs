@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new HttpClientCoreObserver(options, stats, null);
 
             var message = GetHttpResponseMessage(HttpStatusCode.OK);
-            string status = observer.GetStatusCode(message, default);
+            var status = observer.GetStatusCode(message, default);
             Assert.Equal("200", status);
 
             status = observer.GetStatusCode(null, TaskStatus.Canceled);
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var req = GetHttpRequestMessage();
             var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
 
             Task.Delay(1000).Wait();

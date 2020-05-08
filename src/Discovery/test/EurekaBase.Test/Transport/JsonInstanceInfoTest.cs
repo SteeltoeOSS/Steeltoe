@@ -50,7 +50,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     ""actionType"":""ADDED""
 }";
 
-            Stream stream = TestHelpers.StringToStream(json);
+            var stream = TestHelpers.StringToStream(json);
             var result = JsonInstanceInfo.Deserialize(stream);
             Assert.NotNull(result);
             Assert.Equal("localhost:foo", result.InstanceId);

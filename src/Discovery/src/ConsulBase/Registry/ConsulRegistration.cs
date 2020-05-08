@@ -157,7 +157,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static string[] CreateTags(ConsulDiscoveryOptions options)
         {
-            List<string> tags = new List<string>();
+            var tags = new List<string>();
             if (options.Tags != null)
             {
                 tags.AddRange(options.Tags);
@@ -209,9 +209,9 @@ namespace Steeltoe.Discovery.Consul.Registry
                 throw new ArgumentException("Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: " + s);
             }
 
-            StringBuilder normalized = new StringBuilder();
+            var normalized = new StringBuilder();
             char prev = default;
-            foreach (char curr in s)
+            foreach (var curr in s)
             {
                 char toAppend = default;
                 if (char.IsLetterOrDigit(curr))
@@ -235,7 +235,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
         {
-            AgentServiceCheck check = new AgentServiceCheck();
+            var check = new AgentServiceCheck();
             if (options.IsHeartBeatEnabled)
             {
                 check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);

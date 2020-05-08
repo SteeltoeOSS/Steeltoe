@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
-            bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
+            var isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
             if (Platform.IsCloudFoundry
                 && isEndpointExposed
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     return;
                 }
 
-                IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+                var target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
@@ -91,9 +91,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         internal string GetAccessToken(HttpRequest request)
         {
-            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out StringValues headerVal))
+            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out var headerVal))
             {
-                string header = headerVal.ToString();
+                var header = headerVal.ToString();
                 if (header.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase))
                 {
                     return header.Substring(_base.BEARER.Length + 1);
@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         internal async Task<SecurityResult> GetPermissions(HttpContext context)
         {
-            string token = GetAccessToken(context.Request);
+            var token = GetAccessToken(context.Request);
             return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 

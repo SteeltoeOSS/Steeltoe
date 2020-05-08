@@ -19,7 +19,7 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <NoWarn>SA1101;SA1124;S1128;SA1201;SA1309;SA1310;SA1314;SA1401;SA1413;SA1600;SA1629;SA1652;1591;S1854</NoWarn>
+    <NoWarn>SA1101;SA1124;S1128;SA1201;SA1309;SA1310;SA1314;SA1401;SA1413;SA1600;SA1629;SA1652;1591;S1854;S3458</NoWarn>
     <CodeAnalysisRuleSet>..\..\..\..\Steeltoe.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>

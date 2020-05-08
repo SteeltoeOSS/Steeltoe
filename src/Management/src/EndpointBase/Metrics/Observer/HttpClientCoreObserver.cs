@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 return;
             }
 
-            Activity current = Activity.Current;
+            var current = Activity.Current;
             if (current == null)
             {
                 return;
@@ -148,7 +148,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (response != null)
             {
-                int val = (int)response.StatusCode;
+                var val = (int)response.StatusCode;
                 return val.ToString();
             }
 

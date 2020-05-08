@@ -23,8 +23,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixRequestEvents requestEvents)
         {
-            using StringWriter sw = new StringWriter();
-            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            using var sw = new StringWriter();
+            using (var writer = new JsonTextWriter(sw))
             {
                 SerializeRequestEvents(writer, requestEvents);
             }
@@ -49,12 +49,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteStartObject();
             json.WriteStringField("name", executionSignature.CommandName);
             json.WriteArrayFieldStart("events");
-            ExecutionResult.EventCounts eventCounts = executionSignature.Eventcounts;
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
+            var eventCounts = executionSignature.Eventcounts;
+            foreach (var eventType in HystrixEventTypeHelper.Values)
             {
                 if (!eventType.Equals(HystrixEventType.COLLAPSED) && eventCounts.Contains(eventType))
                 {
-                    int eventCount = eventCounts.GetCount(eventType);
+                    var eventCount = eventCounts.GetCount(eventType);
                     if (eventCount > 1)
                     {
                         json.WriteStartObject();
@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
 
             json.WriteEndArray();
             json.WriteArrayFieldStart("latencies");
-            foreach (int latency in latencies)
+            foreach (var latency in latencies)
             {
                 json.WriteValue(latency);
             }

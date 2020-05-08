@@ -230,9 +230,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private TracingOptions GetOptions(Dictionary<string, string> settings)
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
             return opts;
         }
 

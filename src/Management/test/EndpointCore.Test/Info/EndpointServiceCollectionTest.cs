@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         [Fact]
         public void AddInfoActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                 ["management:endpoints:info:enabled"] = "false",
                 ["management:endpoints:info:id"] = "infomanagement"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 

@@ -73,8 +73,8 @@ namespace Steeltoe.Management.EndpointCore.Test.Metrics
             Assert.Equal(200, context.Response.StatusCode);
 
             context2.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr2 = new StreamReader(context2.Response.Body);
-            string json = await rdr2.ReadToEndAsync();
+            var rdr2 = new StreamReader(context2.Response.Body);
+            var json = await rdr2.ReadToEndAsync();
             Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"COUNT\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.EndpointCore.Test.Metrics
                 { "c", "v1" }
             }.ToList();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 measure.Add(default(SpanContext), i, labels);
             }

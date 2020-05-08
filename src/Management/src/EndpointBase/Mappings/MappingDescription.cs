@@ -72,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         private string CreatePredicateString(IRouteDetails routeDetails)
         {
-            StringBuilder sb = new StringBuilder("{");
+            var sb = new StringBuilder("{");
 
             sb.Append("[" + routeDetails.RouteTemplate + "]");
 

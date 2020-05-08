@@ -72,7 +72,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerRetryCount = 0
             };
             var client = new EurekaHttpClient(config);
-            EurekaTransportException ex = await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
+            var ex = await Assert.ThrowsAsync<EurekaTransportException>(() => client.RegisterAsync(new InstanceInfo()));
         }
 
         [Fact]
@@ -86,8 +86,8 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var config = new EurekaInstanceConfig();
+            var info = InstanceInfo.FromInstanceConfig(config);
 
             var cconfig = new EurekaClientConfig()
             {
@@ -95,7 +95,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
 
-            EurekaHttpResponse resp = await client.RegisterAsync(info);
+            var resp = await client.RegisterAsync(info);
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.NoContent, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -112,19 +112,19 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaInstanceConfig config = new EurekaInstanceConfig()
+            var config = new EurekaInstanceConfig()
             {
                 AppName = "foobar"
             };
 
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var info = InstanceInfo.FromInstanceConfig(config);
 
             var cconfig = new EurekaClientConfig()
             {
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse resp = await client.RegisterAsync(info);
+            var resp = await client.RegisterAsync(info);
 
             Assert.NotNull(TestConfigServerStartup.LastRequest);
             Assert.Equal("POST", TestConfigServerStartup.LastRequest.Method);
@@ -132,12 +132,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
             // Check JSON payload
-            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.LastRequest.Body);
+            var recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.LastRequest.Body);
             Assert.NotNull(recvJson);
             Assert.NotNull(recvJson.Instance);
 
             // Compare a few random values
-            JsonInstanceInfo sentJsonObj = info.ToJsonInstance();
+            var sentJsonObj = info.ToJsonInstance();
             Assert.Equal(sentJsonObj.Actiontype, recvJson.Instance.Actiontype);
             Assert.Equal(sentJsonObj.AppName, recvJson.Instance.AppName);
             Assert.Equal(sentJsonObj.HostName, recvJson.Instance.HostName);
@@ -181,19 +181,19 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
 
             var uri = "http://localhost:8888/";
             server.BaseAddress = new Uri(uri);
-            EurekaInstanceConfig config = new EurekaInstanceConfig()
+            var config = new EurekaInstanceConfig()
             {
                 AppName = "foo",
                 InstanceId = "id1"
             };
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var info = InstanceInfo.FromInstanceConfig(config);
 
             var cconfig = new EurekaClientConfig()
             {
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<InstanceInfo> resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.UNKNOWN);
+            var resp = await client.SendHeartBeatAsync("foo", "id1", info, InstanceStatus.UNKNOWN);
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -254,7 +254,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<Applications> resp = await client.GetApplicationsAsync();
+            var resp = await client.GetApplicationsAsync();
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -354,7 +354,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
+            var resp = await client.GetApplicationAsync("foo");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -425,7 +425,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<Application> resp = await client.GetApplicationAsync("foo");
+            var resp = await client.GetApplicationAsync("foo");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -524,7 +524,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
+            var resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -589,7 +589,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = "https://bad.host:9999/," + uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse<InstanceInfo> resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
+            var resp = await client.GetInstanceAsync("DESKTOP-GNQ5SUT");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.Equal("GET", TestConfigServerStartup.LastRequest.Method);
@@ -641,7 +641,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = uri
             };
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
-            EurekaHttpResponse resp = await client.CancelAsync("foo", "bar");
+            var resp = await client.CancelAsync("foo", "bar");
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -698,7 +698,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var now = DateTime.UtcNow.Ticks;
             var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
-            EurekaHttpResponse resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.DOWN, new InstanceInfo() { LastDirtyTimestamp = now });
+            var resp = await client.StatusUpdateAsync("foo", "bar", InstanceStatus.DOWN, new InstanceInfo() { LastDirtyTimestamp = now });
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -755,7 +755,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             var client = new EurekaHttpClient(cconfig, server.CreateClient());
             var now = DateTime.UtcNow.Ticks;
             var javaTime = DateTimeConversions.ToJavaMillis(new DateTime(now, DateTimeKind.Utc));
-            EurekaHttpResponse resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo() { LastDirtyTimestamp = now });
+            var resp = await client.DeleteStatusOverrideAsync("foo", "bar", new InstanceInfo() { LastDirtyTimestamp = now });
             Assert.NotNull(resp);
             Assert.Equal(HttpStatusCode.OK, resp.StatusCode);
             Assert.NotNull(resp.Headers);
@@ -791,7 +791,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         [Fact]
         public void GetRequestMessage_ReturnsCorrectMesssage_WithAdditionalHeaders()
         {
-            Dictionary<string, string> headers = new Dictionary<string, string>()
+            var headers = new Dictionary<string, string>()
             {
                 { "foo", "bar" }
             };
@@ -868,12 +868,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 EurekaServerServiceUrls = "http://boo:123/eureka/"
             };
             var client = new EurekaHttpClient(config, new HttpClient());
-            Dictionary<string, string> queryArgs = new Dictionary<string, string>()
+            var queryArgs = new Dictionary<string, string>()
             {
                 { "foo", "bar" },
                 { "bar", "foo" }
             };
-            Uri result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
+            var result = client.GetRequestUri("http://boo:123/eureka", queryArgs);
             Assert.NotNull(result);
             Assert.Equal("http://boo:123/eureka?foo=bar&bar=foo", result.ToString());
         }

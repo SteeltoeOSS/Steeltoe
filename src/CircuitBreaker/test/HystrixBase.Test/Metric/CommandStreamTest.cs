@@ -122,14 +122,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 HystrixEventType desiredFallbackEventType,
                 int fallbackLatency)
             {
-                HystrixThreadPoolOptions topts = new HystrixThreadPoolOptions()
+                var topts = new HystrixThreadPoolOptions()
                 {
                     CoreSize = 10,
                     MaxQueueSize = -1,
                     ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name)
                 };
 
-                HystrixCommandOptions setter = new HystrixCommandOptions()
+                var setter = new HystrixCommandOptions()
                 {
                     GroupKey = groupKey,
                     CommandKey = key,
@@ -165,7 +165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                         uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                         return new Command(setter, HystrixEventType.BAD_REQUEST, latency, uniqueArg, desiredFallbackEventType, 0);
                     case HystrixEventType.RESPONSE_FROM_CACHE:
-                        string arg = UniqueId.Value + string.Empty;
+                        var arg = UniqueId.Value + string.Empty;
                         return new Command(setter, HystrixEventType.SUCCESS, 0, arg, desiredFallbackEventType, 0);
                     default:
                         throw new Exception("not supported yet");
@@ -174,9 +174,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             public static List<Command> GetCommandsWithResponseFromCache(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key)
             {
-                Command cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
-                Command cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-                List<Command> cmds = new List<Command>
+                var cmd1 = Command.From(groupKey, key, HystrixEventType.SUCCESS);
+                var cmd2 = Command.From(groupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+                var cmds = new List<Command>
                 {
                     cmd1,
                     cmd2
@@ -279,8 +279,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             protected override HystrixCommand<List<int>> CreateCommand(ICollection<ICollapsedRequest<int, int>> collapsedRequests)
             {
-                List<int> args = new List<int>();
-                foreach (ICollapsedRequest<int, int> collapsedReq in collapsedRequests)
+                var args = new List<int>();
+                foreach (var collapsedReq in collapsedRequests)
                 {
                     args.Add(collapsedReq.Argument);
                 }
@@ -292,7 +292,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
             protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> collapsedRequests)
             {
-                foreach (ICollapsedRequest<int, int> collapsedReq in collapsedRequests)
+                foreach (var collapsedReq in collapsedRequests)
                 {
                     collapsedReq.Response = collapsedReq.Argument;
                     collapsedReq.Complete = true;
@@ -326,7 +326,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
         protected static bool HasData(long[] eventCounts)
         {
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
+            foreach (var eventType in HystrixEventTypeHelper.Values)
             {
                 if (eventCounts[(int)eventType] > 0)
                 {

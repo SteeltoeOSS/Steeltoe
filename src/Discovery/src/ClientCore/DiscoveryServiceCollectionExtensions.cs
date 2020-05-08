@@ -54,16 +54,14 @@ namespace Steeltoe.Discovery.Client
 
             if (discoveryOptions.ClientType == DiscoveryClientType.EUREKA)
             {
-                var clientOptions = discoveryOptions.ClientOptions as EurekaClientOptions;
-                if (clientOptions == null)
+                if (!(discoveryOptions.ClientOptions is EurekaClientOptions clientOptions))
                 {
                     throw new ArgumentException("Missing Client Options");
                 }
 
                 services.AddSingleton<IOptionsMonitor<EurekaClientOptions>>(new OptionsMonitorWrapper<EurekaClientOptions>(clientOptions));
 
-                var regOptions = discoveryOptions.RegistrationOptions as EurekaInstanceOptions;
-                if (regOptions == null)
+                if (!(discoveryOptions.RegistrationOptions is EurekaInstanceOptions regOptions))
                 {
                     clientOptions.ShouldRegisterWithEureka = false;
                     regOptions = new EurekaInstanceOptions();
@@ -168,7 +166,7 @@ namespace Steeltoe.Discovery.Client
         private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)
         {
             var clientConfigsection = config.GetSection(CONSUL_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
+            var childCount = clientConfigsection.GetChildren().Count();
             return childCount > 0;
         }
 
@@ -206,7 +204,7 @@ namespace Steeltoe.Discovery.Client
         private static bool IsEurekaConfigured(IConfiguration config, IServiceInfo info)
         {
             var clientConfigsection = config.GetSection(EUREKA_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
+            var childCount = clientConfigsection.GetChildren().Count();
             return childCount > 0 || info is EurekaServiceInfo;
         }
 

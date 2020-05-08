@@ -52,8 +52,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var context = CreateRequest("GET", "/");
             await middle.HandleCloudFoundryRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
         }
 

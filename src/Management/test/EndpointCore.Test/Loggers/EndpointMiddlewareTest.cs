@@ -52,8 +52,8 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             var context = CreateRequest("GET", "/loggers");
             await middle.HandleLoggersRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{}", json);
         }
 

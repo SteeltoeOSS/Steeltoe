@@ -61,7 +61,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
                 ["management:endpoints:path"] = "/management",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -85,7 +85,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -109,7 +109,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             };
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

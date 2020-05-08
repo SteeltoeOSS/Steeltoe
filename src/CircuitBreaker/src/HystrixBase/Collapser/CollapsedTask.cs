@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             {
                 // we fetch current so that when multiple threads race
                 // we can do compareAndSet with the expected/new to ensure only one happens
-                RequestBatch<BatchReturnType, ResponseType, RequestArgumentType> currentBatch = rq.Batch.Value;
+                var currentBatch = rq.Batch.Value;
 
                 // 1) it can be null if it got shutdown
                 // 2) we don't execute this batch if it has no requests and let it wait until next tick to be executed

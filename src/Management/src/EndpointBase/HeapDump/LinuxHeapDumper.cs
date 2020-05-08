@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public string DumpHeap()
         {
-            string fileName = CreateFileName();
+            var fileName = CreateFileName();
             if (_basePathOverride != null)
             {
                 fileName = _basePathOverride + fileName;

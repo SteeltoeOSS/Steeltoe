@@ -25,7 +25,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Constructor_Defaults()
         {
-            LeaseInfo info = new LeaseInfo();
+            var info = new LeaseInfo();
             Assert.Equal(LeaseInfo.Default_DurationInSecs, info.DurationInSecs);
             Assert.Equal(LeaseInfo.Default_RenewalIntervalInSecs, info.RenewalIntervalInSecs);
         }
@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJson_Correct()
         {
-            JsonLeaseInfo jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo()
             {
                 RenewalIntervalInSecs = 100,
                 DurationInSecs = 200,
@@ -44,7 +44,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 ServiceUpTimestamp = 1457973741708
             };
 
-            LeaseInfo result = LeaseInfo.FromJson(jinfo);
+            var result = LeaseInfo.FromJson(jinfo);
             Assert.Equal(100, result.RenewalIntervalInSecs);
             Assert.Equal(200, result.DurationInSecs);
             Assert.Equal(1457973741708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
@@ -57,7 +57,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void ToJson_Correct()
         {
-            JsonLeaseInfo jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo()
             {
                 RenewalIntervalInSecs = 100,
                 DurationInSecs = 200,
@@ -68,7 +68,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 ServiceUpTimestamp = 1457973741708
             };
 
-            LeaseInfo result = LeaseInfo.FromJson(jinfo);
+            var result = LeaseInfo.FromJson(jinfo);
 
             jinfo = result.ToJson();
 
@@ -84,8 +84,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromConfig_Correct()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
-            LeaseInfo info = LeaseInfo.FromConfig(config);
+            var config = new EurekaInstanceConfig();
+            var info = LeaseInfo.FromConfig(config);
             Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.RenewalIntervalInSecs);
             Assert.Equal(config.LeaseExpirationDurationInSeconds, info.DurationInSecs);
         }

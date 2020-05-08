@@ -77,10 +77,10 @@ namespace Steeltoe.Common.Util
 
         public virtual bool IsPattern(string path)
         {
-            bool uriVar = false;
-            for (int i = 0; i < path.Length; i++)
+            var uriVar = false;
+            for (var i = 0; i < path.Length; i++)
             {
-                char c = path[i];
+                var c = path[i];
                 if (c == '*' || c == '?')
                 {
                     return true;
@@ -113,15 +113,15 @@ namespace Steeltoe.Common.Util
 
         public virtual string ExtractPathWithinPattern(string pattern, string path)
         {
-            string[] patternParts = TokenizePath(pattern);
-            string[] pathParts = TokenizePath(path);
+            var patternParts = TokenizePath(pattern);
+            var pathParts = TokenizePath(path);
 
-            StringBuilder builder = new StringBuilder();
-            bool pathStarted = false;
+            var builder = new StringBuilder();
+            var pathStarted = false;
 
-            for (int segment = 0; segment < patternParts.Length; segment++)
+            for (var segment = 0; segment < patternParts.Length; segment++)
             {
-                string patternPart = patternParts[segment];
+                var patternPart = patternParts[segment];
                 if (patternPart.IndexOf('*') > -1 || patternPart.IndexOf('?') > -1)
                 {
                     for (; segment < pathParts.Length; segment++)
@@ -142,8 +142,8 @@ namespace Steeltoe.Common.Util
 
         public virtual IDictionary<string, string> ExtractUriTemplateVariables(string pattern, string path)
         {
-            Dictionary<string, string> variables = new Dictionary<string, string>();
-            bool result = DoMatch(pattern, path, true, variables);
+            var variables = new Dictionary<string, string>();
+            var result = DoMatch(pattern, path, true, variables);
             if (!result)
             {
                 throw new InvalidOperationException("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"");
@@ -169,7 +169,7 @@ namespace Steeltoe.Common.Util
                 return pattern1;
             }
 
-            bool pattern1ContainsUriVar = pattern1.IndexOf('{') != -1;
+            var pattern1ContainsUriVar = pattern1.IndexOf('{') != -1;
             if (!pattern1.Equals(pattern2) && !pattern1ContainsUriVar && Match(pattern1, pattern2))
             {
                 // /* + /hotel -> /hotel ; "/*.*" + "/*.html" -> /*.html
@@ -191,25 +191,25 @@ namespace Steeltoe.Common.Util
                 return Concat(pattern1, pattern2);
             }
 
-            int starDotPos1 = pattern1.IndexOf("*.");
+            var starDotPos1 = pattern1.IndexOf("*.");
             if (pattern1ContainsUriVar || starDotPos1 == -1 || _pathSeparator.Equals("."))
             {
                 // simply concatenate the two patterns
                 return Concat(pattern1, pattern2);
             }
 
-            string ext1 = pattern1.Substring(starDotPos1 + 1);
-            int dotPos2 = pattern2.IndexOf('.');
-            string file2 = dotPos2 == -1 ? pattern2 : pattern2.Substring(0, dotPos2);
-            string ext2 = dotPos2 == -1 ? string.Empty : pattern2.Substring(dotPos2);
-            bool ext1All = ext1.Equals(".*") || ext1 == string.Empty;
-            bool ext2All = ext2.Equals(".*") || ext2 == string.Empty;
+            var ext1 = pattern1.Substring(starDotPos1 + 1);
+            var dotPos2 = pattern2.IndexOf('.');
+            var file2 = dotPos2 == -1 ? pattern2 : pattern2.Substring(0, dotPos2);
+            var ext2 = dotPos2 == -1 ? string.Empty : pattern2.Substring(dotPos2);
+            var ext1All = ext1.Equals(".*") || ext1 == string.Empty;
+            var ext2All = ext2.Equals(".*") || ext2 == string.Empty;
             if (!ext1All && !ext2All)
             {
                 throw new InvalidOperationException("Cannot combine patterns: " + pattern1 + " vs " + pattern2);
             }
 
-            string ext = ext1All ? ext2 : ext1;
+            var ext = ext1All ? ext2 : ext1;
             return file2 + ext;
         }
 
@@ -225,23 +225,23 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            string[] pattDirs = TokenizePattern(pattern);
+            var pattDirs = TokenizePattern(pattern);
             if (fullMatch && CaseSensitive && !IsPotentialMatch(path, pattDirs))
             {
                 return false;
             }
 
-            string[] pathDirs = TokenizePath(path);
+            var pathDirs = TokenizePath(path);
 
-            int pattIdxStart = 0;
-            int pattIdxEnd = pattDirs.Length - 1;
-            int pathIdxStart = 0;
-            int pathIdxEnd = pathDirs.Length - 1;
+            var pattIdxStart = 0;
+            var pattIdxEnd = pattDirs.Length - 1;
+            var pathIdxStart = 0;
+            var pathIdxEnd = pathDirs.Length - 1;
 
             // Match all elements up to the first **
             while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd)
             {
-                string pattDir = pattDirs[pattIdxStart];
+                var pattDir = pattDirs[pattIdxStart];
                 if ("**".Equals(pattDir))
                 {
                     break;
@@ -274,7 +274,7 @@ namespace Steeltoe.Common.Util
                     return true;
                 }
 
-                for (int i = pattIdxStart; i <= pattIdxEnd; i++)
+                for (var i = pattIdxStart; i <= pattIdxEnd; i++)
                 {
                     if (!pattDirs[i].Equals("**"))
                     {
@@ -298,7 +298,7 @@ namespace Steeltoe.Common.Util
             // up to last '**'
             while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd)
             {
-                string pattDir = pattDirs[pattIdxEnd];
+                var pattDir = pattDirs[pattIdxEnd];
                 if (pattDir.Equals("**"))
                 {
                     break;
@@ -316,7 +316,7 @@ namespace Steeltoe.Common.Util
             if (pathIdxStart > pathIdxEnd)
             {
                 // String is exhausted
-                for (int i = pattIdxStart; i <= pattIdxEnd; i++)
+                for (var i = pattIdxStart; i <= pattIdxEnd; i++)
                 {
                     if (!pattDirs[i].Equals("**"))
                     {
@@ -329,8 +329,8 @@ namespace Steeltoe.Common.Util
 
             while (pattIdxStart != pattIdxEnd && pathIdxStart <= pathIdxEnd)
             {
-                int patIdxTmp = -1;
-                for (int i = pattIdxStart + 1; i <= pattIdxEnd; i++)
+                var patIdxTmp = -1;
+                for (var i = pattIdxStart + 1; i <= pattIdxEnd; i++)
                 {
                     if (pattDirs[i].Equals("**"))
                     {
@@ -348,17 +348,17 @@ namespace Steeltoe.Common.Util
 
                 // Find the pattern between padIdxStart & padIdxTmp in str between
                 // strIdxStart & strIdxEnd
-                int patLength = patIdxTmp - pattIdxStart - 1;
-                int strLength = pathIdxEnd - pathIdxStart + 1;
-                int foundIdx = -1;
+                var patLength = patIdxTmp - pattIdxStart - 1;
+                var strLength = pathIdxEnd - pathIdxStart + 1;
+                var foundIdx = -1;
 
-                for (int i = 0; i <= strLength - patLength; i++)
+                for (var i = 0; i <= strLength - patLength; i++)
                 {
-                    bool failedMatch = false;
-                    for (int j = 0; j < patLength; j++)
+                    var failedMatch = false;
+                    for (var j = 0; j < patLength; j++)
                     {
-                        string subPat = pattDirs[pattIdxStart + j + 1];
-                        string subStr = pathDirs[pathIdxStart + i + j];
+                        var subPat = pattDirs[pattIdxStart + j + 1];
+                        var subStr = pathDirs[pathIdxStart + i + j];
                         if (!MatchStrings(subPat, subStr, uriTemplateVariables))
                         {
                             failedMatch = true;
@@ -384,7 +384,7 @@ namespace Steeltoe.Common.Util
                 pathIdxStart = foundIdx + patLength;
             }
 
-            for (int i = pattIdxStart; i <= pattIdxEnd; i++)
+            for (var i = pattIdxStart; i <= pattIdxEnd; i++)
             {
                 if (!pattDirs[i].Equals("**"))
                 {
@@ -398,7 +398,7 @@ namespace Steeltoe.Common.Util
         protected virtual string[] TokenizePattern(string pattern)
         {
             string[] tokenized = null;
-            bool? cachePatterns = CachePatterns;
+            var cachePatterns = CachePatterns;
             if (cachePatterns == null || cachePatterns.Value)
             {
                 _tokenizedPatternCache.TryGetValue(pattern, out tokenized);
@@ -435,7 +435,7 @@ namespace Steeltoe.Common.Util
             var split = path.Split(new string[] { _pathSeparator }, StringSplitOptions.RemoveEmptyEntries);
             if (TrimTokens)
             {
-                for (int i = 0; i < split.Length; i++)
+                for (var i = 0; i < split.Length; i++)
                 {
                     split[i] = split[i].Trim();
                 }
@@ -447,7 +447,7 @@ namespace Steeltoe.Common.Util
         protected virtual AntPathStringMatcher GetStringMatcher(string pattern)
         {
             AntPathStringMatcher matcher = null;
-            bool? cachePatterns = CachePatterns;
+            var cachePatterns = CachePatterns;
             if (cachePatterns == null || cachePatterns.Value)
             {
                 _stringMatcherCache.TryGetValue(pattern, out matcher);
@@ -476,8 +476,8 @@ namespace Steeltoe.Common.Util
 
         private string Concat(string path1, string path2)
         {
-            bool path1EndsWithSeparator = path1.EndsWith(_pathSeparator);
-            bool path2StartsWithSeparator = path2.StartsWith(_pathSeparator);
+            var path1EndsWithSeparator = path1.EndsWith(_pathSeparator);
+            var path2StartsWithSeparator = path2.StartsWith(_pathSeparator);
 
             if (path1EndsWithSeparator && path2StartsWithSeparator)
             {
@@ -502,10 +502,10 @@ namespace Steeltoe.Common.Util
         {
             if (!TrimTokens)
             {
-                int pos = 0;
-                foreach (string pattDir in pattDirs)
+                var pos = 0;
+                foreach (var pattDir in pattDirs)
                 {
-                    int skipped = SkipSeparator(path, pos, _pathSeparator);
+                    var skipped = SkipSeparator(path, pos, _pathSeparator);
                     pos += skipped;
                     skipped = SkipSegment(path, pos, pattDir);
                     if (skipped < pattDir.Length)
@@ -522,16 +522,16 @@ namespace Steeltoe.Common.Util
 
         private int SkipSegment(string path, int pos, string prefix)
         {
-            int skipped = 0;
-            for (int i = 0; i < prefix.Length; i++)
+            var skipped = 0;
+            for (var i = 0; i < prefix.Length; i++)
             {
-                char c = prefix[i];
+                var c = prefix[i];
                 if (IsWildcardChar(c))
                 {
                     return skipped;
                 }
 
-                int currPos = pos + skipped;
+                var currPos = pos + skipped;
                 if (currPos >= path.Length)
                 {
                     return 0;
@@ -548,7 +548,7 @@ namespace Steeltoe.Common.Util
 
         private int SkipSeparator(string path, int pos, string separator)
         {
-            int skipped = 0;
+            var skipped = 0;
             path = path.Substring(pos);
             while (path.StartsWith(separator))
             {
@@ -561,7 +561,7 @@ namespace Steeltoe.Common.Util
 
         private bool IsWildcardChar(char c)
         {
-            foreach (char candidate in WILDCARD_CHARS)
+            foreach (var candidate in WILDCARD_CHARS)
             {
                 if (c == candidate)
                 {
@@ -590,8 +590,8 @@ namespace Steeltoe.Common.Util
 
             public int Compare(string pattern1, string pattern2)
             {
-                PatternInfo info1 = new PatternInfo(pattern1);
-                PatternInfo info2 = new PatternInfo(pattern2);
+                var info1 = new PatternInfo(pattern1);
+                var info2 = new PatternInfo(pattern2);
 
                 if (info1.IsLeastSpecific && info2.IsLeastSpecific)
                 {
@@ -606,8 +606,8 @@ namespace Steeltoe.Common.Util
                     return -1;
                 }
 
-                bool pattern1EqualsPath = pattern1.Equals(path);
-                bool pattern2EqualsPath = pattern2.Equals(path);
+                var pattern1EqualsPath = pattern1.Equals(path);
+                var pattern2EqualsPath = pattern2.Equals(path);
                 if (pattern1EqualsPath && pattern2EqualsPath)
                 {
                     return 0;
@@ -685,7 +685,7 @@ namespace Steeltoe.Common.Util
 
                 protected void InitCounters()
                 {
-                    int pos = 0;
+                    var pos = 0;
                     if (pattern != null)
                     {
                         while (pos < pattern.Length)
@@ -768,13 +768,13 @@ namespace Steeltoe.Common.Util
 
             public AntPathStringMatcher(string pattern, bool caseSensitive)
             {
-                StringBuilder patternBuilder = new StringBuilder();
+                var patternBuilder = new StringBuilder();
                 var matcher = GLOB_PATTERN.Match(pattern);
-                int end = 0;
+                var end = 0;
                 while (matcher.Success)
                 {
                     patternBuilder.Append(Quote(pattern, end, matcher.Index));
-                    string match = matcher.Value;
+                    var match = matcher.Value;
                     if ("?".Equals(match))
                     {
                         patternBuilder.Append('.');
@@ -785,7 +785,7 @@ namespace Steeltoe.Common.Util
                     }
                     else if (match.StartsWith("{") && match.EndsWith("}"))
                     {
-                        int colonIdx = match.IndexOf(':');
+                        var colonIdx = match.IndexOf(':');
                         if (colonIdx == -1)
                         {
                             patternBuilder.Append(DEFAULT_VARIABLE_PATTERN);
@@ -794,11 +794,11 @@ namespace Steeltoe.Common.Util
                         }
                         else
                         {
-                            string variablePattern = match.Substring(colonIdx + 1, (match.Length - 1) - (colonIdx + 1));
+                            var variablePattern = match.Substring(colonIdx + 1, (match.Length - 1) - (colonIdx + 1));
                             patternBuilder.Append('(');
                             patternBuilder.Append(variablePattern);
                             patternBuilder.Append(')');
-                            string variableName = match.Substring(1, colonIdx - 1);
+                            var variableName = match.Substring(1, colonIdx - 1);
                             _variableNames.Add(variableName);
                         }
                     }
@@ -828,10 +828,10 @@ namespace Steeltoe.Common.Util
                                     "Use non-capturing groups instead.");
                         }
 
-                        for (int i = 1; i <= matcher.Groups.Count - 1; i++)
+                        for (var i = 1; i <= matcher.Groups.Count - 1; i++)
                         {
-                            string name = _variableNames[i - 1];
-                            string value = matcher.Groups[i].Value;
+                            var name = _variableNames[i - 1];
+                            var value = matcher.Groups[i].Value;
                             uriTemplateVariables[name] = value;
                         }
                     }
@@ -851,7 +851,7 @@ namespace Steeltoe.Common.Util
                     return string.Empty;
                 }
 
-                string s = str.Substring(start, end - start);
+                var s = str.Substring(start, end - start);
                 return Regex.Escape(s);
             }
         }

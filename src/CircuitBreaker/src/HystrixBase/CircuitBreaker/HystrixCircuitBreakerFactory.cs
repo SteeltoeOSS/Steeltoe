@@ -28,7 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key)
         {
-            CircuitBreakersByCommand.TryGetValue(key.Name, out ICircuitBreaker previouslyCached);
+            CircuitBreakersByCommand.TryGetValue(key.Name, out var previouslyCached);
             return previouslyCached;
         }
 

@@ -20,7 +20,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         public CloudFoundryJwtBearerOptions()
         {
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenUri;
             SaveToken = true;

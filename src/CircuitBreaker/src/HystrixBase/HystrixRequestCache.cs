@@ -60,7 +60,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public T Get<T>(string cacheKey)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
+            var key = GetRequestCacheKey(cacheKey);
             object result = null;
             if (key != null)
             {
@@ -77,18 +77,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public void Clear(string cacheKey)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
+            var key = GetRequestCacheKey(cacheKey);
             if (key != null)
             {
                 /* remove this cache key */
                 var cacheInstance = RequestVariableForCache.Value;
-                cacheInstance.TryRemove(key, out object removed);
+                cacheInstance.TryRemove(key, out var removed);
             }
         }
 
         internal T PutIfAbsent<T>(string cacheKey, T f)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
+            var key = GetRequestCacheKey(cacheKey);
             object result = null;
             if (key != null)
             {
@@ -131,8 +131,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public override int GetHashCode()
             {
-                int prime = 31;
-                int result = 1;
+                var prime = 31;
+                var result = 1;
                 result = (prime * result) + ((rvKey == null) ? 0 : rvKey.GetHashCode());
                 result = (prime * result) + ((valueCacheKey == null) ? 0 : valueCacheKey.GetHashCode());
                 return result;
@@ -155,7 +155,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                ValueCacheKey other = (ValueCacheKey)obj;
+                var other = (ValueCacheKey)obj;
                 if (rvKey == null)
                 {
                     if (other.rvKey != null)
@@ -217,8 +217,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public override int GetHashCode()
             {
-                int prime = 31;
-                int result = 1;
+                var prime = 31;
+                var result = 1;
                 result = (prime * result) + ((key == null) ? 0 : key.GetHashCode());
                 result = (prime * result) + type;
                 return result;
@@ -241,7 +241,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                RequestCacheKey other = (RequestCacheKey)obj;
+                var other = (RequestCacheKey)obj;
                 if (type != other.type)
                 {
                     return false;

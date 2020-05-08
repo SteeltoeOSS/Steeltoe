@@ -73,7 +73,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected override void QueueTask(Task task)
         {
-            bool isCommand = task.AsyncState is IHystrixInvokable;
+            var isCommand = task.AsyncState is IHystrixInvokable;
             if (!isCommand)
             {
                 RunContinuation(task);
@@ -126,7 +126,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                 {
                     while (!shutdown)
                     {
-                        workQueue.TryTake(out Task item, 250);
+                        workQueue.TryTake(out var item, 250);
 
                         if (item != null)
                         {

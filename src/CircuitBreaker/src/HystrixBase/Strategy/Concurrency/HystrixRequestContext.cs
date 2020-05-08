@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             get
             {
-                HystrixRequestContext context = RequestVariables.Value;
+                var context = RequestVariables.Value;
                 return context != null && context.State != null;
             }
         }
@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         public static HystrixRequestContext InitializeContext()
         {
-            HystrixRequestContext context = new HystrixRequestContext
+            var context = new HystrixRequestContext
             {
                 State = new ConcurrentDictionary<IDisposable, object>()
             };
@@ -83,7 +83,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                     {
                         v.Dispose();
 
-                        State.TryRemove(v, out object oldValue);
+                        State.TryRemove(v, out var oldValue);
                     }
                     catch (Exception)
                     {

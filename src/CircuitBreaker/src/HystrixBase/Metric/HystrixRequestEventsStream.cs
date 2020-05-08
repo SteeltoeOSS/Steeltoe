@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Write(ICollection<IHystrixInvokableInfo> executions)
         {
-            HystrixRequestEvents requestEvents = new HystrixRequestEvents(executions);
+            var requestEvents = new HystrixRequestEvents(executions);
             writeOnlyRequestEventsSubject.OnNext(requestEvents);
         }
 

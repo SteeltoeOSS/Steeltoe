@@ -82,10 +82,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
         {
-            long totalMemory = GC.GetTotalMemory(false);
+            var totalMemory = GC.GetTotalMemory(false);
             memoryUsed.Record(default(SpanContext), totalMemory, memoryLabels);
-            List<long> counts = new List<long>(GC.MaxGeneration);
-            for (int i = 0; i < GC.MaxGeneration; i++)
+            var counts = new List<long>(GC.MaxGeneration);
+            for (var i = 0; i < GC.MaxGeneration; i++)
             {
                 var count = (long)GC.CollectionCount(i);
                 counts.Add(count);

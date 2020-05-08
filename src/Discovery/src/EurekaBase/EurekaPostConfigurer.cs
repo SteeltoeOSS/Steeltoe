@@ -103,7 +103,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (string.IsNullOrEmpty(options.RegistrationMethod))
             {
-                string springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
+                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
                 if (!string.IsNullOrEmpty(springRegMethod))
                 {
                     options.RegistrationMethod = springRegMethod;

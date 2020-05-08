@@ -43,7 +43,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal IList<IServiceInstance> GetConfigServerInstances()
         {
-            MethodInfo method = FindGetInstancesMethod();
+            var method = FindGetInstancesMethod();
             if (method == null)
             {
                 _logger?.LogWarning("Could not locate discovery assembly or GetInstances() method!");
@@ -55,7 +55,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal MethodInfo FindGetInstancesMethod()
         {
-            Type discoveryService = ReflectionHelpers.FindType(_discoveryServiceAssemblies, _discoveryServiceTypeNames);
+            var discoveryService = ReflectionHelpers.FindType(_discoveryServiceAssemblies, _discoveryServiceTypeNames);
             MethodInfo method = null;
 
             if (discoveryService != null)

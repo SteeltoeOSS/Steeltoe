@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 { "c", "v1" }
             }.ToList();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 measure.Add(default(SpanContext), i, labels);
             }

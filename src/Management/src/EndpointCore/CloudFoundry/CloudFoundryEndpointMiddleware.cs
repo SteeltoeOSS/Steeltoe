@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             var scheme = request.Scheme;
 
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
             {
                 scheme = headerScheme.ToString();
             }

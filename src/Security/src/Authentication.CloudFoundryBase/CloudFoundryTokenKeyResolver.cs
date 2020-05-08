@@ -48,15 +48,15 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
         {
-            if (Resolved.TryGetValue(kid, out SecurityKey resolved))
+            if (Resolved.TryGetValue(kid, out var resolved))
             {
                 return new List<SecurityKey> { resolved };
             }
 
-            JsonWebKeySet keyset = FetchKeySet().GetAwaiter().GetResult();
+            var keyset = FetchKeySet().GetAwaiter().GetResult();
             if (keyset != null)
             {
-                foreach (JsonWebKey key in keyset.Keys)
+                foreach (var key in keyset.Keys)
                 {
                     FixupKey(key);
                     Resolved[key.Kid] = key;
@@ -75,7 +75,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
             if (Platform.IsFullFramework)
             {
-                byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
+                var existing = Base64UrlEncoder.DecodeBytes(key.N);
                 TrimKey(key, existing);
             }
 
@@ -87,12 +87,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
             requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-            HttpClient client = GetHttpClient();
+            var client = GetHttpClient();
 
             HttpClientHelper.ConfigureCertificateValidation(
                 _validateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var prevProtocols,
+                out var prevValidator);
 
             HttpResponseMessage response = null;
             try
@@ -130,9 +130,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         private void TrimKey(JsonWebKey key, byte[] existing)
         {
-            byte[] signRemoved = new byte[existing.Length - 1];
+            var signRemoved = new byte[existing.Length - 1];
             Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
-            string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
+            var withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
             key.N = withSignRemoved;
         }
     }

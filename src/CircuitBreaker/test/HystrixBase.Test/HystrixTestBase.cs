@@ -100,8 +100,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
         {
-            bool updated = false;
-            int number = numberOfUpdates;
+            var updated = false;
+            var number = numberOfUpdates;
 
             using (observable.Subscribe((item) =>
             {
@@ -124,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int maxWaitTime, ITestOutputHelper output = null)
         {
             var current = observer.TickCount;
-            int countToWait = count;
+            var countToWait = count;
 
             output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
@@ -134,8 +134,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime, ITestOutputHelper output = null)
         {
             var current = observer.TickCount;
-            int countToWait = count;
-            long minTime = Time.CurrentTimeMillis + minWaitTime;
+            var countToWait = count;
+            var minTime = Time.CurrentTimeMillis + minWaitTime;
 
             output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
@@ -144,9 +144,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected static string BucketToString(long[] eventCounts)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append("[");
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
+            foreach (var eventType in HystrixEventTypeHelper.Values)
             {
                 if (eventCounts[(int)eventType] > 0)
                 {

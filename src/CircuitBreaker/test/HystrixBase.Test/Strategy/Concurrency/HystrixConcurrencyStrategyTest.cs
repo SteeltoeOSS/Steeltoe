@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         [Fact]
         public async Task TestThreadContextOnTimeout()
         {
-            AtomicBoolean isInitialized = new AtomicBoolean();
+            var isInitialized = new AtomicBoolean();
             await Assert.ThrowsAsync<HystrixRuntimeException>(async () =>
           {
               await new TimeoutCommand(output).ToObservable()

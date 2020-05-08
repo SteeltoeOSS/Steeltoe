@@ -107,7 +107,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             get
             {
-                ConfigServerClientSettings settings = new ConfigServerClientSettings();
+                var settings = new ConfigServerClientSettings();
 
                 settings.Enabled = Enabled;
                 settings.FailFast = FailFast;

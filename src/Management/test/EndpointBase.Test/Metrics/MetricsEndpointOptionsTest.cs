@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 ["management:endpoints:metrics:ingressIgnorePattern"] = "pattern",
                 ["management:endpoints:metrics:egressIgnorePattern"] = "pattern",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

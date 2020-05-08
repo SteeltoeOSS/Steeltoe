@@ -68,8 +68,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     }
                     else
                     {
-                        CollapsedRequest<RequestResponseType, RequestArgumentType> collapsedRequest = new CollapsedRequest<RequestResponseType, RequestArgumentType>(arg, token);
-                        TaskCompletionSource<RequestResponseType> tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
+                        var collapsedRequest = new CollapsedRequest<RequestResponseType, RequestArgumentType>(arg, token);
+                        var tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
                         collapsedRequest.CompletionSource = tcs;
 
                         CollapsedRequest<RequestResponseType, RequestArgumentType> existing = null;
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          */
                         if (existing != collapsedRequest)
                         {
-                            bool requestCachingEnabled = properties.RequestCacheEnabled;
+                            var requestCachingEnabled = properties.RequestCacheEnabled;
                             if (requestCachingEnabled)
                             {
                                 return existing;
@@ -135,7 +135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 /* wait for 'offer'/'remove' threads to finish before executing the batch so 'requests' is complete */
                 batchLock.EnterWriteLock();
 
-                List<CollapsedRequest<RequestResponseType, RequestArgumentType>> args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+                var args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
                 try
                 {
                     // Check for cancel
@@ -160,16 +160,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     if (args.Count > 0)
                     {
                         // shard batches
-                        ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = commandCollapser.DoShardRequests(args);
+                        var shards = commandCollapser.DoShardRequests(args);
 
                         // for each shard execute its requests
-                        foreach (ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> shardRequests in shards)
+                        foreach (var shardRequests in shards)
                         {
                             try
                             {
                                 // create a new command to handle this batch of requests
-                                HystrixCommand<BatchReturnType> command = commandCollapser.DoCreateObservableCommand(shardRequests);
-                                BatchReturnType result = command.Execute();
+                                var command = commandCollapser.DoCreateObservableCommand(shardRequests);
+                                var result = command.Execute();
 
                                 try
                                 {
@@ -178,7 +178,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                                 catch (Exception mapException)
                                 {
                                     // logger.debug("Exception mapping responses to requests.", e);
-                                    foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in args)
+                                    foreach (var request in args)
                                     {
                                         try
                                         {
@@ -270,7 +270,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          *
                          * This safety-net just prevents the CollapsedRequestFutureImpl.get() from waiting on the CountDownLatch until its max timeout.
                          */
-                        foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in argumentMap.Values)
+                        foreach (var request in argumentMap.Values)
                         {
                             try
                             {
@@ -342,7 +342,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                         nullArg.Value = null;
                     }
 
-                    if (argumentMap.TryRemove(arg, out CollapsedRequest<RequestResponseType, RequestArgumentType> existing))
+                    if (argumentMap.TryRemove(arg, out var existing))
                     {
                         // Log
                     }

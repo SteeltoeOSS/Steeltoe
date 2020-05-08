@@ -64,7 +64,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             configurationBuilder.AddConfigServer(environment);
             var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
         }
@@ -80,7 +80,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Act and Assert
             configurationBuilder.AddConfigServer(environment, loggerFactory);
             var config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
             Assert.NotNull(configServerProvider.Logger);
@@ -122,9 +122,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -132,11 +132,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -177,9 +177,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -189,10 +189,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             configurationBuilder.AddConfigServer(environment);
             var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.ValidateCertificates);
         }
@@ -213,9 +213,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -224,11 +224,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
             var config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
 
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.ValidateCertificates);
         }
@@ -254,9 +254,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
     </spring>
 </settings>";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -264,11 +264,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -298,9 +298,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
     password=myPassword
 ";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -308,11 +308,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             // Act and Assert
             Assert.False(settings.Enabled);
@@ -349,12 +349,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -400,9 +400,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             var path = TestHelpers.CreateTempFile(appsettings);
 
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -410,11 +410,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
 
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
@@ -491,13 +491,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                 }";
             var tempPath = Path.GetTempPath();
             var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
-            string appsettingsfileName = Path.GetFileName(appsettingsPath);
+            var appsettingsfileName = Path.GetFileName(appsettingsPath);
 
             var vcapAppPath = TestHelpers.CreateTempFile(vcap_application);
-            string vcapAppfileName = Path.GetFileName(vcapAppPath);
+            var vcapAppfileName = Path.GetFileName(vcapAppPath);
 
             var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
-            string vcapServicesfileName = Path.GetFileName(vcapServicesPath);
+            var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
@@ -509,13 +509,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
 
             // Check settings
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
             Assert.True(settings.Enabled);
             Assert.False(settings.FailFast);
             Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);
@@ -599,13 +599,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                 }";
             var tempPath = Path.GetTempPath();
             var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
-            string appsettingsfileName = Path.GetFileName(appsettingsPath);
+            var appsettingsfileName = Path.GetFileName(appsettingsPath);
 
             var vcapAppPath = TestHelpers.CreateTempFile(vcap_application);
-            string vcapAppfileName = Path.GetFileName(vcapAppPath);
+            var vcapAppfileName = Path.GetFileName(vcapAppPath);
 
             var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
-            string vcapServicesfileName = Path.GetFileName(vcapServicesPath);
+            var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
@@ -617,13 +617,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 
             // Act and Assert
             configurationBuilder.AddConfigServer(environment);
-            IConfigurationRoot config = configurationBuilder.Build();
-            ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+            var config = configurationBuilder.Build();
+            var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
             Assert.NotNull(configServerProvider);
 
             // Check settings
-            ConfigServerClientSettings settings = configServerProvider.Settings;
+            var settings = configServerProvider.Settings;
             Assert.True(settings.Enabled);
             Assert.False(settings.FailFast);
             Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);

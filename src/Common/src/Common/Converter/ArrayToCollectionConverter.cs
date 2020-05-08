@@ -44,9 +44,7 @@ namespace Steeltoe.Common.Converter
 
         public override object Convert(object source, Type sourceType, Type targetType)
         {
-            var asArray = source as Array;
-
-            if (asArray == null)
+            if (!(source is Array asArray))
             {
                 return null;
             }

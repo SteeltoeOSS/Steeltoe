@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Security.Test
         {
             if (context.Request.Headers.Keys.Contains(TestingHeader))
             {
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(TestFakeAuthentication);
+                var claimsIdentity = new ClaimsIdentity(TestFakeAuthentication);
                 claimsIdentity.AddClaim(new Claim("scope", "actuator.read"));
                 context.User = new ClaimsPrincipal(claimsIdentity);
             }

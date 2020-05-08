@@ -144,9 +144,8 @@ namespace Steeltoe.Common.Retry
                         {
                             var retryContext = GetRetryContext(context);
                             retryContext.LastException = delegateResult.Exception;
-                            var callback = retryContext.GetAttribute(RECOVERY_CALLBACK_KEY) as IRecoveryCallback;
                             var result = default(T);
-                            if (callback != null)
+                            if (retryContext.GetAttribute(RECOVERY_CALLBACK_KEY) is IRecoveryCallback callback)
                             {
                                 result = (T)callback.Recover(retryContext);
                                 retryContext.SetAttribute(RECOVERED, true);

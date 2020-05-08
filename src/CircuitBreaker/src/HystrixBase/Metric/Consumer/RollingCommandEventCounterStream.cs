@@ -26,9 +26,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCommandEventCounterStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
         {
-            int counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-            int numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-            int counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+            var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+            var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+            var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
             return GetInstance(commandKey, numCounterBuckets, counterBucketSizeInMs);
         }

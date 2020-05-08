@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Health
                     result.Status = h.Status;
                 }
 
-                string key = GetKey(result, contributor.Id);
+                var key = GetKey(result, contributor.Id);
                 result.Details.Add(key, h.Details);
             }
 

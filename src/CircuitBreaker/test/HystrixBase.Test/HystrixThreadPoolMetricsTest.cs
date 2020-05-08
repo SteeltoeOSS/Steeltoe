@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void ShouldYieldNoExecutedTasksOnStartup()
         {
             // given
-            ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
+            var instances = HystrixThreadPoolMetrics.GetInstances();
 
             // then
             Assert.Equal(0, instances.Count);
@@ -60,12 +60,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             await cmd.ExecuteAsync();
             Time.Wait(250);
 
-            ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
+            var instances = HystrixThreadPoolMetrics.GetInstances();
 
             // then
             output.WriteLine($"Instance count: {instances.Count}");
             Assert.Equal(1, instances.Count);
-            HystrixThreadPoolMetrics metrics = instances.First();
+            var metrics = instances.First();
             output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
             Assert.Equal(1, metrics.RollingCountThreadsExecuted);
         }
@@ -88,7 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
-                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions(TpKey)
+                var opts = new HystrixThreadPoolOptions(TpKey)
                 {
                     MetricsRollingStatisticalWindowInMilliseconds = 100
                 };
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixCommandOptions GetCommandOptions()
             {
-                HystrixCommandOptions opts = new HystrixCommandOptions()
+                var opts = new HystrixCommandOptions()
                 {
                     GroupKey = GroupKey,
                     ThreadPoolKey = TpKey,

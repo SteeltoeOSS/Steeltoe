@@ -282,7 +282,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
             services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
@@ -309,7 +309,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
             services.AddTransient<TService, TImplementation>((p) => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
         }
 
@@ -334,7 +334,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
             services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }
@@ -360,7 +360,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
 
             services.AddTransient<TService>((p) => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
         }

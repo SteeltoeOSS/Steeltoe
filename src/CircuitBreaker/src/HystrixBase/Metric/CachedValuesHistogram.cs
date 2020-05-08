@@ -53,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public static LongHistogram GetNewHistogram()
         {
-            LongHistogram histo = new LongHistogram(1, 2, NUMBER_SIGNIFICANT_DIGITS);
+            var histo = new LongHistogram(1, 2, NUMBER_SIGNIFICANT_DIGITS);
             histo.Reset();
             return histo;
         }
@@ -113,7 +113,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
          // Return the cached value if available. Otherwise, we need to synchronize access to the underlying {@link Histogram}
         public int GetValueAtPercentile(double percentile)
         {
-            int permyriad = (int)percentile * 100;
+            var permyriad = (int)percentile * 100;
             switch (permyriad)
             {
                 case 0: return p0;

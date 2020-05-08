@@ -30,10 +30,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCreatesBuckets()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // confirm the initial settings
                 Assert.Equal(200, counter._timeInMilliseconds);
@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(0, counter._buckets.Size);
 
                 // add a success in each interval which should result in all 10 buckets being created with 1 success in each
-                for (int i = 0; i < counter._numberOfBuckets; i++)
+                for (var i = 0; i < counter._numberOfBuckets; i++)
                 {
                     counter.Increment(HystrixRollingNumberEvent.SUCCESS);
                     time.Increment(counter._bucketSizeInMillseconds);
@@ -67,10 +67,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestResetBuckets()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // we start out with 0 buckets in the queue
                 Assert.Equal(0, counter._buckets.Size);
@@ -100,10 +100,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestEmptyBucketsFillIn()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // add 1
                 counter.Increment(HystrixRollingNumberEvent.SUCCESS);
@@ -130,10 +130,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestIncrementInSingleBucket()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(HystrixRollingNumberEvent.SUCCESS);
@@ -162,10 +162,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestTimeout()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(HystrixRollingNumberEvent.TIMEOUT);
@@ -202,10 +202,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestShortCircuited()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(HystrixRollingNumberEvent.SHORT_CIRCUITED);
@@ -266,10 +266,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestIncrementInMultipleBuckets()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(HystrixRollingNumberEvent.SUCCESS);
@@ -330,10 +330,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCounterRetrievalRefreshesBuckets()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(HystrixRollingNumberEvent.SUCCESS);
@@ -380,10 +380,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestUpdateMax1()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.UpdateRollingMax(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE, 10);
@@ -408,7 +408,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(20, counter._buckets.Last.GetMaxUpdater(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE).Max);
 
                 // counts per bucket
-                long[] values = counter.GetValues(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
+                var values = counter.GetValues(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
                 Assert.Equal(10, values[0]); // oldest bucket
                 Assert.Equal(0, values[1]);
                 Assert.Equal(0, values[2]);
@@ -424,10 +424,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestUpdateMax2()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.UpdateRollingMax(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE, 10);
@@ -456,7 +456,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
                 Assert.Equal(50, counter.GetValueOfLatestBucket(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE));
 
                 // values per bucket
-                long[] values = counter.GetValues(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
+                var values = counter.GetValues(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
                 Assert.Equal(30, values[0]); // oldest bucket
                 Assert.Equal(0, values[1]);
                 Assert.Equal(0, values[2]);
@@ -472,12 +472,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestMaxValue()
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumberEvent type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
+                var type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
 
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 counter.UpdateRollingMax(type, 10);
 
@@ -508,39 +508,39 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestEmptySum()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.COLLAPSED;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.COLLAPSED;
+            var counter = new HystrixRollingNumber(time, 200, 10);
             Assert.Equal(0, counter.GetRollingSum(type));
         }
 
         [Fact]
         public void TestEmptyMax()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
+            var counter = new HystrixRollingNumber(time, 200, 10);
             Assert.Equal(0, counter.GetRollingMaxValue(type));
         }
 
         [Fact]
         public void TestEmptyLatestValue()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
+            var counter = new HystrixRollingNumber(time, 200, 10);
             Assert.Equal(0, counter.GetValueOfLatestBucket(type));
         }
 
         [Fact]
         public void TestRolling()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.THREAD_MAX_ACTIVE;
+            var counter = new HystrixRollingNumber(time, 20, 2);
 
             // iterate over 20 buckets on a queue sized for 2
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 // first bucket
                 counter.GetCurrentBucket();
@@ -565,14 +565,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCumulativeCounterAfterRolling()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.SUCCESS;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.SUCCESS;
+            var counter = new HystrixRollingNumber(time, 20, 2);
 
             Assert.Equal(0, counter.GetCumulativeSum(type));
 
             // iterate over 20 buckets on a queue sized for 2
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 // first bucket
                 counter.Increment(type);
@@ -597,14 +597,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCumulativeCounterAfterRollingAndReset()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.SUCCESS;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.SUCCESS;
+            var counter = new HystrixRollingNumber(time, 20, 2);
 
             Assert.Equal(0, counter.GetCumulativeSum(type));
 
             // iterate over 20 buckets on a queue sized for 2
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 // first bucket
                 counter.Increment(type);
@@ -636,9 +636,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCumulativeCounterAfterRollingAndReset2()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.SUCCESS;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.SUCCESS;
+            var counter = new HystrixRollingNumber(time, 20, 2);
 
             Assert.Equal(0, counter.GetCumulativeSum(type));
 
@@ -647,7 +647,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             counter.Increment(type);
 
             // iterate over 20 buckets on a queue sized for 2
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 try
                 {
@@ -677,9 +677,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Fact]
         public void TestCumulativeCounterAfterRollingAndReset3()
         {
-            MockedTime time = new MockedTime();
-            HystrixRollingNumberEvent type = HystrixRollingNumberEvent.SUCCESS;
-            HystrixRollingNumber counter = new HystrixRollingNumber(time, 20, 2);
+            var time = new MockedTime();
+            var type = HystrixRollingNumberEvent.SUCCESS;
+            var counter = new HystrixRollingNumber(time, 20, 2);
 
             Assert.Equal(0, counter.GetCumulativeSum(type));
 
@@ -688,7 +688,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             counter.Increment(type);
 
             // iterate over 20 buckets on a queue sized for 2
-            for (int i = 0; i < 20; i++)
+            for (var i = 0; i < 20; i++)
             {
                 try
                 {
@@ -712,10 +712,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
 
         private void TestCounterType(HystrixRollingNumberEvent type)
         {
-            MockedTime time = new MockedTime();
+            var time = new MockedTime();
             try
             {
-                HystrixRollingNumber counter = new HystrixRollingNumber(time, 200, 10);
+                var counter = new HystrixRollingNumber(time, 200, 10);
 
                 // Increment
                 counter.Increment(type);

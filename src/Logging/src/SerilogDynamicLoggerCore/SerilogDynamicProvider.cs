@@ -115,8 +115,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             var results = new Dictionary<string, ILoggerConfiguration>();
 
             // get the default first
-            LogLevel configuredDefault = GetConfiguredLevel("Default") ?? LogLevel.None;
-            LogLevel effectiveDefault = GetEffectiveLevel("Default");
+            var configuredDefault = GetConfiguredLevel("Default") ?? LogLevel.None;
+            var effectiveDefault = GetEffectiveLevel("Default");
             results.Add("Default", new DynamicLoggerConfiguration("Default", configuredDefault, effectiveDefault));
 
             // then get all running loggers
@@ -126,8 +126,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                 {
                     if (name != "Default")
                     {
-                        LogLevel? configured = GetConfiguredLevel(name);
-                        LogLevel effective = GetEffectiveLevel(name);
+                        var configured = GetConfiguredLevel(name);
+                        var effective = GetEffectiveLevel(name);
                         var config = new DynamicLoggerConfiguration(name, configured, effective);
                         if (results.ContainsKey(name) && !results[name].Equals(config))
                         {
@@ -224,7 +224,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private LogEventLevel GetLevel(string name)
         {
             var prefixes = GetKeyPrefixes(name);
-            LogEventLevel eventLevel = _serilogOptions.MinimumLevel.Default;
+            var eventLevel = _serilogOptions.MinimumLevel.Default;
 
             if (_defaultLevel.HasValue)
             {
@@ -278,7 +278,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                 var overrides = _serilogOptions.MinimumLevel.Override;
                 if (overrides != null
                     && overrides.ContainsKey(name)
-                    && overrides.TryGetValue(name, out LogEventLevel configuredLevel))
+                    && overrides.TryGetValue(name, out var configuredLevel))
                 {
                     returnValue = (LogLevel)configuredLevel;
                 }
@@ -293,12 +293,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             foreach (var prefix in prefixes)
             {
-                if (_loggerSwitches.TryGetValue(prefix, out LoggingLevelSwitch levelSwitch))
+                if (_loggerSwitches.TryGetValue(prefix, out var levelSwitch))
                 {
                     return (LogLevel)levelSwitch.MinimumLevel;
                 }
 
-                if (_runningLevels.TryGetValue(prefix, out LogEventLevel level))
+                if (_runningLevels.TryGetValue(prefix, out var level))
                 {
                     return (LogLevel)level;
                 }

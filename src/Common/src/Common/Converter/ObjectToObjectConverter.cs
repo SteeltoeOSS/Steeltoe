@@ -46,9 +46,8 @@ namespace Steeltoe.Common.Converter
 
             try
             {
-                if (member is MethodInfo)
+                if (member is MethodInfo method)
                 {
-                    var method = (MethodInfo)member;
                     if (!method.IsStatic)
                     {
                         return method.Invoke(source, Array.Empty<object>());
@@ -58,9 +57,8 @@ namespace Steeltoe.Common.Converter
                         return method.Invoke(null, new object[1] { source });
                     }
                 }
-                else if (member is ConstructorInfo)
+                else if (member is ConstructorInfo ctor)
                 {
-                    var ctor = (ConstructorInfo)member;
                     return ctor.Invoke(new object[1] { source });
                 }
             }
@@ -120,16 +118,14 @@ namespace Steeltoe.Common.Converter
 
         private static bool IsApplicable(MemberInfo member, Type sourceClass)
         {
-            if (member is MethodInfo)
+            if (member is MethodInfo method)
             {
-                var method = (MethodInfo)member;
                 return !method.IsStatic ?
                     method.DeclaringType.IsAssignableFrom(sourceClass) :
                         method.GetParameters()[0].ParameterType == sourceClass;
             }
-            else if (member is ConstructorInfo)
+            else if (member is ConstructorInfo ctor)
             {
-                var ctor = (ConstructorInfo)member;
                 return ctor.GetParameters()[0].ParameterType == sourceClass;
             }
             else

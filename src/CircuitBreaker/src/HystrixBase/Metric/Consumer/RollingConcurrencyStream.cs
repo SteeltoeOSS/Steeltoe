@@ -46,8 +46,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         protected RollingConcurrencyStream(IHystrixEventStream<HystrixCommandExecutionStarted> inputEventStream, int numBuckets, int bucketSizeInMs)
         {
-            List<int> emptyRollingMaxBuckets = new List<int>();
-            for (int i = 0; i < numBuckets; i++)
+            var emptyRollingMaxBuckets = new List<int>();
+            for (var i = 0; i < numBuckets; i++)
             {
                 emptyRollingMaxBuckets.Add(0);
             }
@@ -68,7 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             if (rollingMaxSubscription.Value == null)
             {
                 // the stream is not yet started
-                IDisposable candidateSubscription = Observe().Subscribe(rollingMax);
+                var candidateSubscription = Observe().Subscribe(rollingMax);
                 if (rollingMaxSubscription.CompareAndSet(null, candidateSubscription))
                 {
                     // won the race to set the subscription
@@ -85,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             get
             {
-                rollingMax.TryGetValue(out int value);
+                rollingMax.TryGetValue(out var value);
                 return value;
             }
         }
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public void Unsubscribe()
         {
-            IDisposable s = rollingMaxSubscription.Value;
+            var s = rollingMaxSubscription.Value;
             if (s != null)
             {
                 s.Dispose();

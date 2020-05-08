@@ -32,13 +32,13 @@ namespace Steeltoe.Discovery.Eureka.Util
                 return 0;
             }
 
-            long javaTicks = dt.Ticks - BaseTime.Ticks;
+            var javaTicks = dt.Ticks - BaseTime.Ticks;
             return javaTicks / 10000;
         }
 
         public static DateTime FromJavaMillis(long javaMillis)
         {
-            long dotNetTicks = (javaMillis * 10000) + BaseTime.Ticks;
+            var dotNetTicks = (javaMillis * 10000) + BaseTime.Ticks;
             return new DateTime(dotNetTicks, DateTimeKind.Utc);
         }
     }

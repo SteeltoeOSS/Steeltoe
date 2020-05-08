@@ -46,14 +46,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var opts = new TraceEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
             await middle.HandleTraceRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
         }
 
@@ -63,14 +63,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var opts = new TraceEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep, mopts);
             var context = CreateRequest("GET", "/cloudfoundryapplication/trace");
             await middle.HandleTraceRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("[]", json);
         }
 
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var opts = new TraceEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+            var obs = new TraceDiagnosticObserver(opts);
             var ep = new TraceEndpoint(opts, obs);
             var middle = new TraceEndpointMiddleware(null, ep, mopts);
 

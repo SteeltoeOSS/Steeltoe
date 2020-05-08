@@ -27,12 +27,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         static ExecutionResult()
         {
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
+            foreach (var eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
             {
                 EXCEPTION_PRODUCING_EVENTS.Set((int)eventType, true);
             }
 
-            foreach (HystrixEventType eventType in HystrixEventTypeHelper.TerminalEventTypes)
+            foreach (var eventType in HystrixEventTypeHelper.TerminalEventTypes)
             {
                 TERMINAL_EVENTS.Set((int)eventType, true);
             }
@@ -85,11 +85,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             internal EventCounts(HystrixEventType[] eventTypes)
             {
-                BitArray newBitSet = new BitArray(NUM_EVENT_TYPES);
-                int localNumEmits = 0;
-                int localNumFallbackEmits = 0;
-                int localNumCollapsed = 0;
-                foreach (HystrixEventType eventType in eventTypes)
+                var newBitSet = new BitArray(NUM_EVENT_TYPES);
+                var localNumEmits = 0;
+                var localNumFallbackEmits = 0;
+                var localNumCollapsed = 0;
+                foreach (var eventType in eventTypes)
                 {
                     switch (eventType)
                     {
@@ -129,7 +129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                for (int i = 0; i < other.Length; i++)
+                for (var i = 0; i < other.Length; i++)
                 {
                     if (i >= events.Length)
                     {
@@ -169,7 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                EventCounts that = (EventCounts)o;
+                var that = (EventCounts)o;
 
                 if (numEmissions != that.numEmissions)
                 {
@@ -191,7 +191,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public override int GetHashCode()
             {
-                int result = GetHashCode(events);
+                var result = GetHashCode(events);
                 result = (31 * result) + numEmissions;
                 result = (31 * result) + numFallbackEmissions;
                 result = (31 * result) + numCollapsed;
@@ -215,10 +215,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             internal EventCounts Plus(HystrixEventType eventType, int count)
             {
-                BitArray newBitSet = new BitArray(events);
-                int localNumEmits = numEmissions;
-                int localNumFallbackEmits = numFallbackEmissions;
-                int localNumCollapsed = numCollapsed;
+                var newBitSet = new BitArray(events);
+                var localNumEmits = numEmissions;
+                var localNumFallbackEmits = numFallbackEmissions;
+                var localNumCollapsed = numCollapsed;
                 switch (eventType)
                 {
                     case HystrixEventType.EMIT:
@@ -248,7 +248,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                for (int i = 0; i < events.Length; i++)
+                for (var i = 0; i < events.Length; i++)
                 {
                     if (events[i] != other[i])
                     {
@@ -262,10 +262,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             private int GetHashCode(BitArray bits)
             {
                 long h = 1234;
-                int[] copy = new int[bits.Length];
+                var copy = new int[bits.Length];
                 ICollection asCollection = bits;
                 asCollection.CopyTo(copy, 0);
-                for (int i = copy.Length; --i >= 0;)
+                for (var i = copy.Length; --i >= 0;)
                 {
                     h ^= copy[i] * (i + 1);
                 }
@@ -276,8 +276,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static ExecutionResult From(params HystrixEventType[] eventTypes)
         {
-            bool didExecutionOccur = false;
-            foreach (HystrixEventType eventType in eventTypes)
+            var didExecutionOccur = false;
+            foreach (var eventType in eventTypes)
             {
                 if (DidExecutionOccur(eventType))
                 {
@@ -489,8 +489,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             get
             {
-                List<HystrixEventType> eventList = new List<HystrixEventType>();
-                foreach (HystrixEventType eventType in ALL_EVENT_TYPES)
+                var eventList = new List<HystrixEventType>();
+                foreach (var eventType in ALL_EVENT_TYPES)
                 {
                     if (Eventcounts.Contains(eventType))
                     {

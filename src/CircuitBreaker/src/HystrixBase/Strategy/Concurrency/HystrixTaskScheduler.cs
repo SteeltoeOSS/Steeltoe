@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             queueSize = options.MaxQueueSize;
             queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
 
-            System.Threading.ThreadPool.GetMinThreads(out int workThreads, out int compThreads);
+            System.Threading.ThreadPool.GetMinThreads(out var workThreads, out var compThreads);
 
             System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DEFAULT_MIN_WORKTHREADS), compThreads);
         }

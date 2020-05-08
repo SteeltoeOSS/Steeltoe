@@ -40,7 +40,7 @@ namespace Steeltoe.Common.Test.Options
                 { "foo", "bar" }
             });
 
-            IConfigurationRoot root = builder.Build();
+            var root = builder.Build();
             IConfiguration config = root;
 
             var opt1 = new TestOptions(root);
@@ -54,7 +54,7 @@ namespace Steeltoe.Common.Test.Options
             {
                 { "prefix:foo", "bar" }
             });
-            IConfigurationRoot root2 = builder2.Build();
+            var root2 = builder2.Build();
             var opt3 = new TestOptions(root2, "prefix");
             Assert.Equal("bar", opt3.Foo);
         }

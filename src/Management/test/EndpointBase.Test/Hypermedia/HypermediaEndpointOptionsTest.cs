@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

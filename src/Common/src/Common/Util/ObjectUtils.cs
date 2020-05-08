@@ -183,10 +183,10 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            for (int i = 0; i < o1.Length; i++)
+            for (var i = 0; i < o1.Length; i++)
             {
-                T item1 = o1[i];
-                T item2 = o2[i];
+                var item1 = o1[i];
+                var item2 = o2[i];
                 if (!(item1 == null ? item2 == null : item1.Equals(item2)))
                 {
                     return false;
@@ -203,8 +203,8 @@ namespace Steeltoe.Common.Util
                 return 0;
             }
 
-            int hash = INITIAL_HASH;
-            foreach (T element in array)
+            var hash = INITIAL_HASH;
+            foreach (var element in array)
             {
                 hash = (MULTIPLIER * hash) + NullSafeHashCode(element);
             }

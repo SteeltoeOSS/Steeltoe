@@ -52,7 +52,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
         {
             return CommandPublishers.GetOrAddEx(commandKey.Name, (k) =>
             {
-                IHystrixMetricsPublisherCommand newPublisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+                var newPublisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
                 newPublisher.Initialize();
                 return newPublisher;
             });
@@ -62,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
         {
             return ThreadPoolPublishers.GetOrAddEx(threadPoolKey.Name, (k) =>
             {
-                IHystrixMetricsPublisherThreadPool publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
+                var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
                 publisher.Initialize();
                 return publisher;
             });
@@ -78,7 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
         {
             return CollapserPublishers.GetOrAddEx(collapserKey.Name, (k) =>
             {
-                IHystrixMetricsPublisherCollapser publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
+                var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
                 publisher.Initialize();
                 return publisher;
             });

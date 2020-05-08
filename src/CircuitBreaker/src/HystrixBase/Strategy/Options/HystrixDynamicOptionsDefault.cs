@@ -33,7 +33,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
                 return fallback;
             }
 
-            if (bool.TryParse(val, out bool result))
+            if (bool.TryParse(val, out var result))
             {
                 return result;
             }
@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
                 return fallback;
             }
 
-            int result = -1;
+            var result = -1;
             if (int.TryParse(val, out result))
             {
                 return result;

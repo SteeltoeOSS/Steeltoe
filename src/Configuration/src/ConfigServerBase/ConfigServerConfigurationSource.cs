@@ -116,8 +116,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (Configuration == null)
             {
                 // Create our own builder to build sources
-                ConfigurationBuilder configBuilder = new ConfigurationBuilder();
-                foreach (IConfigurationSource s in _sources)
+                var configBuilder = new ConfigurationBuilder();
+                foreach (var s in _sources)
                 {
                     configBuilder.Add(s);
                 }

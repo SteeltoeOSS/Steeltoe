@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var opts = new RefreshEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
 
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         {
             var opts = new RefreshEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
             var ep = new RefreshEndpoint(opts, config);

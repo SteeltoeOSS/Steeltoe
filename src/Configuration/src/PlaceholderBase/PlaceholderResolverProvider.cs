@@ -134,8 +134,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             else
             {
                 // Reload called
-                var asRoot = Configuration as IConfigurationRoot;
-                if (asRoot != null)
+                if (Configuration is IConfigurationRoot asRoot)
                 {
                     asRoot.Reload();
                 }

@@ -128,7 +128,7 @@ namespace Steeltoe.Common.Http
 
                 if (accessToken != null)
                 {
-                    AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Bearer", accessToken);
+                    var auth = new AuthenticationHeaderValue("Bearer", accessToken);
                     request.Headers.Authorization = auth;
                 }
             }
@@ -151,7 +151,7 @@ namespace Steeltoe.Common.Http
             var request = new HttpRequestMessage(method, requestUri);
             if (!string.IsNullOrEmpty(password))
             {
-                AuthenticationHeaderValue auth = new AuthenticationHeaderValue(
+                var auth = new AuthenticationHeaderValue(
                     "Basic",
                     GetEncodedUserPassword(userName, password));
                 request.Headers.Authorization = auth;
@@ -202,12 +202,12 @@ namespace Steeltoe.Common.Http
             ILogger logger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
-            HttpClient client = GetHttpClient(validateCertificates, timeout);
+            var client = GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
 
-            AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
+            var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;
 
             request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
@@ -219,7 +219,7 @@ namespace Steeltoe.Common.Http
             {
                 using (client)
                 {
-                    using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await client.SendAsync(request).ConfigureAwait(false);
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         logger?.LogInformation(
