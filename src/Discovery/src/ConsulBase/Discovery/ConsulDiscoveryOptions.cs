@@ -125,7 +125,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         }
 
         /// <summary>
-        /// Gets or sets IP address to use when accessing service
+        /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
         /// </summary>
         public string IpAddress
         {
@@ -134,7 +134,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         }
 
         /// <summary>
-        /// Gets or sets Port to register the service under (defaults to listening port)
+        /// Gets or sets Port to register the service under
         /// </summary>
         public int Port { get; set; }
 
