@@ -219,7 +219,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.shouldFail = shouldFail;
                 this.shouldFailWithBadRequest = shouldFailWithBadRequest;
                 this.latencyToAdd = latencyToAdd;
-                this.IsFallbackUserDefined = true;
+                IsFallbackUserDefined = true;
             }
 
             protected override bool Run()

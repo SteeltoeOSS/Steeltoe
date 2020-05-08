@@ -21,19 +21,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public TestCircuitBreaker()
         {
-            this.Metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
+            Metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
             forceShortCircuit = false;
         }
 
         public TestCircuitBreaker(IHystrixCommandKey commandKey)
         {
-            this.Metrics = HystrixCircuitBreakerTest.GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
+            Metrics = HystrixCircuitBreakerTest.GetMetrics(commandKey, HystrixCommandOptionsTest.GetUnitTestOptions());
             forceShortCircuit = false;
         }
 
         public TestCircuitBreaker SetForceShortCircuit(bool value)
         {
-            this.forceShortCircuit = value;
+            forceShortCircuit = value;
             return this;
         }
 

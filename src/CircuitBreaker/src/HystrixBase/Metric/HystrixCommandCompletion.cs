@@ -68,7 +68,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public HystrixRequestContext RequestContext
         {
-            get { return this.requestContext; }
+            get { return requestContext; }
         }
 
         public ExecutionResult.EventCounts Eventcounts

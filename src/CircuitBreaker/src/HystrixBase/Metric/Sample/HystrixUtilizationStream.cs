@@ -24,7 +24,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
     public class HystrixUtilizationStream
     {
         private const int DataEmissionIntervalInMs = 500;
-        private readonly int intervalInMilliseconds;
         private readonly IObservable<HystrixUtilization> allUtilizationStream;
         private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
@@ -38,8 +37,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         public HystrixUtilizationStream(int intervalInMilliseconds)
         {
-            this.intervalInMilliseconds = intervalInMilliseconds;
-            this.allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            IntervalInMilliseconds = intervalInMilliseconds;
+            allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map((t) => AllUtilization(t))
                     .OnSubscribe(() =>
                     {
@@ -77,10 +76,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             return allUtilizationStream.Map((a) => OnlyThreadPoolUtilization(a));
         }
 
-        public int IntervalInMilliseconds
-        {
-            get { return this.intervalInMilliseconds; }
-        }
+        public int IntervalInMilliseconds { get; }
 
         public bool IsSourceCurrentlySubscribed
         {

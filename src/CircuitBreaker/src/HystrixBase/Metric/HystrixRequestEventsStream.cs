@@ -26,8 +26,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixRequestEventsStream()
         {
-            this.writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
-            this.readOnlyRequestEvents = writeOnlyRequestEventsSubject.AsObservable();
+            writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
+            readOnlyRequestEvents = writeOnlyRequestEventsSubject.AsObservable();
         }
 
         private static readonly HystrixRequestEventsStream INSTANCE = new HystrixRequestEventsStream();

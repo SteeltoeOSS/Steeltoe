@@ -29,9 +29,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingCollapserEventCounterStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingCollapserEventCounterStream stream;
         private IDisposable latchSubscription;
-        private readonly ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<long[]>
         {

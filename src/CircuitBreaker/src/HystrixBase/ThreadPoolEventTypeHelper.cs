@@ -20,17 +20,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class ThreadPoolEventTypeHelper
     {
-        private static readonly IList<ThreadPoolEventType> ValueList = new List<ThreadPoolEventType>();
-
-        public static IList<ThreadPoolEventType> Values
-        {
-            get { return ValueList; }
-        }
+        public static IList<ThreadPoolEventType> Values { get; } = new List<ThreadPoolEventType>();
 
         static ThreadPoolEventTypeHelper()
         {
-            ValueList.Add(ThreadPoolEventType.EXECUTED);
-            ValueList.Add(ThreadPoolEventType.REJECTED);
+            Values.Add(ThreadPoolEventType.EXECUTED);
+            Values.Add(ThreadPoolEventType.REJECTED);
         }
 
         public static ThreadPoolEventType From(this HystrixRollingNumberEvent @event)

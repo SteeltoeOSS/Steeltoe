@@ -781,7 +781,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             if (tokenRenewTimer == null)
             {
                 tokenRenewTimer = new Timer(
-                    this.RefreshVaultTokenAsync,
+                    RefreshVaultTokenAsync,
                     null,
                     TimeSpan.FromMilliseconds(_settings.TokenRenewRate),
                     TimeSpan.FromMilliseconds(_settings.TokenRenewRate));

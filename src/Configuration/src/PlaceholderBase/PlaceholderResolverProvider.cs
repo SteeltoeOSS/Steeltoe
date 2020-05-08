@@ -30,7 +30,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
     {
         internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
         internal ILogger<PlaceholderResolverProvider> _logger;
-        private readonly IList<string> _resolvedKeys = new List<string>();
 
         /// <summary>
         /// Gets the configuration this placeholder resolver wraps
@@ -77,10 +76,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             get { return _providers; }
         }
 
-        public IList<string> ResolvedKeys
-        {
-            get { return _resolvedKeys; }
-        }
+        public IList<string> ResolvedKeys { get; } = new List<string>();
 
         /// <summary>
         /// Tries to get a configuration value for the specified key. If the value is a placeholder
@@ -95,9 +91,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder
             var originalValue = Configuration[key];
             value = PropertyPlaceholderHelper.ResolvePlaceholders(originalValue, Configuration);
 
-            if (value != originalValue && !_resolvedKeys.Contains(key))
+            if (value != originalValue && !ResolvedKeys.Contains(key))
             {
-                _resolvedKeys.Add(key);
+                ResolvedKeys.Add(key);
             }
 
             return !string.IsNullOrEmpty(value);

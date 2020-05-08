@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
         {
-            var filename = _endpoint.Invoke();
+            var filename = Endpoint.Invoke();
             _logger?.LogDebug("Returning: {0}", filename);
             context.Response.Headers.Add("Content-Type", "application/octet-stream");
 

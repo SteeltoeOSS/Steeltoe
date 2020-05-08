@@ -53,12 +53,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 int fallbackExecutionLatency)
                 : base(setter)
             {
-                this.executionResult2 = executionResult;
+                executionResult2 = executionResult;
                 this.executionLatency = executionLatency;
                 this.fallbackExecutionResult = fallbackExecutionResult;
                 this.fallbackExecutionLatency = fallbackExecutionLatency;
                 this.arg = arg;
-                this._isFallbackUserDefined = true;
+                _isFallbackUserDefined = true;
             }
 
             public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType)
@@ -190,10 +190,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
                 try
                 {
                     // sw.Start();
-                    Time.WaitUntil(() => { return this._token.IsCancellationRequested; }, executionLatency);
+                    Time.WaitUntil(() => { return _token.IsCancellationRequested; }, executionLatency);
 
                     // sw.Stop();
-                    this._token.ThrowIfCancellationRequested();
+                    _token.ThrowIfCancellationRequested();
 
                     switch (executionResult2)
                     {

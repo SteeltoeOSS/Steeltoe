@@ -130,7 +130,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
                 this.uniqueArg = uniqueArg;
                 this.shouldSucceed = shouldSucceed;
-                this.IsFallbackUserDefined = true;
+                IsFallbackUserDefined = true;
             }
 
             protected override int Run()
@@ -169,7 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public SubCommandOverrideFallback(string uniqueArg, bool shouldSucceed)
                 : base(uniqueArg, shouldSucceed)
             {
-                this.IsFallbackUserDefined = true;
+                IsFallbackUserDefined = true;
             }
 
             protected override int RunFallback()

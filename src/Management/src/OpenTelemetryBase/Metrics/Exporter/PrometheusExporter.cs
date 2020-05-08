@@ -25,8 +25,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
     {
         public PrometheusExporter()
         {
-            this.LongMetrics = new List<ProcessedMetric<long>>();
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            LongMetrics = new List<ProcessedMetric<long>>();
+            DoubleMetrics = new List<ProcessedMetric<double>>();
         }
 
         private List<ProcessedMetric<long>> LongMetrics { get; set; }
@@ -46,7 +46,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                 .Select(x => (x as ProcessedMetric<double>))
                 .ToList();
 
-                this.DoubleMetrics.AddRange(doubleList);
+                DoubleMetrics.AddRange(doubleList);
             }
             else
             {
@@ -54,7 +54,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                 .Select(x => (x as ProcessedMetric<long>))
                 .ToList();
 
-                this.LongMetrics.AddRange(longList);
+                LongMetrics.AddRange(longList);
             }
 
             return Task.FromResult(ExportResult.Success);
@@ -63,16 +63,16 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         internal List<ProcessedMetric<long>> GetAndClearLongMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<long>> current = this.LongMetrics;
-            this.LongMetrics = new List<ProcessedMetric<long>>();
+            List<ProcessedMetric<long>> current = LongMetrics;
+            LongMetrics = new List<ProcessedMetric<long>>();
             return current;
         }
 
         internal List<ProcessedMetric<double>> GetAndClearDoubleMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<double>> current = this.DoubleMetrics;
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            List<ProcessedMetric<double>> current = DoubleMetrics;
+            DoubleMetrics = new List<ProcessedMetric<double>>();
             return current;
         }
     }

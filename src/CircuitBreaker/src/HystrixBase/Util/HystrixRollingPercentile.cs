@@ -309,7 +309,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             private readonly int[] data;
             private readonly int length;
-            private readonly int mean;
 
             /* package for testing */
             public PercentileSnapshot(Bucket[] buckets)
@@ -341,11 +340,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 length = index;
                 if (length == 0)
                 {
-                    mean = 0;
+                    Mean = 0;
                 }
                 else
                 {
-                    mean = sum / length;
+                    Mean = sum / length;
                 }
 
                 Array.Sort(data, 0, length);
@@ -363,13 +362,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     sum += v;
                 }
 
-                mean = sum / length;
+                Mean = sum / length;
 
                 Array.Sort(this.data, 0, length);
             }
 
             /* package for testing */
-            public int Mean => mean;
+            public int Mean { get; }
 
             public int GetPercentile(double percentile)
             {

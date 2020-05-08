@@ -36,8 +36,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         internal HystrixThreadPoolCompletionStream(IHystrixThreadPoolKey threadPoolKey)
         {
             this.threadPoolKey = threadPoolKey;
-            this.writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
-            this.readOnlyStream = writeOnlySubject.AsObservable();
+            writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
+            readOnlyStream = writeOnlySubject.AsObservable();
         }
 
         public static void Reset()

@@ -66,7 +66,7 @@ namespace Steeltoe.Discovery.Eureka
                         {
                             try
                             {
-                                StatusChangedEvent(this, new StatusChangedArgs(prev, value, InstanceInfo.InstanceId));
+                                StatusChangedEvent(this, new StatusChangedEventArgs(prev, value, InstanceInfo.InstanceId));
                             }
                             catch (Exception e)
                             {
@@ -111,5 +111,5 @@ namespace Steeltoe.Discovery.Eureka
         }
     }
 
-    public delegate void StatusChangedHandler(object sender, StatusChangedArgs args);
+    public delegate void StatusChangedHandler(object sender, StatusChangedEventArgs args);
 }

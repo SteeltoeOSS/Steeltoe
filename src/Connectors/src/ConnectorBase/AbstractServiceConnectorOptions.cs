@@ -43,8 +43,8 @@ namespace Steeltoe.Connector
 
         protected AbstractServiceConnectorOptions(char keyValueTerm, char keyValueSep)
         {
-            this._keyValueSep = keyValueSep;
-            this._keyValueTerm = keyValueTerm;
+            _keyValueSep = keyValueSep;
+            _keyValueTerm = keyValueTerm;
         }
 
         /// <summary>

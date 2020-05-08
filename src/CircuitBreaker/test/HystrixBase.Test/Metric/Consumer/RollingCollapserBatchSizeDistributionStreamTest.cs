@@ -28,10 +28,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingCollapserBatchSizeDistributionStream stream;
         private IDisposable latchSubscription;
-
-        private readonly ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
         {

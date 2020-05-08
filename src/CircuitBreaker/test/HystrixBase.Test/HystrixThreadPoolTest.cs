@@ -54,21 +54,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class HystrixMetricsPublisherThreadPoolContainer : IHystrixMetricsPublisherThreadPool
         {
-            private readonly HystrixThreadPoolMetrics hystrixThreadPoolMetrics;
-
             public HystrixMetricsPublisherThreadPoolContainer(HystrixThreadPoolMetrics hystrixThreadPoolMetrics)
             {
-                this.hystrixThreadPoolMetrics = hystrixThreadPoolMetrics;
+                HystrixThreadPoolMetrics = hystrixThreadPoolMetrics;
             }
 
             public void Initialize()
             {
             }
 
-            public HystrixThreadPoolMetrics HystrixThreadPoolMetrics
-            {
-                get { return hystrixThreadPoolMetrics; }
-            }
+            public HystrixThreadPoolMetrics HystrixThreadPoolMetrics { get; }
         }
 
         private class MyHystrixMetricsPublisher : HystrixMetricsPublisher

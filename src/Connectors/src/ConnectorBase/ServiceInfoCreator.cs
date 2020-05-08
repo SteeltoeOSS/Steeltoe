@@ -25,9 +25,9 @@ namespace Steeltoe.Connector
 {
     public class ServiceInfoCreator
     {
+        private static readonly object _lock = new object();
         private static IConfiguration _config;
         private static ServiceInfoCreator _me = null;
-        private static readonly object _lock = new object();
 
         internal ServiceInfoCreator(IConfiguration config)
         {

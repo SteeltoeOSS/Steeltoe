@@ -294,7 +294,7 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+        internal async void Instance_StatusChangedEvent(object sender, StatusChangedEventArgs args)
         {
             InstanceInfo info = _appInfoManager.InstanceInfo;
             if (info != null)
@@ -618,7 +618,7 @@ namespace Steeltoe.Discovery.Eureka
 
                 _logger?.LogInformation("Starting HeartBeat");
                 var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
+                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
                 if (ClientConfig.ShouldOnDemandUpdateStatusChange)
                 {
                     _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;

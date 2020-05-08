@@ -28,7 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 
         public HystrixTestBase()
         {
-            this.context = HystrixRequestContext.InitializeContext();
+            context = HystrixRequestContext.InitializeContext();
 
             HystrixCommandMetrics.Reset();
             HystrixThreadPoolMetrics.Reset();
@@ -45,10 +45,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 
         public virtual void Dispose()
         {
-            if (this.context != null)
+            if (context != null)
             {
-                this.context.Dispose();
-                this.context = null;
+                context.Dispose();
+                context = null;
             }
 
             HystrixThreadPoolFactory.Shutdown();

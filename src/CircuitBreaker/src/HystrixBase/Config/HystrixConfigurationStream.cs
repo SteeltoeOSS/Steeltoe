@@ -24,7 +24,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
     public class HystrixConfigurationStream
     {
         private static readonly int dataEmissionIntervalInMs = 5000;
-        private readonly int intervalInMilliseconds;
         private readonly IObservable<HystrixConfiguration> allConfigurationStream;
         private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
@@ -39,8 +38,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 
         public HystrixConfigurationStream(int intervalInMilliseconds)
         {
-            this.intervalInMilliseconds = intervalInMilliseconds;
-            this.allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            IntervalInMilliseconds = intervalInMilliseconds;
+            allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map(AllConfig)
                     .OnSubscribe(() =>
                 {
@@ -83,10 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             return allConfigurationStream.Map(OnlyCollapserConfig);
         }
 
-        public int IntervalInMilliseconds
-        {
-            get { return this.intervalInMilliseconds; }
-        }
+        public int IntervalInMilliseconds { get; }
 
         public bool IsSourceCurrentlySubscribed
         {

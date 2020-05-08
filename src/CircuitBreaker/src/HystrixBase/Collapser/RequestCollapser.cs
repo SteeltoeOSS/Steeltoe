@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             // the command with implementation of abstract methods we need
             this.commandCollapser = commandCollapser;
             this.concurrencyStrategy = concurrencyStrategy;
-            this.Properties = properties;
+            Properties = properties;
             this.timer = timer;
             Batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
         }

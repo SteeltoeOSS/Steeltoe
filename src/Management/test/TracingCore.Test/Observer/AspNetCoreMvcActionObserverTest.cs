@@ -285,8 +285,8 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             {
                 ControllerName = "foobar",
                 ActionName = "barfoo",
-                ControllerTypeInfo = this.GetType().GetTypeInfo(),
-                MethodInfo = this.GetType().GetMethod("FakeControllerMethod")
+                ControllerTypeInfo = GetType().GetTypeInfo(),
+                MethodInfo = GetType().GetMethod("FakeControllerMethod")
             };
             return desc;
         }

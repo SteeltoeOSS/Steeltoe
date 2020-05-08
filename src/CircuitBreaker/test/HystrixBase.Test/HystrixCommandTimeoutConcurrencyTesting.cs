@@ -109,7 +109,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public TestCommand()
             : base(GetOptions())
             {
-                this.IsFallbackUserDefined = true;
+                IsFallbackUserDefined = true;
             }
 
             protected override string Run()

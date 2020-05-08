@@ -1876,7 +1876,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 : base(CollapserKeyFromString(timer), scope, timer, GetOptions(CollapserKeyFromString(timer), defaultMaxRequestsInBatch, defaultTimerDelayInMilliseconds), CreateMetrics())
             {
                 this.value = value;
-                this.commandsExecuted = executionLog;
+                commandsExecuted = executionLog;
                 this.output = output;
             }
 
@@ -2199,7 +2199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // Called when context is disposed
                 foreach (var v in ctimer.Tasks.Values)
                 {
-                    if (v.Task == this._listener)
+                    if (v.Task == _listener)
                     {
                         _ = ctimer.Tasks.TryRemove(v, out var removed);
                     }
@@ -2261,8 +2261,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 {
                     output.WriteLine("Executing task ...");
                     Task.Tick();
-                    this.Time = 0; // we reset time after each execution
-                    this.ExecutionCount++;
+                    Time = 0; // we reset time after each execution
+                    ExecutionCount++;
                     output.WriteLine("executionCount: " + ExecutionCount);
                 }
             }
@@ -2275,7 +2275,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             public TestTimerListener(ITimerListener actual)
             {
-                this.ActualListener = actual;
+                ActualListener = actual;
             }
 
             public void Tick()
@@ -2509,8 +2509,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public TestSubscriber(ITestOutputHelper output)
             {
                 this.output = output;
-                this.OnNextEvents = new List<T>();
-                this.OnErrorEvents = new List<Exception>();
+                OnNextEvents = new List<T>();
+                OnErrorEvents = new List<Exception>();
             }
 
             public void Unsubscribe()

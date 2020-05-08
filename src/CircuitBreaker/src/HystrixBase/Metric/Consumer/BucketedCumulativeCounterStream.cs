@@ -31,8 +31,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         protected BucketedCumulativeCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> reduceCommandCompletion, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, reduceCommandCompletion)
         {
-            this.counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
-            this.sourceStream = bucketedStream
+            counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
+            sourceStream = bucketedStream
                     .Scan(EmptyOutputValue, (arg1, arg2) => reduceBucket(arg1, arg2))
                     .Skip(numBuckets)
                     .OnSubscribe(() => { isSourceCurrentlySubscribed.Value = true; })
@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             if (subscription.Value == null)
             {
                 // the stream is not yet started
-                IDisposable candidateSubscription = Observe().Subscribe(this.counterSubject);
+                IDisposable candidateSubscription = Observe().Subscribe(counterSubject);
                 if (subscription.CompareAndSet(null, candidateSubscription))
                 {
                     // won the race to set the subscription

@@ -19,8 +19,6 @@ namespace Steeltoe.Common.Util
 {
     public class SimpleRouteMatcher : IRouteMatcher
     {
-        private readonly IPathMatcher pathMatcher;
-
         public SimpleRouteMatcher(IPathMatcher pathMatcher)
         {
             if (pathMatcher == null)
@@ -28,13 +26,10 @@ namespace Steeltoe.Common.Util
                 throw new ArgumentNullException(nameof(pathMatcher));
             }
 
-            this.pathMatcher = pathMatcher;
+            PathMatcher = pathMatcher;
         }
 
-        public IPathMatcher PathMatcher
-        {
-            get { return pathMatcher; }
-        }
+        public IPathMatcher PathMatcher { get; }
 
         public IRoute ParseRoute(string route)
         {
@@ -43,17 +38,17 @@ namespace Steeltoe.Common.Util
 
         public bool IsPattern(string route)
         {
-            return pathMatcher.IsPattern(route);
+            return PathMatcher.IsPattern(route);
         }
 
         public string Combine(string pattern1, string pattern2)
         {
-            return pathMatcher.Combine(pattern1, pattern2);
+            return PathMatcher.Combine(pattern1, pattern2);
         }
 
         public bool Match(string pattern, IRoute route)
         {
-            return pathMatcher.Match(pattern, route.Value);
+            return PathMatcher.Match(pattern, route.Value);
         }
 
         public IDictionary<string, string> MatchAndExtract(string pattern, IRoute route)
@@ -63,27 +58,22 @@ namespace Steeltoe.Common.Util
                 return null;
             }
 
-            return pathMatcher.ExtractUriTemplateVariables(pattern, route.Value);
+            return PathMatcher.ExtractUriTemplateVariables(pattern, route.Value);
         }
 
         public IComparer<string> GetPatternComparer(IRoute route)
         {
-            return pathMatcher.GetPatternComparer(route.Value);
+            return PathMatcher.GetPatternComparer(route.Value);
         }
 
         private class DefaultRoute : IRoute
         {
-            private readonly string path;
-
             public DefaultRoute(string path)
             {
-                this.path = path;
+                Value = path;
             }
 
-            public string Value
-            {
-                get { return path; }
-            }
+            public string Value { get; }
         }
     }
 }

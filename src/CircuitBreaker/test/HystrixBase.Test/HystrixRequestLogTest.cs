@@ -218,9 +218,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.value = value;
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
-                this.timeout = false;
-                this.useFallback = true;
-                this.useCache = true;
+                timeout = false;
+                useFallback = true;
+                useCache = true;
             }
 
             public TestCommand(string value, bool fail, bool failOnFallback)
@@ -229,9 +229,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.value = value;
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
-                this.timeout = false;
-                this.useFallback = true;
-                this.useCache = true;
+                timeout = false;
+                useFallback = true;
+                useCache = true;
             }
 
             public TestCommand(string value, bool fail, bool failOnFallback, bool timeout)
@@ -245,8 +245,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
                 this.timeout = timeout;
-                this.useFallback = false;
-                this.useCache = false;
+                useFallback = false;
+                useCache = false;
             }
 
             protected override string Run()

@@ -308,46 +308,44 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
 
         private class SimpleExecution : IHystrixInvokableInfo
         {
-            private readonly IHystrixCommandKey commandKey;
             private readonly ExecutionResult executionResult;
-            private readonly string cacheKey;
             private readonly IHystrixCollapserKey collapserKey;
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, params HystrixEventType[] events)
             {
-                this.commandKey = commandKey;
-                this.executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
-                this.cacheKey = null;
-                this.collapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+                PublicCacheKey = null;
+                collapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, string cacheKey, params HystrixEventType[] events)
             {
-                this.commandKey = commandKey;
-                this.executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
-                this.cacheKey = cacheKey;
-                this.collapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+                PublicCacheKey = cacheKey;
+                collapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, string cacheKey)
             {
-                this.commandKey = commandKey;
-                this.executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
-                this.cacheKey = cacheKey;
-                this.collapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
+                PublicCacheKey = cacheKey;
+                collapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, IHystrixCollapserKey collapserKey, int batchSize, params HystrixEventType[] events)
             {
-                this.commandKey = commandKey;
+                CommandKey = commandKey;
                 ExecutionResult interimResult = ExecutionResult.From(events).SetExecutionLatency(latency);
                 for (int i = 0; i < batchSize; i++)
                 {
                     interimResult = interimResult.AddEvent(HystrixEventType.COLLAPSED);
                 }
 
-                this.executionResult = interimResult;
-                this.cacheKey = null;
+                executionResult = interimResult;
+                PublicCacheKey = null;
                 this.collapserKey = collapserKey;
             }
 
@@ -356,20 +354,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
                 get { return GroupKey; }
             }
 
-            public IHystrixCommandKey CommandKey
-            {
-                get { return commandKey; }
-            }
+            public IHystrixCommandKey CommandKey { get; }
 
             public IHystrixThreadPoolKey ThreadPoolKey
             {
                 get { return SerialHystrixRequestEventsTest.ThreadPoolKey; }
             }
 
-            public string PublicCacheKey
-            {
-                get { return cacheKey; }
-            }
+            public string PublicCacheKey { get; }
 
             public IHystrixCollapserKey OriginatingCollapserKey
             {
@@ -489,9 +481,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
             public override string ToString()
             {
                 return "SimpleExecution{" +
-                        "commandKey=" + commandKey.Name +
+                        "commandKey=" + CommandKey.Name +
                         ", executionResult=" + executionResult +
-                        ", cacheKey='" + cacheKey + '\'' +
+                        ", cacheKey='" + PublicCacheKey + '\'' +
                         ", collapserKey=" + collapserKey +
                         '}';
             }

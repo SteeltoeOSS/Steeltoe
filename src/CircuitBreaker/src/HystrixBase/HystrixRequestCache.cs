@@ -194,11 +194,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 type = 1;
                 if (commandKey == null)
                 {
-                    this.key = null;
+                    key = null;
                 }
                 else
                 {
-                    this.key = commandKey.Name;
+                    key = commandKey.Name;
                 }
             }
 
@@ -207,11 +207,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 type = 2;
                 if (collapserKey == null)
                 {
-                    this.key = null;
+                    key = null;
                 }
                 else
                 {
-                    this.key = collapserKey.Name;
+                    key = collapserKey.Name;
                 }
             }
 

@@ -59,11 +59,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
                 if (_mgmtOptions == null)
                 {
-                    paths.Add(_endpoint.Path);
+                    paths.Add(Endpoint.Path);
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}"));
+                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{Endpoint.Path}"));
                 }
 
                 foreach (var path in paths)
@@ -80,7 +80,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             // GET request
-            var serialInfo = this.HandleRequest(null);
+            var serialInfo = HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             {
                 var loggerName = remaining.Value.TrimStart('/');
 
-                var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(request.Body);
+                var change = ((LoggersEndpoint)Endpoint).DeserializeRequest(request.Body);
 
                 change.TryGetValue("configuredLevel", out var level);
 

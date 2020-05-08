@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-        private static readonly DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly ILogger<TraceDiagnosticObserver> _logger;
         private readonly ITraceOptions _options;
 
@@ -150,7 +150,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - baseTime.Ticks;
+            long javaTicks = ticks - BaseTime.Ticks;
             return javaTicks / 10000;
         }
 

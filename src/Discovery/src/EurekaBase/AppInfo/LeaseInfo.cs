@@ -74,13 +74,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             JsonLeaseInfo jinfo = new JsonLeaseInfo()
             {
-                RenewalIntervalInSecs = this.RenewalIntervalInSecs,
-                DurationInSecs = this.DurationInSecs,
-                RegistrationTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.RegistrationTimestamp, DateTimeKind.Utc)),
-                LastRenewalTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.LastRenewalTimestamp, DateTimeKind.Utc)),
-                LastRenewalTimestampLegacy = DateTimeConversions.ToJavaMillis(new DateTime(this.LastRenewalTimestampLegacy, DateTimeKind.Utc)),
-                EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.EvictionTimestamp, DateTimeKind.Utc)),
-                ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.ServiceUpTimestamp, DateTimeKind.Utc))
+                RenewalIntervalInSecs = RenewalIntervalInSecs,
+                DurationInSecs = DurationInSecs,
+                RegistrationTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(RegistrationTimestamp, DateTimeKind.Utc)),
+                LastRenewalTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestamp, DateTimeKind.Utc)),
+                LastRenewalTimestampLegacy = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestampLegacy, DateTimeKind.Utc)),
+                EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(EvictionTimestamp, DateTimeKind.Utc)),
+                ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(ServiceUpTimestamp, DateTimeKind.Utc))
             };
             return jinfo;
         }

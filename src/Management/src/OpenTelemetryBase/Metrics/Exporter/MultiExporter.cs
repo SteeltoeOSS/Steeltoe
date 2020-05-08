@@ -32,7 +32,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 
         public MultiExporter(IEnumerable<MetricExporter> exporters)
         {
-            this._exporters = exporters;
+            _exporters = exporters;
         }
 
         public override async Task<ExportResult> ExportAsync<T>(List<Metric<T>> metrics, CancellationToken cancellationToken)

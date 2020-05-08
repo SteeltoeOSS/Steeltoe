@@ -45,15 +45,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             // TODO make this thread safe.
-            this.LongMetrics = new Dictionary<MetricKey, Metric<long>>();
-            this.DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
+            LongMetrics = new Dictionary<MetricKey, Metric<long>>();
+            DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
             this.exportInterval = exportInterval;
-            this.cts = new CancellationTokenSource();
+            cts = new CancellationTokenSource();
 
             if (exporter == null || exportInterval < TimeSpan.MaxValue)
             {
-                this.worker = Task.Factory.StartNew(
-                    s => this.Worker((CancellationToken)s), this.cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+                worker = Task.Factory.StartNew(
+                    s => Worker((CancellationToken)s), cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             var metric = new ProcessedMetric<long>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType());
             metric.Data = aggregator.ToMetricData();
             var metricKey = new MetricKey(metricName, labelSet.Labels);
-            if (this.LongMetrics.ContainsKey(metricKey))
+            if (LongMetrics.ContainsKey(metricKey))
             {
                 var previousMetric = LongMetrics[metricKey];
                 switch (previousMetric.AggregationType)
@@ -96,7 +96,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             metric.Data = aggregator.ToMetricData();
             var metricKey = new MetricKey(metricName, labelSet.Labels);
 
-            if (this.DoubleMetrics.ContainsKey(metricKey))
+            if (DoubleMetrics.ContainsKey(metricKey))
             {
                 var previousMetric = DoubleMetrics[metricKey];
                 switch (previousMetric.AggregationType)
@@ -194,8 +194,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         internal void Clear()
         {
-            this.LongMetrics = new Dictionary<MetricKey, Metric<long>>();
-            this.DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
+            LongMetrics = new Dictionary<MetricKey, Metric<long>>();
+            DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
         }
 
         internal void ExportMetrics()
@@ -277,16 +277,16 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         private async Task ExportMetrics(CancellationToken cancellationToken)
         {
-            if (this.LongMetrics.Count > 0)
+            if (LongMetrics.Count > 0)
             {
-                var metricToExport = this.LongMetrics.Values.ToList();
-                await this.exporter.ExportAsync<long>(metricToExport, cancellationToken);
+                var metricToExport = LongMetrics.Values.ToList();
+                await exporter.ExportAsync<long>(metricToExport, cancellationToken);
             }
 
-            if (this.DoubleMetrics.Count > 0)
+            if (DoubleMetrics.Count > 0)
             {
-                var metricToExport = this.DoubleMetrics.Values.ToList();
-                await this.exporter.ExportAsync<double>(metricToExport, cancellationToken);
+                var metricToExport = DoubleMetrics.Values.ToList();
+                await exporter.ExportAsync<double>(metricToExport, cancellationToken);
             }
         }
 
@@ -294,7 +294,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         {
             try
             {
-                await Task.Delay(this.exportInterval, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(exportInterval, cancellationToken).ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var sw = Stopwatch.StartNew();
@@ -306,7 +306,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
                         return;
                     }
 
-                    var remainingWait = this.exportInterval - sw.Elapsed;
+                    var remainingWait = exportInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);
@@ -326,8 +326,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
             public MetricKey(string name, IEnumerable<KeyValuePair<string, string>> labelSet)
             {
-                this.MetricName = name;
-                this.LabelSet = labelSet.ToList();
+                MetricName = name;
+                LabelSet = labelSet.ToList();
             }
         }
     }

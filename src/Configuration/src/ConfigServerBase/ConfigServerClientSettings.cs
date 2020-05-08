@@ -189,7 +189,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Username
         {
             get { return GetUserName(); }
-            set { this.username = value; }
+            set { username = value; }
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Password
         {
             get { return GetPassword(); }
-            set { this.password = value; }
+            set { password = value; }
         }
 #pragma warning restore S4275 // Getters and setters should access the expected fields
 

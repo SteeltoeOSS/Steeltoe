@@ -38,12 +38,6 @@ namespace Steeltoe.Common.Util
 
         private PathSeparatorPatternCache _pathSeparatorPatternCache;
 
-        private bool _caseSensitive = true;
-
-        private bool _trimTokens = false;
-
-        private bool? _cachePatterns;
-
         public AntPathMatcher()
         {
             _pathSeparator = DEFAULT_PATH_SEPARATOR;
@@ -75,44 +69,11 @@ namespace Steeltoe.Common.Util
             }
         }
 
-        public virtual bool CaseSensitive
-        {
-            get
-            {
-                return _caseSensitive;
-            }
+        public virtual bool CaseSensitive { get; set; } = true;
 
-            set
-            {
-                _caseSensitive = value;
-            }
-        }
+        public virtual bool TrimTokens { get; set; } = false;
 
-        public virtual bool TrimTokens
-        {
-            get
-            {
-                return _trimTokens;
-            }
-
-            set
-            {
-                _trimTokens = value;
-            }
-        }
-
-        public virtual bool? CachePatterns
-        {
-            get
-            {
-                return _cachePatterns;
-            }
-
-            set
-            {
-                _cachePatterns = value;
-            }
-        }
+        public virtual bool? CachePatterns { get; set; }
 
         public virtual bool IsPattern(string path)
         {
@@ -265,7 +226,7 @@ namespace Steeltoe.Common.Util
             }
 
             string[] pattDirs = TokenizePattern(pattern);
-            if (fullMatch && _caseSensitive && !IsPotentialMatch(path, pattDirs))
+            if (fullMatch && CaseSensitive && !IsPotentialMatch(path, pattDirs))
             {
                 return false;
             }
@@ -437,7 +398,7 @@ namespace Steeltoe.Common.Util
         protected virtual string[] TokenizePattern(string pattern)
         {
             string[] tokenized = null;
-            bool? cachePatterns = _cachePatterns;
+            bool? cachePatterns = CachePatterns;
             if (cachePatterns == null || cachePatterns.Value)
             {
                 _tokenizedPatternCache.TryGetValue(pattern, out tokenized);
@@ -472,7 +433,7 @@ namespace Steeltoe.Common.Util
             }
 
             var split = path.Split(new string[] { _pathSeparator }, StringSplitOptions.RemoveEmptyEntries);
-            if (_trimTokens)
+            if (TrimTokens)
             {
                 for (int i = 0; i < split.Length; i++)
                 {
@@ -486,7 +447,7 @@ namespace Steeltoe.Common.Util
         protected virtual AntPathStringMatcher GetStringMatcher(string pattern)
         {
             AntPathStringMatcher matcher = null;
-            bool? cachePatterns = _cachePatterns;
+            bool? cachePatterns = CachePatterns;
             if (cachePatterns == null || cachePatterns.Value)
             {
                 _stringMatcherCache.TryGetValue(pattern, out matcher);
@@ -494,7 +455,7 @@ namespace Steeltoe.Common.Util
 
             if (matcher == null)
             {
-                matcher = new AntPathStringMatcher(pattern, _caseSensitive);
+                matcher = new AntPathStringMatcher(pattern, CaseSensitive);
                 if (cachePatterns == null && _stringMatcherCache.Count >= CACHE_TURNOFF_THRESHOLD)
                 {
                     // Try to adapt to the runtime situation that we're encountering:
@@ -539,7 +500,7 @@ namespace Steeltoe.Common.Util
 
         private bool IsPotentialMatch(string path, string[] pattDirs)
         {
-            if (!_trimTokens)
+            if (!TrimTokens)
             {
                 int pos = 0;
                 foreach (string pattDir in pattDirs)
@@ -613,7 +574,7 @@ namespace Steeltoe.Common.Util
 
         private void DeactivatePatternCache()
         {
-            _cachePatterns = false;
+            CachePatterns = false;
             _tokenizedPatternCache.Clear();
             _stringMatcherCache.Clear();
         }
@@ -703,17 +664,7 @@ namespace Steeltoe.Common.Util
             private class PatternInfo
             {
                 private readonly string pattern;
-
-                private int uriVars;
-
-                private int singleWildcards;
-
-                private int doubleWildcards;
-
                 private readonly bool catchAllPattern;
-
-                private readonly bool prefixPattern;
-
                 private int? length;
 
                 public PatternInfo(string pattern)
@@ -723,10 +674,10 @@ namespace Steeltoe.Common.Util
                     {
                         InitCounters();
                         catchAllPattern = this.pattern.Equals("/**");
-                        prefixPattern = !catchAllPattern && this.pattern.EndsWith("/**");
+                        IsPrefixPattern = !catchAllPattern && this.pattern.EndsWith("/**");
                     }
 
-                    if (uriVars == 0)
+                    if (UriVars == 0)
                     {
                         length = this.pattern != null ? this.pattern.Length : 0;
                     }
@@ -741,19 +692,19 @@ namespace Steeltoe.Common.Util
                         {
                             if (pattern[pos] == '{')
                             {
-                                uriVars++;
+                                UriVars++;
                                 pos++;
                             }
                             else if (pattern[pos] == '*')
                             {
                                 if (pos + 1 < pattern.Length && pattern[pos + 1] == '*')
                                 {
-                                    doubleWildcards++;
+                                    DoubleWildcards++;
                                     pos += 2;
                                 }
                                 else if (pos > 0 && !pattern.Substring(pos - 1).Equals(".*"))
                                 {
-                                    singleWildcards++;
+                                    SingleWildcards++;
                                     pos++;
                                 }
                                 else
@@ -769,34 +720,22 @@ namespace Steeltoe.Common.Util
                     }
                 }
 
-                public int UriVars
-                {
-                    get { return uriVars; }
-                }
+                public int UriVars { get; private set; }
 
-                public int SingleWildcards
-                {
-                    get { return singleWildcards; }
-                }
+                public int SingleWildcards { get; private set; }
 
-                public int DoubleWildcards
-                {
-                    get { return doubleWildcards; }
-                }
+                public int DoubleWildcards { get; private set; }
 
                 public bool IsLeastSpecific
                 {
                     get { return pattern == null || catchAllPattern; }
                 }
 
-                public bool IsPrefixPattern
-                {
-                    get { return prefixPattern; }
-                }
+                public bool IsPrefixPattern { get; }
 
                 public int TotalCount
                 {
-                    get { return uriVars + singleWildcards + (2 * doubleWildcards); }
+                    get { return UriVars + SingleWildcards + (2 * DoubleWildcards); }
                 }
 
                 public int Length
@@ -919,24 +858,15 @@ namespace Steeltoe.Common.Util
 
         protected class PathSeparatorPatternCache
         {
-            private readonly string endsOnWildCard;
-            private readonly string endsOnDoubleWildCard;
-
             public PathSeparatorPatternCache(string pathSeparator)
             {
-                endsOnWildCard = pathSeparator + "*";
-                endsOnDoubleWildCard = pathSeparator + "**";
+                EndsOnWildCard = pathSeparator + "*";
+                EndsOnDoubleWildCard = pathSeparator + "**";
             }
 
-            public string EndsOnWildCard
-            {
-                get { return endsOnWildCard; }
-            }
+            public string EndsOnWildCard { get; }
 
-            public string EndsOnDoubleWildCard
-            {
-                get { return endsOnDoubleWildCard; }
-            }
+            public string EndsOnDoubleWildCard { get; }
         }
     }
 }

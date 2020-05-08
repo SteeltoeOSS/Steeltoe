@@ -159,7 +159,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return false;
             }
 
-            if (other.InstanceId.Equals(this.InstanceId))
+            if (other.InstanceId.Equals(InstanceId))
             {
                 return true;
             }

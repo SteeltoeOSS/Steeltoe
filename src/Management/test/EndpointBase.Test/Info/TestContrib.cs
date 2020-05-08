@@ -25,12 +25,12 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
         public TestContrib()
         {
-            this.Throws = false;
+            Throws = false;
         }
 
         public TestContrib(bool throws)
         {
-            this.Throws = throws;
+            Throws = throws;
         }
 
         public void Contribute(IInfoBuilder builder)

@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class ApplicationInfoManagerTest : AbstractBaseTest
     {
-        private StatusChangedArgs eventArg = null;
+        private StatusChangedEventArgs eventArg = null;
 
         public ApplicationInfoManagerTest()
             : base()
@@ -136,7 +136,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
         }
 
-        private void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
+        private void Instance_StatusChangedEvent(object sender, StatusChangedEventArgs args)
         {
             eventArg = args;
         }

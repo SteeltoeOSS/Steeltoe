@@ -25,7 +25,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
 {
     public class EndpointMiddleware<TResult>
     {
-        protected IEndpoint<TResult> _endpoint;
         protected ILogger _logger;
         protected IEnumerable<HttpMethod> _allowedMethods;
         protected bool _exactRequestPathMatching;
@@ -51,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
             _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
 
             if (mgmtOptions == null)
             {
@@ -62,30 +61,19 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
         }
 
-        internal IEndpoint<TResult> Endpoint
-        {
-            get
-            {
-                return _endpoint;
-            }
-
-            set
-            {
-                _endpoint = value;
-            }
-        }
+        internal IEndpoint<TResult> Endpoint { get; set; }
 
         public virtual string HandleRequest()
         {
-            var result = _endpoint.Invoke();
+            var result = Endpoint.Invoke();
             return Serialize(result);
         }
 
         public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}");
+            _logger?.LogDebug($"endpoint: {Endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}");
 
-            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
+            return Endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
         protected virtual string Serialize(TResult result)
@@ -113,25 +101,12 @@ namespace Steeltoe.Management.Endpoint.Middleware
 #pragma warning disable SA1402 // File may only contain a single class
     public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
-        protected new IEndpoint<TResult, TRequest> _endpoint;
-
-        internal new IEndpoint<TResult, TRequest> Endpoint
-        {
-            get
-            {
-                return _endpoint;
-            }
-
-            set
-            {
-                _endpoint = value;
-            }
-        }
+        internal new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
         {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            Endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
         public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
@@ -141,14 +116,14 @@ namespace Steeltoe.Management.Endpoint.Middleware
 
         public virtual string HandleRequest(TRequest arg)
         {
-            var result = _endpoint.Invoke(arg);
+            var result = Endpoint.Invoke(arg);
             return Serialize(result);
         }
 
         public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
         {
-            var result = _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
-            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}, result: {result}");
+            var result = Endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
+            _logger?.LogDebug($"endpoint: {Endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}, result: {result}");
             return result;
         }
     }

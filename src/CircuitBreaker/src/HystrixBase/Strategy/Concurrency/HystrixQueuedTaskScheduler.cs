@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                 throw new ArgumentOutOfRangeException("queueSizeRejectionThreshold");
             }
 
-            this.workQueue = new BlockingCollection<Task>(queueSize);
+            workQueue = new BlockingCollection<Task>(queueSize);
 
             StartThreadPoolWorker();
             runningThreads = 1;
@@ -124,7 +124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 #pragma warning restore S2696 // Instance members should not write to "static" fields
                 try
                 {
-                    while (!this.shutdown)
+                    while (!shutdown)
                     {
                         workQueue.TryTake(out Task item, 250);
 
@@ -132,7 +132,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                         {
                             try
                             {
-                                Interlocked.Increment(ref this.runningTasks);
+                                Interlocked.Increment(ref runningTasks);
                                 TryExecuteTask(item);
                             }
                             catch (Exception)
@@ -141,7 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                             }
                             finally
                             {
-                                Interlocked.Decrement(ref this.runningTasks);
+                                Interlocked.Decrement(ref runningTasks);
                                 Interlocked.Increment(ref completedTasks);
                             }
                         }
@@ -169,7 +169,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
             try
             {
-                Interlocked.Increment(ref this.runningTasks);
+                Interlocked.Increment(ref runningTasks);
                 return TryExecuteTask(task);
             }
             catch (Exception)
@@ -178,7 +178,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             }
             finally
             {
-                Interlocked.Decrement(ref this.runningTasks);
+                Interlocked.Decrement(ref runningTasks);
                 Interlocked.Increment(ref completedTasks);
             }
 

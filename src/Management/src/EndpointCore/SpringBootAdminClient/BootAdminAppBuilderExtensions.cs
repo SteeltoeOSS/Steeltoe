@@ -31,9 +31,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
     public static class BootAdminAppBuilderExtensions
     {
         private const int ConnectionTimeoutMs = 100000;
-        private static RegistrationResult registrationResult;
 
-        internal static RegistrationResult RegistrationResult { get => registrationResult; }
+        internal static RegistrationResult RegistrationResult { get; private set; }
 
         public static void RegisterSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration, HttpClient testClient = null)
         {
@@ -74,7 +73,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 if (result.IsSuccessStatusCode)
                 {
                     var task = result.Content.ReadAsStringAsync();
-                    registrationResult = JsonConvert.DeserializeObject<RegistrationResult>(task.Result);
+                    RegistrationResult = JsonConvert.DeserializeObject<RegistrationResult>(task.Result);
                 }
             });
 

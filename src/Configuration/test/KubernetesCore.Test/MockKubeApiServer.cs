@@ -63,6 +63,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         {
             _webHost.StopAsync();
             _webHost.WaitForShutdown();
+            _webHost.Dispose();
         }
     }
 }

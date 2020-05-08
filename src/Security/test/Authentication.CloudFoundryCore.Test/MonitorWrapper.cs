@@ -19,24 +19,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class MonitorWrapper<T> : IOptionsMonitor<T>
     {
-        private readonly T _options;
-
         public MonitorWrapper(T options)
         {
-            _options = options;
+            CurrentValue = options;
         }
 
-        public T CurrentValue
-        {
-            get
-            {
-                return _options;
-            }
-        }
+        public T CurrentValue { get; }
 
         public T Get(string name)
         {
-            return _options;
+            return CurrentValue;
         }
 
         public IDisposable OnChange(Action<T, string> listener)

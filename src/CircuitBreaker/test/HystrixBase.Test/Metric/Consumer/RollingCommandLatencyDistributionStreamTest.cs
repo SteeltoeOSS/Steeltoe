@@ -29,9 +29,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
+        private readonly ITestOutputHelper output;
         private RollingCommandLatencyDistributionStream stream;
         private IDisposable latchSubscription;
-        private readonly ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
         {

@@ -202,7 +202,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.Equal("http:/", spanData.Name);
 
             var exception = new Exception("Help");
-            obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_EXCEPTION_EVENT, new { httpContext = request, exception = exception });
+            obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_EXCEPTION_EVENT, new { httpContext = request, exception });
 
             request.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_STOP_EVENT, new { HttpContext = request });

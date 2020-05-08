@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public async Task Invoke(HttpContext context, HealthEndpointCore endpoint)
         {
-            _endpoint = endpoint;
+            Endpoint = endpoint;
 
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
@@ -60,8 +60,8 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected internal string DoRequest(HttpContext context)
         {
-            var result = _endpoint.Invoke(new CoreSecurityContext(context));
-            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            var result = Endpoint.Invoke(new CoreSecurityContext(context));
+            context.Response.StatusCode = ((HealthEndpoint)Endpoint).GetStatusCode(result);
             return Serialize(result);
         }
     }

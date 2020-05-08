@@ -26,14 +26,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public TestContrib(string id)
         {
-            this.Id = id;
-            this.Throws = false;
+            Id = id;
+            Throws = false;
         }
 
         public TestContrib(string id, bool throws)
         {
-            this.Id = id;
-            this.Throws = throws;
+            Id = id;
+            Throws = throws;
         }
 
         public string Id { get; private set; }

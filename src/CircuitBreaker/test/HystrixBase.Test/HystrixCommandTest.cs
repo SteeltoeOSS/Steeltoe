@@ -4291,7 +4291,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("Flexible-" + Interlocked.Increment(ref uniqueNameCounter));
             var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
-            result._output = this.output;
+            result._output = output;
             var testExecHook = result._executionHook as TestableExecutionHook;
             if (testExecHook != null)
             {
@@ -4304,7 +4304,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected override TestHystrixCommand<int> GetCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         {
             var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
-            result._output = this.output;
+            result._output = output;
             var testExecHook = result._executionHook as TestableExecutionHook;
             if (testExecHook != null)
             {
@@ -4565,7 +4565,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .SetExecutionSemaphore(executionSemaphore)
                 .SetFallbackSemaphore(fallbackSemaphore))
         {
-            this.result = executionResult;
+            result = executionResult;
             this.executionLatency = executionLatency;
             this.cacheEnabled = cacheEnabled;
             this.value = value;
@@ -4991,8 +4991,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                  .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), executionSemaphoreCount)))
         {
             this.executionSleep = executionSleep;
-            this.ResultBehavior = resultBehavior;
-            this.FallbackBehavior = fallbackBehavior;
+            ResultBehavior = resultBehavior;
+            FallbackBehavior = fallbackBehavior;
         }
 
         public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, SemaphoreSlim semaphore, int executionSleep, int resultBehavior, int fallbackBehavior)
@@ -5001,8 +5001,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
         {
             this.executionSleep = executionSleep;
-            this.ResultBehavior = resultBehavior;
-            this.FallbackBehavior = fallbackBehavior;
+            ResultBehavior = resultBehavior;
+            FallbackBehavior = fallbackBehavior;
         }
 
         protected override bool Run()
@@ -5133,12 +5133,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected override bool Run()
         {
             // signals caller that run has started
-            this.startLatch.SignalEx();
+            startLatch.SignalEx();
 
             try
             {
                 // waits for caller to countDown latch
-                this.waitLatch.Wait();
+                waitLatch.Wait();
             }
             catch (Exception)
             {
@@ -5483,6 +5483,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public void Dispose()
         {
+            _scheduler.Dispose();
         }
 
         public bool IsQueueSpaceAvailable
@@ -5904,7 +5905,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return this._token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
                 _token.ThrowIfCancellationRequested();
                 return true;
             }

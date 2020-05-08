@@ -23,27 +23,20 @@ namespace Steeltoe.Management.OpenTelemetry.Stats
     public class OpenTelemetryMetrics : IStats
     {
         private static readonly Lazy<OpenTelemetryMetrics> AsSingleton = new Lazy<OpenTelemetryMetrics>(() => new OpenTelemetryMetrics());
-        private readonly Meter _meter = null;
 
         public static OpenTelemetryMetrics Instance => AsSingleton.Value;
 
-        public Meter Meter
-        {
-            get
-            {
-                return _meter;
-            }
-        }
+        public Meter Meter { get; } = null;
 
         public OpenTelemetryMetrics(MetricProcessor processor = null)
         {
-            _meter = MeterFactory.Create(processor).GetMeter("Steeltoe");
+            Meter = MeterFactory.Create(processor).GetMeter("Steeltoe");
         }
 
         public OpenTelemetryMetrics(MetricProcessor processor, TimeSpan timeSpan)
         {
             var factory = new AutoCollectingMeterFactory(processor, timeSpan);
-            _meter = factory.GetMeter("Steeltoe");
+            Meter = factory.GetMeter("Steeltoe");
         }
     }
 }

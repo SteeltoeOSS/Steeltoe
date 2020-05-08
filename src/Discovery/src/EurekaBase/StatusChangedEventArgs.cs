@@ -17,7 +17,7 @@ using System;
 
 namespace Steeltoe.Discovery.Eureka
 {
-    public class StatusChangedArgs : EventArgs
+    public class StatusChangedEventArgs : EventArgs
     {
         public InstanceStatus Previous { get; private set; }
 
@@ -25,7 +25,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public string InstanceId { get; private set; }
 
-        public StatusChangedArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
+        public StatusChangedEventArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
         {
             Previous = prev;
             Current = current;

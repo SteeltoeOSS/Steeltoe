@@ -66,8 +66,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixThreadEventStream(int id)
         {
-            this.threadId = id;
-            this.threadName = "hystrix-" + threadId;
+            threadId = id;
+            threadName = "hystrix-" + threadId;
 
             writeOnlyCommandStartSubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
             writeOnlyCommandCompletionSubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());

@@ -30,25 +30,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         public HystrixThreadPoolDefault(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions propertiesDefaults)
         {
-            this.properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
-            this.properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
+            properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
+            properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
             HystrixConcurrencyStrategy concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-            this.queueSize = properties.MaxQueueSize;
-            this.metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
-            this.taskScheduler = this.metrics.TaskScheduler;
+            queueSize = properties.MaxQueueSize;
+            metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
+            taskScheduler = metrics.TaskScheduler;
 
             /* strategy: HystrixMetricsPublisherThreadPool */
-            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, this.metrics, this.properties);
+            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, metrics, properties);
         }
 
         public IHystrixTaskScheduler GetScheduler()
         {
-            return this.taskScheduler;
+            return taskScheduler;
         }
 
         public TaskScheduler GetTaskScheduler()
         {
-            return this.taskScheduler as TaskScheduler;
+            return taskScheduler as TaskScheduler;
         }
 
         public void MarkThreadExecution()
@@ -74,7 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         protected virtual void Dispose(bool disposing)
         {
-            this.taskScheduler.Dispose();
+            taskScheduler.Dispose();
         }
 
         public bool IsQueueSpaceAvailable
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         public bool IsShutdown
         {
-            get { return this.taskScheduler.IsShutdown; }
+            get { return taskScheduler.IsShutdown; }
         }
     }
 }

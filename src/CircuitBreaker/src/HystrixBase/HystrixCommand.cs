@@ -251,11 +251,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             IObservable<TResult> observable = Observable.FromAsync<TResult>((ct) =>
             {
-                this._usersToken = ct;
+                _usersToken = ct;
                 Task<TResult> toStart = ToTask();
                 if (!toStart.IsCompleted)
                 {
-                    if (this._execThreadTask != null)
+                    if (_execThreadTask != null)
                     {
                         StartCommand();
                     }

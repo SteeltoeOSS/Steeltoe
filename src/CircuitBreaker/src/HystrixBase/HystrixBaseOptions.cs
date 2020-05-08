@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected HystrixBaseOptions(IHystrixDynamicOptions dynamicOptions)
         {
-            this._dynamic = dynamicOptions;
+            _dynamic = dynamicOptions;
         }
 
         protected virtual bool GetBoolean(string prefix, string key, string property, bool globalDefault, bool? instanceDefaultFromCode)

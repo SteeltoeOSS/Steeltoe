@@ -46,8 +46,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
 
-            this.responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
-            this.serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
+            responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
+            serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
             /*
             //var view = View.Create(
             //        ViewName.Create("http.server.request.time"),

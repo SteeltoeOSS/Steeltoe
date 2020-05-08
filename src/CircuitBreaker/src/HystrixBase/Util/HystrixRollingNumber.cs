@@ -41,15 +41,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal HystrixRollingNumber(ITime time, int timeInMilliseconds, int numberOfBuckets)
         {
             this.time = time;
-            this._timeInMilliseconds = timeInMilliseconds;
-            this._numberOfBuckets = numberOfBuckets;
+            _timeInMilliseconds = timeInMilliseconds;
+            _numberOfBuckets = numberOfBuckets;
 
             if (timeInMilliseconds % numberOfBuckets != 0)
             {
                 throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
             }
 
-            this._bucketSizeInMillseconds = timeInMilliseconds / numberOfBuckets;
+            _bucketSizeInMillseconds = timeInMilliseconds / numberOfBuckets;
 
             _buckets = new BucketCircularArray(numberOfBuckets);
         }
@@ -176,7 +176,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
              */
             Bucket currentBucket = _buckets.PeekLast;
-            if (currentBucket != null && currentTime < currentBucket._windowStart + this._bucketSizeInMillseconds)
+            if (currentBucket != null && currentTime < currentBucket._windowStart + _bucketSizeInMillseconds)
             {
                 // if we're within the bucket 'window of time' return the current one
                 // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
@@ -226,14 +226,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                         {
                             // we have at least 1 bucket so retrieve it
                             Bucket lastBucket = _buckets.PeekLast;
-                            if (currentTime < lastBucket._windowStart + this._bucketSizeInMillseconds)
+                            if (currentTime < lastBucket._windowStart + _bucketSizeInMillseconds)
                             {
                                 // if we're within the bucket 'window of time' return the current one
                                 // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
                                 // we'll just use the latest as long as we're not AFTER the window
                                 return lastBucket;
                             }
-                            else if (currentTime - (lastBucket._windowStart + this._bucketSizeInMillseconds) > _timeInMilliseconds)
+                            else if (currentTime - (lastBucket._windowStart + _bucketSizeInMillseconds) > _timeInMilliseconds)
                             {
                                 // the time passed is greater than the entire rolling counter so we want to clear it all and start from scratch
                                 Reset();
@@ -246,7 +246,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                             {
                                 // we're past the window so we need to create a new bucket
                                 // create a new bucket and add it as the new 'last'
-                                _buckets.AddLast(new Bucket(lastBucket._windowStart + this._bucketSizeInMillseconds));
+                                _buckets.AddLast(new Bucket(lastBucket._windowStart + _bucketSizeInMillseconds));
 
                                 // add the lastBucket values to the cumulativeSum
                                 _cumulativeSum.AddBucket(lastBucket);
@@ -294,7 +294,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public Bucket(long startTime)
             {
-                this._windowStart = startTime;
+                _windowStart = startTime;
 
                 /*
                  * We support both LongAdder and LongMaxUpdater in a bucket but don't want the memory allocation
@@ -472,19 +472,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
                 public ListState(BucketCircularArray ca, AtomicReferenceArray<Bucket> data, int head, int tail)
                 {
-                    this._ca = ca;
-                    this._head = head;
-                    this._listtail = tail;
+                    _ca = ca;
+                    _head = head;
+                    _listtail = tail;
                     if (head == 0 && tail == 0)
                     {
                         _size = 0;
                     }
                     else
                     {
-                        this._size = (tail + ca.dataLength - head) % ca.dataLength;
+                        _size = (tail + ca.dataLength - head) % ca.dataLength;
                     }
 
-                    this._data = data;
+                    _data = data;
                 }
 
                 public Bucket Tail

@@ -30,9 +30,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandEventCounterStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("RollingCommandCounter");
+        private readonly ITestOutputHelper output;
         private RollingCommandEventCounterStream stream;
         private IDisposable latchSubscription;
-        private readonly ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<long[]>
         {

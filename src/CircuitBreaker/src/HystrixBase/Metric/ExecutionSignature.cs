@@ -16,20 +16,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class ExecutionSignature
     {
-        private readonly string commandName;
-        private readonly ExecutionResult.EventCounts eventCounts;
         private readonly string cacheKey;
-        private readonly int cachedCount;
-        private readonly IHystrixCollapserKey collapserKey;
         private readonly int collapserBatchSize;
 
         private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount, IHystrixCollapserKey collapserKey, int collapserBatchSize)
         {
-            this.commandName = commandKey.Name;
-            this.eventCounts = eventCounts;
+            CommandName = commandKey.Name;
+            Eventcounts = eventCounts;
             this.cacheKey = cacheKey;
-            this.cachedCount = cachedCount;
-            this.collapserKey = collapserKey;
+            CachedCount = cachedCount;
+            CollapserKey = collapserKey;
             this.collapserBatchSize = collapserBatchSize;
         }
 
@@ -57,12 +53,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
             ExecutionSignature that = (ExecutionSignature)o;
 
-            if (!commandName.Equals(that.commandName))
+            if (!CommandName.Equals(that.CommandName))
             {
                 return false;
             }
 
-            if (!eventCounts.Equals(that.eventCounts))
+            if (!Eventcounts.Equals(that.Eventcounts))
             {
                 return false;
             }
@@ -72,31 +68,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override int GetHashCode()
         {
-            int result = commandName.GetHashCode();
-            result = (31 * result) + eventCounts.GetHashCode();
+            int result = CommandName.GetHashCode();
+            result = (31 * result) + Eventcounts.GetHashCode();
             result = (31 * result) + (cacheKey != null ? cacheKey.GetHashCode() : 0);
             return result;
         }
 
-        public string CommandName
-        {
-            get { return commandName; }
-        }
+        public string CommandName { get; }
 
-        public ExecutionResult.EventCounts Eventcounts
-        {
-            get { return eventCounts; }
-        }
+        public ExecutionResult.EventCounts Eventcounts { get; }
 
-        public int CachedCount
-        {
-            get { return cachedCount; }
-        }
+        public int CachedCount { get; }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
         public int CollapserBatchSize
         {
