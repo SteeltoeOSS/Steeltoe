@@ -51,7 +51,7 @@ namespace Steeltoe.Common.Converter
                     var method = (MethodInfo)member;
                     if (!method.IsStatic)
                     {
-                        return method.Invoke(source, new object[0]);
+                        return method.Invoke(source, Array.Empty<object>());
                     }
                     else
                     {

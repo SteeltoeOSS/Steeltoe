@@ -291,7 +291,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var providers = builder.Build().Providers.ToList();
 
             var holder = new PlaceholderResolverProvider(providers);
-            var result = holder.GetChildKeys(new string[0], "spring");
+            var result = holder.GetChildKeys(Array.Empty<string>(), "spring");
 
             Assert.NotNull(result);
             var list = result.ToList();

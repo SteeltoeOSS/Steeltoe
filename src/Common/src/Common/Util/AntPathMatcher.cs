@@ -468,7 +468,7 @@ namespace Steeltoe.Common.Util
         {
             if (path == null)
             {
-                return new string[0];
+                return Array.Empty<string>();
             }
 
             var split = path.Split(new string[] { _pathSeparator }, StringSplitOptions.RemoveEmptyEntries);
