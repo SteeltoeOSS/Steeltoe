@@ -63,20 +63,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
                 foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
                 {
-                    using (StringWriter sw = new StringWriter())
+                    using StringWriter sw = new StringWriter();
+                    using (JsonTextWriter writer = new JsonTextWriter(sw))
                     {
-                        using (JsonTextWriter writer = new JsonTextWriter(sw))
-                        {
-                            writer.WriteStartObject();
-                            WriteLocalService(writer, localService);
-                            writer.WriteObjectFieldStart("data");
-                            WriteThreadPoolMetrics(writer, threadPoolMetrics);
-                            writer.WriteEndObject();
-                            writer.WriteEndObject();
-                        }
-
-                        jsonList.Add(sw.ToString());
+                        writer.WriteStartObject();
+                        WriteLocalService(writer, localService);
+                        writer.WriteObjectFieldStart("data");
+                        WriteThreadPoolMetrics(writer, threadPoolMetrics);
+                        writer.WriteEndObject();
+                        writer.WriteEndObject();
                     }
+
+                    jsonList.Add(sw.ToString());
                 }
             }
             catch (Exception)
@@ -93,20 +91,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
                 foreach (HystrixCommandMetrics commandMetrics in data.CommandMetrics)
                 {
-                    using (StringWriter sw = new StringWriter())
+                    using StringWriter sw = new StringWriter();
+                    using (JsonTextWriter writer = new JsonTextWriter(sw))
                     {
-                        using (JsonTextWriter writer = new JsonTextWriter(sw))
-                        {
-                            writer.WriteStartObject();
-                            WriteLocalService(writer, localService);
-                            writer.WriteObjectFieldStart("data");
-                            WriteCommandMetrics(writer, commandMetrics, localService);
-                            writer.WriteEndObject();
-                            writer.WriteEndObject();
-                        }
-
-                        jsonList.Add(sw.ToString());
+                        writer.WriteStartObject();
+                        WriteLocalService(writer, localService);
+                        writer.WriteObjectFieldStart("data");
+                        WriteCommandMetrics(writer, commandMetrics, localService);
+                        writer.WriteEndObject();
+                        writer.WriteEndObject();
                     }
+
+                    jsonList.Add(sw.ToString());
                 }
             }
             catch (Exception)

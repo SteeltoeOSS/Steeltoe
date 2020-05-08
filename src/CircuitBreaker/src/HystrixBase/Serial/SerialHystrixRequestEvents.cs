@@ -23,15 +23,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixRequestEvents requestEvents)
         {
-            using (StringWriter sw = new StringWriter())
+            using StringWriter sw = new StringWriter();
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
             {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    SerializeRequestEvents(writer, requestEvents);
-                }
-
-                return sw.ToString();
+                SerializeRequestEvents(writer, requestEvents);
             }
+
+            return sw.ToString();
         }
 
         private static void SerializeRequestEvents(JsonTextWriter json, HystrixRequestEvents requestEvents)

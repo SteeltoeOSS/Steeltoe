@@ -95,25 +95,21 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     _options.ValidateCertificates,
                     out prevProtocols,
                     out prevValidator);
-                using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
+                using var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT);
+                using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
-                    {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            _logger?.LogInformation(
-                                "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
-                                response.StatusCode,
-                                checkPermissionsUri);
+                    _logger?.LogInformation(
+                        "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
+                        response.StatusCode,
+                        checkPermissionsUri);
 
-                            return response.StatusCode == HttpStatusCode.Forbidden
-                                ? new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE)
-                                : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
-                        }
-
-                        return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
-                    }
+                    return response.StatusCode == HttpStatusCode.Forbidden
+                        ? new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE)
+                        : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
                 }
+
+                return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
             }
             catch (Exception e)
             {

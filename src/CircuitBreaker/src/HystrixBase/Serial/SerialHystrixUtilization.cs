@@ -22,15 +22,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixUtilization utilization)
         {
-            using (StringWriter sw = new StringWriter())
+            using StringWriter sw = new StringWriter();
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
             {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    SerializeUtilization(writer, utilization);
-                }
-
-                return sw.ToString();
+                SerializeUtilization(writer, utilization);
             }
+
+            return sw.ToString();
         }
 
         private static void SerializeUtilization(JsonTextWriter json, HystrixUtilization utilization)

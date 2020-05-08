@@ -489,34 +489,32 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 // Invoke config server
                 try
                 {
-                    using (HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false))
+                    using HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
+                    // Log status
+                    var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
+                    _logger?.LogInformation(WebUtility.UrlEncode(message));
+
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        // Log status
-                        var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                        _logger?.LogInformation(WebUtility.UrlEncode(message));
-
-                        if (response.StatusCode != HttpStatusCode.OK)
+                        if (response.StatusCode == HttpStatusCode.NotFound)
                         {
-                            if (response.StatusCode == HttpStatusCode.NotFound)
-                            {
-                                return null;
-                            }
-
-                            // Throw if status >= 400
-                            if (response.StatusCode >= HttpStatusCode.BadRequest)
-                            {
-                                // HttpClientErrorException
-                                throw new HttpRequestException(message);
-                            }
-                            else
-                            {
-                                return null;
-                            }
+                            return null;
                         }
 
-                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                        return Deserialize(stream);
+                        // Throw if status >= 400
+                        if (response.StatusCode >= HttpStatusCode.BadRequest)
+                        {
+                            // HttpClientErrorException
+                            throw new HttpRequestException(message);
+                        }
+                        else
+                        {
+                            return null;
+                        }
                     }
+
+                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    return Deserialize(stream);
                 }
                 catch (Exception e)
                 {
@@ -567,34 +565,32 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Invoke config server
             try
             {
-                using (HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false))
+                using HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    if (response.StatusCode != HttpStatusCode.OK)
+                    if (response.StatusCode == HttpStatusCode.NotFound)
                     {
-                        if (response.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            return null;
-                        }
-
-                        // Log status
-                        var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-
-                        _logger?.LogInformation(WebUtility.UrlEncode(message));
-
-                        // Throw if status >= 400
-                        if (response.StatusCode >= HttpStatusCode.BadRequest)
-                        {
-                            throw new HttpRequestException(message);
-                        }
-                        else
-                        {
-                            return null;
-                        }
+                        return null;
                     }
 
-                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                    return Deserialize(stream);
+                    // Log status
+                    var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
+
+                    _logger?.LogInformation(WebUtility.UrlEncode(message));
+
+                    // Throw if status >= 400
+                    if (response.StatusCode >= HttpStatusCode.BadRequest)
+                    {
+                        throw new HttpRequestException(message);
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
+
+                Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                return Deserialize(stream);
             }
             catch (Exception e)
             {
@@ -840,12 +836,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                 _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 
-                using (HttpResponseMessage response = await client.SendAsync(message).ConfigureAwait(false))
+                using HttpResponseMessage response = await client.SendAsync(message).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        _logger?.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
-                    }
+                    _logger?.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
                 }
             }
             catch (Exception e)

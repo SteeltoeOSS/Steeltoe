@@ -408,22 +408,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
-            using (var server = new TestServer(builder))
+            using var server = new TestServer(builder);
+            ConfigServerClientSettings settings = new ConfigServerClientSettings
             {
-                ConfigServerClientSettings settings = new ConfigServerClientSettings
-                {
-                    Uri = "http://localhost:8888",
-                    Name = "myName"
-                };
-                server.BaseAddress = new Uri(settings.Uri);
-                ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+                Uri = "http://localhost:8888",
+                Name = "myName"
+            };
+            server.BaseAddress = new Uri(settings.Uri);
+            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
-                // Act and Assert
-                HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
+            // Act and Assert
+            HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
 
-                Assert.NotNull(TestConfigServerStartup.LastRequest);
-                Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
-            }
+            Assert.NotNull(TestConfigServerStartup.LastRequest);
+            Assert.Equal("/" + settings.Name + "/" + settings.Environment, TestConfigServerStartup.LastRequest.Path.Value);
         }
 
         [Fact]

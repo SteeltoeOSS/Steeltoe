@@ -54,18 +54,16 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             var builder = new WebHostBuilder();
             builder.UseStartup<TestStartup>();
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                appBuilder.RegisterSpringBootAdmin(config, client);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            appBuilder.RegisterSpringBootAdmin(config, client);
 
-                appLifeTime.AppStartTokenSource.Cancel(); // Trigger application lifetime start
+            appLifeTime.AppStartTokenSource.Cancel(); // Trigger application lifetime start
 
-                Assert.NotNull(BootAdminAppBuilderExtensions.RegistrationResult);
-                Assert.Equal("1234567", BootAdminAppBuilderExtensions.RegistrationResult.Id);
+            Assert.NotNull(BootAdminAppBuilderExtensions.RegistrationResult);
+            Assert.Equal("1234567", BootAdminAppBuilderExtensions.RegistrationResult.Id);
 
-                appLifeTime.AppStopTokenSource.Cancel(); // Trigger application lifetime stop
-            }
+            appLifeTime.AppStopTokenSource.Cancel(); // Trigger application lifetime stop
         }
 
         private class MyAppLifeTime : IHostApplicationLifetime

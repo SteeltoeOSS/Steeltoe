@@ -219,21 +219,19 @@ namespace Steeltoe.Common.Http
             {
                 using (client)
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
+                    using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            logger?.LogInformation(
-                                "GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                                response.StatusCode,
-                                WebUtility.UrlEncode(accessTokenUri.OriginalString));
-                            return null;
-                        }
-
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                        var token = payload.Value<string>("access_token");
-                        return token;
+                        logger?.LogInformation(
+                            "GetAccessToken returned status: {0} while obtaining access token from: {1}",
+                            response.StatusCode,
+                            WebUtility.UrlEncode(accessTokenUri.OriginalString));
+                        return null;
                     }
+
+                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                    var token = payload.Value<string>("access_token");
+                    return token;
                 }
             }
             catch (Exception e)

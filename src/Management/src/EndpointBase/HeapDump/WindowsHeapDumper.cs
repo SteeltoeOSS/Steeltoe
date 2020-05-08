@@ -65,10 +65,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 }
 
                 fileName = Path.GetFullPath(fileName);
-                using (var dumpFile = new FileStream(fileName, FileMode.Create))
-                {
-                    result = MiniDumper.DumpProcess(dumpFile, snapshotHandle, process.Id);
-                }
+                using var dumpFile = new FileStream(fileName, FileMode.Create);
+                result = MiniDumper.DumpProcess(dumpFile, snapshotHandle, process.Id);
             }
             catch (Exception e)
             {

@@ -69,26 +69,24 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                    loggingBuilder.AddDynamicConsole();
                });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
 
-                var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-                Assert.NotNull(loggers);
-                Assert.True(loggers.ContainsKey("levels"));
-                Assert.True(loggers.ContainsKey("loggers"));
+            var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            Assert.NotNull(loggers);
+            Assert.True(loggers.ContainsKey("levels"));
+            Assert.True(loggers.ContainsKey("loggers"));
 
-                // at least one logger should be returned
-                Assert.True(loggers["loggers"].ToString().Length > 2);
+            // at least one logger should be returned
+            Assert.True(loggers["loggers"].ToString().Length > 2);
 
-                // parse the response into a dynamic object, verify that Default was returned and configured at Warning
-                dynamic parsedObject = JsonConvert.DeserializeObject(json);
-                Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
-            }
+            // parse the response into a dynamic object, verify that Default was returned and configured at Warning
+            dynamic parsedObject = JsonConvert.DeserializeObject(json);
+            Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
         }
 
         [Fact]
@@ -103,18 +101,16 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                    loggingBuilder.AddDynamicConsole();
                });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
-                var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
-                Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
+            var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
+            Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
-                var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
-                var json = await validationResult.Content.ReadAsStringAsync();
-                dynamic parsedObject = JsonConvert.DeserializeObject(json);
-                Assert.Equal("ERROR", parsedObject.loggers.Default.effectiveLevel.ToString());
-            }
+            var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+            var json = await validationResult.Content.ReadAsStringAsync();
+            dynamic parsedObject = JsonConvert.DeserializeObject(json);
+            Assert.Equal("ERROR", parsedObject.loggers.Default.effectiveLevel.ToString());
         }
 
         [Fact]
@@ -129,22 +125,20 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                    loggingBuilder.AddDynamicConsole();
                });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
-                var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);
-                Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            HttpContent content = new StringContent("{\"configuredLevel\":\"TRACE\"}");
+            var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Steeltoe", content);
+            Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
 
-                var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
-                var json = await validationResult.Content.ReadAsStringAsync();
-                dynamic parsedObject = JsonConvert.DeserializeObject(json);
-                Assert.Equal("TRACE", parsedObject.loggers.Steeltoe.effectiveLevel.ToString());
-                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management"].effectiveLevel.ToString());
-                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint"].effectiveLevel.ToString());
-                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers"].effectiveLevel.ToString());
-                Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers.LoggersEndpointMiddleware"].effectiveLevel.ToString());
-            }
+            var validationResult = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+            var json = await validationResult.Content.ReadAsStringAsync();
+            dynamic parsedObject = JsonConvert.DeserializeObject(json);
+            Assert.Equal("TRACE", parsedObject.loggers.Steeltoe.effectiveLevel.ToString());
+            Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management"].effectiveLevel.ToString());
+            Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint"].effectiveLevel.ToString());
+            Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers"].effectiveLevel.ToString());
+            Assert.Equal("TRACE", parsedObject.loggers["Steeltoe.Management.Endpoint.Loggers.LoggersEndpointMiddleware"].effectiveLevel.ToString());
         }
 
         [Fact]
@@ -177,26 +171,24 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                    loggingBuilder.AddDebug();
                });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/loggers");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
 
-                var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
-                Assert.NotNull(loggers);
-                Assert.True(loggers.ContainsKey("levels"));
-                Assert.True(loggers.ContainsKey("loggers"));
+            var loggers = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            Assert.NotNull(loggers);
+            Assert.True(loggers.ContainsKey("levels"));
+            Assert.True(loggers.ContainsKey("loggers"));
 
-                // at least one logger should be returned
-                Assert.True(loggers["loggers"].ToString().Length > 2);
+            // at least one logger should be returned
+            Assert.True(loggers["loggers"].ToString().Length > 2);
 
-                // parse the response into a dynamic object, verify that Default was returned and configured at Warning
-                dynamic parsedObject = JsonConvert.DeserializeObject(json);
-                Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
-            }
+            // parse the response into a dynamic object, verify that Default was returned and configured at Warning
+            dynamic parsedObject = JsonConvert.DeserializeObject(json);
+            Assert.Equal("WARN", parsedObject.loggers.Default.configuredLevel.ToString());
         }
 
         private HttpContext CreateRequest(string method, string path)

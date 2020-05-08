@@ -98,15 +98,14 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                var expected = JToken.FromObject(
-                    new Dictionary<string, DbMigrationsDescriptor>()
-                    {
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            var expected = JToken.FromObject(
+                new Dictionary<string, DbMigrationsDescriptor>()
+                {
                         {
                             nameof(MockDbContext), new DbMigrationsDescriptor()
                             {
@@ -114,11 +113,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
                                 PendingMigrations = new List<string> { "pending" }
                             }
                         }
-                    },
-                    GetSerializer());
-                var actual = JObject.Parse(json);
-                actual.Should().BeEquivalentTo(expected);
-            }
+                },
+                GetSerializer());
+            var actual = JObject.Parse(json);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Fact]

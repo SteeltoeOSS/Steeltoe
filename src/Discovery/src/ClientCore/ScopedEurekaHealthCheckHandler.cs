@@ -34,13 +34,11 @@ namespace Steeltoe.Discovery.Client
 
         public override InstanceStatus GetStatus(InstanceStatus currentStatus)
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                _contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
-                var result = base.GetStatus(currentStatus);
-                _contributors = null;
-                return result;
-            }
+            using var scope = _scopeFactory.CreateScope();
+            _contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
+            var result = base.GetStatus(currentStatus);
+            _contributors = null;
+            return result;
         }
     }
 }

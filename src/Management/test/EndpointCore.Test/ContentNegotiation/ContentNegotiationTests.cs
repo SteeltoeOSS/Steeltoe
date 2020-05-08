@@ -87,21 +87,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                     loggingBuilder.AddDynamicConsole();
                 });
 
-            using (var server = new TestServer(builder))
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            foreach (var accept in accepts)
             {
-                var client = server.CreateClient();
-                foreach (var accept in accepts)
-                {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
-                }
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains(contentHeaders, (header) => header.StartsWith(contentType));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
             }
+
+            // send the request
+            var result = await client.GetAsync(epPath);
+            var json = await result.Content.ReadAsStringAsync();
+
+            var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+            Assert.Contains(contentHeaders, (header) => header.StartsWith(contentType));
         }
     }
 }

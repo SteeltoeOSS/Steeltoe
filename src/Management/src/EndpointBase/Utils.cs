@@ -35,13 +35,9 @@ namespace Steeltoe.Management.Endpoint
             {
                 using (var input = new FileStream(filename, FileMode.Open))
                 {
-                    using (var output = new FileStream(gzFilename, FileMode.CreateNew))
-                    {
-                        using (var gzipStream = new GZipStream(output, CompressionLevel.Fastest))
-                        {
-                            input.CopyTo(gzipStream);
-                        }
-                    }
+                    using var output = new FileStream(gzFilename, FileMode.CreateNew);
+                    using var gzipStream = new GZipStream(output, CompressionLevel.Fastest);
+                    input.CopyTo(gzipStream);
                 }
 
                 return new FileStream(gzFilename, FileMode.Open);
@@ -71,13 +67,9 @@ namespace Steeltoe.Management.Endpoint
             {
                 using (var input = new FileStream(filename, FileMode.Open))
                 {
-                    using (var output = new FileStream(gzFilename, FileMode.CreateNew))
-                    {
-                        using (var gzipStream = new GZipStream(output, CompressionLevel.Fastest))
-                        {
-                            await input.CopyToAsync(gzipStream).ConfigureAwait(false);
-                        }
-                    }
+                    using var output = new FileStream(gzFilename, FileMode.CreateNew);
+                    using var gzipStream = new GZipStream(output, CompressionLevel.Fastest);
+                    await input.CopyToAsync(gzipStream).ConfigureAwait(false);
                 }
 
                 return new FileStream(gzFilename, FileMode.Open);

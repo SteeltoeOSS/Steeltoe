@@ -59,18 +59,16 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                        .UseStartup<TestServerStartup>()
                        .UseConfiguration(config1);
 
-            using (var server = new TestServer(hostBuilder))
-            {
-                var services = TestServerStartup.ServiceProvider;
-                var config2 = services.GetServices<IConfiguration>().SingleOrDefault();
-                Assert.NotSame(config1, config2);
+            using var server = new TestServer(hostBuilder);
+            var services = TestServerStartup.ServiceProvider;
+            var config2 = services.GetServices<IConfiguration>().SingleOrDefault();
+            Assert.NotSame(config1, config2);
 
-                Assert.Null(config2["nokey"]);
-                Assert.Equal("value1", config2["key1"]);
-                Assert.Equal("value1", config2["key2"]);
-                Assert.Equal("notfound", config2["key3"]);
-                Assert.Equal("${nokey}", config2["key4"]);
-            }
+            Assert.Null(config2["nokey"]);
+            Assert.Equal("value1", config2["key1"]);
+            Assert.Equal("value1", config2["key2"]);
+            Assert.Equal("notfound", config2["key3"]);
+            Assert.Equal("${nokey}", config2["key4"]);
         }
 
         [Fact]
@@ -128,12 +126,10 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                 })
                 .AddPlaceholderResolver();
 
-            using (var server = new TestServer(hostBuilder))
-            {
-                var services = TestServerStartup1.ServiceProvider;
-                var config = services.GetServices<IConfiguration>().SingleOrDefault();
-                Assert.Equal("myName", config["spring:cloud:config:name"]);
-            }
+            using var server = new TestServer(hostBuilder);
+            var services = TestServerStartup1.ServiceProvider;
+            var config = services.GetServices<IConfiguration>().SingleOrDefault();
+            Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
 
         [Fact]

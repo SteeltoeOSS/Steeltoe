@@ -26,51 +26,37 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixDashboardStream.DashboardData data)
         {
-            using (StringWriter sw = new StringWriter())
+            using StringWriter sw = new StringWriter();
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
             {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    WriteDashboardData(writer, data);
-                }
-
-                return sw.ToString();
+                WriteDashboardData(writer, data);
             }
+
+            return sw.ToString();
         }
 
         public static string ToJsonString(HystrixCommandMetrics commandMetrics)
         {
-            using (StringWriter sw = new StringWriter())
-            {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    WriteCommandMetrics(writer, commandMetrics);
-                    return sw.ToString();
-                }
-            }
+            using StringWriter sw = new StringWriter();
+            using JsonTextWriter writer = new JsonTextWriter(sw);
+            WriteCommandMetrics(writer, commandMetrics);
+            return sw.ToString();
         }
 
         public static string ToJsonString(HystrixThreadPoolMetrics threadPoolMetrics)
         {
-            using (StringWriter sw = new StringWriter())
-            {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    WriteThreadPoolMetrics(writer, threadPoolMetrics);
-                    return sw.ToString();
-                }
-            }
+            using StringWriter sw = new StringWriter();
+            using JsonTextWriter writer = new JsonTextWriter(sw);
+            WriteThreadPoolMetrics(writer, threadPoolMetrics);
+            return sw.ToString();
         }
 
         public static string ToJsonString(HystrixCollapserMetrics collapserMetrics)
         {
-            using (StringWriter sw = new StringWriter())
-            {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    WriteCollapserMetrics(writer, collapserMetrics);
-                    return sw.ToString();
-                }
-            }
+            using StringWriter sw = new StringWriter();
+            using JsonTextWriter writer = new JsonTextWriter(sw);
+            WriteCollapserMetrics(writer, collapserMetrics);
+            return sw.ToString();
         }
 
         public static List<string> ToMultipleJsonStrings(HystrixDashboardStream.DashboardData dashboardData)

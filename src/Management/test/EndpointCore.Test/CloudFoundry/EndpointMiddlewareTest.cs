@@ -68,20 +68,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                var links = JsonConvert.DeserializeObject<Links>(json);
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+            var links = JsonConvert.DeserializeObject<Links>(json);
+            Assert.NotNull(links);
+            Assert.True(links._links.ContainsKey("self"));
+            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
+            Assert.True(links._links.ContainsKey("info"));
+            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
         }
 
         [Fact]
@@ -92,17 +90,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
 
-                // send the request
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-                var json = await result.Content.ReadAsStringAsync();
+            // send the request
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+            var json = await result.Content.ReadAsStringAsync();
 
-                // assert
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
-            }
+            // assert
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
         }
 
         [Fact]

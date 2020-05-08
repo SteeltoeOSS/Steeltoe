@@ -76,17 +76,15 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     loggingBuilder.AddDynamicConsole();
                 });
 
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                    var json = await result.Content.ReadAsStringAsync();
-                    Assert.NotNull(json);
-                    Assert.NotEqual("[]", json);
-                    Assert.StartsWith("[", json);
-                    Assert.EndsWith("]", json);
-                }
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+                Assert.NotEqual("[]", json);
+                Assert.StartsWith("[", json);
+                Assert.EndsWith("]", json);
             }
         }
 
