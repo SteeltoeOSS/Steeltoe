@@ -127,7 +127,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public string IpAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets Port to register the service under (defaults to listening port)
+        /// Gets or sets Port to register the service under
         /// </summary>
         public int Port { get; set; }
 
