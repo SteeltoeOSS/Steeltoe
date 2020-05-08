@@ -57,22 +57,14 @@ namespace Steeltoe.Discovery.Consul.Util
                 throw new ArgumentNullException(nameof(unit));
             }
 
-            switch (unit)
+            return unit switch
             {
-                case "ms":
-                    return TimeSpan.FromMilliseconds(value);
-
-                case "s":
-                    return TimeSpan.FromSeconds(value);
-
-                case "m":
-                    return TimeSpan.FromMinutes(value);
-
-                case "h":
-                    return TimeSpan.FromHours(value);
-            }
-
-            throw new InvalidOperationException("Incorrect unit:" + unit);
+                "ms" => TimeSpan.FromMilliseconds(value),
+                "s" => TimeSpan.FromSeconds(value),
+                "m" => TimeSpan.FromMinutes(value),
+                "h" => TimeSpan.FromHours(value),
+                _ => throw new InvalidOperationException("Incorrect unit:" + unit),
+            };
         }
     }
 }

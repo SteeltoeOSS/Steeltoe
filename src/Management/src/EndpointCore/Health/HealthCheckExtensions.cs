@@ -26,23 +26,23 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         public static HealthStatus ToHealthStatus(this MicrosoftHealthStatus status)
         {
-            switch (status)
+            return status switch
             {
-                case MicrosoftHealthStatus.Healthy: return HealthStatus.UP;
-                case MicrosoftHealthStatus.Degraded: return HealthStatus.WARNING;
-                case MicrosoftHealthStatus.Unhealthy: return HealthStatus.DOWN;
-                default: return HealthStatus.UNKNOWN;
-            }
+                MicrosoftHealthStatus.Healthy => HealthStatus.UP,
+                MicrosoftHealthStatus.Degraded => HealthStatus.WARNING,
+                MicrosoftHealthStatus.Unhealthy => HealthStatus.DOWN,
+                _ => HealthStatus.UNKNOWN,
+            };
         }
 
         public static MicrosoftHealthStatus ToHealthStatus(this HealthStatus status)
         {
-            switch (status)
+            return status switch
             {
-                case HealthStatus.UP: return MicrosoftHealthStatus.Healthy;
-                case HealthStatus.WARNING: return MicrosoftHealthStatus.Degraded;
-                default: return MicrosoftHealthStatus.Unhealthy;
-            }
+                HealthStatus.UP => MicrosoftHealthStatus.Healthy,
+                HealthStatus.WARNING => MicrosoftHealthStatus.Degraded,
+                _ => MicrosoftHealthStatus.Unhealthy,
+            };
         }
 
         public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this HealthCheckResult result)

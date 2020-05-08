@@ -30,7 +30,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         /// Gets or sets the list of links contained in this collection
         /// </summary>
 #pragma warning disable SA1300 // Element should begin with upper-case letter
+#pragma warning disable IDE1006 // Naming Styles
         public Dictionary<string, Link> _links { get; set; } = new Dictionary<string, Link>();
+#pragma warning restore IDE1006 // Naming Styles
 #pragma warning restore SA1300 // Element should begin with upper-case letter
     }
 }
