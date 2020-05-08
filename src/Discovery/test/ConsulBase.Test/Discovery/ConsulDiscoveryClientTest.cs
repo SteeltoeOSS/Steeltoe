@@ -69,7 +69,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var healthMoq = new Mock<IHealthEndpoint>();
             clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
-            healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default(CancellationToken))).Returns(result);
+            healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default)).Returns(result);
 
             var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
             var list = new List<IServiceInstance>();
@@ -118,7 +118,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var catMoq = new Mock<ICatalogEndpoint>();
             clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
-            catMoq.Setup(c => c.Services(QueryOptions.Default, default(CancellationToken))).Returns(result);
+            catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
             var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
             var services = await dc.GetServicesAsync();
@@ -144,7 +144,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var catMoq = new Mock<ICatalogEndpoint>();
             clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
-            catMoq.Setup(c => c.Services(QueryOptions.Default, default(CancellationToken))).Returns(result);
+            catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
             var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
             var services = dc.GetServices();
@@ -198,11 +198,11 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var catMoq = new Mock<ICatalogEndpoint>();
             clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
-            catMoq.Setup(c => c.Services(QueryOptions.Default, default(CancellationToken))).Returns(result1);
+            catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result1);
 
             var healthMoq = new Mock<IHealthEndpoint>();
             clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
-            healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default(CancellationToken))).Returns(result2);
+            healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default)).Returns(result2);
 
             var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
             var list = dc.GetAllInstances(QueryOptions.Default);

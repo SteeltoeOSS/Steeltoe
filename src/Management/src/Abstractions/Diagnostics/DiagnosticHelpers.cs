@@ -24,7 +24,7 @@ namespace Steeltoe.Common.Diagnostics
             var property = o.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
             if (property == null)
             {
-                return default(T);
+                return default;
             }
 
             return (T)property.GetValue(o);

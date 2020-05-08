@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Util
         private volatile T _value;
 
         public AtomicReference()
-            : this(default(T))
+            : this(default)
         {
         }
 

@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new HttpClientCoreObserver(options, stats, null);
 
             var message = GetHttpResponseMessage(HttpStatusCode.OK);
-            string status = observer.GetStatusCode(message, default(TaskStatus));
+            string status = observer.GetStatusCode(message, default);
             Assert.Equal("200", status);
 
             status = observer.GetStatusCode(null, TaskStatus.Canceled);

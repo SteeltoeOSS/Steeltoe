@@ -423,13 +423,13 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            return default(FileAndLineNumber);
+            return default;
         }
 
         private FileAndLineNumber FindNearestLine(IEnumerable<SymUnmanagedSequencePoint> sequences, int ilOffset)
         {
             int distance = int.MaxValue;
-            FileAndLineNumber nearest = default(FileAndLineNumber);
+            FileAndLineNumber nearest = default;
 
             foreach (var point in sequences)
             {

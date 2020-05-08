@@ -72,7 +72,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         public void Clear(string cacheKey)
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 result = cacheInstance.GetOrAdd(key, f);
                 if (f.Equals(result))
                 {
-                    return default(T);
+                    return default;
                 }
                 else
                 {
@@ -104,7 +104,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         private ValueCacheKey GetRequestCacheKey(string cacheKey)

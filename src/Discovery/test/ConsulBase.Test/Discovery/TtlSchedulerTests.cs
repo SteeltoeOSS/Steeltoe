@@ -118,7 +118,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");
             Thread.Sleep(2500);
-            agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", default(CancellationToken)), Times.AtLeastOnce);
+            agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", default), Times.AtLeastOnce);
             sch.Remove("foobar");
         }
     }

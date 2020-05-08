@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly IEnumerable<KeyValuePair<string, string>> threadPoolWorkerLabels = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("kind", "worker") };
         private readonly IEnumerable<KeyValuePair<string, string>> threadPoolComPortLabels = new List<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("kind", "completionPort") };
 
-        private CLRRuntimeSource.HeapMetrics previous = default(CLRRuntimeSource.HeapMetrics);
+        private CLRRuntimeSource.HeapMetrics previous = default;
 
         public CLRRuntimeObserver(IMetricsOptions options, IStats stats, ILogger<CLRRuntimeObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)

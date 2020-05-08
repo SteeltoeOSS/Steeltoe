@@ -1194,7 +1194,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
                 else
                 {
-                    result = default(TResult);
+                    result = default;
                 }
 
                 return result;
@@ -1207,7 +1207,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (flatten.InnerException is TaskCanceledException && isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
                 var ex = WrapWithOnExecutionErrorHook(flatten.InnerException);
@@ -1225,7 +1225,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
                 var ex = WrapWithOnExecutionErrorHook(e);

@@ -41,7 +41,7 @@ namespace Steeltoe.Common.Http
                 logger?.LogError("Serialization exception: {0}", e);
             }
 
-            return default(T);
+            return default;
         }
     }
 }

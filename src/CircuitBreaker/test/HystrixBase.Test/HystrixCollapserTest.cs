@@ -1816,7 +1816,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
             else
             {
-                return default(T);
+                return default;
             }
         }
 

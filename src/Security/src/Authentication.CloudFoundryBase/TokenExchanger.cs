@@ -80,7 +80,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>The user's ClaimsIdentity</returns>
         public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
         {
-            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken)).ConfigureAwait(false);
+            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
