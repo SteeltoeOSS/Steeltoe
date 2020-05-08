@@ -125,7 +125,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         }
 
         /// <summary>
-        /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
+        /// Gets or sets IP address to use when accessing service
         /// </summary>
         public string IpAddress
         {
