@@ -31,7 +31,11 @@ namespace Steeltoe.Common.Util
             _value = value;
         }
 
-        public T Value { get; set; }
+        public T Value
+        {
+            get => _value;
+            set { _value = value; }
+        }
 
         public bool CompareAndSet(T expected, T update)
         {
