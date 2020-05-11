@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Tracing.Test
         {
             var services = new ServiceCollection();
             var config = GetConfiguration();
-
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             services.AddOptions();
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddDistributedTracing(config);
