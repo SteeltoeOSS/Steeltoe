@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Net.Test
             _shouldConnect = shouldConnect;
         }
 
-        public int AddConnection(WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags)
+        public int AddConnection(NetResource netResource, string password, string username, int flags)
         {
             throw new NotImplementedException();
         }
@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Net.Test
             throw new NotImplementedException();
         }
 
-        public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
+        public int UseConnection(IntPtr hwndOwner, NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
         {
             _networkpath = netResource.RemoteName;
             _username = username;

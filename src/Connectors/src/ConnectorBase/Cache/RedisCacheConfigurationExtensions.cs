@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.Redis
             var initializer = ReflectionHelpers.FindMethod(redisConnection, "Connect");
 
             var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer ?? null);
+            return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer);
         }
     }
 }

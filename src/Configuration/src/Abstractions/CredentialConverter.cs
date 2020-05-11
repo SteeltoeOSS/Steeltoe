@@ -22,9 +22,9 @@ namespace Steeltoe.Extensions.Configuration
     {
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if (value is string)
+            if (value is string @string)
             {
-                return new Credential((string)value);
+                return new Credential(@string);
             }
 
             return base.ConvertFrom(context, culture, value);

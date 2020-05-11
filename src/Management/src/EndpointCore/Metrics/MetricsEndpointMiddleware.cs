@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string HandleRequest(MetricsRequest arg)
         {
-            var result = Endpoint.Invoke(arg);
+            var result = _endpoint.Invoke(arg);
             return result == null ? null : Serialize(result);
         }
 
@@ -93,10 +93,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             if (_mgmtOptions == null)
             {
-                return GetMetricName(request, Endpoint.Path);
+                return GetMetricName(request, _endpoint.Path);
             }
 
-            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{Endpoint.Id}"));
+            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}"));
             foreach (var path in paths)
             {
                 var metricName = GetMetricName(request, path);

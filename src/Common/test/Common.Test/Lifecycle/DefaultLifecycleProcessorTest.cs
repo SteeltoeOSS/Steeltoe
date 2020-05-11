@@ -290,9 +290,9 @@ namespace Steeltoe.Common.Test.Lifecycle
 
         private static int GetPhase(ILifecycle lifecycle)
         {
-            if (lifecycle is ISmartLifecycle)
+            if (lifecycle is ISmartLifecycle lifecycle1)
             {
-                return ((ISmartLifecycle)lifecycle).Phase;
+                return lifecycle1.Phase;
             }
 
             return 0;

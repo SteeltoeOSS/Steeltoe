@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string HandleRequest()
         {
-            var result = this.Endpoint.Invoke();
+            var result = _endpoint.Invoke();
             return result;
         }
 

@@ -29,7 +29,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is Guid ? (Guid)value : Guid.Parse(value.ToString());
+            return value is Guid guid ? guid : Guid.Parse(value.ToString());
         }
 
         public static long? GetTimestamp(IMessage message)
@@ -40,7 +40,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is long ? (long)value : long.Parse(value.ToString());
+            return value is long @int ? @int : long.Parse(value.ToString());
         }
 
         public static MimeType GetContentType(IMessage message)
@@ -51,7 +51,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is MimeType ? (MimeType)value : MimeType.ToMimeType(value.ToString());
+            return value is MimeType type ? type : MimeType.ToMimeType(value.ToString());
         }
 
         public static long? GetExpirationDate(IMessage message)
@@ -62,7 +62,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is long ? (long)value : long.Parse(value.ToString());
+            return value is long @long ? @long : long.Parse(value.ToString());
         }
 
         public static int? GetSequenceNumber(IMessage message)
@@ -73,7 +73,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return int.Parse(value.ToString());
         }
 
         public static int? GetSequenceSize(IMessage message)
@@ -84,7 +84,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return int.Parse(value.ToString());
         }
 
         public static int? GetPriority(IMessage message)
@@ -95,7 +95,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return int.Parse(value.ToString());
         }
 
         public static IAcknowledgmentCallback GetAcknowledgmentCallback(IMessage message)
