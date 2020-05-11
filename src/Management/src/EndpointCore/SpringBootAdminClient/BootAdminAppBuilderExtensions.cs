@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using IApplicationLifetime = Microsoft.Extensions.Hosting.IApplicationLifetime;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
@@ -47,8 +48,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
-            var options = new BootAdminClientOptions(configuration, appInfo);
+            var options = new BootAdminClientOptions(configuration);
             var mgmtOptions = new ManagementEndpointOptions(configuration);
             var healthOptions = new HealthEndpointOptions(configuration);
             var basePath = options.BasePath;
@@ -61,8 +61,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 ServiceUrl = new Uri($"{basePath}/"),
                 Metadata = new Metadata() { Startup = DateTime.Now }
             };
-            var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
-            lifetime.ApplicationStarted.Register(() =>
+            Action onStarted = () =>
             {
                 var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
 
@@ -76,9 +75,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                     var task = result.Content.ReadAsStringAsync();
                     registrationResult = JsonConvert.DeserializeObject<RegistrationResult>(task.Result);
                 }
-            });
-
-            lifetime.ApplicationStopped.Register(() =>
+            };
+            Action onStopped = () =>
             {
                 if (RegistrationResult == null || string.IsNullOrEmpty(RegistrationResult.Id))
                 {
@@ -87,7 +85,17 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
                 var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
                 var result = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").Result;
-            });
+            };
+
+#if NETCOREAPP3_0
+            var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
+            lifetime.ApplicationStarted.Register(onStarted);
+            lifetime.ApplicationStopped.Register(onStopped);
+#else
+            var lifetime = builder.ApplicationServices.GetService<IApplicationLifetime>();
+            lifetime.ApplicationStarted.Register(onStarted);
+            lifetime.ApplicationStopped.Register(onStopped);
+#endif
         }
     }
 }

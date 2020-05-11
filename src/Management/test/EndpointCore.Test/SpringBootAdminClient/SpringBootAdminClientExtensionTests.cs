@@ -14,16 +14,18 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
+using IApplicationLifetime = Microsoft.Extensions.Hosting.IApplicationLifetime;
 
 namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
 {
@@ -46,13 +48,13 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             var config = configurationBuilder.Build();
             var services = new ServiceCollection();
             var appLifeTime = new MyAppLifeTime();
-            services.TryAddSingleton<IHostApplicationLifetime>(appLifeTime);
+
+#pragma warning disable CS0618 // Needed for 2.x
+            services.TryAddSingleton<IApplicationLifetime>(appLifeTime);
             services.TryAddSingleton<IConfiguration>(config);
             var provider = services.BuildServiceProvider();
-            var appBuilder = new ApplicationBuilder(provider);
-
-            var builder = new WebHostBuilder();
-            builder.UseStartup<TestStartup>();
+            var appBuilder = new MyAppBuilder(provider);
+            var builder = new WebHostBuilder().UseStartup<TestStartup>();
 
             using (var server = new TestServer(builder))
             {
@@ -68,7 +70,8 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             }
         }
 
-        private class MyAppLifeTime : IHostApplicationLifetime
+        private class MyAppLifeTime : IApplicationLifetime
+#pragma warning restore CS0618 // Needed for 2.x
         {
             public CancellationTokenSource AppStartTokenSource = new CancellationTokenSource();
             public CancellationTokenSource AppStopTokenSource = new CancellationTokenSource();
@@ -80,6 +83,35 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             public CancellationToken ApplicationStopping => throw new NotImplementedException();
 
             public void StopApplication()
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private class MyAppBuilder : IApplicationBuilder
+        {
+            public MyAppBuilder(IServiceProvider provider)
+            {
+                ApplicationServices = provider;
+            }
+
+            public IServiceProvider ApplicationServices { get; set; }
+
+            public IFeatureCollection ServerFeatures => throw new NotImplementedException();
+
+            public IDictionary<string, object> Properties => throw new NotImplementedException();
+
+            public RequestDelegate Build()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IApplicationBuilder New()
+            {
+                throw new NotImplementedException();
+            }
+
+            public IApplicationBuilder Use(Func<RequestDelegate, RequestDelegate> middleware)
             {
                 throw new NotImplementedException();
             }

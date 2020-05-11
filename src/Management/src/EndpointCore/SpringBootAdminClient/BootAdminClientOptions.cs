@@ -14,10 +14,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
@@ -25,6 +27,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
     public class BootAdminClientOptions
     {
         private const string PREFIX = "spring:boot:admin:client";
+        private const string SPRING_APPLICATION_NAME = "spring:application:name";
+        private const string DefaultAppName = "SteeltoeApp";
         private const string URLS = "URLS";
 
         public string Url { get; set; }
@@ -33,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         public string BasePath { get; set; }
 
-        public BootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo = null)
+        public BootAdminClientOptions(IConfiguration config)
         {
             if (config == null)
             {
@@ -47,8 +51,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             }
 
             BasePath ??= GetBasePath(config);
-            appInfo ??= new ApplicationInstanceInfo(config);
-            ApplicationName ??= appInfo.ApplicationName;
+            ApplicationName ??= config.GetValue<string>(SPRING_APPLICATION_NAME);
+            ApplicationName ??= Assembly.GetEntryAssembly()?.GetName().Name ?? DefaultAppName;
         }
 
         private string GetBasePath(IConfiguration config)
