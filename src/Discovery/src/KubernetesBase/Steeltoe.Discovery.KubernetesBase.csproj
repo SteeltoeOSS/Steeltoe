@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <Authors>Steeltoe,VMware</Authors>
+        <Description>Client for service discovery with Kubernetes native service discovery</Description>
+        <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
+        <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
+        <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
+        <Company>Steeltoe,VMware</Company>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="KubernetesClient" Version="1.6.30" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Properties" />
+    </ItemGroup>
+
+</Project>

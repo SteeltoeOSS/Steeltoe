@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <Description>Package for using Steeltoe Service Discovery Client in ASP.NET Core applications</Description>
-    <PackageTags>aspnetcore;service discovery;service registry;Spring Cloud;eureka;consul</PackageTags>
+    <PackageTags>aspnetcore;service discovery;service registry;Spring Cloud;eureka;consul;kubernetes</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
     <ProjectReference Include="..\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj" />
+    <ProjectReference Include="..\KubernetesBase\Steeltoe.Discovery.KubernetesBase.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
   </ItemGroup>
 

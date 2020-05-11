@@ -57,6 +57,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Net", "..\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", "..\Common\src\Common.Security\Steeltoe.Common.Security.csproj", "{A90F4766-BDBE-4509-9C6D-F362A8ADD770}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.KubernetesBase", "src\KubernetesBase\Steeltoe.Discovery.KubernetesBase.csproj", "{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.KubernetesBase.Test", "test\KubernetesBase.Test\Steeltoe.Discovery.KubernetesBase.Test.csproj", "{6911713F-9BE5-4EAE-B959-9EB273049738}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -271,6 +275,30 @@ Global
 		{A90F4766-BDBE-4509-9C6D-F362A8ADD770}.Release|x64.Build.0 = Release|Any CPU
 		{A90F4766-BDBE-4509-9C6D-F362A8ADD770}.Release|x86.ActiveCfg = Release|Any CPU
 		{A90F4766-BDBE-4509-9C6D-F362A8ADD770}.Release|x86.Build.0 = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|x64.Build.0 = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Debug|x86.Build.0 = Debug|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|x64.ActiveCfg = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|x64.Build.0 = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|x86.ActiveCfg = Release|Any CPU
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F}.Release|x86.Build.0 = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|x64.Build.0 = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Debug|x86.Build.0 = Debug|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|x64.ActiveCfg = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|x64.Build.0 = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|x86.ActiveCfg = Release|Any CPU
+		{6911713F-9BE5-4EAE-B959-9EB273049738}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -293,6 +321,8 @@ Global
 		{12D3578C-4653-43C7-9523-7A1FE0AE77AF} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{E16BB219-A939-4D5A-B991-1E8DDBE4720F} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{A90F4766-BDBE-4509-9C6D-F362A8ADD770} = {26A62999-E553-40B7-B393-2195557F6D8B}
+		{A27FBAC2-73B1-41A8-AC29-AAFE2DDAFE6F} = {A0CD0464-8E5B-42DD-8464-13FC8E6F35FF}
+		{6911713F-9BE5-4EAE-B959-9EB273049738} = {482BD4E0-A909-403B-B83A-D1D6377E0022}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09301AE1-862F-43FC-9E71-732151D4CDDF}

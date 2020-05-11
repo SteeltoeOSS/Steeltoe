@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -20,6 +21,8 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.KubernetesBase;
+using Steeltoe.Discovery.KubernetesBase.Discovery;
 using System;
 using System.Linq;
 using System.Threading;
@@ -147,6 +150,11 @@ namespace Steeltoe.Discovery.Client
                 ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
+            else if (IsKubernetesConfigured(config, info))
+            {
+                ConfigureKubernetesServices(services, config, info);
+                AddKubernetesServices(services, config, lifecycle);
+            }
             else
             {
                 throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
@@ -155,6 +163,37 @@ namespace Steeltoe.Discovery.Client
             services.TryAddTransient<DiscoveryHttpMessageHandler>();
             services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
         }
+
+        #region Kubernetes
+        private static bool IsKubernetesConfigured(IConfiguration config, IServiceInfo info)
+        {
+            var clientConfigSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
+            var childCount = clientConfigSection.GetChildren().Count();
+            return childCount > 0;
+        }
+
+        private static void ConfigureKubernetesServices(
+            IServiceCollection services,
+            IConfiguration config,
+            IServiceInfo info)
+        {
+            var kubernetesSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
+            services.Configure<KubernetesDiscoveryOptions>(kubernetesSection);
+        }
+
+        private static void AddKubernetesServices(
+            IServiceCollection services,
+            IConfiguration config,
+            IDiscoveryLifecycle lifecycle)
+        {
+            services.AddSingleton((p) =>
+            {
+                var kubernetesOptions = p.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+                var kubernetes = p.GetRequiredService<IKubernetes>();
+                return KubernetesDiscoveryClientFactory.CreateClient(kubernetesOptions.Value, kubernetes);
+            });
+        }
+        #endregion
 
         #region Consul
         private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)
