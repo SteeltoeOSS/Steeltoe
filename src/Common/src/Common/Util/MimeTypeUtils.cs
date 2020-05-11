@@ -51,9 +51,9 @@ namespace Steeltoe.Common.Util
                 'V', 'W', 'X', 'Y', 'Z'
             };
 
-        private static volatile Random _random;
-
         private static readonly object _lock = new object();
+
+        private static volatile Random _random;
 
         public static MimeType ParseMimeType(string mimeType)
         {

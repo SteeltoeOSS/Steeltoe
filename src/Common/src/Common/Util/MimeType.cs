@@ -73,7 +73,6 @@ namespace Steeltoe.Common.Util
         }
 #pragma warning restore S3963 // "static" fields should be initialized inline
 
-
         private readonly string subtype;
         private volatile string tostringValue;
 

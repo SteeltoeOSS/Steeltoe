@@ -50,7 +50,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             this.exportInterval = exportInterval;
             cts = new CancellationTokenSource();
 
-            if (exporter == null || exportInterval < TimeSpan.MaxValue)
+            if (exportInterval < TimeSpan.MaxValue)
             {
                 worker = Task.Factory.StartNew(
                     s => Worker((CancellationToken)s), cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);

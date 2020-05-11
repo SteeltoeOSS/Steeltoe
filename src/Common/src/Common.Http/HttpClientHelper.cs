@@ -87,7 +87,9 @@ namespace Steeltoe.Common.Http
                 prevValidator = ServicePointManager.ServerCertificateValidationCallback;
 
                 // Disabling certificate validation is a bad idea, that's why it's off by default!
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
                 ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
             }
         }
 

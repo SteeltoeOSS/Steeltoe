@@ -61,7 +61,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
             _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
         }
 
-        internal IEndpoint<TResult> Endpoint { get; set; }
+        protected IEndpoint<TResult> Endpoint { get; set; }
 
         public virtual string HandleRequest()
         {
@@ -101,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
 #pragma warning disable SA1402 // File may only contain a single class
     public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
     {
-        internal new IEndpoint<TResult, TRequest> Endpoint { get; set; }
+        protected new IEndpoint<TResult, TRequest> Endpoint { get; set; }
 
         public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
             : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)

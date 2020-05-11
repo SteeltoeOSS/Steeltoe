@@ -118,7 +118,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         /// <returns>Metrics serialized to string in Prometheus format.</returns>
         public static string GetMetricsCollection(this PrometheusExporter exporter)
         {
-            using var stream = new MemoryStream();
+            var stream = new MemoryStream();
             using var writer = new StreamWriter(stream);
             WriteMetricsCollection(exporter, writer);
             writer.Flush();

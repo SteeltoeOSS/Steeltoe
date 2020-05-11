@@ -25,7 +25,7 @@ namespace Steeltoe.Common.Net
     /// </summary>
     public class WindowsNetworkFileShare : IDisposable
     {
-        // private const int NO_ERROR = 0;
+        // private const int NO_ERROR = 0
         private const int ERROR_ACCESS_DENIED = 5;
         private const int ERROR_ALREADY_ASSIGNED = 85;
         private const int ERROR_PATH_NOT_FOUND = 53;
@@ -122,50 +122,6 @@ namespace Steeltoe.Common.Net
         }
 
         /// <summary>
-        /// Scope of the file share
-        /// </summary>
-        public enum ResourceScope
-        {
-            Connected = 1,
-            GlobalNetwork,
-            Remembered,
-            Recent,
-            Context
-        }
-
-        /// <summary>
-        /// Type of network resource
-        /// </summary>
-        public enum ResourceType
-        {
-            Any = 0,
-            Disk = 1,
-            Print = 2,
-#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
-            Reserved = 8,
-#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
-        }
-
-        /// <summary>
-        /// The display options for the network object in a network browsing user interface
-        /// </summary>
-        public enum ResourceDisplaytype
-        {
-            Generic = 0x0,
-            Domain = 0x01,
-            Server = 0x02,
-            Share = 0x03,
-            File = 0x04,
-            Group = 0x05,
-            Network = 0x06,
-            Root = 0x07,
-            Shareadmin = 0x08,
-            Directory = 0x09,
-            Tree = 0x0a,
-            Ndscontainer = 0x0b
-        }
-
-        /// <summary>
         /// Retrieves the most recent extended error code set by a WNet function
         /// <para/>Wraps an underlying P/Invoke call to mpr.dll - <seealso href="https://docs.microsoft.com/en-us/windows/desktop/api/winnetwk/nf-winnetwk-wnetgetlasterrora"/>
         /// </summary>
@@ -229,23 +185,68 @@ namespace Steeltoe.Common.Net
                 Message = message;
             }
         }
+    }
 
-        /// <summary>
-        /// The NETRESOURCE structure contains information about a network resource.
-        /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
-        /// </summary>
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        [StructLayout(LayoutKind.Sequential)]
-        internal class NetResource
-        {
-            public ResourceScope Scope;
-            public ResourceType ResourceType;
-            public ResourceDisplaytype DisplayType;
-            public int Usage;
-            public string LocalName;
-            public string RemoteName;
-            public string Comment;
-            public string Provider;
-        }
+    /// <summary>
+    /// Scope of the file share
+    /// </summary>
+    public enum ResourceScope
+    {
+        Connected = 1,
+        GlobalNetwork,
+        Remembered,
+        Recent,
+        Context
+    }
+
+    /// <summary>
+    /// Type of network resource
+    /// </summary>
+    public enum ResourceType
+    {
+        Any = 0,
+        Disk = 1,
+        Print = 2,
+#pragma warning disable S4016 // Enumeration members should not be named "Reserved"
+        Reserved = 8,
+#pragma warning restore S4016 // Enumeration members should not be named "Reserved"
+    }
+
+    /// <summary>
+    /// The display options for the network object in a network browsing user interface
+    /// </summary>
+    public enum ResourceDisplaytype
+    {
+        Generic = 0x0,
+        Domain = 0x01,
+        Server = 0x02,
+        Share = 0x03,
+        File = 0x04,
+        Group = 0x05,
+        Network = 0x06,
+        Root = 0x07,
+        Shareadmin = 0x08,
+        Directory = 0x09,
+        Tree = 0x0a,
+        Ndscontainer = 0x0b
+    }
+
+    /// <summary>
+    /// The NETRESOURCE structure contains information about a network resource.
+    /// More info on NetResource: <seealso href="https://msdn.microsoft.com/en-us/c53d078e-188a-4371-bdb9-fc023bc0c1ba"/>
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+#pragma warning disable SA1402 // File may only contain a single type
+    public class NetResource
+#pragma warning restore SA1402 // File may only contain a single type
+    {
+        public ResourceScope Scope;
+        public ResourceType ResourceType;
+        public ResourceDisplaytype DisplayType;
+        public int Usage;
+        public string LocalName;
+        public string RemoteName;
+        public string Comment;
+        public string Provider;
     }
 }

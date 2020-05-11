@@ -33,9 +33,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private readonly Logger _globalLogger;
         private readonly ISerilogOptions _serilogOptions;
 
+        private readonly ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private ConcurrentDictionary<string, ILogger> _loggers = new ConcurrentDictionary<string, ILogger>();
         private ConcurrentDictionary<string, LoggingLevelSwitch> _loggerSwitches = new ConcurrentDictionary<string, LoggingLevelSwitch>();
-        private readonly ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
         private bool disposed = false;
 
