@@ -33,7 +33,7 @@ namespace Steeltoe.Stream.TestBinder
     public class TestChannelBinder : AbstractPollableMessageSourceBinder
     {
         public TestChannelBinder(IServiceProvider serviceProvider, TestChannelBinderProvisioner provisioningProvider)
-            : base(serviceProvider, new string[] { }, provisioningProvider)
+            : base(serviceProvider, Array.Empty<string>(), provisioningProvider)
         {
         }
 

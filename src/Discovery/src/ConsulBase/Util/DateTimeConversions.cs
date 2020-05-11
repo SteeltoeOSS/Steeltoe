@@ -29,22 +29,22 @@ namespace Steeltoe.Discovery.Consul.Util
 
             if (time.EndsWith("ms"))
             {
-                return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 2)), "ms");
+                return ToTimeSpan(int.Parse(time[0..^2]), "ms");
             }
 
             if (time.EndsWith("s"))
             {
-                return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "s");
+                return ToTimeSpan(int.Parse(time[0..^1]), "s");
             }
 
             if (time.EndsWith("m"))
             {
-                return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "m");
+                return ToTimeSpan(int.Parse(time[0..^1]), "m");
             }
 
             if (time.EndsWith("h"))
             {
-                return ToTimeSpan(int.Parse(time.Substring(0, time.Length - 1)), "h");
+                return ToTimeSpan(int.Parse(time[0..^1]), "h");
             }
 
             throw new InvalidOperationException("Incorrect format:" + time);

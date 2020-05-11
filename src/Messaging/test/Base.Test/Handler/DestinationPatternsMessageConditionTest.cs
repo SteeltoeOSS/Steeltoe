@@ -142,7 +142,7 @@ namespace Steeltoe.Messaging.Handler.Test
 
         private IMessage MessageTo(string destination)
         {
-            return MessageBuilder.WithPayload(new byte[0]).SetHeader(
+            return MessageBuilder.WithPayload(System.Array.Empty<byte>()).SetHeader(
                     DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, destination).Build();
         }
     }

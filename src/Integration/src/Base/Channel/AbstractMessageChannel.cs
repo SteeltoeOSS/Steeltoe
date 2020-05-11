@@ -239,7 +239,7 @@ namespace Steeltoe.Integration.Channel
         internal class ChannelInterceptorList
         {
             private readonly object _lock = new object();
-            private IChannelInterceptor[] _interceptors = new IChannelInterceptor[0];
+            private IChannelInterceptor[] _interceptors = Array.Empty<IChannelInterceptor>();
 
             public ChannelInterceptorList()
             {

@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgument()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).SetHeader("param1", "foo").Build();
+            var message = MessageBuilder<byte[]>.WithPayload(System.Array.Empty<byte>()).SetHeader("param1", "foo").Build();
             var result = resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message);
             Assert.Equal("foo", result);
         }
@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             var headers = new TestMessageHeaderAccessor();
             headers.SetNativeHeader("param1", "foo");
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).SetHeaders(headers).Build();
+            var message = MessageBuilder<byte[]>.WithPayload(System.Array.Empty<byte>()).SetHeaders(headers).Build();
             Assert.Equal("foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
             var headers = new TestMessageHeaderAccessor();
             headers.SetHeader("param1", "foo");
             headers.SetNativeHeader("param1", "native-foo");
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).SetHeaders(headers).Build();
+            var message = MessageBuilder<byte[]>.WithPayload(System.Array.Empty<byte>()).SetHeaders(headers).Build();
 
             Assert.Equal("foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
             Assert.Equal("native-foo", resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.Header("nativeHeaders.param1")).Arg(), message));
@@ -66,14 +66,14 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgumentNotFound()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder<byte[]>.WithPayload(System.Array.Empty<byte>()).Build();
             Assert.Throws<MessageHandlingException>(() => resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
         }
 
         [Fact]
         public void ResolveArgumentDefaultValue()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder<byte[]>.WithPayload(System.Array.Empty<byte>()).Build();
             var result = resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.Header("name", "bar")).Arg(), message);
             Assert.Equal("bar", result);
         }

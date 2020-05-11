@@ -373,7 +373,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 var returnType = resultArg.ReturnType;
                 if (returnType != null)
                 {
-                    var actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : new Type[0];
+                    var actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : Array.Empty<Type>();
                     if (actualTypeArguments.Length > 0)
                     {
                         returnType = actualTypeArguments[0];

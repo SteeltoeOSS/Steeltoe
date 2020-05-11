@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
     {
         private readonly HeadersMethodArgumentResolver resolver = new HeadersMethodArgumentResolver();
 
-        private readonly IMessage<byte[]> message = MessageBuilder<byte[]>.WithPayload(new byte[0]).CopyHeaders(new Dictionary<string, object>() { { "foo", "bar" } }).Build();
+        private readonly IMessage<byte[]> message = MessageBuilder<byte[]>.WithPayload(Array.Empty<byte>()).CopyHeaders(new Dictionary<string, object>() { { "foo", "bar" } }).Build();
 
         private readonly ResolvableMethod resolvable = ResolvableMethod.On<HeadersMethodArgumentResolverTest>().Named("HandleMessage").Build();
 

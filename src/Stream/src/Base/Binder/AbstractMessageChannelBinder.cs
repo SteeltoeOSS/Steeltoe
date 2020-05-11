@@ -56,7 +56,7 @@ namespace Steeltoe.Stream.Binder
             IMessageSourceCustomizer sourceCustomizer)
             : base(serviceProvider)
         {
-            _headersToEmbed = headersToEmbed ?? (new string[0]);
+            _headersToEmbed = headersToEmbed ?? Array.Empty<string>();
             _provisioningProvider = provisioningProvider;
             ListenerContainerCustomizer = containerCustomizer;
             MessageSourceCustomizer = sourceCustomizer;

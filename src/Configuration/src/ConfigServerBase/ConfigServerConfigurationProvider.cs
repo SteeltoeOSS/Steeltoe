@@ -359,7 +359,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                     {
                         if (uri.EndsWith("/") && path.StartsWith("/"))
                         {
-                            uri = uri.Substring(0, uri.Length - 1);
+                            uri = uri[0..^1];
                         }
 
                         uri += path;
@@ -732,8 +732,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
                 if (!readEscapeChar && source[i] == DELIMITER_CHAR)
                 {
-                    result.Add(UnEscapeString(
-                      source.Substring(segmentStart, i - segmentStart)));
+                    result.Add(UnEscapeString(source[segmentStart..i]));
                     segmentStart = i + 1;
                 }
 

@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
     {
-        private static readonly object[] EMPTY_ARGS = new object[0];
+        private static readonly object[] EMPTY_ARGS = Array.Empty<object>();
 
         public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new HandlerMethodArgumentResolverComposite();
 
