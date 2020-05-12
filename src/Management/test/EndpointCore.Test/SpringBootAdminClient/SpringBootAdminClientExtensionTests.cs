@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using System;
 using System.Collections.Generic;
@@ -47,10 +48,7 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var services = new ServiceCollection();
-            var appLifeTime = new MyAppLifeTime();
-
-#pragma warning disable CS0618 // Needed for 2.x
-            services.TryAddSingleton<IApplicationLifetime>(appLifeTime);
+            var appLifeTime = AddApplicationLifetime(services);
             services.TryAddSingleton<IConfiguration>(config);
             var provider = services.BuildServiceProvider();
             var appBuilder = new MyAppBuilder(provider);
@@ -70,8 +68,25 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             }
         }
 
-        private class MyAppLifeTime : IApplicationLifetime
-#pragma warning restore CS0618 // Needed for 2.x
+        private MyAppLifeTime AddApplicationLifetime(ServiceCollection services)
+        {
+            var appLifeTime = new MyAppLifeTime();
+#if NETCOREAPP3_0
+            services.TryAddSingleton<IHostApplicationLifetime>(appLifeTime);
+#else
+            services.TryAddSingleton<IApplicationLifetime>(appLifeTime);
+#endif
+            return appLifeTime;
+        }
+
+        private class MyAppLifeTime :
+#if NETCOREAPP3_0
+            IHostApplicationLifetime
+#else
+#pragma warning disable CS0618 // Needed for 2.x
+            IApplicationLifetime
+#pragma warning restore CS0618
+#endif
         {
             public CancellationTokenSource AppStartTokenSource = new CancellationTokenSource();
             public CancellationTokenSource AppStopTokenSource = new CancellationTokenSource();

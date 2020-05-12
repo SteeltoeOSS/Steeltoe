@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
