@@ -30,18 +30,18 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
     public class HttpClientDesktopObserverTest : BaseTest
     {
-       // Bring back with Views API
-       /* [Fact]
-        public void Constructor_RegistersExpectedViews()
-        {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new HttpClientDesktopObserver(options, stats, tags, null);
+        // Bring back with Views API
+        /* [Fact]
+         public void Constructor_RegistersExpectedViews()
+         {
+             var options = new MetricsEndpointOptions();
+             var stats = new OpenCensusStats();
+             var tags = new OpenCensusTags();
+             var observer = new HttpClientDesktopObserver(options, stats, tags, null);
 
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time")));
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count")));
-        }*/
+             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.time")));
+             Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.desktop.client.request.count")));
+         }*/
 
         [Fact]
         public void ShouldIgnore_ReturnsExpected()

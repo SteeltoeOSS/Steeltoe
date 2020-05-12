@@ -99,8 +99,8 @@ namespace Steeltoe.Stream.Binder
         }
 
         public virtual IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
-       {
-                throw new NotImplementedException();
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void PostProcessPollableSource(DefaultPollableMessageSource bindingTarget)

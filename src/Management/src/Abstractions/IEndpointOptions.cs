@@ -20,7 +20,7 @@ namespace Steeltoe.Management
     {
         bool? Enabled { get; }
 
-        string Id { get;  }
+        string Id { get; }
 
         string Path { get; }
 

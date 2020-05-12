@@ -65,13 +65,13 @@ namespace Steeltoe.Common.Transaction
 
         protected override ISavepointManager GetSavepointManager()
         {
-                var transaction = Transaction;
-                if (!(transaction is ISavepointManager))
-                {
-                    throw new NestedTransactionNotSupportedException("Transaction object [" + Transaction + "] does not support savepoints");
-                }
+            var transaction = Transaction;
+            if (!(transaction is ISavepointManager))
+            {
+                throw new NestedTransactionNotSupportedException("Transaction object [" + Transaction + "] does not support savepoints");
+            }
 
-                return (ISavepointManager)Transaction;
+            return (ISavepointManager)Transaction;
         }
     }
 }

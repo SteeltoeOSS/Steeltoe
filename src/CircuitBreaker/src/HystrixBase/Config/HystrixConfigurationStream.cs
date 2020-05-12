@@ -61,7 +61,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             return INSTANCE;
         }
 
-         // Return a ref-counted stream that will only do work when at least one subscriber is present
+        // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<HystrixConfiguration> Observe()
         {
             return allConfigurationStream;

@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Tracing.Observer
             span.PutErrorAttribute(GetExceptionMessage(exception))
                 .PutErrorStackTraceAttribute(GetExceptionStackTrace(exception))
                 .Status = Status.Aborted;
-            }
+        }
 
         protected internal void HandleStartEvent(HttpRequestMessage request)
         {
@@ -181,15 +181,15 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             // Expects the currentspan to be the span to inject into
             var headers = message.Headers;
-            TextFormat.Inject(Tracer.CurrentSpan.Context, headers,  (c, k, v) =>
-            {
-                if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
-                {
-                    v = v.Substring(v.Length - 16, 16);
-                }
+            TextFormat.Inject(Tracer.CurrentSpan.Context, headers, (c, k, v) =>
+           {
+               if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
+               {
+                   v = v.Substring(v.Length - 16, 16);
+               }
 
-                c.Add(k, v);
-            });
+               c.Add(k, v);
+           });
             if (parentSpan != null)
             {
                 headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToHexString());

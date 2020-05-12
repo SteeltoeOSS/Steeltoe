@@ -24,6 +24,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         public IList<string> Produces { get; set; }
 
-        public IList<string> Consumes { get; set;  }
+        public IList<string> Consumes { get; set; }
     }
 }

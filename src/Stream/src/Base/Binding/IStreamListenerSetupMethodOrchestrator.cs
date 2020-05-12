@@ -22,7 +22,7 @@ namespace Steeltoe.Stream.Binding
     {
         bool Supports(MethodInfo method);
 
-        void OrchestrateStreamListener(StreamListenerAttribute streamListener,  MethodInfo method, Type implementation);
+        void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementation);
 
         object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters);
     }

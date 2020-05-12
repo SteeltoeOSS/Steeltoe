@@ -106,7 +106,7 @@ namespace Steeltoe.Stream.Binding
 
         public IBinding DoBindConsumerWithRetry<T>(T inputChan, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
         {
-             // TODO: Java code never stops retrying the bind
+            // TODO: Java code never stops retrying the bind
             do
             {
                 try

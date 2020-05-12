@@ -60,7 +60,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             return Instance;
         }
 
-         // Return a ref-counted stream that will only do work when at least one subscriber is present
+        // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<HystrixUtilization> Observe()
         {
             return allUtilizationStream;

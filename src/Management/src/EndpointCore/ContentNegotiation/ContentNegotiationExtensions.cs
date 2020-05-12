@@ -28,7 +28,7 @@ namespace Steeltoe.Management.EndpointCore.ContentNegotiation
             context.Response.Headers.SetContentType(context.Request.Headers, logger);
         }
 
-        public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders,  string contentType)
+        public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
         {
             logger?.LogError("setting contentType to {0}", contentType);
             var logTrace = logger?.IsEnabled(LogLevel.Trace);

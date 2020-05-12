@@ -188,13 +188,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetClientSecret(string configPrefix, IConfiguration config)
         {
-           return ConfigurationValuesHelper.GetSetting(
-               "credentials:client_secret",
-               config,
-               ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
-               VCAP_SERVICES_CONFIGSERVER_PREFIX,
-               VCAP_SERVICES_CONFIGSERVER30_PREFIX,
-               configPrefix);
+            return ConfigurationValuesHelper.GetSetting(
+                "credentials:client_secret",
+                config,
+                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
+                VCAP_SERVICES_CONFIGSERVER_PREFIX,
+                VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                configPrefix);
         }
 
         private static string GetClientId(string configPrefix, IConfiguration config)

@@ -63,8 +63,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             }
         }
 
-         // Synchronous call to retrieve the last calculated bucket without waiting for any emissions
-         // return last calculated bucket
+        // Synchronous call to retrieve the last calculated bucket without waiting for any emissions
+        // return last calculated bucket
         public Output Latest
         {
             get

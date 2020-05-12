@@ -33,8 +33,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         private HystrixMetricsStreamController(IObservable<HystrixDashboardStream.DashboardData> observable)
             : base(observable.Map((data) =>
             {
-                 return SerialHystrixDashboardData.ToMultipleJsonStrings(data).ToObservable();
-             }).SelectMany(n => n))
+                return SerialHystrixDashboardData.ToMultipleJsonStrings(data).ToObservable();
+            }).SelectMany(n => n))
         {
         }
 

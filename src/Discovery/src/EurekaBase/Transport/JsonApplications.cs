@@ -22,10 +22,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
     internal class JsonApplications
     {
         [JsonProperty("apps__hashcode")]
-        public string AppsHashCode { get;  set; }
+        public string AppsHashCode { get; set; }
 
         [JsonProperty("versions__delta")]
-        public long VersionDelta { get;  set; }
+        public long VersionDelta { get; set; }
 
         [JsonProperty("application")]
         [JsonConverter(typeof(JsonApplicationConverter))]

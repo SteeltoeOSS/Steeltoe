@@ -67,7 +67,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         private RollingCommandLatencyDistributionStream(IHystrixCommandKey commandKey, int numPercentileBuckets, int percentileBucketSizeInMs)
             : base(HystrixCommandCompletionStream.GetInstance(commandKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
-            {
+        {
         }
     }
 }

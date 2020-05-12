@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Test
     {
         public virtual void Dispose()
         {
-           DiagnosticsManager.Instance.Dispose();
+            DiagnosticsManager.Instance.Dispose();
         }
 
         public ILogger<T> GetLogger<T>()

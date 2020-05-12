@@ -115,7 +115,7 @@ namespace Steeltoe.Connector.Hystrix.Test
 
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
-            {
+        {
             var config = new HystrixProviderConnectorOptions()
             {
                 Server = "localhost",

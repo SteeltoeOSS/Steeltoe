@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Consul.Client.Test
         [Fact]
         public void CreateClient_ThrowsNullOptions()
         {
-           Assert.Throws<ArgumentNullException>(() => ConsulClientFactory.CreateClient(null));
+            Assert.Throws<ArgumentNullException>(() => ConsulClientFactory.CreateClient(null));
         }
 
         [Fact]

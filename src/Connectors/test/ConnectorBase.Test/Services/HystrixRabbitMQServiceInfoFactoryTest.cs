@@ -187,7 +187,7 @@ namespace Steeltoe.Connector.Services.Test
             Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uris[0]);
             Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uri);
             Assert.False(info.IsSslEnabled);
-         }
+        }
 
         private static Service CreateHystrixService()
         {

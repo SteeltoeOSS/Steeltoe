@@ -21,7 +21,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using T=System.Threading.Tasks;
+using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {

@@ -16,6 +16,6 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
     public interface ISerilogOptions
     {
-       MinimumLevel MinimumLevel { get; set; }
+        MinimumLevel MinimumLevel { get; set; }
     }
 }

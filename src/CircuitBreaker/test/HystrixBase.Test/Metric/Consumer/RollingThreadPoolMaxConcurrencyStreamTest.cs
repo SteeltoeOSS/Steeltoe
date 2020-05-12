@@ -360,7 +360,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var shorts = new List<Task<int>>();
             foreach (var cmd in shortCircuited)
             {
-                 shorts.Add(cmd.ExecuteAsync());
+                shorts.Add(cmd.ExecuteAsync());
             }
 
             Task.WaitAll(shorts.ToArray());

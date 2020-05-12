@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
     {
         private static readonly AsyncLocal<HystrixRequestContext> RequestVariables = new AsyncLocal<HystrixRequestContext>();
 
-        internal ConcurrentDictionary<IDisposable, object> State { get;  set; }
+        internal ConcurrentDictionary<IDisposable, object> State { get; set; }
 
         private HystrixRequestContext()
         {

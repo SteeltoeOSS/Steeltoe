@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Config
     {
         string ConfigureClass { get; }
 
-        Dictionary<string, object> Environment { get;  }
+        Dictionary<string, object> Environment { get; }
 
         bool InheritEnvironment { get; }
 

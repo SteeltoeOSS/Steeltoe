@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Diagnostics
 
         protected IDisposable Subscription { get; set; }
 
-        protected DiagnosticObserver(string name, string listenerName,  ILogger logger = null)
+        protected DiagnosticObserver(string name, string listenerName, ILogger logger = null)
         {
             if (string.IsNullOrEmpty(name))
             {

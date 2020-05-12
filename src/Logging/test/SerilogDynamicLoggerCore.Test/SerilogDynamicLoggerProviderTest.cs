@@ -239,13 +239,13 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
-             var provider = new SerilogDynamicProvider(GetConfiguration());
-             var fac = new LoggerFactory();
-             fac.AddProvider(provider);
-             var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var provider = new SerilogDynamicProvider(GetConfiguration());
+            var fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
-             using (var unConsole = new ConsoleOutputBorrower())
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -264,8 +264,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act II - adjust rules, expect Error and above to work
-             provider.SetLogLevel("A.B.C.D", LogLevel.Error);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A.B.C.D", LogLevel.Error);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -284,8 +284,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act III - adjust rules, expect Trace and above to work
-             provider.SetLogLevel("A", LogLevel.Trace);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.Trace);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -304,8 +304,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act IV - adjust rules, expect nothing to work
-             provider.SetLogLevel("A", LogLevel.None);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.None);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -324,8 +324,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act V - reset the rules, expect Info and above to work
-             provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
