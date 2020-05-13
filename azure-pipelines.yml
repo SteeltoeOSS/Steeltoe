@@ -126,7 +126,6 @@ jobs:
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
-      publishTestResults: false
       arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
       nobuild: true
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)

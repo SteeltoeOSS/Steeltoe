@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
     <Description>Steeltoe Messaging Base</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>

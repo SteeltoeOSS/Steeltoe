@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <Description>Steeltoe Stream MockBinder</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -16,7 +15,6 @@
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
   </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Base\Steeltoe.Stream.Base.csproj" />

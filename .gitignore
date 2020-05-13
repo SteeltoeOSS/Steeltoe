@@ -232,3 +232,4 @@ Pivotal.GemFire.dll
 pivnet*
 pivotal*.zip
 GeneratedCertificates/
+*.opencover.xml
