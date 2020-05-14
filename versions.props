@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
+    <VersionPrefix>3.0.0</VersionPrefix>
+  </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
@@ -32,7 +35,7 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>2.8.1</CoverletVersion>
+    <CoverletVersion>2.7.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>

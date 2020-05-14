@@ -10,7 +10,7 @@
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedtest.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />

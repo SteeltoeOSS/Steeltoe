@@ -50,6 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1B
 		..\.editorconfig = ..\.editorconfig
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
+		..\azurepipelines-coverage.yml = ..\azurepipelines-coverage.yml
 		..\codecov.yml = ..\codecov.yml
 		..\nuget.config = ..\nuget.config
 		..\sharedproject.props = ..\sharedproject.props

@@ -23,6 +23,7 @@ namespace Steeltoe.Common.Net.Test
         internal string _password;
         internal string _networkpath;
         internal bool _shouldConnect;
+        internal bool _cancelledConnection = false;
 
         public FakeMPR(bool shouldConnect = true)
         {
@@ -36,7 +37,8 @@ namespace Steeltoe.Common.Net.Test
 
         public int CancelConnection(string name, int flags, bool force)
         {
-            throw new NotImplementedException();
+            _cancelledConnection = true;
+            return 0;
         }
 
         public int GetLastError(out int error, out StringBuilder errorBuf, int errorBufSize, out StringBuilder nameBuf, int nameBufSize)
