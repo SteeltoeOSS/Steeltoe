@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Consul.Util;
+using Steeltoe.Discovery.Consul.Util;
 using System;
 
 namespace Steeltoe.Discovery.Consul.Discovery
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
             // heartbeat rate at ratio * ttl, but no later than ttl -1s and, (under lesser priority),
             // no sooner than 1s from now
-            var interval = TimeSpan.FromMilliseconds(ttl.TotalMilliseconds * IntervalRatio);
+            var interval = ttl * IntervalRatio;
             var max = interval > second ? interval : second;
             var ttlMinus1sec = ttl - second;
             var min = ttlMinus1sec < max ? ttlMinus1sec : max;
