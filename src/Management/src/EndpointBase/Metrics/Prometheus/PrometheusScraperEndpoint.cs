@@ -24,8 +24,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly PrometheusExporter _exporter;
         private readonly ILogger<PrometheusScraperEndpoint> _logger;
+        private string cachedMetrics;
 
-        public PrometheusScraperEndpoint(IPrometheusOptions options, PrometheusExporter exporter, ILogger<PrometheusScraperEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter, ILogger<PrometheusScraperEndpoint> logger = null)
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
@@ -42,7 +43,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string Invoke()
         {
-            return _exporter.GetMetricsCollection();
+            var metrics = _exporter.GetMetricsCollection();
+
+            if (!string.IsNullOrEmpty(metrics))
+            {
+                cachedMetrics = metrics;
+            }
+
+            return cachedMetrics;
         }
     }
 }

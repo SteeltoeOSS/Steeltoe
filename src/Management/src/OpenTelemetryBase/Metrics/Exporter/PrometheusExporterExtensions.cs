@@ -115,11 +115,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 
                             builder = builder.WithType("summary");
                             var metricValueBuilder = builder.AddValue();
-                            var mean = 0D;
+                            var mean = 0L;
 
                             if (longSummary.Count > 0)
                             {
-                                mean = (double)longSummary.Sum / longSummary.Count;
+                                mean = longSummary.Sum / longSummary.Count;
                             }
 
                             metricValueBuilder = metricValueBuilder.WithValue(mean);

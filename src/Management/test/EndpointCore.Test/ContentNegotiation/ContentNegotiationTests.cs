@@ -72,7 +72,6 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             }
         }
 
-        /// <param name="version">For now there is no way to configure version - defined for future use</param>
         [Theory]
         [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
         public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)

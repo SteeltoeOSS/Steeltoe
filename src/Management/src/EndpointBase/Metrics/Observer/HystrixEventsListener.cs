@@ -26,8 +26,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     public class HystrixEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Steeltoe.Hystrix.Events";
+        private static string[] _allowedEvents = new string[]
+        {
+            "CommandMetrics",
+            "ThreadPoolMetrics",
+            "CollapserMetrics",
+        };
+
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly Dictionary<string, string> cktBreakerLabels = new Dictionary<string, string>() { { "area", "circuitbreaker" } };
+        private readonly Dictionary<string, string> cktBreakerLabels = new Dictionary<string, string>();
 
         public HystrixEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats, logger)
@@ -44,7 +51,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             try
             {
+                if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
+                {
                     ExtractAndRecordMetric(EventSourceName, eventData, cktBreakerLabels);
+                }
             }
             catch (Exception ex)
             {
@@ -56,31 +66,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (eventSource.Name == EventSourceName)
             {
-                EnableEvents(eventSource, EventLevel.Verbose, (EventKeywords)0x1);
+                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
             }
         }
-
-        //private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
-        //{
-        //    long totalMemory = GC.GetTotalMemory(false);
-        //    memoryUsed.Record(default(SpanContext), totalMemory, memoryLabels);
-        //    List<long> counts = new List<long>(GC.MaxGeneration);
-        //    for (int i = 0; i < GC.MaxGeneration; i++)
-        //    {
-        //        var count = (long)GC.CollectionCount(i);
-        //        counts.Add(count);
-        //        if (previousCollectionCounts != null && i < previousCollectionCounts.Count &&
-        //            previousCollectionCounts[i] <= count)
-        //        {
-        //            count -= previousCollectionCounts[i];
-        //        }
-
-        //        var genKeylabelSet = new List<KeyValuePair<string, string>>()
-        //            { new KeyValuePair<string, string>(generationKey, GENERATION_TAGVALUE_NAME + i) };
-        //        collectionCount.Record(default(SpanContext), count, genKeylabelSet);
-        //    }
-
-        //    previousCollectionCounts = counts;
-        //}
     }
 }

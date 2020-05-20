@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientDesktopObserver(options, stats, null);
 
@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientDesktopObserver(options, stats, null);
 
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetTagContext_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientDesktopObserver(options, stats, null);
 
@@ -92,7 +92,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleStopEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientDesktopObserver(options, stats, null);
             var factory = stats.Factory;

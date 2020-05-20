@@ -27,9 +27,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
     {
         public SteeltoeExporter()
         {
-            // this.Options = options;
-            this.LongMetrics = new List<ProcessedMetric<long>>();
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            LongMetrics = new List<ProcessedMetric<long>>();
+            DoubleMetrics = new List<ProcessedMetric<double>>();
         }
 
         private List<ProcessedMetric<long>> LongMetrics { get; set; }
@@ -61,16 +60,16 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         public List<ProcessedMetric<long>> GetAndClearLongMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<long>> current = this.LongMetrics;
-            this.LongMetrics = new List<ProcessedMetric<long>>();
+            List<ProcessedMetric<long>> current = LongMetrics;
+            LongMetrics = new List<ProcessedMetric<long>>();
             return current;
         }
 
         public List<ProcessedMetric<double>> GetAndClearDoubleMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<double>> current = this.DoubleMetrics;
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            List<ProcessedMetric<double>> current = DoubleMetrics;
+            DoubleMetrics = new List<ProcessedMetric<double>>();
             return current;
         }
     }

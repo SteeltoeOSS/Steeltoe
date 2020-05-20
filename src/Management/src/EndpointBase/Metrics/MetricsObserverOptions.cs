@@ -13,29 +13,36 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointOptions
+    public class MetricsObserverOptions : IMetricsObserverOptions
     {
-        internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:metrics";
+        internal const string MANAGEMENT_METRICS_PREFIX = "management:metrics:observer";
         internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
         internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
 
-        public MetricsEndpointOptions()
+        public MetricsObserverOptions()
             : base()
         {
-            Id = "metrics";
             IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
             EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
         }
 
-        public MetricsEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
+        public MetricsObserverOptions(IConfiguration config)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (config == null)
             {
-                Id = "metrics";
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            var section = config.GetSection(MANAGEMENT_METRICS_PREFIX);
+            if (section != null)
+            {
+                section.Bind(this);
             }
 
             if (string.IsNullOrEmpty(IngressIgnorePattern))
@@ -52,5 +59,19 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public string IngressIgnorePattern { get; set; }
 
         public string EgressIgnorePattern { get; set; }
+
+        public bool AspNetCoreHosting { get; set; } = true;
+
+        public bool GCEvents { get; set; } = true;
+
+        public bool ThreadPoolEvents { get; set; } = true;
+
+        public bool EventCounterEvents { get; set; } = false;
+
+        public bool HttpClientCore { get; set; } = false;
+
+        public bool HttpClientDesktop { get; set; } = false;
+
+        public bool HystrixEvents { get; set; } = false;
     }
 }

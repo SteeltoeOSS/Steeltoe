@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var source = new CLRRuntimeSource();
             var listener = source.Source as DiagnosticListener;
 
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new TestObserver(options, stats, null);
 
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             public List<object> Args { get; set; } = new List<object>();
 
-            public TestObserver(IMetricsOptions options, IStats stats, ILogger logger)
+            public TestObserver(IMetricsObserverOptions options, IStats stats, ILogger logger)
                 : base("TestObserver", DIAGNOSTIC_NAME, options, stats, logger)
             {
             }

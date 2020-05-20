@@ -43,10 +43,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(services));
             }
 
-            //services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
-            services.AddSingleton<IHystrixEventSource>(HystrixMetricsEventSource.EventLogger);
-            services.AddHostedService<EventSourceManager>();
+            services.AddHostedService<HystrixEventSourceService>();
         }
+
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)

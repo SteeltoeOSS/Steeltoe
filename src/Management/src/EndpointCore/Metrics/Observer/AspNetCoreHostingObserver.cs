@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly MeasureMetric<double> responseTimeMeasure;
         private readonly CounterMetric<long> serverCountMeasure;
 
-        public AspNetCoreHostingObserver(IMetricsOptions options, IStats stats, ILogger<AspNetCoreHostingObserver> logger)
+        public AspNetCoreHostingObserver(IMetricsObserverOptions options, IStats stats, ILogger<AspNetCoreHostingObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);

@@ -44,6 +44,7 @@ namespace Steeltoe.Management.EndpointCore.Test.Metrics
             var exporter2 = new SteeltoeExporter();
             var multiExporter = new MultiExporter(new MetricExporter[] { exporter1, exporter2 }.ToList());
             var processor = new SteeltoeProcessor(multiExporter);
+
             var factory = AutoCollectingMeterFactory.Create(processor);
             var meter = factory.GetMeter("Test");
             SetupTestView(meter);

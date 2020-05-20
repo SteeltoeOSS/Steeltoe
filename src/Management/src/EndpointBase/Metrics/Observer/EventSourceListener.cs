@@ -21,7 +21,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Globalization;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
@@ -29,6 +28,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     public class EventSourceListener : EventListener
     {
         protected ConcurrentDictionary<string, MeasureMetric<long>> LongMeasureMetrics { get; set; }
+
         protected ConcurrentDictionary<string, MeasureMetric<double>> DoubleMeasureMetrics { get; set; }
 
         private readonly IStats _stats;
@@ -44,78 +44,112 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         protected Meter Meter => _stats.Meter;
 
-        protected virtual void ExtractAndRecordMetric(string eventSourceName, EventWrittenEventArgs eventData, IDictionary<string, string> labels, string[] ignorePayloadNames = null)
+        protected virtual void ExtractAndRecordMetric(
+            string eventSourceName,
+            EventWrittenEventArgs eventData,
+            IDictionary<string, string> labels,
+            string[] ignorePayloadNames = null,
+            string[] counterNames = null)
         {
             var payloadNames = eventData.PayloadNames;
             var payload = eventData.Payload;
 
-            using var nameEnumerator = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).GetEnumerator();
-            using var payloadEnumerator = payload.GetEnumerator();
+            var names = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).ToList();
 
-            var currentLabels = new Dictionary<string, string>(labels);
-            var doubleValues = new Dictionary<string, double>();
-            var longValues = new Dictionary<string, long>();
+            var currentLabels = GetLabels(payload, names, labels);
+
+            using var payloadEnumerator = payload.GetEnumerator();
+            using var nameEnumerator = names.GetEnumerator();
+            while (nameEnumerator.MoveNext())
+            {
+                payloadEnumerator.MoveNext();
+                var metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
+                RecordMetricsWithLabels(
+                     metricName,
+                     nameEnumerator.Current,
+                     payloadEnumerator.Current,
+                     currentLabels,
+                     counterNames);
+            }
+        }
+
+        private IDictionary<string, string> GetLabels(
+            IEnumerable<object> payload,
+            IList<string> names,
+            IDictionary<string, string> labels)
+        {
+            var nameEnumerator = names.GetEnumerator();
+            var payloadEnumerator = payload.GetEnumerator();
+
             while (nameEnumerator.MoveNext())
             {
                 payloadEnumerator.MoveNext();
 
-                var metricName = $"{eventSourceName}.{nameEnumerator.Current}";
-                CollectionMetricsWithLabels(metricName, nameEnumerator.Current, payloadEnumerator.Current, currentLabels, longValues, doubleValues);
+                switch (payloadEnumerator.Current)
+                {
+                    case string strValue:
+                        if (!labels.ContainsKey(nameEnumerator.Current))
+                        {
+                            labels.Add(nameEnumerator.Current, strValue);
+                        }
+
+                        break;
+                }
             }
 
-            foreach (var longValue in longValues)
-            {
-                var currentMetric = LongMeasureMetrics?.GetOrAddEx(
-                    longValue.Key,
-                    (name) => _stats.Meter.CreateInt64Measure(name));
-                currentMetric?.Record(default(SpanContext), longValue.Value, labels.ToList());
-            }
-
-            foreach (var doubleValue in doubleValues)
-            {
-                var currentMetric = DoubleMeasureMetrics?.GetOrAddEx(
-                    doubleValue.Key,
-                    (name) => _stats.Meter.CreateDoubleMeasure(name));
-                currentMetric?.Record(default(SpanContext), doubleValue.Value, labels.ToList());
-            }
+            return labels;
         }
 
-        private void CollectionMetricsWithLabels(
+        private void RecordMetricsWithLabels(
             string metricName,
             string payLoadName,
             object payloadValue,
-            Dictionary<string, string> labels,
-            Dictionary<string, long> longValues,
-            Dictionary<string, double> doubleValues)
+            IDictionary<string, string> labels,
+            string[] counterNames)
         {
+            long? longValue = null;
+            double? doubleValue = null;
+
             switch (payloadValue)
             {
-                case string strValue:
-                    labels.Add(payLoadName, strValue);
+                case string stringValue:
                     break;
                 case short shortValue:
-                    longValues.Add(metricName, shortValue);
+                    longValue = shortValue;
                     break;
                 case int intValue:
-                    longValues.Add(metricName, intValue);
+                    longValue = intValue;
                     break;
                 case uint unsignedInt:
-                    longValues.Add(metricName, unsignedInt);
+                    longValue = unsignedInt;
                     break;
-                case long longValue:
-                    longValues.Add(metricName, longValue);
+                case long lValue:
+                    longValue = lValue;
                     break;
-                case double doubleValue:
-                    doubleValues.Add(metricName, doubleValue);
+                case ulong ulValue:
+                    longValue = (long)ulValue;
+                    break;
+                case double dValue:
+                    doubleValue = dValue;
                     break;
                 case bool boolValue:
-                    longValues.Add(metricName, boolValue ? 1 : 0);
+                    longValue = boolValue ? 1 : 0;
                     break;
                 default:
                     Console.WriteLine($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
                     break;
             }
 
+            if (longValue.HasValue)
+            {
+                var currentMetric = LongMeasureMetrics.GetOrAddEx(metricName, (name) => _stats.Meter.CreateInt64Measure(name));
+                currentMetric.Record(default(SpanContext), longValue.Value, labels);
+            }
+            else if (doubleValue.HasValue)
+            {
+                var currentMetric = DoubleMeasureMetrics.GetOrAddEx(metricName, (name) => _stats.Meter.CreateDoubleMeasure(name));
+                currentMetric.Record(default(SpanContext), doubleValue.Value, labels);
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new CLRRuntimeObserver(options, stats, null);
 
@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleHeapEvent_RecordsValues()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new CLRRuntimeObserver(options, stats, null);
             var factory = stats.Factory;
@@ -125,7 +125,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void HandleThreadsEvent_RecordsValues()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var factory = stats.Factory;
             var processor = stats.Processor;

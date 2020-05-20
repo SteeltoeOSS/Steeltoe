@@ -14,7 +14,7 @@
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public interface IPrometheusOptions : IEndpointOptions
+    public interface IMetricsEndpointOptions : IEndpointOptions
     {
     }
 }

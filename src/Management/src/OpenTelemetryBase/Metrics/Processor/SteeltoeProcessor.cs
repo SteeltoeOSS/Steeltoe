@@ -27,8 +27,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 {
     public class SteeltoeProcessor : MetricProcessor
     {
-        internal Dictionary<MetricKey, Metric<long>> LongMetrics;
-        internal Dictionary<MetricKey, Metric<double>> DoubleMetrics;
+        internal List<ProcessedMetric<long>> LongMetrics;
+        internal List<ProcessedMetric<double>> DoubleMetrics;
 
         private readonly MetricExporter exporter;
         private readonly Task worker;
@@ -44,16 +44,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         {
             this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
-            // TODO make this thread safe.
-            this.LongMetrics = new Dictionary<MetricKey, Metric<long>>();
-            this.DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
+            LongMetrics = new List<ProcessedMetric<long>>();
+            DoubleMetrics = new List<ProcessedMetric<double>>();
             this.exportInterval = exportInterval;
-            this.cts = new CancellationTokenSource();
+            cts = new CancellationTokenSource();
 
             if (exporter == null || exportInterval < TimeSpan.MaxValue)
             {
-                this.worker = Task.Factory.StartNew(
-                    s => this.Worker((CancellationToken)s), this.cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+                worker = Task.Factory.StartNew(
+                    s => Worker((CancellationToken)s), cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -68,60 +67,29 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         public override void Process(string meterName, string metricName, LabelSet labelSet, Aggregator<long> aggregator)
         {
-            var metric = new ProcessedMetric<long>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType());
-            metric.Data = aggregator.ToMetricData();
-            var metricKey = new MetricKey(metricName, labelSet.Labels);
-            if (this.LongMetrics.ContainsKey(metricKey))
+            var metric = new ProcessedMetric<long>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType())
             {
-                var previousMetric = LongMetrics[metricKey];
-                switch (previousMetric.AggregationType)
-                {
-                    case AggregationType.LongSum:
-                        LongMetrics[metricKey] = UpdateSum(metric, previousMetric);
-                        break;
-                    case AggregationType.Summary:
-                        LongMetrics[metricKey] = UpdateSummary(metric, previousMetric);
-                        break;
-                }
-            }
-            else
-            {
-                LongMetrics.Add(metricKey, metric);
-            }
+                Data = aggregator.ToMetricData()
+            };
+            LongMetrics.Add(metric);
         }
 
         public override void Process(string meterName, string metricName, LabelSet labelSet, Aggregator<double> aggregator)
         {
-            var metric = new ProcessedMetric<double>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType());
-            metric.Data = aggregator.ToMetricData();
-            var metricKey = new MetricKey(metricName, labelSet.Labels);
-
-            if (this.DoubleMetrics.ContainsKey(metricKey))
+            var metric = new ProcessedMetric<double>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType())
             {
-                var previousMetric = DoubleMetrics[metricKey];
-                switch (previousMetric.AggregationType)
-                {
-                    case AggregationType.LongSum:
-                        DoubleMetrics[metricKey] = UpdateSum(metric, previousMetric);
-                        break;
-                    case AggregationType.Summary:
-                        DoubleMetrics[metricKey] = UpdateSummary(metric, previousMetric);
-                        break;
-                }
-            }
-            else
-            {
-                DoubleMetrics.Add(metricKey, metric);
-            }
+                Data = aggregator.ToMetricData()
+            };
+            DoubleMetrics.Add(metric);
         }
 
         internal SummaryData<T> GetMetricByName<T>(string name, List<KeyValuePair<string, string>> labels = null)
             where T : struct
         {
-            ProcessedMetric<T> processedMetric;
+            ProcessedMetric<T> processedMetric = null;
             if (typeof(T) == typeof(long))
             {
-                var filtered = LongMetrics.Values.Where(m => m.MetricName == name).Select(m => m as ProcessedMetric<T>);
+                var filtered = LongMetrics.Where(m => m.MetricName == name).Select(m => m as ProcessedMetric<T>);
                 filtered = labels == null ? filtered : filtered.Where(m => m.Labels.Any(label => labels.Contains(label))).ToList();
                 processedMetric = filtered.Count() < 1 ? default : filtered.Aggregate(
                     (a, b) =>
@@ -155,7 +123,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             }
             else
             {
-                var filtered = DoubleMetrics.Values.Where(m => m.MetricName == name).Select(m => m as ProcessedMetric<T>);
+                var filtered = DoubleMetrics.Where(m => m.MetricName == name).Select(m => m as ProcessedMetric<T>);
                 filtered = labels == null ? filtered : filtered.Where(m => m.Labels.Any(label => labels.Contains(label))).ToList();
 
                 processedMetric = filtered.Count() < 1 ? default : filtered.Aggregate(
@@ -194,55 +162,13 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         internal void Clear()
         {
-            this.LongMetrics = new Dictionary<MetricKey, Metric<long>>();
-            this.DoubleMetrics = new Dictionary<MetricKey, Metric<double>>();
+            LongMetrics = new List<ProcessedMetric<long>>();
+            DoubleMetrics = new List<ProcessedMetric<double>>();
         }
 
         internal void ExportMetrics()
         {
             ExportMetrics(CancellationToken.None).Wait();
-        }
-
-        private Metric<T> UpdateSum<T>(ProcessedMetric<T> metric, Metric<T> previousMetric)
-   where T : struct
-        {
-            var previousSummary = previousMetric.Data as SumData<T>;
-            var currentSummary = metric.Data as SumData<T>;
-
-            var newSum = Sum(previousSummary.Sum, currentSummary.Sum);
-            var newSummary = new SumData<T>() { Sum = newSum, Timestamp = currentSummary.Timestamp };
-            metric.Data = newSummary;
-            return metric;
-        }
-
-        private Metric<T> UpdateSummary<T>(ProcessedMetric<T> metric, Metric<T> previousMetric)
-    where T : struct
-        {
-            var previousSummary = previousMetric.Data as SummaryData<T>;
-            var currentSummary = metric.Data as SummaryData<T>;
-            var newMax = Max(previousSummary.Max, currentSummary.Max);
-            var newMin = Min(previousSummary.Min, currentSummary.Min);
-            var newCount = previousSummary.Count + currentSummary.Count;
-            var newSum = Sum(previousSummary.Sum, currentSummary.Sum);
-            var newSummary = new SummaryData<T>() { Count = newCount, Min = newMin, Max = newMax, Sum = newSum, Timestamp = currentSummary.Timestamp };
-            metric.Data = newSummary;
-            previousMetric = metric;
-            return previousMetric;
-        }
-
-        private T Sum<T>(T val1, T val2)
-           where T : struct
-        {
-            if (typeof(T) == typeof(long))
-            {
-                return (T)(object)((long)(object)val1 + (long)(object)val2);
-            }
-            else if (typeof(T) == typeof(double))
-            {
-                return (T)(object)((double)(object)val1 + (double)(object)val2);
-            }
-
-            return default;
         }
 
         private T Max<T>(T val1, T val2)
@@ -277,24 +203,26 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 
         private async Task ExportMetrics(CancellationToken cancellationToken)
         {
-            if (this.LongMetrics.Count > 0)
+            if (LongMetrics.Count > 0)
             {
-                var metricToExport = this.LongMetrics.Values.ToList();
-                await this.exporter.ExportAsync<long>(metricToExport, cancellationToken);
+                var metricToExport = LongMetrics.Select(v => (Metric<long>)v).ToList();
+                await exporter.ExportAsync<long>(metricToExport, cancellationToken);
             }
 
-            if (this.DoubleMetrics.Count > 0)
+            if (DoubleMetrics.Count > 0)
             {
-                var metricToExport = this.DoubleMetrics.Values.ToList();
-                await this.exporter.ExportAsync<double>(metricToExport, cancellationToken);
+                var metricToExport = DoubleMetrics.Select(v => (Metric<double>)v).ToList();
+                await exporter.ExportAsync<double>(metricToExport, cancellationToken);
             }
+
+            Clear();
         }
 
         private async Task Worker(CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(this.exportInterval, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(exportInterval, cancellationToken).ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var sw = Stopwatch.StartNew();
@@ -306,7 +234,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
                         return;
                     }
 
-                    var remainingWait = this.exportInterval - sw.Elapsed;
+                    var remainingWait = exportInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);
@@ -316,18 +244,6 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             catch (Exception ex)
             {
                 var s = ex.Message;
-            }
-        }
-
-        internal struct MetricKey
-        {
-            public string MetricName;
-            public List<KeyValuePair<string, string>> LabelSet;
-
-            public MetricKey(string name, IEnumerable<KeyValuePair<string, string>> labelSet)
-            {
-                this.MetricName = name;
-                this.LabelSet = labelSet.ToList();
             }
         }
     }

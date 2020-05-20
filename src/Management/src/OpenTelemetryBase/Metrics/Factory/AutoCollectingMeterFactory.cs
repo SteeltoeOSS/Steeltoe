@@ -46,7 +46,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             if (processor != null && timeSpan < TimeSpan.MaxValue)
             {
                 _worker = Task.Factory.StartNew(
-                    s => this.Worker((CancellationToken)s), _cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+                    s => Worker((CancellationToken)s), _cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -86,13 +86,12 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
                     CollectAllMetrics();
                     (_processor as SteeltoeProcessor)?.ExportMetrics();
 
-                    // (_processor as SteeltoeProcessor)?.Clear();
                     if (cancellationToken.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    var remainingWait = this._collectionInterval - sw.Elapsed;
+                    var remainingWait = _collectionInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);
