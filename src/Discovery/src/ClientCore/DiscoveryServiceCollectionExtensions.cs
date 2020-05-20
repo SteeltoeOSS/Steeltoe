@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Consul;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +22,7 @@ using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Net;
 using Steeltoe.Consul.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
@@ -143,6 +143,7 @@ namespace Steeltoe.Discovery.Client
 
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
+            var netOptions = config.Get<InetOptions>();
             if (IsEurekaConfigured(config, info))
             {
                 ConfigureEurekaServices(services, config, info);
@@ -150,7 +151,7 @@ namespace Steeltoe.Discovery.Client
             }
             else if (IsConsulConfigured(config, info))
             {
-                ConfigureConsulServices(services, config, info);
+                ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
             else
@@ -170,12 +171,17 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0;
         }
 
-        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
             services.Configure<ConsulOptions>(consulSection);
             var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
             services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
+            services.PostConfigure<ConsulDiscoveryOptions>(options =>
+            {
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
+            });
         }
 
         private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)

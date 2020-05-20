@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Net;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -27,15 +28,31 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
 
         private string _hostName;
-        private string _hostAddress;
         private string _scheme = "http";
 
         public ConsulDiscoveryOptions()
         {
+            if (!UseNetUtils)
+            {
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
-            _hostName = ResolveHostName();
-            _hostAddress = ResolveHostAddress(_hostName);
+                _hostName = ResolveHostName();
+                IpAddress = ResolveHostAddress(_hostName);
 #pragma warning restore S1699 // Constructors should only call non-overridable methods
+            }
+        }
+
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _hostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
         }
 
         /// <summary>
@@ -47,6 +64,10 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// Gets or sets Tags to use when registering service
         /// </summary>
         public IList<string> Tags { get; set; }
+
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
 
         /// <summary>
         /// Gets or sets values related to Heartbeat
@@ -120,18 +141,14 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// </summary>
         public string HostName
         {
-            get => PreferIpAddress ? _hostAddress : _hostName;
+            get => PreferIpAddress ? IpAddress : _hostName;
             set => _hostName = value;
         }
 
         /// <summary>
         /// Gets or sets IP address to use when accessing service (must also set preferIpAddress to use)
         /// </summary>
-        public string IpAddress
-        {
-            get => _hostAddress;
-            set => _hostAddress = value;
-        }
+        public string IpAddress { get; set; }
 
         /// <summary>
         /// Gets or sets Port to register the service under
@@ -194,24 +211,12 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// <summary>
         /// Gets a value indicating whether heart beat is enabled
         /// </summary>
-        public bool IsHeartBeatEnabled
-        {
-            get
-            {
-                return Heartbeat != null ? Heartbeat.Enabled : false;
-            }
-        }
+        public bool IsHeartBeatEnabled => Heartbeat != null && Heartbeat.Enabled;
 
         /// <summary>
         /// Gets a value indicating whether retry is enabled
         /// </summary>
-        public bool IsRetryEnabled
-        {
-            get
-            {
-                return Retry != null ? Retry.Enabled : false;
-            }
-        }
+        public bool IsRetryEnabled => Retry != null && Retry.Enabled;
 
         // TODO: This code lifted from Eureka, refactor into common
         protected virtual string ResolveHostAddress(string hostName)
