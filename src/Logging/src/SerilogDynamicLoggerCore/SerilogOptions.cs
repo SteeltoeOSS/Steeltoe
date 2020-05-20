@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Serilog.Events;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
@@ -23,7 +24,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
     /// </summary>
     public class SerilogOptions : ISerilogOptions
     {
-        private const string CONFIG_PATH = "Serilog";
+        public string ConfigPath => "Serilog";
 
         /// <summary>
         /// Gets or sets the minimum level for the root logger (and the "Default").
@@ -31,9 +32,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 
+        public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+
         public SerilogOptions(IConfiguration configuration)
         {
-            var section = configuration.GetSection(CONFIG_PATH);
+            var section = configuration.GetSection(ConfigPath);
             section.Bind(this);
             if (MinimumLevel == null)
             {
@@ -43,7 +46,14 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     Override = new Dictionary<string, LogEventLevel>()
                 };
             }
+
+            if (SubloggerConfigKeyExclusions == null)
+            {
+                SubloggerConfigKeyExclusions = new List<string> { "WriteTo", "MinimumLevel" };
+            }
         }
+
+        public IEnumerable<string> FullnameExclusions => SubloggerConfigKeyExclusions?.Select(key => ConfigPath + ":" + key);
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

@@ -84,7 +84,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
                         ""read_uri"": ""postgresql://steeltoe7b59f5b8a34bce2a3cf873061cfb5815:%21DQ4Wm%21r4omt%24h1929%21%24@10.194.45.174:5432/postgresample"",
                         ""service_id"": ""service-instance_9d294ea3-4745-4115-8ef2-0ee28f42bc78"",
                         ""service_role"": ""steeltoe"",
-                        ""uri"": ""postgresql://steeltoe7b59f5b8a34bce2a3cf873061cfb5815:%21DQ4Wm%21r4omt%24h1929%21%24@10.194.45.174:5432/postgresample"",
+                        ""uri"": ""postgresql://steeltoe7b59f5b8a34bce2a3cf873061cfb5815:%21DQ4Wm%21r4omt%24h1929%21%24@10.194.45.174:5432/postgresample?sslmode=require&pooling=true"",
                         ""username"": ""steeltoe7b59f5b8a34bce2a3cf873061cfb5815""
                     },
                     ""syslog_drain_url"": null,

@@ -206,6 +206,8 @@ namespace Steeltoe.Connector.PostgreSql.Test
             Assert.Contains("Database=postgresample;", connString);
             Assert.Contains("Username=steeltoe7b59f5b8a34bce2a3cf873061cfb5815;", connString);
             Assert.Contains("Password=!DQ4Wm!r4omt$h1929!$;", connString);
+            Assert.Contains("sslmode=Require;", connString);
+            Assert.Contains("pooling=true;", connString);
         }
 
         [Fact]

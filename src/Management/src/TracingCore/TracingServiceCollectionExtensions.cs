@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Tracing
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var appInstanceInfo = services.BuildServiceProvider().GetService<IApplicationInstanceInfo>();
+            var appInstanceInfo = services.GetApplicationInstanceInfo();
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, TracingService>());
