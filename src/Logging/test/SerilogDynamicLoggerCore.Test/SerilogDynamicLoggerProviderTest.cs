@@ -15,8 +15,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Serilog.Context;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
@@ -236,6 +238,71 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         }
 
         [Fact]
+        public void LoggerLogsWithEnrichers()
+        {
+         // arrange
+            var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+
+            // act I - log at all levels, expect Info and above to work
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                using (LogContext.PushProperty("A", 1))
+                {
+                    logger.LogInformation("Carries property A = 1");
+
+                    using (LogContext.PushProperty("A", 2))
+                    using (LogContext.PushProperty("B", 1))
+                    {
+                        logger.LogInformation("Carries A = 2 and B = 1");
+                    }
+
+                    logger.LogInformation("Carries property A = 1, again");
+                }
+
+                // pause the thread to allow the logging to happen
+                Thread.Sleep(100);
+
+                var logged = unConsole.ToString();
+
+                // assert I
+                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries property A = 1", logged);
+                Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries A = 2 and B = 1", logged);
+                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries property A = 1, again", logged);
+                Assert.Matches(new Regex(@"ThreadId:<\d+>"), logged);
+            }
+        }
+
+        [Fact]
+        public void LoggerLogsWithDestructuring()
+        {
+            // arrange
+            var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+
+            // act I - log at all levels, expect Info and above to work
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
+
+                // pause the thread to allow the logging to happen
+                Thread.Sleep(100);
+
+                var logged = unConsole.ToString();
+
+                // assert I
+                Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
+            }
+        }
+
+        [Fact]
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
@@ -369,6 +436,13 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             };
 
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+            return builder.Build();
+        }
+
+        private IConfiguration GetConfigurationFromFile()
+        {
+            var builder = new ConfigurationBuilder()
+              .AddJsonFile("serilogSettings.json");
             return builder.Build();
         }
     }

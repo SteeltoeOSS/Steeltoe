@@ -30,7 +30,7 @@ namespace Steeltoe.Management.EndpointCore.ContentNegotiation
 
         public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
         {
-            logger?.LogError("setting contentType to {0}", contentType);
+            logger?.LogTrace("setting contentType to {0}", contentType);
             var logTrace = logger?.IsEnabled(LogLevel.Trace);
 
             if (logTrace.GetValueOrDefault())
