@@ -63,7 +63,9 @@ steps:
     SonarCloud: SonarCloud
     organization: steeltoeoss
     projectKey: SteeltoeOSS_steeltoe
-    extraProperties: sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+    extraProperties: |
+      sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
+      sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
 - task: DotNetCoreCLI@2
   displayName: dotnet build
   inputs:
@@ -76,6 +78,7 @@ steps:
     command: test
     projects: src/Steeltoe.All.sln
     arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+    publishTestResults: true
     nobuild: true
 - pwsh: choco install codecov; codecov -f "**/coverage.opencover.xml" -t $env:CodeCovToken
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
