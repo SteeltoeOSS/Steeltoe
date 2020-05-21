@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var polled = serviceProvider.GetServices<EventListener>();
             var list2 = polled.ToList();
-            Assert.Equal(4, list2.Count);
+            Assert.Equal(2, list2.Count);
 
             var ep = serviceProvider.GetService<MetricsEndpoint>();
             Assert.NotNull(ep);

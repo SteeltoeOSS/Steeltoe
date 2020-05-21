@@ -47,35 +47,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
             return Task.CompletedTask;
         }
 
-        private void Subscribe() => SampleSubscription = Stream.Observe()
-                 .ObserveOn(NewThreadScheduler.Default)
-                 .Subscribe(OnNext, ReSubscribeOnError, ReSubscribe);
-
-        private void ReSubscribeOnError(Exception ex) => ReSubscribe();
-
-        private void ReSubscribe()
-        {
-            if (SampleSubscription != null)
-            {
-                SampleSubscription.Dispose();
-                SampleSubscription = null;
-            }
-
-            Subscribe();
-        }
-
-        private void OnNext(DashboardData dashboardData)
+        internal void OnNext(DashboardData dashboardData)
         {
             if (dashboardData != null)
             {
                 try
                 {
-                    var dictionary = new Dictionary<string, string>();
                     foreach (HystrixCommandMetrics commandMetrics in dashboardData.CommandMetrics)
                     {
                         var circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(commandMetrics.CommandKey);
                         var isOpen = circuitBreaker?.IsOpen;
-                        IHystrixCommandOptions commandProperties = commandMetrics.Properties;
 
                         HystrixMetricsEventSource.EventLogger.CommandMetrics(
                             commandKey: commandMetrics.CommandKey.Name,
@@ -122,6 +103,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
                     Console.WriteLine(ex);
                 }
             }
+        }
+
+        private void Subscribe() => SampleSubscription = Stream.Observe()
+                 .ObserveOn(NewThreadScheduler.Default)
+                 .Subscribe(OnNext, ReSubscribeOnError, ReSubscribe);
+
+        private void ReSubscribeOnError(Exception ex) => ReSubscribe();
+
+        private void ReSubscribe()
+        {
+            if (SampleSubscription != null)
+            {
+                SampleSubscription.Dispose();
+                SampleSubscription = null;
+            }
+
+            Subscribe();
         }
     }
 }
