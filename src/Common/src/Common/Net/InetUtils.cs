@@ -188,6 +188,10 @@ namespace Steeltoe.Common.Net
 
                 hostInfo.Hostname = hostname;
             }
+            else
+            {
+                hostInfo.Hostname = _options.DefaultHostname;
+            }
 
             hostInfo.IpAddress = address.ToString();
             return hostInfo;

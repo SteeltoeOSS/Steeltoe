@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test
@@ -93,6 +94,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
         {
             // arrange
+            var noSlowReverseDNSQuery = new Stopwatch();
+            noSlowReverseDNSQuery.Start();
             var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var opts = new ConsulDiscoveryOptions() { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
@@ -100,9 +103,11 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
 
             // act
             opts.ApplyNetUtils();
+            noSlowReverseDNSQuery.Stop();
 
             // assert
             Assert.NotNull(opts.HostName);
+            Assert.InRange(noSlowReverseDNSQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
         }
     }
 }
