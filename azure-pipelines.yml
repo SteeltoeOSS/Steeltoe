@@ -77,24 +77,7 @@ steps:
     projects: src/Steeltoe.All.sln
     arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
     nobuild: true
-  # Generate code coverage report (on Windows) using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
-- pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator -reports:**/coverage.opencover.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:Cobertura
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
-  displayName: Create Code coverage report
-- task: PublishTestResults@2
-  condition:  always()
-  displayName: Publish test results
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: $(Agent.TempDirectory)/*.trx
-- task: PublishCodeCoverageResults@1
-  condition: always()
-  displayName: Publish code coverage
-  inputs:
-    codeCoverageTool: Cobertura
-    summaryFileLocation: $(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml
-    reportDirectory: $(Build.SourcesDirectory)/CodeCoverage
-- pwsh: choco install codecov; codecov -f "$(Build.SourcesDirectory)/CodeCoverage/Cobertura.xml" -t $env:CodeCovToken
+- pwsh: choco install codecov; codecov -f "**/coverage.opencover.xml" -t $env:CodeCovToken
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Install and Run CodeCov
   env:
