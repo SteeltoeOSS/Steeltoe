@@ -77,9 +77,15 @@ steps:
   inputs:
     command: test
     projects: src/Steeltoe.All.sln
-    arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+    arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover%2ccobertura /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*" /p:UseSourceLink=true'
     publishTestResults: true
     nobuild: true
+- task: PublishCodeCoverageResults@1	
+  condition: always()	
+  displayName: Publish code coverage	
+  inputs:	
+    codeCoverageTool: Cobertura	
+    summaryFileLocation: **/coverage.cobertura.xml	
 - pwsh: choco install codecov; codecov -f "**/coverage.opencover.xml" -t $env:CodeCovToken
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Install and Run CodeCov
