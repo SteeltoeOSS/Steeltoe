@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
@@ -40,14 +35,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
         }
 
         [Fact]
-        public async void TestSubscription()
+        public void TestSubscription()
         {
             var stream = HystrixDashboardStream.GetInstance();
             var service = new HystrixEventSourceService(stream);
 
             using (var listener = new HystrixEventsListener())
             {
-                await service.StartAsync(new CancellationTokenSource().Token);
+                var token = new CancellationTokenSource().Token;
 
                 service.OnNext(GetTestData());
 
@@ -105,11 +100,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
 
             protected override void OnEventWritten(EventWrittenEventArgs eventData)
             {
-                if (eventData == null)
-                {
-                    throw new ArgumentNullException(nameof(eventData));
-                }
-
                 if (Enum.TryParse<EventTypes>(eventData.EventName, out var eventType))
                 {
                     switch (eventType)
