@@ -210,8 +210,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
             var result = ConsulRegistration.CreateCheck(1234, options);
             Assert.NotNull(result);
-            var expectedTtl = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
-            Assert.Equal(result.TTL, expectedTtl);
+            Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl), result.TTL);
+            Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
 
             options.Heartbeat = null;
             Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(0, options));

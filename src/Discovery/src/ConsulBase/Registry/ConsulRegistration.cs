@@ -236,6 +236,12 @@ namespace Steeltoe.Discovery.Consul.Registry
         internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
         {
             AgentServiceCheck check = new AgentServiceCheck();
+
+            if (!string.IsNullOrEmpty(options.HealthCheckCriticalTimeout))
+            {
+                check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
+            }
+
             if (options.IsHeartBeatEnabled)
             {
                 check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
@@ -266,11 +272,6 @@ namespace Steeltoe.Discovery.Consul.Registry
             if (!string.IsNullOrEmpty(options.HealthCheckTimeout))
             {
                 check.Timeout = DateTimeConversions.ToTimeSpan(options.HealthCheckTimeout);
-            }
-
-            if (!string.IsNullOrEmpty(options.HealthCheckCriticalTimeout))
-            {
-                check.DeregisterCriticalServiceAfter = DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout);
             }
 
             check.TLSSkipVerify = options.HealthCheckTlsSkipVerify;
