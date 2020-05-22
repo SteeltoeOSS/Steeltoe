@@ -86,7 +86,7 @@ steps:
   inputs:	
     codeCoverageTool: Cobertura	
     summaryFileLocation: "**/coverage.cobertura.xml"
-- pwsh: choco install codecov; codecov -f "**/coverage.opencover.xml" -t $env:CodeCovToken
+- pwsh: choco install codecov --no-progress; codecov -f "**/coverage.opencover.xml" -t $env:CodeCovToken
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Install and Run CodeCov
   env:
