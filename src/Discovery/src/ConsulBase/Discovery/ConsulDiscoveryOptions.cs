@@ -31,8 +31,27 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         public ConsulDiscoveryOptions()
         {
-            _hostName = DnsTools.ResolveHostName();
-            IpAddress = DnsTools.ResolveHostAddress(_hostName);
+            if (!UseNetUtils)
+            {
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
+                _hostName = DnsTools.ResolveHostName();
+                IpAddress = DnsTools.ResolveHostAddress(_hostName);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
+            }
+        }
+
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _hostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
         }
 
         /// <summary>
@@ -44,6 +63,10 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// Gets or sets Tags to use when registering service
         /// </summary>
         public IList<string> Tags { get; set; }
+
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
 
         /// <summary>
         /// Gets or sets values related to Heartbeat
