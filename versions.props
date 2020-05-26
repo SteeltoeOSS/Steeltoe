@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
+    <VersionPrefix>2.4.4</VersionPrefix>
+  </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
@@ -64,6 +67,13 @@
     <ExtensionsVersion>3.0.0</ExtensionsVersion>
     <HealthChecksVersion>3.0.0</HealthChecksVersion>
     <LoggingVersion>3.0.0</LoggingVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+    <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
+    <EF6Version>6.3.0</EF6Version>
+    <ExtensionsVersion>3.1.0</ExtensionsVersion>
+    <HealthChecksVersion>3.1.0</HealthChecksVersion>
+    <LoggingVersion>3.1.0</LoggingVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
     <AspNetVersion>5.2.4</AspNetVersion>

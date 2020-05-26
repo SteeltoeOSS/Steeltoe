@@ -20,6 +20,7 @@ using Steeltoe.CloudFoundry.Connector;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.Options.Autofac;
 using Steeltoe.Consul.Client;
 using Steeltoe.Discovery.Consul.Discovery;
@@ -50,16 +51,14 @@ namespace Steeltoe.Discovery.Client
 
             if (discoveryOptions.ClientType == DiscoveryClientType.EUREKA)
             {
-                EurekaClientOptions clientOptions = discoveryOptions.ClientOptions as EurekaClientOptions;
-                if (clientOptions == null)
+                if (!(discoveryOptions.ClientOptions is EurekaClientOptions clientOptions))
                 {
                     throw new ArgumentException("Missing Client Options");
                 }
 
                 container.RegisterInstance(new OptionsMonitorWrapper<EurekaClientOptions>(clientOptions)).As<IOptionsMonitor<EurekaClientOptions>>().SingleInstance();
 
-                var regOptions = discoveryOptions.RegistrationOptions as EurekaInstanceOptions;
-                if (regOptions == null)
+                if (!(discoveryOptions.RegistrationOptions is EurekaInstanceOptions regOptions))
                 {
                     clientOptions.ShouldRegisterWithEureka = false;
                     regOptions = new EurekaInstanceOptions();
@@ -151,14 +150,15 @@ namespace Steeltoe.Discovery.Client
             IConfiguration config,
             IDiscoveryLifecycle lifecycle)
         {
+            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
             if (IsEurekaConfigured(config, info))
             {
-                ConfigureEurekaServices(container, config, info);
+                ConfigureEurekaServices(container, config, info, netOptions);
                 AddEurekaServices(container, lifecycle);
             }
             else if (IsConsulConfigured(config, info))
             {
-                ConfigureConsulServices(container, config, info);
+                ConfigureConsulServices(container, config, info, netOptions);
                 AddConsulServices(container, config, lifecycle);
             }
             else
@@ -175,12 +175,17 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0;
         }
 
-        private static void ConfigureConsulServices(ContainerBuilder container, IConfiguration config, IServiceInfo info)
+        private static void ConfigureConsulServices(ContainerBuilder container, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
             container.RegisterOption<ConsulOptions>(consulSection);
             var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
             container.RegisterOption<ConsulDiscoveryOptions>(consulDiscoverySection);
+            container.RegisterPostConfigure<ConsulDiscoveryOptions>(options =>
+            {
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
+            });
         }
 
         private static void AddConsulServices(ContainerBuilder container, IConfiguration config, IDiscoveryLifecycle lifecycle)
@@ -214,21 +219,23 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0 || info is EurekaServiceInfo;
         }
 
-        private static void ConfigureEurekaServices(ContainerBuilder container, IConfiguration config, IServiceInfo info)
+        private static void ConfigureEurekaServices(ContainerBuilder container, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             EurekaServiceInfo einfo = info as EurekaServiceInfo;
 
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
             container.RegisterOption<EurekaClientOptions>(clientSection);
-            container.RegisterPostConfigure<EurekaClientOptions>((options) =>
+            container.RegisterPostConfigure<EurekaClientOptions>(options =>
             {
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
             });
 
             var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
             container.RegisterOption<EurekaInstanceOptions>(instSection);
-            container.RegisterPostConfigure<EurekaInstanceOptions>((options) =>
+            container.RegisterPostConfigure<EurekaInstanceOptions>(options =>
             {
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
             });
         }

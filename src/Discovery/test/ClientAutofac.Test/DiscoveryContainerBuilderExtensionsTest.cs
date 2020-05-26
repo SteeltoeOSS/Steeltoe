@@ -17,8 +17,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Options.Autofac;
+using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Xunit;
@@ -28,7 +30,7 @@ namespace Steeltoe.Discovery.Client.Test
     public class DiscoveryContainerBuilderExtensionsTest
     {
         [Fact]
-        public void RegisteriscoveryClient_ThrowsIfContainerNull()
+        public void RegisterDiscoveryClient_ThrowsIfContainerNull()
         {
             // Arrange
             ContainerBuilder container = null;
@@ -46,7 +48,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_ThrowsIfConfigurtionNull()
+        public void RegisterDiscoveryClient_ThrowsIfConfigurtionNull()
         {
             // Arrange
             ContainerBuilder services = new ContainerBuilder();
@@ -58,7 +60,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_ThrowsIfDiscoveryOptionsNull()
+        public void RegisterDiscoveryClient_ThrowsIfDiscoveryOptionsNull()
         {
             // Arrange
             ContainerBuilder services = new ContainerBuilder();
@@ -70,7 +72,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_ThrowsIfDiscoveryOptionsClientType_Unknown()
+        public void RegisterDiscoveryClient_ThrowsIfDiscoveryOptionsClientType_Unknown()
         {
             // Arrange
             ContainerBuilder services = new ContainerBuilder();
@@ -82,7 +84,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_ThrowsIfSetupOptionsNull()
+        public void RegisterDiscoveryClient_ThrowsIfSetupOptionsNull()
         {
             // Arrange
             ContainerBuilder services = new ContainerBuilder();
@@ -94,7 +96,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
+        public void RegisterDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
         {
             // Arrange
             var appsettings = @"
@@ -131,7 +133,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_WithNoEurekaConfig_AddsDiscoveryClient_UnknownClientType()
+        public void RegisterDiscoveryClient_WithNoEurekaConfig_AddsDiscoveryClient_UnknownClientType()
         {
             // Arrange
             var appsettings = @"
@@ -156,7 +158,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_WithDiscoveryOptions_AddsDiscoveryClient()
+        public void RegisterDiscoveryClient_WithDiscoveryOptions_AddsDiscoveryClient()
         {
             // Arrange
             DiscoveryOptions options = new DiscoveryOptions()
@@ -178,7 +180,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
+        public void RegisterDiscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
         {
             // Arrange
             DiscoveryOptions options = new DiscoveryOptions()
@@ -194,7 +196,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void RegisteriscoveryClient_WithSetupAction_AddsDiscoveryClient()
+        public void RegisterDiscoveryClient_WithSetupAction_AddsDiscoveryClient()
         {
             // Arrange
             var services = new ContainerBuilder();
@@ -212,6 +214,60 @@ namespace Steeltoe.Discovery.Client.Test
 
             var service = services.Build().Resolve<IDiscoveryClient>();
             Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void RegisterDiscoveryClient_WithEurekaInet_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "spring:cloud:inet:defaulthostname", "fromtest" },
+                { "spring:cloud:inet:skipReverseDnsLookup", "true" },
+                { "eureka:client:shouldFetchRegistry", "false" },
+                { "eureka:client:shouldRegisterWithEureka", "false" },
+                { "eureka:instance:useNetUtils", "true" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ContainerBuilder();
+
+            // act
+            services.RegisterOptions();
+            services.RegisterDiscoveryClient(config);
+            var service = services.Build().Resolve<IDiscoveryClient>();
+
+            // assert
+            Assert.NotNull(service);
+            Assert.IsAssignableFrom<EurekaDiscoveryClient>(service);
+            Assert.Equal("fromtest", service.GetLocalServiceInstance().Host);
+        }
+
+        [Fact]
+        public void RegisterDiscoveryClient_WithConsulInet_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "spring:cloud:inet:defaulthostname", "fromtest" },
+                { "spring:cloud:inet:skipReverseDnsLookup", "true" },
+                { "consul:discovery:useNetUtils", "true" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ContainerBuilder();
+
+            // act
+            services.RegisterOptions();
+            services.RegisterDiscoveryClient(config);
+            var service = services.Build().Resolve<IDiscoveryClient>();
+
+            // assert
+            Assert.NotNull(service);
+            Assert.IsAssignableFrom<ConsulDiscoveryClient>(service);
+            Assert.Equal("fromtest", service.GetLocalServiceInstance().Host);
         }
     }
 }

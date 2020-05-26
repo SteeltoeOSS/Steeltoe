@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
@@ -58,6 +59,20 @@ namespace Steeltoe.Discovery.Eureka
             MetadataMap = new Dictionary<string, string>();
             DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
             PreferIpAddress = false;
+        }
+
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _thisHostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
         }
 
         // eureka:instance:instanceId, spring:application:instance_id, null
@@ -140,6 +155,10 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual string[] DefaultAddressResolutionOrder { get; set; }
 
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
+
         public virtual string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(_thisHostName))
@@ -169,15 +188,22 @@ namespace Steeltoe.Discovery.Eureka
             string result = null;
             try
             {
-                var results = Dns.GetHostAddresses(hostName);
-                if (results != null && results.Length > 0)
+                if (UseNetUtils && NetUtils != null)
                 {
-                    foreach (var addr in results)
+                    return NetUtils.FindFirstNonLoopbackAddress().ToString();
+                }
+                else
+                {
+                    var results = Dns.GetHostAddresses(hostName);
+                    if (results != null && results.Length > 0)
                     {
-                        if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
+                        foreach (var addr in results)
                         {
-                            result = addr.ToString();
-                            break;
+                            if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
+                            {
+                                result = addr.ToString();
+                                break;
+                            }
                         }
                     }
                 }
@@ -195,13 +221,20 @@ namespace Steeltoe.Discovery.Eureka
             string result = null;
             try
             {
-                result = Dns.GetHostName();
-                if (!string.IsNullOrEmpty(result))
+                if (UseNetUtils && NetUtils != null)
                 {
-                    var response = Dns.GetHostEntry(result);
-                    if (response != null)
+                    return NetUtils.FindFirstNonLoopbackHostInfo().Hostname;
+                }
+                else
+                {
+                    result = Dns.GetHostName();
+                    if (!string.IsNullOrEmpty(result))
                     {
-                        return response.HostName;
+                        var response = Dns.GetHostEntry(result);
+                        if (response != null)
+                        {
+                            return response.HostName;
+                        }
                     }
                 }
             }
