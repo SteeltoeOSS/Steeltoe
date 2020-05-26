@@ -23,14 +23,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>
     {
         private readonly PrometheusExporter _exporter;
-        private readonly ILogger<PrometheusScraperEndpoint> _logger;
         private string cachedMetrics;
 
-        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter, ILogger<PrometheusScraperEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter)
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-            _logger = logger;
         }
 
         public new IEndpointOptions Options

@@ -24,7 +24,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using static Steeltoe.Management.OpenTelemetry.Metrics.Processor.SteeltoeProcessor;
 using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test

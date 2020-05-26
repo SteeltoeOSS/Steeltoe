@@ -46,8 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public void AddHystrixMetricsEventSource_ThrowsIfServiceContainerNull()
         {
             IServiceCollection services = null;
-            IConfiguration config = new ConfigurationBuilder().Build();
-            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsEventSource(config));
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsEventSource());
             Assert.Contains(nameof(services), ex5.Message);
         }
 
@@ -55,8 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public void AddHystrixMetricsEventSource_AddsHostedService()
         {
             IServiceCollection services = new ServiceCollection();
-            IConfiguration config = new ConfigurationBuilder().Build();
-            services.AddHystrixMetricsEventSource(config);
+            services.AddHystrixMetricsEventSource();
         }
     }
 }

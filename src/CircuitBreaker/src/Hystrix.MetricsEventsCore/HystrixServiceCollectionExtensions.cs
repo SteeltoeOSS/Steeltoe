@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
         }
 
-        public static void AddHystrixMetricsEventSource(this IServiceCollection services, IConfiguration config)
+        public static void AddHystrixMetricsEventSource(this IServiceCollection services)
         {
             if (services == null)
             {

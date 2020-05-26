@@ -136,7 +136,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                     longValue = Convert.ToInt64(boolValue);
                     break;
                 default:
-                    Console.WriteLine($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
+                    _logger.LogDebug($"Unhandled type at {metricName} - {payloadValue.GetType()} - {payloadValue}");
                     break;
             }
 
