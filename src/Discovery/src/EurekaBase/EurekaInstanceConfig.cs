@@ -58,6 +58,20 @@ namespace Steeltoe.Discovery.Eureka
             PreferIpAddress = false;
         }
 
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _thisHostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
+        }
+
         // eureka:instance:instanceId, spring:application:instance_id, null
         public virtual string InstanceId { get; set; }
 
@@ -132,11 +146,22 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual IEnumerable<string> DefaultAddressResolutionOrder { get; set; }
 
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
+
         public virtual string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
-                _thisHostName = DnsTools.ResolveHostName();
+                if (UseNetUtils && NetUtils != null)
+                {
+                    return NetUtils.FindFirstNonLoopbackHostInfo().Hostname;
+                }
+                else
+                {
+                    _thisHostName = DnsTools.ResolveHostName();
+                }
             }
 
             return _thisHostName;
@@ -146,10 +171,17 @@ namespace Steeltoe.Discovery.Eureka
         {
             if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
-                var hostName = GetHostName(refresh);
-                if (!string.IsNullOrEmpty(hostName))
+                if (UseNetUtils && NetUtils != null)
                 {
-                    _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
+                    _thisHostAddress = NetUtils.FindFirstNonLoopbackAddress().ToString();
+                }
+                else
+                {
+                    var hostName = GetHostName(refresh);
+                    if (!string.IsNullOrEmpty(hostName))
+                    {
+                        _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
+                    }
                 }
             }
 

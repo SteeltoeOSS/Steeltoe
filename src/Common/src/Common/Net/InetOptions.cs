@@ -31,6 +31,8 @@ namespace Steeltoe.Common.Net
 
         public string PreferredNetworks { get; set; }
 
+        public bool SkipReverseDnsLookup { get; set; }
+
         internal IEnumerable<string> GetIgnoredInterfaces()
         {
             if (string.IsNullOrEmpty(IgnoredInterfaces))

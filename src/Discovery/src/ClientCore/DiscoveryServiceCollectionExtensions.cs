@@ -22,6 +22,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
@@ -145,14 +146,15 @@ namespace Steeltoe.Discovery.Client
 
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
+            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
             if (IsEurekaConfigured(config, info))
             {
-                ConfigureEurekaServices(services, config, info);
+                ConfigureEurekaServices(services, config, info, netOptions);
                 AddEurekaServices(services, lifecycle);
             }
             else if (IsConsulConfigured(config, info))
             {
-                ConfigureConsulServices(services, config, info);
+                ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
             else
@@ -172,12 +174,17 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0;
         }
 
-        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
             services.Configure<ConsulOptions>(consulSection);
             var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
             services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
+            services.PostConfigure<ConsulDiscoveryOptions>(options =>
+            {
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
+            });
         }
 
         private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
@@ -210,7 +217,7 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0 || info is EurekaServiceInfo;
         }
 
-        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var einfo = info as EurekaServiceInfo;
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -227,9 +234,11 @@ namespace Steeltoe.Discovery.Client
                 IApplicationInstanceInfo appInfo = null;
                 if (einfo?.ApplicationInfo == null)
                 {
-                    appInfo = services.BuildServiceProvider().GetService<IApplicationInstanceInfo>() ?? new ApplicationInstanceInfo(config);
+                    appInfo = services.GetApplicationInstanceInfo();
                 }
 
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
             });
         }

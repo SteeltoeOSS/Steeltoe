@@ -34,7 +34,7 @@ namespace Steeltoe.Common.Net
             _logger = logger;
         }
 
-        public HostInfo FindFirstNonLoopbackHostInfo()
+        public virtual HostInfo FindFirstNonLoopbackHostInfo()
         {
             var address = FindFirstNonLoopbackAddress();
             if (address != null)
@@ -171,19 +171,28 @@ namespace Steeltoe.Common.Net
         internal HostInfo ConvertAddress(IPAddress address)
         {
             HostInfo hostInfo = new HostInfo();
-            string hostname;
-            try
+            if (!_options.SkipReverseDnsLookup)
             {
-                var hostEntry = Dns.GetHostEntry(address);
-                hostname = hostEntry.HostName;
+                string hostname;
+                try
+                {
+                    // warning: this might take a few seconds...
+                    var hostEntry = Dns.GetHostEntry(address);
+                    hostname = hostEntry.HostName;
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogInformation(e, "Cannot determine local hostname");
+                    hostname = "localhost";
+                }
+
+                hostInfo.Hostname = hostname;
             }
-            catch (Exception e)
+            else
             {
-                _logger?.LogInformation(e, "Cannot determine local hostname");
-                hostname = "localhost";
+                hostInfo.Hostname = _options.DefaultHostname;
             }
 
-            hostInfo.Hostname = hostname;
             hostInfo.IpAddress = address.ToString();
             return hostInfo;
         }
