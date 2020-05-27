@@ -63,7 +63,14 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 
                             builder = builder.WithType("summary");
                             var metricValueBuilder = builder.AddValue();
-                            metricValueBuilder = metricValueBuilder.WithValue(doubleSummary.Count);
+                            var mean = 0D;
+
+                            if (doubleSummary.Count > 0)
+                            {
+                                mean = doubleSummary.Sum / doubleSummary.Count;
+                            }
+
+                            metricValueBuilder = metricValueBuilder.WithValue(mean);
 
                             foreach (var label in labels)
                             {
@@ -104,7 +111,25 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 
                     case AggregationType.Summary:
                         {
-                            // Not supported yet.
+                            var longSummary = metric.Data as SummaryData<long>;
+
+                            builder = builder.WithType("summary");
+                            var metricValueBuilder = builder.AddValue();
+                            var mean = 0L;
+
+                            if (longSummary.Count > 0)
+                            {
+                                mean = longSummary.Sum / longSummary.Count;
+                            }
+
+                            metricValueBuilder = metricValueBuilder.WithValue(mean);
+
+                            foreach (var label in labels)
+                            {
+                                metricValueBuilder.WithLabel(label.Key, label.Value);
+                            }
+
+                            builder.Write(writer);
                             break;
                         }
                 }

@@ -14,6 +14,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using System;
 using Xunit;
 
@@ -38,9 +40,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream(config));
             Assert.Contains(nameof(services), ex4.Message);
+        }
 
-            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(config));
+        [Fact]
+        public void AddHystrixMetricsEventSource_ThrowsIfServiceContainerNull()
+        {
+            IServiceCollection services = null;
+            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsEventSource());
             Assert.Contains(nameof(services), ex5.Message);
+        }
+
+        [Fact]
+        public void AddHystrixMetricsEventSource_AddsHostedService()
+        {
+            IServiceCollection services = new ServiceCollection();
+            services.AddHystrixMetricsEventSource();
         }
     }
 }

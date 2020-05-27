@@ -46,8 +46,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:metrics:enabled"] = "false",
                 ["management:endpoints:metrics:id"] = "metricsmanagement",
-                ["management:endpoints:metrics:ingressIgnorePattern"] = "pattern",
-                ["management:endpoints:metrics:egressIgnorePattern"] = "pattern",
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
@@ -56,8 +54,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var opts = new MetricsEndpointOptions(config);
             Assert.False(opts.Enabled);
             Assert.Equal("metricsmanagement", opts.Id);
-            Assert.Equal("pattern", opts.IngressIgnorePattern);
-            Assert.Equal("pattern", opts.EgressIgnorePattern);
         }
     }
 }

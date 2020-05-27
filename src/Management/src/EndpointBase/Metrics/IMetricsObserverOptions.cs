@@ -12,27 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Configuration;
-
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
+    public interface IMetricsObserverOptions
     {
-        internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
+        string IngressIgnorePattern { get; }
 
-        public PrometheusEndpointOptions()
-            : base()
-        {
-            Id = "prometheus";
-        }
-
-        public PrometheusEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "prometheus";
-            }
-        }
+        string EgressIgnorePattern { get; }
     }
 }

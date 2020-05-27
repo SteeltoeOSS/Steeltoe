@@ -32,18 +32,18 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         private List<ProcessedMetric<double>> DoubleMetrics { get; set; }
 
-        public MetricsEndpoint(IMetricsOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
+        public MetricsEndpoint(IMetricsEndpointOptions options, SteeltoeExporter exporter, ILogger<MetricsEndpoint> logger = null)
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
             _logger = logger;
         }
 
-        public new IMetricsOptions Options
+        public new IMetricsEndpointOptions Options
         {
             get
             {
-                return options as IMetricsOptions;
+                return options as IMetricsEndpointOptions;
             }
         }
 
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             if (doubleMetrics != null)
             {
-                for (int i = 0; i < doubleMetrics.Count; i++)
+                for (var i = 0; i < doubleMetrics.Count; i++)
                 {
                     var metric = doubleMetrics[i];
                     var labels = metric.Labels;

@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var obs = new HttpClientCoreObserver(options, stats, null);
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -82,7 +82,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetStatusCode_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetTagContext_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -121,7 +121,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleStopEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
             var factory = stats.Factory;
@@ -157,7 +157,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleExceptionEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
             var factory = stats.Factory;

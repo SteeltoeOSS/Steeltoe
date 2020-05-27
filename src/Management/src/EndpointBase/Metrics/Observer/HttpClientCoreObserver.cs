@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly MeasureMetric<double> clientTimeMeasure;
         private readonly MeasureMetric<long> clientCountMeasure;
 
-        public HttpClientCoreObserver(IMetricsOptions options, IStats stats, ILogger<HttpClientCoreObserver> logger)
+        public HttpClientCoreObserver(IMetricsObserverOptions options, IStats stats, ILogger<HttpClientCoreObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.EgressIgnorePattern);

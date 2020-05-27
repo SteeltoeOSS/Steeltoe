@@ -24,11 +24,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     {
         protected Meter Meter { get; }
 
-        protected IMetricsOptions Options { get; }
+        protected IMetricsObserverOptions Options { get; }
 
         protected Regex PathMatcher { get; set; }
 
-        public MetricsObserver(string observerName, string diagnosticName, IMetricsOptions options, IStats stats, ILogger logger = null)
+        public MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, IStats stats, ILogger logger = null)
             : base(observerName, diagnosticName, logger)
         {
             Meter = stats.Meter;

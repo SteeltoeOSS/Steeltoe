@@ -30,6 +30,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly IStats _stats;
         private readonly ILogger<EventCounterListener> _logger;
         private readonly string _eventSourceName = "System.Runtime";
+        private readonly string _eventName = "EventCounters";
 
         private ConcurrentDictionary<string, MeasureMetric<double>> doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
         private ConcurrentDictionary<string, MeasureMetric<long>> longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
@@ -53,9 +54,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             try
             {
-                foreach (IDictionary<string, object> payload in eventData.Payload)
+                if (eventData.EventName.Equals(_eventName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ExtractAndRecordMetric(eventData.EventSource.Name, payload);
+                    foreach (IDictionary<string, object> payload in eventData.Payload)
+                    {
+                        ExtractAndRecordMetric(eventData.EventSource.Name, payload);
+                    }
                 }
             }
             catch (Exception ex)

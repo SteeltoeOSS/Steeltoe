@@ -25,7 +25,15 @@ using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
-    public class ThreadpoolEventsListener : EventSourceListener
+    /// <summary>
+    /// This EventSourceListener listens on the following events:
+    /// ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
+    /// IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate
+    /// And Records the following values:
+    /// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
+    /// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
+    /// </summary>
+    public class ThreadPoolEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
         private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
@@ -49,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly ILogger<EventSourceListener> _logger;
         private readonly MeasureMetric<long> availableThreads;
 
-        public ThreadpoolEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
+        public ThreadPoolEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats)
         {
             _logger = logger;
