@@ -82,6 +82,7 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
         }
+
         /// <summary>
         /// Adds components of the Health actuator to Microsoft-DI
         /// </summary>
@@ -117,12 +118,20 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthRegistrationsAggregator>(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
         }
+
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {
             List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
             foreach (var c in contributors)
             {
-                descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
+                if (typeof(IAsyncHealthContributor).IsAssignableFrom(c))
+                {
+                    descriptors.Add(new ServiceDescriptor(typeof(IAsyncHealthContributor), c, ServiceLifetime.Scoped));
+                }
+                else
+                {
+                    descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
+                }
             }
 
             services.TryAddEnumerable(descriptors);
@@ -132,7 +141,7 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             return new Type[]
             {
-                typeof(DiskSpaceContributor)
+                typeof(DiskSpaceAsyncContributor)
             };
         }
     }

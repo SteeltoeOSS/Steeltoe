@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Health
         }
 
         public HealthEndpointCore(IHealthOptions options, IHealthRegistrationsAggregator registrationsAggregator, IEnumerable<IAsyncHealthContributor> asyncContributors, IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
-        : base(options, null, asyncContributors, logger)
+        : base(options, new DefaultAsyncHealthAggregator(), asyncContributors, logger)
         {
             if (options == null)
             {
