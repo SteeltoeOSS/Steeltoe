@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
@@ -25,8 +26,11 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthEndpoint : AbstractEndpoint<HealthCheckResult, ISecurityContext>
     {
-        private readonly IHealthAggregator _aggregator;
-        private readonly IList<IHealthContributor> _contributors;
+        protected readonly IHealthAggregator _aggregator;
+        protected readonly IAsyncHealthAggregator _asyncAggregator;
+        protected readonly IEnumerable<IHealthContributor> _contributors;
+        protected readonly IEnumerable<IAsyncHealthContributor> _asyncContributors;
+
         private readonly ILogger<HealthEndpoint> _logger;
 
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
@@ -37,13 +41,21 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(options));
             }
 
-            if (contributors == null)
+            _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
+            _contributors = contributors ?? throw new ArgumentNullException(nameof(contributors));
+            _logger = logger;
+        }
+
+        public HealthEndpoint(IHealthOptions options, IAsyncHealthAggregator asyncAggregator, IEnumerable<IAsyncHealthContributor> asyncContributors, ILogger<HealthEndpoint> logger = null)
+            : base(options)
+        {
+            if (options == null)
             {
-                throw new ArgumentNullException(nameof(contributors));
+                throw new ArgumentNullException(nameof(options));
             }
 
-            _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
-            _contributors = contributors.ToList();
+            _asyncAggregator = asyncAggregator ?? throw new ArgumentNullException(nameof(asyncAggregator));
+            _asyncContributors = asyncContributors ?? throw new ArgumentNullException(nameof(asyncContributors));
             _logger = logger;
         }
 
@@ -57,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public override HealthCheckResult Invoke(ISecurityContext securityContext)
         {
-            return BuildHealth(_aggregator, _contributors, securityContext);
+            return BuildHealth(securityContext);
         }
 
         public int GetStatusCode(HealthCheckResult health)
@@ -67,9 +79,11 @@ namespace Steeltoe.Management.Endpoint.Health
                 : 200;
         }
 
-        protected virtual HealthCheckResult BuildHealth(IHealthAggregator aggregator, IList<IHealthContributor> contributors, ISecurityContext securityContext)
+        protected virtual HealthCheckResult BuildHealth(ISecurityContext securityContext)
         {
-            var result = _aggregator.Aggregate(contributors);
+            HealthCheckResult result = _aggregator != null
+                ? _aggregator.Aggregate(_contributors.ToList())
+                : _asyncAggregator.Aggregate(_asyncContributors).Result;
 
             var showDetails = Options.ShowDetails;
 

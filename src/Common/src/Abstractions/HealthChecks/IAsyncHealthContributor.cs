@@ -12,18 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common.HealthChecks;
-using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Common.HealthChecks
 {
-    public interface IHealthRegistrationsAggregator
+    /// <summary>
+    /// Implement this interface and add to DI to be included in health checks
+    /// </summary>
+    public interface IAsyncHealthContributor
     {
-        Task<HealthCheckResult> Aggregate(IEnumerable<IHealthContributor> contributors, IEnumerable<IAsyncHealthContributor> asyncContributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider);
+        /// <summary>
+        /// Gets an identifier for the type of check being performed
+        /// </summary>
+        string Id { get; }
+
+        /// <summary>
+        /// Check the health of a resource
+        /// </summary>
+        /// <returns>The result of checking the health of a resource</returns>
+        Task<HealthCheckResult> CheckHealthAsync();
     }
 }

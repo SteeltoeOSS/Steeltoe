@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -60,7 +61,7 @@ namespace Steeltoe.Management.Endpoint.Health
             };
         }
 
-        public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)
+        public static async Task<HealthCheckResult> CheckHealthAsync(this HealthCheckRegistration registration, IServiceProvider provider)
         {
             var context = new HealthCheckContext { Registration = registration };
             var healthCheckResult = new HealthCheckResult();
@@ -88,6 +89,28 @@ namespace Steeltoe.Management.Endpoint.Health
 #pragma warning restore CA1031 // Do not catch general exception types
 
             return healthCheckResult;
+        }
+
+        public static HealthCheckResult Merge(this HealthCheckResult result, HealthCheckResult next, ILogger logger = null)
+        {
+            if (result == null)
+            {
+                throw new ArgumentNullException(nameof(result));
+            }
+
+            if (next == null)
+            {
+                throw new ArgumentNullException(nameof(next));
+            }
+
+            result.Status = result.Status > next.Status ? result.Status : next.Status;
+            foreach (var detail in next.Details)
+            {
+                result.Details.Add(detail.Key, detail.Value);
+            }
+
+            result.Description += next.Description;
+            return result;
         }
     }
 }

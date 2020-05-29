@@ -72,6 +72,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public bool HttpClientDesktop { get; set; } = false;
 
-        public bool HystrixEvents { get; set; } = false;
+        public bool HystrixEvents { get; set; } = true;
     }
 }
