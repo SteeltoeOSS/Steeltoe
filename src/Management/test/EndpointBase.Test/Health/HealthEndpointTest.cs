@@ -26,9 +26,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_ThrowsOptionsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, new DefaultHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(null, new DefaultAsyncHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null as DefaultAsyncHealthAggregator, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), null as DefaultHealthAggregator, null));
             Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new DefaultHealthAggregator(), null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpoint(new HealthEndpointOptions(), new DefaultAsyncHealthAggregator(), null));
         }
 
         [Fact]

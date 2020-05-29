@@ -82,7 +82,41 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddSingleton<IHealthAggregator>(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
         }
+        /// <summary>
+        /// Adds components of the Health actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add health to</param>
+        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
+        /// <param name="aggregator">Custom health aggregator</param>
+        /// <param name="contributors">Contributors to application health</param>
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthRegistrationsAggregator aggregator, params Type[] contributors)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
 
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            if (aggregator == null)
+            {
+                throw new ArgumentNullException(nameof(aggregator));
+            }
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+
+            var options = new HealthEndpointOptions(config);
+            services.TryAddSingleton<IHealthOptions>(options);
+            services.RegisterEndpointOptions(options);
+            AddHealthContributors(services, contributors);
+
+            services.TryAddSingleton<IHealthRegistrationsAggregator>(aggregator);
+            services.TryAddScoped<HealthEndpointCore>();
+        }
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {
             List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();

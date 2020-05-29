@@ -26,12 +26,15 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Constructor_ThrowsOptionsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, null, null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), null, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, null as IHealthAggregator, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, null as IAsyncHealthAggregator, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), null as IHealthAggregator, null, null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), null as IAsyncHealthAggregator, null, null, null));
             Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IHealthContributor>(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IAsyncHealthContributor>(), null, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IAsyncHealthContributor>(), null, null));
             var svcOptions = default(IOptionsMonitor<Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckServiceOptions>);
-            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IHealthContributor>(), svcOptions, null));
+            Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(new HealthEndpointOptions(), new HealthRegistrationsAggregator(), new List<IAsyncHealthContributor>(), svcOptions, null));
         }
     }
 }

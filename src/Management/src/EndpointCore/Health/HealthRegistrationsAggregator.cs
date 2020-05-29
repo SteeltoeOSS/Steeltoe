@@ -19,25 +19,52 @@ using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
+    public class HealthRegistrationsAggregator : IHealthRegistrationsAggregator
     {
-        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
-        {
-            var result = Aggregate(contributors);
+        private DefaultHealthAggregator _aggregator;
+        private DefaultAsyncHealthAggregator _asyncAggregator;
 
-            if (healthServiceOptions == null)
+        public HealthRegistrationsAggregator()
+        {
+            _aggregator = new DefaultHealthAggregator();
+            _asyncAggregator = new DefaultAsyncHealthAggregator();
+        }
+
+        public async Task<HealthCheckResult> Aggregate(IEnumerable<IHealthContributor> contributors, IEnumerable<IAsyncHealthContributor> asyncContributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
+        {
+            HealthCheckResult result = null;
+
+            if (contributors != null)
             {
-                return result;
+                result = _aggregator.Aggregate(contributors.ToList());
             }
 
-            var contributorIds = contributors.Select(x => x.Id);
+            if (asyncContributors != null)
+            {
+                var asyncResult = await _asyncAggregator.Aggregate(asyncContributors);
+                result = result == null ? asyncResult : result.Merge(asyncResult);
+            }
+
+            if (healthServiceOptions != null)
+            {
+                var registrationsResult = await AggregateRegistrations(healthServiceOptions, serviceProvider);
+                result = result == null ? registrationsResult : result.Merge(registrationsResult);
+            }
+
+            return result;
+        }
+
+        private async Task<HealthCheckResult> AggregateRegistrations(IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
+        {
+            var result = new HealthCheckResult();
             foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
             {
-                HealthCheckResult h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
+                HealthCheckResult h = await registration.CheckHealthAsync(serviceProvider);
 
                 if (h.Status > result.Status)
                 {
@@ -46,15 +73,20 @@ namespace Steeltoe.Management.Endpoint.Health
 
                 var key = GetKey(result, registration.Name);
                 result.Details.Add(key, h);
-                var possibleDuplicate = contributorIds.FirstOrDefault(id => id.IndexOf(registration.Name, StringComparison.OrdinalIgnoreCase) >= 0);
-                if (!string.IsNullOrEmpty(possibleDuplicate))
-                {
-                    var logger = serviceProvider.GetService(typeof(ILogger<HealthRegistrationsAggregator>)) as ILogger;
-                    logger?.LogDebug($"Possible duplicate HealthCheck registation {registration.Name}, {possibleDuplicate} ");
-                }
             }
 
             return result;
+        }
+
+        private string GetKey(HealthCheckResult result, string key)
+        {
+            // add the contribtor with a -n appended to the id
+            if (result.Details.ContainsKey(key))
+            {
+                return string.Concat(key, "-", result.Details.Count(k => k.Key == key));
+            }
+
+            return key;
         }
     }
 }

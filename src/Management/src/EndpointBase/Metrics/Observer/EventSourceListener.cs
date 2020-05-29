@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         protected virtual void ExtractAndRecordMetric(
             string eventSourceName,
             EventWrittenEventArgs eventData,
-            IDictionary<string, string> labels,
+            IDictionary<string, string> labels = null,
             string[] ignorePayloadNames = null,
             string[] counterNames = null)
         {
@@ -80,6 +80,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             var nameEnumerator = names.GetEnumerator();
             var payloadEnumerator = payload.GetEnumerator();
+
+            if (labels == null)
+            {
+                labels = new Dictionary<string, string>();
+            }
 
             while (nameEnumerator.MoveNext())
             {

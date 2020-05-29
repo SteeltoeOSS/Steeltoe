@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         };
 
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly Dictionary<string, string> cktBreakerLabels = new Dictionary<string, string>();
+       // private readonly Dictionary<string, string> cktBreakerLabels = new Dictionary<string, string>();
 
         public HystrixEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats, logger)
@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
                 {
-                    ExtractAndRecordMetric(EventSourceName, eventData, cktBreakerLabels);
+                    ExtractAndRecordMetric(EventSourceName, eventData);
                 }
             }
             catch (Exception ex)
