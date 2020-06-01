@@ -6,7 +6,8 @@
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <EFCoreVersion>2.0.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
-    <HttpVersion>4.3.3</HttpVersion>
+    <HttpVersion>4.3.4</HttpVersion>
+    <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
