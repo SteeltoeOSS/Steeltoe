@@ -383,12 +383,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     .Sum();
         }
 
-        public async Task Start()
+        public Task Start()
         {
-            await DoStart();
+            return DoStart();
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             lock (_directReplyToContainers)
             {
@@ -403,7 +403,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 _directReplyToContainers.Clear();
             }
 
-            await DoStop();
+            return DoStop();
         }
 
         public async Task Destroy() => await Stop();

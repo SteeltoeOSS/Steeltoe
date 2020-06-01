@@ -31,25 +31,23 @@ namespace Steeltoe.Management.Endpoint.Trace
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleTraceRequestAsync(context).ConfigureAwait(false);
+                return HandleTraceRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleTraceRequestAsync(HttpContext context)
+        protected internal Task HandleTraceRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
     }
 }

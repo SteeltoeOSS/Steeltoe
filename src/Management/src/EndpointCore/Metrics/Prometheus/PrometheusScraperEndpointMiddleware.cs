@@ -31,16 +31,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
+                return HandleMetricsRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
         public override string HandleRequest()
@@ -49,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return result;
         }
 
-        protected internal async Task HandleMetricsRequestAsync(HttpContext context)
+        protected internal Task HandleMetricsRequestAsync(HttpContext context)
         {
             HttpRequest request = context.Request;
             HttpResponse response = context.Response;
@@ -59,16 +57,15 @@ namespace Steeltoe.Management.Endpoint.Metrics
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
             var serialInfo = HandleRequest();
 
-            if (serialInfo != null)
+            if (serialInfo == null)
             {
-                response.StatusCode = (int)HttpStatusCode.OK;
-                response.ContentType = "text/plain; version=0.0.4;";
-                await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+                response.StatusCode = (int) HttpStatusCode.NotFound;
+                return Task.CompletedTask;
             }
-            else
-            {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-            }
+
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.ContentType = "text/plain; version=0.0.4;";
+            return context.Response.WriteAsync(serialInfo);
         }
     }
 }

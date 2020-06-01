@@ -613,20 +613,24 @@ namespace Steeltoe.Stream.Binder
                 this.useNativeEncoding = useNativeEncoding;
             }
 
-            public async Task Start()
+            public Task Start()
             {
                 if (handler is ILifecycle)
                 {
-                    await ((ILifecycle)handler).Start();
+                    return ((ILifecycle)handler).Start();
                 }
+
+                return Task.CompletedTask;
             }
 
-            public async Task Stop()
+            public Task Stop()
             {
                 if (handler is ILifecycle)
                 {
-                    await ((ILifecycle)handler).Stop();
+                    return ((ILifecycle)handler).Stop();
                 }
+
+                return Task.CompletedTask;
             }
 
             public bool IsRunning

@@ -130,7 +130,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             return DeregisterAsyncInternal(registration);
         }
 
-        private async Task DeregisterAsyncInternal(IConsulRegistration registration)
+        private Task DeregisterAsyncInternal(IConsulRegistration registration)
         {
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
@@ -139,7 +139,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             _logger?.LogInformation("Deregistering service with consul {instanceId} ", registration.InstanceId);
 
-            await _client.Agent.ServiceDeregister(registration.InstanceId).ConfigureAwait(false);
+            return _client.Agent.ServiceDeregister(registration.InstanceId);
         }
 
         /// <inheritdoc/>
@@ -153,20 +153,19 @@ namespace Steeltoe.Discovery.Consul.Registry
             return SetStatusAsyncInternal(registration, status);
         }
 
-        private async Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
+        private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
         {
             if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE).ConfigureAwait(false);
+                return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
             }
-            else if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
+
+            if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.DisableServiceMaintenance(registration.InstanceId).ConfigureAwait(false);
+                return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
             }
-            else
-            {
-                throw new ArgumentException($"Unknown status: {status}");
-            }
+
+            throw new ArgumentException($"Unknown status: {status}");
         }
 
         /// <inheritdoc/>

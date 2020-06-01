@@ -60,17 +60,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 out SecurityProtocolType protocolType,
                 out RemoteCertificateValidationCallback prevValidator);
 
-            HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                return await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
                 HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
             }
-
-            return response;
         }
 
         /// <summary>
@@ -115,17 +112,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
 
-            HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+                return await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
                 HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
             }
-
-            return response;
         }
 
         /// <summary>
