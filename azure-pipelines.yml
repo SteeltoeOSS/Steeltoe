@@ -28,6 +28,16 @@ jobs:
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: sdk
+      version: 2.1.806
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
+    inputs:
+      packageType: sdk
+      version: 3.1.300
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -44,7 +54,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
+      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
 - job: MacOS_Build_and_Test
   pool:
     vmImage: 'macOS-latest'
@@ -58,12 +68,12 @@ jobs:
     displayName: 'Install .NET Core 2.x SDK'
     inputs:
       packageType: sdk
-      version: 2.2.300
+      version: 2.1.806
   - task: UseDotNet@2
     displayName: 'Install .NET Core 3.x SDK'
     inputs:
       packageType: sdk
-      version: 3.0.100
+      version: 3.1.300
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -80,7 +90,7 @@ jobs:
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '-c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnMacOS"'
+      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnMacOS"'
 - job: Windows_Build_Test_and_Package
   timeoutInMinutes: 90
   pool:
@@ -105,6 +115,16 @@ jobs:
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: sdk
+      version: 2.1.806
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
+    inputs:
+      packageType: sdk
+      version: 3.1.300
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -117,16 +137,17 @@ jobs:
       organization: 'steeltoeoss'
       projectKey: 'SteeltoeOSS_steeltoe'
       extraProperties: |
-        sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/coverage.opencover.xml
-        sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
-        sonar.exclusions=$(Build.SourcesDirectory)/src/Management/OpenCensus, $(Build.SourcesDirectory)/src/Management/OpenCensus.*
+        sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)\**\*opencover.xml
+        sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\*.trx
+        sonar.exclusions=$(Build.SourcesDirectory)\src\Management\OpenCensus*
+        sonar.coverage.exclusions=**/*Test*/**/*
   - task: DotNetCoreCLI@2
-    displayName: dotnet pack
+    displayName: dotnet build
     inputs:
-      command: 'pack'
+      command: 'build'
       feedsToUse: 'select'
-      arguments: '--no-restore -c $(buildConfiguration) /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
-      packagesToPack: 'src/Steeltoe.All.sln'
+      arguments: '--no-restore -c $(buildConfiguration) /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+      projects: 'src/Steeltoe.All.sln'
       versioningScheme: 'byEnvVar'
       versionEnvVar: PackageVersion
   - task: DotNetCoreCLI@2
@@ -134,12 +155,10 @@ jobs:
     inputs:
       command: test
       projects: 'src/Steeltoe.All.sln'
-      arguments: '-c $(buildConfiguration) -maxcpucount:1 /p:TreatWarningsAsErrors=True /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test]*"'
+      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*"'
   # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
   # First install the tool on the machine, then run it
-  - pwsh: |
-      dotnet tool install -g dotnet-reportgenerator-globaltool
-      reportgenerator "-reports:**\coverage.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
+  - pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator "-reports:**\*.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
     displayName: Create Code coverage report
     condition: always()
   # Publish the code coverage result (summary and web site)
@@ -152,9 +171,7 @@ jobs:
       summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
       reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
     condition: always()
-  - pwsh: |
-      choco install codecov
-      codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
+  - pwsh: choco install codecov --no-progress; codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
     env:
       CodeCovToken: $(CodeCovToken)
     displayName: Install and Run CodeCov
@@ -165,6 +182,14 @@ jobs:
   - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
     displayName: Publish Quality Gate Result
     condition: always()
+  - task: DotNetCoreCLI@2
+    displayName: dotnet pack
+    inputs:
+      command: 'pack'
+      feedsToUse: 'select'
+      packagesToPack: 'src/Steeltoe.All.sln'
+      versioningScheme: 'byEnvVar'
+      versionEnvVar: PackageVersion
   - task: PowerShell@2
     displayName: Authenticode Sign Packages
     inputs:
