@@ -150,20 +150,18 @@ namespace Steeltoe.Discovery.Consul.Discovery
             Dispose(false);
         }
 
-        private Task PassTtl(string serviceId)
+        private async Task PassTtl(string serviceId)
         {
             _logger?.LogDebug("Sending consul heartbeat for: {serviceId} ", serviceId);
 
             try
             {
-                return _client.Agent.PassTTL(serviceId, "ttl");
+                await _client.Agent.PassTTL(serviceId, "ttl");
             }
             catch (Exception e)
             {
                 _logger?.LogError(e, "Exception sending consul heartbeat for: {serviceId} ", serviceId);
             }
-
-            return Task.CompletedTask;
         }
     }
 }
