@@ -171,10 +171,8 @@ jobs:
       summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
       reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
     condition: always()
-  - pwsh: choco install codecov --no-progress; codecov -f "$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml" -t $env:CodeCovToken
-    env:
-      CodeCovToken: $(CodeCovToken)
-    displayName: Install and Run CodeCov
+  - bash: bash <(curl -s https://codecov.io/bash)
+    displayName: 'Upload to codecov.io'
     condition: always()
   - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
     displayName: Run Code Analysis
