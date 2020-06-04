@@ -12,28 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
     internal class Application
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("managementUrl")]
+        [JsonPropertyName("managementUrl")]
         public Uri ManagementUrl { get; set; }
 
-        [JsonProperty("healthUrl")]
+        [JsonPropertyName("healthUrl")]
         public Uri HealthUrl { get; set; }
 
-        [JsonProperty("serviceUrl")]
+        [JsonPropertyName("serviceUrl")]
         public Uri ServiceUrl { get; set; }
 
-        [JsonProperty("metadata")]
+        [JsonPropertyName("metadata")]
         public Metadata Metadata { get; set; }
     }
 
@@ -41,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
     internal class Metadata
 #pragma warning restore SA1402 // File may only contain a single type
     {
-        [JsonProperty("startup")]
+        [JsonPropertyName("startup")]
         public DateTimeOffset Startup { get; set; }
     }
 

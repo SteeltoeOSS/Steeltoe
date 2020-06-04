@@ -13,12 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
@@ -46,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 section.Bind(this);
             }
 
-            BasePath ??= GetBasePath(config);
+            BasePath ??= GetBasePath(config) ?? appInfo.Uris.FirstOrDefault() ?? throw new NullReferenceException($"Please set {PREFIX}:BasePath in order to register with Spring Boot Admin");
             appInfo ??= new ApplicationInstanceInfo(config);
             ApplicationName ??= appInfo.ApplicationName;
         }
