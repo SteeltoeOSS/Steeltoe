@@ -4,8 +4,6 @@
 
 using System.Collections.Generic;
 
-using System.Collections.Generic;
-
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
     public interface ISerilogOptions

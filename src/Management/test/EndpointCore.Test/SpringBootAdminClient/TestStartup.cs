@@ -49,4 +49,3 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
         }
     }
 }
-

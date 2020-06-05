@@ -49,24 +49,6 @@ namespace Steeltoe.Common.Configuration.Test
         }
 
         [Fact]
-        public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
-        {
-            // Arrange
-            var text = "foo=${foo.bar}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo:bar", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
-
-            // Act and Assert
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
-
-        [Fact]
         public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
         {
             // Arrange
@@ -76,24 +58,6 @@ namespace Steeltoe.Common.Configuration.Test
                 {
                     { "foo", "bar" },
                     { "bar", "baz" }
-                };
-            builder.AddInMemoryCollection(dic1);
-
-            // Act and Assert
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
-            Assert.Equal("foo=bar,bar=baz", result);
-        }
-
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
-        {
-            // Arrange
-            var text = "foo=${foo.boo},bar=${bar.far}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo:boo", "bar" },
-                    { "bar:far", "baz" }
                 };
             builder.AddInMemoryCollection(dic1);
 
@@ -159,25 +123,6 @@ namespace Steeltoe.Common.Configuration.Test
         }
 
         [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
-        {
-            // Arrange
-            var text = "foo=${bar.boo}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar:boo", "${baz.faz}" },
-                    { "baz:faz", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
-
-            // Act and Assert
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
-
-        [Fact]
         public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
         {
             // Arrange
@@ -199,39 +144,6 @@ namespace Steeltoe.Common.Configuration.Test
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
                     { "first.grandchild", "actualValue" }
-                };
-            builder2.AddInMemoryCollection(dic2);
-            var config2 = builder2.Build();
-
-            // Act and Assert
-            var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
-            Assert.Equal("foo=bar", result1);
-            var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
-            Assert.Equal("actualValue+actualValue", result2);
-        }
-
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
-        {
-            // Arrange
-            var text1 = "foo=${b${inner.placeholder}}";
-            var builder1 = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar", "bar" },
-                    { "inner:placeholder", "ar" }
-                };
-            builder1.AddInMemoryCollection(dic1);
-            var config1 = builder1.Build();
-
-            var text2 = "${top}";
-            var builder2 = new ConfigurationBuilder();
-            var dic2 = new Dictionary<string, string>()
-                {
-                    { "top", "${child}+${child}" },
-                    { "child", "${${differentiator}.grandchild}" },
-                    { "differentiator", "first" },
-                    { "first:grandchild", "actualValue" }
                 };
             builder2.AddInMemoryCollection(dic2);
             var config2 = builder2.Build();
