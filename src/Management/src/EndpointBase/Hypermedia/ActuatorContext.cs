@@ -14,6 +14,6 @@ namespace Steeltoe.Management.Hypermedia
     {
         CloudFoundry,
         Actuator,
-        ActuatorAndCloudFoundry
+        ActuatorAndCloudFoundry,
     }
 }

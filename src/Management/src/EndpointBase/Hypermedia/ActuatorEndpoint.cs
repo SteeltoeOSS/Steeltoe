@@ -14,12 +14,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
     public class ActuatorEndpoint : AbstractEndpoint<Links, string>
     {
         private readonly ILogger<ActuatorEndpoint> _logger;
-        private readonly IManagementOptions _mgmtOption;
+        private readonly ActuatorManagementOptions _mgmtOption;
 
-        public ActuatorEndpoint(IActuatorHypermediaOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+        public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
         {
-            _mgmtOption = mgmtOptions?.OfType<ActuatorManagementOptions>().Single();
+            _mgmtOption = mgmtOptions;
             _logger = logger;
         }
 

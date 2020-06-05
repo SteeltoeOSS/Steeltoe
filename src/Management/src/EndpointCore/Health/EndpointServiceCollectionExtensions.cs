@@ -61,8 +61,10 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(aggregator));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+            services.TryAddSingleton(new ActuatorManagementOptions(config));
+
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
 
             var options = new HealthEndpointOptions(config);
             services.TryAddSingleton<IHealthOptions>(options);

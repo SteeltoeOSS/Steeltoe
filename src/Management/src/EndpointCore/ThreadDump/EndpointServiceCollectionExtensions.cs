@@ -53,6 +53,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             services.TryAddSingleton<IThreadDumpOptions>(options);
             services.RegisterEndpointOptions(options);
             services.TryAddSingleton<IThreadDumper, ThreadDumper>();
+            services.AddSingleton<ThreadDumpEndpoint_v2>();
         }
     }
 }

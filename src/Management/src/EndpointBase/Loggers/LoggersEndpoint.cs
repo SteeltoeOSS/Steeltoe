@@ -34,6 +34,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
             _logger = logger;
+            AllowedVerbs = new List<string> { "Get", "Post" };
         }
 
         protected new ILoggersOptions Options

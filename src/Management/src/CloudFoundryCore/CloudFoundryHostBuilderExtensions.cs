@@ -27,7 +27,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
-            return webHostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
+            return webHostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2, ActuatorContext.ActuatorAndCloudFoundry, buildCorsPolicy);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
-            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
+            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2, ActuatorContext.ActuatorAndCloudFoundry, buildCorsPolicy);
         }
 
         /// <summary>

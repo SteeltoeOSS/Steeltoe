@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
+    [Obsolete] // delete
     public class HealthJsonConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

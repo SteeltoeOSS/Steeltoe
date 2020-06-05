@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management
 {
@@ -22,6 +23,33 @@ namespace Steeltoe.Management
         public virtual IEndpointOptions Options => options;
 
         public string Path => options.Path;
+
+        public IEnumerable<string> AllowedVerbs { get; set; }
+
+        public bool ExactMatch { get; set; } = true;
+
+        public string GetContextPath(IManagementOptions mgmtOptions)
+        {
+            var contextPath = mgmtOptions.Path;
+            if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(Path))
+            {
+                contextPath += "/";
+            }
+
+            contextPath += Path;
+            if (!ExactMatch)
+            {
+                if (!contextPath.EndsWith("/"))
+                {
+                    contextPath += "/";
+                }
+
+                contextPath += "{**_}";
+            }
+
+            return contextPath;
+        }
+
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

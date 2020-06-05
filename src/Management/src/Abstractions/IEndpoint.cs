@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management
 {
@@ -15,6 +16,10 @@ namespace Steeltoe.Management
         IEndpointOptions Options { get; }
 
         string Path { get; }
+
+        string GetContextPath(IManagementOptions options);
+
+        IEnumerable<string> AllowedVerbs { get; set; }
     }
 
     public interface IEndpoint<out TResult> : IEndpoint
