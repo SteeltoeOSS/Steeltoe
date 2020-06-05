@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
+    <VersionPrefix>2.4.4</VersionPrefix>
+  </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
@@ -33,7 +36,7 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>2.7.0</CoverletVersion>
+    <CoverletVersion>2.9.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
@@ -44,7 +47,7 @@
     <OpenTelemetryVersion>0.2.0-alpha.220</OpenTelemetryVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>16.3.0</TestSdkVersion>
+    <TestSdkVersion>16.6.1</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
@@ -59,6 +49,24 @@ namespace Steeltoe.Common.Configuration.Test
         }
 
         [Fact]
+        public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
+        {
+            // Arrange
+            var text = "foo=${foo.bar}";
+            var builder = new ConfigurationBuilder();
+            var dic1 = new Dictionary<string, string>()
+                {
+                    { "foo:bar", "bar" }
+                };
+            builder.AddInMemoryCollection(dic1);
+            var config = builder.Build();
+
+            // Act and Assert
+            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+            Assert.Equal("foo=bar", result);
+        }
+
+        [Fact]
         public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
         {
             // Arrange
@@ -68,6 +76,24 @@ namespace Steeltoe.Common.Configuration.Test
                 {
                     { "foo", "bar" },
                     { "bar", "baz" }
+                };
+            builder.AddInMemoryCollection(dic1);
+
+            // Act and Assert
+            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
+            Assert.Equal("foo=bar,bar=baz", result);
+        }
+
+        [Fact]
+        public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
+        {
+            // Arrange
+            var text = "foo=${foo.boo},bar=${bar.far}";
+            var builder = new ConfigurationBuilder();
+            var dic1 = new Dictionary<string, string>()
+                {
+                    { "foo:boo", "bar" },
+                    { "bar:far", "baz" }
                 };
             builder.AddInMemoryCollection(dic1);
 
@@ -133,6 +159,25 @@ namespace Steeltoe.Common.Configuration.Test
         }
 
         [Fact]
+        public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
+        {
+            // Arrange
+            var text = "foo=${bar.boo}";
+            var builder = new ConfigurationBuilder();
+            var dic1 = new Dictionary<string, string>()
+                {
+                    { "bar:boo", "${baz.faz}" },
+                    { "baz:faz", "bar" }
+                };
+            builder.AddInMemoryCollection(dic1);
+            var config = builder.Build();
+
+            // Act and Assert
+            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+            Assert.Equal("foo=bar", result);
+        }
+
+        [Fact]
         public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
         {
             // Arrange
@@ -154,6 +199,39 @@ namespace Steeltoe.Common.Configuration.Test
                     { "child", "${${differentiator}.grandchild}" },
                     { "differentiator", "first" },
                     { "first.grandchild", "actualValue" }
+                };
+            builder2.AddInMemoryCollection(dic2);
+            var config2 = builder2.Build();
+
+            // Act and Assert
+            var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
+            Assert.Equal("foo=bar", result1);
+            var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
+            Assert.Equal("actualValue+actualValue", result2);
+        }
+
+        [Fact]
+        public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
+        {
+            // Arrange
+            var text1 = "foo=${b${inner.placeholder}}";
+            var builder1 = new ConfigurationBuilder();
+            var dic1 = new Dictionary<string, string>()
+                {
+                    { "bar", "bar" },
+                    { "inner:placeholder", "ar" }
+                };
+            builder1.AddInMemoryCollection(dic1);
+            var config1 = builder1.Build();
+
+            var text2 = "${top}";
+            var builder2 = new ConfigurationBuilder();
+            var dic2 = new Dictionary<string, string>()
+                {
+                    { "top", "${child}+${child}" },
+                    { "child", "${${differentiator}.grandchild}" },
+                    { "differentiator", "first" },
+                    { "first:grandchild", "actualValue" }
                 };
             builder2.AddInMemoryCollection(dic2);
             var config2 = builder2.Build();
