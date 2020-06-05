@@ -88,7 +88,7 @@ namespace Steeltoe.Common
         }
 
         public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
-            : base(configuration, BuildConfigString(configPrefix, "application"))
+            : base(configuration, BuildConfigString(configPrefix, ApplicationRoot))
         {
             this.configuration = configuration;
             SecondChanceSetIdProperties(this.configuration);

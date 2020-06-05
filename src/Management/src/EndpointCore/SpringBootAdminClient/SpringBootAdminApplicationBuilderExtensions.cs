@@ -25,7 +25,7 @@ using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
-    public static class BootAdminAppBuilderExtensions
+    public static class SpringBootAdminApplicationBuilderExtensions
     {
         private const int ConnectionTimeoutMs = 100000;
 
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
         /// <param name="builder"><see cref="IApplicationBuilder"/></param>
         /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided</param>
         /// <param name="httpClient">A customized HttpClient. [Bring your own auth]</param>
-        public static void RegisterSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
+        public static void RegisterWithSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
         {
             if (builder is null)
             {
@@ -49,9 +49,9 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 configuration = builder.ApplicationServices.GetRequiredService<IConfiguration>();
             }
 
-            var logger = builder.ApplicationServices.GetService<ILogger<BootAdminClientOptions>>();
+            var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
             var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
-            var options = new BootAdminClientOptions(configuration, appInfo);
+            var options = new SpringBootAdminClientOptions(configuration, appInfo);
             var mgmtOptions = new ManagementEndpointOptions(configuration);
             var healthOptions = new HealthEndpointOptions(configuration);
             var basePath = options.BasePath.TrimEnd('/');

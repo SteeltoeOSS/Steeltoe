@@ -19,7 +19,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
-    public class BootAdminClientOptions
+    public class SpringBootAdminClientOptions
     {
         private const string PREFIX = "spring:boot:admin:client";
         private const string URLS = "URLS";
@@ -30,11 +30,16 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         public string BasePath { get; set; }
 
-        public BootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo = null)
+        public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
         {
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
+            }
+
+            if (appInfo is null)
+            {
+                throw new ArgumentNullException(nameof(appInfo));
             }
 
             var section = config.GetSection(PREFIX);
@@ -43,8 +48,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 section.Bind(this);
             }
 
-            BasePath ??= GetBasePath(config) ?? appInfo.Uris.FirstOrDefault() ?? throw new NullReferenceException($"Please set {PREFIX}:BasePath in order to register with Spring Boot Admin");
-            appInfo ??= new ApplicationInstanceInfo(config);
+            // Require base path to be supplied directly, in the config, or in the app instance info
+            BasePath ??= GetBasePath(config) ?? appInfo?.Uris?.FirstOrDefault() ?? throw new NullReferenceException($"Please set {PREFIX}:BasePath in order to register with Spring Boot Admin");
             ApplicationName ??= appInfo.ApplicationName;
         }
 

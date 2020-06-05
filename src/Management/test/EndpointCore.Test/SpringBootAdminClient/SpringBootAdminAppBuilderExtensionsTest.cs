@@ -19,18 +19,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
+namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
 {
-    public class SpringBootAdminClientExtensionTests
+    public class SpringBootAdminAppBuilderExtensionsTest
     {
         [Fact]
-        public void BootAdminClient_Endtoend()
+        public void SpringBootAdminClient_EndToEnd()
         {
             var appsettings = new Dictionary<string, string>()
             {
@@ -57,12 +56,12 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                appBuilder.RegisterSpringBootAdmin(config, client);
+                appBuilder.RegisterWithSpringBootAdmin(config, client);
 
                 appLifeTime.AppStartTokenSource.Cancel(); // Trigger application lifetime start
 
-                Assert.NotNull(BootAdminAppBuilderExtensions.RegistrationResult);
-                Assert.Equal("1234567", BootAdminAppBuilderExtensions.RegistrationResult.Id);
+                Assert.NotNull(SpringBootAdminApplicationBuilderExtensions.RegistrationResult);
+                Assert.Equal("1234567", SpringBootAdminApplicationBuilderExtensions.RegistrationResult.Id);
 
                 appLifeTime.AppStopTokenSource.Cancel(); // Trigger application lifetime stop
             }
