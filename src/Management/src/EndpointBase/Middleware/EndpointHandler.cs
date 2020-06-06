@@ -14,13 +14,10 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Metrics;
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Trace;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
@@ -78,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Middleware
                     IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
                 options.Converters.Add(new HealthConverter());
-                //options.Converters.Add(new MetricsResponseConverter());
+                options.Converters.Add(new MetricsResponseConverter());
 
                 return JsonSerializer.Serialize(result, options);
             }
@@ -88,31 +85,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             }
 
             return string.Empty;
-        }
-    }
-
-    public class MetricsResponseConverter : JsonConverter<MetricsListNamesResponse>
-    {
-        public override MetricsListNamesResponse Read(ref Utf8JsonReader reader, Type typeToConvert,
-            JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override void Write(Utf8JsonWriter writer, MetricsListNamesResponse value, JsonSerializerOptions options)
-        {
-            writer.WriteStartObject();
-            if (value is MetricsListNamesResponse metricslist)
-            {
-                writer.WritePropertyName("names");
-
-                foreach (var name in metricslist.Names)
-                {
-                    JsonSerializer.Serialize(writer, name);
-                }
-            }
-
-            writer.WriteEndObject();
         }
     }
 

@@ -42,11 +42,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             GetMetricsCollection(out var measurements, out var availTags);
 
-            var metricNames = new HashSet<string>();
-            
+            var metricNames = new HashSet<string>(measurements.Keys);
             if (request == null)
             {
-                return new MetricsListNamesResponse(new HashSet<string>(){"test"});
+                return new MetricsListNamesResponse(metricNames);
             }
             else
             {
