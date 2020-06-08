@@ -55,7 +55,7 @@ namespace Steeltoe.Integration.Endpoint
 
         public int Phase { get; set; } = 0;
 
-        public async Task Start()
+        public Task Start()
         {
             var doTheStart = false;
             lock (_lifecyclelock)
@@ -69,11 +69,13 @@ namespace Steeltoe.Integration.Endpoint
 
             if (doTheStart)
             {
-                await DoStart();
+                return DoStart();
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task Stop(Action callback)
+        public Task Stop(Action callback)
         {
             var doTheStop = false;
 
@@ -88,15 +90,14 @@ namespace Steeltoe.Integration.Endpoint
 
             if (doTheStop)
             {
-                await DoStop(callback);
+                return DoStop(callback);
             }
-            else
-            {
-                callback();
-            }
+
+            callback();
+            return Task.CompletedTask;
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             var doTheStop = false;
             lock (_lifecyclelock)
@@ -110,8 +111,10 @@ namespace Steeltoe.Integration.Endpoint
 
             if (doTheStop)
             {
-                await DoStop();
+                return DoStop();
             }
+
+            return Task.CompletedTask;
         }
 
         protected virtual async Task DoStop(Action callback)

@@ -74,58 +74,58 @@ namespace Steeltoe.Messaging.Core
             return ConvertAndSendAsync(destinationName, payload, null, postProcessor, cancellationToken);
         }
 
-        public virtual async Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+        public virtual Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            await ConvertAndSendAsync(destination, payload, headers, postProcessor, cancellationToken);
+            return ConvertAndSendAsync(destination, payload, headers, postProcessor, cancellationToken);
         }
 
-        public virtual async Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, CancellationToken cancellationToken = default)
+        public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ConvertSendAndReceiveAsync<T>(destination, request, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(destination, request, cancellationToken);
         }
 
-        public virtual async Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
+        public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ConvertSendAndReceiveAsync<T>(destination, request, headers, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(destination, request, headers, cancellationToken);
         }
 
-        public virtual async Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+        public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ConvertSendAndReceiveAsync<T>(destination, request, requestPostProcessor, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(destination, request, requestPostProcessor, cancellationToken);
         }
 
-        public virtual async Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+        public virtual Task<T> ConvertSendAndReceiveAsync<T>(string destinationName, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ConvertSendAndReceiveAsync<T>(destination, request, headers, requestPostProcessor, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(destination, request, headers, requestPostProcessor, cancellationToken);
         }
 
-        public virtual async Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken = default)
+        public virtual Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ReceiveAsync(destination, cancellationToken);
+            return ReceiveAsync(destination, cancellationToken);
         }
 
-        public virtual async Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken = default)
+        public virtual Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await ReceiveAndConvertAsync<T>(destination, cancellationToken);
+            return ReceiveAndConvertAsync<T>(destination, cancellationToken);
         }
 
-        public virtual async Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken = default)
+        public virtual Task SendAsync(string destinationName, IMessage message, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            await SendAsync(destination, message, cancellationToken);
+            return SendAsync(destination, message, cancellationToken);
         }
 
-        public virtual async Task<IMessage> SendAndReceiveAsync(string destinationName, IMessage requestMessage, CancellationToken cancellationToken = default)
+        public virtual Task<IMessage> SendAndReceiveAsync(string destinationName, IMessage requestMessage, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
-            return await SendAndReceiveAsync(destination, requestMessage, cancellationToken);
+            return SendAndReceiveAsync(destination, requestMessage, cancellationToken);
         }
 
         public virtual void ConvertAndSend<T>(string destinationName, T payload)

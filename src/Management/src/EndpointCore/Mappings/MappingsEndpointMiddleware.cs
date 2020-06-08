@@ -56,19 +56,17 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (IsMappingsRequest(context))
             {
-                await HandleMappingsRequestAsync(context).ConfigureAwait(false);
+                return HandleMappingsRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleMappingsRequestAsync(HttpContext context)
+        protected internal Task HandleMappingsRequestAsync(HttpContext context)
         {
             var result = GetApplicationMappings(context);
             var serialInfo = Serialize(result);
@@ -76,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)

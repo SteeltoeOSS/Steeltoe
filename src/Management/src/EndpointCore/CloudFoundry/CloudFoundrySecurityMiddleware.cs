@@ -103,10 +103,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        internal async Task<SecurityResult> GetPermissions(HttpContext context)
+        internal Task<SecurityResult> GetPermissions(HttpContext context)
         {
             string token = GetAccessToken(context.Request);
-            return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
+            return _base.GetPermissionsAsync(token);
         }
 
         private IEndpointOptions FindTargetEndpoint(PathString path)
@@ -132,12 +132,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             return null;
         }
 
-        private async Task ReturnError(HttpContext context, SecurityResult error)
+        private Task ReturnError(HttpContext context, SecurityResult error)
         {
             LogError(context, error);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
             context.Response.StatusCode = (int)error.Code;
-            await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
+            return context.Response.WriteAsync(_base.Serialize(error));
         }
 
         private void LogError(HttpContext context, SecurityResult error)

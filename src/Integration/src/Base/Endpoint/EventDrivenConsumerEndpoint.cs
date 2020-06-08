@@ -56,22 +56,26 @@ namespace Steeltoe.Integration.Endpoint
             }
         }
 
-        protected override async Task DoStart()
+        protected override Task DoStart()
         {
             _inputChannel.Subscribe(_handler);
             if (_handler is ILifecycle)
             {
-                await ((ILifecycle)_handler).Start();
+                return ((ILifecycle)_handler).Start();
             }
+
+            return Task.CompletedTask;
         }
 
-        protected override async Task DoStop()
+        protected override Task DoStop()
         {
             _inputChannel.Unsubscribe(_handler);
             if (_handler is ILifecycle)
             {
-                await ((ILifecycle)_handler).Stop();
+                return ((ILifecycle)_handler).Stop();
             }
+
+            return Task.CompletedTask;
         }
     }
 }

@@ -95,20 +95,24 @@ namespace Steeltoe.Stream.Binder
             _interceptors.Insert(index, interceptor);
         }
 
-        public async Task Start()
+        public Task Start()
         {
             if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle)
             {
-                await ((ILifecycle)Source).Start();
+                return ((ILifecycle)Source).Start();
             }
+
+            return Task.CompletedTask;
         }
 
-        public async Task Stop()
+        public Task Stop()
         {
             if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle)
             {
-                await ((ILifecycle)Source).Stop();
+                return ((ILifecycle)Source).Stop();
             }
+
+            return Task.CompletedTask;
         }
 
         public override bool Poll(IMessageHandler handler)

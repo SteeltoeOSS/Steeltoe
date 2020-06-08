@@ -89,10 +89,9 @@ namespace Steeltoe.Discovery.Consul.Discovery
             return result;
         }
 
-        internal async Task<string> GetLeaderStatusAsync()
+        internal Task<string> GetLeaderStatusAsync()
         {
-            var result = await _client.Status.Leader().ConfigureAwait(false);
-            return result;
+            return _client.Status.Leader();
         }
 
         internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync()

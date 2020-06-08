@@ -32,27 +32,25 @@ namespace Steeltoe.Management.Endpoint.Info
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
 
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleInfoRequestAsync(context).ConfigureAwait(false);
+                return HandleInfoRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleInfoRequestAsync(HttpContext context)
+        protected internal Task HandleInfoRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
     }
 }
