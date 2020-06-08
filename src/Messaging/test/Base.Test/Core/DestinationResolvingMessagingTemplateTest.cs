@@ -57,10 +57,10 @@ namespace Steeltoe.Messaging.Core.Test
         }
 
         [Fact]
-        public async Task SendAsyncNoDestinationResolver()
+        public Task SendAsyncNoDestinationResolver()
         {
             var template = new TestDestinationResolvingMessagingTemplate();
-            await Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", new GenericMessage("payload")));
+            return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", new GenericMessage("payload")));
         }
 
         [Fact]

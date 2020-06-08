@@ -24,16 +24,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
+                return HandleMetricsRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
         public override string HandleRequest(MetricsRequest arg)

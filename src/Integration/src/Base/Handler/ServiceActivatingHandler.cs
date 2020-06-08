@@ -39,20 +39,24 @@ namespace Steeltoe.Integration.Handler
 
         public virtual bool IsRunning => !(_processor is ILifecycle) || ((ILifecycle)_processor).IsRunning;
 
-        public virtual async Task Start()
+        public virtual Task Start()
         {
             if (_processor is ILifecycle)
             {
-                await ((ILifecycle)_processor).Start();
+                return ((ILifecycle)_processor).Start();
             }
+
+            return Task.CompletedTask;
         }
 
-        public virtual async Task Stop()
+        public virtual Task Stop()
         {
             if (_processor is ILifecycle)
             {
-                await ((ILifecycle)_processor).Stop();
+                return ((ILifecycle)_processor).Stop();
             }
+
+            return Task.CompletedTask;
         }
 
         public override string ToString()

@@ -73,27 +73,23 @@ namespace Steeltoe.Stream.Binder
             get { return _lifecycle is IPausable; }
         }
 
-        public override async Task Start()
+        public override Task Start()
         {
-            if (!IsRunning)
+            if (!IsRunning && _lifecycle != null && _restartable)
             {
-                if (_lifecycle != null && _restartable)
-                {
-                    await _lifecycle.Start();
-                }
-                else
-                {
-                    // this.logger.warn("Can not re-bind an anonymous binding");
-                }
-            }
+                return _lifecycle.Start();
+            }  // else this.logger.warn("Can not re-bind an anonymous binding");
+            return Task.CompletedTask;
         }
 
-        public override async Task Stop()
+        public override Task Stop()
         {
             if (IsRunning)
             {
-                await _lifecycle.Stop();
+                return _lifecycle.Stop();
             }
+
+            return Task.CompletedTask;
         }
 
         public override async Task Pause()

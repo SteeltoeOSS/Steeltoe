@@ -21,25 +21,23 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleEntityFrameworkRequestAsync(context);
+                return HandleEntityFrameworkRequestAsync(context);
             }
-            else
-            {
-                await _next(context);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleEntityFrameworkRequestAsync(HttpContext context)
+        protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo);
+            return context.Response.WriteAsync(serialInfo);
         }
     }
 }

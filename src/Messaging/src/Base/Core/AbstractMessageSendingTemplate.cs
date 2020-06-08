@@ -69,10 +69,10 @@ namespace Steeltoe.Messaging.Core
             return ConvertAndSendAsync(destination, payload, null, postProcessor, cancellationToken);
         }
 
-        public virtual async Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+        public virtual Task ConvertAndSendAsync(D destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
         {
             var message = DoConvert(payload, headers, postProcessor);
-            await SendAsync(destination, message, cancellationToken);
+            return SendAsync(destination, message, cancellationToken);
         }
 
         public virtual Task SendAsync(IMessage message, CancellationToken cancellationToken = default)

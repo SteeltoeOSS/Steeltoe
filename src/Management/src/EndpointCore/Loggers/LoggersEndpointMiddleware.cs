@@ -25,16 +25,14 @@ namespace Steeltoe.Management.Endpoint.Loggers
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleLoggersRequestAsync(context).ConfigureAwait(false);
+                return HandleLoggersRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
         protected internal async Task HandleLoggersRequestAsync(HttpContext context)

@@ -21,25 +21,23 @@ namespace Steeltoe.Management.Endpoint.Env
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleEnvRequestAsync(context).ConfigureAwait(false);
+                return HandleEnvRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleEnvRequestAsync(HttpContext context)
+        protected internal Task HandleEnvRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest();
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
     }
 }

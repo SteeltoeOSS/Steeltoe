@@ -25,27 +25,25 @@ namespace Steeltoe.Management.Endpoint.Health
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context, HealthEndpointCore endpoint)
+        public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
         {
             _endpoint = endpoint;
 
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleHealthRequestAsync(context).ConfigureAwait(false);
+                return HandleHealthRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
-        protected internal async Task HandleHealthRequestAsync(HttpContext context)
+        protected internal Task HandleHealthRequestAsync(HttpContext context)
         {
             var serialInfo = DoRequest(context);
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal string DoRequest(HttpContext context)

@@ -21,16 +21,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
             {
-                await HandleHeapDumpRequestAsync(context).ConfigureAwait(false);
+                return HandleHeapDumpRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return _next(context);
         }
 
         protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
