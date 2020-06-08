@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             if (serialInfo == null)
             {
-                response.StatusCode = (int) HttpStatusCode.NotFound;
+                response.StatusCode = (int)HttpStatusCode.NotFound;
                 return Task.CompletedTask;
             }
 

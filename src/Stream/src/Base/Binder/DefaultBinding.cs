@@ -85,15 +85,10 @@ namespace Steeltoe.Stream.Binder
 
         public override Task Start()
         {
-            if (!IsRunning)
+            if (!IsRunning && _lifecycle != null && _restartable)
             {
-                if (_lifecycle != null && _restartable)
-                {
-                    return _lifecycle.Start();
-                }
-
-                // this.logger.warn("Can not re-bind an anonymous binding");
-            }
+                return _lifecycle.Start();
+            }  // else this.logger.warn("Can not re-bind an anonymous binding");
 
             return Task.CompletedTask;
         }
