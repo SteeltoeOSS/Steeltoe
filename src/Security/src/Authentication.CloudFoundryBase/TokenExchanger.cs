@@ -171,7 +171,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var scopes = "openid " + _options.AdditionalTokenScopes;
             if (_options.RequiredScopes != null)
             {
-                scopes += string.Join(" ", _options.RequiredScopes);
+                scopes = scopes.Trim() + " " + string.Join(" ", _options.RequiredScopes);
             }
 
             return new List<KeyValuePair<string, string>>

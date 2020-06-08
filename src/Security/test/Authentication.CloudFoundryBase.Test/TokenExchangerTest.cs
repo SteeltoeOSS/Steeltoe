@@ -82,6 +82,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
+        public void CommonTokenRequestParamsHandlesScopes()
+        {
+            // arrange
+            var opts = new AuthServerOptions { AdditionalTokenScopes = "onescope", RequiredScopes = new string[] { "twoscope" } };
+            var tEx = new TokenExchanger(opts);
+
+            // act
+            var parameters = tEx.CommonTokenRequestParams();
+            Assert.Equal("openid onescope twoscope", parameters.First(i => i.Key == CloudFoundryDefaults.ParamsScope).Value);
+        }
+
+        [Fact]
         public async void ExchangeAuthCodeForClaimsIdentity_ExchangesCodeForIdentity()
         {
             // arrange
