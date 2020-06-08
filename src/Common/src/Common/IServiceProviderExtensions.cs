@@ -32,7 +32,7 @@ namespace Steeltoe.Common
             if (appInfo == null)
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-                appInfo = new ApplicationInstanceInfo(config);
+                appInfo = new ApplicationInstanceInfo(config, string.Empty);
             }
 
             return appInfo;
