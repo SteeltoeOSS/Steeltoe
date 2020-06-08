@@ -89,7 +89,6 @@ namespace Steeltoe.Stream.Binder
             {
                 return _lifecycle.Start();
             }  // else this.logger.warn("Can not re-bind an anonymous binding");
-
             return Task.CompletedTask;
         }
 
