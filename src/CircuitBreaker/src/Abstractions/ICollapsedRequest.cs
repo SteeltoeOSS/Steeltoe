@@ -16,6 +16,6 @@ namespace Steeltoe.CircuitBreaker
 
         Exception Exception { get; set; }
 
-        bool Complete { get;  set; }
+        bool Complete { get; set; }
     }
 }

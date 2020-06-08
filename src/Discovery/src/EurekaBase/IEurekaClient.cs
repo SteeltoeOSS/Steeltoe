@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
-using T=System.Threading.Tasks;
+using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {

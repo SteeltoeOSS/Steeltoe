@@ -207,7 +207,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         public override bool IsQueueSpaceAvailable
         {
-            get { return CurrentQueueSize < workQueues.Length;  }
+            get { return CurrentQueueSize < workQueues.Length; }
         }
 
         #endregion IHystrixTaskScheduler

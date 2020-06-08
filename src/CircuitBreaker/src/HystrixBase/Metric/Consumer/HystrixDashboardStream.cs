@@ -37,7 +37,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             return instance;
         }
 
-         // Return a ref-counted stream that will only do work when at least one subscriber is present
+        // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<DashboardData> Observe()
         {
             return singleSource;

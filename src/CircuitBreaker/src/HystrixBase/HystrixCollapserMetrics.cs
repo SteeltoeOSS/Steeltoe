@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 initialCountArray[(int)eventType] += count;
                 return initialCountArray;
             }
-       };
+        };
 
         public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
         {

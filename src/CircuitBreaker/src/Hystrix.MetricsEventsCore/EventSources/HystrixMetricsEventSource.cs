@@ -7,7 +7,7 @@ using System.Diagnostics.Tracing;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
 {
-    [EventSource(Name ="Steeltoe.Hystrix.Events")]
+    [EventSource(Name = "Steeltoe.Hystrix.Events")]
     public class HystrixMetricsEventSource : EventSource
     {
         public class Keywords
@@ -48,18 +48,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
         {
             if (IsEnabled())
             {
-                  WriteEvent(
-                    1,
-                    commandKey,
-                    commandGroup,
-                    isCiruitBreakerOpen,
-                    errorCount,
-                    requestCount,
-                    currentConcurrentExecutionCount,
-                    latencyExecute_mean,
-                    latencyTotal_mean,
-                    reportingHosts,
-                    threadPool);
+                WriteEvent(
+                  1,
+                  commandKey,
+                  commandGroup,
+                  isCiruitBreakerOpen,
+                  errorCount,
+                  requestCount,
+                  currentConcurrentExecutionCount,
+                  latencyExecute_mean,
+                  latencyTotal_mean,
+                  reportingHosts,
+                  threadPool);
             }
         }
 

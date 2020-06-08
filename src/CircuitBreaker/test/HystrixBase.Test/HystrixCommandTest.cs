@@ -1032,7 +1032,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             int numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
             Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
 
-                                                                          // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
+            // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
             HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Equal(3, requestLog.AllExecutedCommands.Count);
             Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
@@ -1967,7 +1967,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             RequestCacheNullPointerExceptionCase command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
             Task<bool> f = command5.ExecuteAsync(); // return from cache #4
 
-                                                    // the bug is that we're getting a null Future back, rather than a Future that returns false
+            // the bug is that we're getting a null Future back, rather than a Future that returns false
             Assert.NotNull(f);
             Assert.False(f.Result);
 

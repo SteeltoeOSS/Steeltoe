@@ -13,6 +13,6 @@ namespace Steeltoe.Management
 
         string Path { get; }
 
-        List<IEndpointOptions> EndpointOptions { get;  }
+        List<IEndpointOptions> EndpointOptions { get; }
     }
 }

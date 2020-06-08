@@ -105,7 +105,7 @@ namespace Steeltoe.Connector.RabbitMQ.Test
 
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
-            {
+        {
             var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",

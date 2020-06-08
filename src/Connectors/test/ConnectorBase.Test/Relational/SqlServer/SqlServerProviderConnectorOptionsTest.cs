@@ -27,12 +27,12 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void Constructor_BindsValues()
         {
             var appsettings = new Dictionary<string, string>()
-                {
-                    ["sqlserver:credentials:uid"] = "username",
-                    ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
-                    ["sqlserver:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
-                    ["sqlserver:credentials:pw"] = "password"
-                };
+            {
+                ["sqlserver:credentials:uid"] = "username",
+                ["sqlserver:credentials:uri"] = "jdbc:sqlserver://servername:1433;databaseName=de5aa3a747c134b3d8780f8cc80be519e",
+                ["sqlserver:credentials:db"] = "de5aa3a747c134b3d8780f8cc80be519e",
+                ["sqlserver:credentials:pw"] = "password"
+            };
 
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);

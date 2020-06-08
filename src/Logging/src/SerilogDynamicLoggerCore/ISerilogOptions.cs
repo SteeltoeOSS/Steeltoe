@@ -8,12 +8,12 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 {
     public interface ISerilogOptions
     {
-       string ConfigPath { get; }
+        string ConfigPath { get; }
 
-       MinimumLevel MinimumLevel { get; set; }
+        MinimumLevel MinimumLevel { get; set; }
 
-       IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+        IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
 
-       IEnumerable<string> FullnameExclusions { get; }
+        IEnumerable<string> FullnameExclusions { get; }
     }
 }

@@ -291,18 +291,18 @@ namespace Steeltoe.Stream.Binding
                 {
                     declarative = typeof(IMessageChannel).IsAssignableFrom(methodParameter.ParameterType);
                     if (!declarative)
+                    {
+                        var targetBeanClass = targetBindable.GetType();
+                        foreach (var adapter in _streamListenerParameterAdapters)
                         {
-                            var targetBeanClass = targetBindable.GetType();
-                            foreach (var adapter in _streamListenerParameterAdapters)
+                            if (adapter.Supports(targetBeanClass, methodParameter))
                             {
-                                if (adapter.Supports(targetBeanClass, methodParameter))
-                                {
-                                    declarative = true;
-                                    break;
-                                }
+                                declarative = true;
+                                break;
                             }
                         }
                     }
+                }
             }
             else
             {

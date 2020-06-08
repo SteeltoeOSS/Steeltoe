@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         #region Implementation of IServiceInstance
 
-            /// <inheritdoc/>
+        /// <inheritdoc/>
         public string ServiceId { get; }
 
         /// <inheritdoc/>

@@ -220,6 +220,6 @@ namespace Steeltoe.Stream.TestBinder
                     _adapter.SendMessage(message);
                 }
             }
-    }
+        }
     }
 }

@@ -10,7 +10,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
-using T=System.Threading.Tasks;
+using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {

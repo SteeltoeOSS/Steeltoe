@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return null;
         }
 
-        protected internal List<MetricSample> GetMetricSamplesByTags(MetricDictionary<List<MetricSample>> measurements,  string metricName, IEnumerable<KeyValuePair<string, string>> tags)
+        protected internal List<MetricSample> GetMetricSamplesByTags(MetricDictionary<List<MetricSample>> measurements, string metricName, IEnumerable<KeyValuePair<string, string>> tags)
         {
             IEnumerable<MetricSample> filtered = measurements[metricName];
             var sampleList = new List<MetricSample>();
@@ -73,8 +73,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
             {
-               var sample = valueSamples.Aggregate(sumAggregator);
-               sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
+                var sample = valueSamples.Aggregate(sumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
             }
 
             var totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL);

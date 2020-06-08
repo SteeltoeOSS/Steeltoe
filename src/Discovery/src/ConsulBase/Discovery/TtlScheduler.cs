@@ -92,7 +92,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
                     checkId = "service:" + checkId;
                 }
 
-                var timer = new Timer(s => { PassTtl(s.ToString()); }, checkId, TimeSpan.Zero, interval);
+                var timer = new Timer(async s => { await PassTtl(s.ToString()).ConfigureAwait(false); }, checkId, TimeSpan.Zero, interval);
                 _serviceHeartbeats.AddOrUpdate(instanceId, timer, (key, oldTimer) =>
                 {
                     oldTimer.Dispose();

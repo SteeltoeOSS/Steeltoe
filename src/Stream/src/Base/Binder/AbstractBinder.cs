@@ -54,8 +54,8 @@ namespace Steeltoe.Stream.Binder
         }
 
         public IBinding BindProducer(string name, T outboundTarget, IProducerOptions producerOptions)
-            {
-                return DoBindProducer(name, outboundTarget, producerOptions);
+        {
+            return DoBindProducer(name, outboundTarget, producerOptions);
         }
 
         public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)

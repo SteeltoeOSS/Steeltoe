@@ -22,17 +22,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
     public class AspNetCoreHostingObserverTest : BaseTest
     {
         // Pending views API
-     /* [Fact]
-        public void Constructor_RegistersExpectedViews()
-        {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+        /* [Fact]
+           public void Constructor_RegistersExpectedViews()
+           {
+               var options = new MetricsEndpointOptions();
+               var stats = new OpenCensusStats();
+               var tags = new OpenCensusTags();
+               var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
 
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
-        }*/
+               Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
+               Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
+           }*/
 
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
