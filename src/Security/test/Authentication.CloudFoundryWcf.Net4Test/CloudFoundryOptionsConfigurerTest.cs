@@ -55,5 +55,22 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
             Assert.Equal(authURL + CloudFoundryDefaults.CheckTokenUri, opts.TokenInfoUrl);
             Assert.True(opts.ValidateCertificates);
         }
+
+        [Fact]
+        public void Configure_AlwaysSetsTokenValidationParameters()
+        {
+            // arrange
+            var opts = new CloudFoundryOptions() { ValidateAudience = false };
+
+            // this property isn't set in the constructor or exposed downstream, it should be false here:
+            Assert.Null(opts.TokenValidationParameters);
+
+            // act
+            CloudFoundryOptionsConfigurer.Configure(null, opts);
+
+            // assert
+            Assert.NotNull(opts.TokenValidationParameters);
+            Assert.False(opts.TokenValidationParameters.ValidateAudience);
+        }
     }
 }

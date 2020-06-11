@@ -21,6 +21,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 throw new ArgumentNullException(nameof(options));
             }
 
+            var backchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
+            options.TokenValidationParameters ??= options.GetTokenValidationParameters();
+            options.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(options.TokenValidationParameters, options.AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri, backchannelHttpHandler, options.ValidateCertificates, options);
+
             if (si == null)
             {
                 return;
@@ -29,9 +33,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             options.AuthorizationUrl = si.AuthDomain;
             options.ClientId = si.ClientId;
             options.ClientSecret = si.ClientSecret;
-
-            var backchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
-            options.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(options.TokenValidationParameters, options.AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri, backchannelHttpHandler, options.ValidateCertificates, options);
         }
     }
 }
