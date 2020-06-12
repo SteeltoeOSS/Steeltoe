@@ -89,16 +89,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 AuthorizationUrl = Environment.GetEnvironmentVariable("sso_auth_domain");
                 ClientId = Environment.GetEnvironmentVariable("sso_client_id");
                 ClientSecret = Environment.GetEnvironmentVariable("sso_client_secret");
+
+                // not using ILogger because an app using environment variable here could predate inclusion of ILogger in this class
                 Console.Error.WriteLine("sso_* variables were detected in your environment! Future releases of Steeltoe will not uses them for configuration");
                 Debug.WriteLine("sso_* variables were detected in your environment! Future releases of Steeltoe will not uses them for configuration");
             }
 
-            TokenKeyResolver = TokenKeyResolver ??
-                new CloudFoundry.CloudFoundryTokenKeyResolver(
-                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
-                    null,
-                    ValidateCertificates);
-            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
+            TokenKeyResolver ??= new CloudFoundry.CloudFoundryTokenKeyResolver(AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri, null, ValidateCertificates);
+            TokenValidator ??= new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
         }
 
         [Obsolete("This constructor is expected to be removed in a future release. Please reach out if this constructor is important to you!")]
@@ -128,13 +126,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             AuthorizationUrl = info.AuthDomain;
             ClientId = info.ClientId;
             ClientSecret = info.ClientSecret;
-            TokenKeyResolver = TokenKeyResolver ??
-                new CloudFoundry.CloudFoundryTokenKeyResolver(
-                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
-                    null,
-                    ValidateCertificates);
-            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this);
-            TokenValidationParameters = TokenValidationParameters ?? GetTokenValidationParameters();
+            TokenKeyResolver ??= new CloudFoundry.CloudFoundryTokenKeyResolver(AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri, null, ValidateCertificates);
+            TokenValidator ??= new CloudFoundryWcfTokenValidator(this);
+            TokenValidationParameters ??= GetTokenValidationParameters();
         }
 
         internal TokenValidationParameters GetTokenValidationParameters()
@@ -145,12 +139,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
 
             var parameters = new TokenValidationParameters();
-            TokenKeyResolver = TokenKeyResolver ??
-                new Steeltoe.Security.Authentication.CloudFoundry.CloudFoundryTokenKeyResolver(
-                    AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri,
-                    null,
-                    ValidateCertificates);
-            TokenValidator = TokenValidator ?? new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
+            TokenKeyResolver ??= new CloudFoundry.CloudFoundryTokenKeyResolver(AuthorizationUrl + CloudFoundryDefaults.JwtTokenUri, null, ValidateCertificates);
+            TokenValidator ??= new CloudFoundryWcfTokenValidator(this, LoggerFactory?.CreateLogger<CloudFoundryWcfTokenValidator>());
             TokenValidationParameters = parameters;
 
             parameters.ValidateAudience = ValidateAudience;

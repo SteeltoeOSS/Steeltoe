@@ -22,7 +22,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         /// <param name="httpClient">Provide your own http client for interacting with the security server</param>
         /// <param name="loggerFactory">For logging within the library</param>
         /// <returns>Your service</returns>
+        [Obsolete("The httpClient parameter has never actually been used, please remove it")]
         public static ServiceHost AddJwtAuthorization(this ServiceHost serviceHost, IConfiguration configuration, HttpClient httpClient = null, LoggerFactory loggerFactory = null)
+        {
+            return serviceHost.AddJwtAuthorization(configuration, loggerFactory);
+        }
+
+        /// <summary>
+        /// Adds the <see cref="JwtAuthorizationManager"/> to a <see cref="ServiceHost"/>
+        /// </summary>
+        /// <param name="serviceHost">Your service to be secured with JWT Auth</param>
+        /// <param name="configuration">Your application configuration, including VCAP_SERVICES</param>
+        /// <param name="loggerFactory">For logging within the library</param>
+        /// <returns>Your service</returns>
+        public static ServiceHost AddJwtAuthorization(this ServiceHost serviceHost, IConfiguration configuration, LoggerFactory loggerFactory = null)
         {
             if (serviceHost == null)
             {
@@ -42,7 +55,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             securitySection.Bind(cloudFoundryOptions);
 
             // get and apply service binding info
-            SsoServiceInfo info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryOptionsConfigurer.Configure(info, cloudFoundryOptions);
 
             var authManager = new JwtAuthorizationManager(cloudFoundryOptions);
