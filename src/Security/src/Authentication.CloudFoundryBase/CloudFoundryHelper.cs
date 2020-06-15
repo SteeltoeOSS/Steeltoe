@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
 using System.Text.Json;
 #endif
 
@@ -19,7 +19,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         public static List<string> GetScopes(JsonElement user)
         {
             var result = new List<string>();
@@ -106,7 +106,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return parameters;
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         /// <summary>
         /// Retrieves the time at which a token was issued
         /// </summary>

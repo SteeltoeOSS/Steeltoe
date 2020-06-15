@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Security Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -7,7 +6,10 @@
     <PackageId>Steeltoe.Common.Security</PackageId>
     <PackageTags>NET Core;NET Framework</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
+
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />

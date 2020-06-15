@@ -68,7 +68,7 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.IsType<DiscoveryClientStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddServiceDiscovery_IHostBuilder_IStartupFilterFires()
         {

@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Common Library for Autofac</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -7,6 +6,8 @@
     <PackageId>Steeltoe.Common.Autofac</PackageId>
     <PackageTags>NET Core;NET Framework;Autofac</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>

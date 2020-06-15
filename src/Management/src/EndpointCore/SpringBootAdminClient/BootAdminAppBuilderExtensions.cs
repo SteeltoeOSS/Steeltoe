@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 var result = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").Result;
             };
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
             lifetime.ApplicationStarted.Register(onStarted);
             lifetime.ApplicationStopped.Register(onStopped);

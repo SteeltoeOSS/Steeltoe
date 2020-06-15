@@ -119,7 +119,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             Assert.IsType<CloudFoundryActuatorsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddCloudFoundryActuators_IHostBuilder_IStartupFilterFires()
         {

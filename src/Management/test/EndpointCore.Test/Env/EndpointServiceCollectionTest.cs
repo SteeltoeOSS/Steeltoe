@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         public void AddEnvActuator_AddsCorrectServices()
         {
             var services = new ServiceCollection();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var host = HostingHelpers.GetHostingEnvironment();
             services.AddSingleton<IHostEnvironment>(host);
 #else

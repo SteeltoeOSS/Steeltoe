@@ -1,28 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
-  
   <PropertyGroup>
     <Description>Steeltoe Management Exporter</Description>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.ExporterCore</AssemblyName>
     <PackageId>Steeltoe.Management.ExporterCore</PackageId>
     <PackageTags>Asp.NET Core, Management;Monitoring;Metrics;Distributed Trace</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup Condition="'$(TF_BUILD)' == ''">
     <ProjectReference Include="..\ExporterBase\Steeltoe.Management.ExporterBase.csproj" />
     <ProjectReference Include="..\OpenCensus.Exporter.Zipkin\Steeltoe.Management.OpenCensus.Exporter.Zipkin.csproj" />
     <ProjectReference Include="..\OpenCensus\Steeltoe.Management.OpenCensus.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Management.ExporterBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensus.Exporter.Zipkin" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.OpenCensus" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />

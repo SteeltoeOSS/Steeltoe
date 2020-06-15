@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Newtonsoft.Json.Linq;
 #endif
 using System.Security.Claims;
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
 using System.Text.Json;
 #endif
 
@@ -20,7 +20,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         public override void Run(JsonElement userData, ClaimsIdentity identity, string issuer)
 #else
         public override void Run(JObject userData, ClaimsIdentity identity, string issuer)

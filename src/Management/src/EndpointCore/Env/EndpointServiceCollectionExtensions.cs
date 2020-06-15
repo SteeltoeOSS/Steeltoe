@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Env
                 throw new ArgumentNullException(nameof(config));
             }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
                 var service = provider.GetRequiredService<IHostEnvironment>();

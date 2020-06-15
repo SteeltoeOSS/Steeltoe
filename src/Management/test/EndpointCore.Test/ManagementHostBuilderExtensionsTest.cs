@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<DbMigrationsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<EnvStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -157,7 +157,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<HealthStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -195,7 +195,7 @@ namespace Steeltoe.Management.Endpoint.Test
             }
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddHeapDumpActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -233,7 +233,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<HypermediaStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -285,7 +285,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<InfoStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -320,7 +320,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<LoggersStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -355,7 +355,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<MappingsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -390,7 +390,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<MetricsStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -425,7 +425,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<RefreshStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -463,7 +463,7 @@ namespace Steeltoe.Management.Endpoint.Test
             }
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddThreadDumpActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -501,7 +501,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<TraceStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
         {
@@ -536,7 +536,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.IsType<CloudFoundryActuatorStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {

@@ -100,7 +100,7 @@ namespace Steeltoe.Common.Hosting.Test
             Assert.Contains("https://*:5001", addresses.Addresses);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public void UseCloudHosting_GenericHost_Default8080()
         {

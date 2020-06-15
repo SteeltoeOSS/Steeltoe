@@ -49,7 +49,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             return webHostBuilder;
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         /// <summary>
         /// Enable the application to listen on port(s) provided by the environment at runtime
         /// </summary>

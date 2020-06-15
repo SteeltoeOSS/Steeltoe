@@ -1,6 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Extensions for using Steeltoe Management OWIN Endpoints with Autofac</Description>
     <TargetFramework>net461</TargetFramework>
@@ -8,20 +6,21 @@
     <PackageId>Steeltoe.Management.EndpointOwinAutofac</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;OWIN</PackageTags>
   </PropertyGroup>
-  <Import Project="..\..\..\..\sharedproject.props" />
 
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
   <Import Project="..\..\..\..\targetframework.props" />
   
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup Condition="'$(TF_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
     <ProjectReference Include="..\EndpointOwin\Steeltoe.Management.EndpointOwin.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
+  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
     <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
     <PackageReference Include="Steeltoe.Management.EndpointOwin" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>

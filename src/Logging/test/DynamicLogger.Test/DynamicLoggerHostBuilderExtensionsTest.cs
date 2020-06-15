@@ -45,7 +45,7 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
             Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
         {

@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Hosting
             return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         /// <summary>
         /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
         /// </summary>
