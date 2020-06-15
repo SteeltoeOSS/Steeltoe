@@ -5,6 +5,10 @@
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>

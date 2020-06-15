@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
@@ -69,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return null;
         }
 
-        protected internal List<MetricSample> GetMetricSamplesByTags(MetricDictionary<List<MetricSample>> measurements,  string metricName, IEnumerable<KeyValuePair<string, string>> tags)
+        protected internal List<MetricSample> GetMetricSamplesByTags(MetricDictionary<List<MetricSample>> measurements, string metricName, IEnumerable<KeyValuePair<string, string>> tags)
         {
             IEnumerable<MetricSample> filtered = measurements[metricName];
             var sampleList = new List<MetricSample>();
@@ -83,8 +73,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
             {
-               var sample = valueSamples.Aggregate(sumAggregator);
-               sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
+                var sample = valueSamples.Aggregate(sumAggregator);
+                sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
             }
 
             var totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL);

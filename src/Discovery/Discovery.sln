@@ -13,7 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{31067C
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\stylecop.json = ..\..\stylecop.json
-		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
 	EndProjectSection
 EndProject
