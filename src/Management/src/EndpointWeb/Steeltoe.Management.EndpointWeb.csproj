@@ -21,11 +21,7 @@
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="$(WebInfrastructureVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TF_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

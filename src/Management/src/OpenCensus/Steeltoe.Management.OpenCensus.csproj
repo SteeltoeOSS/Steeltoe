@@ -30,11 +30,7 @@
     <PackageReference Include="System.Collections.Immutable" Version="1.6.0" />
   </ItemGroup>
   
-  <ItemGroup Condition="'$(TF_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\OpenCensus.Abstractions\Steeltoe.Management.OpenCensus.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Management.OpenCensus.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

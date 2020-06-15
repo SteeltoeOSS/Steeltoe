@@ -10,13 +10,9 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(TF_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

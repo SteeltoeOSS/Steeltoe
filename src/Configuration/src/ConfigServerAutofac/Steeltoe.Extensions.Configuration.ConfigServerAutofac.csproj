@@ -14,13 +14,8 @@
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TF_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
     <ProjectReference Include="..\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TF_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.ConfigServerBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>
