@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -55,7 +55,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RabbitMQ.Client.ConnectionFactory is retrievable as both ConnectionFactory and IConnectionFactory</remarks>
-        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddRabbitMQConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {

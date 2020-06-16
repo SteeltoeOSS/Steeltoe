@@ -28,6 +28,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsRedisVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
     <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" /> -->
     <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" />-->
