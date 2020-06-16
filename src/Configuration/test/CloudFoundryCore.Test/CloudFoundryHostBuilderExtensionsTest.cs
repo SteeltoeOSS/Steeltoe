@@ -5,16 +5,17 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using System;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
-    [Obsolete]
     public class CloudFoundryHostBuilderExtensionsTest
     {
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_Web_ThrowsIfHostBuilderNull()
         {
             // Arrange
@@ -26,6 +27,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_DoNotSetUrlsIfNull()
         {
             // Arrange
@@ -44,6 +46,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_MakeSureThePortIsSet()
         {
             // Arrange
@@ -63,6 +66,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
 #if NETCOREAPP3_1
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_GenericHost_DoNotSetUrlsIfNull()
         {
             // Arrange
@@ -81,6 +85,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
 
         [Fact]
+        [Obsolete]
         public void UseCloudFoundryHosting_GenericHost_MakeSureThePortIsSet()
         {
             // Arrange
@@ -97,6 +102,37 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             using var host = hostBuilder.Build();
             host.Start();
         }
+
+        [Fact]
+        public void HostAddCloudFoundryConfiguration_Adds()
+        {
+            // arrange
+            var hostbuilder = new HostBuilder();
+
+            // act
+            hostbuilder.AddCloudFoundryConfiguration();
+            var host = hostbuilder.Build();
+
+            // assert
+            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        }
 #endif
+
+        [Fact]
+        public void WebHostAddCloudFoundryConfiguration_Adds()
+        {
+            // arrange
+            var hostbuilder = new WebHostBuilder();
+            hostbuilder.Configure(builder => { });
+
+            // act
+            hostbuilder.AddCloudFoundryConfiguration();
+            var host = hostbuilder.Build();
+
+            // assert
+            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        }
     }
 }
