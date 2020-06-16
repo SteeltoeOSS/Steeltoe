@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
@@ -20,19 +22,18 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
             var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
-
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
-            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions(configuration);
+            var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             return new RabbitMQHealthContributor(factory, logger);
         }
 
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
-        private object _connFactory;
+        private readonly object _connFactory;
+        private object connection;
 
         public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {
@@ -49,19 +50,31 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             var result = new HealthCheckResult();
             try
             {
-                var connection = ConnectorHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+                connection ??= ConnectorHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
 
                 if (connection == null)
                 {
                     throw new ConnectorException("Failed to open RabbitMQ connection!");
                 }
 
-                // Spring Boot health checks also include RMQ version the server is running
+                if (RabbitMQTypeLocator.IConnection.GetProperty("IsOpen").GetValue(connection).Equals(false))
+                {
+                    throw new ConnectorException("RabbitMQ connection is closed!");
+                }
+
+                try
+                {
+                    var serverproperties = RabbitMQTypeLocator.IConnection.GetProperty("ServerProperties").GetValue(connection) as Dictionary<string, object>;
+                    result.Details.Add("version", Encoding.UTF8.GetString(serverproperties["version"] as byte[]));
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogTrace(e, "Failed to find server version while checking RabbitMQ connection health");
+                }
+
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
                 _logger?.LogTrace("RabbitMQ connection up!");
-
-                ConnectorHelpers.Invoke(RabbitMQTypeLocator.CloseConnectionMethod, connection, null);
             }
             catch (Exception e)
             {
