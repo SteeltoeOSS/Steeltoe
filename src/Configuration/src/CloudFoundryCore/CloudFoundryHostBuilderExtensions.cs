@@ -93,28 +93,26 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder)
-        {
-            hostBuilder.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddCloudFoundry();
-            });
-
-            return hostBuilder;
-        }
+        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
+        public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryConfiguration();
 
         /// <summary>
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your WebHostBuilder</param>
-        public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder)
-        {
-            hostBuilder.ConfigureAppConfiguration((context, config) =>
-            {
-                config.AddCloudFoundry();
-            });
+        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
+        public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryConfiguration();
 
-            return hostBuilder;
-        }
+        /// <summary>
+        /// Add Cloud Foundry Configuration Provider
+        /// </summary>
+        /// <param name="hostBuilder">Your HostBuilder</param>
+        public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder) => hostBuilder.ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); });
+
+        /// <summary>
+        /// Add Cloud Foundry Configuration Provider
+        /// </summary>
+        /// <param name="hostBuilder">Your WebHostBuilder</param>
+        public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder) => hostBuilder.ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); });
     }
 }
