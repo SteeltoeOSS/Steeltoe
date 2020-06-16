@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
@@ -13,7 +14,27 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
+        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
         public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder)
+        {
+            return hostBuilder.AddCloudFoundryConfiguration();
+        }
+
+        /// <summary>
+        /// Add Cloud Foundry Configuration Provider
+        /// </summary>
+        /// <param name="hostBuilder">Your WebHostBuilder</param>
+        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
+        public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder)
+        {
+            return hostBuilder.AddCloudFoundryConfiguration();
+        }
+
+        /// <summary>
+        /// Add Cloud Foundry Configuration Provider
+        /// </summary>
+        /// <param name="hostBuilder">Your HostBuilder</param>
+        public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
@@ -29,7 +50,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your WebHostBuilder</param>
-        public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder)
+        public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
