@@ -30,7 +30,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         public async Task<OAuthTokenResponse> TestExchangeCodeAsync(string code, string redirectUri)
         {
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             return await ExchangeCodeAsync(new OAuthCodeExchangeContext(new AuthenticationProperties(), code, redirectUri));
 #else
             return await ExchangeCodeAsync(code, redirectUri);

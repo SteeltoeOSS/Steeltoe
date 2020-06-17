@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Random Value Provider - Base Package</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -7,6 +6,8 @@
     <PackageId>Steeltoe.Extensions.Configuration.RandomValueBase</PackageId>
     <PackageTags>Configuration;Random Values</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>

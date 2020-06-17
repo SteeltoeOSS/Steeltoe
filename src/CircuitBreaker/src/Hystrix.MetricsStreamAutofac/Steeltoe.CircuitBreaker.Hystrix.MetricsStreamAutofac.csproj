@@ -1,7 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
- <Import Project="..\..\..\..\versions.props" />
-
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream Autofac</Description>
     <TargetFramework>net461</TargetFramework>
@@ -9,20 +6,15 @@
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamAutofac</PackageId>
     <PackageTags>ASPNET;Autofac;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
-  <Import Project="..\..\..\..\sharedproject.props" />
 
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
   <Import Project="..\..\..\..\targetframework.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorAutofac\Steeltoe.CloudFoundry.ConnectorAutofac.csproj" />
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorAutofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

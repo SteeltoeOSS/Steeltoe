@@ -61,7 +61,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Contains("http://*:42", addresses.Addresses);
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public void UseCloudFoundryHosting_GenericHost_DoNotSetUrlsIfNull()
         {

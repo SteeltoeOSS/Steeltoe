@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-#if !NETCOREAPP3_0
+#if !NETCOREAPP3_1
 using Newtonsoft.Json.Linq;
 #endif
 using System.Linq;
@@ -15,7 +15,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
 using System.Text.Json;
 #endif
 using Xunit;
@@ -117,7 +117,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
 #else
@@ -140,7 +140,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
             MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
 #else
@@ -176,7 +176,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             ClaimsIdentity identity = new ClaimsIdentity();
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
 #else

@@ -1,29 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
- <Import Project="..\..\..\..\versions.props" />
- 
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Client - ASPNET Core</Description>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Steeltoe.CircuitBreaker.HystrixCore</AssemblyName>
     <PackageId>Steeltoe.CircuitBreaker.HystrixCore</PackageId>
     <PackageTags>ASPNET Core;Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
   </PropertyGroup>
+ 
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
-      <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-      <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  <ItemGroup>
+    <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 </Project>

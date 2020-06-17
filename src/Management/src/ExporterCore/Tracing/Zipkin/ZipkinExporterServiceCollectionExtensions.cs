@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Exporter.Tracing
 
         private static ZipkinTraceExporter CreateExporter(IServiceProvider p, IConfiguration config)
         {
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var h = p.GetRequiredService<IHostEnvironment>();
 #else
             var h = p.GetRequiredService<IHostingEnvironment>();

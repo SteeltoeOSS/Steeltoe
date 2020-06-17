@@ -1,7 +1,3 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 trigger:
   branches:
     include:
@@ -13,88 +9,26 @@ trigger:
     - project-docs/*
     - roadmaps/*
 
-variables:
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('2.5.0-ci{0}', variables['Build.BuildId'])]
-
 jobs:
-- job: Linux_Build_and_Test
+- job:
+  variables:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    PackageVersion: $[format('2.5.0-ci{0}', variables['Build.BuildId'])]
+  strategy:
+    matrix:
+      Linux_Build_and_Test:
+        imageName: ubuntu-latest
+        skipFilter: '--filter "Category!=Integration&Category!=SkipOnLinux"'
+      MacOS_Build_and_Test:
+        imageName: macOS-latest
+        skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      Windows_Build_Test_and_Package:
+        imageName: windows-latest
+        skipFilter: '--filter "Category!=Integration"'
   pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
-    inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
-    inputs:
-      packageType: sdk
-      version: 2.1.806
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.300
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: 'src/Steeltoe.All.sln'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: 'src/Steeltoe.All.sln'
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnLinux"'
-- job: MacOS_Build_and_Test
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - task: PowerShell@2
-    displayName: 'Get GemFire NativeClient assemblies'
-    inputs:
-      filePath: src/Connectors/EnableGemFire.ps1
-      arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
-    inputs:
-      packageType: sdk
-      version: 2.1.806
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.300
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: 'src/Steeltoe.All.sln'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: 'src/Steeltoe.All.sln'
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 --filter "Category!=SkipOnMacOS"'
-- job: Windows_Build_Test_and_Package
-  timeoutInMinutes: 90
-  pool:
-    vmImage: 'windows-latest'
+    vmImage: $(imageName) 
+  timeoutInMinutes: 0
   steps:
   - pwsh: |
       if ($env:PackageVersionOverride){
@@ -115,22 +49,15 @@ jobs:
     inputs:
       filePath: src/Connectors/EnableGemFire.ps1
       arguments: $(PivNetAPIToken)
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 2.x SDK'
-    inputs:
-      packageType: sdk
-      version: 2.1.806
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core 3.x SDK'
-    inputs:
-      packageType: sdk
-      version: 3.1.300
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
-      command: 'restore'
-      projects: 'src/Steeltoe.All.sln'
-  - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
+      command: restore
+      projects: src/Steeltoe.All.sln
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+  - task: SonarCloudPrepare@1
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: 'Prepare analysis on SonarCloud'
     inputs:
       SonarCloud: SonarCloud
@@ -144,51 +71,46 @@ jobs:
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
-      command: 'build'
-      feedsToUse: 'select'
-      arguments: '--no-restore -c $(buildConfiguration) /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+      command: build
       projects: 'src/Steeltoe.All.sln'
-      versioningScheme: 'byEnvVar'
-      versionEnvVar: PackageVersion
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
       command: test
-      projects: 'src/Steeltoe.All.sln'
-      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true --filter "Category!=Integration" /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*"'
-  # Generate the report using ReportGenerator (https://github.com/danielpalme/ReportGenerator)
-  # First install the tool on the machine, then run it
+      projects: '**/*.Test/*.csproj'
+      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*"'
   - pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator "-reports:**\*.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: Create Code coverage report
-    condition: always()
-  # Publish the code coverage result (summary and web site)
-  # The summary allows to view the coverage percentage in the summary tab
-  # The web site allows to view which lines are covered directly in Azure Pipeline
   - task: PublishCodeCoverageResults@1
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: 'Publish code coverage'
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(Build.SourcesDirectory)\CodeCoverage\Cobertura.xml'
       reportDirectory: '$(Build.SourcesDirectory)\CodeCoverage'
-    condition: always()
   - bash: bash <(curl -s https://codecov.io/bash)
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: 'Upload to codecov.io'
-    condition: always()
-  - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
+  - task: SonarCloudAnalyze@1
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: Run Code Analysis
-    condition: always()
-  - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
+  - task: SonarCloudPublish@1
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: Publish Quality Gate Result
-    condition: always()
   - task: DotNetCoreCLI@2
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: dotnet pack
     inputs:
-      command: 'pack'
-      feedsToUse: 'select'
-      packagesToPack: 'src/Steeltoe.All.sln'
-      versioningScheme: 'byEnvVar'
+      command: pack
+      feedsToUse: select
+      packagesToPack: src/Steeltoe.All.sln
+      versioningScheme: byEnvVar
       versionEnvVar: PackageVersion
+      nobuild: true
   - task: PowerShell@2
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')), eq( variables['Agent.OS'], 'Windows_NT' ))
     displayName: Authenticode Sign Packages
     inputs:
       filePath: build/sign-packages.ps1
@@ -196,10 +118,9 @@ jobs:
       SignClientUser: $(SignClientUser)
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
       ArtifactName: Packages
       publishLocation: Container
-    condition: always()

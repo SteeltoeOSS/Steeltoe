@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Management Endpoints for ASP.NET 4.x</Description>
     <TargetFrameworks>net461</TargetFrameworks>
@@ -7,6 +6,8 @@
     <PackageId>Steeltoe.Management.EndpointWeb</PackageId>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring;CloudFoundry;ASP.NET 4.x</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
   <Import Project="..\..\..\..\targetframework.props" />
 
@@ -20,11 +21,7 @@
     <PackageReference Include="Microsoft.Web.Infrastructure" Version="$(WebInfrastructureVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Management.EndpointBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

@@ -61,7 +61,7 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
         private MyAppLifeTime AddApplicationLifetime(ServiceCollection services)
         {
             var appLifeTime = new MyAppLifeTime();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             services.TryAddSingleton<IHostApplicationLifetime>(appLifeTime);
 #else
             services.TryAddSingleton<IApplicationLifetime>(appLifeTime);
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.EndpointCore.Test.SpringBootAdminClient
         }
 
         private class MyAppLifeTime :
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             IHostApplicationLifetime
 #else
 #pragma warning disable CS0618 // Needed for 2.x

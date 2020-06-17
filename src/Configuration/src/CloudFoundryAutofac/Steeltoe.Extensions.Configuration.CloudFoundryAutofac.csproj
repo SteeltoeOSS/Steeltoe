@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>CloudFoundry Environment Variable Configuration Provider Autofac</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,19 +6,16 @@
     <PackageId>Steeltoe.Extensions.Configuration.CloudFoundryAutofac</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Autofac</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
     <ProjectReference Include="..\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common.Autofac" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

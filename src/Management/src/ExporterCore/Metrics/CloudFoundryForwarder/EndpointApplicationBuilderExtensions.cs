@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Exporter.Metrics
             }
 
             var service = builder.ApplicationServices.GetRequiredService<IMetricsExporter>();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var lifetime = builder.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
 #else
             var lifetime = builder.ApplicationServices.GetRequiredService<IApplicationLifetime>();

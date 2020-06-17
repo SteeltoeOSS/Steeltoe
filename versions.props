@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>2.4.4</VersionPrefix>
+    <VersionPrefix>2.5.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
@@ -57,18 +57,11 @@
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
     <SonarAnalyzerVersion>7.17.0.9346</SonarAnalyzerVersion>
-    <SourceLinkGitHubVersion>1.0.0-beta2-19367-01</SourceLinkGitHubVersion>
+    <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
-    <EF6Version>6.3.0</EF6Version>
-    <ExtensionsVersion>3.0.0</ExtensionsVersion>
-    <HealthChecksVersion>3.0.0</HealthChecksVersion>
-    <LoggingVersion>3.0.0</LoggingVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.1' OR '$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <EF6Version>6.3.0</EF6Version>
     <ExtensionsVersion>3.1.0</ExtensionsVersion>

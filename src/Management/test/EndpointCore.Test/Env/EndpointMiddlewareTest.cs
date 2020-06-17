@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
 #else
         private Microsoft.Extensions.Hosting.IHostingEnvironment host = (Microsoft.Extensions.Hosting.IHostingEnvironment)HostingHelpers.GetHostingEnvironment();

@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         public void Configure(IApplicationBuilder app)
         {
             var config = app.ApplicationServices.GetServices<IConfiguration>();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

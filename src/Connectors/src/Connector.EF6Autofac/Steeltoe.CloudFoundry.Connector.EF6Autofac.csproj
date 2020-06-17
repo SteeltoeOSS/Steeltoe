@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>CloudFoundry Connector Extensions for Entity Framework 6 with Autofac</Description>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,15 +6,14 @@
     <PackageId>Steeltoe.CloudFoundry.Connector.EF6Autofac</PackageId>
     <PackageTags>CloudFoundry;ASPNET;Autofac;EntityFramework</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\ConnectorBase\Steeltoe.CloudFoundry.ConnectorBase.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autofac" Version="$(AutofacVersion)" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

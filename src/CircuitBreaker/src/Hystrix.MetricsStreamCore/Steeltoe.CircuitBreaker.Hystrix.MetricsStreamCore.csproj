@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
- <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -7,16 +6,13 @@
     <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore</PackageId>
     <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.CloudFoundry.ConnectorCore.csproj" />
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -20,7 +20,7 @@ using System.Net.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
 using System.Text.Json;
 #endif
 using System.Threading.Tasks;
@@ -85,7 +85,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             return Backchannel;
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         protected override async Task<OAuthTokenResponse> ExchangeCodeAsync(OAuthCodeExchangeContext context)
         {
             _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", context.Code, context.RedirectUri);
@@ -172,7 +172,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             var resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var payload = JsonDocument.Parse(resp).RootElement;
 #else
             var payload = JObject.Parse(resp);

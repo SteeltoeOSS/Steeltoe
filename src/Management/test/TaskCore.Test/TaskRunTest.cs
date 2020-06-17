@@ -36,7 +36,7 @@ namespace Steeltoe.Management.TaskCore.Test
             Assert.True(true, "If we reached this assertion, the app stopped without throwing anything");
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public void DelegatingTask_GenericHost_ExecutesRun()
         {

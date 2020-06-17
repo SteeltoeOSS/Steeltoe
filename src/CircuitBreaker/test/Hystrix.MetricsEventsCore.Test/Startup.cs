@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public void Configure(IApplicationBuilder app)
         {
             app.UseHystrixRequestContext();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

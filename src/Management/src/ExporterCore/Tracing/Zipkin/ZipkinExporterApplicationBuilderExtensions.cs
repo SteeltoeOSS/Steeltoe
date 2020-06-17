@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Exporter.Tracing
             }
 
             var service = builder.ApplicationServices.GetRequiredService<ZipkinTraceExporter>();
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             var lifetime = builder.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
 #else
             var lifetime = builder.ApplicationServices.GetRequiredService<IApplicationLifetime>();

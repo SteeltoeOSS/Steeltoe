@@ -126,7 +126,7 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
             }
         }
 
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
         [Fact]
         public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
         {

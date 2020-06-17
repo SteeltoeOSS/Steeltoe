@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <Description>Unit test project for Steeltoe.Management.EndpointAutofac</Description>
     <TargetFrameworks>net461</TargetFrameworks>
     <AssemblyName>Steeltoe.Management.EndpointAutofac.Test</AssemblyName>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
   <Import Project="..\..\..\..\targetframework.props" />
  

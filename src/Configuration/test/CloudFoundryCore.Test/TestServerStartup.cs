@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
         public void Configure(IApplicationBuilder app)
         {
-#if NETCOREAPP3_0
+#if NETCOREAPP3_1
             app.UseRouting();
 #else
             app.UseMvc();
