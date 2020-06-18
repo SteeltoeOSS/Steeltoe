@@ -26,10 +26,8 @@ namespace Steeltoe.Management.CloudFoundry
         {
             return app =>
             {
-                app.UseRouting();
-                app.UseCloudFoundryActuators(MediaTypeVersion, ActuatorContext);
-
                 next(app);
+                app.UseCloudFoundryActuators(MediaTypeVersion, ActuatorContext);
             };
         }
     }

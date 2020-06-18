@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
         public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddTraceActuator(config, MediaTypeVersion.V1);
+            services.AddTraceActuator(config, MediaTypeVersion.V2);
         }
 
         public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)

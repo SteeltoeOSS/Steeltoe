@@ -18,6 +18,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             Id = "metrics";
             IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
             EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+            ExactMatch = false;
         }
 
         public MetricsEndpointOptions(IConfiguration config)
@@ -37,6 +38,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
             }
+
+            ExactMatch = false;
         }
 
         public string IngressIgnorePattern { get; set; }

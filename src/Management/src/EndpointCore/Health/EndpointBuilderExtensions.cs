@@ -1,39 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-
-using Microsoft.AspNetCore.Mvc.Core;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.Routing.Constraints;
-using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Hypermedia;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
     public static class EndpointBuilderExtensions
     {
-        public static void MapHealth(
-            this IEndpointRouteBuilder endpoints
-        )
+        public static void MapHealth(this IEndpointRouteBuilder endpoints)
         {
             if (endpoints == null)
             {
                 throw new ArgumentNullException(nameof(endpoints));
             }
 
-
             var healthOptions = endpoints.ServiceProvider.GetService<IHealthOptions>();
-            var options =
-               endpoints.ServiceProvider
-                   .GetService<IEnumerable<IManagementOptions>>();
-
+            var options = endpoints.ServiceProvider.GetService<IEnumerable<IManagementOptions>>();
 
             foreach (var mgmtOptions in options)
             {

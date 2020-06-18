@@ -14,12 +14,12 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             return app =>
             {
+                next(app);
                 app.UseEndpoints(endpoints =>
                 {
                   endpoints.Map<HealthEndpointCore>();
                 });
 
-                next(app);
             };
         }
     }

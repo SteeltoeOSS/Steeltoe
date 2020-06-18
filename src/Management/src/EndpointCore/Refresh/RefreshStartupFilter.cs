@@ -12,14 +12,15 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
+            
             return app =>
             {
+                next(app);
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.Map<RefreshEndpoint>();
                 });
 
-                next(app);
             };
         }
     }

@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
             _logger = logger;
-            ExactMatch = false;
+          //  ExactMatch = false;
         }
 
         public new IMetricsEndpointOptions Options

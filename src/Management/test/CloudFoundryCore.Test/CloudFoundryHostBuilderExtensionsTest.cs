@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,8 @@ namespace Steeltoe.Management.CloudFoundry.Test
             ["management:endpoints:path"] = "/testing",
         };
 
+        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+
         [Fact]
         public void AddCloudFoundryActuators_IWebHostBuilder()
         {
@@ -45,12 +48,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
@@ -124,7 +127,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         {
             // Arrange
             var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }))
+                .ConfigureWebHost(testServerWithRouting)
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
 
             // Act

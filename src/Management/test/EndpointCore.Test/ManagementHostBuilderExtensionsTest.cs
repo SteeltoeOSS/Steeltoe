@@ -1,4 +1,4 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+﻿﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -53,8 +53,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
@@ -86,8 +85,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddEnvActuator().StartAsync();
@@ -153,8 +151,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHealthActuator().StartAsync();
@@ -191,8 +188,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder()
-                    .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
@@ -225,8 +221,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHypermediaActuator().StartAsync();
@@ -275,8 +270,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddInfoActuator().StartAsync();
@@ -308,8 +302,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
@@ -341,8 +334,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMappingsActuator().StartAsync();
@@ -374,8 +366,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMetricsActuator().StartAsync();
@@ -407,8 +398,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddRefreshActuator().StartAsync();
@@ -429,7 +419,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
                 // Act
                 var host = hostBuilder.AddThreadDumpActuator().Build();
-                var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint>();
+                var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
                 var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
                 // Assert
@@ -445,8 +435,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder()
-                    .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
@@ -454,7 +443,7 @@ namespace Steeltoe.Management.Endpoint.Test
                 // Assert general success...
                 //   not sure how to actually validate the StartupFilter worked,
                 //   but debug through and you'll see it. Also the code coverage report should provide validation
-                Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint>());
+                Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint_v2>());
             }
         }
 
@@ -466,7 +455,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Act
             var host = hostBuilder.AddTraceActuator().Build();
-            var managementEndpoint = host.Services.GetServices<TraceEndpoint>();
+            var managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
@@ -479,8 +468,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddTraceActuator().StartAsync();
@@ -488,7 +476,7 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert general success...
             //   not sure how to actually validate the StartupFilter worked,
             //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<TraceEndpoint>());
+            Assert.NotNull(host.Services.GetService<HttpTraceEndpoint>());
         }
 
         [Fact]
@@ -512,8 +500,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
@@ -523,5 +510,7 @@ namespace Steeltoe.Management.Endpoint.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<CloudFoundryEndpoint>());
         }
+
+        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
     }
 }

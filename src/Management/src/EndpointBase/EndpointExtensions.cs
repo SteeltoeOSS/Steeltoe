@@ -2,13 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -65,50 +63,32 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
-        [Obsolete("Use ShouldExecute instead")]
-        public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
-        {
-            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out IManagementOptions matchingMgmtContext, exactMatch)
-                && endpoint.IsEnabled(matchingMgmtContext)
-                && endpoint.IsExposed(matchingMgmtContext)
-                && allowedMethods.Any(m => m.Method.Equals(httpMethod));
-        }
-
         public static bool ShouldInvoke(this IEndpoint endpoint, IManagementOptions mgmtContext)
         {
             return endpoint.IsEnabled(mgmtContext) && endpoint.IsExposed(mgmtContext);
         }
-        
-        [Obsolete("Use ShouldExecute instead")]
-        private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
+
+        public static string GetContextPath(this IEndpointOptions options, IManagementOptions mgmtContext)
         {
-            matchingContext = null;
-            var endpointPath = endpoint.Path;
-
-            if (mgmtOptions == null)
+            var contextPath = mgmtContext.Path;
+            if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(options.Path))
             {
-                return exactMatch ? requestPath.Equals(endpointPath) : requestPath.StartsWith(endpointPath);
+                contextPath += "/";
             }
-            else
-            {
-                foreach (var context in mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpointPath))
-                    {
-                        contextPath += "/";
-                    }
 
-                    var fullPath = contextPath + endpointPath;
-                    if (exactMatch ? requestPath.Equals(fullPath) : requestPath.StartsWith(fullPath))
-                    {
-                        matchingContext = context;
-                        return true;
-                    }
+            contextPath += options.Path;
+
+            if (!options.ExactMatch)
+            {
+                if (!contextPath.EndsWith("/"))
+                {
+                    contextPath += "/";
                 }
 
-                return false;
+                contextPath += "{**_}";
             }
+
+            return contextPath;
         }
     }
 }

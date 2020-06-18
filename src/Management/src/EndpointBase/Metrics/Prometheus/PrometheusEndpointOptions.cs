@@ -14,6 +14,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             : base()
         {
             Id = "prometheus";
+            ExactMatch = false;
         }
 
         public PrometheusEndpointOptions(IConfiguration config)
@@ -23,6 +24,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 Id = "prometheus";
             }
+            ExactMatch = false;
         }
     }
 }

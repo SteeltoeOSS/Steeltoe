@@ -17,9 +17,9 @@ namespace Steeltoe.Management
 
         string Path { get; }
 
-        string GetContextPath(IManagementOptions options);
+      //  IEnumerable<string> AllowedVerbs { get; set; }
 
-        IEnumerable<string> AllowedVerbs { get; set; }
+      //  bool ExactMatch { get; set; }
     }
 
     public interface IEndpoint<out TResult> : IEndpoint

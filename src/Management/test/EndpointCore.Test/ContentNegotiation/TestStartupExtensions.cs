@@ -258,7 +258,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<TraceEndpoint>();
+                endpoints.Map<HttpTraceEndpoint>();
             });
         }
     }

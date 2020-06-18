@@ -14,11 +14,11 @@ namespace Steeltoe.Management.Endpoint.Env
         {
             return app =>
             {
+                next(app);
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.Map<EnvEndpoint>();
                 });
-                next(app);
             };
         }
     }

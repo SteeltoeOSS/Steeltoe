@@ -67,7 +67,7 @@ namespace Steeltoe.Management.CloudFoundry
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<InfoEndpoint>();
-                endpoints.MapHealth();
+                endpoints.Map<HealthEndpoint>();
                 endpoints.Map<LoggersEndpoint>();
                 endpoints.Map<HttpTraceEndpoint>();
                 endpoints.Map<MappingsEndpoint>();

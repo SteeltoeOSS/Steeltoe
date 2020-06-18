@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<CloudFoundryEndpoint>();
-                endpoints.Map<TraceEndpoint>();
+                endpoints.Map<HttpTraceEndpoint>();
             });
         }
     }

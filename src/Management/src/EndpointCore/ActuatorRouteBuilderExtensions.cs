@@ -25,6 +25,7 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
@@ -35,31 +36,52 @@ namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorRouteBuilderExtensions
     {
-        private static readonly Dictionary<Type, Type> MiddlewareLookup = new Dictionary<Type, Type>()
+        public static (Type middleware, Type options) LookupMiddleware(Type endpointType)
         {
-            { typeof(ActuatorEndpoint), typeof(ActuatorHypermediaEndpointMiddleware) },
-            { typeof(DbMigrationsEndpoint), typeof(DbMigrationsEndpointMiddleware) },
-            { typeof(EnvEndpoint), typeof(EnvEndpointMiddleware) },
-            { typeof(HealthEndpointCore), typeof(HealthEndpointMiddleware) },
-            { typeof(HeapDumpEndpoint), typeof(HeapDumpEndpointMiddleware) },
-            { typeof(InfoEndpoint), typeof(InfoEndpointMiddleware) },
-            { typeof(LoggersEndpoint), typeof(LoggersEndpointMiddleware) },
-            { typeof(MappingsEndpoint), typeof(MappingsEndpointMiddleware) },
-            { typeof(MetricsEndpoint), typeof(MetricsEndpointMiddleware) },
-            { typeof(PrometheusScraperEndpoint), typeof(PrometheusScraperEndpointMiddleware)},
-            { typeof(RefreshEndpoint), typeof(RefreshEndpointMiddleware) },
-            { typeof(ThreadDumpEndpoint), typeof(ThreadDumpEndpointMiddleware) },
-            { typeof(ThreadDumpEndpoint_v2), typeof(ThreadDumpEndpointMiddleware_v2) },
-            { typeof(TraceEndpoint), typeof(TraceEndpointMiddleware) },
-            { typeof(HttpTraceEndpoint), typeof(HttpTraceEndpointMiddleware) },
-            { typeof(CloudFoundryEndpoint), typeof(CloudFoundryEndpointMiddleware) },
-        };
+            switch (endpointType)
+            {
+                case Type _ when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)):
+                    return (typeof(ActuatorHypermediaEndpointMiddleware), typeof(IActuatorHypermediaOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)):
+                    return (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(EnvEndpoint)):
+                    return (typeof(EnvEndpointMiddleware), typeof(IEnvOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)):
+                    return (typeof(HealthEndpointMiddleware), typeof(IHealthOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)):
+                    return (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(InfoEndpoint)):
+                    return (typeof(InfoEndpointMiddleware), typeof(IInfoOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)):
+                    return (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)):
+                    return (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)):
+                    return (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)):
+                    return (typeof(PrometheusScraperEndpointMiddleware), typeof(IPrometheusEndpointOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)):
+                    return (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)):
+                    return (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint_v2)):
+                    return (typeof(ThreadDumpEndpointMiddleware_v2), typeof(IThreadDumpOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(TraceEndpoint)):
+                    return (typeof(TraceEndpointMiddleware), typeof(ITraceOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)):
+                    return (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions));
+                case Type _ when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)):
+                    return (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions));
+            }
+
+            throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} ");
+        }
 
         /// <summary>
         /// Generic routebuilder extension for Actuators.
         /// </summary>
         /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
-        /// <typeparam name="TEndpoint">IEndpoint for which the route is mapped.</typeparam>
+        /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
         /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
         public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints)
         where TEndpoint : IEndpoint
@@ -69,32 +91,31 @@ namespace Steeltoe.Management.Endpoint
                 throw new ArgumentNullException(nameof(endpoints));
             }
 
-            var actuator = endpoints.ServiceProvider.GetService<TEndpoint>()
-                ?? throw new InvalidOperationException($"Could not find type {typeof(TEndpoint)} in service container");
+            var (middleware, optionsType) = LookupMiddleware(typeof(TEndpoint));
+            var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
+            var mgmtOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
 
-            var options = endpoints.ServiceProvider.GetServices<IManagementOptions>();
-
-            foreach (var mgmtOptions in options)
+            foreach (var mgmtOptions in mgmtOptionsCollection)
             {
-                if ((mgmtOptions is CloudFoundryManagementOptions && actuator is ActuatorEndpoint)
-                    || (mgmtOptions is ActuatorManagementOptions && actuator is CloudFoundryEndpoint))
+                if ((mgmtOptions is CloudFoundryManagementOptions && options is IActuatorHypermediaOptions)
+                    || (mgmtOptions is ActuatorManagementOptions && options is ICloudFoundryOptions))
                 {
                     continue;
                 }
 
-                var fullPath = actuator.GetContextPath(mgmtOptions);
-                var middle = MiddlewareLookup[actuator.GetType()];
+                var fullPath = options.GetContextPath(mgmtOptions);
+
                 var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware(middle, mgmtOptions)
+                    .UseMiddleware(middleware, mgmtOptions)
                     .Build();
 
-                if (actuator.AllowedVerbs == null)
+                if (options.AllowedVerbs == null)
                 {
                     endpoints.Map(fullPath, pipeline);
                 }
                 else
                 {
-                    endpoints.MapMethods(fullPath, actuator.AllowedVerbs, pipeline);
+                    endpoints.MapMethods(fullPath, options.AllowedVerbs, pipeline);
                 }
             }
         }

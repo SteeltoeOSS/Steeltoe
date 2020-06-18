@@ -21,6 +21,8 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             return app =>
             {
+                next(app);
+
                 app.UseEndpoints(endpoints =>
                  {
                      switch (MediaTypeVersion)
@@ -30,7 +32,6 @@ namespace Steeltoe.Management.Endpoint.Trace
                      }
                  });
 
-                next(app);
             };
         }
     }

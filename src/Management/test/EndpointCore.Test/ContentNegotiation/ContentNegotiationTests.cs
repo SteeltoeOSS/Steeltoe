@@ -35,7 +35,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                     new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
                     new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },
                     new { epName = EndpointNames.Health, epPath = "http://localhost/actuator/health" },
-                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/trace" },
+                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/httptrace" },
                     new { epName = EndpointNames.Env, epPath = "http://localhost/actuator/env" },
                     new { epName = EndpointNames.Mappings, epPath = "http://localhost/actuator/mappings" },
                     new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }

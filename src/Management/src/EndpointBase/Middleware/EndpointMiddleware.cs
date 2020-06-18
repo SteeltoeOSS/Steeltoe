@@ -11,7 +11,6 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
-
     public class EndpointMiddleware<TResult>
     {
         protected IEndpoint<TResult> _endpoint;

@@ -82,7 +82,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/httptrace");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
                 Assert.NotNull(json);

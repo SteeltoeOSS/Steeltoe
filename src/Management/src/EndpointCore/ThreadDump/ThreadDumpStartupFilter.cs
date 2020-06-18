@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
     {
         private MediaTypeVersion MediaTypeVersion { get; set; }
 
-        public ThreadDumpStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V1)
+        public ThreadDumpStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             MediaTypeVersion = mediaTypeVersion;
         }
@@ -21,6 +21,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             return app =>
             {
+                next(app);
                 app.UseEndpoints(endpoints =>
                 {
                     switch (MediaTypeVersion)
@@ -29,7 +30,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                         case MediaTypeVersion.V2: endpoints.Map<ThreadDumpEndpoint_v2>(); break;
                     }
                 });
-                next(app);
             };
         }
     }
