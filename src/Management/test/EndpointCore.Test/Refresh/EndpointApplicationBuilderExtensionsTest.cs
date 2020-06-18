@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseRefreshActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseRefreshActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseRefreshActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseRefreshActuator());
+        //}
     }
 }

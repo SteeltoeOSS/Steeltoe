@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
                 var fullPath = contextPath + healthOptions.Path;
                 var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware<HealthEndpointHandler>()
+                    .UseMiddleware<HealthEndpointMiddleware>()
                     .Build();
 
                 endpoints.Map(fullPath, pipeline);

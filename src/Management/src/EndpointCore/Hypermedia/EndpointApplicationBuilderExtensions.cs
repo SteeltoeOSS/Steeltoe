@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         /// Enable Basic Actuator Middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseHypermediaActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseHypermediaActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<ActuatorHypermediaEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<ActuatorHypermediaEndpointMiddleware>();
+        //}
     }
 }

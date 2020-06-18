@@ -216,7 +216,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void GetAccessToken_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var token = middle.GetAccessToken(context.Request);
@@ -232,7 +233,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public async void GetPermissions_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);

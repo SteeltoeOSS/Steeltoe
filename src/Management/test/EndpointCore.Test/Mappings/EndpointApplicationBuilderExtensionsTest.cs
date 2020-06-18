@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseEnvActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseEnvActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseMappingsActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseMappingsActuator());
+        //}
     }
 }

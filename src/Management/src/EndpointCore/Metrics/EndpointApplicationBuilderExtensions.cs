@@ -13,24 +13,24 @@ namespace Steeltoe.Management.Endpoint.Metrics
         /// Enable the metrics middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseMetricsActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseMetricsActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<MetricsEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<MetricsEndpointMiddleware>();
+        //}
 
-        public static void UsePrometheusActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UsePrometheusActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<PrometheusScraperEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<PrometheusScraperEndpointMiddleware>();
+        //}
     }
 }

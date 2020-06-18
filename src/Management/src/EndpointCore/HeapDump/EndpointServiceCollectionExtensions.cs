@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             if (IsHeapDumpSupported())
             {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+                services.AddActuatorManagementOptions(config);
 
                 var options = new HeapDumpEndpointOptions(config);
                 services.TryAddSingleton<IHeapDumpOptions>(options);

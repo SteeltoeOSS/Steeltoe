@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseHeapDumpActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseHeapDumpActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseHeapDumpActuator());
+        //}
     }
 }

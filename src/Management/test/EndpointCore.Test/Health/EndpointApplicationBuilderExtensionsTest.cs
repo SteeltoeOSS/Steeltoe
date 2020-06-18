@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseHealthActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseHealthActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseHealthActuator());
+        //}
     }
 }

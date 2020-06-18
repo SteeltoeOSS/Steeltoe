@@ -9,8 +9,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
     public enum MetricStatistic
     {
         TOTAL,
-        [EnumMember(Value = "TOTAL_TIME")]
-        TOTALTIME,
+        TOTAL_TIME,
         COUNT,
         MAX,
         VALUE,

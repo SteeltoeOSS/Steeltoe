@@ -32,12 +32,13 @@ namespace Steeltoe.Management.Endpoint.Mappings
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
-            IEnumerable<IManagementOptions> mgmtOptions,
+            IManagementOptions mgmtOptions,
+            MappingsEndpoint endpoint,
             IRouteMappings routeMappings = null,
             IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
             IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
             ILogger<MappingsEndpointMiddleware> logger = null)
-            : base(mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = options;
@@ -48,12 +49,12 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         public Task Invoke(HttpContext context)
         {
-            if (IsMappingsRequest(context))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleMappingsRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleMappingsRequestAsync(HttpContext context)
@@ -84,35 +85,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             var contextMappings = new ContextMappings(desc);
             return new ApplicationMappings(contextMappings);
         }
-
-        protected internal bool IsMappingsRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            var paths = new List<string>();
-            if (_mgmtOptions != null)
-            {
-                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}"));
-            }
-            else
-            {
-                paths.Add(_options.Path);
-            }
-
-            foreach (var path in paths)
-            {
-                var pathString = new PathString(path);
-                if (context.Request.Path.Equals(pathString))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
+        
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
         {

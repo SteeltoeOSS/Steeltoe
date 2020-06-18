@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
             var options = new ThreadDumpEndpointOptions(config);
             if (version == MediaTypeVersion.V1)
             {

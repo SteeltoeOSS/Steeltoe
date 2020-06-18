@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseTraceActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseTraceActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(testCode: () => builder.UseTraceActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(testCode: () => builder.UseTraceActuator());
+        //}
     }
 }

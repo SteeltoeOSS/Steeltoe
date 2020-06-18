@@ -18,17 +18,16 @@ namespace Steeltoe.Management.Endpoint.Health
             writer.WriteStartObject();
             if (value is HealthCheckResult health)
             {
-                writer.WriteString("status",health.Status.ToString());
+                writer.WriteString("status", health.Status.ToString());
                 if (!string.IsNullOrEmpty(health.Description))
                 {
-                    writer.WritePropertyName("description");
                     writer.WriteString("description", health.Description);
                 }
 
                 foreach (var detail in health.Details)
                 {
                     writer.WritePropertyName(detail.Key);
-                    JsonSerializer.Serialize(writer, detail.Value);
+                    JsonSerializer.Serialize(writer, detail.Value, options);
                 }
             }
 

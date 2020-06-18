@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             mgmtOptions.EndpointOptions.Add(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null, new List<IManagementOptions> { mgmtOptions });
+            var middle = new HealthEndpointMiddleware(null, mgmtOptions);
             middle.Endpoint = ep;
 
             var context = CreateRequest("GET", "/health");
@@ -248,22 +248,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.NotNull(unknownJson);
                 Assert.Contains("\"status\":\"UP\"", unknownJson);
             }
-        }
-
-        [Fact]
-        public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var actMOptions = new ActuatorManagementOptions();
-            actMOptions.EndpointOptions.Add(opts);
-            var middle = new HealthEndpointMiddleware(null, new List<IManagementOptions> { actMOptions });
-            middle.Endpoint = ep;
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

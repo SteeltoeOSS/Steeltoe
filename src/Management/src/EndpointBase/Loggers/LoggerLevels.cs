@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -15,10 +15,10 @@ namespace Steeltoe.Management.Endpoint.Loggers
             EffectiveLevel = MapLogLevel(effective);
         }
 
-        [JsonProperty("configuredLevel")]
+        [JsonPropertyName("configuredLevel")]
         public string ConfiguredLevel { get; }
 
-        [JsonProperty("effectiveLevel")]
+        [JsonPropertyName("effectiveLevel")]
         public string EffectiveLevel { get; }
 
         public static string MapLogLevel(LogLevel level)

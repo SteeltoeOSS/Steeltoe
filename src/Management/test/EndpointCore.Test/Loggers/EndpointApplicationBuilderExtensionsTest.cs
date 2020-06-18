@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseLoggersActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseLoggersActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseLoggersActuator());
+        //}
     }
 }

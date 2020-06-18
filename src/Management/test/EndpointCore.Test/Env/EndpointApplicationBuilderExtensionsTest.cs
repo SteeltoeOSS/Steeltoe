@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseEnvActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseEnvActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseEnvActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseEnvActuator());
+        //}
     }
 }

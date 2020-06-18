@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
-    public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
+    public class EnvEndpointMiddleware: EndpointMiddleware<EnvironmentDescriptor>
     {
         private readonly RequestDelegate _next;
 
-        public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
+        public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -23,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.Env
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleEnvRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleEnvRequestAsync(HttpContext context)

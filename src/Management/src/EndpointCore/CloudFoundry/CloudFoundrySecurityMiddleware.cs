@@ -22,12 +22,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private readonly IManagementOptions _mgmtOptions;
         private readonly SecurityBase _base;
 
-        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
         {
             _next = next;
             _logger = logger;
             _options = options;
-            _mgmtOptions = mgmtOptions?.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+            _mgmtOptions = mgmtOptions;
 
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }

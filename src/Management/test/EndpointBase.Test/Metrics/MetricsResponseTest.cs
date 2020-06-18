@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var samples = new List<MetricSample>()
             {
-                new MetricSample(MetricStatistic.TOTALTIME, 100.00)
+                new MetricSample(MetricStatistic.TOTAL_TIME, 100.00)
             };
 
             var tags = new List<MetricTag>()
@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var samples = new List<MetricSample>()
             {
-                new MetricSample(MetricStatistic.TOTALTIME, 100.00)
+                new MetricSample(MetricStatistic.TOTAL_TIME, 100.1)
             };
 
             var tags = new List<MetricTag>()
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             var resp = new MetricsResponse("foo.bar", samples, tags);
             var result = Serialize(resp);
-            Assert.Equal("{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.0}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}", result);
+            Assert.Equal("{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}", result);
         }
     }
 }

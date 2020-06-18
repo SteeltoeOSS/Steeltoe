@@ -14,7 +14,10 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         {
             return app =>
             {
-                app.UseHypermediaActuator();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<ActuatorEndpoint>();
+                });
 
                 next(app);
             };

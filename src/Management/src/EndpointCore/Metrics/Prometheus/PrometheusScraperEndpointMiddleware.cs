@@ -15,20 +15,20 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly RequestDelegate _next;
 
-        public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, null, false, logger)
+        public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger)
         {
             _next = next;
         }
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleMetricsRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         public override string HandleRequest()

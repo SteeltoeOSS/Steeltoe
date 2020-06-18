@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
     {
         private readonly RequestDelegate _next;
 
-        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
+        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -23,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleHeapDumpRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)

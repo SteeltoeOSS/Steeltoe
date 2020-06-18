@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Info
         /// Enable the trace middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseInfoActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseInfoActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<InfoEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<InfoEndpointMiddleware>();
+        //}
     }
 }

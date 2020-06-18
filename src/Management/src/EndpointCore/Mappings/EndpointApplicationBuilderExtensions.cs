@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Mappings
         /// Enable the Mappings middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseMappingsActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseMappingsActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<MappingsEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<MappingsEndpointMiddleware>();
+        //}
     }
 }

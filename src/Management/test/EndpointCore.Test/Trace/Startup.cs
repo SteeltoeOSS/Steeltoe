@@ -20,13 +20,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddTraceActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseTraceActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+                endpoints.Map<TraceEndpoint>();
+            });
         }
     }
 }

@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Health
         /// Enable the health middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseHealthActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseHealthActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<HealthEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<HealthEndpointMiddleware>();
+        //}
     }
 }

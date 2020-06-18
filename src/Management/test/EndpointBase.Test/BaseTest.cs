@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Metrics;
 using System;
+using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -25,23 +26,26 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public string Serialize<T>(T value)
         {
-            return JsonConvert.SerializeObject(
+            return JsonSerializer.Serialize(
                 value,
-                GetSerializerSettings());
+                GetSerializerOptions());
         }
 
-        public JsonSerializer GetSerializer()
-        {
-            return JsonSerializer.Create(GetSerializerSettings());
-        }
+        //public JsonSerializer GetSerializer()
+        //{
+        //    return JsonSerializer.Create(GetSerializerSettings());
+        //}
 
-        public JsonSerializerSettings GetSerializerSettings()
+        public JsonSerializerOptions GetSerializerOptions()
         {
-            return new JsonSerializerSettings()
+            var options = new JsonSerializerOptions()
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true,
             };
+            options.Converters.Add(new HealthConverter());
+            options.Converters.Add(new MetricsResponseConverter());
+            return options;
         }
     }
 }

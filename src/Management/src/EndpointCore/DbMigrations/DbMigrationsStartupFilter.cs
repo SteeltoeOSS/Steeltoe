@@ -14,7 +14,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
         {
             return app =>
             {
-                app.UseDbMigrationsActuator();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<DbMigrationsEndpoint>();
+                });
 
                 next(app);
             };

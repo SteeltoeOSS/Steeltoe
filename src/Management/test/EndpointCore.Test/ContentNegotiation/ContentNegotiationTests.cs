@@ -30,7 +30,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                 var endpoints = new[]
                 {
                     new { epName = EndpointNames.Hypermedia, epPath = "http://localhost/actuator" },
-                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/actuator" },
+                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/cloudfoundryapplication" },
                     new { epName = EndpointNames.Info, epPath = "http://localhost/actuator/info" },
                     new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
                     new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },

@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
 
             var options = new MetricsEndpointOptions(config);
             services.TryAddSingleton<IMetricsEndpointOptions>(options);

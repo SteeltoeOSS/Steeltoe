@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
     {
         private readonly RequestDelegate _next;
 
-        public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
+        public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -22,12 +22,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleThreadDumpRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleThreadDumpRequestAsync(HttpContext context)

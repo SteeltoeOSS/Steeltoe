@@ -19,20 +19,20 @@ namespace Steeltoe.Management.Endpoint.Loggers
     {
         private readonly RequestDelegate _next;
 
-        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger)
         {
             _next = next;
         }
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if(_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleLoggersRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         protected internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}"));
+                    paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}");
                 }
 
                 foreach (var path in paths)

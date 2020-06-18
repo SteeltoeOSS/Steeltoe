@@ -20,14 +20,19 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseInfoActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<InfoEndpoint>();
+            });
         }
     }
 }

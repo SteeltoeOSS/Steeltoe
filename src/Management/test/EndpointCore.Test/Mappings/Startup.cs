@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 
 namespace Steeltoe.Management.Endpoint.Mappings.Test
 {
@@ -19,19 +20,19 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCloudFoundryActuator(Configuration);
             services.AddMappingsActuator(Configuration);
-            services
-                .AddMvc();
+            services.AddMvc();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseMappingsActuator();
-
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.Map<CloudFoundryEndpoint>();
+                endpoints.Map<MappingsEndpoint>();
             });
         }
     }

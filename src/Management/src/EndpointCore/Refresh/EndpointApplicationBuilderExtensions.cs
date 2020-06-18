@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.Refresh
         /// Enable the Refresh middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseRefreshActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseRefreshActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<RefreshEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<RefreshEndpointMiddleware>();
+        //}
     }
 }

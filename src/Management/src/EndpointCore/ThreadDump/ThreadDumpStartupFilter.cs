@@ -21,8 +21,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         {
             return app =>
             {
-                app.UseThreadDumpActuator(MediaTypeVersion);
-
+                app.UseEndpoints(endpoints =>
+                {
+                    switch (MediaTypeVersion)
+                    {
+                        case MediaTypeVersion.V1: endpoints.Map<ThreadDumpEndpoint>(); break;
+                        case MediaTypeVersion.V2: endpoints.Map<ThreadDumpEndpoint_v2>(); break;
+                    }
+                });
                 next(app);
             };
         }

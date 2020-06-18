@@ -27,7 +27,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:dump:enabled"] = "true",
         };
 
@@ -37,11 +36,13 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var opts = new ThreadDumpEndpointOptions();
-                var mopts = TestHelper.GetManagementOptions(opts);
+
+                var mgmtOptions = new ActuatorManagementOptions();
+                mgmtOptions.EndpointOptions.Add(opts);
 
                 ThreadDumper obs = new ThreadDumper(opts);
                 var ep = new ThreadDumpEndpoint(opts, obs);
-                var middle = new ThreadDumpEndpointMiddleware(null, ep, mopts);
+                var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
                 var context = CreateRequest("GET", "/dump");
                 await middle.HandleThreadDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -78,26 +79,6 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     Assert.EndsWith("]", json);
                 }
             }
-        }
-
-        [Fact]
-        public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var actOptions = new ActuatorManagementOptions()
-            {
-                Path = "/",
-                Exposure = new Exposure { Include = new List<string> { "*" } }
-            };
-
-            var opts = new ThreadDumpEndpointOptions();
-            actOptions.EndpointOptions.Add(opts);
-            ThreadDumper obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep, new List<IManagementOptions> { actOptions });
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

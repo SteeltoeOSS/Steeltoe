@@ -11,6 +11,7 @@ using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -61,10 +62,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(aggregator));
             }
 
-            services.TryAddSingleton(new ActuatorManagementOptions(config));
-
-            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            //services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
 
             var options = new HealthEndpointOptions(config);
             services.TryAddSingleton<IHealthOptions>(options);

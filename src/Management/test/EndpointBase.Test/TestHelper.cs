@@ -10,13 +10,13 @@ namespace Steeltoe.Management.Endpoint.Test
 {
     public static class TestHelper
     {
-        public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
-        {
-            var mgmtOptions = new CloudFoundryManagementOptions();
-            mgmtOptions.EndpointOptions.AddRange(options);
-            var actuatorOptions = new ActuatorManagementOptions();
-            actuatorOptions.EndpointOptions.AddRange(options);
-            return new List<IManagementOptions>() { mgmtOptions, actuatorOptions };
-        }
+        //public static IEnumerable<IManagementOptions> GetManagementOptions(params IEndpointOptions[] options)
+        //{
+        //    var mgmtOptions = new CloudFoundryManagementOptions();
+        //    mgmtOptions.EndpointOptions.AddRange(options);
+        //    var actuatorOptions = new ActuatorManagementOptions();
+        //    actuatorOptions.EndpointOptions.AddRange(options);
+        //    return new List<IManagementOptions>() { mgmtOptions, actuatorOptions };
+        //}
     }
 }

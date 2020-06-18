@@ -20,13 +20,18 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddLoggersActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseLoggersActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<LoggersEndpoint>();
+            });
         }
     }
 }

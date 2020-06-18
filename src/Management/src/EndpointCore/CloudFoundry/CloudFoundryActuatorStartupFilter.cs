@@ -4,6 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -14,8 +16,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             return app =>
             {
-                app.UseCloudFoundryActuator();
-
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<CloudFoundryEndpoint>();
+                });
                 next(app);
             };
         }

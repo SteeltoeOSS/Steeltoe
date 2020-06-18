@@ -14,7 +14,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             return app =>
             {
-                app.UseMetricsActuator();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<MetricsEndpoint>();
+                });
 
                 next(app);
             };

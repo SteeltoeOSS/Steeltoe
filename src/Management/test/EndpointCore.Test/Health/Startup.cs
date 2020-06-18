@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             switch (Configuration.GetValue<string>("HealthCheckType"))
             {
                 case "down":
@@ -43,7 +45,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHealthActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<HealthEndpointCore>();
+            });
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 {
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
-        [Fact]
-        public void UseThreadDumpActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseThreadDumpActuator_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseThreadDumpActuator());
+        //}
     }
 }

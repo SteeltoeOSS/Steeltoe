@@ -12,10 +12,11 @@ namespace Steeltoe.Management.Endpoint
     {
         public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options)
         {
-            var actuatorManagement = services.BuildServiceProvider().GetService<ActuatorManagementOptions>();
-            actuatorManagement?.EndpointOptions.Add(options);
-            var cfManagement = services.BuildServiceProvider().GetService<CloudFoundryManagementOptions>();
-            cfManagement?.EndpointOptions.Add(options);
+            var mgmtOptions = services.BuildServiceProvider().GetServices<IManagementOptions>();
+            foreach (var mgmtOption in mgmtOptions)
+            {
+                mgmtOption.EndpointOptions.Add(options);
+            }
         }
     }
 }

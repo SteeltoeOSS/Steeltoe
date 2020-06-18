@@ -3,56 +3,35 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Metrics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
+
     public class EndpointMiddleware<TResult>
     {
         protected IEndpoint<TResult> _endpoint;
         protected ILogger _logger;
-        protected IEnumerable<HttpMethod> _allowedMethods;
-        protected bool _exactRequestPathMatching;
-        protected IList<IManagementOptions> _mgmtOptions;
+        protected IManagementOptions _mgmtOptions;
 
-        public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
         {
-            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
-            _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
-
-            if (mgmtOptions == null)
-            {
-                throw new ArgumentNullException(nameof(mgmtOptions));
-            }
-
-            var mOptions = mgmtOptions.ToList();
-            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
+            _mgmtOptions = mgmtOptions ??  throw new ArgumentNullException(nameof(mgmtOptions));
         }
 
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
+        public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions,  ILogger logger = null)
         {
-            _allowedMethods = allowedMethods ?? new List<HttpMethod> { HttpMethod.Get };
-            _exactRequestPathMatching = exactRequestPathMatching;
             _logger = logger;
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-
-            if (mgmtOptions == null)
-            {
-                throw new ArgumentNullException(nameof(mgmtOptions));
-            }
-
-            var mOptions = mgmtOptions.ToList();
-            _mgmtOptions = mOptions.Count > 0 ? mOptions : null;
+            _mgmtOptions = mgmtOptions ??  throw new ArgumentNullException(nameof(mgmtOptions));
         }
 
-        internal IEndpoint<TResult> Endpoint
+        public IEndpoint<TResult> Endpoint
         {
             get
             {
@@ -71,25 +50,24 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return Serialize(result);
         }
 
-        public virtual bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        {
-            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}");
+        //public virtual bool ShouldInvoke()
+        //{
+        //    _logger?.LogDebug($"endpoint: {_endpoint.Id}, contextPath: {_mgmtOptions.Path}");
+        //    return _endpoint.ShouldInvoke(_mgmtOptions);
+        //}
 
-            return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
-        }
-
-        protected virtual string Serialize(TResult result)
+        public virtual string Serialize(TResult result)
         {
             try
             {
-                var serializerSettings = new JsonSerializerSettings()
+                var options = new JsonSerializerOptions()
                 {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                    IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
-                serializerSettings.Converters.Add(new HealthJsonConverter());
+                options.Converters.Add(new HealthConverter());
+                options.Converters.Add(new MetricsResponseConverter());
 
-                return JsonConvert.SerializeObject(result, serializerSettings);
+                return JsonSerializer.Serialize(result, options);
             }
             catch (Exception e)
             {
@@ -118,14 +96,14 @@ namespace Steeltoe.Management.Endpoint.Middleware
             }
         }
 
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-            : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
+            : base(mgmtOptions, logger)
         {
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
         }
 
-        public EndpointMiddleware(IEnumerable<IManagementOptions> mgmtOptions, IEnumerable<HttpMethod> allowedMethods = null, bool exactRequestPathMatching = true, ILogger logger = null)
-          : base(mgmtOptions, allowedMethods, exactRequestPathMatching, logger)
+        public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
+          : base(mgmtOptions, logger)
         {
         }
 
@@ -135,12 +113,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             return Serialize(result);
         }
 
-        public override bool RequestVerbAndPathMatch(string httpMethod, string requestPath)
-        {
-            var result = _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
-            _logger?.LogDebug($"endpoint: {_endpoint.Id}, httpMethod:  {httpMethod}, requestPath: {requestPath}, contextPaths: {string.Join(",", _mgmtOptions?.Select(x => x.Path))}, result: {result}");
-            return result;
-        }
     }
 #pragma warning restore SA1402 // File may only contain a single class
 }

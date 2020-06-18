@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         private readonly RequestDelegate _next;
 
-        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
+        public TraceEndpointMiddleware(RequestDelegate next, TraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<TraceEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -23,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleTraceRequestAsync(context);
             }
-
-            return _next(context);
+            
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleTraceRequestAsync(HttpContext context)

@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             mgmtOptions.EndpointOptions.Add(infoOpts);
             mgmtOptions.EndpointOptions.Add(cloudOpts);
 
-            var ep = new CloudFoundryEndpoint(cloudOpts, new List<IManagementOptions> { mgmtOptions }, null);
+            var ep = new CloudFoundryEndpoint(cloudOpts,  mgmtOptions, null);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -45,7 +45,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
         {
             var cloudOpts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(cloudOpts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(cloudOpts);
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
@@ -62,7 +63,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var infoOpts = new InfoEndpointOptions { Enabled = false };
             var cloudOpts = new CloudFoundryEndpointOptions();
 
-            var mgmtOptions = TestHelper.GetManagementOptions(infoOpts, cloudOpts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(infoOpts);
+            mgmtOptions.EndpointOptions.Add(cloudOpts);
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
@@ -79,7 +82,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         {
             var infoOpts = new InfoEndpointOptions { Enabled = true };
             var cloudOpts = new CloudFoundryEndpointOptions { Enabled = false };
-            var mgmtOptions = TestHelper.GetManagementOptions(infoOpts, cloudOpts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(infoOpts);
+
             var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");

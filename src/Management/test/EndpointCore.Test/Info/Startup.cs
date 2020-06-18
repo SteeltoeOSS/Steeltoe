@@ -20,13 +20,18 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseInfoActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                 endpoints.Map<InfoEndpoint>();
+            });
         }
     }
 }

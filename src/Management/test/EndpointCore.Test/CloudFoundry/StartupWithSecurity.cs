@@ -21,6 +21,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddHypermediaActuator(Configuration);
             services.AddInfoActuator(Configuration);
@@ -29,8 +30,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void Configure(IApplicationBuilder app)
         {
             app.UseCloudFoundrySecurity();
-            app.UseCloudFoundryActuator();
-            app.UseInfoActuator();
+            app.UseRouting();
+            //app.UseCloudFoundryActuator();
+            //app.UseInfoActuator();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+                endpoints.Map<InfoEndpoint>();
+            });
         }
     }
 }

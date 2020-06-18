@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.CloudFoundry.Test;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -26,7 +28,6 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:trace:enabled"] = "true",
         };
 
@@ -34,7 +35,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public async void HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -51,7 +53,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
             TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -86,19 +89,19 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             }
         }
 
-        [Fact]
-        public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new TraceEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
-            var ep = new TraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep, mopts);
+        //[Fact]
+        //public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        //{
+        //    var opts = new TraceEndpointOptions();
+        //    var mopts = TestHelper.GetManagementOptions(opts);
+        //    TraceDiagnosticObserver obs = new TraceDiagnosticObserver(opts);
+        //    var ep = new TraceEndpoint(opts, obs);
+        //    var middle = new TraceEndpointMiddleware(null, ep, mopts);
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        }
+        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/trace"));
+        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/trace"));
+        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+        //}
 
         private HttpContext CreateRequest(string method, string path)
         {

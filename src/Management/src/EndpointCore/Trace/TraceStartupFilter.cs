@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         private MediaTypeVersion MediaTypeVersion { get; set; }
 
-        public TraceStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V1)
+        public TraceStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             MediaTypeVersion = mediaTypeVersion;
         }
@@ -21,7 +21,14 @@ namespace Steeltoe.Management.Endpoint.Trace
         {
             return app =>
             {
-                app.UseTraceActuator(MediaTypeVersion);
+                app.UseEndpoints(endpoints =>
+                 {
+                     switch (MediaTypeVersion)
+                     {
+                         case MediaTypeVersion.V1: endpoints.Map<TraceEndpoint>(); break;
+                         case MediaTypeVersion.V2: endpoints.Map<HttpTraceEndpoint>(); break;
+                     }
+                 });
 
                 next(app);
             };

@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
+using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
@@ -28,36 +28,38 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorRouteBuilderExtensions
     {
-        private static readonly Dictionary<Type,Type> MiddlewareLookup = new Dictionary<Type, Type>()
+        private static readonly Dictionary<Type, Type> MiddlewareLookup = new Dictionary<Type, Type>()
         {
-            { typeof(ActuatorEndpoint), typeof(ActuatorHypermediaEndpointHandler) },
-            { typeof(DbMigrationsEndpoint), typeof(DbMigrationsEndpointHandler) },
-            { typeof(EnvEndpoint), typeof(EnvEndpointHandler) },
-            { typeof(HeapDumpEndpoint), typeof(HeapDumpEndpointHandler) },
-            { typeof(InfoEndpoint), typeof(InfoEndpointHandler) },
-            { typeof(LoggersEndpoint), typeof(LoggersEndpointHandler) },
-            { typeof(MappingsEndpoint), typeof(MappingsEndpointHandler) },
-            { typeof(MetricsEndpoint), typeof(MetricsEndpointHandler) },
-            { typeof(PrometheusScraperEndpoint), typeof(PrometheusScraperEndpointHandler)},
-            { typeof(RefreshEndpoint), typeof(RefreshEndpointHandler) },
-            { typeof(ThreadDumpEndpoint_v2), typeof(ThreadDumpEndpointHandler) },
-            { typeof(HttpTraceEndpoint), typeof(HttpTraceEndpointHandler) },
-
-            //  { typeof(DbMigrationsEndpoint), typeof(DbMigrationsEndpointHandler) },
-           // endpoints.Map<LoggersEndpoint>();
-            // endpoints.Map<MappingsEndpoint>();
+            { typeof(ActuatorEndpoint), typeof(ActuatorHypermediaEndpointMiddleware) },
+            { typeof(DbMigrationsEndpoint), typeof(DbMigrationsEndpointMiddleware) },
+            { typeof(EnvEndpoint), typeof(EnvEndpointMiddleware) },
+            { typeof(HealthEndpointCore), typeof(HealthEndpointMiddleware) },
+            { typeof(HeapDumpEndpoint), typeof(HeapDumpEndpointMiddleware) },
+            { typeof(InfoEndpoint), typeof(InfoEndpointMiddleware) },
+            { typeof(LoggersEndpoint), typeof(LoggersEndpointMiddleware) },
+            { typeof(MappingsEndpoint), typeof(MappingsEndpointMiddleware) },
+            { typeof(MetricsEndpoint), typeof(MetricsEndpointMiddleware) },
+            { typeof(PrometheusScraperEndpoint), typeof(PrometheusScraperEndpointMiddleware)},
+            { typeof(RefreshEndpoint), typeof(RefreshEndpointMiddleware) },
+            { typeof(ThreadDumpEndpoint), typeof(ThreadDumpEndpointMiddleware) },
+            { typeof(ThreadDumpEndpoint_v2), typeof(ThreadDumpEndpointMiddleware_v2) },
+            { typeof(TraceEndpoint), typeof(TraceEndpointMiddleware) },
+            { typeof(HttpTraceEndpoint), typeof(HttpTraceEndpointMiddleware) },
+            { typeof(CloudFoundryEndpoint), typeof(CloudFoundryEndpointMiddleware) },
         };
+
         /// <summary>
         /// Generic routebuilder extension for Actuators.
         /// </summary>
         /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
         /// <typeparam name="TEndpoint">IEndpoint for which the route is mapped.</typeparam>
-        /// <typeparam name="TMiddleware">Type of Middleware</typeparam>
         /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
         public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints)
         where TEndpoint : IEndpoint
@@ -70,17 +72,20 @@ namespace Steeltoe.Management.Endpoint
             var actuator = endpoints.ServiceProvider.GetService<TEndpoint>()
                 ?? throw new InvalidOperationException($"Could not find type {typeof(TEndpoint)} in service container");
 
-            var options =
-                endpoints.ServiceProvider
-                    .GetService<IEnumerable<IManagementOptions>>();
-
+            var options = endpoints.ServiceProvider.GetServices<IManagementOptions>();
 
             foreach (var mgmtOptions in options)
             {
+                if ((mgmtOptions is CloudFoundryManagementOptions && actuator is ActuatorEndpoint)
+                    || (mgmtOptions is ActuatorManagementOptions && actuator is CloudFoundryEndpoint))
+                {
+                    continue;
+                }
+
                 var fullPath = actuator.GetContextPath(mgmtOptions);
                 var middle = MiddlewareLookup[actuator.GetType()];
                 var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware(middle)
+                    .UseMiddleware(middle, mgmtOptions)
                     .Build();
 
                 if (actuator.AllowedVerbs == null)

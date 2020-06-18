@@ -13,14 +13,14 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
         /// Enable the EntityFramework middleware
         /// </summary>
         /// <param name="builder">Your application builder</param>
-        public static void UseDbMigrationsActuator(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+        //public static void UseDbMigrationsActuator(this IApplicationBuilder builder)
+        //{
+        //    if (builder == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(builder));
+        //    }
 
-            builder.UseMiddleware<DbMigrationsEndpointMiddleware>();
-        }
+        //    builder.UseMiddleware<DbMigrationsEndpointMiddleware>();
+        //}
     }
 }

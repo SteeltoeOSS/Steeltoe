@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Extensions.Configuration;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -72,11 +74,20 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services) =>
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
+        }
 
-        public void Configure(IApplicationBuilder app) =>
-            app.UseCloudFoundryActuator();
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+            });
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -90,11 +101,20 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services) =>
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
+        }
 
-        public void Configure(IApplicationBuilder app) =>
-            app.UseHypermediaActuator();
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+            });
+        }
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
@@ -110,14 +130,20 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseInfoActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<InfoEndpoint>();
+            });
+
         }
     }
 
@@ -134,14 +160,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddMetricsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseMetricsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<MetricsEndpoint>();
+            });
         }
     }
 
@@ -158,14 +189,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddLoggersActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseLoggersActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<LoggersEndpoint>();
+            });
         }
     }
 
@@ -182,14 +218,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddHealthActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseHealthActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<HealthEndpointCore>();
+            });
         }
     }
 
@@ -206,14 +247,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddTraceActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseTraceActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<TraceEndpoint>();
+            });
         }
     }
 
@@ -230,14 +276,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddDbMigrationsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseDbMigrationsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<DbMigrationsEndpoint>();
+            });
         }
     }
 
@@ -254,14 +305,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddEnvActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseEnvActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<EnvEndpoint>();
+            });
         }
     }
 
@@ -278,14 +334,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddMappingsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseMappingsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<MappingsEndpoint>();
+            });
         }
     }
 
@@ -302,14 +363,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddRefreshActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseRefreshActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<RefreshEndpoint>();
+            });
         }
     }
 
@@ -326,14 +392,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddThreadDumpActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseThreadDumpActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<ThreadDumpEndpoint>();
+            });
         }
     }
 }
