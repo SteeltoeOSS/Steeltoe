@@ -8,21 +8,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class ExecutionSignature
     {
-        private readonly string _commandName;
-        private readonly ExecutionResult.EventCounts _eventCounts;
         private readonly string _cacheKey;
-        private readonly int _cachedCount;
-        private readonly IHystrixCollapserKey _collapserKey;
-        private readonly int _collapserBatchSize;
 
         private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount, IHystrixCollapserKey collapserKey, int collapserBatchSize)
         {
-            this._commandName = commandKey.Name;
-            this._eventCounts = eventCounts;
+            this.CommandName = commandKey.Name;
+            this.Eventcounts = eventCounts;
             this._cacheKey = cacheKey;
-            this._cachedCount = cachedCount;
-            this._collapserKey = collapserKey;
-            this._collapserBatchSize = collapserBatchSize;
+            this.CachedCount = cachedCount;
+            this.CollapserKey = collapserKey;
+            this.CollapserBatchSize = collapserBatchSize;
         }
 
         public static ExecutionSignature From(IHystrixInvokableInfo execution)
@@ -49,12 +44,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
             ExecutionSignature that = (ExecutionSignature)o;
 
-            if (!_commandName.Equals(that._commandName))
+            if (!CommandName.Equals(that.CommandName))
             {
                 return false;
             }
 
-            if (!_eventCounts.Equals(that._eventCounts))
+            if (!Eventcounts.Equals(that.Eventcounts))
             {
                 return false;
             }
@@ -64,35 +59,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override int GetHashCode()
         {
-            int result = _commandName.GetHashCode();
-            result = (31 * result) + _eventCounts.GetHashCode();
+            int result = CommandName.GetHashCode();
+            result = (31 * result) + Eventcounts.GetHashCode();
             result = (31 * result) + (_cacheKey != null ? _cacheKey.GetHashCode() : 0);
             return result;
         }
 
-        public string CommandName
-        {
-            get { return _commandName; }
-        }
+        public string CommandName { get; }
 
-        public ExecutionResult.EventCounts Eventcounts
-        {
-            get { return _eventCounts; }
-        }
+        public ExecutionResult.EventCounts Eventcounts { get; }
 
-        public int CachedCount
-        {
-            get { return _cachedCount; }
-        }
+        public int CachedCount { get; }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return _collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
-        public int CollapserBatchSize
-        {
-            get { return _collapserBatchSize; }
-        }
+        public int CollapserBatchSize { get; }
     }
 }

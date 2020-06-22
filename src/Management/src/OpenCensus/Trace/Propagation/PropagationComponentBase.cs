@@ -20,15 +20,7 @@ namespace OpenCensus.Trace.Propagation
 
     public abstract class PropagationComponentBase : IPropagationComponent
     {
-        private static readonly IPropagationComponent NoopPropagationComponentInstance = new NoopPropagationComponent();
-
-        public static IPropagationComponent NoopPropagationComponent
-        {
-            get
-            {
-                return NoopPropagationComponentInstance;
-            }
-        }
+        public static IPropagationComponent NoopPropagationComponent { get; } = new NoopPropagationComponent();
 
         public abstract IBinaryFormat BinaryFormat { get; }
 

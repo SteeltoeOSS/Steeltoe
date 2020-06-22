@@ -9,37 +9,32 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     internal static class HystrixRollingNumberEventHelper
     {
-        private static readonly IList<HystrixRollingNumberEvent> _valueList = new List<HystrixRollingNumberEvent>();
-
         static HystrixRollingNumberEventHelper()
         {
-            _valueList.Add(HystrixRollingNumberEvent.SUCCESS);
-            _valueList.Add(HystrixRollingNumberEvent.FAILURE);
-            _valueList.Add(HystrixRollingNumberEvent.TIMEOUT);
-            _valueList.Add(HystrixRollingNumberEvent.SHORT_CIRCUITED);
-            _valueList.Add(HystrixRollingNumberEvent.THREAD_POOL_REJECTED);
-            _valueList.Add(HystrixRollingNumberEvent.SEMAPHORE_REJECTED);
-            _valueList.Add(HystrixRollingNumberEvent.BAD_REQUEST);
-            _valueList.Add(HystrixRollingNumberEvent.FALLBACK_SUCCESS);
-            _valueList.Add(HystrixRollingNumberEvent.FALLBACK_FAILURE);
-            _valueList.Add(HystrixRollingNumberEvent.FALLBACK_REJECTION);
-            _valueList.Add(HystrixRollingNumberEvent.FALLBACK_MISSING);
-            _valueList.Add(HystrixRollingNumberEvent.EXCEPTION_THROWN);
-            _valueList.Add(HystrixRollingNumberEvent.COMMAND_MAX_ACTIVE);
-            _valueList.Add(HystrixRollingNumberEvent.EMIT);
-            _valueList.Add(HystrixRollingNumberEvent.FALLBACK_EMIT);
-            _valueList.Add(HystrixRollingNumberEvent.THREAD_EXECUTION);
-            _valueList.Add(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
-            _valueList.Add(HystrixRollingNumberEvent.COLLAPSED);
-            _valueList.Add(HystrixRollingNumberEvent.RESPONSE_FROM_CACHE);
-            _valueList.Add(HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED);
-            _valueList.Add(HystrixRollingNumberEvent.COLLAPSER_BATCH);
+            Values.Add(HystrixRollingNumberEvent.SUCCESS);
+            Values.Add(HystrixRollingNumberEvent.FAILURE);
+            Values.Add(HystrixRollingNumberEvent.TIMEOUT);
+            Values.Add(HystrixRollingNumberEvent.SHORT_CIRCUITED);
+            Values.Add(HystrixRollingNumberEvent.THREAD_POOL_REJECTED);
+            Values.Add(HystrixRollingNumberEvent.SEMAPHORE_REJECTED);
+            Values.Add(HystrixRollingNumberEvent.BAD_REQUEST);
+            Values.Add(HystrixRollingNumberEvent.FALLBACK_SUCCESS);
+            Values.Add(HystrixRollingNumberEvent.FALLBACK_FAILURE);
+            Values.Add(HystrixRollingNumberEvent.FALLBACK_REJECTION);
+            Values.Add(HystrixRollingNumberEvent.FALLBACK_MISSING);
+            Values.Add(HystrixRollingNumberEvent.EXCEPTION_THROWN);
+            Values.Add(HystrixRollingNumberEvent.COMMAND_MAX_ACTIVE);
+            Values.Add(HystrixRollingNumberEvent.EMIT);
+            Values.Add(HystrixRollingNumberEvent.FALLBACK_EMIT);
+            Values.Add(HystrixRollingNumberEvent.THREAD_EXECUTION);
+            Values.Add(HystrixRollingNumberEvent.THREAD_MAX_ACTIVE);
+            Values.Add(HystrixRollingNumberEvent.COLLAPSED);
+            Values.Add(HystrixRollingNumberEvent.RESPONSE_FROM_CACHE);
+            Values.Add(HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED);
+            Values.Add(HystrixRollingNumberEvent.COLLAPSER_BATCH);
         }
 
-        public static IList<HystrixRollingNumberEvent> Values
-        {
-            get { return _valueList; }
-        }
+        public static IList<HystrixRollingNumberEvent> Values { get; } = new List<HystrixRollingNumberEvent>();
 
         public static HystrixRollingNumberEvent From(HystrixEventType eventType)
         {

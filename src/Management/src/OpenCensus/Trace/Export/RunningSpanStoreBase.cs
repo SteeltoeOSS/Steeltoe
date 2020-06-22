@@ -20,21 +20,13 @@ namespace OpenCensus.Trace.Export
 
     public abstract class RunningSpanStoreBase : IRunningSpanStore
     {
-        private static readonly IRunningSpanStore NoopRunningSpanStoreInstance = new NoopRunningSpanStore();
-
         protected RunningSpanStoreBase()
         {
         }
 
         public abstract IRunningSpanStoreSummary Summary { get; }
 
-        internal static IRunningSpanStore NoopRunningSpanStore
-        {
-            get
-            {
-                return NoopRunningSpanStoreInstance;
-            }
-        }
+        internal static IRunningSpanStore NoopRunningSpanStore { get; } = new NoopRunningSpanStore();
 
         public abstract IEnumerable<ISpanData> GetRunningSpans(IRunningSpanStoreFilter filter);
 

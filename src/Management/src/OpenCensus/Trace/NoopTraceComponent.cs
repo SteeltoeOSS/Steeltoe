@@ -23,8 +23,6 @@ namespace OpenCensus.Trace
 
     internal sealed class NoopTraceComponent : ITraceComponent
     {
-        private readonly IExportComponent noopExportComponent = Export.ExportComponentBase.NewNoopExportComponent;
-
         public ITracer Tracer
         {
             get
@@ -49,13 +47,7 @@ namespace OpenCensus.Trace
             }
         }
 
-        public IExportComponent ExportComponent
-        {
-            get
-            {
-                return this.noopExportComponent;
-            }
-        }
+        public IExportComponent ExportComponent { get; } = Export.ExportComponentBase.NewNoopExportComponent;
 
         public ITraceConfig TraceConfig
         {

@@ -57,40 +57,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public class DashboardData
         {
-            private readonly ICollection<HystrixCommandMetrics> _commandMetrics;
-            private readonly ICollection<HystrixThreadPoolMetrics> _threadPoolMetrics;
-            private readonly ICollection<HystrixCollapserMetrics> _collapserMetrics;
-
             public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)
             {
-                this._commandMetrics = commandMetrics;
-                this._threadPoolMetrics = threadPoolMetrics;
-                this._collapserMetrics = collapserMetrics;
+                this.CommandMetrics = commandMetrics;
+                this.ThreadPoolMetrics = threadPoolMetrics;
+                this.CollapserMetrics = collapserMetrics;
             }
 
-            public ICollection<HystrixCommandMetrics> CommandMetrics
-            {
-                get
-                {
-                    return _commandMetrics;
-                }
-            }
+            public ICollection<HystrixCommandMetrics> CommandMetrics { get; }
 
-            public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics
-            {
-                get
-                {
-                    return _threadPoolMetrics;
-                }
-            }
+            public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics { get; }
 
-            public ICollection<HystrixCollapserMetrics> CollapserMetrics
-            {
-                get
-                {
-                    return _collapserMetrics;
-                }
-            }
+            public ICollection<HystrixCollapserMetrics> CollapserMetrics { get; }
         }
     }
 }

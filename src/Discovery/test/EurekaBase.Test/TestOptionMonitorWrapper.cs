@@ -9,18 +9,16 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
     {
-        private T _opt;
-
         public TestOptionMonitorWrapper(T opt)
         {
-            _opt = opt;
+            CurrentValue = opt;
         }
 
-        public T CurrentValue => _opt;
+        public T CurrentValue { get; private set; }
 
         public T Get(string name)
         {
-            return _opt;
+            return CurrentValue;
         }
 
         public IDisposable OnChange(Action<T, string> listener)

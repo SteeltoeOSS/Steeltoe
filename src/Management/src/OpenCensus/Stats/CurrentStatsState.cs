@@ -21,7 +21,6 @@ namespace OpenCensus.Stats
     public sealed class CurrentStatsState
     {
         private readonly object lck = new object();
-        private StatsCollectionState currentState = StatsCollectionState.ENABLED;
         private bool isRead;
 
         public StatsCollectionState Value
@@ -40,13 +39,7 @@ namespace OpenCensus.Stats
             }
         }
 
-        internal StatsCollectionState Internal
-        {
-            get
-            {
-                return this.currentState;
-            }
-        }
+        internal StatsCollectionState Internal { get; private set; } = StatsCollectionState.ENABLED;
 
         // Sets current state to the given state. Returns true if the current state is changed, false
         // otherwise.
@@ -59,13 +52,13 @@ namespace OpenCensus.Stats
                     throw new ArgumentException("State was already read, cannot set state.");
                 }
 
-                if (state == this.currentState)
+                if (state == this.Internal)
                 {
                     return false;
                 }
                 else
                 {
-                    this.currentState = state;
+                    this.Internal = state;
                     return true;
                 }
             }

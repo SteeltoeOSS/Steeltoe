@@ -66,15 +66,7 @@ namespace Steeltoe.Management.Census.Trace
             }
         }
 
-        private readonly IPropagationComponent _propagation = new B3PropagationComponent();
-
-        public IPropagationComponent PropagationComponent
-        {
-            get
-            {
-                return _propagation;
-            }
-        }
+        public IPropagationComponent PropagationComponent { get; } = new B3PropagationComponent();
 
         public IExportComponent ExportComponent
         {

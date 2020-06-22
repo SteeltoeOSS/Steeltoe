@@ -7,13 +7,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     public class HystrixCommandExecutionStarted : HystrixCommandEvent
     {
         private readonly ExecutionIsolationStrategy _isolationStrategy;
-        private readonly int _currentConcurrency;
 
         public HystrixCommandExecutionStarted(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy, int currentConcurrency)
             : base(commandKey, threadPoolKey)
         {
             this._isolationStrategy = isolationStrategy;
-            this._currentConcurrency = currentConcurrency;
+            this.CurrentConcurrency = currentConcurrency;
         }
 
         public override bool IsExecutionStart
@@ -41,9 +40,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             get { return false; }
         }
 
-        public int CurrentConcurrency
-        {
-            get { return _currentConcurrency; }
-        }
+        public int CurrentConcurrency { get; }
     }
 }

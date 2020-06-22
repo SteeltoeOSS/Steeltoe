@@ -18,8 +18,6 @@ namespace OpenCensus.Trace.Export
 {
     internal sealed class NoopExportComponent : IExportComponent
     {
-        private readonly ISampledSpanStore noopSampledSpanStore = Export.SampledSpanStoreBase.NewNoopSampledSpanStore;
-
         public ISpanExporter SpanExporter
         {
             get
@@ -36,12 +34,6 @@ namespace OpenCensus.Trace.Export
             }
         }
 
-        public ISampledSpanStore SampledSpanStore
-        {
-            get
-            {
-                return this.noopSampledSpanStore;
-            }
-        }
+        public ISampledSpanStore SampledSpanStore { get; } = Export.SampledSpanStoreBase.NewNoopSampledSpanStore;
     }
 }

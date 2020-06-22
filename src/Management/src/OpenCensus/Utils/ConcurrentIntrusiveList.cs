@@ -22,20 +22,13 @@ namespace OpenCensus.Utils
     internal sealed class ConcurrentIntrusiveList<T> where T : IElement<T>
     {
         private readonly object lck = new object();
-        private int size = 0;
         private T head = default(T);
 
         public ConcurrentIntrusiveList()
         {
         }
 
-        public int Count
-        {
-            get
-            {
-                return this.size;
-            }
-        }
+        public int Count { get; private set; } = 0;
 
         public void AddElement(T element)
         {
@@ -46,7 +39,7 @@ namespace OpenCensus.Utils
                     throw new ArgumentOutOfRangeException("Element already in a list");
                 }
 
-                this.size++;
+                this.Count++;
                 if (this.head == null)
                 {
                     this.head = element;
@@ -69,7 +62,7 @@ namespace OpenCensus.Utils
                     throw new ArgumentOutOfRangeException("Element not in the list");
                 }
 
-                this.size--;
+                this.Count--;
                 if (element.Previous == null)
                 {
                     // This is the first element
@@ -102,7 +95,7 @@ namespace OpenCensus.Utils
         {
             lock (this.lck)
             {
-                List<T> all = new List<T>(this.size);
+                List<T> all = new List<T>(this.Count);
                 for (T e = this.head; e != null; e = e.Next)
                 {
                     all.Add(e);
