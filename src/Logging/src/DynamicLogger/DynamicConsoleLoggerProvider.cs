@@ -26,7 +26,7 @@ namespace Steeltoe.Extensions.Logging
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
         private ConsoleLoggerProvider _delegate;
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicConsoleLoggerProvider"/> class.
@@ -154,7 +154,7 @@ namespace Steeltoe.Extensions.Logging
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
@@ -164,7 +164,7 @@ namespace Steeltoe.Extensions.Logging
                     _loggers = null;
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

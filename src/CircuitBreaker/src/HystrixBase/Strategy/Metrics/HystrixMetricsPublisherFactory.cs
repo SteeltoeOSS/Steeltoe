@@ -38,7 +38,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
         {
         }
 
-        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> commandPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
+        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> _commandPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
 
         internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, IHystrixCircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
@@ -50,7 +50,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
             });
         }
 
-        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> threadPoolPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool>();
+        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> _threadPoolPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool>();
 
         internal IHystrixMetricsPublisherThreadPool GetPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
         {
@@ -62,13 +62,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
             });
         }
 
-        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> collapserPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser>();
+        private readonly ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> _collapserPublishers = new ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser>();
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers => commandPublishers;
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers => _commandPublishers;
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers => threadPoolPublishers;
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers => _threadPoolPublishers;
 
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers => collapserPublishers;
+        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers => _collapserPublishers;
 
         internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
         {

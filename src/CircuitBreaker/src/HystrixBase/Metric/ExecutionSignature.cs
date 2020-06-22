@@ -8,21 +8,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class ExecutionSignature
     {
-        private readonly string commandName;
-        private readonly ExecutionResult.EventCounts eventCounts;
-        private readonly string cacheKey;
-        private readonly int cachedCount;
-        private readonly IHystrixCollapserKey collapserKey;
-        private readonly int collapserBatchSize;
+        private readonly string _commandName;
+        private readonly ExecutionResult.EventCounts _eventCounts;
+        private readonly string _cacheKey;
+        private readonly int _cachedCount;
+        private readonly IHystrixCollapserKey _collapserKey;
+        private readonly int _collapserBatchSize;
 
         private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount, IHystrixCollapserKey collapserKey, int collapserBatchSize)
         {
-            this.commandName = commandKey.Name;
-            this.eventCounts = eventCounts;
-            this.cacheKey = cacheKey;
-            this.cachedCount = cachedCount;
-            this.collapserKey = collapserKey;
-            this.collapserBatchSize = collapserBatchSize;
+            this._commandName = commandKey.Name;
+            this._eventCounts = eventCounts;
+            this._cacheKey = cacheKey;
+            this._cachedCount = cachedCount;
+            this._collapserKey = collapserKey;
+            this._collapserBatchSize = collapserBatchSize;
         }
 
         public static ExecutionSignature From(IHystrixInvokableInfo execution)
@@ -49,50 +49,50 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
             ExecutionSignature that = (ExecutionSignature)o;
 
-            if (!commandName.Equals(that.commandName))
+            if (!_commandName.Equals(that._commandName))
             {
                 return false;
             }
 
-            if (!eventCounts.Equals(that.eventCounts))
+            if (!_eventCounts.Equals(that._eventCounts))
             {
                 return false;
             }
 
-            return !(cacheKey != null ? !cacheKey.Equals(that.cacheKey) : that.cacheKey != null);
+            return !(_cacheKey != null ? !_cacheKey.Equals(that._cacheKey) : that._cacheKey != null);
         }
 
         public override int GetHashCode()
         {
-            int result = commandName.GetHashCode();
-            result = (31 * result) + eventCounts.GetHashCode();
-            result = (31 * result) + (cacheKey != null ? cacheKey.GetHashCode() : 0);
+            int result = _commandName.GetHashCode();
+            result = (31 * result) + _eventCounts.GetHashCode();
+            result = (31 * result) + (_cacheKey != null ? _cacheKey.GetHashCode() : 0);
             return result;
         }
 
         public string CommandName
         {
-            get { return commandName; }
+            get { return _commandName; }
         }
 
         public ExecutionResult.EventCounts Eventcounts
         {
-            get { return eventCounts; }
+            get { return _eventCounts; }
         }
 
         public int CachedCount
         {
-            get { return cachedCount; }
+            get { return _cachedCount; }
         }
 
         public IHystrixCollapserKey CollapserKey
         {
-            get { return collapserKey; }
+            get { return _collapserKey; }
         }
 
         public int CollapserBatchSize
         {
-            get { return collapserBatchSize; }
+            get { return _collapserBatchSize; }
         }
     }
 }

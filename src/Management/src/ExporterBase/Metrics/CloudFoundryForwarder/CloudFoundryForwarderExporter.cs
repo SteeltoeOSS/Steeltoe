@@ -23,78 +23,78 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private const int PAYLOAD_TOO_LARGE = 413;
         private const int TOO_MANY_REQUESTS = 429;
 
-        private readonly ILogger<CloudFoundryForwarderExporter> logger;
-        private readonly ICloudFoundryMetricWriter metricFormatWriter;
+        private readonly ILogger<CloudFoundryForwarderExporter> _logger;
+        private readonly ICloudFoundryMetricWriter _metricFormatWriter;
 
-        private readonly CloudFoundryForwarderOptions options;
-        private readonly IStats stats;
-        private readonly IViewManager viewManager;
-        private Thread workerThread;
-        private bool shutdown = false;
+        private readonly CloudFoundryForwarderOptions _options;
+        private readonly IStats _stats;
+        private readonly IViewManager _viewManager;
+        private Thread _workerThread;
+        private bool _shutdown = false;
 
         public CloudFoundryForwarderExporter(CloudFoundryForwarderOptions options, IStats stats, ILogger<CloudFoundryForwarderExporter> logger = null)
         {
-            this.options = options;
-            this.stats = stats;
-            this.viewManager = stats.ViewManager;
-            this.logger = logger;
+            this._options = options;
+            this._stats = stats;
+            this._viewManager = stats.ViewManager;
+            this._logger = logger;
             if (options.MicrometerMetricWriter)
             {
-                this.metricFormatWriter = new MicrometerMetricWriter(options, stats, logger);
+                this._metricFormatWriter = new MicrometerMetricWriter(options, stats, logger);
             }
             else
             {
-                this.metricFormatWriter = new SpringBootMetricWriter(options, stats, logger);
+                this._metricFormatWriter = new SpringBootMetricWriter(options, stats, logger);
             }
         }
 
         public void Start()
         {
-            workerThread = new Thread(this.Run)
+            _workerThread = new Thread(this.Run)
             {
                 IsBackground = true,
                 Name = "MetricsPublisher"
             };
-            workerThread.Start();
+            _workerThread.Start();
         }
 
         public void Stop()
         {
-            shutdown = true;
+            _shutdown = true;
         }
 
         protected internal void Run(object obj)
         {
-            if (string.IsNullOrEmpty(options.AccessToken) || string.IsNullOrEmpty(options.Endpoint))
+            if (string.IsNullOrEmpty(_options.AccessToken) || string.IsNullOrEmpty(_options.Endpoint))
             {
-                logger?.LogInformation("Unable to export metrics to metrics forwarder service, service binding missing!");
+                _logger?.LogInformation("Unable to export metrics to metrics forwarder service, service binding missing!");
                 Stop();
             }
             else
             {
-                logger?.LogInformation("Exporting metrics to metrics forwarder service");
+                _logger?.LogInformation("Exporting metrics to metrics forwarder service");
             }
 
-            while (!shutdown)
+            while (!_shutdown)
             {
                 try
                 {
                     long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
                     HttpClient client = GetHttpClient();
-                    var requestUri = new Uri(options.Endpoint);
+                    var requestUri = new Uri(_options.Endpoint);
                     var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
-                    Message message = GetMessage(viewManager.AllExportedViews, timeStamp);
+                    Message message = GetMessage(_viewManager.AllExportedViews, timeStamp);
                     request.Content = GetRequestContent(message);
 
                     DoPost(client, request);
 
-                    Thread.Sleep(options.RateMilli);
+                    Thread.Sleep(_options.RateMilli);
                 }
                 catch (Exception e)
                 {
-                    logger?.LogError(e, "Exception exporting metrics, terminating metrics forwarding!");
-                    shutdown = true;
+                    _logger?.LogError(e, "Exception exporting metrics, terminating metrics forwarding!");
+                    _shutdown = true;
                 }
             }
         }
@@ -105,14 +105,14 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 #pragma warning restore S3168 // "async" methods should not return "void"
         {
             HttpClientHelper.ConfigureCertificateValidation(
-                options.ValidateCertificates,
+                _options.ValidateCertificates,
                 out SecurityProtocolType prevProtocols,
                 out RemoteCertificateValidationCallback prevValidator);
             try
             {
                 using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
                 {
-                    logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
+                    _logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
                     if (response.StatusCode != HttpStatusCode.OK &&
                         response.StatusCode != HttpStatusCode.Accepted)
                     {
@@ -121,19 +121,19 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
                         if (statusCode == UNPROCESSABLE_ENTITY)
                         {
-                            logger?.LogError("Failed to send metrics to Metrics Forwarder service due to unprocessable payload.  Discarding metrics.");
+                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to unprocessable payload.  Discarding metrics.");
                         }
                         else if (statusCode == PAYLOAD_TOO_LARGE)
                         {
-                            logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
+                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
                         }
                         else if (statusCode == TOO_MANY_REQUESTS)
                         {
-                            logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
+                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
                         }
                         else
                         {
-                            logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {status}", statusCode);
+                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {status}", statusCode);
                         }
                     }
 
@@ -142,19 +142,19 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
             catch (Exception e)
             {
-                logger?.LogError(e, "DoPost Exception: {uri}", request.RequestUri);
+                _logger?.LogError(e, "DoPost Exception: {uri}", request.RequestUri);
             }
             finally
             {
                 client.Dispose();
-                HttpClientHelper.RestoreCertificateValidation(options.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
         protected internal Message GetMessage(ISet<IView> exportedViews, long timeStamp)
         {
             Instance instance = new Instance(GetInstanceId(), GetInstanceIndex(), GetMetricsForExportedViews(exportedViews, timeStamp));
-            Application application = new Application(options.ApplicationId, new List<Instance>() { instance });
+            Application application = new Application(_options.ApplicationId, new List<Instance>() { instance });
             return new Message(new List<Application>() { application });
         }
 
@@ -163,7 +163,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             var result = new List<Metric>();
             foreach (var view in exportedViews)
             {
-                IViewData data = viewManager.GetView(view.Name);
+                IViewData data = _viewManager.GetView(view.Name);
                 if (data != null)
                 {
                     IList<Metric> metrics = CreateMetricsFromViewData(data, timeStamp);
@@ -184,7 +184,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             List<Metric> result = new List<Metric>();
             foreach (var entry in viewData.AggregationMap)
             {
-                IList<Metric> metrics = metricFormatWriter.CreateMetrics(viewData, entry.Value, entry.Key, timeStamp);
+                IList<Metric> metrics = _metricFormatWriter.CreateMetrics(viewData, entry.Value, entry.Key, timeStamp);
                 result.AddRange(metrics);
             }
 
@@ -193,30 +193,30 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal string GetInstanceId()
         {
-            if (string.IsNullOrEmpty(options.InstanceId))
+            if (string.IsNullOrEmpty(_options.InstanceId))
             {
                 return Environment.GetEnvironmentVariable("CF_INSTANCE_GUID");
             }
 
-            return options.InstanceId;
+            return _options.InstanceId;
         }
 
         protected internal string GetInstanceIndex()
         {
-            if (string.IsNullOrEmpty(options.InstanceIndex))
+            if (string.IsNullOrEmpty(_options.InstanceIndex))
             {
                 return Environment.GetEnvironmentVariable("CF_INSTANCE_INDEX");
             }
 
-            return options.InstanceIndex;
+            return _options.InstanceIndex;
         }
 
         protected internal HttpRequestMessage GetHttpRequestMessage(HttpMethod method, Uri requestUri)
         {
             var request = new HttpRequestMessage(method, requestUri);
-            request.Headers.Add("Authorization", options.AccessToken);
+            request.Headers.Add("Authorization", _options.AccessToken);
             request.Headers.Add("Accept", "application/json");
-            logger?.LogDebug("GetHttpRequestMessage {0}, token: {1}", request.RequestUri, options.AccessToken);
+            _logger?.LogDebug("GetHttpRequestMessage {0}, token: {1}", request.RequestUri, _options.AccessToken);
             return request;
         }
 
@@ -225,12 +225,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             try
             {
                 string json = JsonConvert.SerializeObject(toSerialize);
-                logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
+                _logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
                 return new StringContent(json, Encoding.UTF8, "application/json");
             }
             catch (Exception e)
             {
-                logger?.LogError("GetRequestContent Exception: {0}", e);
+                _logger?.LogError("GetRequestContent Exception: {0}", e);
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
@@ -238,13 +238,13 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal HttpClient GetHttpClient()
         {
-            return HttpClientHelper.GetHttpClient(options.ValidateCertificates, options.TimeoutSeconds * 1000);
+            return HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.TimeoutSeconds * 1000);
         }
 
         protected internal void ResetMetrics()
         {
-            stats.State = StatsCollectionState.DISABLED;
-            stats.State = StatsCollectionState.ENABLED;
+            _stats.State = StatsCollectionState.DISABLED;
+            _stats.State = StatsCollectionState.ENABLED;
         }
     }
 }

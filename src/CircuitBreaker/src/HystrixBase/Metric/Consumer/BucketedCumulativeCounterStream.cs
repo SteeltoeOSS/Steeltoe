@@ -13,25 +13,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     public abstract class BucketedCumulativeCounterStream<Event, Bucket, Output> : BucketedCounterStream<Event, Bucket, Output>
         where Event : IHystrixEvent
     {
-        private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
-        private readonly BehaviorSubject<Output> counterSubject;
-        private IObservable<Output> sourceStream;
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private readonly BehaviorSubject<Output> _counterSubject;
+        private IObservable<Output> _sourceStream;
 
         protected BucketedCumulativeCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> reduceCommandCompletion, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, reduceCommandCompletion)
         {
-            this.counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
-            this.sourceStream = bucketedStream
+            this._counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
+            this._sourceStream = bucketedStream
                     .Scan(EmptyOutputValue, (arg1, arg2) => reduceBucket(arg1, arg2))
                     .Skip(numBuckets)
-                    .OnSubscribe(() => { isSourceCurrentlySubscribed.Value = true; })
-                    .OnDispose(() => { isSourceCurrentlySubscribed.Value = false; })
+                    .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
+                    .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
                     .Publish().RefCount();           // multiple subscribers should get same data
         }
 
         public override IObservable<Output> Observe()
         {
-            return sourceStream;
+            return _sourceStream;
         }
 
         public void StartCachingStreamValuesIfUnstarted()
@@ -39,7 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
             if (subscription.Value == null)
             {
                 // the stream is not yet started
-                IDisposable candidateSubscription = Observe().Subscribe(this.counterSubject);
+                IDisposable candidateSubscription = Observe().Subscribe(this._counterSubject);
                 if (subscription.CompareAndSet(null, candidateSubscription))
                 {
                     // won the race to set the subscription
@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             get
             {
-                if (counterSubject.TryGetValue(out Output v))
+                if (_counterSubject.TryGetValue(out Output v))
                 {
                     return v;
                 }

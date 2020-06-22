@@ -14,9 +14,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ConcurrentDictionary<string, HystrixThreadPoolStartStream>();
 
-        private readonly IHystrixThreadPoolKey threadPoolKey;
-        private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> writeOnlySubject;
-        private readonly IObservable<HystrixCommandExecutionStarted> readOnlyStream;
+        private readonly IHystrixThreadPoolKey _threadPoolKey;
+        private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
+        private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
 
         public static HystrixThreadPoolStartStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
         {
@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixThreadPoolStartStream(IHystrixThreadPoolKey threadPoolKey)
         {
-            this.threadPoolKey = threadPoolKey;
-            this.writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
-            this.readOnlyStream = writeOnlySubject.AsObservable();
+            this._threadPoolKey = threadPoolKey;
+            this._writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
+            this._readOnlyStream = _writeOnlySubject.AsObservable();
         }
 
         public static void Reset()
@@ -37,17 +37,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Write(HystrixCommandExecutionStarted @event)
         {
-            writeOnlySubject.OnNext(@event);
+            _writeOnlySubject.OnNext(@event);
         }
 
         public IObservable<HystrixCommandExecutionStarted> Observe()
         {
-            return readOnlyStream;
+            return _readOnlyStream;
         }
 
         public override string ToString()
         {
-            return "HystrixThreadPoolStartStream(" + threadPoolKey.Name + ")";
+            return "HystrixThreadPoolStartStream(" + _threadPoolKey.Name + ")";
         }
     }
 }

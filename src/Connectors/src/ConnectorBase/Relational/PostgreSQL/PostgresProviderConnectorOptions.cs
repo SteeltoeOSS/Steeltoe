@@ -15,7 +15,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         public const string Default_Host = "localhost";
         public const int Default_Port = 5432;
         private const string POSTGRES_CLIENT_SECTION_PREFIX = "postgres:client";
-        private bool cloudFoundryConfigFound = false;
+        private bool _cloudFoundryConfigFound = false;
 
         public PostgresProviderConnectorOptions()
         {
@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
             var section = config.GetSection(POSTGRES_CLIENT_SECTION_PREFIX);
             section.Bind(this);
 
-            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -65,7 +65,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
         {
             StringBuilder sb;
 
-            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
             {
                 sb = new StringBuilder(ConnectionString);
             }

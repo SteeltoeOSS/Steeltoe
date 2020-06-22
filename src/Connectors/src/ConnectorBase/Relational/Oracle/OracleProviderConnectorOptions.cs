@@ -13,7 +13,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
         public const string Default_Server = "localhost";
         public const int Default_Port = 1521;
         private const string ORACLE_CLIENT_SECTION_PREFIX = "oracle:client";
-        private bool cloudFoundryConfigFound = false;
+        private bool _cloudFoundryConfigFound = false;
 
         public OracleProviderConnectorOptions()
         {
@@ -31,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
 
             section.Bind(this);
 
-            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -50,7 +50,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

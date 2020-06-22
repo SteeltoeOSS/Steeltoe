@@ -13,11 +13,11 @@ namespace Steeltoe.Management.Census.Trace
 {
     public class OpenCensusTracing : ITracing
     {
-        private readonly ITracingOptions options;
+        private readonly ITracingOptions _options;
 
         public OpenCensusTracing(ITracingOptions options, ISampler sampler = null)
         {
-            this.options = options;
+            this._options = options;
             var builder = TraceParams.Default.ToBuilder();
 
             if (sampler != null)
@@ -56,23 +56,23 @@ namespace Steeltoe.Management.Census.Trace
             TraceConfig.UpdateActiveTraceParams(builder.Build());
         }
 
-        private readonly ITraceComponent traceComponent = new TraceComponent();
+        private readonly ITraceComponent _traceComponent = new TraceComponent();
 
         public ITracer Tracer
         {
             get
             {
-                return traceComponent.Tracer;
+                return _traceComponent.Tracer;
             }
         }
 
-        private readonly IPropagationComponent propagation = new B3PropagationComponent();
+        private readonly IPropagationComponent _propagation = new B3PropagationComponent();
 
         public IPropagationComponent PropagationComponent
         {
             get
             {
-                return propagation;
+                return _propagation;
             }
         }
 
@@ -80,7 +80,7 @@ namespace Steeltoe.Management.Census.Trace
         {
             get
             {
-                return traceComponent.ExportComponent;
+                return _traceComponent.ExportComponent;
             }
         }
 
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Census.Trace
         {
             get
             {
-                return traceComponent.TraceConfig;
+                return _traceComponent.TraceConfig;
             }
         }
     }

@@ -14,10 +14,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         private static readonly ConcurrentDictionary<string, HystrixCollapserEventStream> Streams = new ConcurrentDictionary<string, HystrixCollapserEventStream>();
 
-        private readonly IHystrixCollapserKey collapserKey;
+        private readonly IHystrixCollapserKey _collapserKey;
 
-        private readonly ISubject<HystrixCollapserEvent, HystrixCollapserEvent> writeOnlyStream;
-        private readonly IObservable<HystrixCollapserEvent> readOnlyStream;
+        private readonly ISubject<HystrixCollapserEvent, HystrixCollapserEvent> _writeOnlyStream;
+        private readonly IObservable<HystrixCollapserEvent> _readOnlyStream;
 
         public static HystrixCollapserEventStream GetInstance(IHystrixCollapserKey collapserKey)
         {
@@ -26,9 +26,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixCollapserEventStream(IHystrixCollapserKey collapserKey)
         {
-            this.collapserKey = collapserKey;
-            this.writeOnlyStream = Subject.Synchronize<HystrixCollapserEvent, HystrixCollapserEvent>(new Subject<HystrixCollapserEvent>());
-            this.readOnlyStream = writeOnlyStream.AsObservable();
+            this._collapserKey = collapserKey;
+            this._writeOnlyStream = Subject.Synchronize<HystrixCollapserEvent, HystrixCollapserEvent>(new Subject<HystrixCollapserEvent>());
+            this._readOnlyStream = _writeOnlyStream.AsObservable();
         }
 
         public static void Reset()
@@ -38,17 +38,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Write(HystrixCollapserEvent @event)
         {
-            writeOnlyStream.OnNext(@event);
+            _writeOnlyStream.OnNext(@event);
         }
 
         public IObservable<HystrixCollapserEvent> Observe()
         {
-            return readOnlyStream;
+            return _readOnlyStream;
         }
 
         public override string ToString()
         {
-            return "HystrixCollapserEventStream(" + collapserKey.Name + ")";
+            return "HystrixCollapserEventStream(" + _collapserKey.Name + ")";
         }
     }
 }

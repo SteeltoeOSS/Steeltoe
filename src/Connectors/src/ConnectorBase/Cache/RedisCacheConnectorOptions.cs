@@ -15,7 +15,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         private const string Default_Host = "localhost";
         private const int Default_Port = 6379;
         private const string RedisClientSectionPrefix = "redis:client";
-        private bool cloudFoundryConfigFound = false;
+        private bool _cloudFoundryConfigFound = false;
 
         public RedisCacheConnectorOptions()
             : base(',', Default_Separator)
@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             var section = config.GetSection(RedisClientSectionPrefix);
             section.Bind(this);
 
-            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         // Configure either a single Host/Port or optionaly provide
@@ -86,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         // public int? DefaultDatabase { get; set; }
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
             {
                 return ConnectionString;
             }

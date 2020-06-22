@@ -8,15 +8,15 @@ namespace Steeltoe.Management.Census.Trace.Propagation
 {
     public sealed class B3PropagationComponent : PropagationComponentBase
     {
-        private readonly ThrowsBinaryFormat binaryFormat = new ThrowsBinaryFormat();
-        private readonly B3Format textFormat = new B3Format();
+        private readonly ThrowsBinaryFormat _binaryFormat = new ThrowsBinaryFormat();
+        private readonly B3Format _textFormat = new B3Format();
 
         /// <inheritdoc/>
         public override IBinaryFormat BinaryFormat
         {
             get
             {
-                return this.binaryFormat;
+                return this._binaryFormat;
             }
         }
 
@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation
         {
             get
             {
-                return this.textFormat;
+                return this._textFormat;
             }
         }
     }

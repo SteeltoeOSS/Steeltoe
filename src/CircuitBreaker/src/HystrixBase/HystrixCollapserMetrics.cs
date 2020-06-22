@@ -65,9 +65,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly RollingCollapserEventCounterStream rollingCollapserEventCounterStream;
-        private readonly CumulativeCollapserEventCounterStream cumulativeCollapserEventCounterStream;
-        private readonly RollingCollapserBatchSizeDistributionStream rollingCollapserBatchSizeDistributionStream;
+        private readonly RollingCollapserEventCounterStream _rollingCollapserEventCounterStream;
+        private readonly CumulativeCollapserEventCounterStream _cumulativeCollapserEventCounterStream;
+        private readonly RollingCollapserBatchSizeDistributionStream _rollingCollapserBatchSizeDistributionStream;
 
         internal HystrixCollapserMetrics(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
             : base(null)
@@ -75,9 +75,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             CollapserKey = key;
             Properties = properties;
 
-            rollingCollapserEventCounterStream = RollingCollapserEventCounterStream.GetInstance(key, properties);
-            cumulativeCollapserEventCounterStream = CumulativeCollapserEventCounterStream.GetInstance(key, properties);
-            rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
+            _rollingCollapserEventCounterStream = RollingCollapserEventCounterStream.GetInstance(key, properties);
+            _cumulativeCollapserEventCounterStream = CumulativeCollapserEventCounterStream.GetInstance(key, properties);
+            _rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
         }
 
         public IHystrixCollapserKey CollapserKey { get; }
@@ -86,7 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public long GetRollingCount(CollapserEventType collapserEventType)
         {
-            return rollingCollapserEventCounterStream.GetLatest(collapserEventType);
+            return _rollingCollapserEventCounterStream.GetLatest(collapserEventType);
         }
 
         public override long GetRollingCount(HystrixRollingNumberEvent @event)
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public long GetCumulativeCount(CollapserEventType collapserEventType)
         {
-            return cumulativeCollapserEventCounterStream.GetLatest(collapserEventType);
+            return _cumulativeCollapserEventCounterStream.GetLatest(collapserEventType);
         }
 
         public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
@@ -106,12 +106,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public int GetBatchSizePercentile(double percentile)
         {
-            return rollingCollapserBatchSizeDistributionStream.GetLatestPercentile(percentile);
+            return _rollingCollapserBatchSizeDistributionStream.GetLatestPercentile(percentile);
         }
 
         public int BatchSizeMean
         {
-            get { return rollingCollapserBatchSizeDistributionStream.LatestMean; }
+            get { return _rollingCollapserBatchSizeDistributionStream.LatestMean; }
         }
 
         public int GetShardSizePercentile(double percentile)

@@ -9,16 +9,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixRequestEvents
     {
-        private readonly ICollection<IHystrixInvokableInfo> executions;
+        private readonly ICollection<IHystrixInvokableInfo> _executions;
 
         public HystrixRequestEvents(ICollection<IHystrixInvokableInfo> executions)
         {
-            this.executions = executions;
+            this._executions = executions;
         }
 
         public ICollection<IHystrixInvokableInfo> Executions
         {
-            get { return executions; }
+            get { return _executions; }
         }
 
         public IDictionary<ExecutionSignature, List<int>> ExecutionsMappedToLatencies
@@ -26,8 +26,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             get
             {
                 Dictionary<CommandAndCacheKey, int> cachingDetector = new Dictionary<CommandAndCacheKey, int>();
-                List<IHystrixInvokableInfo> nonCachedExecutions = new List<IHystrixInvokableInfo>(executions.Count);
-                foreach (IHystrixInvokableInfo execution in executions)
+                List<IHystrixInvokableInfo> nonCachedExecutions = new List<IHystrixInvokableInfo>(_executions.Count);
+                foreach (IHystrixInvokableInfo execution in _executions)
                 {
                     if (execution.PublicCacheKey != null)
                     {

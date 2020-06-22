@@ -8,28 +8,28 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class HystrixRabbitMQServiceInfo : ServiceInfo
     {
-        private RabbitMQServiceInfo rabbitInfo;
-        private bool sslEnabled = false;
+        private RabbitMQServiceInfo _rabbitInfo;
+        private bool _sslEnabled = false;
 
         public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
             : base(id)
         {
-            this.sslEnabled = sslEnabled;
-            rabbitInfo = new RabbitMQServiceInfo(id, uri);
+            this._sslEnabled = sslEnabled;
+            _rabbitInfo = new RabbitMQServiceInfo(id, uri);
         }
 
         public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
             : base(id)
         {
-            rabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
-            this.sslEnabled = sslEnabled;
+            _rabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
+            this._sslEnabled = sslEnabled;
         }
 
         public RabbitMQServiceInfo RabbitInfo
         {
             get
             {
-                return rabbitInfo;
+                return _rabbitInfo;
             }
         }
 
@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Scheme;
+                return _rabbitInfo.Scheme;
             }
         }
 
@@ -45,7 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Query;
+                return _rabbitInfo.Query;
             }
         }
 
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Path;
+                return _rabbitInfo.Path;
             }
         }
 
@@ -61,7 +61,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Uri;
+                return _rabbitInfo.Uri;
             }
         }
 
@@ -69,7 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Uris;
+                return _rabbitInfo.Uris;
             }
         }
 
@@ -77,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Host;
+                return _rabbitInfo.Host;
             }
         }
 
@@ -85,7 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Port;
+                return _rabbitInfo.Port;
             }
         }
 
@@ -93,7 +93,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.UserName;
+                return _rabbitInfo.UserName;
             }
         }
 
@@ -101,7 +101,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return rabbitInfo.Password;
+                return _rabbitInfo.Password;
             }
         }
 
@@ -109,7 +109,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
             get
             {
-                return this.sslEnabled;
+                return this._sslEnabled;
             }
         }
     }

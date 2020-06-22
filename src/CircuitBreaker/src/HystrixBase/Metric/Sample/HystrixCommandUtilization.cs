@@ -6,11 +6,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 {
     public class HystrixCommandUtilization
     {
-        private readonly int concurrentCommandCount;
+        private readonly int _concurrentCommandCount;
 
         public HystrixCommandUtilization(int concurrentCommandCount)
         {
-            this.concurrentCommandCount = concurrentCommandCount;
+            this._concurrentCommandCount = concurrentCommandCount;
         }
 
         public static HystrixCommandUtilization Sample(HystrixCommandMetrics commandMetrics)
@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         public int ConcurrentCommandCount
         {
-            get { return concurrentCommandCount; }
+            get { return _concurrentCommandCount; }
         }
     }
 }

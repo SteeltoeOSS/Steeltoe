@@ -358,14 +358,14 @@ namespace Steeltoe.Management.Endpoint
 
         public class DefaultHostingEnvironment : IHostingEnvironment
         {
-            private readonly string profile;
+            private readonly string _profile;
 
             public DefaultHostingEnvironment(string profile)
             {
-                this.profile = profile;
+                this._profile = profile;
             }
 
-            public string EnvironmentName { get => profile; set => throw new NotImplementedException(); }
+            public string EnvironmentName { get => _profile; set => throw new NotImplementedException(); }
 
             public string ApplicationName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 

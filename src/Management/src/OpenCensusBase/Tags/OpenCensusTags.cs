@@ -14,13 +14,13 @@ namespace Steeltoe.Management.Census.Tags
 
         public static OpenCensusTags Instance => AsSingleton.Value;
 
-        private readonly ITagsComponent tagsComponent = new TagsComponent();
+        private readonly ITagsComponent _tagsComponent = new TagsComponent();
 
         public ITagger Tagger
         {
             get
             {
-                return tagsComponent.Tagger;
+                return _tagsComponent.Tagger;
             }
         }
 
@@ -28,7 +28,7 @@ namespace Steeltoe.Management.Census.Tags
         {
             get
             {
-                return tagsComponent.TagPropagationComponent;
+                return _tagsComponent.TagPropagationComponent;
             }
         }
 
@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Census.Tags
         {
             get
             {
-                return tagsComponent.State;
+                return _tagsComponent.State;
             }
         }
     }

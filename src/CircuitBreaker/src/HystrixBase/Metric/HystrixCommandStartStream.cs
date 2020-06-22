@@ -14,9 +14,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         private static readonly ConcurrentDictionary<string, HystrixCommandStartStream> Streams = new ConcurrentDictionary<string, HystrixCommandStartStream>();
 
-        private readonly IHystrixCommandKey commandKey;
-        private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> writeOnlySubject;
-        private readonly IObservable<HystrixCommandExecutionStarted> readOnlyStream;
+        private readonly IHystrixCommandKey _commandKey;
+        private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
+        private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
 
         public static HystrixCommandStartStream GetInstance(IHystrixCommandKey commandKey)
         {
@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixCommandStartStream(IHystrixCommandKey commandKey)
         {
-            this.commandKey = commandKey;
-            this.writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
-            this.readOnlyStream = writeOnlySubject.AsObservable();
+            this._commandKey = commandKey;
+            this._writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
+            this._readOnlyStream = _writeOnlySubject.AsObservable();
         }
 
         public static void Reset()
@@ -37,17 +37,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Write(HystrixCommandExecutionStarted @event)
         {
-            writeOnlySubject.OnNext(@event);
+            _writeOnlySubject.OnNext(@event);
         }
 
         public IObservable<HystrixCommandExecutionStarted> Observe()
         {
-            return readOnlyStream;
+            return _readOnlyStream;
         }
 
         public override string ToString()
         {
-            return "HystrixCommandStartStream(" + commandKey.Name + ")";
+            return "HystrixCommandStartStream(" + _commandKey.Name + ")";
         }
     }
 }

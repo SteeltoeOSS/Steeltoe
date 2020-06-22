@@ -11,9 +11,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class UriInfo
     {
-        private char[] questionMark = new char[] { '?' };
+        private char[] _questionMark = new char[] { '?' };
 
-        private char[] colon = new char[] { ':' };
+        private char[] _colon = new char[] { ':' };
 
         public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
         {
@@ -205,7 +205,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
                 if (firstAmp > 0)
                 {
-                    uriString = uriString.Substring(0, firstAmp) + questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
+                    uriString = uriString.Substring(0, firstAmp) + _questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
                 }
             }
         }
@@ -217,7 +217,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return null;
             }
 
-            string[] split = pathAndQuery.Split(questionMark);
+            string[] split = pathAndQuery.Split(_questionMark);
             if (split.Length == 0)
             {
                 return null;
@@ -233,7 +233,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return null;
             }
 
-            string[] split = pathAndQuery.Split(questionMark);
+            string[] split = pathAndQuery.Split(_questionMark);
             if (split.Length <= 1)
             {
                 return null;
@@ -249,7 +249,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return new string[2] { null, null };
             }
 
-            string[] split = userPass.Split(colon);
+            string[] split = userPass.Split(_colon);
             if (split.Length != 2)
             {
                 throw new ArgumentException(

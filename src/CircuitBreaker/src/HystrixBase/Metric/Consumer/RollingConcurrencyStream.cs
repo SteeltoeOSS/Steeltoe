@@ -15,9 +15,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public abstract class RollingConcurrencyStream
     {
-        private readonly BehaviorSubject<int> rollingMax = new BehaviorSubject<int>(0);
-        private readonly IObservable<int> rollingMaxStream;
-        private AtomicReference<IDisposable> rollingMaxSubscription = new AtomicReference<IDisposable>(null);
+        private readonly BehaviorSubject<int> _rollingMax = new BehaviorSubject<int>(0);
+        private readonly IObservable<int> _rollingMaxStream;
+        private AtomicReference<IDisposable> _rollingMaxSubscription = new AtomicReference<IDisposable>(null);
 
         private static Func<int, int, int> ReduceToMax { get; } = (a, b) =>
        {
@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                 emptyRollingMaxBuckets.Add(0);
             }
 
-            rollingMaxStream = inputEventStream
+            _rollingMaxStream = inputEventStream
                     .Observe()
                     .Map((arg) => GetConcurrencyCountFromEvent(arg))
                     .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default)
@@ -55,11 +55,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public void StartCachingStreamValuesIfUnstarted()
         {
-            if (rollingMaxSubscription.Value == null)
+            if (_rollingMaxSubscription.Value == null)
             {
                 // the stream is not yet started
-                IDisposable candidateSubscription = Observe().Subscribe(rollingMax);
-                if (rollingMaxSubscription.CompareAndSet(null, candidateSubscription))
+                IDisposable candidateSubscription = Observe().Subscribe(_rollingMax);
+                if (_rollingMaxSubscription.CompareAndSet(null, candidateSubscription))
                 {
                     // won the race to set the subscription
                 }
@@ -75,23 +75,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             get
             {
-                rollingMax.TryGetValue(out int value);
+                _rollingMax.TryGetValue(out int value);
                 return value;
             }
         }
 
         public IObservable<int> Observe()
         {
-            return rollingMaxStream;
+            return _rollingMaxStream;
         }
 
         public void Unsubscribe()
         {
-            IDisposable s = rollingMaxSubscription.Value;
+            IDisposable s = _rollingMaxSubscription.Value;
             if (s != null)
             {
                 s.Dispose();
-                rollingMaxSubscription.CompareAndSet(s, null);
+                _rollingMaxSubscription.CompareAndSet(s, null);
             }
         }
     }

@@ -26,37 +26,37 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const string OBSERVER_NAME = "AspNetCoreHostingObserver";
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
 
-        private readonly ITagKey statusTagKey = TagKey.Create("status");
-        private readonly ITagKey exceptionTagKey = TagKey.Create("exception");
-        private readonly ITagKey methodTagKey = TagKey.Create("method");
-        private readonly ITagKey uriTagKey = TagKey.Create("uri");
+        private readonly ITagKey _statusTagKey = TagKey.Create("status");
+        private readonly ITagKey _exceptionTagKey = TagKey.Create("exception");
+        private readonly ITagKey _methodTagKey = TagKey.Create("method");
+        private readonly ITagKey _uriTagKey = TagKey.Create("uri");
 
-        private readonly IMeasureDouble responseTimeMeasure;
-        private readonly IMeasureLong serverCountMeasure;
+        private readonly IMeasureDouble _responseTimeMeasure;
+        private readonly IMeasureLong _serverCountMeasure;
 
         public AspNetCoreHostingObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger<AspNetCoreHostingObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
 
-            responseTimeMeasure = MeasureDouble.Create("server.core.totalTime", "Total request time", MeasureUnit.MilliSeconds);
-            serverCountMeasure = MeasureLong.Create("server.core.totalRequests", "Total request count", "count");
+            _responseTimeMeasure = MeasureDouble.Create("server.core.totalTime", "Total request time", MeasureUnit.MilliSeconds);
+            _serverCountMeasure = MeasureLong.Create("server.core.totalRequests", "Total request count", "count");
 
             var view = View.Create(
                     ViewName.Create("http.server.request.time"),
                     "Total request time",
-                    responseTimeMeasure,
+                    _responseTimeMeasure,
                     Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-                    new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
+                    new List<ITagKey>() { _statusTagKey, _exceptionTagKey, _methodTagKey, _uriTagKey });
 
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("http.server.request.count"),
                     "Total request counts",
-                    serverCountMeasure,
+                    _serverCountMeasure,
                     Sum.Create(),
-                    new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
+                    new List<ITagKey>() { _statusTagKey, _exceptionTagKey, _methodTagKey, _uriTagKey });
 
             ViewManager.RegisterView(view);
         }
@@ -102,8 +102,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 ITagContext tagContext = GetTagContext(arg);
                 StatsRecorder
                     .NewMeasureMap()
-                    .Put(responseTimeMeasure, current.Duration.TotalMilliseconds)
-                    .Put(serverCountMeasure, 1)
+                    .Put(_responseTimeMeasure, current.Duration.TotalMilliseconds)
+                    .Put(_serverCountMeasure, 1)
                     .Record(tagContext);
             }
         }
@@ -116,10 +116,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             return Tagger
                 .EmptyBuilder
-                .Put(uriTagKey, TagValue.Create(uri))
-                .Put(statusTagKey, TagValue.Create(statusCode))
-                .Put(exceptionTagKey, TagValue.Create(exception))
-                .Put(methodTagKey, TagValue.Create(arg.Request.Method))
+                .Put(_uriTagKey, TagValue.Create(uri))
+                .Put(_statusTagKey, TagValue.Create(statusCode))
+                .Put(_exceptionTagKey, TagValue.Create(exception))
+                .Put(_methodTagKey, TagValue.Create(arg.Request.Method))
                 .Build();
         }
 

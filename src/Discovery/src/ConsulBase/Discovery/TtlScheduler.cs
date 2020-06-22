@@ -117,7 +117,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         /// <summary>
         /// Remove all heart beats from scheduler
@@ -130,7 +130,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
@@ -141,7 +141,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
                     }
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 
