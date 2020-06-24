@@ -34,11 +34,9 @@ namespace OpenCensus.Trace
         private const int ValueMaxSize = 256;
         private const int MaxKeyValuePairsCount = 32;
 
-        private readonly IEnumerable<Entry> entries;
-
         private Tracestate(IEnumerable<Entry> entries)
         {
-            this.entries = entries;
+            this.Entries = entries;
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace OpenCensus.Trace
         /// <summary>
         /// Gets the list of entris in tracestate.
         /// </summary>
-        public IEnumerable<Entry> Entries { get => this.entries; }
+        public IEnumerable<Entry> Entries { get; private set; }
 
         /// <summary>
         /// Returns the value to which the specified key is mapped, or null if this map contains no mapping
@@ -202,24 +200,21 @@ namespace OpenCensus.Trace
         /// </summary>
         public sealed class Entry
         {
-            private readonly string key;
-            private readonly string value;
-
             private Entry(string key, string value)
             {
-                this.key = key;
-                this.value = value;
+                this.Key = key;
+                this.Value = value;
             }
 
             /// <summary>
             /// Gets the key of tracestate entry.
             /// </summary>
-            public string Key { get => this.key; }
+            public string Key { get; private set; }
 
             /// <summary>
             /// Gets the value of tracestate entry.
             /// </summary>
-            public string Value { get => this.value; }
+            public string Value { get; private set; }
 
             /// <summary>
             /// Creates a new Entry with the given name and value.

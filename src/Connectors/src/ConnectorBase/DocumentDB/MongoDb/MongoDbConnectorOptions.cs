@@ -15,7 +15,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
         public const string Default_Server = "localhost";
         public const int Default_Port = 27017;
         private const string MONGODB_CLIENT_SECTION_PREFIX = "mongodb:client";
-        private readonly bool cloudFoundryConfigFound = false;
+        private readonly bool _cloudFoundryConfigFound = false;
 
         public MongoDbConnectorOptions()
         {
@@ -32,7 +32,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
             var section = config.GetSection(MONGODB_CLIENT_SECTION_PREFIX);
             section.Bind(this);
 
-            cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+            _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
         }
 
         public string ConnectionString { get; set; }
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
 
         public override string ToString()
         {
-            if (!string.IsNullOrEmpty(ConnectionString) && !cloudFoundryConfigFound)
+            if (!string.IsNullOrEmpty(ConnectionString) && !_cloudFoundryConfigFound)
             {
                 // Connection string was provided and VCAP_SERVICES wasn't found, just use the connectionstring
                 return ConnectionString;

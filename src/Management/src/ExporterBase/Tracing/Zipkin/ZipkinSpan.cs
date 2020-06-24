@@ -122,91 +122,91 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         public class Builder
         {
-            private string traceId;
-            private string parentId;
-            private string id;
-            private ZipkinSpanKind kind;
-            private string name;
-            private long timestamp;
-            private long duration; // zero means null
-            private ZipkinEndpoint localEndpoint;
-            private ZipkinEndpoint remoteEndpoint;
-            private List<ZipkinAnnotation> annotations;
-            private Dictionary<string, string> tags;
-            private bool debug;
-            private bool shared;
+            private string _traceId;
+            private string _parentId;
+            private string _id;
+            private ZipkinSpanKind _kind;
+            private string _name;
+            private long _timestamp;
+            private long _duration; // zero means null
+            private ZipkinEndpoint _localEndpoint;
+            private ZipkinEndpoint _remoteEndpoint;
+            private List<ZipkinAnnotation> _annotations;
+            private Dictionary<string, string> _tags;
+            private bool _debug;
+            private bool _shared;
 
             internal Builder TraceId(string v)
             {
-                traceId = v;
+                _traceId = v;
                 return this;
             }
 
             internal Builder Id(string v)
             {
-                id = v;
+                _id = v;
                 return this;
             }
 
             internal Builder ParentId(string v)
             {
-                parentId = v;
+                _parentId = v;
                 return this;
             }
 
             internal Builder Kind(ZipkinSpanKind v)
             {
-                kind = v;
+                _kind = v;
                 return this;
             }
 
             internal Builder Name(string v)
             {
-                name = v;
+                _name = v;
                 return this;
             }
 
             internal Builder Timestamp(long v)
             {
-                timestamp = v;
+                _timestamp = v;
                 return this;
             }
 
             internal Builder Duration(long v)
             {
-                duration = v;
+                _duration = v;
                 return this;
             }
 
             internal Builder LocalEndpoint(ZipkinEndpoint v)
             {
-                localEndpoint = v;
+                _localEndpoint = v;
                 return this;
             }
 
             internal Builder RemoteEndpoint(ZipkinEndpoint v)
             {
-                remoteEndpoint = v;
+                _remoteEndpoint = v;
                 return this;
             }
 
             internal Builder Debug(bool v)
             {
-                debug = v;
+                _debug = v;
                 return this;
             }
 
             internal Builder Shared(bool v)
             {
-                shared = v;
+                _shared = v;
                 return this;
             }
 
             internal Builder PutTag(string key, string value)
             {
-                if (tags == null)
+                if (_tags == null)
                 {
-                    tags = new Dictionary<string, string>();
+                    _tags = new Dictionary<string, string>();
                 }
 
                 if (key == null)
@@ -219,30 +219,30 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                this.tags[key] = value;
+                this._tags[key] = value;
                 return this;
             }
 
             internal Builder AddAnnotation(long timestamp, string value)
             {
-                if (annotations == null)
+                if (_annotations == null)
                 {
-                    annotations = new List<ZipkinAnnotation>(2);
+                    _annotations = new List<ZipkinAnnotation>(2);
                 }
 
-                annotations.Add(new ZipkinAnnotation() { Timestamp = timestamp, Value = value });
+                _annotations.Add(new ZipkinAnnotation() { Timestamp = timestamp, Value = value });
                 return this;
             }
 
             internal ZipkinSpan Build()
             {
                 string missing = string.Empty;
-                if (traceId == null)
+                if (_traceId == null)
                 {
                     missing += " traceId";
                 }
 
-                if (id == null)
+                if (_id == null)
                 {
                     missing += " id";
                 }
@@ -254,19 +254,19 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
                 return new ZipkinSpan()
                 {
-                    TraceId = traceId,
-                    ParentId = parentId,
-                    Id = id,
-                    Kind = kind,
-                    Name = name,
-                    Timestamp = timestamp,
-                    Duration = duration,
-                    LocalEndpoint = localEndpoint,
-                    RemoteEndpoint = remoteEndpoint,
-                    Annotations = annotations,
-                    Tags = tags,
-                    Shared = shared,
-                    Debug = debug
+                    TraceId = _traceId,
+                    ParentId = _parentId,
+                    Id = _id,
+                    Kind = _kind,
+                    Name = _name,
+                    Timestamp = _timestamp,
+                    Duration = _duration,
+                    LocalEndpoint = _localEndpoint,
+                    RemoteEndpoint = _remoteEndpoint,
+                    Annotations = _annotations,
+                    Tags = _tags,
+                    Shared = _shared,
+                    Debug = _debug
                 };
             }
         }

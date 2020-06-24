@@ -13,21 +13,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
     public abstract class HystrixKeyDefault : IHystrixKey
     {
-        private readonly string name;
-
         public HystrixKeyDefault(string name)
         {
-            this.name = name;
+            this.Name = name;
         }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name { get; }
 
         public override string ToString()
         {
-            return name;
+            return Name;
         }
     }
 }

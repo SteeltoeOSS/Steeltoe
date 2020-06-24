@@ -156,7 +156,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             while (true);
         }
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         /// <inheritdoc/>
         public void Dispose()
@@ -167,7 +167,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
@@ -180,7 +180,7 @@ namespace Steeltoe.Discovery.Consul.Registry
                     _registry.Dispose();
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

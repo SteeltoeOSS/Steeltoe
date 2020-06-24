@@ -290,7 +290,7 @@ namespace Steeltoe.Discovery.Client
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
-            private CancellationTokenSource source = new CancellationTokenSource();
+            private CancellationTokenSource _source = new CancellationTokenSource();
 
             public ApplicationLifecycle()
             {
@@ -298,32 +298,30 @@ namespace Steeltoe.Discovery.Client
 
             public void Shutdown()
             {
-                source.Cancel();
+                _source.Cancel();
             }
 
             public CancellationToken ApplicationStopping
             {
                 get
                 {
-                    return source.Token;
+                    return _source.Token;
                 }
             }
         }
 
         public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
         {
-            private T _option;
-
             public OptionsMonitorWrapper(T option)
             {
-                _option = option;
+                CurrentValue = option;
             }
 
-            public T CurrentValue => _option;
+            public T CurrentValue { get; }
 
             public T Get(string name)
             {
-                return _option;
+                return CurrentValue;
             }
 
             public IDisposable OnChange(Action<T, string> listener)

@@ -11,15 +11,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Application
     {
-        private ConcurrentDictionary<string, InstanceInfo> _instanceMap = new ConcurrentDictionary<string, InstanceInfo>();
-
         public string Name { get; internal set; }
 
         public int Count
         {
             get
             {
-                return _instanceMap.Count;
+                return InstanceMap.Count;
             }
         }
 
@@ -27,13 +25,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             get
             {
-                return new List<InstanceInfo>(_instanceMap.Values);
+                return new List<InstanceInfo>(InstanceMap.Values);
             }
         }
 
         public InstanceInfo GetInstance(string instanceId)
         {
-            _instanceMap.TryGetValue(instanceId, out InstanceInfo result);
+            InstanceMap.TryGetValue(instanceId, out InstanceInfo result);
             return result;
         }
 
@@ -70,29 +68,23 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             if (!string.IsNullOrEmpty(info.InstanceId))
             {
-                _instanceMap[info.InstanceId] = info;
+                InstanceMap[info.InstanceId] = info;
             }
             else if (!string.IsNullOrEmpty(info.HostName))
             {
-                _instanceMap[info.HostName] = info;
+                InstanceMap[info.HostName] = info;
             }
         }
 
         internal void Remove(InstanceInfo info)
         {
-            if (!_instanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
+            if (!InstanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
             {
-                _instanceMap.TryRemove(info.HostName, out removed);
+                InstanceMap.TryRemove(info.HostName, out removed);
             }
         }
 
-        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap
-        {
-            get
-            {
-                return _instanceMap;
-            }
-        }
+        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ConcurrentDictionary<string, InstanceInfo>();
 
         internal static Application FromJsonApplication(JsonApplication japp)
         {

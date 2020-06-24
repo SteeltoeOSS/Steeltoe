@@ -53,7 +53,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
         private static readonly string[] EMPTY_LABELS = new string[] { string.Empty };
 
-        private Timer tokenRenewTimer;
+        private Timer _tokenRenewTimer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
@@ -771,9 +771,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         protected internal virtual void RenewToken(string token)
         {
-            if (tokenRenewTimer == null)
+            if (_tokenRenewTimer == null)
             {
-                tokenRenewTimer = new Timer(
+                _tokenRenewTimer = new Timer(
                     this.RefreshVaultTokenAsync,
                     null,
                     TimeSpan.FromMilliseconds(_settings.TokenRenewRate),

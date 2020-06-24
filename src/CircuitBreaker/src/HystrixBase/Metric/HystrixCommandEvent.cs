@@ -8,13 +8,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public abstract class HystrixCommandEvent : IHystrixEvent
     {
-        private readonly IHystrixCommandKey commandKey;
-        private readonly IHystrixThreadPoolKey threadPoolKey;
+        private readonly IHystrixCommandKey _commandKey;
+        private readonly IHystrixThreadPoolKey _threadPoolKey;
 
         protected HystrixCommandEvent(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
         {
-            this.commandKey = commandKey;
-            this.threadPoolKey = threadPoolKey;
+            this._commandKey = commandKey;
+            this._threadPoolKey = threadPoolKey;
         }
 
         public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = (commandEvent) =>
@@ -29,12 +29,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public virtual IHystrixCommandKey CommandKey
         {
-            get { return commandKey; }
+            get { return _commandKey; }
         }
 
         public virtual IHystrixThreadPoolKey ThreadPoolKey
         {
-            get { return threadPoolKey; }
+            get { return _threadPoolKey; }
         }
 
         public abstract bool IsExecutionStart { get; }

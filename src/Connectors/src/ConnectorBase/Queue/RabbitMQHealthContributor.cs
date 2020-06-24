@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
         private readonly object _connFactory;
-        private object connection;
+        private object _connection;
 
         public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {
@@ -50,21 +50,21 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             var result = new HealthCheckResult();
             try
             {
-                connection ??= ConnectorHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+                _connection ??= ConnectorHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
 
-                if (connection == null)
+                if (_connection == null)
                 {
                     throw new ConnectorException("Failed to open RabbitMQ connection!");
                 }
 
-                if (RabbitMQTypeLocator.IConnection.GetProperty("IsOpen").GetValue(connection).Equals(false))
+                if (RabbitMQTypeLocator.IConnection.GetProperty("IsOpen").GetValue(_connection).Equals(false))
                 {
                     throw new ConnectorException("RabbitMQ connection is closed!");
                 }
 
                 try
                 {
-                    var serverproperties = RabbitMQTypeLocator.IConnection.GetProperty("ServerProperties").GetValue(connection) as Dictionary<string, object>;
+                    var serverproperties = RabbitMQTypeLocator.IConnection.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
                     result.Details.Add("version", Encoding.UTF8.GetString(serverproperties["version"] as byte[]));
                 }
                 catch (Exception e)

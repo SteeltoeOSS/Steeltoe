@@ -14,27 +14,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 {
     public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>
     {
-        private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser;
-        private readonly int maxBatchSize;
-        private readonly AtomicBoolean batchStarted = new AtomicBoolean();
+        private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
+        private readonly int _maxBatchSize;
+        private readonly AtomicBoolean _batchStarted = new AtomicBoolean();
 
-        private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> argumentMap = new ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>>();
-        private readonly IHystrixCollapserOptions properties;
+        private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private readonly IHystrixCollapserOptions _properties;
 
-        private ReaderWriterLockSlim batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
 
         public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, int maxBatchSize)
         {
-            this.properties = properties;
-            this.commandCollapser = commandCollapser;
-            this.maxBatchSize = maxBatchSize;
+            this._properties = properties;
+            this._commandCollapser = commandCollapser;
+            this._maxBatchSize = maxBatchSize;
         }
 
         public CollapsedRequest<RequestResponseType, RequestArgumentType> Offer(RequestArgumentType arg, CancellationToken token)
         {
             /* short-cut - if the batch is started we reject the offer */
-            if (batchStarted.Value)
+            if (_batchStarted.Value)
             {
                 return null;
             }
@@ -42,17 +42,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             /*
              * The 'read' just means non-exclusive even though we are writing.
              */
-            if (batchLock.TryEnterReadLock(1))
+            if (_batchLock.TryEnterReadLock(1))
             {
                 try
                 {
                     /* double-check now that we have the lock - if the batch is started we reject the offer */
-                    if (batchStarted.Value)
+                    if (_batchStarted.Value)
                     {
                         return null;
                     }
 
-                    if (argumentMap.Count >= maxBatchSize)
+                    if (_argumentMap.Count >= _maxBatchSize)
                     {
                         return null;
                     }
@@ -70,7 +70,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                         }
                         else
                         {
-                            existing = argumentMap.GetOrAdd(arg, collapsedRequest);
+                            existing = _argumentMap.GetOrAdd(arg, collapsedRequest);
                         }
 
                         /*
@@ -87,14 +87,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          */
                         if (existing != collapsedRequest)
                         {
-                            bool requestCachingEnabled = properties.RequestCacheEnabled;
+                            bool requestCachingEnabled = _properties.RequestCacheEnabled;
                             if (requestCachingEnabled)
                             {
                                 return existing;
                             }
                             else
                             {
-                                throw new ArgumentException("Duplicate argument in collapser batch : [" + arg + "]  This is not supported.  Please turn request-caching on for HystrixCollapser:" + commandCollapser.CollapserKey.Name + " or prevent duplicates from making it into the batch!");
+                                throw new ArgumentException("Duplicate argument in collapser batch : [" + arg + "]  This is not supported.  Please turn request-caching on for HystrixCollapser:" + _commandCollapser.CollapserKey.Name + " or prevent duplicates from making it into the batch!");
                             }
                         }
                         else
@@ -105,7 +105,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 }
                 finally
                 {
-                    batchLock.ExitReadLock();
+                    _batchLock.ExitReadLock();
                 }
             }
             else
@@ -120,16 +120,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
              * - check that we only execute once since there's multiple paths to do so (timer, waiting thread or max batch size hit)
              * - close the gate so 'offer' can no longer be invoked and we turn those threads away so they create a new batch
              */
-            if (batchStarted.CompareAndSet(false, true))
+            if (_batchStarted.CompareAndSet(false, true))
             {
                 /* wait for 'offer'/'remove' threads to finish before executing the batch so 'requests' is complete */
-                batchLock.EnterWriteLock();
+                _batchLock.EnterWriteLock();
 
                 List<CollapsedRequest<RequestResponseType, RequestArgumentType>> args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
                 try
                 {
                     // Check for cancel
-                    foreach (var entry in argumentMap)
+                    foreach (var entry in _argumentMap)
                     {
                         if (!entry.Value.IsRequestCanceled())
                         {
@@ -138,9 +138,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     }
 
                     // Handle case of null arg submit
-                    if (nullArg.Value != null)
+                    if (_nullArg.Value != null)
                     {
-                        var req = nullArg.Value;
+                        var req = _nullArg.Value;
                         if (!req.IsRequestCanceled())
                         {
                             args.Add(req);
@@ -150,7 +150,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     if (args.Count > 0)
                     {
                         // shard batches
-                        ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = commandCollapser.DoShardRequests(args);
+                        ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = _commandCollapser.DoShardRequests(args);
 
                         // for each shard execute its requests
                         foreach (ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> shardRequests in shards)
@@ -158,12 +158,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                             try
                             {
                                 // create a new command to handle this batch of requests
-                                HystrixCommand<BatchReturnType> command = commandCollapser.DoCreateObservableCommand(shardRequests);
+                                HystrixCommand<BatchReturnType> command = _commandCollapser.DoCreateObservableCommand(shardRequests);
                                 BatchReturnType result = command.Execute();
 
                                 try
                                 {
-                                    commandCollapser.DoMapResponseToRequests(result, shardRequests);
+                                    _commandCollapser.DoMapResponseToRequests(result, shardRequests);
                                 }
                                 catch (Exception mapException)
                                 {
@@ -190,7 +190,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                                 {
                                     try
                                     {
-                                        e = request.SetExceptionIfResponseNotReceived(e, "No response set by " + commandCollapser.CollapserKey.Name + " 'mapResponseToRequests' implementation.");
+                                        e = request.SetExceptionIfResponseNotReceived(e, "No response set by " + _commandCollapser.CollapserKey.Name + " 'mapResponseToRequests' implementation.");
                                     }
                                     catch (InvalidOperationException)
                                     {
@@ -235,7 +235,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 }
                 finally
                 {
-                    batchLock.ExitWriteLock();
+                    _batchLock.ExitWriteLock();
                 }
             }
         }
@@ -243,14 +243,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         public void Shutdown()
         {
             // take the 'batchStarted' state so offers and execution will not be triggered elsewhere
-            if (batchStarted.CompareAndSet(false, true))
+            if (_batchStarted.CompareAndSet(false, true))
             {
                 // get the write lock so offers are synced with this (we don't really need to unlock as this is a one-shot deal to shutdown)
-                batchLock.EnterWriteLock();
+                _batchLock.EnterWriteLock();
                 try
                 {
                     // if we win the 'start' and once we have the lock we can now shut it down otherwise another thread will finish executing this batch
-                    if (argumentMap.Count > 0)
+                    if (_argumentMap.Count > 0)
                     {
                         // logger.warn("Requests still exist in queue but will not be executed due to RequestCollapser shutdown: " + argumentMap.size(), new InvalidOperationException());
                         /*
@@ -260,7 +260,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          *
                          * This safety-net just prevents the CollapsedRequestFutureImpl.get() from waiting on the CountDownLatch until its max timeout.
                          */
-                        foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in argumentMap.Values)
+                        foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in _argumentMap.Values)
                         {
                             try
                             {
@@ -278,7 +278,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 }
                 finally
                 {
-                    batchLock.ExitWriteLock();
+                    _batchLock.ExitWriteLock();
                 }
             }
         }
@@ -287,8 +287,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         {
             get
             {
-                var result = argumentMap.Count;
-                if (nullArg != null)
+                var result = _argumentMap.Count;
+                if (_nullArg != null)
                 {
                     result++;
                 }
@@ -299,47 +299,47 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal CollapsedRequest<RequestResponseType, RequestArgumentType> GetOrAddNullArg(CollapsedRequest<RequestResponseType, RequestArgumentType> collapsedRequest)
         {
-            if (nullArg.CompareAndSet(null, collapsedRequest))
+            if (_nullArg.CompareAndSet(null, collapsedRequest))
             {
                 return collapsedRequest;
             }
 
-            return nullArg.Value;
+            return _nullArg.Value;
         }
 
         // Best-effort attempt to remove an argument from a batch.  This may get invoked when a cancellation occurs somewhere downstream.
         // This method finds the argument in the batch, and removes it.
         internal void Remove(RequestArgumentType arg)
         {
-            if (batchStarted.Value)
+            if (_batchStarted.Value)
             {
                 // nothing we can do
                 return;
             }
 
-            if (batchLock.TryEnterReadLock(1))
+            if (_batchLock.TryEnterReadLock(1))
             {
                 try
                 {
                     /* double-check now that we have the lock - if the batch is started, deleting is useless */
-                    if (batchStarted.Value)
+                    if (_batchStarted.Value)
                     {
                         return;
                     }
 
                     if (arg == null)
                     {
-                        nullArg.Value = null;
+                        _nullArg.Value = null;
                     }
 
-                    if (argumentMap.TryRemove(arg, out CollapsedRequest<RequestResponseType, RequestArgumentType> existing))
+                    if (_argumentMap.TryRemove(arg, out CollapsedRequest<RequestResponseType, RequestArgumentType> existing))
                     {
                         // Log
                     }
                 }
                 finally
                 {
-                    batchLock.ExitReadLock();
+                    _batchLock.ExitReadLock();
                 }
             }
         }

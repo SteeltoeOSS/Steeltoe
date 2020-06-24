@@ -24,36 +24,36 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private const string GENERATION_TAGVALUE_NAME = "gen";
 
-        private readonly ITagKey threadKindKey = TagKey.Create("kind");
-        private readonly ITagValue threadPoolWorkerKind = TagValue.Create("worker");
-        private readonly ITagValue threadPoolComppKind = TagValue.Create("completionPort");
+        private readonly ITagKey _threadKindKey = TagKey.Create("kind");
+        private readonly ITagValue _threadPoolWorkerKind = TagValue.Create("worker");
+        private readonly ITagValue _threadPoolComppKind = TagValue.Create("completionPort");
 
-        private readonly IMeasureLong activeThreadsMeasure;
-        private readonly IMeasureLong availThreadsMeasure;
-        private readonly ITagContext threadPoolWorkerTagValues;
-        private readonly ITagContext threadPoolCompPortTagValues;
+        private readonly IMeasureLong _activeThreadsMeasure;
+        private readonly IMeasureLong _availThreadsMeasure;
+        private readonly ITagContext _threadPoolWorkerTagValues;
+        private readonly ITagContext _threadPoolCompPortTagValues;
 
-        private readonly ITagKey generationKey = TagKey.Create("generation");
-        private readonly IMeasureLong collectionCountMeasure;
+        private readonly ITagKey _generationKey = TagKey.Create("generation");
+        private readonly IMeasureLong _collectionCountMeasure;
 
-        private readonly ITagKey memoryAreaKey = TagKey.Create("area");
-        private readonly ITagValue heapArea = TagValue.Create("heap");
-        private readonly IMeasureLong memoryUsedMeasure;
-        private readonly ITagContext memoryTagValues;
+        private readonly ITagKey _memoryAreaKey = TagKey.Create("area");
+        private readonly ITagValue _heapArea = TagValue.Create("heap");
+        private readonly IMeasureLong _memoryUsedMeasure;
+        private readonly ITagContext _memoryTagValues;
 
-        private CLRRuntimeSource.HeapMetrics previous = default(CLRRuntimeSource.HeapMetrics);
+        private CLRRuntimeSource.HeapMetrics _previous = default(CLRRuntimeSource.HeapMetrics);
 
         public CLRRuntimeObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger<CLRRuntimeObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
         {
-            memoryUsedMeasure = MeasureLong.Create("memory.used.value", "Current CLR memory usage", MeasureUnit.Bytes);
-            collectionCountMeasure = MeasureLong.Create("collection.count", "Garbage collection count", "count");
-            activeThreadsMeasure = MeasureLong.Create("active.thread.value", "Active thread count", "count");
-            availThreadsMeasure = MeasureLong.Create("avail.thread.value", "Available thread count", "count");
+            _memoryUsedMeasure = MeasureLong.Create("memory.used.value", "Current CLR memory usage", MeasureUnit.Bytes);
+            _collectionCountMeasure = MeasureLong.Create("collection.count", "Garbage collection count", "count");
+            _activeThreadsMeasure = MeasureLong.Create("active.thread.value", "Active thread count", "count");
+            _availThreadsMeasure = MeasureLong.Create("avail.thread.value", "Available thread count", "count");
 
-            memoryTagValues = Tagger.CurrentBuilder.Put(memoryAreaKey, heapArea).Build();
-            threadPoolWorkerTagValues = Tagger.CurrentBuilder.Put(threadKindKey, threadPoolWorkerKind).Build();
-            threadPoolCompPortTagValues = Tagger.CurrentBuilder.Put(threadKindKey, threadPoolComppKind).Build();
+            _memoryTagValues = Tagger.CurrentBuilder.Put(_memoryAreaKey, _heapArea).Build();
+            _threadPoolWorkerTagValues = Tagger.CurrentBuilder.Put(_threadKindKey, _threadPoolWorkerKind).Build();
+            _threadPoolCompPortTagValues = Tagger.CurrentBuilder.Put(_threadKindKey, _threadPoolComppKind).Build();
 
             RegisterViews();
         }
@@ -85,29 +85,29 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             StatsRecorder
                 .NewMeasureMap()
-                .Put(memoryUsedMeasure, metrics.TotalMemory)
-                .Record(memoryTagValues);
+                .Put(_memoryUsedMeasure, metrics.TotalMemory)
+                .Record(_memoryTagValues);
 
             for (int i = 0; i < metrics.CollectionCounts.Count; i++)
             {
                 var count = metrics.CollectionCounts[i];
-                if (previous.CollectionCounts != null && i < previous.CollectionCounts.Count && previous.CollectionCounts[i] <= count)
+                if (_previous.CollectionCounts != null && i < _previous.CollectionCounts.Count && _previous.CollectionCounts[i] <= count)
                 {
-                    count -= previous.CollectionCounts[i];
+                    count -= _previous.CollectionCounts[i];
                 }
 
                 var tagContext = Tagger
                     .EmptyBuilder
-                    .Put(generationKey, TagValue.Create(GENERATION_TAGVALUE_NAME + i.ToString()))
+                    .Put(_generationKey, TagValue.Create(GENERATION_TAGVALUE_NAME + i.ToString()))
                     .Build();
 
                 StatsRecorder
                     .NewMeasureMap()
-                    .Put(collectionCountMeasure, count)
+                    .Put(_collectionCountMeasure, count)
                     .Record(tagContext);
             }
 
-            previous = metrics;
+            _previous = metrics;
         }
 
         protected internal void HandleThreadsEvent(CLRRuntimeSource.ThreadMetrics metrics)
@@ -117,15 +117,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             StatsRecorder
                 .NewMeasureMap()
-                .Put(activeThreadsMeasure, activeWorkers)
-                .Put(availThreadsMeasure, metrics.AvailableThreadPoolWorkers)
-                .Record(threadPoolWorkerTagValues);
+                .Put(_activeThreadsMeasure, activeWorkers)
+                .Put(_availThreadsMeasure, metrics.AvailableThreadPoolWorkers)
+                .Record(_threadPoolWorkerTagValues);
 
             StatsRecorder
                 .NewMeasureMap()
-                .Put(activeThreadsMeasure, activeCompPort)
-                .Put(availThreadsMeasure, metrics.AvailableThreadCompletionPort)
-                .Record(threadPoolCompPortTagValues);
+                .Put(_activeThreadsMeasure, activeCompPort)
+                .Put(_availThreadsMeasure, metrics.AvailableThreadCompletionPort)
+                .Record(_threadPoolCompPortTagValues);
         }
 
         protected internal void RegisterViews()
@@ -133,33 +133,33 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             IView view = View.Create(
                     ViewName.Create("clr.memory.used"),
                     "Current CLR memory usage",
-                    memoryUsedMeasure,
+                    _memoryUsedMeasure,
                     Mean.Create(),
-                    new List<ITagKey>() { memoryAreaKey });
+                    new List<ITagKey>() { _memoryAreaKey });
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("clr.gc.collections"),
                     "Garbage collection count",
-                    collectionCountMeasure,
+                    _collectionCountMeasure,
                     Sum.Create(),
-                    new List<ITagKey>() { generationKey });
+                    new List<ITagKey>() { _generationKey });
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("clr.threadpool.active"),
                     "Active thread count",
-                    activeThreadsMeasure,
+                    _activeThreadsMeasure,
                     Mean.Create(),
-                    new List<ITagKey>() { threadKindKey });
+                    new List<ITagKey>() { _threadKindKey });
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("clr.threadpool.avail"),
                     "Available thread count",
-                    availThreadsMeasure,
+                    _availThreadsMeasure,
                     Mean.Create(),
-                    new List<ITagKey>() { threadKindKey });
+                    new List<ITagKey>() { _threadKindKey });
             ViewManager.RegisterView(view);
         }
     }

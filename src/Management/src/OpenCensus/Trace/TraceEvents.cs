@@ -20,31 +20,24 @@ namespace OpenCensus.Trace
 
     internal class TraceEvents<T>
     {
-        private readonly EvictingQueue<T> events;
         private int totalRecordedEvents = 0;
 
         public TraceEvents(int maxNumEvents)
         {
-            this.events = new EvictingQueue<T>(maxNumEvents);
+            this.Events = new EvictingQueue<T>(maxNumEvents);
         }
 
-        public EvictingQueue<T> Events
-        {
-            get
-            {
-                return this.events;
-            }
-        }
+        public EvictingQueue<T> Events { get; private set; }
 
         public int NumberOfDroppedEvents
         {
-            get { return this.totalRecordedEvents - this.events.Count; }
+            get { return this.totalRecordedEvents - this.Events.Count; }
         }
 
         internal void AddEvent(T @event)
         {
             this.totalRecordedEvents++;
-            this.events.Add(@event);
+            this.Events.Add(@event);
         }
     }
 }

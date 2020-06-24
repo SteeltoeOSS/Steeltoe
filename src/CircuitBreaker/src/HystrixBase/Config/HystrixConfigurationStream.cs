@@ -13,9 +13,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
     public class HystrixConfigurationStream
     {
         private static int dataEmissionIntervalInMs = 5000;
-        private readonly int intervalInMilliseconds;
-        private readonly IObservable<HystrixConfiguration> allConfigurationStream;
-        private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private readonly IObservable<HystrixConfiguration> _allConfigurationStream;
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
         private static Func<long, HystrixConfiguration> AllConfig { get; } =
             (long timestamp) =>
@@ -28,16 +27,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 
         public HystrixConfigurationStream(int intervalInMilliseconds)
         {
-            this.intervalInMilliseconds = intervalInMilliseconds;
-            this.allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            this.IntervalInMilliseconds = intervalInMilliseconds;
+            this._allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map(AllConfig)
                     .OnSubscribe(() =>
                 {
-                    isSourceCurrentlySubscribed.Value = true;
+                    _isSourceCurrentlySubscribed.Value = true;
                 })
                     .OnDispose(() =>
                 {
-                    isSourceCurrentlySubscribed.Value = false;
+                    _isSourceCurrentlySubscribed.Value = false;
                 })
                     .Publish().RefCount();
         }
@@ -54,32 +53,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
          // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<HystrixConfiguration> Observe()
         {
-            return allConfigurationStream;
+            return _allConfigurationStream;
         }
 
         public IObservable<Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> ObserveCommandConfiguration()
         {
-            return allConfigurationStream.Map(OnlyCommandConfig);
+            return _allConfigurationStream.Map(OnlyCommandConfig);
         }
 
         public IObservable<Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> ObserveThreadPoolConfiguration()
         {
-            return allConfigurationStream.Map(OnlyThreadPoolConfig);
+            return _allConfigurationStream.Map(OnlyThreadPoolConfig);
         }
 
         public IObservable<Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> ObserveCollapserConfiguration()
         {
-            return allConfigurationStream.Map(OnlyCollapserConfig);
+            return _allConfigurationStream.Map(OnlyCollapserConfig);
         }
 
-        public int IntervalInMilliseconds
-        {
-            get { return this.intervalInMilliseconds; }
-        }
+        public int IntervalInMilliseconds { get; }
 
         public bool IsSourceCurrentlySubscribed
         {
-            get { return isSourceCurrentlySubscribed.Value; }
+            get { return _isSourceCurrentlySubscribed.Value; }
         }
 
         internal static HystrixConfigurationStream GetNonSingletonInstanceOnlyUsedInUnitTests(int delayInMs)

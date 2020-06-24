@@ -11,28 +11,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 {
     public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType>
     {
-        private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser;
+        private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
+        private readonly AtomicReference<TimerReference> _timerListenerReference = new AtomicReference<TimerReference>();
+        private readonly AtomicBoolean _timerListenerRegistered = new AtomicBoolean();
+        private readonly ICollapserTimer _timer;
+        private readonly HystrixConcurrencyStrategy _concurrencyStrategy;
 
-        // batch can be null once shutdown
-        private readonly AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> batch = new AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>>();
-        private readonly AtomicReference<TimerReference> timerListenerReference = new AtomicReference<TimerReference>();
-        private readonly AtomicBoolean timerListenerRegistered = new AtomicBoolean();
-        private readonly ICollapserTimer timer;
-        private readonly IHystrixCollapserOptions properties;
-        private readonly HystrixConcurrencyStrategy concurrencyStrategy;
+        public AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> Batch { get; } = new AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>>();
 
-        public AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> Batch => batch;
-
-        public IHystrixCollapserOptions Properties => properties;
+        public IHystrixCollapserOptions Properties { get; }
 
         internal RequestCollapser(HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
         {
             // the command with implementation of abstract methods we need
-            this.commandCollapser = commandCollapser;
-            this.concurrencyStrategy = concurrencyStrategy;
-            this.properties = properties;
-            this.timer = timer;
-            batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
+            this._commandCollapser = commandCollapser;
+            this._concurrencyStrategy = concurrencyStrategy;
+            this.Properties = properties;
+            this._timer = timer;
+            Batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
         }
 
         public CollapsedRequest<RequestResponseType, RequestArgumentType> SubmitRequest(RequestArgumentType arg, CancellationToken token)
@@ -40,10 +36,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             /*
              * We only want the timer ticking if there are actually things to do so we register it the first time something is added.
              */
-            if (!timerListenerRegistered.Value && timerListenerRegistered.CompareAndSet(false, true))
+            if (!_timerListenerRegistered.Value && _timerListenerRegistered.CompareAndSet(false, true))
             {
                 /* schedule the collapsing task to be executed every x milliseconds (x defined inside CollapsedTask) */
-                timerListenerReference.Value = timer.AddListener(new CollapsedTask<BatchReturnType, RequestResponseType, RequestArgumentType>(this));
+                _timerListenerReference.Value = _timer.AddListener(new CollapsedTask<BatchReturnType, RequestResponseType, RequestArgumentType>(this));
             }
 
             // loop until succeed (compare-and-set spin-loop)
@@ -78,10 +74,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 currentBatch.Shutdown();
             }
 
-            if (timerListenerReference.Value != null)
+            if (_timerListenerReference.Value != null)
             {
                 // if the timer was started we'll clear it so it stops ticking
-                timerListenerReference.Value.Dispose();
+                _timerListenerReference.Value.Dispose();
             }
         }
 
@@ -92,7 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 throw new InvalidOperationException("Trying to start null batch which means it was shutdown already.");
             }
 
-            if (Batch.CompareAndSet(previousBatch, new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(Properties, commandCollapser, Properties.MaxRequestsInBatch)))
+            if (Batch.CompareAndSet(previousBatch, new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(Properties, _commandCollapser, Properties.MaxRequestsInBatch)))
             {
                 previousBatch.ExecuteBatchIfNotAlreadyStarted();
             }

@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         protected internal const int MAX_STORAGE = 1000;
-        private BlockingCollection<IHystrixInvokableInfo> allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
+        private BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
 
         internal HystrixRequestLog()
         {
@@ -51,7 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         internal void AddExecutedCommand(IHystrixInvokableInfo command)
         {
-            if (!allExecutedCommands.TryAdd(command))
+            if (!_allExecutedCommands.TryAdd(command))
             {
                 // see RequestLog: Reduce Chance of Memory Leak https://github.com/Netflix/Hystrix/issues/53
                 // logger.warn("RequestLog ignoring command after reaching limit of " + MAX_STORAGE + ". See https://github.com/Netflix/Hystrix/issues/53 for more information.");
@@ -62,7 +62,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             get
             {
-                return allExecutedCommands.ToList().AsReadOnly();
+                return _allExecutedCommands.ToList().AsReadOnly();
             }
         }
 
@@ -75,7 +75,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 StringBuilder builder = new StringBuilder();
                 int estimatedLength = 0;
-                foreach (IHystrixInvokableInfo command in allExecutedCommands)
+                foreach (IHystrixInvokableInfo command in _allExecutedCommands)
                 {
                     builder.Length = 0;
                     builder.Append(command.CommandKey.Name);

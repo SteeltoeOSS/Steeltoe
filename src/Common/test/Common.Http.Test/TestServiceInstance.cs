@@ -10,11 +10,9 @@ namespace Steeltoe.Common.Http.Test
 {
     internal class TestServiceInstance : IServiceInstance
     {
-        private Uri _uri;
-
         public TestServiceInstance(Uri uri)
         {
-            _uri = uri;
+            Uri = uri;
         }
 
         public string Host
@@ -57,12 +55,6 @@ namespace Steeltoe.Common.Http.Test
             }
         }
 
-        public Uri Uri
-        {
-            get
-            {
-                return _uri;
-            }
-        }
+        public Uri Uri { get; private set; }
     }
 }

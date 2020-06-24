@@ -11,11 +11,11 @@ namespace Steeltoe.Common.Logging.Autofac
 {
     public class LoggerFilterConfigureOptions : IConfigureOptions<LoggerFilterOptions>
     {
-        private readonly IConfiguration configuration;
+        private readonly IConfiguration _configuration;
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
         {
-            this.configuration = configuration;
+            this._configuration = configuration;
         }
 
         public void Configure(LoggerFilterOptions options)
@@ -42,12 +42,12 @@ namespace Steeltoe.Common.Logging.Autofac
 
         private void LoadDefaultConfigValues(LoggerFilterOptions options)
         {
-            if (configuration == null)
+            if (_configuration == null)
             {
                 return;
             }
 
-            foreach (var configurationSection in configuration.GetChildren())
+            foreach (var configurationSection in _configuration.GetChildren())
             {
                 if (configurationSection.Key == "LogLevel")
                 {

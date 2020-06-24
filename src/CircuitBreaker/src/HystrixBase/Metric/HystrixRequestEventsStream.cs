@@ -11,13 +11,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixRequestEventsStream
     {
-        private readonly ISubject<HystrixRequestEvents, HystrixRequestEvents> writeOnlyRequestEventsSubject;
-        private readonly IObservable<HystrixRequestEvents> readOnlyRequestEvents;
+        private readonly ISubject<HystrixRequestEvents, HystrixRequestEvents> _writeOnlyRequestEventsSubject;
+        private readonly IObservable<HystrixRequestEvents> _readOnlyRequestEvents;
 
         internal HystrixRequestEventsStream()
         {
-            this.writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
-            this.readOnlyRequestEvents = writeOnlyRequestEventsSubject.AsObservable();
+            this._writeOnlyRequestEventsSubject = Subject.Synchronize<HystrixRequestEvents, HystrixRequestEvents>(new Subject<HystrixRequestEvents>());
+            this._readOnlyRequestEvents = _writeOnlyRequestEventsSubject.AsObservable();
         }
 
         private static readonly HystrixRequestEventsStream INSTANCE = new HystrixRequestEventsStream();
@@ -29,18 +29,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Shutdown()
         {
-            writeOnlyRequestEventsSubject.OnCompleted();
+            _writeOnlyRequestEventsSubject.OnCompleted();
         }
 
         public void Write(ICollection<IHystrixInvokableInfo> executions)
         {
             HystrixRequestEvents requestEvents = new HystrixRequestEvents(executions);
-            writeOnlyRequestEventsSubject.OnNext(requestEvents);
+            _writeOnlyRequestEventsSubject.OnNext(requestEvents);
         }
 
         public IObservable<HystrixRequestEvents> Observe()
         {
-            return readOnlyRequestEvents;
+            return _readOnlyRequestEvents;
         }
     }
 }

@@ -33,7 +33,6 @@ namespace OpenCensus.Trace
         private readonly ITraceParams traceParams;
         private readonly IStartEndHandler startEndHandler;
         private readonly IClock clock;
-        private readonly ITimestampConverter timestampConverter;
         private readonly long startNanoTime;
         private readonly object @lock = new object();
         private AttributesWithCapacity attributes;
@@ -67,13 +66,13 @@ namespace OpenCensus.Trace
             this.sampleToLocalSpanStore = false;
             if (options.HasFlag(SpanOptions.RecordEvents))
             {
-                this.timestampConverter = timestampConverter ?? OpenCensus.Internal.TimestampConverter.Now(clock);
+                this.TimestampConverter = timestampConverter ?? OpenCensus.Internal.TimestampConverter.Now(clock);
                 this.startNanoTime = clock.NowNanos;
             }
             else
             {
                 this.startNanoTime = 0;
-                this.timestampConverter = timestampConverter;
+                this.TimestampConverter = timestampConverter;
             }
         }
 
@@ -171,13 +170,7 @@ namespace OpenCensus.Trace
             }
         }
 
-        internal ITimestampConverter TimestampConverter
-        {
-            get
-            {
-                return this.timestampConverter;
-            }
-        }
+        internal ITimestampConverter TimestampConverter { get; private set; }
 
         private AttributesWithCapacity InitializedAttributes
         {
@@ -415,8 +408,8 @@ namespace OpenCensus.Trace
             Attributes attributesSpanData = this.attributes == null ? Attributes.Create(new Dictionary<string, IAttributeValue>(), 0)
                         : Attributes.Create(this.attributes, this.attributes.NumberOfDroppedAttributes);
 
-            ITimedEvents<IAnnotation> annotationsSpanData = CreateTimedEvents(this.InitializedAnnotations, this.timestampConverter);
-            ITimedEvents<IMessageEvent> messageEventsSpanData = CreateTimedEvents(this.InitializedMessageEvents, this.timestampConverter);
+            ITimedEvents<IAnnotation> annotationsSpanData = CreateTimedEvents(this.InitializedAnnotations, this.TimestampConverter);
+            ITimedEvents<IMessageEvent> messageEventsSpanData = CreateTimedEvents(this.InitializedMessageEvents, this.TimestampConverter);
             LinkList linksSpanData = this.links == null ? LinkList.Create(new List<ILink>(), 0) : LinkList.Create(this.links.Events.ToList(), this.links.NumberOfDroppedEvents);
 
             return SpanData.Create(
@@ -424,7 +417,7 @@ namespace OpenCensus.Trace
                 this.parentSpanId,
                 this.hasRemoteParent,
                 this.Name,
-                this.timestampConverter.ConvertNanoTime(this.startNanoTime),
+                this.TimestampConverter.ConvertNanoTime(this.startNanoTime),
                 attributesSpanData,
                 annotationsSpanData,
                 messageEventsSpanData,
@@ -432,7 +425,7 @@ namespace OpenCensus.Trace
                 null, // Not supported yet.
                 this.hasBeenEnded ? this.StatusWithDefault : null,
                 this.Kind.HasValue ? this.Kind.Value : SpanKind.Client,
-                this.hasBeenEnded ? this.timestampConverter.ConvertNanoTime(this.endNanoTime) : null);
+                this.hasBeenEnded ? this.TimestampConverter.ConvertNanoTime(this.endNanoTime) : null);
         }
 
         internal static ISpan StartSpan(

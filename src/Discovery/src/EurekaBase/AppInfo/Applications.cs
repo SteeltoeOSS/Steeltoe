@@ -13,10 +13,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Applications
     {
-        private ConcurrentDictionary<string, Application> _applicationMap = new ConcurrentDictionary<string, Application>();
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> _virtHostInstanceMap = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
-        private ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> _secureVirtHostInstanceMap = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
-
         private object _addRemoveInstanceLock = new object();
 
         public string AppsHashCode { get; internal set; }
@@ -27,7 +23,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public IList<Application> GetRegisteredApplications()
         {
-            return new List<Application>(_applicationMap.Values);
+            return new List<Application>(ApplicationMap.Values);
         }
 
         public Application GetRegisteredApplication(string appName)
@@ -37,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentException(nameof(appName));
             }
 
-            _applicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
+            ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
             return result;
         }
 
@@ -48,7 +44,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentException(nameof(secureVirtualHostName));
             }
 
-            return DoGetByVirtualHostName(secureVirtualHostName, _secureVirtHostInstanceMap);
+            return DoGetByVirtualHostName(secureVirtualHostName, SecureVirtualHostInstanceMap);
         }
 
         public IList<InstanceInfo> GetInstancesByVirtualHostName(string virtualHostName)
@@ -58,7 +54,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentException(nameof(virtualHostName));
             }
 
-            return DoGetByVirtualHostName(virtualHostName, _virtHostInstanceMap);
+            return DoGetByVirtualHostName(virtualHostName, VirtualHostInstanceMap);
         }
 
         public override string ToString()
@@ -98,7 +94,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentNullException(nameof(app));
             }
 
-            _applicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => { return app; });
+            ApplicationMap.AddOrUpdate(app.Name.ToUpperInvariant(), app, (key, existing) => { return app; });
             AddInstances(app);
         }
 
@@ -114,12 +110,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             if (!string.IsNullOrEmpty(inst.VipAddress))
             {
-                AddInstanceToVip(inst.VipAddress, inst, _virtHostInstanceMap);
+                AddInstanceToVip(inst.VipAddress, inst, VirtualHostInstanceMap);
             }
 
             if (!string.IsNullOrEmpty(inst.SecureVipAddress))
             {
-                AddInstanceToVip(inst.SecureVipAddress, inst, _secureVirtHostInstanceMap);
+                AddInstanceToVip(inst.SecureVipAddress, inst, SecureVirtualHostInstanceMap);
             }
         }
 
@@ -147,12 +143,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             if (!string.IsNullOrEmpty(inst.VipAddress))
             {
-                RemoveInstanceFromVip(inst.VipAddress, inst, _virtHostInstanceMap);
+                RemoveInstanceFromVip(inst.VipAddress, inst, VirtualHostInstanceMap);
             }
 
             if (!string.IsNullOrEmpty(inst.SecureVipAddress))
             {
-                RemoveInstanceFromVip(inst.SecureVipAddress, inst, _secureVirtHostInstanceMap);
+                RemoveInstanceFromVip(inst.SecureVipAddress, inst, SecureVirtualHostInstanceMap);
             }
         }
 
@@ -239,29 +235,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             return hashcodeBuilder.ToString();
         }
 
-        internal ConcurrentDictionary<string, Application> ApplicationMap
-        {
-            get
-            {
-                return _applicationMap;
-            }
-        }
+        internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new ConcurrentDictionary<string, Application>();
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap
-        {
-            get
-            {
-                return _virtHostInstanceMap;
-            }
-        }
+        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
 
-        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap
-        {
-            get
-            {
-                return _secureVirtHostInstanceMap;
-            }
-        }
+        internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
 
         internal static Applications FromJsonApplications(JsonApplications japps)
         {

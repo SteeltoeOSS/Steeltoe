@@ -87,11 +87,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             Metrics.Clear();
         }
 
-        private readonly AtomicInteger concurrentExecutionCount = new AtomicInteger();
+        private readonly AtomicInteger _concurrentExecutionCount = new AtomicInteger();
 
-        private readonly RollingThreadPoolEventCounterStream rollingCounterStream;
-        private readonly CumulativeThreadPoolEventCounterStream cumulativeCounterStream;
-        private readonly RollingThreadPoolMaxConcurrencyStream rollingThreadPoolMaxConcurrencyStream;
+        private readonly RollingThreadPoolEventCounterStream _rollingCounterStream;
+        private readonly CumulativeThreadPoolEventCounterStream _cumulativeCounterStream;
+        private readonly RollingThreadPoolMaxConcurrencyStream _rollingThreadPoolMaxConcurrencyStream;
 
         private HystrixThreadPoolMetrics(IHystrixThreadPoolKey threadPoolKey, IHystrixTaskScheduler threadPool, IHystrixThreadPoolOptions properties)
             : base(null)
@@ -100,16 +100,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             TaskScheduler = threadPool;
             Properties = properties;
 
-            rollingCounterStream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
-            cumulativeCounterStream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
-            rollingThreadPoolMaxConcurrencyStream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, properties);
+            _rollingCounterStream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
+            _cumulativeCounterStream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
+            _rollingThreadPoolMaxConcurrencyStream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, properties);
         }
 
         public static Func<int> GetCurrentConcurrencyThunk(IHystrixThreadPoolKey threadPoolKey)
         {
             return () =>
             {
-                return GetInstance(threadPoolKey).concurrentExecutionCount.Value;
+                return GetInstance(threadPoolKey)._concurrentExecutionCount.Value;
             };
         }
 
@@ -137,50 +137,50 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public void MarkThreadExecution()
         {
-            concurrentExecutionCount.IncrementAndGet();
+            _concurrentExecutionCount.IncrementAndGet();
         }
 
-        public long RollingCountThreadsExecuted => rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
+        public long RollingCountThreadsExecuted => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public long CumulativeCountThreadsExecuted => cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
+        public long CumulativeCountThreadsExecuted => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public long RollingCountThreadsRejected => rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
+        public long RollingCountThreadsRejected => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
-        public long CumulativeCountThreadsRejected => cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
+        public long CumulativeCountThreadsRejected => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
         public long GetRollingCount(ThreadPoolEventType @event)
         {
-            return rollingCounterStream.GetLatestCount(@event);
+            return _rollingCounterStream.GetLatestCount(@event);
         }
 
         public override long GetRollingCount(HystrixRollingNumberEvent @event)
         {
-            return rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
+            return _rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
         }
 
         public long GetCumulativeCount(ThreadPoolEventType @event)
         {
-            return cumulativeCounterStream.GetLatestCount(@event);
+            return _cumulativeCounterStream.GetLatestCount(@event);
         }
 
         public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
         {
-            return cumulativeCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
+            return _cumulativeCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
         }
 
         public void MarkThreadCompletion()
         {
-            concurrentExecutionCount.DecrementAndGet();
+            _concurrentExecutionCount.DecrementAndGet();
         }
 
         public long RollingMaxActiveThreads
         {
-            get { return rollingThreadPoolMaxConcurrencyStream.LatestRollingMax; }
+            get { return _rollingThreadPoolMaxConcurrencyStream.LatestRollingMax; }
         }
 
         public void MarkThreadRejection()
         {
-            concurrentExecutionCount.DecrementAndGet();
+            _concurrentExecutionCount.DecrementAndGet();
         }
     }
 }

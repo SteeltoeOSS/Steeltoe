@@ -14,9 +14,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         private static readonly ConcurrentDictionary<string, HystrixCommandCompletionStream> Streams = new ConcurrentDictionary<string, HystrixCommandCompletionStream>();
 
-        private readonly IHystrixCommandKey commandKey;
-        private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> writeOnlySubject;
-        private readonly IObservable<HystrixCommandCompletion> readOnlyStream;
+        private readonly IHystrixCommandKey _commandKey;
+        private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> _writeOnlySubject;
+        private readonly IObservable<HystrixCommandCompletion> _readOnlyStream;
 
         public static HystrixCommandCompletionStream GetInstance(IHystrixCommandKey commandKey)
         {
@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixCommandCompletionStream(IHystrixCommandKey commandKey)
         {
-            this.commandKey = commandKey;
-            this.writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
-            this.readOnlyStream = writeOnlySubject.AsObservable();
+            this._commandKey = commandKey;
+            this._writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
+            this._readOnlyStream = _writeOnlySubject.AsObservable();
         }
 
         public static void Reset()
@@ -37,17 +37,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void Write(HystrixCommandCompletion @event)
         {
-            writeOnlySubject.OnNext(@event);
+            _writeOnlySubject.OnNext(@event);
         }
 
         public IObservable<HystrixCommandCompletion> Observe()
         {
-            return readOnlyStream;
+            return _readOnlyStream;
         }
 
         public override string ToString()
         {
-            return "HystrixCommandCompletionStream(" + commandKey.Name + ")";
+            return "HystrixCommandCompletionStream(" + _commandKey.Name + ")";
         }
     }
 }

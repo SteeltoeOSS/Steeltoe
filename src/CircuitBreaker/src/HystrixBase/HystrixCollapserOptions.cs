@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         internal const int DEFAULT_METRICS_ROLLING_PERCENTILE_BUCKET_SIZE = 100; // default to 100 values max per bucket
 
         protected const string HYSTRIX_COLLAPSER_PREFIX = "hystrix:collapser";
-        private IHystrixCollapserOptions defaults;
+        private IHystrixCollapserOptions _defaults;
 
         public HystrixCollapserOptions(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions defaults = null, IHystrixDynamicOptions dynamic = null)
             : this(collapserKey, RequestCollapserScope.REQUEST, defaults, dynamic)
@@ -31,7 +31,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             this.CollapserKey = key;
             this.Scope = scope;
-            this.defaults = defaults;
+            this._defaults = defaults;
 
             MaxRequestsInBatch = GetInteger(HYSTRIX_COLLAPSER_PREFIX, key.Name, "maxRequestsInBatch", DEFAULT_MAX_REQUESTS_IN_BATCH, defaults?.MaxRequestsInBatch);
             TimerDelayInMilliseconds = GetInteger(HYSTRIX_COLLAPSER_PREFIX, key.Name, "timerDelayInMilliseconds", DEFAULT_TIMER_DELAY_IN_MILLISECONDS, defaults?.TimerDelayInMilliseconds);

@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Census.Stats
 
         public static OpenCensusStats Instance => AsSingleton.Value;
 
-        private readonly IStatsComponent statsComponent = new StatsComponent();
+        private readonly IStatsComponent _statsComponent = new StatsComponent();
 
         public OpenCensusStats()
         {
@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Census.Stats
         {
             get
             {
-                return statsComponent.StatsRecorder;
+                return _statsComponent.StatsRecorder;
             }
         }
 
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Census.Stats
         {
             get
             {
-                return statsComponent.ViewManager;
+                return _statsComponent.ViewManager;
             }
         }
 
@@ -39,12 +39,12 @@ namespace Steeltoe.Management.Census.Stats
         {
             get
             {
-                return statsComponent.State;
+                return _statsComponent.State;
             }
 
             set
             {
-                ((StatsComponent)statsComponent).State = value;
+                ((StatsComponent)_statsComponent).State = value;
             }
         }
     }

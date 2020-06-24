@@ -9,11 +9,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 {
     internal class CollapsedTask<BatchReturnType, ResponseType, RequestArgumentType> : ITimerListener
     {
-        private readonly RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> rq;
+        private readonly RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> _rq;
 
         public CollapsedTask(RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> rq)
         {
-            this.rq = rq;
+            this._rq = rq;
         }
 
         public void Tick()
@@ -22,14 +22,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             {
                 // we fetch current so that when multiple threads race
                 // we can do compareAndSet with the expected/new to ensure only one happens
-                RequestBatch<BatchReturnType, ResponseType, RequestArgumentType> currentBatch = rq.Batch.Value;
+                RequestBatch<BatchReturnType, ResponseType, RequestArgumentType> currentBatch = _rq.Batch.Value;
 
                 // 1) it can be null if it got shutdown
                 // 2) we don't execute this batch if it has no requests and let it wait until next tick to be executed
                 if (currentBatch != null && currentBatch.Size > 0)
                 {
                     // do execution within context of wrapped Callable
-                    rq.CreateNewBatchAndExecutePreviousIfNeeded(currentBatch);
+                    _rq.CreateNewBatchAndExecutePreviousIfNeeded(currentBatch);
                 }
             }
             catch (Exception)
@@ -38,6 +38,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
             }
         }
 
-        public int IntervalTimeInMilliseconds => rq.Properties.TimerDelayInMilliseconds;
+        public int IntervalTimeInMilliseconds => _rq.Properties.TimerDelayInMilliseconds;
     }
 }
