@@ -5,11 +5,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.EndpointCore;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -20,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Health
         private readonly RequestDelegate _next;
 
         public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-            : base(mgmtOptions: mgmtOptions, logger: logger)
+            : base(mgmtOptions: mgmtOptions, exactRequestPathMatching: false, logger: logger)
         {
             _next = next;
         }

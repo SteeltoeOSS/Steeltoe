@@ -7,14 +7,11 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http.Headers;
 using Xunit;
-using static Steeltoe.Management.EndpointCore.Test.ContentNegotiation.TestStartupExtensions;
+using static Steeltoe.Management.Endpoint.ContentNegotiation.Test.TestStartupExtensions;
 
-namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
+namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
 {
     public class ContentNegotiationTests
     {

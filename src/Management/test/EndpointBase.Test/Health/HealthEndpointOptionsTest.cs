@@ -41,7 +41,10 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 ["management:endpoints:health:enabled"] = "true",
                 ["management:endpoints:health:requiredPermissions"] = "NONE",
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-                ["management:endpoints:cloudfoundry:enabled"] = "true"
+                ["management:endpoints:cloudfoundry:enabled"] = "true",
+                ["management:endpoints:health:groups:custom:include"] = "diskSpace",
+                ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
+                ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
             };
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
@@ -59,6 +62,10 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Equal("health", opts.Id);
             Assert.Equal("health", opts.Path);
             Assert.Equal(Permissions.NONE, opts.RequiredPermissions);
+            Assert.Equal(3, opts.Groups.Count);
+            Assert.True(opts.Groups.ContainsKey("custom"));
+            Assert.True(opts.Groups.ContainsKey("liveness"));
+            Assert.True(opts.Groups.ContainsKey("READINESS"));
         }
 
         [Fact]

@@ -21,9 +21,11 @@ namespace Steeltoe.Management.Endpoint.Health
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null)
         {
-            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), GetDefaultHealthContributors());
+            var serviceProvider = services.BuildServiceProvider();
+            config ??= serviceProvider.GetRequiredService<IConfiguration>();
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), DefaultHealthContributors);
         }
 
         /// <summary>
@@ -69,13 +71,13 @@ namespace Steeltoe.Management.Endpoint.Health
             services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
 
-            services.TryAddSingleton<IHealthAggregator>(aggregator);
+            services.TryAddSingleton(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
         }
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
         {
-            List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
+            var descriptors = new List<ServiceDescriptor>();
             foreach (var c in contributors)
             {
                 descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
@@ -84,12 +86,6 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddEnumerable(descriptors);
         }
 
-        internal static Type[] GetDefaultHealthContributors()
-        {
-            return new Type[]
-            {
-                typeof(DiskSpaceContributor)
-            };
-        }
+        internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor) };
     }
 }

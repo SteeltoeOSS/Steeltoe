@@ -19,7 +19,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 
-namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
+namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
 {
     public static class TestStartupExtensions
     {

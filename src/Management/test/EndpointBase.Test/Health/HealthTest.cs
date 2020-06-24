@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_Default_ReturnsExpected()
         {
-            var health = new HealthCheckResult();
+            var health = new HealthEndpointResponse(null);
             var json = Serialize(health);
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
         }
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_WithDetails_ReturnsExpected()
         {
-            var health = new HealthCheckResult()
+            var health = new HealthEndpointResponse(null)
             {
                 Status = HealthStatus.OUT_OF_SERVICE,
                 Description = "Test",
@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}", json);
         }
 
-        private string Serialize(HealthCheckResult result)
+        private string Serialize(HealthEndpointResponse result)
         {
             try
             {

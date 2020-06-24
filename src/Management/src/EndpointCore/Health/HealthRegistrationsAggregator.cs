@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
@@ -15,19 +14,19 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
     {
-        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
+        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider)
         {
             var result = Aggregate(contributors);
 
-            if (healthServiceOptions == null)
+            if (healthCheckRegistrations == null)
             {
                 return result;
             }
 
             var contributorIds = contributors.Select(x => x.Id);
-            foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
+            foreach (var registration in healthCheckRegistrations)
             {
-                HealthCheckResult h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
+                var h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
 
                 if (h.Status > result.Status)
                 {
