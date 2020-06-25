@@ -279,8 +279,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Kubernetes"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Kubernetes.Test", "Common\test\Common.Kubernetes.Test\Steeltoe.Common.Kubernetes.Test.csproj", "{B29554A3-724B-4D8D-B7D1-32EB53497FBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloudFoundry", "..\..\Samples\Management\src\AspDotNetCore\CloudFoundry\CloudFoundry.csproj", "{2F835020-6660-4F0A-8934-3000CEBA8EC5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -719,10 +717,6 @@ Global
 		{B29554A3-724B-4D8D-B7D1-32EB53497FBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B29554A3-724B-4D8D-B7D1-32EB53497FBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B29554A3-724B-4D8D-B7D1-32EB53497FBC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F835020-6660-4F0A-8934-3000CEBA8EC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F835020-6660-4F0A-8934-3000CEBA8EC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F835020-6660-4F0A-8934-3000CEBA8EC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F835020-6660-4F0A-8934-3000CEBA8EC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
