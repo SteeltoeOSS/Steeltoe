@@ -3,20 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Metrics.Configuration;
-using OpenTelemetry.Metrics.Export;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
@@ -96,7 +91,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions(); 
+            var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
@@ -115,7 +110,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions(); 
+            var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
             mopts.EndpointOptions.Add(opts);
 

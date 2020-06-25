@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {

@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                 endpoints.Map<InfoEndpoint>();
+                endpoints.Map<InfoEndpoint>();
             });
         }
     }

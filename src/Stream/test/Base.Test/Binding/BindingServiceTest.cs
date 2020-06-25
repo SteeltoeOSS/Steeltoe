@@ -12,7 +12,6 @@ using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Util;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;

@@ -7,7 +7,6 @@ using RabbitMQ.Client;
 using Steeltoe.Messaging.Rabbit.Config;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {

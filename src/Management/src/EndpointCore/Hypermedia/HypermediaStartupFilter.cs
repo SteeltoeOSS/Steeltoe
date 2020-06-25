@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 {
                     endpoints.Map<ActuatorEndpoint>();
                 });
-
             };
         }
     }

@@ -2,11 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -29,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             mgmtOptions.EndpointOptions.Add(infoOpts);
             mgmtOptions.EndpointOptions.Add(cloudOpts);
 
-            var ep = new CloudFoundryEndpoint(cloudOpts,  mgmtOptions, null);
+            var ep = new CloudFoundryEndpoint(cloudOpts, mgmtOptions, null);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);

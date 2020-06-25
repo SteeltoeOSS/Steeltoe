@@ -56,8 +56,6 @@ namespace Steeltoe.Management.Endpoint.Test
 
             var options = new InfoEndpointOptions();
             Assert.False(options.IsExposed(mgmtOptions));
-
-            
         }
     }
 }

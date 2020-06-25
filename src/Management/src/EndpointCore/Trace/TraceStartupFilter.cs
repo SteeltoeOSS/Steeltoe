@@ -31,7 +31,6 @@ namespace Steeltoe.Management.Endpoint.Trace
                          case MediaTypeVersion.V2: endpoints.Map<HttpTraceEndpoint>(); break;
                      }
                  });
-
             };
         }
     }

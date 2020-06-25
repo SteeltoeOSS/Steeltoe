@@ -29,7 +29,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 throw new ArgumentNullException(nameof(config));
             }
 
-
             services.AddActuatorManagementOptions(config);
             var options = new RefreshEndpointOptions(config);
             services.TryAddSingleton<IRefreshOptions>(options);

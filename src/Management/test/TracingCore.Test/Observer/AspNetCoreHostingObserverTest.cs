@@ -10,7 +10,6 @@ using Steeltoe.Management.OpenTelemetry.Trace.Propagation;
 using Steeltoe.Management.Tracing.Test;
 using Steeltoe.Management.TracingCore;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;

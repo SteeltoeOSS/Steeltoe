@@ -7,7 +7,6 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text;
 using Xunit;
 

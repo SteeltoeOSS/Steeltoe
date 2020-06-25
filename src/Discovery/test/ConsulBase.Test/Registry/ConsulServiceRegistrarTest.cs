@@ -5,8 +5,6 @@
 using Moq;
 using Steeltoe.Discovery.Consul.Discovery;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test

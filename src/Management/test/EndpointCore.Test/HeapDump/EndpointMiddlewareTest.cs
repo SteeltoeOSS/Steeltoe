@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                var opts = new HeapDumpEndpointOptions();                                                                                                                                                                       
+                var opts = new HeapDumpEndpointOptions();
                 var mopts = new ActuatorManagementOptions();
                 mopts.EndpointOptions.Add(opts);
 

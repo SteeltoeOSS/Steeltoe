@@ -7,7 +7,6 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware
 {
@@ -105,7 +104,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             var result = _endpoint.Invoke(arg);
             return Serialize(result);
         }
-
     }
 #pragma warning restore SA1402 // File may only contain a single class
 }

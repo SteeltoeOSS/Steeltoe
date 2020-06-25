@@ -5,11 +5,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Test
 {

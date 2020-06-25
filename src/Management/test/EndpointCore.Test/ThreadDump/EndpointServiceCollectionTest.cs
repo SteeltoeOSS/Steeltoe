@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             Assert.NotNull(options);
             var repo = serviceProvider.GetService<IThreadDumper>();
             Assert.NotNull(repo);
-            var ep = serviceProvider.GetService<ThreadDumpEndpoint>();
+            var ep = serviceProvider.GetService<ThreadDumpEndpoint_v2>();
             Assert.NotNull(ep);
         }
     }

@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;

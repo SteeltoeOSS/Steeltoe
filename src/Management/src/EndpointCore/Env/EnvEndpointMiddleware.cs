@@ -6,12 +6,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
-    public class EnvEndpointMiddleware: EndpointMiddleware<EnvironmentDescriptor>
+    public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     {
         private readonly RequestDelegate _next;
 

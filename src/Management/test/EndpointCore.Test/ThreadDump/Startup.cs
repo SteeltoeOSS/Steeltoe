@@ -30,9 +30,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.Map<ThreadDumpEndpoint>();
+                endpoints.Map<ThreadDumpEndpoint_v2>();
             });
-
         }
     }
 }

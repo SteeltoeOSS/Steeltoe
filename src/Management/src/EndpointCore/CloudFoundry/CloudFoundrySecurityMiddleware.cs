@@ -8,9 +8,7 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -29,9 +27,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _logger = logger;
             _options = options;
             _mgmtOptions = mgmtOptions;
-
-            //Remove
-            _logger.LogDebug("Application Id"+options.ApplicationId);
 
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }

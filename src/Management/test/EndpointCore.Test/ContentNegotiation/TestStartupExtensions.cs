@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Extensions.Configuration;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
@@ -143,7 +142,6 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                 endpoints.Map<ActuatorEndpoint>();
                 endpoints.Map<InfoEndpoint>();
             });
-
         }
     }
 

@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 var builder = new WebHostBuilder()
-                .UseStartup<Startup>()
+                .UseStartup<StartupV1>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
@@ -82,6 +82,33 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             }
         }
 
+        [Fact]
+        public async void ThreadDumpActuatorv2_ReturnsExpectedData()
+        {
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
+
+                using (var server = new TestServer(builder))
+                {
+                    var client = server.CreateClient();
+                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/threaddump");
+                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                    var json = await result.Content.ReadAsStringAsync();
+                    Assert.NotNull(json);
+                    Assert.NotEqual("{}", json);
+                    Assert.StartsWith("{", json);
+                    Assert.EndsWith("}", json);
+                }
+            }
+        }
         [Fact]
         public void RoutesByPathAndVerb()
         {

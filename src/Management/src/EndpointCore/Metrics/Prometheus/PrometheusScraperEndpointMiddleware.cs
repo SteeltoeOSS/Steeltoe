@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 

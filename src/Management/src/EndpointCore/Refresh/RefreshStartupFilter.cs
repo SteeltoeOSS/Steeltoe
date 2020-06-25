@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
                 {
                     endpoints.Map<RefreshEndpoint>();
                 });
-
             };
         }
     }

@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Integration;
 using Steeltoe.Integration.Retry;
-using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;

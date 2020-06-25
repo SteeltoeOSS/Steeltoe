@@ -9,7 +9,6 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Config;
 using System;

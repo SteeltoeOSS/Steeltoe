@@ -24,6 +24,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 Id = "prometheus";
             }
+
             ExactMatch = false;
         }
     }

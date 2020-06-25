@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Info
                 {
                     endpoints.Map<InfoEndpoint>();
                 });
-
             };
         }
     }

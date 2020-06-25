@@ -20,7 +20,6 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
                 {
                     endpoints.Map<DbMigrationsEndpoint>();
                 });
-
             };
         }
     }

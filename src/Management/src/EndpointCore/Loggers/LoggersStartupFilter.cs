@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 {
                     endpoints.Map<LoggersEndpoint>();
                 });
-
             };
         }
     }

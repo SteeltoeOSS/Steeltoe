@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Http.Headers;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -100,6 +99,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
             var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
+
             // Endpoint not configured
             using (var server = new TestServer(builder3))
             {
@@ -174,7 +174,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public async void CloudFoundrySecurityMiddleware_ReturnsError()
         {
             var mgmtOptions = new CloudFoundryManagementOptions();
-            
+
             var options = new CloudFoundryEndpointOptions();
             mgmtOptions.EndpointOptions.Add(options);
             options.ApplicationId = "foo";

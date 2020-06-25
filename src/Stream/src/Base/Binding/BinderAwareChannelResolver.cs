@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using System;
 

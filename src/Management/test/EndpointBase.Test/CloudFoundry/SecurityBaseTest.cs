@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.DbMigrations.Test;
-using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -50,7 +48,6 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
             response.Content = JsonContent.Create(perms);
             Permissions result = await securityBase.GetPermissions(response);
             Assert.Equal(Permissions.FULL, result);
-            
         }
     }
 }

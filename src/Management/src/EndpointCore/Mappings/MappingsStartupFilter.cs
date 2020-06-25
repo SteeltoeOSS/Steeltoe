@@ -20,7 +20,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 {
                     endpoints.Map<MappingsEndpoint>();
                 });
-
             };
         }
     }

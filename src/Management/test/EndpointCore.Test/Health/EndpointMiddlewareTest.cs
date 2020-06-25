@@ -175,6 +175,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.True(health.ContainsKey("diskSpace"));
             }
         }
+
         [Fact]
         public async void TestDI()
         {
@@ -277,7 +278,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public async void GetStatusCode_MicrosoftAggregator_ReturnsExpected()
         {
-
             var builder = new WebHostBuilder()
               .UseStartup<Startup>()
               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "microsoftHealthAggregator" }));

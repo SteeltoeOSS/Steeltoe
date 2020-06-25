@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management
 {
@@ -23,7 +22,6 @@ namespace Steeltoe.Management
         public virtual IEndpointOptions Options => options;
 
         public string Path => options.Path;
-
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

@@ -4,7 +4,6 @@
 
 using Polly;
 using Polly.Contrib.WaitAndRetry;
-using Polly.Retry;
 using System;
 using System.Collections.Generic;
 

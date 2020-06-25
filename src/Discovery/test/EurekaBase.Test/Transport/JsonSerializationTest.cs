@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Newtonsoft.Json;
-using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.Test;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test

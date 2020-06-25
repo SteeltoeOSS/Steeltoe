@@ -14,7 +14,6 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using Steeltoe.Management.Hypermedia;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var cloudOpts = new HypermediaEndpointOptions();
             mgmtOptions.EndpointOptions.AddRange(new List<IEndpointOptions>() { infoOpts, cloudOpts });
 
-            var ep = new ActuatorEndpoint(cloudOpts,  mgmtOptions);
+            var ep = new ActuatorEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);

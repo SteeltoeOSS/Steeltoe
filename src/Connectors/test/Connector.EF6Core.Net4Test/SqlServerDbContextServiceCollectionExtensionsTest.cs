@@ -4,10 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
-using System.Data.Entity;
 using Xunit;
 
 namespace Steeltoe.Connector.SqlServer.EF6.Test

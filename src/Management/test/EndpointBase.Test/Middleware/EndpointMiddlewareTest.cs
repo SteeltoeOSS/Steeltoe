@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Middleware.Test

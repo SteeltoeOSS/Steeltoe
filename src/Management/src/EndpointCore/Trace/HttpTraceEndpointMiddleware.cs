@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Trace

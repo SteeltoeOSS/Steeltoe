@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration.ConfigServer;
 using System.IO;
 using Xunit;
 

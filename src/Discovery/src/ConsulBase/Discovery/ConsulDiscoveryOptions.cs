@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Net;
-using System;
 using System.Collections.Generic;
-using System.Net;
 
 namespace Steeltoe.Discovery.Consul.Discovery
 {

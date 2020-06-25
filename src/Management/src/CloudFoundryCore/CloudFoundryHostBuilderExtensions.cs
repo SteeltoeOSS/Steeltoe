@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Hypermedia;
 using System;
 using System.Linq;
 
@@ -37,7 +36,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
-            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2,  buildCorsPolicy);
+            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2, buildCorsPolicy);
         }
 
         /// <summary>
@@ -46,11 +45,11 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="webHostBuilder">Your Hostbuilder</param>
         /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
-        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion,Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return webHostBuilder
                 .ConfigureLogging(ConfigureDynamicLogging)
-                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion,  buildCorsPolicy));
+                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 
         /// <summary>

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common;
-using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Services.Test
 {

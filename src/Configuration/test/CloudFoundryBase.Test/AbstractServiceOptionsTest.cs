@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test

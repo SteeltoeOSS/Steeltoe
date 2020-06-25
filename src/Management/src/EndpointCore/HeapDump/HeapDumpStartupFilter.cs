@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 {
                     endpoints.Map<HeapDumpEndpoint>();
                 });
-
             };
         }
     }

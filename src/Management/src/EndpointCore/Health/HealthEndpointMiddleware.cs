@@ -10,7 +10,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointCore;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health

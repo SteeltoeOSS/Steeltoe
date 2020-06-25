@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             return Serialize(result, logger);
         }
 
-        private static string Serialize<TResult>(TResult result, ILogger _logger)
+        private static string Serialize<TResult>(TResult result, ILogger logger)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             }
             catch (Exception e)
             {
-                _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+                logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
             }
 
             return string.Empty;

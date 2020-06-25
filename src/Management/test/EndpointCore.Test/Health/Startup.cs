@@ -2,18 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions.Common;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
-using NSubstitute.Routing.AutoValues;
-using NSubstitute.Routing.Handlers;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -47,8 +42,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                     services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
                     break;
                 case "microsoftHealthAggregator":
-                    //        services.AddSingleton(new HealthCheckOptions() { Predicate = })
-
                     services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
                     services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new Type[] { typeof(DiskSpaceContributor) });
                     break;
@@ -72,15 +65,18 @@ namespace Steeltoe.Management.Endpoint.Health.Test
     public class TestHealthCheck : IHealthCheck
 #pragma warning restore SA1402 // File may only contain a single type
     {
-    
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
             return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
         }
     }
+
+#pragma warning disable SA1402 // File may only contain a single type
     public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+#pragma warning restore SA1402 // File may only contain a single type
     {
         private HealthCheckServiceOptions serviceOptions;
+
         public TestServiceOptions()
         {
             serviceOptions = new HealthCheckServiceOptions();

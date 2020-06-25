@@ -19,7 +19,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 {
                     endpoints.Map<MetricsEndpoint>();
                 });
-
             };
         }
     }

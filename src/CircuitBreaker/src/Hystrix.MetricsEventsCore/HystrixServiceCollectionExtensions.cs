@@ -10,7 +10,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using System;
-using System.Diagnostics.Tracing;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
