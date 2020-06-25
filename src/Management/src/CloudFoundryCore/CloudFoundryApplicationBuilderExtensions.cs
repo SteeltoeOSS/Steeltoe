@@ -20,58 +20,27 @@ namespace Steeltoe.Management.CloudFoundry
 {
     public static class CloudFoundryApplicationBuilderExtensions
     {
-        ///// <summary>
-        ///// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
-        ///// </summary>
-        ///// <param name="app">AppBuilder needing actuators added</param>
-        public static void UseCloudFoundryActuators(this IApplicationBuilder app)
-        {
-            app.UseCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry);
-        }
+        /////// <summary>
+        /////// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
+        /////// </summary>
+        /////// <param name="app">AppBuilder needing actuators added</param>
+        //public static void UseCloudFoundryActuators(this IApplicationBuilder app)
+        //{
+        //    app.UseCloudFoundryActuators(MediaTypeVersion.V1);
+        //}
 
-        ///// <summary>
-        ///// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
-        ///// </summary>
-        ///// <param name="app">AppBuilder needing actuators added</param>
-        ///// <param name="version">Mediatype version of the response</param>
-        ///// <param name="context">Actuator context for endpoints</param>
-        public static void UseCloudFoundryActuators(this IApplicationBuilder app, MediaTypeVersion version, ActuatorContext actuatorContext = ActuatorContext.ActuatorAndCloudFoundry)
-        {
-            if (actuatorContext != ActuatorContext.Actuator)
-            {
-                app.UseCors("SteeltoeManagement");
-                app.UseCloudFoundrySecurity();
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<CloudFoundryEndpoint>();
-                });
-            }
-
-            if (actuatorContext != ActuatorContext.CloudFoundry)
-            {
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<ActuatorEndpoint>();
-                });
-            }
-
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<ThreadDumpEndpoint_v2>();
-                    endpoints.Map<HeapDumpEndpoint>();
-                });
-            }
-
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<InfoEndpoint>();
-                endpoints.Map<HealthEndpoint>();
-                endpoints.Map<LoggersEndpoint>();
-                endpoints.Map<HttpTraceEndpoint>();
-                endpoints.Map<MappingsEndpoint>();
-            });
-        }
+        /////// <summary>
+        /////// Add all CloudFoundry Actuators (Info, Health, Loggers, Trace) and configure CORS
+        /////// </summary>
+        /////// <param name="app">AppBuilder needing actuators added</param>
+        /////// <param name="version">Mediatype version of the response</param>
+        //public static void UseCloudFoundryActuators(this IApplicationBuilder app, MediaTypeVersion version)
+        //{
+        //    app.UseCors(policyBuilder =>
+        //    {
+        //        policyBuilder.AllowAnyOrigin();
+        //    });
+        //    app.UseCloudFoundrySecurity();
+        //}
     }
 }

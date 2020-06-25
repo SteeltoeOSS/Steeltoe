@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            
             return app =>
             {
                 next(app);

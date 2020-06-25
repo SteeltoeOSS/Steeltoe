@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -31,25 +32,15 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
             ["management:endpoints:enabled"] = "true",
         };
 
-        //[Fact]
-        //public void IsMappingsRequest_ReturnsExpected()
-        //{
-        //    var opts = new MappingsEndpointOptions();
-        //    var mopts = TestHelper.GetManagementOptions(opts);
-
-        //    var configurationBuilder = new ConfigurationBuilder();
-        //    configurationBuilder.AddInMemoryCollection(AppSettings);
-        //    var config = configurationBuilder.Build();
-        //    var host = HostingHelpers.GetHostingEnvironment();
-        //    var middle = new MappingsEndpointMiddleware(null, opts, mopts);
-
-        //    var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
-        //    Assert.True(middle.IsMappingsRequest(context));
-        //    var context2 = CreateRequest("PUT", "/cloudfoundryapplication/mappings");
-        //    Assert.False(middle.IsMappingsRequest(context2));
-        //    var context3 = CreateRequest("GET", "/cloudfoundryapplication/badpath");
-        //    Assert.False(middle.IsMappingsRequest(context3));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new MappingsEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/mappings", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/mappings", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         [Fact]
         public async void HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()

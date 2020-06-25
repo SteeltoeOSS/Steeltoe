@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
@@ -256,5 +258,17 @@ namespace Steeltoe.Management.Endpoint
                     collection.AddTransient<IStartupFilter, CloudFoundryActuatorStartupFilter>();
                 });
         }
+
+        public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        {
+            return hostBuilder
+                .AddDynamicLogging()
+                .ConfigureServices((context, collection) =>
+                {
+                    collection.AddAllActuators(context.Configuration, mediaTypeVersion);
+                    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
+                });
+        }
+
     }
 }

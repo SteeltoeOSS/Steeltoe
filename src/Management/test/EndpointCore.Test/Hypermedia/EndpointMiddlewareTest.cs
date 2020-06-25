@@ -91,21 +91,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             }
         }
 
-        //[Fact]
-        //public void ActuatorHypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new HypermediaEndpointOptions();
-        //    var actmOpts = new ActuatorManagementOptions();
-        //    var mgmtOpts = new List<IManagementOptions> { actmOpts };
-
-        //    var ep = new ActuatorEndpoint(opts, mgmtOpts);
-        //    actmOpts.EndpointOptions.Add(opts);
-        //    var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOpts);
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HypermediaEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         private HttpContext CreateRequest(string method, string path)
         {

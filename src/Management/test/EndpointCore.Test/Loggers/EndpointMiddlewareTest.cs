@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -138,22 +139,15 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             }
         }
 
-        //[Fact]
-        //public void LoggersEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new LoggersEndpointOptions();
-        //    var mopts = TestHelper.GetManagementOptions(opts);
-        //    var ep = new LoggersEndpoint(opts, null);
-        //    var middle = new LoggersEndpointMiddleware(null, ep, mopts);
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/loggers"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/loggers"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        //    Assert.True(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/loggers"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/badpath"));
-        //    Assert.True(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/loggers/Foo.Bar.Class"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/badpath/Foo.Bar.Class"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new LoggersEndpointOptions();
+            Assert.False(options.ExactMatch);
+            Assert.Equal("/actuator/loggers/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/loggers/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Collection(options.AllowedVerbs, verb => Assert.Contains("Get", verb), verb => Assert.Contains("Post", verb));
+        }
 
         [Fact]
         public async void LoggersActuator_MultipleProviders_ReturnsExpectedData()

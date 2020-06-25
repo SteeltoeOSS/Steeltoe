@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
         public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config)
         {
-            services.AddThreadDumpActuator(config, MediaTypeVersion.V1);
+            services.AddThreadDumpActuator(config, MediaTypeVersion.V2);
         }
 
         public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)

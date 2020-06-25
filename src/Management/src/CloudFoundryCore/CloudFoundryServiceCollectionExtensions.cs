@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.CloudFoundry
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
+            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, buildCorsPolicy);
         }
 
         /// <summary>
@@ -47,7 +48,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="version">Set response type version</param>
         /// <param name="context">The context in which to run the actuators</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, ActuatorContext context, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -59,48 +60,32 @@ namespace Steeltoe.Management.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (context != ActuatorContext.Actuator)
+            services.AddCors(setup =>
             {
-                var managementOptions = new CloudFoundryManagementOptions(config);
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(managementOptions));
+                var logger = services.BuildServiceProvider().GetService<ILogger>();
+                setup.AddPolicy("SteeltoeManagement", (policy) =>
+                    {
+                        policy
+                            .WithMethods("GET", "POST")
+                            .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
 
-                services.AddCors(setup =>
-                {
-                    setup.AddPolicy("SteeltoeManagement", (policy) =>
+                        if (buildCorsPolicy != null)
                         {
-                            policy
-                                .WithMethods("GET", "POST")
-                                .WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+                            buildCorsPolicy(policy);
 
-                            if (buildCorsPolicy != null)
-                            {
-                                buildCorsPolicy(policy);
-                            }
-                            else
-                            {
-                                policy.AllowAnyOrigin();
-                            }
-                        });
-                });
-                services.AddCloudFoundryActuator(config);
-            }
+                            logger?.LogDebug("Cors: building with policy ");
 
-            if (context != ActuatorContext.CloudFoundry)
-            {
-                services.AddHypermediaActuator(config);
-            }
+                        }
+                        else
+                        {
+                            policy.AllowAnyOrigin();
+                            logger?.LogDebug("Cors: allowing all origins");
+                        }
+                    });
+            });
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-            {
-                services.AddThreadDumpActuator(config, version);
-                services.AddHeapDumpActuator(config);
-            }
-
-            services.AddInfoActuator(config);
-            services.AddHealthActuator(config);
-            services.AddLoggersActuator(config);
-            services.AddTraceActuator(config, version);
-            services.AddMappingsActuator(config);
+            services.AddCloudFoundryActuator(config);
+            services.AddAllActuators(config, version);
         }
     }
 }

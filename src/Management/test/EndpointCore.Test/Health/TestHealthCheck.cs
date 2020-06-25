@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
-    internal class TestHealthCheck : IHealthCheck
-    {
-        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            throw new System.NotImplementedException();
-        }
-    }
+    //internal class TestHealthCheck : IHealthCheck
+    //{
+    //    //public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default(CancellationToken))
+    //    //{
+    //    //    throw new System.NotImplementedException();
+    //    //}
+    //}
 }

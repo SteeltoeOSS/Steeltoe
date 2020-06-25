@@ -152,6 +152,30 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
+        public async void HealthActuator_ReturnsMicrosoftHealthDetails()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+
+                // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+                var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(health);
+                Assert.True(health.ContainsKey("status"));
+                Assert.True(health.ContainsKey("diskSpace"));
+            }
+        }
+        [Fact]
         public async void TestDI()
         {
             var settings = new Dictionary<string, string>(appSettings);
@@ -248,6 +272,35 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.NotNull(unknownJson);
                 Assert.Contains("\"status\":\"UP\"", unknownJson);
             }
+        }
+
+        [Fact]
+        public async void GetStatusCode_MicrosoftAggregator_ReturnsExpected()
+        {
+
+            var builder = new WebHostBuilder()
+              .UseStartup<Startup>()
+              .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "microsoftHealthAggregator" }));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+                var unknownJson = await unknownResult.Content.ReadAsStringAsync();
+                Assert.NotNull(unknownJson);
+                Assert.Contains("\"status\":\"UP\"", unknownJson);
+            }
+        }
+
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HealthEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/health", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/health", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

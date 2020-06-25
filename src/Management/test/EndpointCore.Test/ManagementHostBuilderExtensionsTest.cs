@@ -497,6 +497,50 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
+        public async Task AddAllActuators_IHostBuilder_IStartupFilterFires()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+
+            // Act
+            var host = await hostBuilder.AddAllActuators().StartAsync();
+
+            // Assert general success...
+            //   not sure how to actually validate the StartupFilter worked,
+            //   but debug through and you'll see it. Also the code coverage report should provide validation
+            Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
+            Assert.NotNull(host.Services.GetService<RefreshEndpoint>());
+            Assert.NotNull(host.Services.GetService<MetricsEndpoint>());
+            Assert.NotNull(host.Services.GetService<LoggersEndpoint>());
+            Assert.NotNull(host.Services.GetService<InfoEndpoint>());
+            Assert.NotNull(host.Services.GetService<HttpTraceEndpoint>());
+            Assert.NotNull(host.Services.GetService<HealthEndpointCore>());
+            Assert.NotNull(host.Services.GetService<EnvEndpoint>());
+            Assert.NotNull(host.Services.GetService<DbMigrationsEndpoint>());
+            Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
+            Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
+            Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint_v2>());
+            Assert.NotNull(host.Services.GetService<HeapDumpEndpoint>());
+        }
+
+        [Fact]
+        public void AddaLLActuatorS_IHostBuilder()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder();
+
+            // Act
+            var host = hostBuilder.AddAllActuators().Build();
+            var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+
+            // Assert
+            Assert.Single(managementEndpoint);
+            Assert.NotNull(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
+        }
+
+        [Fact]
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange

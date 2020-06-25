@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -29,12 +30,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             _options = options;
             _mgmtOptions = mgmtOptions;
 
+            //Remove
+            _logger.LogDebug("Application Id"+options.ApplicationId);
+
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
         public async Task Invoke(HttpContext context)
         {
-            _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
+            _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
@@ -113,7 +117,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
 
                 var fullPath = contextPath + ep.Path;
-                if (path.StartsWithSegments(new PathString(fullPath)))
+
+                if (ep is CloudFoundryEndpointOptions)
+                {
+                    if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return ep;
+                    }
+                }
+                else if (path.StartsWithSegments(new PathString(fullPath)))
                 {
                     return ep;
                 }
@@ -132,8 +144,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         private void LogError(HttpContext context, SecurityResult error)
         {
-            _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
-            if (_logger.IsEnabled(LogLevel.Trace))
+            _logger?.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+            if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
             {
                 foreach (var header in context.Request.Headers)
                 {

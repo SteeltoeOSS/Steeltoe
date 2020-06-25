@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                     var mgmtOptions = provider
                         .GetServices<IManagementOptions>().Single(m => m.GetType() == typeof(ActuatorManagementOptions));
                     var opts = new HypermediaEndpointOptions(config);
-                    mgmtOptions.EndpointOptions.Add(opts); //TODO: get rid of this
+                    mgmtOptions.EndpointOptions.Add(opts);
                     return opts;
                 });
 

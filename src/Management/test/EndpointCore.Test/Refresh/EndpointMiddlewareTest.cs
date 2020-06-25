@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -79,21 +80,15 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
         }
 
-        //[Fact]
-        //public void RefreshEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new RefreshEndpointOptions();
-        //    var mopts = TestHelper.GetManagementOptions(opts);
-        //    ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        //    configurationBuilder.AddInMemoryCollection(AppSettings);
-        //    var config = configurationBuilder.Build();
-        //    var ep = new RefreshEndpoint(opts, config);
-        //    var middle = new RefreshEndpointMiddleware(null, ep, mopts);
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/refresh"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/refresh"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new RefreshEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/refresh", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/refresh", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         private HttpContext CreateRequest(string method, string path)
         {

@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public CloudFoundryManagementOptions(IConfiguration config)
             : base(config)
         {
-             Path = DEFAULT_ACTUATOR_PATH; 
+             Path = DEFAULT_ACTUATOR_PATH;
         }
     }
 }

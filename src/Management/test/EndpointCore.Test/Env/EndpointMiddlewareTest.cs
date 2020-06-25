@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Env.Test
@@ -84,22 +85,15 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", originalEnv);
         }
 
-        //[Fact]
-        //public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new EnvEndpointOptions();
-        //    var configurationBuilder = new ConfigurationBuilder();
-        //    configurationBuilder.AddInMemoryCollection(AppSettings);
-        //    var config = configurationBuilder.Build();
-        //    var ep = new EnvEndpoint(opts, config, host);
-        //    var mgmt = new CloudFoundryManagementOptions() { Path = "/" };
-        //    mgmt.EndpointOptions.Add(opts);
-        //    var middle = new EnvEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new EnvEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/env", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         private HttpContext CreateRequest(string method, string path)
         {

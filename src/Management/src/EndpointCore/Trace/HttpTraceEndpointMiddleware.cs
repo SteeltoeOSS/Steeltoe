@@ -23,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public Task Invoke(HttpContext context)
         {
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleTraceRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleTraceRequestAsync(HttpContext context)

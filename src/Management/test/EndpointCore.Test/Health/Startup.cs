@@ -4,10 +4,19 @@
 
 using FluentAssertions.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Options;
+using NSubstitute.Routing.AutoValues;
+using NSubstitute.Routing.Handlers;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
@@ -37,6 +46,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 case "defaultAggregator":
                     services.AddHealthActuator(Configuration, new DefaultHealthAggregator(), new Type[] { typeof(DiskSpaceContributor) });
                     break;
+                case "microsoftHealthAggregator":
+                    //        services.AddSingleton(new HealthCheckOptions() { Predicate = })
+
+                    services.AddSingleton<IOptionsMonitor<HealthCheckServiceOptions>>(new TestServiceOptions());
+                    services.AddHealthActuator(Configuration, new HealthRegistrationsAggregator(), new Type[] { typeof(DiskSpaceContributor) });
+                    break;
                 default:
                     services.AddHealthActuator(Configuration);
                     break;
@@ -50,6 +65,42 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 endpoints.Map<HealthEndpointCore>();
             });
+        }
+    }
+
+#pragma warning disable SA1402 // File may only contain a single type
+    public class TestHealthCheck : IHealthCheck
+#pragma warning restore SA1402 // File may only contain a single type
+    {
+    
+        public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => new HealthCheckResult(HealthStatus.Healthy));
+        }
+    }
+    public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
+    {
+        private HealthCheckServiceOptions serviceOptions;
+        public TestServiceOptions()
+        {
+            serviceOptions = new HealthCheckServiceOptions();
+            serviceOptions.Registrations.Add(new HealthCheckRegistration("test", (provider) => new TestHealthCheck(), HealthStatus.Unhealthy, new string[] { "tags" }.ToList()));
+        }
+
+        public HealthCheckServiceOptions CurrentValue => serviceOptions;
+
+        public void Dispose()
+        {
+        }
+
+        public HealthCheckServiceOptions Get(string name)
+        {
+            return serviceOptions;
+        }
+
+        public IDisposable OnChange(Action<HealthCheckServiceOptions, string> listener)
+        {
+            return this;
         }
     }
 }

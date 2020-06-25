@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
         public Task Invoke(HttpContext context)
         {
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleMappingsRequestAsync(context);
             }
@@ -85,7 +85,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
             var contextMappings = new ContextMappings(desc);
             return new ApplicationMappings(contextMappings);
         }
-        
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
         {

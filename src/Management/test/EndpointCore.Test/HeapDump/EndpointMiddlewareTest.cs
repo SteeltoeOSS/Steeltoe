@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -108,32 +109,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             }
         }
 
-        //[Fact]
-        //public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new HeapDumpEndpointOptions();
-        //    var mopts = TestHelper.GetManagementOptions(opts);
-        //    IHeapDumper obs;
-        //    if (Platform.IsWindows)
-        //    {
-        //        obs = new WindowsHeapDumper(opts);
-        //    }
-        //    else if (Platform.IsLinux)
-        //    {
-        //        obs = new LinuxHeapDumper(opts);
-        //    }
-        //    else
-        //    {
-        //        return;
-        //    }
-
-        //    var ep = new HeapDumpEndpoint(opts, obs);
-        //    var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/heapdump"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/heapdump"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HeapDumpEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/heapdump", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         private HttpContext CreateRequest(string method, string path)
         {

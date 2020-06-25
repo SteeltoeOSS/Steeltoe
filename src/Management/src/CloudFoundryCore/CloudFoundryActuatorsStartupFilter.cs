@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Hypermedia;
 using System;
 
@@ -12,22 +13,28 @@ namespace Steeltoe.Management.CloudFoundry
 {
     public class CloudFoundryActuatorsStartupFilter : IStartupFilter
     {
-        private ActuatorContext ActuatorContext { get; }
-
         private MediaTypeVersion MediaTypeVersion { get; }
 
-        public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext)
+        public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
         {
             MediaTypeVersion = mediaTypeVersion;
-            ActuatorContext = actuatorContext;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
+                app.UseCors("SteeltoeManagement");
+                app.UseCloudFoundrySecurity();
                 next(app);
-                app.UseCloudFoundryActuators(MediaTypeVersion, ActuatorContext);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<CloudFoundryEndpoint>();
+                });
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapAllActuators(MediaTypeVersion);
+                });
             };
         }
     }

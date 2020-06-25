@@ -25,30 +25,30 @@ namespace Steeltoe.Management.Endpoint.Health
             }
         }
 
-        public static MicrosoftHealthStatus ToHealthStatus(this HealthStatus status)
-        {
-            switch (status)
-            {
-                case HealthStatus.UP: return MicrosoftHealthStatus.Healthy;
-                case HealthStatus.WARNING: return MicrosoftHealthStatus.Degraded;
-                default: return MicrosoftHealthStatus.Unhealthy;
-            }
-        }
+        //public static MicrosoftHealthStatus ToHealthStatus(this HealthStatus status)
+        //{
+        //    switch (status)
+        //    {
+        //        case HealthStatus.UP: return MicrosoftHealthStatus.Healthy;
+        //        case HealthStatus.WARNING: return MicrosoftHealthStatus.Degraded;
+        //        default: return MicrosoftHealthStatus.Unhealthy;
+        //    }
+        //}
 
-        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this HealthCheckResult result)
-        {
-            return new Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult(result.Status.ToHealthStatus(), result.Description, null, result.Details);
-        }
+        //public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this HealthCheckResult result)
+        //{
+        //    return new Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult(result.Status.ToHealthStatus(), result.Description, null, result.Details);
+        //}
 
-        public static HealthCheckResult ToHealthCheckResult(this Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult result)
-        {
-            return new HealthCheckResult()
-            {
-                Status = result.Status.ToHealthStatus(),
-                Description = result.Description,
-                Details = result.Data.ToDictionary(t => t.Key, t => t.Value)
-            };
-        }
+        //public static HealthCheckResult ToHealthCheckResult(this Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult result)
+        //{
+        //    return new HealthCheckResult()
+        //    {
+        //        Status = result.Status.ToHealthStatus(),
+        //        Description = result.Description,
+        //        Details = result.Data.ToDictionary(t => t.Key, t => t.Value)
+        //    };
+        //}
 
         public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)
         {

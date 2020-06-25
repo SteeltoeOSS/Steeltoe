@@ -12,7 +12,6 @@ namespace Steeltoe.Management.Endpoint.Loggers
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
-            
             return app =>
             {
                 next(app);

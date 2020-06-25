@@ -80,12 +80,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
@@ -100,7 +100,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
 
             // Act
-            var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry).Build();
+            var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
@@ -131,7 +131,24 @@ namespace Steeltoe.Management.CloudFoundry.Test
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
 
             // Act
-            var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.ActuatorAndCloudFoundry).StartAsync();
+            var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
+
+            // Assert general success...
+            //   not sure how to actually validate the StartupFilter worked,
+            //   but debug through and you'll see it. Also the code coverage report should provide validation
+            Assert.True(true);
+        }
+
+        [Fact]
+        public async Task AddCloudFoundryActuatorsV1_IHostBuilder_IStartupFilterFires()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(testServerWithRouting)
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
+
+            // Act
+            var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
             // Assert general success...
             //   not sure how to actually validate the StartupFilter worked,
@@ -146,7 +163,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging => logging.AddSerilogDynamicConsole())
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings))
-                .ConfigureWebHost(configureApp => configureApp.UseTestServer())
+                .ConfigureWebHost(testServerWithRouting)
                 .AddCloudFoundryActuators();
 
             // Act
@@ -159,12 +176,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
-                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+                Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 

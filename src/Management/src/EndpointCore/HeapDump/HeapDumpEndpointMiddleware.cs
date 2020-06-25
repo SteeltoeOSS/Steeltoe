@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public Task Invoke(HttpContext context)
         {
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleHeapDumpRequestAsync(context);
             }

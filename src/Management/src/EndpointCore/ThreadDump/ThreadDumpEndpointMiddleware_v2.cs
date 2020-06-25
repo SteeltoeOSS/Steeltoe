@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         public Task Invoke(HttpContext context)
         {
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleThreadDumpRequestAsync(context);
             }

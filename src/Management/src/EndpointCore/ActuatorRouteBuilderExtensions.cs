@@ -25,12 +25,10 @@ using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
-using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -118,6 +116,42 @@ namespace Steeltoe.Management.Endpoint
                     endpoints.MapMethods(fullPath, options.AllowedVerbs, pipeline);
                 }
             }
+        }
+
+        public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                if (version == MediaTypeVersion.V2)
+                {
+                    endpoints.Map<ThreadDumpEndpoint_v2>();
+                }
+                else
+                {
+                    endpoints.Map<ThreadDumpEndpoint>();
+                }
+
+                endpoints.Map<HeapDumpEndpoint>();
+            }
+
+            endpoints.Map<EnvEndpoint>();
+            endpoints.Map<RefreshEndpoint>();
+            endpoints.Map<InfoEndpoint>();
+            endpoints.Map<HealthEndpoint>();
+            endpoints.Map<LoggersEndpoint>();
+            if (version == MediaTypeVersion.V2)
+            {
+                endpoints.Map<HttpTraceEndpoint>();
+            }
+            else
+            {
+                endpoints.Map<TraceEndpoint>();
+            }
+
+            endpoints.Map<MappingsEndpoint>();
+            endpoints.Map<MetricsEndpoint>();
+            endpoints.Map<PrometheusScraperEndpoint>();
         }
     }
 }

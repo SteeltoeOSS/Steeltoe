@@ -108,9 +108,5 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Single(contribsList);
         }
 
-        private int IOptionsMonitor<T>()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

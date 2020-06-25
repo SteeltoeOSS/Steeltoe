@@ -20,14 +20,14 @@ namespace Steeltoe.Management.Endpoint.Middleware
         public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
         {
             _logger = logger;
-            _mgmtOptions = mgmtOptions ??  throw new ArgumentNullException(nameof(mgmtOptions));
+            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
         }
 
         public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions,  ILogger logger = null)
         {
             _logger = logger;
             _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-            _mgmtOptions = mgmtOptions ??  throw new ArgumentNullException(nameof(mgmtOptions));
+            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
         }
 
         public IEndpoint<TResult> Endpoint
@@ -48,12 +48,6 @@ namespace Steeltoe.Management.Endpoint.Middleware
             var result = _endpoint.Invoke();
             return Serialize(result);
         }
-
-        //public virtual bool ShouldInvoke()
-        //{
-        //    _logger?.LogDebug($"endpoint: {_endpoint.Id}, contextPath: {_mgmtOptions.Path}");
-        //    return _endpoint.ShouldInvoke(_mgmtOptions);
-        //}
 
         public virtual string Serialize(TResult result)
         {

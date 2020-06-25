@@ -10,12 +10,12 @@ namespace Steeltoe.Management.CloudFoundry.Test
 {
     public class CloudFoundryApplicationBuilderExtensionsTest
     {
-        [Fact]
-        public void UseCloudFoundryActuators_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+        //[Fact]
+        //public void UseCloudFoundryActuators_ThrowsIfNulls()
+        //{
+        //    IApplicationBuilder builder = null;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuators());
-        }
+        //    Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuators());
+        //}
     }
 }

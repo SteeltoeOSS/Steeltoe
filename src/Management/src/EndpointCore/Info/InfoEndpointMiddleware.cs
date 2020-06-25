@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Info
         {
             _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
 
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleInfoRequestAsync(context);
             }

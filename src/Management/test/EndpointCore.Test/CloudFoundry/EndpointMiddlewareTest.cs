@@ -35,6 +35,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         };
 
         [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HypermediaEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
+
+        [Fact]
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();

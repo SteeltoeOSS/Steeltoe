@@ -27,8 +27,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
         public void Configure(IApplicationBuilder app)
         {
-            //app.UseCloudFoundryActuator();
-            //app.UseInfoActuator();
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {

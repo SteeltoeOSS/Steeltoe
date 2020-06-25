@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
@@ -79,6 +80,16 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     Assert.EndsWith("]", json);
                 }
             }
+        }
+
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new ThreadDumpEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/dump", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

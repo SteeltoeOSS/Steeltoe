@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         {
             _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-            if (_endpoint.ShouldInvoke(_mgmtOptions))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 var serialInfo = HandleRequest(_endpoint, GetRequestUri(context.Request), _logger);
                 _logger?.LogDebug("Returning: {0}", serialInfo);

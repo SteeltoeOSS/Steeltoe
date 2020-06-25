@@ -31,11 +31,6 @@ namespace Steeltoe.Management.Endpoint.Test
                 GetSerializerOptions());
         }
 
-        //public JsonSerializer GetSerializer()
-        //{
-        //    return JsonSerializer.Create(GetSerializerSettings());
-        //}
-
         public JsonSerializerOptions GetSerializerOptions()
         {
             var options = new JsonSerializerOptions()

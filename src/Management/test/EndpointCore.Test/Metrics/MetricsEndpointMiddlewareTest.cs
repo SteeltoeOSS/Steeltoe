@@ -154,23 +154,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
-        //[Fact]
-        //public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        //{
-        //    var opts = new MetricsEndpointOptions();
-        //    var mopts = TestHelper.GetManagementOptions(opts);
-        //    var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
-        //    var middle = new MetricsEndpointMiddleware(null, ep, mopts);
-
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/metrics"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/metrics"));
-        //    Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/cloudfoundryapplication/metrics"));
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class"));
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
-        //    Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics?tag=key:value&tag=key1:value1"));
-        //}
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new MetricsEndpointOptions();
+            Assert.False(options.ExactMatch);
+            Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
         {
