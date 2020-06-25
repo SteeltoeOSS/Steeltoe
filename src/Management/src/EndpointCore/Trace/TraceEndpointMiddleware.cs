@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Trace
             {
                 return HandleTraceRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

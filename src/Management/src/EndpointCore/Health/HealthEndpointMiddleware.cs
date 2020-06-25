@@ -26,11 +26,12 @@ namespace Steeltoe.Management.Endpoint.Health
 
         public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
         {
-            if(_endpoint.ShouldInvoke(_mgmtOptions))
+            _endpoint = endpoint;
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleHealthRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

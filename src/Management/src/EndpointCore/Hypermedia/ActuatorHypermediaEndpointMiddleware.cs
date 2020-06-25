@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 context.HandleContentNegotiation(_logger);
                 return context.Response.WriteAsync(serialInfo);
             }
-            
+
             return Task.CompletedTask;
         }
 

@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Env
             {
                 return HandleEnvRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

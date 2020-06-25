@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 return HandleMetricsRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

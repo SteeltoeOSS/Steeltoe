@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
             {
                 return HandleEntityFrameworkRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

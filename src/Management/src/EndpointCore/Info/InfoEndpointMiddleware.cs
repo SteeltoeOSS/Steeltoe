@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Info
             {
                 return HandleInfoRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

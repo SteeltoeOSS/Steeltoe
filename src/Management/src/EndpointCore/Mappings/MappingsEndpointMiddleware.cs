@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             {
                 return HandleMappingsRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

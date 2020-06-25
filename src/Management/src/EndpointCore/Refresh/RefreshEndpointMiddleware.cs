@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             {
                 return HandleRefreshRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

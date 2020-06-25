@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 return HandleCloudFoundryRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

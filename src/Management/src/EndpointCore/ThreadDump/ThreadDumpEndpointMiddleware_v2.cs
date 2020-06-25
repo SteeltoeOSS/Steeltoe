@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 return HandleThreadDumpRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

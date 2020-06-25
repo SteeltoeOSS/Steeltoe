@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 return HandleHeapDumpRequestAsync(context);
             }
-            
+
             return Task.CompletedTask;
         }
 

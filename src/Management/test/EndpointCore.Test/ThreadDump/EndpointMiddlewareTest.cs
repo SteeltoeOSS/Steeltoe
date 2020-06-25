@@ -109,6 +109,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                 }
             }
         }
+
         [Fact]
         public void RoutesByPathAndVerb()
         {
