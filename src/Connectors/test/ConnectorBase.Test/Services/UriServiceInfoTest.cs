@@ -34,5 +34,20 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("big_db", r2.Path);
             Assert.Null(r2.Query);
         }
+
+        [Fact]
+        public void UriEncodingIsApplied()
+        {
+            UriServiceInfo r1 = new TestUriServiceInfo("myId", "http", "foo.bar", 1337, "SomeUser", "P4SSW0RD#", "baz");
+
+            Assert.Equal("myId", r1.Id);
+            Assert.Equal("http", r1.Scheme);
+            Assert.Equal("foo.bar", r1.Host);
+            Assert.Equal(1337, r1.Port);
+            Assert.Equal("SomeUser", r1.UserName);
+            Assert.Equal("P4SSW0RD#", r1.Password);
+            Assert.Equal("baz", r1.Path);
+            Assert.Null(r1.Query);
+        }
     }
 }

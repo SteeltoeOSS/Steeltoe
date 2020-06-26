@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+
 namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public abstract class UriServiceInfo : ServiceInfo
@@ -18,19 +20,19 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             Info = new UriInfo(uriString, username, password);
         }
 
-        public UriServiceInfo(string id, string uriString, bool urlEncodedCredentials = false)
+        public UriServiceInfo(string id, string uriString)
             : base(id)
         {
-            Info = new UriInfo(uriString, urlEncodedCredentials);
+            Info = new UriInfo(uriString);
         }
 
         public UriInfo Info { get; internal protected set; }
 
         public string Uri => Info.UriString;
 
-        public string UserName => Info.UserName;
+        public string UserName => WebUtility.UrlDecode(Info.UserName);
 
-        public string Password => Info.Password;
+        public string Password => WebUtility.UrlDecode(Info.Password);
 
         public string Host => Info.Host;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CloudFoundry.Connector.Services;
-using System.Net;
 
 namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
@@ -25,17 +24,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
             if (!string.IsNullOrEmpty(si.Uri))
             {
                 configuration.Port = si.Port;
-                if (configuration.UrlEncodedCredentials)
-                {
-                    configuration.Username = WebUtility.UrlDecode(si.UserName);
-                    configuration.Password = WebUtility.UrlDecode(si.Password);
-                }
-                else
-                {
-                    configuration.Username = si.UserName;
-                    configuration.Password = si.Password;
-                }
-
+                configuration.Username = si.UserName;
+                configuration.Password = si.Password;
                 configuration.Server = si.Host;
                 configuration.ServiceName = si.Path;
             }

@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config);
@@ -88,7 +88,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => SqlServerProviderServiceCollectionExtensions.AddSqlServerConnection(services, config, "foobar"));
@@ -103,7 +103,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -121,7 +121,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -169,11 +169,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["sqlserver:client:urlEncodedCredentials"] = "true"
-            };
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var appsettings = new Dictionary<string, string>();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
@@ -199,7 +196,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -216,7 +213,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -237,7 +234,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

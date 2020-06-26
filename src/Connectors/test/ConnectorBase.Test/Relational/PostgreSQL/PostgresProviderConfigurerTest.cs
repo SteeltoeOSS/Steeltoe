@@ -13,8 +13,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         [Fact]
         public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
         {
-            PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
-            PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
+            var configurer = new PostgresProviderConfigurer();
+            var config = new PostgresProviderConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -35,8 +35,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         [Fact]
         public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
         {
-            PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
-            PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
+            var configurer = new PostgresProviderConfigurer();
+            var config = new PostgresProviderConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 Password = "password",
                 Database = "database"
             };
-            PostgresServiceInfo si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -58,8 +58,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         [Fact]
         public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
         {
-            PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
-            PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
+            var configurer = new PostgresProviderConfigurer();
+            var config = new PostgresProviderConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 Password = "password",
                 Database = "database"
             };
-            PostgresServiceInfo si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", true);
+            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -81,7 +81,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -90,7 +90,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 Database = "database"
             };
 
-            PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
+            var configurer = new PostgresProviderConfigurer();
             var opts = configurer.Configure(null, config);
             Assert.Contains("Host=localhost;", opts);
             Assert.Contains("Port=1234;", opts);
@@ -102,7 +102,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            PostgresProviderConnectorOptions config = new PostgresProviderConnectorOptions()
+            var config = new PostgresProviderConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -111,8 +111,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.Test
                 Database = "database"
             };
 
-            PostgresProviderConfigurer configurer = new PostgresProviderConfigurer();
-            PostgresServiceInfo si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var configurer = new PostgresProviderConfigurer();
+            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             var opts = configurer.Configure(si, config);
 
