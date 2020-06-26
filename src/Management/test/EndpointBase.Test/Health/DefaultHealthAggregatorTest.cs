@@ -5,6 +5,8 @@
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -24,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_SingleContributor_ReturnsExpectedHealth()
         {
-            List<IHealthContributor> contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>()
             {
                 new UpContributor()
             };
@@ -38,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_MultipleContributor_ReturnsExpectedHealth()
         {
-            List<IHealthContributor> contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>()
             {
                 new DownContributor(),
                 new UpContributor(),
@@ -55,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
         {
-            List<IHealthContributor> contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>()
             {
                 new UpContributor(),
                 new UpContributor()
@@ -70,7 +72,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_MultipleContributor_OrderDoesntMatter_ReturnsExpectedHealth()
         {
-            List<IHealthContributor> contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>()
             {
                 new UpContributor(),
                 new OutOfSserviceContributor(),
@@ -81,6 +83,25 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
             Assert.NotNull(result.Details);
+        }
+
+        [Fact]
+        public void AggregatesInParallel()
+        {
+            var t = new Stopwatch();
+            var contribs = new List<IHealthContributor>()
+            {
+                new UpContributor(500),
+                new UpContributor(500),
+                new UpContributor(500)
+            };
+            var agg = new DefaultHealthAggregator();
+            t.Start();
+            var result = agg.Aggregate(contribs);
+            t.Stop();
+            Assert.NotNull(result);
+            Assert.Equal(HealthStatus.UP, result.Status);
+            Assert.InRange(t.ElapsedMilliseconds, 450, 800);
         }
     }
 }
