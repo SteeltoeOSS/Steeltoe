@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
+using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Endpoint
                 services.AddThreadDumpActuator(config, version);
             }
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Platform.IsLinux)
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
                 services.AddHeapDumpActuator(config);
             }
