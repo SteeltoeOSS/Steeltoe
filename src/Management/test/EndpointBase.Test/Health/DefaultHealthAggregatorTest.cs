@@ -101,7 +101,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             t.Stop();
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.UP, result.Status);
-            Assert.InRange(t.ElapsedMilliseconds, 450, 800);
+            Assert.InRange(t.ElapsedMilliseconds, 450, 1200);
         }
     }
 }

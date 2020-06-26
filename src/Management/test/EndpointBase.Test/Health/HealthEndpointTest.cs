@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using NSubstitute;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
@@ -96,10 +97,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             // arrange
             var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
+            var appAvailability = new ApplicationAvailability();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var context = Substitute.For<ISecurityContext>();
             context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
+            appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
             // act
             var result = ep.Invoke(context);
@@ -115,10 +118,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
             // arrange
             var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
+            var appAvailability = new ApplicationAvailability();
+            var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
             var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
             var context = Substitute.For<ISecurityContext>();
             context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+            appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
             // act
             var result = ep.Invoke(context);

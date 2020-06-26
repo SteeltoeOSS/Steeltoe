@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health.Contributor;
@@ -73,6 +74,7 @@ namespace Steeltoe.Management.Endpoint.Health
 
             services.TryAddSingleton(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
+            services.TryAddSingleton<ApplicationAvailability>();
         }
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
@@ -86,6 +88,6 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddEnumerable(descriptors);
         }
 
-        internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor) };
+        internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
     }
 }

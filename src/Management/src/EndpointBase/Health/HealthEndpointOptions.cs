@@ -52,12 +52,12 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             if (!Groups.ContainsKey("liveness"))
             {
-                Groups.Add("liveness", new HealthGroupOptions { Include = "diskSpace" });
+                Groups.Add("liveness", new HealthGroupOptions { Include = "liveness" });
             }
 
             if (!Groups.ContainsKey("readiness"))
             {
-                Groups.Add("readiness", new HealthGroupOptions { Include = "diskSpace" });
+                Groups.Add("readiness", new HealthGroupOptions { Include = "readiness" });
             }
         }
 

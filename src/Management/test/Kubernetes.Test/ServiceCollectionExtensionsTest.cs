@@ -80,7 +80,7 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // assert
             var infocontributors = provider.GetServices<IInfoContributor>();
-            Assert.Equal(3, infocontributors.Count());
+            Assert.Equal(4, infocontributors.Count());
             Assert.Equal(1, infocontributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
         }
     }

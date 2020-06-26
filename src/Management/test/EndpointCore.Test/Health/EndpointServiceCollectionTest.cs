@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
@@ -91,7 +92,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
-            Assert.Single(contribsList);
+            Assert.Equal(3, contribsList.Count);
+            var availability = serviceProvider.GetService<ApplicationAvailability>();
+            Assert.NotNull(availability);
         }
 
         [Fact]

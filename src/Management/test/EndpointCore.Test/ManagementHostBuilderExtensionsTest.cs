@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
+using Steeltoe.Common.Availability;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -26,6 +27,7 @@ using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -160,10 +162,33 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = await hostBuilder.AddHealthActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.NotNull(host.Services.GetService<HealthEndpointCore>());
+        }
+
+        [Fact]
+        public async Task AddHealthActuator_IHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder()
+                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+
+            // start the server, get a client
+            var host = await hostBuilder.AddHealthActuator().StartAsync();
+            var client = host.GetTestClient();
+
+            // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
+            var livenessResult = await client.GetAsync("actuator/health/liveness");
+            var readinessResult = await client.GetAsync("actuator/health/readiness");
+            Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
+            Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync());
+            Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
+            Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await readinessResult.Content.ReadAsStringAsync());
+
+            // confirm that the Readiness state will be changed to refusing traffic when ApplicationStopping fires
+            var availability = host.Services.GetService<ApplicationAvailability>();
+            await host.StopAsync();
+            Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
+            Assert.Equal(ReadinessState.RefusingTraffic, availability.GetReadinessState());
         }
 
         [Fact]
