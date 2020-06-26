@@ -26,43 +26,26 @@ namespace Steeltoe.Management.Endpoint
     {
         public static (Type middleware, Type options) LookupMiddleware(Type endpointType)
         {
-            switch (endpointType)
+            return endpointType switch
             {
-                case Type _ when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)):
-                    return (typeof(ActuatorHypermediaEndpointMiddleware), typeof(IActuatorHypermediaOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)):
-                    return (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(EnvEndpoint)):
-                    return (typeof(EnvEndpointMiddleware), typeof(IEnvOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)):
-                    return (typeof(HealthEndpointMiddleware), typeof(IHealthOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)):
-                    return (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(InfoEndpoint)):
-                    return (typeof(InfoEndpointMiddleware), typeof(IInfoOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)):
-                    return (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)):
-                    return (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)):
-                    return (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)):
-                    return (typeof(PrometheusScraperEndpointMiddleware), typeof(IPrometheusEndpointOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)):
-                    return (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)):
-                    return (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint_v2)):
-                    return (typeof(ThreadDumpEndpointMiddleware_v2), typeof(IThreadDumpOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(TraceEndpoint)):
-                    return (typeof(TraceEndpointMiddleware), typeof(ITraceOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)):
-                    return (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions));
-                case Type _ when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)):
-                    return (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions));
-            }
-
-            throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} ");
+                Type _ when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware), typeof(IActuatorHypermediaOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)) => (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(EnvEndpoint)) => (typeof(EnvEndpointMiddleware), typeof(IEnvOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)) => (typeof(HealthEndpointMiddleware), typeof(IHealthOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(HeapDumpEndpoint)) => (typeof(HeapDumpEndpointMiddleware), typeof(IHeapDumpOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(InfoEndpoint)) => (typeof(InfoEndpointMiddleware), typeof(IInfoOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)) => (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)) => (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)) => (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)) => (typeof(PrometheusScraperEndpointMiddleware), typeof(IPrometheusEndpointOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)) => (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)) => (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint_v2)) => (typeof(ThreadDumpEndpointMiddleware_v2), typeof(IThreadDumpOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
+                Type _ when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
+                _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} "),
+            };
         }
 
         /// <summary>

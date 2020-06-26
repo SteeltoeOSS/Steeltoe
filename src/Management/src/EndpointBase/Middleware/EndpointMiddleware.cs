@@ -54,7 +54,8 @@ namespace Steeltoe.Management.Endpoint.Middleware
             {
                 var options = new JsonSerializerOptions()
                 {
-                    IgnoreNullValues = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                 };
                 options.Converters.Add(new HealthConverter());
                 options.Converters.Add(new MetricsResponseConverter());

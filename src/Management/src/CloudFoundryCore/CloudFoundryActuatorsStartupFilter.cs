@@ -29,9 +29,6 @@ namespace Steeltoe.Management.CloudFoundry
                 app.UseEndpoints(endpoints =>
                 {
                     endpoints.Map<CloudFoundryEndpoint>();
-                });
-                app.UseEndpoints(endpoints =>
-                {
                     endpoints.MapAllActuators(MediaTypeVersion);
                 });
             };
