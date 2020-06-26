@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
@@ -48,6 +49,10 @@ namespace Steeltoe.Management.Endpoint
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
                 services.AddThreadDumpActuator(config, version);
+            }
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Platform.IsLinux)
+            {
                 services.AddHeapDumpActuator(config);
             }
 

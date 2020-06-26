@@ -63,7 +63,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
 #pragma warning disable SA1402 // File may only contain a single type
     public class TestHealthCheck : IHealthCheck
-#pragma warning restore SA1402 // File may only contain a single type
     {
         public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -71,7 +70,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 #pragma warning restore SA1402 // File may only contain a single type
     {

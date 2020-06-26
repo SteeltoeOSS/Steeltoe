@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -19,6 +20,7 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -79,15 +81,9 @@ namespace Steeltoe.Management.Endpoint
                 var pipeline = endpoints.CreateApplicationBuilder()
                     .UseMiddleware(middleware, mgmtOptions)
                     .Build();
+                var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
 
-                if (options.AllowedVerbs == null)
-                {
-                    endpoints.Map(fullPath, pipeline);
-                }
-                else
-                {
-                    endpoints.MapMethods(fullPath, options.AllowedVerbs, pipeline);
-                }
+                endpoints.MapMethods(fullPath, allowedVerbs, pipeline);
             }
         }
 
@@ -105,6 +101,11 @@ namespace Steeltoe.Management.Endpoint
                     endpoints.Map<ThreadDumpEndpoint>();
                 }
 
+                endpoints.Map<HeapDumpEndpoint>();
+            }
+
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Platform.IsLinux)
+            {
                 endpoints.Map<HeapDumpEndpoint>();
             }
 

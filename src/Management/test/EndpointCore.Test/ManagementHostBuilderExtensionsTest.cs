@@ -28,6 +28,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -521,7 +522,10 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
             Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
             Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint_v2>());
-            Assert.NotNull(host.Services.GetService<HeapDumpEndpoint>());
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                Assert.NotNull(host.Services.GetService<HeapDumpEndpoint>());
+            }
         }
 
         [Fact]

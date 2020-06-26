@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public async void HandleHeapDumpRequestAsync_ReturnsExpected()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
                 var opts = new HeapDumpEndpointOptions();
                 var mopts = new ActuatorManagementOptions();
@@ -60,10 +60,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var buffer = new byte[1024];
                 await context.Response.Body.ReadAsync(buffer, 0, 1024);
                 Assert.NotEqual(0, buffer[0]);
-            }
-            else if (Platform.IsLinux)
-            {
-                // TODO: Make a request and verify
             }
             else
             {
