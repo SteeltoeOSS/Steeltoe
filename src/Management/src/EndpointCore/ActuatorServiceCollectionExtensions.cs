@@ -46,8 +46,15 @@ namespace Steeltoe.Management.Endpoint
             }
 
             services.AddHypermediaActuator(config);
-            services.AddThreadDumpActuator(config, version);
-            services.AddHeapDumpActuator(config);
+            if (Platform.IsWindows)
+            {
+                services.AddThreadDumpActuator(config, version);
+            }
+
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                services.AddHeapDumpActuator(config);
+            }
 
             services.AddDbMigrationsActuator(config);
             services.AddEnvActuator(config);
