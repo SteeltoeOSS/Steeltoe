@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -34,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public async void HandleThreadDumpRequestAsync_ReturnsExpected()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var opts = new ThreadDumpEndpointOptions();
 
@@ -57,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public async void ThreadDumpActuator_ReturnsExpectedData()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<StartupV1>()
@@ -85,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         [Fact]
         public async void ThreadDumpActuatorv2_ReturnsExpectedData()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()

@@ -62,9 +62,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class CloudFoundryStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public CloudFoundryStartup(IConfiguration configuration)
         {
@@ -89,9 +87,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class HyperMediaStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public HyperMediaStartup(IConfiguration configuration)
         {
@@ -116,9 +112,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class InfoStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public InfoStartup(IConfiguration configuration)
         {
@@ -145,9 +139,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class MetricsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public MetricsStartup(IConfiguration configuration)
         {
@@ -174,9 +166,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class LoggersStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public LoggersStartup(IConfiguration configuration)
         {
@@ -203,9 +193,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class HealthStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public HealthStartup(IConfiguration configuration)
         {
@@ -232,9 +220,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class TraceStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public TraceStartup(IConfiguration configuration)
         {
@@ -261,9 +247,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class DbMigrationsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public DbMigrationsStartup(IConfiguration configuration)
         {
@@ -290,9 +274,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class EnvStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public EnvStartup(IConfiguration configuration)
         {
@@ -319,9 +301,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class MappingsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public MappingsStartup(IConfiguration configuration)
         {
@@ -348,9 +328,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class RefreshStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public RefreshStartup(IConfiguration configuration)
         {
@@ -377,9 +355,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class ThreadDumpStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public ThreadDumpStartup(IConfiguration configuration)
         {

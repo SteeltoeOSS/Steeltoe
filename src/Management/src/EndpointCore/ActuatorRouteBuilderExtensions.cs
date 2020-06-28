@@ -90,7 +90,7 @@ namespace Steeltoe.Management.Endpoint
         public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
         {
             endpoints.Map<ActuatorEndpoint>();
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 if (version == MediaTypeVersion.V2)
                 {
@@ -104,7 +104,7 @@ namespace Steeltoe.Management.Endpoint
                 endpoints.Map<HeapDumpEndpoint>();
             }
 
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT || Platform.IsLinux)
+            if (Platform.IsWindows || Platform.IsLinux)
             {
                 endpoints.Map<HeapDumpEndpoint>();
             }

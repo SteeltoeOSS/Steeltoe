@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging.SerilogDynamicLogger;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -17,6 +18,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -45,14 +47,22 @@ namespace Steeltoe.Management.CloudFoundry.Test
 
             // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+
+            if (Platform.IsWindows)
             {
                 Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+            }
+
+            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+            else
+            {
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
@@ -77,14 +87,22 @@ namespace Steeltoe.Management.CloudFoundry.Test
 
             // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+
+            if (Platform.IsWindows)
             {
                 Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+            }
+
+            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+            else
+            {
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
@@ -106,14 +124,22 @@ namespace Steeltoe.Management.CloudFoundry.Test
 
             // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+
+            if (Platform.IsWindows)
             {
                 Assert.Single(host.Services.GetServices<ThreadDumpEndpoint>());
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint>());
+            }
+
+            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+            else
+            {
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 
@@ -132,10 +158,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
             // Act
             var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.True(true);
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/httptrace");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -149,10 +178,13 @@ namespace Steeltoe.Management.CloudFoundry.Test
             // Act
             var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.True(true);
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/info");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication/trace");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -173,14 +205,22 @@ namespace Steeltoe.Management.CloudFoundry.Test
 
             // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+
+            if (Platform.IsWindows)
             {
                 Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
-                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             }
             else
             {
                 Assert.Empty(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+            }
+
+            if (Endpoint.HeapDump.EndpointServiceCollectionExtensions.IsHeapDumpSupported())
+            {
+                Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
+            }
+            else
+            {
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
 

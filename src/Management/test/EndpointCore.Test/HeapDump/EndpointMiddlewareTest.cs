@@ -50,8 +50,12 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+                var logger4 = loggerFactory.CreateLogger<LinuxHeapDumper>();
 
-                var obs = new WindowsHeapDumper(opts, logger: logger1);
+                var obs = Platform.IsWindows ? (IHeapDumper)new WindowsHeapDumper(opts, logger: logger1)
+                                : Platform.IsLinux ? (IHeapDumper)new LinuxHeapDumper(opts, logger: logger4)
+                                : throw new InvalidOperationException("Unsupported Platfornm");
+
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
                 var context = CreateRequest("GET", "/heapdump");

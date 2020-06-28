@@ -18,8 +18,8 @@ namespace Steeltoe.Management
 
         bool IsAccessAllowed(Permissions permissions);
 
-        IEnumerable<string> AllowedVerbs { get; set; }
+        IEnumerable<string> AllowedVerbs { get;  }
 
-        bool ExactMatch { get; set; }
+        bool ExactMatch { get; }
     }
 }
