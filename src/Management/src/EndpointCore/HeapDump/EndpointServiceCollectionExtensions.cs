@@ -24,17 +24,14 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
             if (IsHeapDumpSupported())
             {

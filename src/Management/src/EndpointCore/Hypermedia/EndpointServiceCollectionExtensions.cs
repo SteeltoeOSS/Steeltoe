@@ -12,17 +12,14 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
             services.AddActuatorManagementOptions(config);
             services.TryAddSingleton<IActuatorHypermediaOptions>(provider =>

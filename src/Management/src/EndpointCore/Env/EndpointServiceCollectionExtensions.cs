@@ -18,17 +18,14 @@ namespace Steeltoe.Management.Endpoint.Env
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
         /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
+            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
 
             services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
