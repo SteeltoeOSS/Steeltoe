@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            var opts = new CloudFoundryManagementOptions(config);
+            var opts = new ActuatorManagementOptions(config);
 
             Assert.Equal("/management", opts.Path);
             Assert.False(opts.Enabled);

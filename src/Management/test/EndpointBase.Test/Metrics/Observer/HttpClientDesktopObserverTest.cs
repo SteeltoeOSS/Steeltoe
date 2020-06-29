@@ -4,13 +4,9 @@
 
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading;

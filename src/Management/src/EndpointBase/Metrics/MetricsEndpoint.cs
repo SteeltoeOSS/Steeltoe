@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
@@ -44,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var metricNames = new HashSet<string>(measurements.Keys);
             if (request == null)
             {
-                return new MetricsListNamesResponse(new HashSet<string>(measurements.Keys));
+                return new MetricsListNamesResponse(metricNames);
             }
             else
             {
@@ -83,7 +82,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 sampleList.Add(totalSamples.Aggregate(sumAggregator));
             }
 
-            var totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTALTIME);
+            var totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL_TIME);
             if (totalTimeSamples.Any())
             {
                 sampleList.Add(totalTimeSamples.Aggregate(sumAggregator));
@@ -150,7 +149,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                                 // If labels contain time, Total time
                                 if (labels.Any(l => l.Key.Equals("TimeUnit", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTALTIME, doubleSummary.Sum, labels));
+                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL_TIME, doubleSummary.Sum, labels));
                                 }
                                 else
                                 {
@@ -207,7 +206,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                                 // If labels contain time, Total time
                                 if (labels.Any(l => l.Key.Equals("TimeUnit", StringComparison.OrdinalIgnoreCase)))
                                 {
-                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTALTIME, longSummary.Sum, labels));
+                                    measurements[metric.MetricName].Add(new MetricSample(MetricStatistic.TOTAL_TIME, longSummary.Sum, labels));
                                 }
                                 else
                                 {

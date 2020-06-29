@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var cloudOpts = new HypermediaEndpointOptions();
             mgmtOptions.EndpointOptions.AddRange(new List<IEndpointOptions>() { infoOpts, cloudOpts });
 
-            var ep = new ActuatorEndpoint(cloudOpts, new List<IManagementOptions>() { mgmtOptions });
+            var ep = new ActuatorEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var cloudOpts = new HypermediaEndpointOptions();
             var mgmtOptions = new ActuatorManagementOptions();
             mgmtOptions.EndpointOptions.Add(cloudOpts);
-            var ep = new ActuatorEndpoint(cloudOpts, new List<IManagementOptions> { mgmtOptions });
+            var ep = new ActuatorEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             mgmtOptions.EndpointOptions.AddRange(new List<IEndpointOptions>() { infoOpts, cloudOpts });
 
-            var ep = new ActuatorEndpoint(cloudOpts, new List<IManagementOptions> { mgmtOptions });
+            var ep = new ActuatorEndpoint(cloudOpts, mgmtOptions);
 
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             mgmtOptions.EndpointOptions.AddRange(new List<IEndpointOptions>() { infoOpts, cloudOpts });
 
-            var ep = new ActuatorEndpoint(cloudOpts, new List<IManagementOptions> { mgmtOptions });
+            var ep = new ActuatorEndpoint(cloudOpts, mgmtOptions);
             var info = ep.Invoke("http://localhost:5000/foobar");
             Assert.NotNull(info);
             Assert.NotNull(info._links);

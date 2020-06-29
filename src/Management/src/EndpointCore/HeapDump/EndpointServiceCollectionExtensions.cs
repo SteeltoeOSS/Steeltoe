@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
@@ -39,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             if (IsHeapDumpSupported())
             {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+                services.AddActuatorManagementOptions(config);
 
                 var options = new HeapDumpEndpointOptions(config);
                 services.TryAddSingleton<IHeapDumpOptions>(options);

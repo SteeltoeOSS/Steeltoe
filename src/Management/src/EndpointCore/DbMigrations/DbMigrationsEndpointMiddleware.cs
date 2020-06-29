@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
     {
         private RequestDelegate _next;
 
-        public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
+        public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -23,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleEntityFrameworkRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)

@@ -14,9 +14,11 @@ namespace Steeltoe.Management.Endpoint.Info
         {
             return app =>
             {
-                app.UseInfoActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<InfoEndpoint>();
+                });
             };
         }
     }

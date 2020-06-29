@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -16,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
     {
         private readonly RequestDelegate _next;
 
-        public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
+        public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
           : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
@@ -24,12 +23,12 @@ namespace Steeltoe.Management.Endpoint.Refresh
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleRefreshRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleRefreshRequestAsync(HttpContext context)

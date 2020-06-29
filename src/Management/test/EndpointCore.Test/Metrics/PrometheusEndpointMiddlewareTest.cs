@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
@@ -24,7 +25,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public async void HandlePrometheusRequestAsync_ReturnsExpected()
         {
             var opts = new PrometheusEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
+            var mopts = new ActuatorManagementOptions();
+            mopts.EndpointOptions.Add(opts);
             var exporter = new PrometheusExporter();
             var processor = new SteeltoeProcessor(exporter);
             var factory = AutoCollectingMeterFactory.Create(processor);

@@ -14,9 +14,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         {
             return app =>
             {
-                app.UseHeapDumpActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<HeapDumpEndpoint>();
+                });
             };
         }
     }

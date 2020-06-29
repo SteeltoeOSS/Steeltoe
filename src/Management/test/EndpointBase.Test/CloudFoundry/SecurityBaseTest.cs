@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Test;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
@@ -20,6 +22,32 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
 
             Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
             Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
+        }
+
+        [Fact]
+        public async void GetPermissionsAsyncTest()
+        {
+            var cloudOpts = new CloudFoundryEndpointOptions();
+            var mgmtOpts = new CloudFoundryManagementOptions();
+            mgmtOpts.EndpointOptions.Add(cloudOpts);
+            var securityBase = new SecurityBase(cloudOpts, mgmtOpts, null);
+            var result = await securityBase.GetPermissionsAsync("testToken");
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public async void GetPermissionsTest()
+        {
+            var cloudOpts = new CloudFoundryEndpointOptions();
+            var mgmtOpts = new CloudFoundryManagementOptions();
+            mgmtOpts.EndpointOptions.Add(cloudOpts);
+            var securityBase = new SecurityBase(cloudOpts, mgmtOpts, null);
+            var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+            var perms = new Dictionary<string, object> { { "read_sensitive_data", true } };
+
+            response.Content = JsonContent.Create(perms);
+            Permissions result = await securityBase.GetPermissions(response);
+            Assert.Equal(Permissions.FULL, result);
         }
     }
 }

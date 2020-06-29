@@ -218,7 +218,7 @@ namespace Steeltoe.Management.Endpoint
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
-        public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V1)
+        public static IHostBuilder AddThreadDumpActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             return hostBuilder
                 .ConfigureServices((context, collection) =>
@@ -233,7 +233,7 @@ namespace Steeltoe.Management.Endpoint
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
-        public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V1)
+        public static IHostBuilder AddTraceActuator(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             return hostBuilder
                 .ConfigureServices((context, collection) =>
@@ -254,6 +254,17 @@ namespace Steeltoe.Management.Endpoint
                 {
                     collection.AddCloudFoundryActuator(context.Configuration);
                     collection.AddTransient<IStartupFilter, CloudFoundryActuatorStartupFilter>();
+                });
+        }
+
+        public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        {
+            return hostBuilder
+                .AddDynamicLogging()
+                .ConfigureServices((context, collection) =>
+                {
+                    collection.AddAllActuators(context.Configuration, mediaTypeVersion);
+                    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>();
                 });
         }
     }

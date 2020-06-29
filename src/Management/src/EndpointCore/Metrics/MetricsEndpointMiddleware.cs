@@ -8,7 +8,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,20 +17,20 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly RequestDelegate _next;
 
-        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, null, false, logger)
+        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger)
         {
             _next = next;
         }
 
         public Task Invoke(HttpContext context)
         {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleMetricsRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         public override string HandleRequest(MetricsRequest arg)
@@ -84,17 +83,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return GetMetricName(request, _endpoint.Path);
             }
 
-            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}"));
-            foreach (var path in paths)
-            {
-                var metricName = GetMetricName(request, path);
-                if (metricName != null)
-                {
-                    return metricName;
-                }
-            }
+            var path = $"{_mgmtOptions.Path}/{_endpoint.Id}";
+            var metricName = GetMetricName(request, path);
 
-            return null;
+            return metricName;
         }
 
         protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)

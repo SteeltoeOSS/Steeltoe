@@ -9,7 +9,6 @@ using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.Client
 {

@@ -555,20 +555,7 @@ namespace Steeltoe.Stream.Binder
         //        existingMessageChannel.removeInterceptor(channelInterceptor);
         //    }
         // }
-        protected class PolledConsumerResources
-        {
-            public PolledConsumerResources(IMessageSource source, ErrorInfrastructure errorInfrastructure)
-            {
-                Source = source;
-                ErrorInfrastructure = errorInfrastructure;
-            }
-
-            protected internal IMessageSource Source { get; }
-
-            protected internal ErrorInfrastructure ErrorInfrastructure { get; }
-        }
-
-        protected class ErrorInfrastructure
+        public class ErrorInfrastructure
         {
             public ErrorInfrastructure(ISubscribableChannel errorChannel, ErrorMessageSendingRecoverer recoverer, IMessageHandler handler)
             {
@@ -582,6 +569,19 @@ namespace Steeltoe.Stream.Binder
             public ErrorMessageSendingRecoverer Recoverer { get; }
 
             public IMessageHandler Handler { get; }
+        }
+
+        protected class PolledConsumerResources
+        {
+            public PolledConsumerResources(IMessageSource source, ErrorInfrastructure errorInfrastructure)
+            {
+                Source = source;
+                ErrorInfrastructure = errorInfrastructure;
+            }
+
+            protected internal IMessageSource Source { get; }
+
+            protected internal ErrorInfrastructure ErrorInfrastructure { get; }
         }
 
         protected class SendingHandler : AbstractMessageHandler, ILifecycle

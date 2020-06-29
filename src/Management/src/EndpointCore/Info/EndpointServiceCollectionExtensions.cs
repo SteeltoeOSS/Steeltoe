@@ -42,7 +42,8 @@ namespace Steeltoe.Management.Endpoint.Info
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
+
             var options = new InfoEndpointOptions(config);
             services.TryAddSingleton<IInfoOptions>(options);
             services.RegisterEndpointOptions(options);

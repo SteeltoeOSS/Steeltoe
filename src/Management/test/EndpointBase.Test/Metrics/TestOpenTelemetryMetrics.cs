@@ -3,14 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.EndpointBase.Test.Metrics
 {

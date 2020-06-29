@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         {
             var sample = new MetricSample(MetricStatistic.TOTAL, 100.00);
             var result = Serialize(sample);
-            Assert.Equal("{\"statistic\":\"TOTAL\",\"value\":100.0}", result);
+            Assert.Equal("{\"statistic\":\"TOTAL\",\"value\":100}", result);
         }
     }
 }

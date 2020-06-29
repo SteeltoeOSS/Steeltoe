@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using Steeltoe.Common.Security;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;

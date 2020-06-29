@@ -14,9 +14,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             return app =>
             {
-                app.UseCloudFoundryActuator();
-
                 next(app);
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<CloudFoundryEndpoint>();
+                });
             };
         }
     }

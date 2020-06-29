@@ -14,9 +14,12 @@ namespace Steeltoe.Management.Endpoint.Mappings
         {
             return app =>
             {
-                app.UseMappingsActuator();
-
                 next(app);
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<MappingsEndpoint>();
+                });
             };
         }
     }

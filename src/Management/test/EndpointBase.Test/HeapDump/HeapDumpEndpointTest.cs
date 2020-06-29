@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void Invoke_CreatesDump()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var loggerFactory = TestHelpers.GetLoggerFactory();
                 var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 Assert.True(File.Exists(result));
                 File.Delete(result);
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (Platform.IsLinux)
             {
                 if (typeof(object).Assembly.GetType("System.Index") != null)
                 {

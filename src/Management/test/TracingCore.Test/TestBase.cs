@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Trace;
-using Steeltoe.Management.Tracing;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Tracing.Test

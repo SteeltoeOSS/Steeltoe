@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management
 {
@@ -36,6 +37,10 @@ namespace Steeltoe.Management
             {
                 section.Bind(this);
             }
+
+            // These should not be set from configuration
+            AllowedVerbs = null;
+            ExactMatch = true;
         }
 
         public virtual bool? Enabled
@@ -81,5 +86,9 @@ namespace Steeltoe.Management
         }
 
         public virtual bool DefaultEnabled { get; } = true;
+
+        public IEnumerable<string> AllowedVerbs { get; set; }
+
+        public bool ExactMatch { get; set; } = true;
     }
 }

@@ -4,13 +4,12 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 {
     internal class TestCloudFoundryEndpoint : CloudFoundryEndpoint
     {
-        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOpts, ILogger<CloudFoundryEndpoint> logger = null)
+        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOpts, ILogger<CloudFoundryEndpoint> logger = null)
             : base(options, mgmtOpts, logger)
         {
         }

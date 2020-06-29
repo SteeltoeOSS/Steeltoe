@@ -14,9 +14,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             return app =>
             {
-                app.UseLoggersActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<LoggersEndpoint>();
+                });
             };
         }
     }

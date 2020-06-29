@@ -12,14 +12,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
     public class EndpointApplicationBuilderExtensionsTest : BaseTest
     {
         [Fact]
-        public void UseCloudFoundryActuator_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
-
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundryActuator());
-        }
-
-        [Fact]
         public void UseCloudFoundrySecurity_ThrowsIfNulls()
         {
             IApplicationBuilder builder = null;

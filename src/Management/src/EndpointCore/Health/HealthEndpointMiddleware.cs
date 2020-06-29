@@ -10,7 +10,6 @@ using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointCore;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -19,7 +18,7 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         private readonly RequestDelegate _next;
 
-        public HealthEndpointMiddleware(RequestDelegate next, IEnumerable<IManagementOptions> mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
             : base(mgmtOptions: mgmtOptions, logger: logger)
         {
             _next = next;
@@ -28,13 +27,12 @@ namespace Steeltoe.Management.Endpoint.Health
         public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
         {
             _endpoint = endpoint;
-
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions))
             {
                 return HandleHealthRequestAsync(context);
             }
 
-            return _next(context);
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleHealthRequestAsync(HttpContext context)

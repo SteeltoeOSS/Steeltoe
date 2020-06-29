@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test
@@ -43,6 +46,16 @@ namespace Steeltoe.Management.Endpoint.Test
             var opts = new ManagementEndpointOptions(config);
             Assert.False(opts.Enabled);
             Assert.Equal("/management", opts.Path);
+        }
+
+        [Fact]
+        public void IsExposedCorrectly()
+        {
+            var mgmtOptions = new ActuatorManagementOptions();
+            mgmtOptions.Exposure.Exclude = new string[] { "*" }.ToList();
+
+            var options = new InfoEndpointOptions();
+            Assert.False(options.IsExposed(mgmtOptions));
         }
     }
 }

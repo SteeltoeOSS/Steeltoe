@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
@@ -61,8 +60,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(aggregator));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
 
             var options = new HealthEndpointOptions(config);
             services.TryAddSingleton<IHealthOptions>(options);

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using System;
@@ -12,6 +11,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Security;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             try
             {
-                return JsonConvert.SerializeObject(error);
+                return JsonSerializer.Serialize(error);
             }
             catch (Exception e)
             {
@@ -127,11 +127,11 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
                 _logger?.LogDebug("GetPermisions returned json: {0}", SecurityUtilities.SanitizeInput(json));
 
-                var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-                if (result.TryGetValue(READ_SENSITIVE_DATA, out object perm))
+                if (result.TryGetValue(READ_SENSITIVE_DATA, out JsonElement perm))
                 {
-                    bool boolResult = (bool)perm;
+                    var boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
                     permissions = boolResult ? Permissions.FULL : Permissions.RESTRICTED;
                 }
             }

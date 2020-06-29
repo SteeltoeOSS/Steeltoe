@@ -8,7 +8,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using Steeltoe.Messaging.Support;
 using System;
 
 namespace Steeltoe.Integration

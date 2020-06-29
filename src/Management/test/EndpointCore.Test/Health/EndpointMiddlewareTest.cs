@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             mgmtOptions.EndpointOptions.Add(opts);
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
             var ep = new TestHealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var middle = new HealthEndpointMiddleware(null, new List<IManagementOptions> { mgmtOptions });
+            var middle = new HealthEndpointMiddleware(null, mgmtOptions);
             middle.Endpoint = ep;
 
             var context = CreateRequest("GET", "/health");
@@ -128,6 +128,31 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         [Fact]
         public async void HealthActuator_ReturnsDetails()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+
+                // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
+                var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+                Assert.NotNull(health);
+                Assert.True(health.ContainsKey("status"));
+                Assert.True(health.ContainsKey("diskSpace"));
+            }
+        }
+
+        [Fact]
+        public async void HealthActuator_ReturnsMicrosoftHealthDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);
 
@@ -251,19 +276,31 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public async void GetStatusCode_MicrosoftAggregator_ReturnsExpected()
         {
-            var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var actMOptions = new ActuatorManagementOptions();
-            actMOptions.EndpointOptions.Add(opts);
-            var middle = new HealthEndpointMiddleware(null, new List<IManagementOptions> { actMOptions });
-            middle.Endpoint = ep;
+            var builder = new WebHostBuilder()
+              .UseStartup<Startup>()
+              .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "microsoftHealthAggregator" }));
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator/health"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var unknownResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, unknownResult.StatusCode);
+                var unknownJson = await unknownResult.Content.ReadAsStringAsync();
+                Assert.NotNull(unknownJson);
+                Assert.Contains("\"status\":\"UP\"", unknownJson);
+            }
+        }
+
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HealthEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/health", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/health", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

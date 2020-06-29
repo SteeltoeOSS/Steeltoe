@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics.Export;
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 {

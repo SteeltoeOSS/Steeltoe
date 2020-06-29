@@ -14,9 +14,11 @@ namespace Steeltoe.Management.Endpoint.Refresh
         {
             return app =>
             {
-                app.UseRefreshActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<RefreshEndpoint>();
+                });
             };
         }
     }

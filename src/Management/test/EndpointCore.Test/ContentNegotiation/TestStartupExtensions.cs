@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -61,9 +62,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class CloudFoundryStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public CloudFoundryStartup(IConfiguration configuration)
         {
@@ -72,16 +71,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services) =>
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
+        }
 
-        public void Configure(IApplicationBuilder app) =>
-            app.UseCloudFoundryActuator();
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+            });
+        }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class HyperMediaStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public HyperMediaStartup(IConfiguration configuration)
         {
@@ -90,16 +96,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services) =>
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
+        }
 
-        public void Configure(IApplicationBuilder app) =>
-            app.UseHypermediaActuator();
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+            });
+        }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class InfoStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public InfoStartup(IConfiguration configuration)
         {
@@ -110,20 +123,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddInfoActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseInfoActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<InfoEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class MetricsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public MetricsStartup(IConfiguration configuration)
         {
@@ -134,20 +150,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddMetricsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseMetricsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<MetricsEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class LoggersStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public LoggersStartup(IConfiguration configuration)
         {
@@ -158,20 +177,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddLoggersActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseLoggersActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<LoggersEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class HealthStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public HealthStartup(IConfiguration configuration)
         {
@@ -182,20 +204,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddHealthActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseHealthActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<HealthEndpointCore>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class TraceStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public TraceStartup(IConfiguration configuration)
         {
@@ -206,20 +231,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddTraceActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseTraceActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<HttpTraceEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class DbMigrationsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public DbMigrationsStartup(IConfiguration configuration)
         {
@@ -230,20 +258,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddDbMigrationsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseDbMigrationsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<DbMigrationsEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class EnvStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public EnvStartup(IConfiguration configuration)
         {
@@ -254,20 +285,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddEnvActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseEnvActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<EnvEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class MappingsStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public MappingsStartup(IConfiguration configuration)
         {
@@ -278,20 +312,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddMappingsActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseMappingsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<MappingsEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class RefreshStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public RefreshStartup(IConfiguration configuration)
         {
@@ -302,20 +339,23 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddRefreshActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseRefreshActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<RefreshEndpoint>();
+            });
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class ThreadDumpStartup
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public ThreadDumpStartup(IConfiguration configuration)
         {
@@ -326,14 +366,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHypermediaActuator(Configuration);
             services.AddThreadDumpActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHypermediaActuator();
-            app.UseThreadDumpActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ActuatorEndpoint>();
+                endpoints.Map<ThreadDumpEndpoint>();
+            });
         }
     }
 }

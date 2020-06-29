@@ -35,10 +35,20 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         };
 
         [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HypermediaEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
+
+        [Fact]
         public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var ep = new TestCloudFoundryEndpoint(opts, mgmtOptions);
 
             var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
@@ -93,32 +103,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 // assert
                 Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
             }
-        }
-
-        [Fact]
-        public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
-            var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        }
-
-        [Fact]
-        public void HypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new HypermediaEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
-            var ep = new ActuatorEndpoint(opts, mgmtOptions);
-            var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOptions);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

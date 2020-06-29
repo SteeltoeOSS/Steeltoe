@@ -19,13 +19,18 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddHealthActuator(_configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
             app.UseMiddleware<AuthenticatedTestMiddleware>();
-            app.UseHealthActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<HealthEndpointCore>();
+            });
         }
     }
 }

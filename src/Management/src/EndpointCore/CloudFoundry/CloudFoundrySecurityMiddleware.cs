@@ -8,7 +8,6 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -22,19 +21,19 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private readonly IManagementOptions _mgmtOptions;
         private readonly SecurityBase _base;
 
-        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+        public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
         {
             _next = next;
             _logger = logger;
             _options = options;
-            _mgmtOptions = mgmtOptions?.OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+            _mgmtOptions = mgmtOptions;
 
             _base = new SecurityBase(options, _mgmtOptions, logger);
         }
 
         public async Task Invoke(HttpContext context)
         {
-            _logger.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
+            _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
             bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
 
@@ -113,7 +112,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 }
 
                 var fullPath = contextPath + ep.Path;
-                if (path.StartsWithSegments(new PathString(fullPath)))
+
+                if (ep is CloudFoundryEndpointOptions)
+                {
+                    if (path.Value.Equals(contextPath, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return ep;
+                    }
+                }
+                else if (path.StartsWithSegments(new PathString(fullPath)))
                 {
                     return ep;
                 }
@@ -132,8 +139,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         private void LogError(HttpContext context, SecurityResult error)
         {
-            _logger.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
-            if (_logger.IsEnabled(LogLevel.Trace))
+            _logger?.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+            if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
             {
                 foreach (var header in context.Request.Headers)
                 {

@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http.Headers;
 using Xunit;
 using static Steeltoe.Management.EndpointCore.Test.ContentNegotiation.TestStartupExtensions;
 
@@ -30,12 +28,12 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                 var endpoints = new[]
                 {
                     new { epName = EndpointNames.Hypermedia, epPath = "http://localhost/actuator" },
-                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/actuator" },
+                    new { epName = EndpointNames.Cloudfoundry, epPath = "http://localhost/cloudfoundryapplication" },
                     new { epName = EndpointNames.Info, epPath = "http://localhost/actuator/info" },
                     new { epName = EndpointNames.Metrics, epPath = "http://localhost/actuator/metrics" },
                     new { epName = EndpointNames.Loggers, epPath = "http://localhost/actuator/loggers" },
                     new { epName = EndpointNames.Health, epPath = "http://localhost/actuator/health" },
-                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/trace" },
+                    new { epName = EndpointNames.Trace, epPath = "http://localhost/actuator/httptrace" },
                     new { epName = EndpointNames.Env, epPath = "http://localhost/actuator/env" },
                     new { epName = EndpointNames.Mappings, epPath = "http://localhost/actuator/mappings" },
                     new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }

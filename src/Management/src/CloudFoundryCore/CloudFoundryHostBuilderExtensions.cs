@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Hypermedia;
 using System;
 using System.Linq;
 
@@ -27,7 +26,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
-            return webHostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
+            return webHostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2, buildCorsPolicy);
         }
 
         /// <summary>
@@ -37,7 +36,7 @@ namespace Steeltoe.Management.CloudFoundry
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
-            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry, buildCorsPolicy);
+            return hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2, buildCorsPolicy);
         }
 
         /// <summary>
@@ -45,13 +44,12 @@ namespace Steeltoe.Management.CloudFoundry
         /// </summary>
         /// <param name="webHostBuilder">Your Hostbuilder</param>
         /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
-        /// <param name="actuatorContext">Select how targeted to Apps Manager actuators should be</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
-        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return webHostBuilder
                 .ConfigureLogging(ConfigureDynamicLogging)
-                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, actuatorContext, buildCorsPolicy));
+                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 
         /// <summary>
@@ -59,13 +57,12 @@ namespace Steeltoe.Management.CloudFoundry
         /// </summary>
         /// <param name="hostBuilder">Your Hostbuilder</param>
         /// <param name="mediaTypeVersion">Spring Boot media type version to use with responses</param>
-        /// <param name="actuatorContext">Select how targeted to Apps Manager actuators should be</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
-        public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return hostBuilder
                 .ConfigureLogging(ConfigureDynamicLogging)
-                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, actuatorContext, buildCorsPolicy));
+                .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 
         private static readonly Action<ILoggingBuilder> ConfigureDynamicLogging = (logbuilder) =>
@@ -90,10 +87,10 @@ namespace Steeltoe.Management.CloudFoundry
             }
         };
 
-        private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, ActuatorContext actuatorContext, Action<CorsPolicyBuilder> buildCorsPolicy)
+        private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
         {
-            collection.AddCloudFoundryActuators(configuration, mediaTypeVersion, actuatorContext, buildCorsPolicy);
-            collection.AddSingleton<IStartupFilter>(new CloudFoundryActuatorsStartupFilter(mediaTypeVersion, actuatorContext));
+            collection.AddCloudFoundryActuators(configuration, mediaTypeVersion, buildCorsPolicy);
+            collection.AddSingleton<IStartupFilter>(new CloudFoundryActuatorsStartupFilter(mediaTypeVersion));
         }
     }
 }

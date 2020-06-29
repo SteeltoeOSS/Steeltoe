@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
@@ -53,16 +54,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<DbMigrationsEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -86,16 +85,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddEnvActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<EnvEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/env");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -153,16 +150,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHealthActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<HealthEndpointCore>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -191,16 +186,14 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder()
-                    .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
 
-                // Assert general success...
-                //   not sure how to actually validate the StartupFilter worked,
-                //   but debug through and you'll see it. Also the code coverage report should provide validation
-                Assert.NotNull(host.Services.GetService<HeapDumpEndpoint>());
+                // Assert
+                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
+                Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
             }
         }
 
@@ -225,16 +218,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHypermediaActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<ActuatorEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -275,16 +266,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddInfoActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<InfoEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -308,16 +297,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<LoggersEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -341,16 +328,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMappingsActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<IRouteMappings>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -374,16 +359,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMetricsActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<MetricsEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -407,16 +390,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddRefreshActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<RefreshEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -429,7 +410,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
                 // Act
                 var host = hostBuilder.AddThreadDumpActuator().Build();
-                var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint>();
+                var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
                 var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
                 // Assert
@@ -445,16 +426,14 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder()
-                    .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
 
-                // Assert general success...
-                //   not sure how to actually validate the StartupFilter worked,
-                //   but debug through and you'll see it. Also the code coverage report should provide validation
-                Assert.NotNull(host.Services.GetService<ThreadDumpEndpoint>());
+                // Assert
+                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
+                Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
             }
         }
 
@@ -466,7 +445,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Act
             var host = hostBuilder.AddTraceActuator().Build();
-            var managementEndpoint = host.Services.GetServices<TraceEndpoint>();
+            var managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
@@ -479,16 +458,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddTraceActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<TraceEndpoint>());
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -509,19 +486,53 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
+        public async Task AddAllActuators_IHostBuilder_IStartupFilterFires()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+
+            // Act
+            var host = await hostBuilder.AddAllActuators().StartAsync();
+
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        }
+
+        [Fact]
+        public void AddaLLActuators_IHostBuilder()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder();
+
+            // Act
+            var host = hostBuilder.AddAllActuators().Build();
+            var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
+            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
+
+            // Assert
+            Assert.Single(managementEndpoint);
+            Assert.NotNull(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
+        }
+
+        [Fact]
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder()
-                .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }));
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
 
-            // Assert general success...
-            //   not sure how to actually validate the StartupFilter worked,
-            //   but debug through and you'll see it. Also the code coverage report should provide validation
-            Assert.NotNull(host.Services.GetService<CloudFoundryEndpoint>());
+            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
         }
+
+        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
     }
 }

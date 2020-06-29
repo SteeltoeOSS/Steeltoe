@@ -12,6 +12,7 @@ using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
@@ -59,7 +60,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             {
                 logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
                 httpClient ??= HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
-                var result = HttpClientExtensions.PostAsJsonAsync(httpClient, $"{options.Url}/instances", app).GetAwaiter().GetResult();
+
+                var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
                 if (result.IsSuccessStatusCode)
                 {
                     RegistrationResult = result.Content.ReadAsJsonAsync<RegistrationResult>().GetAwaiter().GetResult();

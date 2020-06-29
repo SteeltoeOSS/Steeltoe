@@ -7,7 +7,6 @@ using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Management.TracingBase.Test.Exporter

@@ -8,9 +8,6 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -24,8 +21,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private readonly ICloudFoundryOptions _options;
         private readonly RequestDelegate _next;
 
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
+        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = endpoint.Options as ICloudFoundryOptions;
@@ -35,21 +32,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
                 return HandleCloudFoundryRequestAsync(context);
             }
-            else
-            {
-                return _next(context);
-            }
+
+            return Task.CompletedTask;
         }
 
         protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-
             context.HandleContentNegotiation(_logger);
             return context.Response.WriteAsync(serialInfo);
         }
