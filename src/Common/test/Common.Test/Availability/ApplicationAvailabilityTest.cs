@@ -54,5 +54,46 @@ namespace Steeltoe.Common.Availability.Test
             Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(availability.LivenessKey, ReadinessState.AcceptingTraffic, null));
             Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(availability.ReadinessKey, LivenessState.Correct, null));
         }
+
+        [Fact]
+        public void FiresEventsOnKnownTypeStateChange()
+        {
+            // arrange
+            var availability = new ApplicationAvailability(_logger);
+            availability.LivenessChanged += Availability_LivenessChanged;
+            availability.ReadinessChanged += Availability_ReadinessChanged;
+
+            // act
+            availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Broken, null);
+            Assert.Equal(LivenessState.Broken, lastLivenessState);
+            availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, null);
+            Assert.Equal(ReadinessState.RefusingTraffic, lastReadinessState);
+            availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, null);
+            availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+
+            // assert
+            Assert.Equal(2, livenessChanges);
+            Assert.Equal(LivenessState.Correct, lastLivenessState);
+            Assert.Equal(2, readinessChanges);
+            Assert.Equal(ReadinessState.AcceptingTraffic, lastReadinessState);
+        }
+
+        private int livenessChanges = 0;
+        private LivenessState lastLivenessState;
+
+        private int readinessChanges = 0;
+        private ReadinessState lastReadinessState;
+
+        private void Availability_ReadinessChanged(object sender, EventArgs e)
+        {
+            readinessChanges++;
+            lastReadinessState = (ReadinessState)(e as AvailabilityEventArgs).NewState;
+        }
+
+        private void Availability_LivenessChanged(object sender, EventArgs e)
+        {
+            livenessChanges++;
+            lastLivenessState = (LivenessState)(e as AvailabilityEventArgs).NewState;
+        }
     }
 }

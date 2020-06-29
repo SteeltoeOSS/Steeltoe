@@ -19,7 +19,11 @@ namespace Steeltoe.Common.Availability
 
         public IAvailabilityState GetLivenessState() => GetAvailabilityState(LivenessKey);
 
+        public event EventHandler LivenessChanged;
+
         public IAvailabilityState GetReadinessState() => GetAvailabilityState(ReadinessKey);
+
+        public event EventHandler ReadinessChanged;
 
         public IAvailabilityState GetAvailabilityState(string availabilityType)
         {
@@ -48,6 +52,15 @@ namespace Steeltoe.Common.Availability
 
             _logger?.LogTrace("{stateKey} availability has been set to {newState} by {caller}", stateKey, newState, caller ?? "unspecified");
             _availabilityStates[stateKey] = newState;
+            if (stateKey == LivenessKey && LivenessChanged != null)
+            {
+                LivenessChanged(this, new AvailabilityEventArgs(newState));
+            }
+
+            if (stateKey == ReadinessKey && ReadinessChanged != null)
+            {
+                ReadinessChanged(this, new AvailabilityEventArgs(newState));
+            }
         }
     }
 }
