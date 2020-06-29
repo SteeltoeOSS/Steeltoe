@@ -27,7 +27,7 @@ namespace Steeltoe.Management.CloudFoundry
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddCloudFoundryActuators(config, MediaTypeVersion.V1, buildCorsPolicy);
+            services.AddCloudFoundryActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
         }
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        public static void AddAllActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
+        public static void AddAllActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version = MediaTypeVersion.V2)
         {
             if (services == null)
             {
