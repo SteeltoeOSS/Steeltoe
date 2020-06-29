@@ -20,9 +20,8 @@ namespace Steeltoe.Management.Endpoint.Health
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
         {
-            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             services.AddHealthActuator(config, new HealthRegistrationsAggregator(), GetDefaultHealthContributors());
         }
 

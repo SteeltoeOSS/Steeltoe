@@ -19,9 +19,8 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null)
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config)
         {
-            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             services.AddInfoActuator(config, new GitInfoContributor(), new AppSettingsInfoContributor(config));
         }
 

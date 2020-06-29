@@ -22,14 +22,17 @@ namespace Steeltoe.Management.Endpoint.Metrics
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config = null)
+        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
@@ -52,14 +55,17 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddSingleton<MetricsEndpoint>();
         }
 
-        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
+        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
