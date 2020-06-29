@@ -100,8 +100,6 @@ namespace Steeltoe.Management.Endpoint
                 {
                     endpoints.Map<ThreadDumpEndpoint>();
                 }
-
-                endpoints.Map<HeapDumpEndpoint>();
             }
 
             if (Platform.IsWindows || Platform.IsLinux)
