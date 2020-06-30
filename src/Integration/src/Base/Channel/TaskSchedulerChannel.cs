@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
 using System;
@@ -22,18 +23,18 @@ namespace Steeltoe.Integration.Channel
 {
     public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
     {
-        public TaskSchedulerChannel(IServiceProvider serviceProvider, TaskScheduler executor, ILogger logger = null)
-            : this(serviceProvider, executor, new RoundRobinLoadBalancingStrategy(), logger)
+        public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+            : this(context, executor, new RoundRobinLoadBalancingStrategy(), logger)
         {
         }
 
-        public TaskSchedulerChannel(IServiceProvider serviceProvider, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, ILogger logger = null)
-            : this(serviceProvider, executor, loadBalancingStrategy, null, logger)
+        public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, ILogger logger = null)
+            : this(context, executor, loadBalancingStrategy, null, logger)
         {
         }
 
-        public TaskSchedulerChannel(IServiceProvider serviceProvider, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, string name, ILogger logger = null)
-            : base(serviceProvider, new UnicastingDispatcher(serviceProvider, executor, logger), executor, name, logger)
+        public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, string name, ILogger logger = null)
+            : base(context, new UnicastingDispatcher(context, executor, logger), executor, name, logger)
         {
             if (executor == null)
             {

@@ -13,20 +13,21 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Data;
 using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
 using Steeltoe.Messaging.Rabbit.Listener.Support;
+using Steeltoe.Messaging.Rabbit.Support;
 using Steeltoe.Messaging.Rabbit.Transaction;
 using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -36,48 +37,37 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
+        internal CountdownEvent _startedLatch = new CountdownEvent(1);
+
+        protected internal readonly List<SimpleConsumer> _consumers = new List<SimpleConsumer>();
+        protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new Dictionary<string, List<SimpleConsumer>>();
+        protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ActiveObjectCounter<SimpleConsumer>();
+        protected internal readonly List<SimpleConsumer> _consumersToRestart = new List<SimpleConsumer>();
         protected const int START_WAIT_TIME = 60;
-
         protected const int DEFAULT_MONITOR_INTERVAL = 10_000;
-
         protected const int DEFAULT_ACK_TIMEOUT = 20_000;
 
-        protected readonly List<SimpleConsumer> _consumers = new List<SimpleConsumer>();
-
-        protected readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ActiveObjectCounter<SimpleConsumer>();
-
-        protected readonly List<SimpleConsumer> _consumersToRestart = new List<SimpleConsumer>();
-
-        protected readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new Dictionary<string, List<SimpleConsumer>>();
-
         private int _consumersPerQueue = 1;
-
+        private long _monitorInterval = DEFAULT_MONITOR_INTERVAL;
         private volatile bool _started = false;
-
         private volatile bool _aborted = false;
-
         private volatile bool _hasStopped = false;
-
         private long _lastAlertAt;
-
-        private CountdownEvent _startedLatch = new CountdownEvent(1);
-
         private Task _consumerMonitorTask;
-
         private CancellationTokenSource _consumerMonitorCancelationToken;
 
-        public DirectMessageListenerContainer(string name = null, ILogger logger = null)
-            : this(null, null, name, logger)
+        public DirectMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
+            : this(null, null, name, loggerFactory)
         {
         }
 
-        public DirectMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILogger logger = null)
-            : this(applicationContext, null, name, logger)
+        public DirectMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILoggerFactory loggerFactory = null)
+            : this(applicationContext, null, name, loggerFactory)
         {
         }
 
-        public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILogger logger = null)
-            : base(applicationContext, connectionFactory, name, logger)
+        public DirectMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
+            : base(applicationContext, connectionFactory, name, loggerFactory)
         {
             MissingQueuesFatal = false;
         }
@@ -118,7 +108,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        public virtual long MonitorInterval { get; set; } = DEFAULT_MONITOR_INTERVAL;
+        public virtual long MonitorInterval
+        {
+            get => _monitorInterval;
+            set => _monitorInterval = value;
+        }
 
         public virtual int MessagesPerAck { get; set; }
 
@@ -128,12 +122,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public override void SetQueueNames(params string[] queueNames)
         {
-            if (IsRunning)
-            {
-                throw new InvalidOperationException("Cannot set queue names while running, use add/remove");
-            }
-
+            RemoveQueues(queueNames.AsEnumerable());
+            base.RemoveQueueNames(queueNames);
             base.SetQueueNames(queueNames);
+            UpdateQueues();
         }
 
         public override void AddQueueNames(params string[] queueNames)
@@ -150,14 +142,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (Exception e)
             {
-                _logger?.LogError("Failed to add queue names", e);
+                _logger?.LogError(e, "Failed to add queue names");
                 throw;
             }
 
             base.AddQueueNames(queueNames);
         }
 
-        public override void AddQueues(params Config.Queue[] queues)
+        public override void AddQueues(params IQueue[] queues)
         {
             if (queues == null)
             {
@@ -166,12 +158,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             try
             {
-                var names = queues.Select((q) => q != null ? q.Name : throw new ArgumentNullException("queues cannot contain nulls"));
+                var names = queues.Select((q) => q != null ? q.QueueName : throw new ArgumentNullException("queues cannot contain nulls"));
                 AddQueues(names);
             }
             catch (Exception e)
             {
-                _logger?.LogError("Failed to add queues", e);
+                _logger?.LogError(e, "Failed to add queues");
                 throw;
             }
 
@@ -184,7 +176,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return base.RemoveQueueNames(queueNames);
         }
 
-        public override void RemoveQueues(params Config.Queue[] queues)
+        public override void RemoveQueues(params IQueue[] queues)
         {
             RemoveQueues(queues.Select((q) => q.ActualName));
             base.RemoveQueues(queues);
@@ -221,17 +213,18 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
 
             base.DoStart();
+            CheckListenerContainerAware();
             var queueNames = GetQueueNames();
             CheckMissingQueues(queueNames);
 
-            if (IdleEventInterval > 0 && MonitorInterval > IdleEventInterval)
+            if (IdleEventInterval > 0 && _monitorInterval > IdleEventInterval)
             {
-                MonitorInterval = IdleEventInterval / 2;
+                _monitorInterval = IdleEventInterval / 2;
             }
 
             if (FailedDeclarationRetryInterval < MonitorInterval)
             {
-                MonitorInterval = FailedDeclarationRetryInterval;
+                _monitorInterval = FailedDeclarationRetryInterval;
             }
 
             var namesToQueues = GetQueueNamesToQueues();
@@ -248,7 +241,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 _startedLatch.Signal();
             }
 
-            _logger?.LogInformation("Container initialized for queues: " + string.Join(',', queueNames));
+            _logger?.LogInformation("Container initialized for queues: {queues}", string.Join(',', queueNames));
         }
 
         protected virtual void DoRedeclareElementsIfNecessary()
@@ -263,9 +256,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 RedeclareElementsIfNecessary();
             }
+            catch (FatalListenerStartupException fe)
+            {
+                _logger?.LogError(fe, "Fatal exception while reclare elements");
+                throw;
+            }
             catch (Exception e)
             {
-                _logger?.LogError("Failed to redeclare elements", e);
+                _logger?.LogError(e, "Failed to redeclare elements");
             }
             finally
             {
@@ -308,7 +306,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         {
                             canceledConsumers.ForEach(consumer =>
                             {
-                                var eventMessage = "Closing channel for unresponsive consumer: " + consumer;
+                                var eventMessage = string.Format("Closing channel for unresponsive consumer: {0} ", consumer);
                                 _logger?.LogWarning(eventMessage);
                                 consumer.CancelConsumer(eventMessage);
                             });
@@ -318,7 +316,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 catch (Exception e)
                 {
                     // Thread.currentThread().interrupt();
-                    _logger?.LogWarning("Interrupted waiting for consumers. Continuing with shutdown.", e);
+                    _logger?.LogWarning(e, "Interrupted waiting for consumers. Continuing with shutdown.");
                 }
                 finally
                 {
@@ -340,6 +338,38 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             // Override if needed
         }
 
+        private void CheckListenerContainerAware()
+        {
+            var listenerAware = MessageListener as IListenerContainerAware;
+            if (listenerAware != null)
+            {
+                var expectedQueueNames = listenerAware.GetExpectedQueueNames();
+                var queueNames = GetQueueNames();
+                if (expectedQueueNames.Count != queueNames.Length)
+                {
+                    throw new InvalidOperationException("Listener expects queues that the container is not listening on");
+                }
+
+                var found = false;
+                foreach(var queueName in queueNames)
+                {
+                    if (expectedQueueNames.Contains(queueName))
+                    {
+                        found = true;
+                    }
+                    else
+                    {
+                        found = false;
+                        break;
+                    }
+                }
+                if (!found)
+                {
+                    throw new InvalidOperationException("Listener expects queues that the container is not listening on");
+                }
+            }
+        }
+
         private void CheckMissingQueues(string[] queueNames)
         {
             if (MissingQueuesFatal)
@@ -347,7 +377,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 var checkAdmin = AmqpAdmin;
                 if (checkAdmin == null)
                 {
-                    checkAdmin = new RabbitAdmin(ConnectionFactory);
+                    checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, _loggerFactory?.CreateLogger<RabbitAdmin>());
                     AmqpAdmin = checkAdmin;
                 }
 
@@ -395,7 +425,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             if (!IsActive)
             {
-                _logger?.LogDebug("Consume from queue " + queue + " ignore, container stopping");
+                _logger?.LogDebug("Consume from queue {queueName} ignore, container stopping", queue);
                 return;
             }
 
@@ -413,8 +443,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             catch (Exception e)
             {
                 // publishConsumerFailedEvent(e.getMessage(), false, e);
-                _logger?.LogError("Exception while CreateConnection", e);
-                AddConsumerToRestart(new SimpleConsumer(this, null, null, queue));
+                _logger?.LogError(e, "Exception while CreateConnection");
+                AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, _loggerFactory?.CreateLogger<SimpleConsumer>()));
                 throw;
 
                 // throw e instanceof AmqpConnectException
@@ -444,7 +474,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     }
 
                     list.Add(consumer);
-                    _logger?.LogInformation(consumer + " started");
+                    _logger?.LogInformation("{consumer} started",  consumer);
 
                     // if (getApplicationEventPublisher() != null)
                     // {
@@ -462,7 +492,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 channel = connection.CreateChannel(IsChannelTransacted);
                 channel.BasicQos(0, (ushort)PrefetchCount, false);  // TODO: Verify this
-                consumer = new SimpleConsumer(this, connection, channel, queue);
+                consumer = new SimpleConsumer(this, connection, channel, queue, _loggerFactory?.CreateLogger<SimpleConsumer>());
                 channel.QueueDeclarePassive(queue);
                 consumer.ConsumerTag = channel.BasicConsume(
                     queue,
@@ -510,7 +540,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             // }
             if (consumer == null)
             {
-                AddConsumerToRestart(new SimpleConsumer(this, null, null, queue));
+                AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, _loggerFactory?.CreateLogger<SimpleConsumer>()));
             }
             else
             {
@@ -521,13 +551,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return consumer;
         }
 
-        private void StartMonitor(long idleEventInterval, Dictionary<string, Config.Queue> namesToQueues)
+        private void StartMonitor(long idleEventInterval, Dictionary<string, IQueue> namesToQueues)
         {
             _consumerMonitorCancelationToken = new CancellationTokenSource();
             _consumerMonitorTask = Task.Run(
                 async () =>
                 {
-                    while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested)
+                    bool shouldShutdown = false;
+                    while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested && !shouldShutdown)
                     {
                         var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                         CheckIdle(idleEventInterval, now);
@@ -543,32 +574,49 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                                 {
                                     if (restartableConsumers.Count > 0)
                                     {
-                                        DoRedeclareElementsIfNecessary();
+                                        try
+                                        {
+                                            DoRedeclareElementsIfNecessary();
+                                        }
+                                        catch (FatalListenerStartupException)
+                                        {
+                                            shouldShutdown = true;
+                                        }
                                     }
 
-                                    foreach (var consumer in restartableConsumers)
+                                    if (!shouldShutdown)
                                     {
-                                        if (!_consumersByQueue.ContainsKey(consumer.Queue))
+                                        foreach (var consumer in restartableConsumers)
                                         {
-                                            _logger?.LogDebug("Skipping restart of consumer " + consumer);
-                                            continue;
+                                            if (!_consumersByQueue.ContainsKey(consumer.Queue))
+                                            {
+                                                _logger?.LogDebug("Skipping restart of consumer {consumer} ", consumer);
+                                                continue;
+                                            }
+
+                                            _logger?.LogDebug("Attempting to restart consumer {consumer}", consumer);
+                                            if (!RestartConsumer(namesToQueues, restartableConsumers, consumer))
+                                            {
+                                                break;
+                                            }
                                         }
 
-                                        _logger?.LogDebug("Attempting to restart consumer " + consumer);
-                                        if (!RestartConsumer(namesToQueues, restartableConsumers, consumer))
-                                        {
-                                            break;
-                                        }
+                                        LastRestartAttempt = now;
                                     }
-
-                                    LastRestartAttempt = now;
                                 }
                             }
                         }
 
                         ProcessMonitorTask();
 
-                        await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancelationToken.Token);
+                        if (shouldShutdown)
+                        {
+                            Shutdown();
+                        }
+                        else
+                        {
+                            await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancelationToken.Token);
+                        }
                     }
                 }, _consumerMonitorCancelationToken.Token);
         }
@@ -586,7 +634,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             try
             {
-                _logger?.LogDebug("Canceling " + consumer);
+                _logger?.LogDebug("Canceling {consumer}", consumer);
                 lock (consumer)
                 {
                     consumer.Canceled = true;
@@ -596,9 +644,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         {
                             consumer.AckIfNecessary(0L);
                         }
-                        catch (IOException e)
+                        catch (Exception e)
                         {
-                            _logger?.LogError("Exception while sending delayed ack", e);
+                            _logger?.LogError(e, "Exception while sending delayed ack");
                         }
                     }
                 }
@@ -627,10 +675,15 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                             {
                                 consumer.AckIfNecessary(now);
                             }
-                            catch (IOException e)
+                            catch (Exception e)
                             {
-                                _logger?.LogError("Exception while sending delayed ack", e);
+                                _logger?.LogError(e, "Exception while sending delayed ack");
                             }
+                        }
+
+                        if (!open)
+                        {
+                            return !open;
                         }
 
                         return !open;
@@ -647,19 +700,19 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogDebug("Error closing consumer " + consumer, e);
+                        _logger?.LogDebug(e, "Error closing consumer {consumer} ", consumer);
                     }
 
-                    _logger?.LogError("Consumer canceled - channel closed " + consumer);
+                    _logger?.LogError("Consumer {consumer} canceled - channel closed ", consumer);
                     consumer.CancelConsumer("Consumer " + consumer + " channel closed");
                 });
         }
 
-        private bool RestartConsumer(Dictionary<string, Config.Queue> namesToQueues, List<SimpleConsumer> restartableConsumers, SimpleConsumer consumerArg)
+        private bool RestartConsumer(Dictionary<string, IQueue> namesToQueues, List<SimpleConsumer> restartableConsumers, SimpleConsumer consumerArg)
         {
             var consumer = consumerArg;
             namesToQueues.TryGetValue(consumer.Queue, out var queue);
-            if (queue != null && string.IsNullOrEmpty(queue.Name))
+            if (queue != null && string.IsNullOrEmpty(queue.QueueName))
             {
                 // check to see if a broker-declared queue name has changed
                 var actualName = queue.ActualName;
@@ -667,7 +720,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     namesToQueues.Remove(consumer.Queue);
                     namesToQueues[actualName] = queue;
-                    consumer = new SimpleConsumer(this, null, null, actualName);
+                    consumer = new SimpleConsumer(this, null, null, actualName, _loggerFactory?.CreateLogger<SimpleConsumer>());
                 }
             }
 
@@ -678,14 +731,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (Exception e)
             {
-                _logger?.LogError("Cannot connect to server", e);
+                _logger?.LogError(e, "Cannot connect to server");
 
                 // if (e.getCause() instanceof AmqpApplicationContextClosedException) {
                 //    this.logger.error("Application context is closed, terminating");
                 //    this.taskScheduler.schedule(this::stop, new Date());
                 // }
                 _consumersToRestart.AddRange(restartableConsumers);
-                _logger?.LogTrace("After restart exception, consumers to restart now: " + _consumersToRestart);
+                _logger?.LogTrace("After restart exception, consumers to restart now: {consumersToRestart}", _consumersToRestart.Count);
                 return false;
             }
         }
@@ -712,21 +765,21 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                                 ConsumeFromQueue(queue);
                             }
                         }
-                        catch (Exception e) when (e is ConnectFailureException || e is IOException)
+                        catch (Exception e) when (e is RabbitConnectException || e is RabbitIOException)
                         {
                             var nextBackOff = backOffExecution.NextBackOff();
                             if (nextBackOff < 0)
                             {
                                 _aborted = true;
                                 Shutdown();
-                                _logger?.LogError("Failed to start container - fatal error or backOffs exhausted", e);
+                                _logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
                                 Task.Run(() => Stop());
 
                                 // this.taskScheduler.schedule(this::stop, new Date());
                                 break;
                             }
 
-                            _logger?.LogError("Error creating consumer; retrying in " + nextBackOff, e);
+                            _logger?.LogError(e, "Error creating consumer; retrying in {nextBackOff}", nextBackOff);
                             DoShutdown();
                             try
                             {
@@ -734,7 +787,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                             }
                             catch (Exception e1)
                             {
-                                _logger?.LogError("Exception while in backoff;" + nextBackOff, e1);
+                                _logger?.LogError(e1, "Exception while in backoff, {nextBackOff}", nextBackOff);
 
                                 // Thread.currentThread().interrupt();
                             }
@@ -763,8 +816,24 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Exception thrown while waiting for container start", e);
+                    _logger?.LogError(e, "Exception thrown while waiting for container start");
                     throw;
+                }
+            }
+        }
+
+        private void UpdateQueues()
+        {
+            if (IsRunning)
+            {
+                lock (_consumersMonitor)
+                {
+                    CheckStartState();
+                    var current = GetQueueNamesAsSet();
+                    foreach (var name in current)
+                    {
+                        ConsumeFromQueue(name);
+                    }
                 }
             }
         }
@@ -822,9 +891,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 foreach (var queue in GetQueueNames())
                 {
                     _consumersByQueue.TryGetValue(queue, out var consumers);
-                    while (consumers != null && consumers.Count < newCount)
+                    while (consumers == null || consumers.Count < newCount)
                     {
                         DoConsumeFromQueue(queue);
+                        _consumersByQueue.TryGetValue(queue, out consumers);
                     }
 
                     if (consumers != null && consumers.Count > newCount)
@@ -853,11 +923,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             if (_started)
             {
                 _consumersToRestart.Add(consumer);
-                _logger?.LogTrace("Consumers to restart now: " + _consumersToRestart.Count);
+                _logger?.LogTrace("Consumers to restart now: {count}", _consumersToRestart.Count);
             }
         }
 
-        protected class SimpleConsumer : R.DefaultBasicConsumer
+        protected internal class SimpleConsumer : R.DefaultBasicConsumer
         {
             private readonly DirectMessageListenerContainer _container;
             private readonly Connection.IConnection _connection;
@@ -925,7 +995,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 get
                 {
-                    return _targetChannel != null && !((IChannelProxy)Model).TargetChannel.Equals(_targetChannel);
+                    return _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
                 }
             }
 
@@ -938,11 +1008,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, R.IBasicProperties properties, byte[] body)
             {
                 var envelope = new Envelope(deliveryTag, redelivered, exchange, routingKey);
-                var messageProperties = _container.MessagePropertiesConverter.ToMessageProperties(properties, envelope, EncodingUtils.Utf8);
-                messageProperties.ConsumerTag = consumerTag;
-                messageProperties.ConsumerQueue = Queue;
-                var message = new Message(body, messageProperties);
-                _logger?.LogDebug(this + " received " + message);
+                var messageHeaders = _container.MessageHeadersConverter.ToMessageHeaders(properties, envelope, EncodingUtils.Utf8);
+                var headerAccessor = MessageHeaderAccessor.GetAccessor<RabbitHeaderAccessor>(messageHeaders);
+                headerAccessor.ConsumerTag = consumerTag;
+                headerAccessor.ConsumerQueue = Queue;
+                var message = Message.Create(body, headerAccessor.MessageHeaders);
+                _logger?.LogDebug("Received {message} {consumer}", message, this);
                 _container.UpdateLastReceive();
 
                 if (TransactionManager != null)
@@ -986,18 +1057,18 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             public override void HandleBasicConsumeOk(string consumerTag)
             {
                 base.HandleBasicConsumeOk(consumerTag);
-                _logger?.LogDebug("New " + this + " consumeOk");
+                _logger?.LogDebug("New {consumer} consumeOk", this);
             }
 
             public override void HandleBasicCancelOk(string consumerTag)
             {
-                _logger?.LogDebug("CancelOk " + this);
+                _logger?.LogDebug("CancelOk {consumer}", this);
                 FinalizeConsumer();
             }
 
             public override void HandleBasicCancel(string consumerTag)
             {
-                _logger?.LogError("Consumer canceled - queue deleted? " + this);
+                _logger?.LogError("Consumer canceled - queue deleted? {consumerTag}, {consumer}", consumerTag, this);
                 CancelConsumer("Consumer " + this + " canceled");
             }
 
@@ -1043,7 +1114,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
             }
 
-            private void ExecuteListenerInTransaction(Message message, ulong deliveryTag)
+            private void ExecuteListenerInTransaction(IMessage<byte[]> message, ulong deliveryTag)
             {
                 if (IsRabbitTxManager)
                 {
@@ -1052,12 +1123,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
                 if (TransactionTemplate == null)
                 {
-                    TransactionTemplate = new TransactionTemplate(TransactionManager, TransactionAttribute);
+                    TransactionTemplate = new TransactionTemplate(TransactionManager, TransactionAttribute, _logger);
                 }
 
                 TransactionTemplate.Execute<object>(s =>
                 {
-                    var resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(new RabbitResourceHolder(Model, false), ConnectionFactory, true);
+                    var resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(
+                        new RabbitResourceHolder(Model, false, _container._loggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);
                     if (resourceHolder != null)
                     {
                         resourceHolder.AddDeliveryTag(Model, deliveryTag);
@@ -1083,7 +1155,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 });
             }
 
-            private void CallExecuteListener(Message message, ulong deliveryTag)
+            private void CallExecuteListener(IMessage<byte[]> message, ulong deliveryTag)
             {
                 var channelLocallyTransacted = _container.IsChannelLocallyTransacted;
                 try
@@ -1091,21 +1163,21 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     _container.ExecuteListener(Model, message);
                     HandleAck(deliveryTag, channelLocallyTransacted);
                 }
-                catch (ImmediateAcknowledgeAmqpException e)
+                catch (ImmediateAcknowledgeException e)
                 {
-                    _logger?.LogDebug("User requested ack for failed delivery '" + e.Message + "': " + deliveryTag);
+                    _logger?.LogDebug(e, "User requested ack for failed delivery '{tag}'", deliveryTag);
                     HandleAck(deliveryTag, channelLocallyTransacted);
                 }
                 catch (Exception e)
                 {
                     if (_container.CauseChainHasImmediateAcknowledgeAmqpException(e))
                     {
-                        _logger?.LogDebug("User requested ack for failed delivery: " + deliveryTag);
+                        _logger?.LogDebug("User requested ack for failed delivery: {tag}", deliveryTag);
                         HandleAck(deliveryTag, channelLocallyTransacted);
                     }
                     else
                     {
-                        _logger?.LogError("Failed to invoke listener", e);
+                        _logger?.LogError(e, "Failed to invoke listener");
                         if (TransactionManager != null)
                         {
                             if (TransactionAttribute.RollbackOn(e))
@@ -1124,7 +1196,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                             }
                             else
                             {
-                                _logger?.LogDebug("No rollback for " + e);
+                                _logger?.LogDebug(e, "No rollback");
                             }
                         }
                         else
@@ -1171,7 +1243,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 catch (Exception e)
                 {
                     AckFailed = true;
-                    _logger?.LogError("Error acking", e);
+                    _logger?.LogError(e, "Error acking");
                 }
             }
 
@@ -1199,9 +1271,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
                         Model.BasicNack(deliveryTag, true, ContainerUtils.ShouldRequeue(_container.DefaultRequeueRejected, e, _logger));
                     }
-                    catch (IOException e1)
+                    catch (Exception e1)
                     {
-                        _logger?.LogError("Failed to nack message", e1);
+                        _logger?.LogError(e1, "Failed to nack message");
                     }
                 }
 

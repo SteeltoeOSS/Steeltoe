@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Messaging.Rabbit.Data;
 using System;
 using System.Collections.Generic;
 
@@ -20,14 +19,14 @@ namespace Steeltoe.Messaging.Rabbit.Batch
 {
     public interface IBatchingStrategy
     {
-        MessageBatch AddToBatch(string exchange, string routingKey, Message message);
+        MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message);
 
-        DateTime NextRelease();
+        DateTime? NextRelease();
 
         ICollection<MessageBatch> ReleaseBatches();
 
-        bool CanDebatch(MessageProperties properties);
+        bool CanDebatch(IMessageHeaders properties);
 
-        void DeBatch(Message message, Action<Message> fragmentConsumer);
+        void DeBatch(IMessage message, Action<IMessage> fragmentConsumer);
     }
 }

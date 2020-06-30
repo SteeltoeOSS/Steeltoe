@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using System;
@@ -39,8 +40,8 @@ namespace Steeltoe.Integration.Handler
         // : this(new MethodInvokingMessageProcessor(instance, methodName))
         // {
         // }
-        public ServiceActivatingHandler(IServiceProvider serviceProvider, IMessageProcessor processor)
-            : base(serviceProvider)
+        public ServiceActivatingHandler(IApplicationContext context, IMessageProcessor processor)
+            : base(context)
         {
             _processor = processor;
         }

@@ -45,7 +45,7 @@ namespace Steeltoe.Stream.Tck
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
             streamProcessor.AfterSingletonsInstantiated();
-            var message = new GenericMessage<byte[]>(Encoding.UTF8.GetBytes("foo"));
+            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
             DoSend(provider, message);
 
             var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
@@ -62,7 +62,7 @@ namespace Steeltoe.Stream.Tck
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
             streamProcessor.AfterSingletonsInstantiated();
-            var message = new GenericMessage<byte[]>(Encoding.UTF8.GetBytes("foo"));
+            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
             DoSend(provider, message);
 
             var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();

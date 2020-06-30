@@ -30,6 +30,7 @@ namespace Steeltoe.Stream.Config
             IConversionService conversionService,
             IExpressionParser expressionParser,
             IEvaluationContext evaluationContext)
+            : base(conversionService, compositeMessageConverter)
         {
             MessageConverter = compositeMessageConverter;
             var resolvers = new List<IHandlerMethodArgumentResolver>();
@@ -46,8 +47,6 @@ namespace Steeltoe.Stream.Config
             resolvers.Add(new DictionaryArgumentResolver(expressionParser, evaluationContext));
 
             SetArgumentResolvers(resolvers);
-
-            AfterPropertiesSet();
         }
     }
 }

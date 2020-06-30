@@ -72,7 +72,7 @@ namespace Steeltoe.Integration.Support.Test
             headerDictionarystrings.Add(MessageHeaders.ID, uuid.ToString());
             headerDictionarystrings.Add(MessageHeaders.TIMESTAMP, timestamp.ToString());
             var mutableMessagestrings = new MutableMessage<object>(payload, headerDictionarystrings);
-            Assert.Equal(uuid, mutableMessagestrings.Headers.Id);
+            Assert.Equal(uuid.ToString(), mutableMessagestrings.Headers.Id);
             Assert.Equal(timestamp, mutableMessagestrings.Headers.Timestamp);
 
             // UUID as byte[]; timestamp as Long
@@ -82,7 +82,7 @@ namespace Steeltoe.Integration.Support.Test
             headerDictionaryByte.Add(MessageHeaders.ID, uuidAsBytes);
             headerDictionaryByte.Add(MessageHeaders.TIMESTAMP, timestamp);
             var mutableMessageBytes = new MutableMessage<object>(payload, headerDictionaryByte);
-            Assert.Equal(uuid, mutableMessageBytes.Headers.Id);
+            Assert.Equal(uuid.ToString(), mutableMessageBytes.Headers.Id);
             Assert.Equal(timestamp, mutableMessageBytes.Headers.Timestamp);
         }
     }

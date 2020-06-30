@@ -17,7 +17,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Support
 {
-    public class ErrorMessage : GenericMessage<Exception>
+    public class ErrorMessage : Message<Exception>
     {
         public ErrorMessage(Exception payload)
         : base(payload)

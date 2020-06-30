@@ -13,9 +13,11 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Listener.Adapters;
 using System;
 using System.Reflection;
@@ -25,8 +27,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
     {
-        public MethodRabbitListenerEndpoint(IApplicationContext applicationContext, MethodInfo method, object instance, ILogger logger = null)
-            : base(applicationContext, logger)
+        public MethodRabbitListenerEndpoint(
+            IApplicationContext applicationContext,
+            MethodInfo method,
+            object instance,
+            ILoggerFactory loggerFactory = null)
+            : base(applicationContext, loggerFactory)
         {
             Method = method;
             Instance = instance;
@@ -81,11 +87,24 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             if (BatchListener)
             {
-                return new BatchMessagingMessageListenerAdapter(Instance, Method, ReturnExceptions, ErrorHandler, BatchingStrategy);
+                return new BatchMessagingMessageListenerAdapter(
+                    ApplicationContext,
+                    Instance,
+                    Method,
+                    ReturnExceptions,
+                    ErrorHandler,
+                    BatchingStrategy,
+                    _loggerFactory?.CreateLogger(typeof(BatchMessagingMessageListenerAdapter)));
             }
             else
             {
-                return new MessagingMessageListenerAdapter(Instance, Method, ReturnExceptions, ErrorHandler);
+                return new MessagingMessageListenerAdapter(
+                    ApplicationContext,
+                    Instance,
+                    Method,
+                    ReturnExceptions,
+                    ErrorHandler,
+                    _loggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
             }
         }
 
@@ -119,6 +138,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private string ResolveSendTo(string value)
         {
+            // TODO:
             // if (getBeanFactory() != null)
             // {
             //    String resolvedValue = getBeanExpressionContext().getBeanFactory().resolveEmbeddedValue(value);
@@ -130,6 +150,20 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             // {
             //    return value;
             // }
+            if (ApplicationContext != null)
+            {
+                value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);
+                if (ConfigUtils.IsExpression(value))
+                {
+                    var serviceName = ConfigUtils.ExtractExpressionString(value);
+                    var queue = ApplicationContext.GetService<IQueue>(serviceName);
+                    if (queue != null)
+                    {
+                        value = queue.QueueName;
+                    }
+                }
+            }
+
             return value;
         }
     }

@@ -14,31 +14,36 @@
 
 using RabbitMQ.Client;
 using System;
+using System.Text;
 
 namespace Steeltoe.Messaging.Rabbit.Support
 {
     public class ShutdownSignalException : Exception
     {
+        private ShutdownEventArgs _args;
+
         public ShutdownSignalException(ShutdownEventArgs args)
         {
-            ClassId = args.ClassId;
-            MethodId = args.MethodId;
-            ReplyCode = args.ReplyCode;
-            ReplyText = args.ReplyText;
-            Initiator = args.Initiator;
-            Cause = args.Cause;
+            _args = args;
         }
 
-        public ushort ClassId { get; }
+        public ushort ClassId => _args.ClassId;
 
-        public ushort MethodId { get; }
+        public ushort MethodId => _args.MethodId;
 
-        public ushort ReplyCode { get; }
+        public ushort ReplyCode => _args.ReplyCode;
 
-        public string ReplyText { get; }
+        public string ReplyText => _args.ReplyText;
 
-        public ShutdownInitiator Initiator { get; }
+        public ShutdownInitiator Initiator => _args.Initiator;
 
-        public object Cause { get; }
+        public object Cause => _args.Cause;
+
+        public ShutdownEventArgs Args => _args;
+
+        public override string ToString()
+        {
+            return _args.ToString();
+        }
     }
 }

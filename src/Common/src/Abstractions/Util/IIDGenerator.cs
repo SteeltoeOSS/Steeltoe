@@ -18,6 +18,6 @@ namespace Steeltoe.Common.Util
 {
     public interface IIDGenerator
     {
-        Guid GenerateId();
+        string GenerateId();
     }
 }

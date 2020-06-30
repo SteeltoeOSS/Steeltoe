@@ -14,9 +14,8 @@
 
 using RabbitMQ.Client;
 using Steeltoe.Common.Transaction;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.Rabbit.Support;
 using System;
-using System.IO;
 using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
@@ -171,10 +170,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
                 return resourceHolderToUse;
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
                 RabbitUtils.CloseConnection(connection);
-                throw new AmqpIOException(ex);
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }
 

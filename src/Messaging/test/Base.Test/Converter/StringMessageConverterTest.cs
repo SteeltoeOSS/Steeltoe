@@ -25,7 +25,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void FromByteArrayMessage()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
             var converter = new StringMessageConverter();
             Assert.Equal("ABC", converter.FromMessage<string>(message));
@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void FromStringMessage()
         {
-            var message = MessageBuilder<string>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
             var converter = new StringMessageConverter();
             Assert.Equal("ABC", converter.FromMessage<string>(message));
@@ -43,7 +43,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void FromMessageNoContentTypeHeader()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
             var converter = new StringMessageConverter();
             Assert.Equal("ABC", converter.FromMessage<string>(message));
         }
@@ -53,7 +53,7 @@ namespace Steeltoe.Messaging.Converter.Test
         {
             var payload = "H\u00e9llo W\u00f6rld";
             var bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(payload);
-            var message = MessageBuilder<byte[]>.WithPayload(bytes)
+            var message = MessageBuilder.WithPayload(bytes)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, new MimeType("text", "plain", Encoding.GetEncoding("ISO-8859-1"))).Build();
             var converter = new StringMessageConverter();
             Assert.Equal(payload, converter.FromMessage<string>(message));
@@ -64,7 +64,7 @@ namespace Steeltoe.Messaging.Converter.Test
         {
             var payload = "H\u00e9llo W\u00f6rld";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
             var converter = new StringMessageConverter();
             Assert.Equal(payload, converter.FromMessage<string>(message));
         }
@@ -72,7 +72,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void FromMessageTargetClassNotSupported()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+            var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
             var converter = new StringMessageConverter();
             Assert.Null(converter.FromMessage<object>(message));
         }
@@ -80,7 +80,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void FromMessageByteArray()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
             var converter = new StringMessageConverter();
             Assert.Equal("ABC", converter.FromMessage<string>(message));
@@ -89,7 +89,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessage()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN);
             var headers = new MessageHeaders(map);
             var converter = new StringMessageConverter();

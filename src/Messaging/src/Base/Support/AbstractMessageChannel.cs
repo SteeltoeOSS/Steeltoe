@@ -31,11 +31,11 @@ namespace Steeltoe.Messaging.Support
 
         public AbstractMessageChannel(ILogger logger = null)
         {
-            Name = GetType().Name + "@" + GetHashCode();
+            ServiceName = GetType().Name + "@" + GetHashCode();
             Logger = logger;
         }
 
-        public virtual string Name { get; set; }
+        public virtual string ServiceName { get; set; }
 
         public ILogger Logger { get; set; }
 
@@ -121,7 +121,7 @@ namespace Steeltoe.Messaging.Support
 
         public override string ToString()
         {
-            return Name;
+            return ServiceName;
         }
 
         protected virtual bool DoSend(IMessage message, int timeout)
@@ -180,7 +180,7 @@ namespace Steeltoe.Messaging.Support
                     throw;
                 }
 
-                throw new MessageDeliveryException(messageToUse, "Failed to send message to " + Name, ex);
+                throw new MessageDeliveryException(messageToUse, "Failed to send message to " + ServiceName, ex);
             }
         }
 
@@ -216,7 +216,7 @@ namespace Steeltoe.Messaging.Support
                     if (resolvedMessage == null)
                     {
                         var name = interceptor.GetType().Name;
-                        this.channel.Logger?.LogDebug(name + " returned null from PreSend, i.e. precluding the send.");
+                        this.channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
                         TriggerAfterSendCompletion(messageToUse, channel, false, null);
                         return null;
                     }
@@ -257,7 +257,7 @@ namespace Steeltoe.Messaging.Support
                     }
                     catch (Exception ex2)
                     {
-                        this.channel.Logger?.LogError("Exception from afterSendCompletion in " + interceptor, ex2);
+                        this.channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
                     }
                 }
             }
@@ -319,7 +319,7 @@ namespace Steeltoe.Messaging.Support
                     }
                     catch (Exception ex2)
                     {
-                        this.channel.Logger?.LogError("Exception from afterReceiveCompletion in " + interceptor, ex2);
+                        this.channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
                     }
                 }
             }

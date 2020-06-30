@@ -14,30 +14,34 @@
 
 using Steeltoe.Common.Services;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
     public abstract class AbstractExchange : AbstractDeclarable, IExchange, IServiceNameAware
     {
-        protected AbstractExchange(string name)
-            : this(name, true, false)
+        protected AbstractExchange(string exchangeName)
+            : this(exchangeName, true, false)
         {
         }
 
-        protected AbstractExchange(string name, bool durable, bool autoDelete)
-         : this(name, durable, autoDelete, null)
+        protected AbstractExchange(string exchangeName, bool durable, bool autoDelete)
+         : this(exchangeName, durable, autoDelete, null)
         {
         }
 
-        protected AbstractExchange(string name, bool durable, bool autoDelete, Dictionary<string, object> arguments)
+        protected AbstractExchange(string exchangeName, bool durable, bool autoDelete, Dictionary<string, object> arguments)
             : base(arguments)
         {
-            Name = name;
+            ExchangeName = exchangeName;
+            ServiceName = !string.IsNullOrEmpty(exchangeName) ? exchangeName : "exchange@" + RuntimeHelpers.GetHashCode(this);
             IsDurable = durable;
             IsAutoDelete = autoDelete;
         }
 
-        public string Name { get; set; }
+        public string ServiceName { get; set; }
+
+        public string ExchangeName { get; set; }
 
         public bool IsDurable { get; set; }
 
@@ -51,7 +55,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         public override string ToString()
         {
-            return "Exchange [name=" + Name +
+            return "Exchange [name=" + ExchangeName +
                             ", type=" + Type +
                             ", durable=" + IsDurable +
                             ", autoDelete=" + IsAutoDelete +

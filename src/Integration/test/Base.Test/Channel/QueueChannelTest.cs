@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,6 +27,18 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class QueueChannelTest
     {
+        private IServiceProvider provider;
+
+        public QueueChannelTest()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+            provider = services.BuildServiceProvider();
+        }
+
         [Fact]
         public void TestSimpleSendAndReceive()
         {
@@ -33,7 +46,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var latch = new CountdownEvent(1);
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             Task.Run(() =>
             {
                 var message = channel.Receive();
@@ -42,7 +55,7 @@ namespace Steeltoe.Integration.Channel.Test
                     latch.Signal();
                 }
             });
-            channel.Send(new GenericMessage("testing"));
+            channel.Send(Message.Create("testing"));
             Assert.True(latch.Wait(10000));
         }
 
@@ -54,7 +67,7 @@ namespace Steeltoe.Integration.Channel.Test
             var provider = services.BuildServiceProvider();
             var latch = new CountdownEvent(1);
             var chan = Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = Channels.BoundedChannelFullMode.DropWrite });
-            var channel = new QueueChannel(provider, chan);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
             Task.Run(() =>
             {
                 var message = channel.Receive();
@@ -63,7 +76,7 @@ namespace Steeltoe.Integration.Channel.Test
                     latch.Signal();
                 }
             });
-            channel.Send(new GenericMessage("testing"));
+            channel.Send(Message.Create("testing"));
             Assert.True(latch.Wait(10000));
         }
 
@@ -75,7 +88,7 @@ namespace Steeltoe.Integration.Channel.Test
             var provider = services.BuildServiceProvider();
             var latch = new CountdownEvent(1);
             var chan = Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = Channels.BoundedChannelFullMode.DropWrite });
-            var channel = new QueueChannel(provider, chan);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
             Task.Run(() =>
             {
                 var message = channel.Receive(1);
@@ -84,7 +97,7 @@ namespace Steeltoe.Integration.Channel.Test
                     latch.Signal();
                 }
             });
-            channel.Send(new GenericMessage("testing"));
+            channel.Send(Message.Create("testing"));
             Assert.True(latch.Wait(10000));
         }
 
@@ -95,7 +108,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var latch = new CountdownEvent(1);
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             Task.Run(() =>
             {
                 var message = channel.Receive(1);
@@ -104,7 +117,7 @@ namespace Steeltoe.Integration.Channel.Test
                     latch.Signal();
                 }
             });
-            channel.Send(new GenericMessage("testing"));
+            channel.Send(Message.Create("testing"));
             Assert.True(latch.Wait(10000));
         }
 
@@ -115,7 +128,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var messageNull = false;
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var latch1 = new CountdownEvent(1);
             var latch2 = new CountdownEvent(1);
             void RecvAction1()
@@ -127,7 +140,7 @@ namespace Steeltoe.Integration.Channel.Test
 
             Task.Run(RecvAction1);
             Assert.True(latch1.Wait(10000));
-            channel.Send(new GenericMessage("testing"));
+            channel.Send(Message.Create("testing"));
             void RecvAction2()
             {
                 var message = channel.Receive(0);
@@ -148,7 +161,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var messageNull = false;
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var latch = new CountdownEvent(1);
             var cancellationTokenSource = new CancellationTokenSource();
             var task = Task.Run(async () =>
@@ -169,7 +182,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var messageNull = false;
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var latch = new CountdownEvent(1);
             Task.Run(() =>
             {
@@ -189,7 +202,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var messageNull = false;
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var latch = new CountdownEvent(1);
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.CancelAfter(10000);
@@ -211,7 +224,7 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var messageNull = false;
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var latch = new CountdownEvent(1);
             var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.CancelAfter(10000);
@@ -232,14 +245,14 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider, 3);
-            var result1 = channel.Send(new GenericMessage("test-1"));
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 3);
+            var result1 = channel.Send(Message.Create("test-1"));
             Assert.True(result1);
-            var result2 = channel.Send(new GenericMessage("test-2"), 100);
+            var result2 = channel.Send(Message.Create("test-2"), 100);
             Assert.True(result2);
-            var result3 = channel.Send(new GenericMessage("test-3"), 0);
+            var result3 = channel.Send(Message.Create("test-3"), 0);
             Assert.True(result3);
-            var result4 = channel.Send(new GenericMessage("test-4"), 0);
+            var result4 = channel.Send(Message.Create("test-4"), 0);
             Assert.False(result4);
         }
 
@@ -249,14 +262,14 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider, 1);
-            var result1 = channel.Send(new GenericMessage("test-1"));
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
+            var result1 = channel.Send(Message.Create("test-1"));
             Assert.True(result1);
             var latch = new CountdownEvent(1);
             var cancellationTokenSource = new CancellationTokenSource();
             Task.Run(async () =>
             {
-                await channel.SendAsync(new GenericMessage("test-2"), cancellationTokenSource.Token);
+                await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
                 latch.Signal();
             });
 
@@ -271,13 +284,13 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider, 1);
-            var result1 = channel.Send(new GenericMessage("test-1"));
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
+            var result1 = channel.Send(Message.Create("test-1"));
             Assert.True(result1);
             var latch = new CountdownEvent(1);
             Task.Run(() =>
             {
-                channel.Send(new GenericMessage("test-2"), 5);
+                channel.Send(Message.Create("test-2"), 5);
                 latch.Signal();
             });
 
@@ -290,15 +303,15 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider, 1);
-            var result1 = channel.Send(new GenericMessage("test-1"));
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
+            var result1 = channel.Send(Message.Create("test-1"));
             Assert.True(result1);
             var latch = new CountdownEvent(1);
             var cancellationTokenSource = new CancellationTokenSource();
             Task.Run(async () =>
             {
                 cancellationTokenSource.CancelAfter(5);
-                await channel.SendAsync(new GenericMessage("test-2"), cancellationTokenSource.Token);
+                await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
                 latch.Signal();
             });
 
@@ -311,10 +324,10 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider, 2);
-            var message1 = new GenericMessage("test1");
-            var message2 = new GenericMessage("test2");
-            var message3 = new GenericMessage("test3");
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 2);
+            var message1 = Message.Create("test1");
+            var message2 = Message.Create("test2");
+            var message3 = Message.Create("test3");
             Assert.True(channel.Send(message1));
             Assert.True(channel.Send(message2));
             Assert.False(channel.Send(message3, 0));
@@ -334,7 +347,7 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             var clearedMessages = channel.Clear();
             Assert.NotNull(clearedMessages);
             Assert.Empty(clearedMessages);
@@ -346,7 +359,7 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new QueueChannel(provider);
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
             Assert.Throws<NotSupportedException>(() => channel.Purge(null));
         }
     }

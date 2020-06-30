@@ -62,7 +62,7 @@ namespace Steeltoe.Messaging.Support
                 var result = handlers.Add(handler);
                 if (result)
                 {
-                    Logger?.LogDebug(Name + " added " + handler);
+                    Logger?.LogDebug("{serviceName} added to {handler} ", ServiceName, handler);
                     _handlers = handlers;
                 }
 
@@ -78,7 +78,7 @@ namespace Steeltoe.Messaging.Support
                 var result = handlers.Remove(handler);
                 if (result)
                 {
-                    Logger?.LogDebug(Name + " removed " + handler);
+                    Logger?.LogDebug("{serviceName} removed from {handler} ", ServiceName, handler);
                     _handlers = handlers;
                 }
 

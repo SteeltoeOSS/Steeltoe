@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Stream.Binding
 {
     public abstract class AbstractBindingTargetFactory<T> : IBindingTargetFactory
     {
-        protected IServiceProvider _serviceProvider;
+        protected IApplicationContext _context;
 
         public Type BindingTargetType { get; }
 
-        protected AbstractBindingTargetFactory(IServiceProvider serviceProvider)
+        protected AbstractBindingTargetFactory(IApplicationContext context)
         {
             BindingTargetType = typeof(T);
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public virtual bool CanCreate(Type type)

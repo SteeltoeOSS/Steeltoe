@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using RabbitMQ.Client.Impl;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using Steeltoe.Messaging.Rabbit.Support;
 using System;
@@ -29,6 +30,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public const int ReplySuccess = 200;
         public const int NotFound = 404;
         public const int Precondition_Failed = 406;
+        public const int Command_Invalid = 503;
 
         public const ushort Exchange_ClassId = 40;
         public const ushort Queue_ClassId = 50;
@@ -54,7 +56,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogDebug("Ignoring Connection exception - assuming already closed: " + ex.Message, ex);
+                    logger?.LogDebug(ex, "Ignoring Connection exception - assuming already closed");
                 }
             }
         }
@@ -71,20 +73,16 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     // empty
                 }
-                catch (IOException ex)
-                {
-                    logger?.LogDebug("Could not close RabbitMQ Channel", ex);
-                }
                 catch (ShutdownSignalException sig)
                 {
                     if (!IsNormalShutdown(sig))
                     {
-                        logger?.LogDebug("Unexpected exception on closing RabbitMQ Channel", sig);
+                        logger?.LogDebug(sig, "Unexpected exception on closing RabbitMQ Channel");
                     }
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogDebug("Unexpected exception on closing RabbitMQ Channel", ex);
+                    logger?.LogDebug(ex, "Unexpected exception on closing RabbitMQ Channel");
                 }
             }
         }
@@ -100,10 +98,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             {
                 channel.TxCommit();
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                logger.LogError("Error during TxCommit", ex);
-                throw new AmqpIOException(ex);
+                logger.LogError(ex, "Error during TxCommit");
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }
 
@@ -118,10 +116,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             {
                 channel.TxRollback();
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
-                logger.LogError("Error during TxCommit", ex);
-                throw new AmqpIOException(ex);
+                logger.LogError(ex, "Error during TxCommit");
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }
 
@@ -151,9 +149,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             catch (Exception ex)
             {
-                logger?.LogError("Exception during CloseMessageConsumer", ex);
+                logger?.LogError(ex, "Exception during CloseMessageConsumer");
 
-                RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }
 
@@ -165,11 +163,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             catch (AlreadyClosedException e)
             {
-                logger?.LogTrace(channel + " is already closed", e);
+                logger?.LogTrace(e, "{channel} is already closed", channel);
             }
             catch (Exception e)
             {
-                logger?.LogDebug("Error performing 'basicCancel' on " + channel, e);
+                logger?.LogDebug(e, "Error performing 'basicCancel' on {channel}", channel);
             }
         }
 
@@ -181,8 +179,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             catch (IOException e)
             {
-                logger?.LogDebug("Error performing 'txSelect' on " + channel, e);
-                RabbitExceptionTranslator.ConvertRabbitAccessException(e);
+                logger?.LogDebug(e, "Error performing 'txSelect' on {channel}", channel);
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }
         }
 
@@ -190,14 +188,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             if (channel is IChannelProxy asProxy)
             {
-                _physicalCloseRequired.Value = true;
+                _physicalCloseRequired.Value = b;
             }
         }
 
         public static bool IsPhysicalCloseRequired()
         {
             var mustClose = _physicalCloseRequired.Value;
-            if (!mustClose.HasValue)
+            if (mustClose == null)
             {
                 mustClose = false;
             }
@@ -212,59 +210,115 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public static bool IsNormalChannelClose(ShutdownEventArgs args)
         {
             return IsNormalShutdown(args) ||
-                   (args.ClassId == ChannelClose_ClassId
+                    (args.ClassId == ChannelClose_ClassId
                     && args.MethodId == ChannelClose_MethodId
                     && args.ReplyCode == ReplySuccess
-                    && args.ReplyText == "OK");
+                    && args.ReplyText == "OK") ||
+                    (args.Initiator == ShutdownInitiator.Application
+                    && args.ClassId == 0 && args.MethodId == 0
+                    && args.ReplyText == "Goodbye");
         }
 
         public static bool IsNormalShutdown(ShutdownSignalException sig)
         {
-            return sig.ClassId == ConnectionClose_ClassId
+            return (sig.ClassId == ConnectionClose_ClassId
                     && sig.MethodId == ConnectionClose_MethodId
                     && sig.ReplyCode == ReplySuccess
-                    && sig.ReplyText == "OK";
+                    && sig.ReplyText == "OK") ||
+                    (sig.Initiator == ShutdownInitiator.Application
+                    && sig.ClassId == 0 && sig.MethodId == 0
+                    && sig.ReplyText == "Goodbye");
         }
 
         public static bool IsNormalShutdown(ShutdownEventArgs args)
         {
-            return args.ClassId == ConnectionClose_ClassId
+            return (args.ClassId == ConnectionClose_ClassId
                     && args.MethodId == ConnectionClose_MethodId
                     && args.ReplyCode == ReplySuccess
-                    && args.ReplyText == "OK";
+                    && args.ReplyText == "OK") ||
+                    (args.Initiator == ShutdownInitiator.Application
+                    && args.ClassId == 0 && args.MethodId == 0
+                    && args.ReplyText == "Goodbye");
         }
 
-        public static bool IsPassiveDeclarationChannelClose(ShutdownSignalException cause)
+        public static bool IsPassiveDeclarationChannelClose(Exception exception)
         {
-            return (cause.ClassId == Exchange_ClassId || cause.ClassId == Queue_ClassId)
-                        && cause.MethodId == Declare_MethodId
-                        && cause.ReplyCode == NotFound;
+            ShutdownEventArgs cause = null;
+            if (exception is ShutdownSignalException)
+            {
+                cause = ((ShutdownSignalException)exception).Args;
+            }
+            else if (exception is ProtocolException)
+            {
+                cause = ((ProtocolException)exception).ShutdownReason;
+            }
+
+            if (cause != null)
+            {
+                return (cause.ClassId == Exchange_ClassId || cause.ClassId == Queue_ClassId)
+                            && cause.MethodId == Declare_MethodId
+                            && cause.ReplyCode == NotFound;
+            }
+
+            return false;
         }
 
         public static bool IsMismatchedQueueArgs(Exception exception)
         {
             var cause = exception;
-            ShutdownSignalException sig = null;
-            while (cause != null && sig == null)
+            ShutdownEventArgs args = null;
+            while (cause != null && args == null)
             {
                 if (cause is ShutdownSignalException)
                 {
-                    sig = (ShutdownSignalException)cause;
+                    args = ((ShutdownSignalException)cause).Args;
+                }
+
+                if (cause is OperationInterruptedException)
+                {
+                    args = ((OperationInterruptedException)cause).ShutdownReason;
                 }
 
                 cause = cause.InnerException;
             }
 
-            if (sig == null)
+            if (args == null)
             {
                 return false;
             }
             else
             {
-                return sig.ClassId == Queue_ClassId
-               && sig.MethodId == Declare_MethodId
-               && sig.ReplyCode == Precondition_Failed;
+                return IsMismatchedQueueArgs(args);
             }
+        }
+
+        public static bool IsMismatchedQueueArgs(ShutdownEventArgs args)
+        {
+            return args.ClassId == Queue_ClassId
+                && args.MethodId == Declare_MethodId
+                && args.ReplyCode == Precondition_Failed;
+        }
+
+        internal static bool IsExchangeDeclarationFailure(RabbitIOException e)
+        {
+            Exception cause = e;
+            ShutdownEventArgs args = null;
+            while(cause != null && args == null)
+            {
+                if (cause is OperationInterruptedException)
+                {
+                    args = ((OperationInterruptedException)cause).ShutdownReason;
+                }
+                cause = cause.InnerException;
+            }
+            if (args == null)
+            {
+                return false;
+            }
+
+            return args.ClassId == Exchange_ClassId &&
+                args.MethodId == Declare_MethodId &&
+                args.ReplyCode == Command_Invalid;
         }
     }
 }

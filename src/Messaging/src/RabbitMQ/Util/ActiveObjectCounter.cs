@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Rabbit.Util
 
         public int Count => _locks.Count;
 
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
         public void Deactivate() => IsActive = false;
 

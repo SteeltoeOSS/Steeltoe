@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Common.Util
 {
-    public interface IErrorHandler
+    public interface IErrorHandler : IServiceNameAware
     {
         bool HandleError(Exception exception);
     }

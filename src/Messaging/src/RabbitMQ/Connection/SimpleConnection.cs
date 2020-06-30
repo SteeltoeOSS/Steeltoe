@@ -15,9 +15,9 @@
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using Steeltoe.Messaging.Rabbit.Exceptions;
 using Steeltoe.Messaging.Rabbit.Support;
 using System;
-using System.IO;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 var result = _connection.CreateModel();
                 if (result == null)
                 {
-                    throw new InvalidOperationException("The channelMax limit is reached. Try later.");
+                    throw new RabbitResourceNotAvailableException("The channelMax limit is reached. Try later.");
                 }
 
                 if (transactional)
@@ -65,7 +65,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
                 return result;
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }
@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             {
                 // Ignore
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }

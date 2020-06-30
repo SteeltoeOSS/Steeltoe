@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -37,11 +38,11 @@ namespace Steeltoe.Integration.Endpoint
 
         private volatile string _errorChannelName;
 
-        protected MessageProducerSupportEndpoint(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        protected MessageProducerSupportEndpoint(IApplicationContext context)
+            : base(context)
         {
             Phase = int.MaxValue / 2;
-            _messagingTemplate = new MessagingTemplate(serviceProvider);
+            _messagingTemplate = new MessagingTemplate(context);
         }
 
         public virtual IMessageChannel OutputChannel

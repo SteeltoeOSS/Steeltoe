@@ -15,6 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
@@ -43,7 +44,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var mockBinder = Mock.Get<IBinder>(binder);
 
             var service = provider.GetService<BindingService>();
@@ -71,7 +72,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var mockBinder = Mock.Get<IBinder>(binder);
 
             var service = provider.GetService<BindingService>();
@@ -107,7 +108,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var mockBinder = Mock.Get<IBinder>(binder);
 
             var service = provider.GetService<BindingService>();
@@ -136,7 +137,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var mockBinder = Mock.Get<IBinder>(binder);
 
             var service = provider.GetService<BindingService>();
@@ -165,7 +166,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel outputChannel = new DirectChannel(provider);
+            IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var mockBinder = Mock.Get<IBinder>(binder);
 
             var service = provider.GetService<BindingService>();
@@ -228,7 +229,7 @@ namespace Steeltoe.Stream.Binding
             var factory = provider.GetService<IBinderFactory>();
             var binder = factory.GetBinder("mock");
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
             var service = provider.GetService<BindingService>();
             Assert.Throws<InvalidOperationException>(() => service.BindConsumer(inputChannel, "input"));
@@ -246,8 +247,8 @@ namespace Steeltoe.Stream.Binding
                 "spring.cloud.stream.bindings.output.binder=mockError")
                 .BuildServiceProvider();
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
-            IMessageChannel outputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+            IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
             var service = provider.GetService<BindingService>();
             var binding1 = service.BindConsumer(inputChannel, "input");
@@ -271,8 +272,8 @@ namespace Steeltoe.Stream.Binding
                 "spring.cloud.stream.binders.kafka1.configureclass=kafka")
                 .BuildServiceProvider();
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
-            IMessageChannel outputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+            IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
             var service = provider.GetService<BindingService>();
             _ = service.BindConsumer(inputChannel, "input");
@@ -316,7 +317,7 @@ namespace Steeltoe.Stream.Binding
             };
             prop.GetSetMethod().Invoke(binder, new object[] { func });
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var bindings = service.BindConsumer(inputChannel, "input");
             Assert.True(fail.IsSet);
             Assert.Single(bindings);
@@ -356,7 +357,7 @@ namespace Steeltoe.Stream.Binding
            };
             prop.GetSetMethod().Invoke(binder, new object[] { func });
 
-            IMessageChannel inputChannel = new DirectChannel(provider);
+            IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var binding = service.BindProducer(inputChannel, "output");
 
             Assert.True(fail.IsSet);

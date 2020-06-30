@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Dispatcher;
@@ -50,7 +51,7 @@ namespace Steeltoe.Stream.Binder
             consumerProperties.PostProcess();
 
             // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
-            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider), consumerProperties);
+            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), consumerProperties);
 
             var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
             Assert.NotNull(defaultBinding);
@@ -96,7 +97,7 @@ namespace Steeltoe.Stream.Binder
             producerProps.PostProcess();
 
             // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
-            var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
+            var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
             Assert.True(registry.Contains("bar.errors"));
             Assert.True(registry.Contains("bar.errors.bridge"));
 
@@ -110,7 +111,7 @@ namespace Steeltoe.Stream.Binder
         {
             var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
             Assert.NotNull(binder);
-            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider), GetConsumerOptions());
+            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions());
             var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
             Assert.NotNull(defaultBinding);
 

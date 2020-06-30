@@ -228,7 +228,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -260,7 +260,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object)
-                .Throws(new AmqpConnectException(null)) // Happens when brokerdown
+                .Throws(new RabbitConnectException(null)) // Happens when brokerdown
                 .Returns(mockConnection.Object);
 
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
@@ -280,7 +280,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -298,7 +298,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpConnectException)
+            catch (RabbitConnectException)
             {
             }
 
@@ -331,7 +331,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 ccf.CreateConnection();
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -1470,9 +1470,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             Assert.False(cf.PublisherConnectionFactory.IsPublisherConfirms);
         }
 
-        protected override AbstractConnectionFactory CreateConnectionFactory(R.IConnectionFactory connectionFactory, ILogger logger = null)
+        protected override AbstractConnectionFactory CreateConnectionFactory(R.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
         {
-            return new CachingConnectionFactory(connectionFactory, logger);
+            return new CachingConnectionFactory(connectionFactory, loggerFactory);
         }
 
         private void TestConsumerChannelPhysicallyClosedWhenNotIsOpenGuts(bool confirms)
@@ -1567,7 +1567,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 rabbitTemplate.ConvertAndSend("foo", "bar"); // pending confirm
             }
 
-            Assert.Throws<AmqpTimeoutException>(() => con.CreateChannel(false));
+            Assert.Throws<RabbitTimeoutException>(() => con.CreateChannel(false));
             var n = 0;
             if (physicalClose)
             {

@@ -27,6 +27,7 @@ namespace Steeltoe.Common.Util
         public static readonly MimeType APPLICATION_JSON = new MimeType("application", "json");
         public static readonly string APPLICATION_JSON_VALUE = "application/json";
         public static readonly MimeType APPLICATION_OCTET_STREAM = new MimeType("application", "octet-stream");
+        public static readonly string APPLICATION_OCTET_STREAM_VALUE = "application/octet-stream";
         public static readonly MimeType APPLICATION_XML = new MimeType("application", "xml");
         public static readonly string APPLICATION_XML_VALUE = "application/xml";
         public static readonly MimeType IMAGE_GIF = new MimeType("image", "gif");

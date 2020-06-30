@@ -62,7 +62,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             var payloadClass = message.Payload.GetType();
             var handler = GetHandlerForPayload(payloadClass);
             var result = handler.Invoke(message, providedArgs);
-            if (!message.Headers.TryGetValue(AmqpHeaders.REPLY_TO, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
+            if (!message.Headers.TryGetValue(RabbitMessageHeaders.REPLY_TO, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
             {
                 return new InvocationResult(result, replyTo, handler.Method.ReturnType, handler.Bean, handler.Method);
             }
@@ -109,7 +109,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 handler = FindHandlerForPayload(payloadClass);
                 if (handler == null)
                 {
-                    throw new AmqpException("No method found for " + payloadClass);
+                    throw new RabbitException("No method found for " + payloadClass);
                 }
 
                 _cachedHandlers.TryAdd(payloadClass, handler);
@@ -131,7 +131,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                         var resultIsDefault = result.Equals(DefaultHandler);
                         if (!handler.Equals(DefaultHandler) && !resultIsDefault)
                         {
-                            throw new AmqpException("Ambiguous methods for payload type: " + payloadClass + ": " + result.Method.Name + " and " + handler.Method.Name);
+                            throw new RabbitException("Ambiguous methods for payload type: " + payloadClass + ": " + result.Method.Name + " and " + handler.Method.Name);
                         }
 
                         if (!resultIsDefault)
@@ -171,7 +171,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 {
                     if (foundCandidate)
                     {
-                        throw new AmqpException("Ambiguous payload parameter for " + method.ToString());
+                        throw new RabbitException("Ambiguous payload parameter for " + method.ToString());
                     }
 
                     foundCandidate = true;
@@ -212,9 +212,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
             if (replyTo != null)
             {
-                throw new NotImplementedException("PARSER");
-
-                // _handlerSendTo[handler] = PARSER.parseExpression(replyTo, PARSER_CONTEXT);
+                // TODO: _handlerSendTo[handler] = PARSER.parseExpression(replyTo, PARSER_CONTEXT);
+                _handlerSendTo[handler] = new ValueExpression<string>(replyTo);
             }
         }
 

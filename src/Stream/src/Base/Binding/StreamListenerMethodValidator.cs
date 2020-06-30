@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
@@ -25,13 +26,13 @@ namespace Steeltoe.Stream.Binding
 {
     public class StreamListenerMethodValidator
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
         private readonly List<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
 
-        public StreamListenerMethodValidator(MethodInfo method, IServiceProvider serviceProvider = null, List<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
+        public StreamListenerMethodValidator(MethodInfo method, IApplicationContext context = null, List<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
         {
             Method = method;
-            _serviceProvider = serviceProvider;
+            _context = context;
             _streamListenerParameterAdapters = streamListenerParameterAdapters ?? new List<IStreamListenerParameterAdapter>();
         }
 
@@ -294,9 +295,9 @@ namespace Steeltoe.Stream.Binding
         private bool IsDeclarativeMethodParameter(string target, ParameterInfo methodParameter)
         {
             var declarative = false;
-            if (_serviceProvider != null)
+            if (_context != null)
             {
-                var targetBindable = BindingHelpers.GetBindableTarget(_serviceProvider, target);
+                var targetBindable = BindingHelpers.GetBindableTarget(_context, target);
                 if (!methodParameter.ParameterType.IsAssignableFrom(typeof(object)) && targetBindable != null)
                 {
                     declarative = typeof(IMessageChannel).IsAssignableFrom(methodParameter.ParameterType);

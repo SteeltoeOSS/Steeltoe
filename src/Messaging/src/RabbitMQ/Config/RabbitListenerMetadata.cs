@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.Rabbit.Attributes;
+using Steeltoe.Messaging.Rabbit.Listener;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +26,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
     public class RabbitListenerMetadata
     {
         internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new Dictionary<Type, RabbitListenerMetadata>();
+        internal static readonly HashSet<string> _groups = new HashSet<string>();
 
         internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
         {
@@ -48,7 +51,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         internal Type TargetClass { get; }
 
-        internal static RabbitListenerMetadata BuildMetadata(Type targetClass)
+        internal static RabbitListenerMetadata BuildMetadata(IServiceCollection services, Type targetClass)
         {
             if (targetClass == null)
             {
@@ -61,7 +64,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
             }
 
             var classLevelListeners = targetClass.GetCustomAttributes<RabbitListenerAttribute>().ToList();
-            Validate(classLevelListeners);
+            Validate(services, classLevelListeners);
             var methods = new List<ListenerMethod>();
             var multiMethods = new List<MethodInfo>();
             var reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
@@ -70,7 +73,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
                 var methodLevelListeners = m.GetCustomAttributes<RabbitListenerAttribute>().ToList();
                 if (methodLevelListeners.Count > 0)
                 {
-                    Validate(methodLevelListeners);
+                    Validate(services, methodLevelListeners);
                     methods.Add(new ListenerMethod(m, methodLevelListeners));
                 }
 
@@ -82,32 +85,33 @@ namespace Steeltoe.Messaging.Rabbit.Config
                         multiMethods.Add(m);
                     }
                 }
+            }
 
-                if (methods.Count == 0 && multiMethods.Count == 0)
-                {
-                    return null;
-                }
+            if (methods.Count == 0 && multiMethods.Count == 0)
+            {
+                return null;
             }
 
             return new RabbitListenerMetadata(targetClass, methods, multiMethods, classLevelListeners);
         }
 
-        private static void Validate(List<RabbitListenerAttribute> listenerAttributes)
+        private static void Validate(IServiceCollection services, List<RabbitListenerAttribute> listenerAttributes)
         {
-            // TODO:
-            // foreach (var listener in listenerAttributes)
-            // {
-            //    var queues = listener.Queues;
-            //    var queuesToDeclare = listener.QueuesToDeclare;
-            //    var bindings = listener.Bindings;
+            foreach (var listener in listenerAttributes)
+            {
+                var queues = listener.Queues;
+                var bindings = listener.Bindings;
+                if (bindings.Length > 0 && queues.Length > 0)
+                {
+                    throw new InvalidOperationException("RabbitListenerAttribute can have either 'Queues' or 'Bindings' set, but not both");
+                }
 
-            // if ((queues.Length > 0 && (queuesToDeclare.Length > 0 || bindings.Length > 0))
-            //        || (queuesToDeclare.Length > 0 && (queues.Length > 0 || bindings.Length > 0))
-            //        || (bindings.Length > 0 && (queues.Length > 0 || queuesToDeclare.Length > 0)))
-            //    {
-            //        throw new InvalidOperationException("RabbitListenerAttribute can have only one of 'Queues', 'QueuesToDeclare', or 'Bindings'");
-            //    }
-            // }
+                if (!string.IsNullOrEmpty(listener.Group) && !_groups.Contains(listener.Group))
+                {
+                    _groups.Add(listener.Group);
+                    services.AddSingleton<IMessageListenerContainerCollection>(new MessageListenerContainerCollection(listener.Group));
+                }
+            }
         }
 
         internal class ListenerMethod

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using System;
@@ -25,8 +26,8 @@ namespace Steeltoe.Stream.Binder
 
         private volatile ILastSubscriberMessageHandler _finalHandler;
 
-        public BinderErrorChannel(IServiceProvider serviceProvider, string name)
-            : base(serviceProvider, name)
+        public BinderErrorChannel(IApplicationContext context, string name)
+            : base(context, name)
         {
         }
 

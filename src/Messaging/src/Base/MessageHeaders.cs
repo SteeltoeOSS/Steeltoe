@@ -26,8 +26,17 @@ namespace Steeltoe.Messaging
         public const string CONTENT_TYPE = "contentType";
         public const string REPLY_CHANNEL = "replyChannel";
         public const string ERROR_CHANNEL = "errorChannel";
+        public const string INFERRED_ARGUMENT_TYPE = "InferredArgumentType";
 
-        public static readonly Guid ID_VALUE_NONE = Guid.Empty;
+        public const string CONTENT_TYPE_JSON = "application/json";
+        public const string CONTENT_TYPE_TEXT_PLAIN = "text/plain";
+        public const string CONTENT_TYPE_BYTES = "application/octet-stream";
+        public const string CONTENT_TYPE_JSON_ALT = "text/x-json";
+        public const string CONTENT_TYPE_XML = "application/xml";
+        public const string CONTENT_TYPE_JAVA_SERIALIZED_OBJECT = "application/x-java-serialized-object";
+        public const string CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT = "application/x-dotnet-serialized-object";
+
+        public static readonly string ID_VALUE_NONE = string.Empty;
         protected readonly IDictionary<string, object> headers;
 
         private static readonly IIDGenerator _defaultIdGenerator = new DefaultIdGenerator();
@@ -38,38 +47,23 @@ namespace Steeltoe.Messaging
         {
         }
 
-        public MessageHeaders(IDictionary<string, object> headers, Guid? id, long? timestamp)
+        public MessageHeaders(IDictionary<string, object> headers, string id, long? timestamp)
         {
             this.headers = headers != null ? new Dictionary<string, object>(headers) : new Dictionary<string, object>();
-
-            if (id == null)
-            {
-                this.headers[ID] = IdGenerator.GenerateId();
-            }
-            else if (id == ID_VALUE_NONE)
-            {
-                this.headers.Remove(ID);
-            }
-            else
-            {
-                this.headers[ID] = id;
-            }
-
-            if (timestamp == null)
-            {
-                this.headers[TIMESTAMP] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            }
-            else if (timestamp.Value < 0)
-            {
-                this.headers.Remove(TIMESTAMP);
-            }
-            else
-            {
-                this.headers[TIMESTAMP] = timestamp.Value;
-            }
+            UpdateHeaders(id, timestamp);
         }
 
-        public virtual Guid? Id
+        public static MessageHeaders From(MessageHeaders other)
+        {
+            return new MessageHeaders(other);
+        }
+
+        protected MessageHeaders(MessageHeaders other)
+        {
+            headers = other.RawHeaders;
+        }
+
+        public virtual string Id
         {
             get
             {
@@ -78,7 +72,7 @@ namespace Steeltoe.Messaging
                     return null;
                 }
 
-                return (Guid)result;
+                return result.ToString();
             }
         }
 
@@ -116,7 +110,7 @@ namespace Steeltoe.Messaging
         public override bool Equals(object other)
         {
             return this == other ||
-                    (other is MessageHeaders && headers.Equals(((MessageHeaders)other).headers));
+                    (other is MessageHeaders && ContentsEqual(((MessageHeaders)other).headers));
         }
 
         public override int GetHashCode()
@@ -204,6 +198,36 @@ namespace Steeltoe.Messaging
             return ((IEnumerable)headers).GetEnumerator();
         }
 
+        internal bool ContentsEqual(IDictionary<string, object> other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            if (headers.Count != other.Count)
+            {
+                return false;
+            }
+
+            foreach (var entry in headers)
+            {
+                if (other.TryGetValue(entry.Key, out var ovalue))
+                {
+                    if (ovalue != entry.Value)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         internal static IIDGenerator IdGenerator
         {
             get
@@ -215,6 +239,35 @@ namespace Steeltoe.Messaging
             set
             {
                 _idGenerator = value;
+            }
+        }
+
+        protected void UpdateHeaders(string id, long? timestamp)
+        {
+            if (id == null)
+            {
+                headers[ID] = IdGenerator.GenerateId().ToString();
+            }
+            else if (id == ID_VALUE_NONE)
+            {
+                headers.Remove(ID);
+            }
+            else
+            {
+                headers[ID] = id;
+            }
+
+            if (timestamp == null)
+            {
+                headers[TIMESTAMP] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            }
+            else if (timestamp.Value < 0)
+            {
+                headers.Remove(TIMESTAMP);
+            }
+            else
+            {
+                headers[TIMESTAMP] = timestamp.Value;
             }
         }
 

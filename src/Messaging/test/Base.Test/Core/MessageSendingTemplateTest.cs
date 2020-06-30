@@ -43,8 +43,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAsync()
         {
-            var message = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            var message = Message.Create("payload");
+            template.DefaultSendDestination = "home";
             await template.SendAsync(message);
 
             Assert.Equal("home", template.Destination);
@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAsyncToDestination()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             await template.SendAsync("somewhere", message);
 
             Assert.Equal("somewhere", template.Destination);
@@ -64,7 +64,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAsyncMissingDestination()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             await Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync(message));
         }
 
@@ -85,7 +85,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncPayload()
         {
-            template.DefaultDestination = "home";
+            template.DefaultSendDestination = "home";
             await template.ConvertAndSendAsync("payload");
 
             Assert.Equal("home", template.Destination);
@@ -136,7 +136,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncPayloadWithPostProcessor()
         {
-            template.DefaultDestination = "home";
+            template.DefaultSendDestination = "home";
             await template.ConvertAndSendAsync((object)"payload", postProcessor);
 
             Assert.Equal("home", template.Destination);
@@ -175,8 +175,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void Send()
         {
-            var message = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            var message = Message.Create("payload");
+            template.DefaultSendDestination = "home";
             template.Send(message);
 
             Assert.Equal("home", template.Destination);
@@ -186,7 +186,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void SendToDestination()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             template.Send("somewhere", message);
 
             Assert.Equal("somewhere", template.Destination);
@@ -196,7 +196,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void SendMissingDestination()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             Assert.Throws<InvalidOperationException>(() => template.Send(message));
         }
 
@@ -217,7 +217,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendPayload()
         {
-            template.DefaultDestination = "home";
+            template.DefaultSendDestination = "home";
             template.ConvertAndSend("payload");
 
             Assert.Equal("home", template.Destination);
@@ -268,7 +268,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendPayloadWithPostProcessor()
         {
-            template.DefaultDestination = "home";
+            template.DefaultSendDestination = "home";
             template.ConvertAndSend((object)"payload", postProcessor);
 
             Assert.Equal("home", template.Destination);

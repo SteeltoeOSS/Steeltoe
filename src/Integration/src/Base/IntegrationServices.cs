@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -28,11 +29,11 @@ namespace Steeltoe.Integration
         protected IConversionService _conversionService;
         protected IIDGenerator _idGenerator;
         protected IDestinationResolver<IMessageChannel> _channelResolver;
-        protected IServiceProvider _serviceProvider;
+        protected IApplicationContext _context;
 
-        public IntegrationServices(IServiceProvider serviceProvider)
+        public IntegrationServices(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public virtual IMessageBuilderFactory MessageBuilderFactory
@@ -41,7 +42,7 @@ namespace Steeltoe.Integration
             {
                 if (_messageBuilderFactory == null)
                 {
-                    _messageBuilderFactory = _serviceProvider.GetService<IMessageBuilderFactory>();
+                    _messageBuilderFactory = _context.GetService<IMessageBuilderFactory>();
                 }
 
                 return _messageBuilderFactory;
@@ -59,7 +60,7 @@ namespace Steeltoe.Integration
             {
                 if (_channelResolver == null)
                 {
-                    _channelResolver = _serviceProvider.GetService<IDestinationResolver<IMessageChannel>>();
+                    _channelResolver = _context.GetService<IDestinationResolver<IMessageChannel>>();
                 }
 
                 return _channelResolver;
@@ -77,7 +78,7 @@ namespace Steeltoe.Integration
             {
                 if (_conversionService == null)
                 {
-                    _conversionService = _serviceProvider.GetService<IConversionService>();
+                    _conversionService = _context.GetService<IConversionService>();
                 }
 
                 return _conversionService;
@@ -95,7 +96,7 @@ namespace Steeltoe.Integration
             {
                 if (_idGenerator == null)
                 {
-                    _idGenerator = _serviceProvider.GetService<IIDGenerator>();
+                    _idGenerator = _context.GetService<IIDGenerator>();
                 }
 
                 return _idGenerator;

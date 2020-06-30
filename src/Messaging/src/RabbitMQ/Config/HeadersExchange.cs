@@ -16,7 +16,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class HeadersExchange : AbstractExchange
+    public class HeadersExchange : AbstractExchange, IHeadersExchange
     {
         public HeadersExchange(string name)
         : base(name)
@@ -33,6 +33,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
         }
 
-        public override string Type { get; } = ExchangeTypes.HEADERS;
+        public override string Type { get; } = ExchangeType.HEADERS;
     }
 }

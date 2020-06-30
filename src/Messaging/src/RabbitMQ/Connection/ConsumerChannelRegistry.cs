@@ -24,13 +24,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public static void RegisterConsumerChannel(IModel channel, IConnectionFactory connectionFactory, ILogger logger = null)
         {
-            logger?.LogDebug("Registering consumer channel" + channel + " from factory " + connectionFactory);
+            logger?.LogDebug("Registering consumer channel {channel} from factory {factory}", channel, connectionFactory);
             _consumerChannel.Value = new ChannelHolder(channel, connectionFactory);
         }
 
         public static void UnRegisterConsumerChannel(ILogger logger = null)
         {
-            logger?.LogDebug("Unregistering consumer channel" + _consumerChannel.Value);
+            logger?.LogDebug("Unregistering consumer channel {channel}", _consumerChannel.Value);
             _consumerChannel.Value = null;
         }
 

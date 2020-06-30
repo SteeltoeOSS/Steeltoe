@@ -57,8 +57,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private bool IsCauseFatal(Exception cause)
         {
-            return cause is Rabbit.Support.Converter.MessageConversionException
-                    || cause is MessageConversionException
+            return cause is MessageConversionException
                     || cause is MethodArgumentResolutionException
                     || cause is MissingMethodException
                     || cause is InvalidCastException

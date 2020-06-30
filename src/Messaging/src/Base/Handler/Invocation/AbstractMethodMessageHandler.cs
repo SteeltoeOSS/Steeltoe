@@ -167,7 +167,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
             var headerAccessor = MessageHeaderAccessor.GetMutableAccessor(message);
             headerAccessor.SetHeader(DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, lookupDestination);
             headerAccessor.LeaveMutable = true;
-            message = MessageBuilder<object>.CreateMessage(message.Payload, headerAccessor.MessageHeaders);
+            message = MessageBuilder.CreateMessage(message.Payload, headerAccessor.MessageHeaders);
 
             HandleMessageInternal(message, lookupDestination);
             headerAccessor.SetImmutable();

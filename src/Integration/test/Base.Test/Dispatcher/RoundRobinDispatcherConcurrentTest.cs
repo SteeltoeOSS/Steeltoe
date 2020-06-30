@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;
@@ -44,9 +46,12 @@ namespace Steeltoe.Integration.Dispatcher.Test
         public RoundRobinDispatcherConcurrentTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             provider = services.BuildServiceProvider();
-            dispatcher = new UnicastingDispatcher(provider);
+            dispatcher = new UnicastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy();
         }
 

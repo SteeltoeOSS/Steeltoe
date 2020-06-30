@@ -25,7 +25,11 @@ namespace Steeltoe.Messaging.Converter
 {
     public class NewtonJsonMessageConverter : AbstractMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(NewtonJsonMessageConverter);
+
         public JsonSerializerSettings Settings { get; }
+
+        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public NewtonJsonMessageConverter()
         : base(new MimeType("application", "json", Encoding.UTF8))
@@ -52,6 +56,16 @@ namespace Steeltoe.Messaging.Converter
         public override bool CanConvertFrom(IMessage message, Type targetClass)
         {
             if (targetClass == null || !SupportsMimeType(message.Headers))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public override bool CanConvertTo(object payload, IMessageHeaders headers = null)
+        {
+            if (!SupportsMimeType(headers))
             {
                 return false;
             }
@@ -111,16 +125,6 @@ namespace Steeltoe.Messaging.Converter
             }
 
             return targetClass;
-        }
-
-        protected override bool CanConvertTo(object payload, IMessageHeaders headers = null)
-        {
-            if (!SupportsMimeType(headers))
-            {
-                return false;
-            }
-
-            return true;
         }
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)

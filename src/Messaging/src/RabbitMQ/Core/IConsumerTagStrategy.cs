@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
+
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public interface IConsumerTagStrategy
+    public interface IConsumerTagStrategy : IServiceNameAware
     {
         string CreateConsumerTag(string queue);
     }

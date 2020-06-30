@@ -16,6 +16,6 @@ namespace Steeltoe.Common.Services
 {
     public interface IServiceNameAware
     {
-        string Name { get; }
+        string ServiceName { get; set; }
     }
 }

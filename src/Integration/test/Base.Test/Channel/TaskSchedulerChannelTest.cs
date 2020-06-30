@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -32,6 +35,9 @@ namespace Steeltoe.Integration.Channel.Test
         public TaskSchedulerChannelTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
@@ -42,11 +48,11 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void VerifyDifferentThread()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var latch = new CountdownEvent(1);
             var handler = new TestHandler(latch);
             channel.Subscribe(handler);
-            channel.Send(new GenericMessage("test"));
+            channel.Send(Message.Create("test"));
             Assert.True(latch.Wait(1000));
             Assert.NotNull(handler.Thread);
             Assert.NotEqual(Thread.CurrentThread.ManagedThreadId, handler.Thread.ManagedThreadId);
@@ -56,7 +62,7 @@ namespace Steeltoe.Integration.Channel.Test
         public void RoundRobinLoadBalancing()
         {
             var numberOfMessages = 12;
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var latch = new CountdownEvent(numberOfMessages);
             var handler1 = new TestHandler(latch);
             var handler2 = new TestHandler(latch);
@@ -66,7 +72,7 @@ namespace Steeltoe.Integration.Channel.Test
             channel.Subscribe(handler3);
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(new GenericMessage("test-" + i));
+                channel.Send(Message.Create("test-" + i));
             }
 
             Assert.True(latch.Wait(3000));
@@ -86,7 +92,7 @@ namespace Steeltoe.Integration.Channel.Test
         public void VerifyFailoverWithLoadBalancing()
         {
             var numberOfMessages = 12;
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var latch = new CountdownEvent(numberOfMessages);
             var handler1 = new TestHandler(latch);
             var handler2 = new TestHandler(latch);
@@ -97,7 +103,7 @@ namespace Steeltoe.Integration.Channel.Test
             handler2.ShouldFail = true;
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(new GenericMessage("test-" + i));
+                channel.Send(Message.Create("test-" + i));
             }
 
             Assert.True(latch.Wait(3000));
@@ -117,7 +123,7 @@ namespace Steeltoe.Integration.Channel.Test
         public void VerifyFailoverWithoutLoadBalancing()
         {
             var numberOfMessages = 12;
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default, null);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null);
             var latch = new CountdownEvent(numberOfMessages);
             var handler1 = new TestHandler(latch);
             var handler2 = new TestHandler(latch);
@@ -128,7 +134,7 @@ namespace Steeltoe.Integration.Channel.Test
             handler1.ShouldFail = true;
             for (var i = 0; i < numberOfMessages; i++)
             {
-                channel.Send(new GenericMessage("test-" + i));
+                channel.Send(Message.Create("test-" + i));
             }
 
             Assert.True(latch.Wait(3000));
@@ -147,7 +153,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void InterceptorWithModifiedMessage()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
 
             var mockHandler = new Mock<IMessageHandler>();
             var mockExpected = new Mock<IMessage>();
@@ -156,7 +162,7 @@ namespace Steeltoe.Integration.Channel.Test
             interceptor.MessageToReturn = mockExpected.Object;
             channel.AddInterceptor(interceptor);
             channel.Subscribe(mockHandler.Object);
-            channel.Send(new GenericMessage("foo"));
+            channel.Send(Message.Create("foo"));
             Assert.True(latch.Wait(10000));
             mockHandler.Verify((h) => h.HandleMessage(mockExpected.Object));
             Assert.Equal(1, interceptor.Counter);
@@ -166,8 +172,8 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void InterceptorWithException()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
-            var message = new GenericMessage("foo");
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
+            var message = Message.Create("foo");
             var mockHandler = new Mock<IMessageHandler>();
 
             var expected = new InvalidOperationException("Fake exception");

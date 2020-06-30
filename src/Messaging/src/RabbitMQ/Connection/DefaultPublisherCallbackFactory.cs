@@ -12,12 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
     public class DefaultPublisherCallbackFactory : IPublisherCallbackChannelFactory
     {
-        public IPublisherCallbackChannel CreateChannel(IModel channel) => new PublisherCallbackChannel(channel);
+        private readonly ILoggerFactory _loggerFactory;
+
+        public DefaultPublisherCallbackFactory(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+        }
+
+        public IPublisherCallbackChannel CreateChannel(IModel channel) => new PublisherCallbackChannel(channel, _loggerFactory?.CreateLogger<PublisherCallbackChannel>());
     }
 }

@@ -12,19 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Messaging.Rabbit.Data;
-
 namespace Steeltoe.Messaging.Rabbit.Batch
 {
-    public class MessageBatch
+    public struct MessageBatch
     {
         public string Exchange { get; }
 
-        private string RoutingKey { get; }
+        public string RoutingKey { get; }
 
-        private Message Message { get; }
+        public IMessage Message { get; }
 
-        public MessageBatch(string exchange, string routingKey, Message message)
+        public MessageBatch(string exchange, string routingKey, IMessage message)
         {
             Exchange = exchange;
             RoutingKey = routingKey;

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Invocation;
@@ -26,8 +27,8 @@ namespace Steeltoe.Stream.Binding
 
         private readonly bool _copyHeaders;
 
-        public StreamListenerMessageHandler(IServiceProvider serviceProvider, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
-            : base(serviceProvider)
+        public StreamListenerMessageHandler(IApplicationContext context, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
+            : base(context)
         {
             _invocableHandlerMethod = invocableHandlerMethod;
             _copyHeaders = copyHeaders;

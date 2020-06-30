@@ -31,6 +31,7 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddDebug());
             var config = new ConfigurationBuilder().Build();
+            container.AddSingleton<IConfiguration>(config);
             container.AddStreamServices(config);
             container.AddProcessorStreamBinding();
             var serviceProvider = container.BuildServiceProvider();
@@ -53,6 +54,7 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddDebug());
             var config = new ConfigurationBuilder().Build();
+            container.AddSingleton<IConfiguration>(config);
             container.AddStreamServices(config);
             container.AddSinkStreamBinding();
             var serviceProvider = container.BuildServiceProvider();
@@ -74,6 +76,7 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddDebug());
             var config = new ConfigurationBuilder().Build();
+            container.AddSingleton<IConfiguration>(config);
             container.AddStreamServices(config);
             container.AddSourceStreamBinding();
             var serviceProvider = container.BuildServiceProvider();

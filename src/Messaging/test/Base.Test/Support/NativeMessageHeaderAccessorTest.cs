@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.Support.Test
             inputHeaders.Add("a", "b");
             inputHeaders.Add(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
 
-            var message = new GenericMessage<string>("p", inputHeaders);
+            var message = Message.Create<string>("p", inputHeaders);
             var headerAccessor = new NativeMessageHeaderAccessor(message);
             var actual = headerAccessor.ToDictionary();
 
@@ -81,7 +81,7 @@ namespace Steeltoe.Messaging.Support.Test
             nativeHeaders.Add("a", "b");
             nativeHeaders.Add(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
 
-            var message = new GenericMessage<string>("p", nativeHeaders);
+            var message = Message.Create<string>("p", nativeHeaders);
 
             var headerAccessor = new NativeMessageHeaderAccessor(message);
             headerAccessor.SetHeader("a", "B");

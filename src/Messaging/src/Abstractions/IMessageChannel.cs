@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,13 +21,8 @@ namespace Steeltoe.Messaging
     /// <summary>
     /// An abstraction that defines methods for sending messages;
     /// </summary>
-    public interface IMessageChannel
+    public interface IMessageChannel : IServiceNameAware
     {
-        /// <summary>
-        /// Gets the name of this channel
-        /// </summary>
-        string Name { get; }
-
         /// <summary>
         /// Send a message to this channel.
         /// </summary>

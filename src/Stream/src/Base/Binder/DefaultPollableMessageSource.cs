@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Integration.Channel;
-using Steeltoe.Integration.Retry;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -41,11 +42,11 @@ namespace Steeltoe.Stream.Binder
         private IRecoveryCallback _recoveryCallback;
         private int _running;
 
-        public DefaultPollableMessageSource(IServiceProvider serviceProvider, ISmartMessageConverter messageConverter)
+        public DefaultPollableMessageSource(IApplicationContext context, ISmartMessageConverter messageConverter)
         {
             _messageConverter = messageConverter;
-            _messagingTemplate = new MessagingTemplate(serviceProvider);
-            _dummyChannel = new DirectChannel(serviceProvider);
+            _messagingTemplate = new MessagingTemplate(context);
+            _dummyChannel = new DirectChannel(context);
         }
 
         public RetryTemplate RetryTemplate

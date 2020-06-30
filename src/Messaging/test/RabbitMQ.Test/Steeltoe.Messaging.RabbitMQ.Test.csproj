@@ -22,6 +22,10 @@
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Retry\" />
+  </ItemGroup>
   
 
 </Project>

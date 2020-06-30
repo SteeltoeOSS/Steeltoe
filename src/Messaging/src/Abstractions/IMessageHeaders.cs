@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging
         /// <summary>
         /// Gets the ID header value
         /// </summary>
-        Guid? Id { get; }
+        string Id { get; }
 
         /// <summary>
         /// Gets the timestamp header value

@@ -15,6 +15,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
@@ -94,11 +95,11 @@ namespace Steeltoe.Stream.Tck
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
             var jsonPayload = "{\"name\":\"oleg\"}";
-            var message = Steeltoe.Messaging.Support.MessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
+            var message = MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
                                         .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
                                         .SetHeader("originalContentType", "application/json;charset=UTF-8")
                                         .Build();
-            source.Send(message);
+            source.Send((IMessage<byte[]>)message);
             var outputMessage = target.Receive();
             Assert.NotNull(outputMessage);
             var payload = outputMessage.Payload as byte[];
@@ -110,7 +111,7 @@ namespace Steeltoe.Stream.Tck
         public async Task WithInternalPipeline()
         {
             container.AddStreamListeners<InternalPipeLine>();
-            container.AddSingleton<IMessageChannel>((p) => new DirectChannel(p, "internalchannel"));
+            container.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
             var provider = container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
@@ -404,7 +405,8 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
             var payload = outputMessage.Payload as byte[];
             Assert.NotNull(payload);
-            Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
+            var str = Encoding.UTF8.GetString(payload);
+            Assert.Equal(jsonPayload, str);
         }
 
         [Fact]
@@ -460,7 +462,7 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
-            var message = new GenericMessage<byte[]>(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
+            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
             var outputMessage = DoSendReceive(provider, message);
 
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
@@ -783,11 +785,11 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
-            var message = Steeltoe.Messaging.Support.MessageBuilder<byte[]>
-                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
+            var message = MessageBuilder
+                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
                 .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
                 .Build();
-            var outputMessage = DoSendReceive(provider, message);
+            var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
             var payload = outputMessage.Payload as byte[];
             Assert.NotNull(payload);
@@ -805,10 +807,10 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
-            var message = Steeltoe.Messaging.Support.MessageBuilder<byte[]>
-                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
+            var message = MessageBuilder
+                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
                 .Build();
-            var outputMessage = DoSendReceive(provider, message);
+            var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
             var payload = outputMessage.Payload as byte[];
             Assert.NotNull(payload);
@@ -826,10 +828,10 @@ namespace Steeltoe.Stream.Tck
             streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
-            var message = Steeltoe.Messaging.Support.MessageBuilder<byte[]>
-                .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
+            var message = MessageBuilder
+                .WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload))
                 .Build();
-            var outputMessage = DoSendReceive(provider, message);
+            var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
             var payload = outputMessage.Payload as byte[];
             Assert.NotNull(payload);
@@ -840,7 +842,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             _ = provider.GetService<OutputDestination>();
-            source.Send(new GenericMessage<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
+            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
             var binder = provider.GetService<IBinder>() as TestChannelBinder;
             Assert.Equal(lastError, binder.LastError?.Payload?.GetType());
         }
@@ -849,7 +851,7 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
-            source.Send(new GenericMessage<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
+            source.Send(Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload)));
             var outputMessage = target.Receive();
             Assert.NotNull(outputMessage);
             return outputMessage;
@@ -869,13 +871,13 @@ namespace Steeltoe.Stream.Tck
         {
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
-            var builder = Steeltoe.Messaging.Support.MessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes(jsonPayload));
+            var builder = Steeltoe.Messaging.Support.MessageBuilder.WithPayload<byte[]>(Encoding.UTF8.GetBytes(jsonPayload));
             foreach (var header in headers)
             {
                 builder.SetHeader(header.Key, header.Value);
             }
 
-            source.Send(builder.Build());
+            source.Send((IMessage<byte[]>)builder.Build());
             var outputMessage = target.Receive();
             Assert.NotNull(outputMessage);
             return outputMessage;

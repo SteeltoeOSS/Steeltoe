@@ -13,13 +13,12 @@
 // limitations under the License.
 
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Data;
 using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public interface IRabbitListenerErrorHandler : IServiceNameAware
     {
-        object HandleError(Message amqpMessage, IMessage message, ListenerExecutionFailedException exception);
+        object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception);
     }
 }

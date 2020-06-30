@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Steeltoe.Messaging.Converter;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,9 +21,26 @@ namespace Steeltoe.Messaging.Core
 {
     public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendingTemplate<D>, IMessageReceivingOperations<D>
     {
+        private D _defaultReceiveDestination;
+
+        public virtual D DefaultReceiveDestination
+        {
+            get
+            {
+                return _defaultReceiveDestination;
+            }
+
+            set
+            {
+                _defaultReceiveDestination = value;
+            }
+        }
+
+        public virtual bool ThrowReceivedExceptions { get; set; } = false;
+
         public virtual Task<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
         {
-            return DoReceiveAsync(RequiredDefaultDestination, cancellationToken);
+            return DoReceiveAsync(RequiredDefaultReceiveDestination, cancellationToken);
         }
 
         public virtual Task<IMessage> ReceiveAsync(D destination, CancellationToken cancellationToken = default)
@@ -32,7 +50,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual Task<T> ReceiveAndConvertAsync<T>(CancellationToken cancellationToken = default)
         {
-            return ReceiveAndConvertAsync<T>(RequiredDefaultDestination);
+            return ReceiveAndConvertAsync<T>(RequiredDefaultReceiveDestination);
         }
 
         public virtual async Task<T> ReceiveAndConvertAsync<T>(D destination, CancellationToken cancellationToken = default)
@@ -44,14 +62,13 @@ namespace Steeltoe.Messaging.Core
             }
             else
             {
-                var result = default(T);
-                return await Task.FromResult(result);
+                return default(T);
             }
         }
 
         public virtual IMessage Receive()
         {
-            return DoReceive(RequiredDefaultDestination);
+            return DoReceive(RequiredDefaultReceiveDestination);
         }
 
         public virtual IMessage Receive(D destination)
@@ -61,7 +78,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual T ReceiveAndConvert<T>()
         {
-            return ReceiveAndConvert<T>(RequiredDefaultDestination);
+            return ReceiveAndConvert<T>(RequiredDefaultReceiveDestination);
         }
 
         public virtual T ReceiveAndConvert<T>(D destination)
@@ -77,6 +94,19 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
+        protected virtual D RequiredDefaultReceiveDestination
+        {
+            get
+            {
+                if (_defaultReceiveDestination == null)
+                {
+                    throw new InvalidOperationException("No default destination configured");
+                }
+
+                return _defaultReceiveDestination;
+            }
+        }
+
         protected abstract Task<IMessage> DoReceiveAsync(D destination, CancellationToken cancellationToken);
 
         protected abstract IMessage DoReceive(D destination);
@@ -84,7 +114,7 @@ namespace Steeltoe.Messaging.Core
         protected virtual T DoConvert<T>(IMessage message)
         {
             var messageConverter = MessageConverter;
-            var value = messageConverter.FromMessage<T>(message);
+            var value = messageConverter.FromMessage(message, typeof(T));
             if (value == null)
             {
                 throw new MessageConversionException(
@@ -92,7 +122,12 @@ namespace Steeltoe.Messaging.Core
                     "Unable to convert payload [" + message.Payload + "] to type [" + typeof(T) + "] using converter [" + messageConverter + "]");
             }
 
-            return value;
+            if (value is Exception && ThrowReceivedExceptions)
+            {
+                throw (Exception)value;
+            }
+
+            return (T)value;
         }
     }
 }

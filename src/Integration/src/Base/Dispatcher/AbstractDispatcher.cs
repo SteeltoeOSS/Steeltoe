@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
@@ -27,7 +28,7 @@ namespace Steeltoe.Integration.Dispatcher
 {
     public abstract class AbstractDispatcher : IMessageDispatcher
     {
-        protected readonly IServiceProvider _serviceProvider;
+        protected readonly IApplicationContext _context;
         protected readonly ILogger _logger;
         protected readonly TaskScheduler _executor;
         protected readonly TaskFactory _factory;
@@ -37,6 +38,17 @@ namespace Steeltoe.Integration.Dispatcher
         private readonly MessageHandlerComparer _comparer = new MessageHandlerComparer();
         private IErrorHandler _errorHandler;
         private volatile IMessageHandler _theOneHandler;
+
+        protected AbstractDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+        {
+            _context = context;
+            _logger = logger;
+            _executor = executor;
+            if (executor != null)
+            {
+                _factory = new TaskFactory(executor);
+            }
+        }
 
         public virtual int MaxSubscribers { get; set; } = int.MaxValue;
 
@@ -54,7 +66,7 @@ namespace Steeltoe.Integration.Dispatcher
             {
                 if (_factory != null && _errorHandler == null)
                 {
-                    _errorHandler = new MessagePublishingErrorHandler(_serviceProvider);
+                    _errorHandler = new MessagePublishingErrorHandler(_context);
                 }
 
                 return _errorHandler;
@@ -63,17 +75,6 @@ namespace Steeltoe.Integration.Dispatcher
             set
             {
                 _errorHandler = value;
-            }
-        }
-
-        protected AbstractDispatcher(IServiceProvider serviceProvider, TaskScheduler executor, ILogger logger = null)
-        {
-            _serviceProvider = serviceProvider;
-            _logger = logger;
-            _executor = executor;
-            if (executor != null)
-            {
-                _factory = new TaskFactory(executor);
             }
         }
 

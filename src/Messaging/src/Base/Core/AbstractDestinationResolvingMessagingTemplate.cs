@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -25,19 +26,19 @@ namespace Steeltoe.Messaging.Core
         IDestinationResolvingMessageReceivingOperations<D>,
         IDestinationResolvingMessageRequestReplyOperations<D>
     {
-        private readonly IServiceProvider _provider;
+        private readonly IApplicationContext _context;
         private IDestinationResolver<D> _destinationResolver;
 
-        public AbstractDestinationResolvingMessagingTemplate(IServiceProvider provider)
+        public AbstractDestinationResolvingMessagingTemplate(IApplicationContext context)
         {
-            _provider = provider;
+            _context = context;
         }
 
-        public virtual IServiceProvider ServiceProvider
+        public virtual IApplicationContext ApplicationContext
         {
             get
             {
-                return _provider;
+                return _context;
             }
         }
 
@@ -47,7 +48,7 @@ namespace Steeltoe.Messaging.Core
             {
                 if (_destinationResolver == null)
                 {
-                    _destinationResolver = (IDestinationResolver<D>)_provider?.GetService(typeof(IDestinationResolver<D>));
+                    _destinationResolver = (IDestinationResolver<D>)ApplicationContext?.GetService(typeof(IDestinationResolver<D>));
                 }
 
                 return _destinationResolver;
@@ -59,22 +60,22 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
-        public virtual Task ConvertAndSendAsync<T>(string destinationName, T payload, CancellationToken cancellationToken = default)
+        public virtual Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken = default)
         {
             return ConvertAndSendAsync(destinationName, payload, null, null, cancellationToken);
         }
 
-        public virtual Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
+        public virtual Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
         {
             return ConvertAndSendAsync(destinationName, payload, headers, null, cancellationToken);
         }
 
-        public virtual Task ConvertAndSendAsync<T>(string destinationName, T payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+        public virtual Task ConvertAndSendAsync(string destinationName, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
         {
             return ConvertAndSendAsync(destinationName, payload, null, postProcessor, cancellationToken);
         }
 
-        public virtual async Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+        public virtual async Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
         {
             var destination = ResolveDestination(destinationName);
             await ConvertAndSendAsync(destination, payload, headers, postProcessor, cancellationToken);
@@ -128,22 +129,22 @@ namespace Steeltoe.Messaging.Core
             return await SendAndReceiveAsync(destination, requestMessage, cancellationToken);
         }
 
-        public virtual void ConvertAndSend<T>(string destinationName, T payload)
+        public virtual void ConvertAndSend(string destinationName, object payload)
         {
             ConvertAndSend(destinationName, payload, null, null);
         }
 
-        public virtual void ConvertAndSend<T>(string destinationName, T payload, IDictionary<string, object> headers)
+        public virtual void ConvertAndSend(string destinationName, object payload, IDictionary<string, object> headers)
         {
             ConvertAndSend(destinationName, payload, headers, null);
         }
 
-        public virtual void ConvertAndSend<T>(string destinationName, T payload, IMessagePostProcessor postProcessor)
+        public virtual void ConvertAndSend(string destinationName, object payload, IMessagePostProcessor postProcessor)
         {
             ConvertAndSend(destinationName, payload, null, postProcessor);
         }
 
-        public virtual void ConvertAndSend<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
+        public virtual void ConvertAndSend(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
         {
             var destination = ResolveDestination(destinationName);
             ConvertAndSend(destination, payload, headers, postProcessor);

@@ -13,12 +13,11 @@
 // limitations under the License.
 
 using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Data;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
     public interface ICorrelationDataPostProcessor
     {
-        CorrelationData PostProcess(Message message, CorrelationData correlationData);
+        CorrelationData PostProcess(IMessage message, CorrelationData correlationData);
     }
 }

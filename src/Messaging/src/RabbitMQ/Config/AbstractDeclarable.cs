@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,7 +25,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         protected AbstractDeclarable(Dictionary<string, object> arguments)
         {
-            Declare = true;
+            ShouldDeclare = true;
             if (arguments != null)
             {
                 Arguments = new Dictionary<string, object>(arguments);
@@ -35,15 +36,20 @@ namespace Steeltoe.Messaging.Rabbit.Config
             }
         }
 
-        public bool Declare { get; set; }
+        public bool ShouldDeclare { get; set; }
 
-        public Dictionary<string, object> Arguments { get; }
+        public Dictionary<string, object> Arguments { get; set; }
 
-        public List<object> Admins
+        public List<object> DeclaringAdmins
         {
             get
             {
                 return _declaringAdmins;
+            }
+
+            set
+            {
+                _declaringAdmins = value;
             }
         }
 
@@ -52,12 +58,26 @@ namespace Steeltoe.Messaging.Rabbit.Config
         public virtual void SetAdminsThatShouldDeclare(params object[] adminArgs)
         {
             var admins = new List<object>();
-            if (adminArgs != null && adminArgs.Length > 0 && !(adminArgs.Length == 1 && adminArgs[0] == null))
+            if (adminArgs != null)
             {
-                admins.AddRange(adminArgs);
+                if (adminArgs.Length > 1)
+                {
+                    foreach (var a in adminArgs)
+                    {
+                        if (a == null)
+                        {
+                            throw new InvalidOperationException("'admins' cannot contain null elements");
+                        }
+                    }
+                }
+
+                if (adminArgs.Length > 0 && !(adminArgs.Length == 1 && adminArgs[0] == null))
+                {
+                    admins.AddRange(adminArgs);
+                }
             }
 
-            _declaringAdmins = admins.ToList();
+            _declaringAdmins = admins;
         }
 
         public void AddArgument(string name, object value)
@@ -67,7 +87,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         public object RemoveArgument(string name)
         {
-            Arguments.TryGetValue(name, out var result);
+            Arguments.Remove(name, out var result);
             return result;
         }
     }

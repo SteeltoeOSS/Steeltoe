@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Stream.Binder;
 using System;
@@ -23,8 +24,8 @@ namespace Steeltoe.Stream.Binding
         private readonly IMessageChannelAndSourceConfigurer _messageConfigurer;
         private readonly ISmartMessageConverter _messageConverter;
 
-        public MessageSourceBindingTargetFactory(IServiceProvider serviceProvider, ISmartMessageConverter messageConverter, CompositeMessageChannelConfigurer messageConfigurer)
-            : base(serviceProvider)
+        public MessageSourceBindingTargetFactory(IApplicationContext context, ISmartMessageConverter messageConverter, CompositeMessageChannelConfigurer messageConfigurer)
+            : base(context)
         {
             _messageConfigurer = messageConfigurer;
             _messageConverter = messageConverter;
@@ -32,7 +33,7 @@ namespace Steeltoe.Stream.Binding
 
         public override IPollableMessageSource CreateInput(string name)
         {
-            var chan = new DefaultPollableMessageSource(_serviceProvider, _messageConverter);
+            var chan = new DefaultPollableMessageSource(_context, _messageConverter);
             _messageConfigurer.ConfigurePolledMessageSource(chan, name);
             return chan;
         }

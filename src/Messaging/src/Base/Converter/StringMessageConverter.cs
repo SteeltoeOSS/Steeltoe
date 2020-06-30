@@ -20,6 +20,8 @@ namespace Steeltoe.Messaging.Converter
 {
     public class StringMessageConverter : AbstractMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(StringMessageConverter);
+
         private readonly Encoding defaultCharset;
 
         public StringMessageConverter()
@@ -37,6 +39,8 @@ namespace Steeltoe.Messaging.Converter
 
             this.defaultCharset = defaultCharset;
         }
+
+        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         protected override bool Supports(Type clazz)
         {

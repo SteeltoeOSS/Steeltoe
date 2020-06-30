@@ -18,6 +18,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
 {
     public interface IRabbitListenerConfigurer
     {
-        void ConfigureRabbitListeners(RabbitListenerEndpointRegistrar registrar);
+        void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar);
     }
 }

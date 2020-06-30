@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using System;
 
@@ -26,8 +27,8 @@ namespace Steeltoe.Integration.Handler
 
         public ILogger MessageLogger { get; }
 
-        public LoggingHandler(IServiceProvider serviceProvider, LogLevel level, ILogger<LoggingHandler> logger)
-            : base(serviceProvider)
+        public LoggingHandler(IApplicationContext context, LogLevel level, ILogger logger)
+            : base(context)
         {
             Level = level;
             MessageLogger = logger;

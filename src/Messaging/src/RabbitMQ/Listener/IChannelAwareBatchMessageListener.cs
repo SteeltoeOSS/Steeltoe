@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Data;
 using System;
 using System.Collections.Generic;
 
@@ -21,11 +20,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public interface IChannelAwareBatchMessageListener : IChannelAwareMessageListener
     {
-        new void OnMessage(Message message, IModel channel)
+        new void OnMessage(IMessage message, IModel channel)
         {
             throw new InvalidOperationException("Should never be called by the container");
         }
 
-        new void OnMessageBatch(List<Message> messages, IModel channel);
+        new void OnMessageBatch(List<IMessage> messages, IModel channel);
     }
 }

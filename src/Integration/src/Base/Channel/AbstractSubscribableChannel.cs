@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging;
 using System;
@@ -22,13 +23,13 @@ namespace Steeltoe.Integration.Channel
 {
     public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
     {
-        protected AbstractSubscribableChannel(IServiceProvider serviceProvider, IMessageDispatcher dispatcher, ILogger logger = null)
-            : this(serviceProvider, dispatcher, null, logger)
+        protected AbstractSubscribableChannel(IApplicationContext context, IMessageDispatcher dispatcher, ILogger logger = null)
+            : this(context, dispatcher, null, logger)
         {
         }
 
-        protected AbstractSubscribableChannel(IServiceProvider serviceProvider, IMessageDispatcher dispatcher, string name, ILogger logger = null)
-            : base(serviceProvider, name, logger)
+        protected AbstractSubscribableChannel(IApplicationContext context, IMessageDispatcher dispatcher, string name, ILogger logger = null)
+            : base(context, name, logger)
         {
             Dispatcher = dispatcher ?? throw new ArgumentNullException(nameof(dispatcher));
         }
@@ -57,7 +58,7 @@ namespace Steeltoe.Integration.Channel
             var added = Dispatcher.AddHandler(handler);
             if (added)
             {
-                Logger?.LogInformation("Channel '" + Name + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+                Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
             }
 
             return added;
@@ -68,7 +69,7 @@ namespace Steeltoe.Integration.Channel
             var removed = Dispatcher.RemoveHandler(handler);
             if (removed)
             {
-                Logger?.LogInformation("Channel '" + Name + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+                Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
             }
 
             return removed;
@@ -82,7 +83,7 @@ namespace Steeltoe.Integration.Channel
             }
             catch (MessageDispatchingException e)
             {
-                var description = e.Message + " for channel '" + Name + "'.";
+                var description = e.Message + " for channel '" + ServiceName + "'.";
                 throw new MessageDeliveryException(message, description, e);
             }
         }

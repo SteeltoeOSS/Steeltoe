@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,8 @@ namespace Steeltoe.Stream.Messaging
     {
         private readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
 
-        public DirectWithAttributesChannel(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        public DirectWithAttributesChannel(IApplicationContext context)
+            : base(context)
         {
         }
 

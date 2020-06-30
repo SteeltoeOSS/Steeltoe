@@ -12,11 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
-    public interface IConnectionFactory : IDisposable
+    public interface IConnectionFactory : IDisposable, IServiceNameAware
     {
         /// <summary>
         /// Gets the host name for the connection factory

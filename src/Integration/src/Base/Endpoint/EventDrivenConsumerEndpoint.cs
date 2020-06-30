@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using System;
@@ -25,8 +26,8 @@ namespace Steeltoe.Integration.Endpoint
 
         private readonly IMessageHandler _handler;
 
-        public EventDrivenConsumerEndpoint(IServiceProvider serviceProvider, ISubscribableChannel inputChannel, IMessageHandler handler)
-            : base(serviceProvider)
+        public EventDrivenConsumerEndpoint(IApplicationContext context, ISubscribableChannel inputChannel, IMessageHandler handler)
+            : base(context)
         {
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             _inputChannel = inputChannel ?? throw new ArgumentNullException(nameof(inputChannel));

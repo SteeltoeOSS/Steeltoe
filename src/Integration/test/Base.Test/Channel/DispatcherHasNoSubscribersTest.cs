@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -23,16 +25,28 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class DispatcherHasNoSubscribersTest
     {
+        private IServiceProvider provider;
+
+        public DispatcherHasNoSubscribersTest()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+            provider = services.BuildServiceProvider();
+        }
+
         [Fact]
         public void OneChannel()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var noSubscribersChannel = new DirectChannel(provider);
+            var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             try
             {
-                noSubscribersChannel.Send(new GenericMessage<string>("Hello, world!"));
+                noSubscribersChannel.Send(Message.Create("Hello, world!"));
                 throw new Exception("Exception expected");
             }
             catch (MessagingException e)
@@ -47,14 +61,14 @@ namespace Steeltoe.Integration.Channel.Test
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var noSubscribersChannel = new DirectChannel(provider);
-            var subscribedChannel = new DirectChannel(provider);
-            var bridgeHandler = new BridgeHandler(provider);
+            var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+            var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+            var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>());
             bridgeHandler.OutputChannel = noSubscribersChannel;
             subscribedChannel.Subscribe(bridgeHandler);
             try
             {
-                subscribedChannel.Send(new GenericMessage<string>("Hello, world!"));
+                subscribedChannel.Send(Message.Create("Hello, world!"));
                 throw new Exception("Exception expected");
             }
             catch (MessagingException e)

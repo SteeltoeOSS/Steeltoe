@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Stream.Binder
@@ -26,6 +27,6 @@ namespace Steeltoe.Stream.Binder
         /// </summary>
         /// <param name="configurationName">the binders configuration name</param>
         /// <param name="binderContext">the configured service provider</param>
-        void AfterBinderInitialized(string configurationName, IServiceProvider binderContext);
+        void AfterBinderInitialized(string configurationName, IApplicationContext binderContext);
     }
 }

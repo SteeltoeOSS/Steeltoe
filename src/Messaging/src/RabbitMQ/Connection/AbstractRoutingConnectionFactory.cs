@@ -70,13 +70,15 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public bool IsPublisherReturns => false;
 
-        public IConnectionFactory GetTargetConnectionFactory(object key)
+        public abstract string ServiceName { get; set; }
+
+        public virtual IConnectionFactory GetTargetConnectionFactory(object key)
         {
             _targetConnectionFactories.TryGetValue(key, out var result);
             return result;
         }
 
-        public void SetTargetConnectionFactories(Dictionary<object, IConnectionFactory> targetConnectionFactories)
+        public virtual void SetTargetConnectionFactories(Dictionary<object, IConnectionFactory> targetConnectionFactories)
         {
             if (targetConnectionFactories == null)
             {
@@ -97,12 +99,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public IConnection CreateConnection()
+        public virtual IConnection CreateConnection()
         {
             return DetermineTargetConnectionFactory().CreateConnection();
         }
 
-        public void AddConnectionListener(IConnectionListener listener)
+        public virtual void AddConnectionListener(IConnectionListener listener)
         {
             foreach (var connectionFactory in _targetConnectionFactories.Values)
             {
@@ -117,7 +119,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             _connectionListeners.Add(listener);
         }
 
-        public bool RemoveConnectionListener(IConnectionListener listener)
+        public virtual bool RemoveConnectionListener(IConnectionListener listener)
         {
             var removed = false;
             foreach (var connectionFactory in _targetConnectionFactories.Values)
@@ -142,7 +144,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return removed;
         }
 
-        public void ClearConnectionListeners()
+        public virtual void ClearConnectionListeners()
         {
             foreach (var connectionFactory in _targetConnectionFactories.Values)
             {
@@ -157,7 +159,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             _connectionListeners.Clear();
         }
 
-        public void Destroy()
+        public virtual void Destroy()
         {
             // Do nothing
         }
@@ -167,7 +169,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             // Do nothing
         }
 
-        protected void AddTargetConnectionFactory(object key, IConnectionFactory connectionFactory)
+        public virtual void AddTargetConnectionFactory(object key, IConnectionFactory connectionFactory)
         {
             _targetConnectionFactories[key] = connectionFactory;
 
@@ -177,7 +179,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        protected IConnectionFactory DetermineTargetConnectionFactory()
+        public virtual IConnectionFactory DetermineTargetConnectionFactory()
         {
             var lookupKey = DetermineCurrentLookupKey();
             IConnectionFactory connectionFactory = null;
@@ -199,12 +201,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return connectionFactory;
         }
 
-        protected IConnectionFactory RemoveTargetConnectionFactory(object key)
+        public virtual IConnectionFactory RemoveTargetConnectionFactory(object key)
         {
             _targetConnectionFactories.TryRemove(key, out var connectionFactory);
             return connectionFactory;
         }
 
-        protected abstract object DetermineCurrentLookupKey();
+        public abstract object DetermineCurrentLookupKey();
     }
 }

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
@@ -27,10 +28,10 @@ namespace Steeltoe.Stream.Binding
         private readonly IEvaluationContext _evaluationContext;
 
         internal DispatchingStreamListenerMessageHandler(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             ICollection<ConditionalStreamListenerMessageHandlerWrapper> handlerMethods,
             IEvaluationContext evaluationContext = null)
-            : base(serviceProvider)
+            : base(context)
         {
             if (handlerMethods == null || handlerMethods.Count == 0)
             {

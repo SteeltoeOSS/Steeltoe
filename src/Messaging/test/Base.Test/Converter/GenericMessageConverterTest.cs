@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.Converter.Test
         public void FromMessageWithConversion()
         {
             var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder<string>.WithPayload("33").Build();
+            var content = MessageBuilder.WithPayload("33").Build();
             Assert.Equal(33, converter.FromMessage<int>(content));
         }
 
@@ -35,7 +35,7 @@ namespace Steeltoe.Messaging.Converter.Test
         public void FromMessageNoConverter()
         {
             var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder<long>.WithPayload(1234L).Build();
+            var content = MessageBuilder.WithPayload(1234L).Build();
             Assert.Null(converter.FromMessage<CultureInfo>(content));
         }
 
@@ -43,7 +43,7 @@ namespace Steeltoe.Messaging.Converter.Test
         public void FromMessageWithFailedConversion()
         {
             var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder<string>.WithPayload("test not a number").Build();
+            var content = MessageBuilder.WithPayload("test not a number").Build();
             Assert.Throws<MessageConversionException>(() => converter.FromMessage<int>(content));
         }
     }

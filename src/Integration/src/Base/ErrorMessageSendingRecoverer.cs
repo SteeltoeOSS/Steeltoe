@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
-using Steeltoe.Integration.Retry;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;
@@ -22,18 +23,18 @@ namespace Steeltoe.Integration
 {
     public class ErrorMessageSendingRecoverer : ErrorMessagePublisher, IRecoveryCallback
     {
-        public ErrorMessageSendingRecoverer(IServiceProvider serviceProvider)
-        : this(serviceProvider, null)
+        public ErrorMessageSendingRecoverer(IApplicationContext context)
+        : this(context, null)
         {
         }
 
-        public ErrorMessageSendingRecoverer(IServiceProvider serviceProvider, IMessageChannel channel)
-        : this(serviceProvider, channel, null)
+        public ErrorMessageSendingRecoverer(IApplicationContext context, IMessageChannel channel)
+        : this(context, channel, null)
         {
         }
 
-        public ErrorMessageSendingRecoverer(IServiceProvider serviceProvider, IMessageChannel channel, IErrorMessageStrategy errorMessageStrategy)
-            : base(serviceProvider)
+        public ErrorMessageSendingRecoverer(IApplicationContext context, IMessageChannel channel, IErrorMessageStrategy errorMessageStrategy)
+            : base(context)
         {
             Channel = channel;
             ErrorMessageStrategy = errorMessageStrategy ?? new DefaultErrorMessageStrategy();

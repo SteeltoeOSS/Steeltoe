@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using System;
 using System.Collections.Concurrent;
 
@@ -22,11 +23,11 @@ namespace Steeltoe.Messaging.Core
     {
         private readonly ConcurrentDictionary<string, object> _destinations = new ConcurrentDictionary<string, object>();
 
-        public IServiceProvider ServiceProvider { get; }
+        public IApplicationContext ApplicationContext { get; }
 
-        public DefaultDestinationRegistry(IServiceProvider services)
+        public DefaultDestinationRegistry(IApplicationContext context)
         {
-            ServiceProvider = services;
+            ApplicationContext = context;
         }
 
         public object Deregister(string name)
@@ -76,10 +77,10 @@ namespace Steeltoe.Messaging.Core
 
         private IMessageChannel LookupFromServices(string name)
         {
-            var messageChannels = ServiceProvider.GetServices<IMessageChannel>();
+            var messageChannels = ApplicationContext.GetServices<IMessageChannel>();
             foreach (var chan in messageChannels)
             {
-                if (chan.Name == name)
+                if (chan.ServiceName == name)
                 {
                     return chan;
                 }

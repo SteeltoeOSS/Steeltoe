@@ -12,57 +12,59 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Common.Services;
 using Steeltoe.Messaging.Rabbit.Core;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    // TODO: This is a AMQP class
-    public class Queue : AbstractDeclarable, ICloneable, IServiceNameAware
+    public class Queue : AbstractDeclarable, IQueue, ICloneable
     {
         public const string X_QUEUE_MASTER_LOCATOR = "x-queue-master-locator";
 
-        public Queue(string name)
-        : this(name, true, false, false)
+        public Queue(string queueName)
+        : this(queueName, true, false, false)
         {
         }
 
-        public Queue(string name, bool durable)
-        : this(name, durable, false, false, null)
+        public Queue(string queueName, bool durable)
+        : this(queueName, durable, false, false, null)
         {
         }
 
-        public Queue(string name, bool durable, bool exclusive, bool autoDelete)
-        : this(name, durable, exclusive, autoDelete, null)
+        public Queue(string queueName, bool durable, bool exclusive, bool autoDelete)
+        : this(queueName, durable, exclusive, autoDelete, null)
         {
         }
 
-        public Queue(string name, bool durable, bool exclusive, bool autoDelete, Dictionary<string, object> arguments)
+        public Queue(string queueName, bool durable, bool exclusive, bool autoDelete, Dictionary<string, object> arguments)
             : base(arguments)
         {
-            if (name == null)
+            if (queueName == null)
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentNullException(nameof(queueName));
             }
 
-            Name = name;
-            ActualName = !string.IsNullOrEmpty(name) ? name : (Base64UrlNamingStrategy.DEFAULT.GenerateName() + "_awaiting_declaration");
-            Durable = durable;
-            Exclusive = exclusive;
-            AutoDelete = autoDelete;
+            QueueName = queueName;
+            ServiceName = !string.IsNullOrEmpty(queueName) ? queueName : "queue@" + RuntimeHelpers.GetHashCode(this);
+            ActualName = !string.IsNullOrEmpty(queueName) ? queueName : (Base64UrlNamingStrategy.DEFAULT.GenerateName() + "_awaiting_declaration");
+            IsDurable = durable;
+            IsExclusive = exclusive;
+            IsAutoDelete = autoDelete;
         }
 
-        public string Name { get; set; }
+        public string ServiceName { get; set; }
+
+        public string QueueName { get; set; }
 
         public string ActualName { get; set; }
 
-        public bool Durable { get; set; }
+        public bool IsDurable { get; set; }
 
-        public bool Exclusive { get; set; }
+        public bool IsExclusive { get; set; }
 
-        public bool AutoDelete { get; set; }
+        public bool IsAutoDelete { get; set; }
 
         public string MasterLocator
         {
@@ -87,15 +89,15 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         public object Clone()
         {
-            var queue = new Queue(Name, Durable, Exclusive, AutoDelete, new Dictionary<string, object>(Arguments));
+            var queue = new Queue(QueueName, IsDurable, IsExclusive, IsAutoDelete, new Dictionary<string, object>(Arguments));
             queue.ActualName = ActualName;
             return queue;
         }
 
         public override string ToString()
         {
-            return "Queue [name=" + Name + ", durable=" + Durable + ", autoDelete=" + AutoDelete
-                    + ", exclusive=" + Exclusive + ", arguments=" + Arguments
+            return "Queue [name=" + QueueName + ", durable=" + IsDurable + ", autoDelete=" + IsAutoDelete
+                    + ", exclusive=" + IsExclusive + ", arguments=" + Arguments
                     + ", actualName=" + ActualName + "]";
         }
     }

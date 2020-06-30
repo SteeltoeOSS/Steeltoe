@@ -13,15 +13,14 @@
 // limitations under the License.
 
 using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Data;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public interface IChannelAwareMessageListener : IMessageListener
     {
-        void OnMessage(Message message, IModel channel);
+        void OnMessage(IMessage message, IModel channel);
 
-        void OnMessageBatch(List<Message> messages, IModel channel);
+        void OnMessageBatch(List<IMessage> messages, IModel channel);
     }
 }

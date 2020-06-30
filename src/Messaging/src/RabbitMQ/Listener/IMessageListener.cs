@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Data;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
@@ -22,8 +21,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener
     {
         AcknowledgeMode ContainerAckMode { get; set; }
 
-        void OnMessage(Message message);
+        void OnMessage(IMessage message);
 
-        void OnMessageBatch(List<Message> messages);
+        void OnMessageBatch(List<IMessage> messages);
     }
 }

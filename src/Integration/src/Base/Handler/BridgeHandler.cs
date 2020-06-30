@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using System;
 
@@ -19,8 +20,8 @@ namespace Steeltoe.Integration.Handler
 {
     public class BridgeHandler : AbstractReplyProducingMessageHandler
     {
-        public BridgeHandler(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        public BridgeHandler(IApplicationContext context)
+            : base(context)
         {
         }
 

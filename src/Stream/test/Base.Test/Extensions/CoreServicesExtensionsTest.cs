@@ -15,6 +15,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Lifecycle;
@@ -32,8 +33,10 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddConsole());
             var config = new ConfigurationBuilder().Build();
+            container.AddSingleton<IConfiguration>(config);
             container.AddCoreServices();
             var serviceProvider = container.BuildServiceProvider();
+            Assert.NotNull(serviceProvider.GetService<IApplicationContext>());
             Assert.NotNull(serviceProvider.GetService<IConversionService>());
             Assert.NotNull(serviceProvider.GetService<ILifecycleProcessor>());
             Assert.NotNull(serviceProvider.GetService<IDestinationRegistry>());

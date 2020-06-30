@@ -31,25 +31,25 @@ namespace Steeltoe.Integration.Support
 
         public IMessageBuilder<T> FromMessage<T>(IMessage<T> message)
         {
-            return MessageBuilder<T>.FromMessage(message)
+            return IntegrationMessageBuilder<T>.FromMessage(message)
                     .ReadOnlyHeaders(ReadOnlyHeaders);
         }
 
         public IMessageBuilder FromMessage(IMessage message)
         {
-            return MessageBuilder.FromMessage(message)
+            return IntegrationMessageBuilder.FromMessage(message)
                     .ReadOnlyHeaders(ReadOnlyHeaders);
         }
 
         public IMessageBuilder<T> WithPayload<T>(T payload)
         {
-            return MessageBuilder<T>.WithPayload(payload)
+            return IntegrationMessageBuilder<T>.WithPayload(payload)
                     .ReadOnlyHeaders(ReadOnlyHeaders);
         }
 
         public IMessageBuilder WithPayload(object payload)
         {
-            return MessageBuilder.WithPayload(payload)
+            return IntegrationMessageBuilder.WithPayload(payload)
                     .ReadOnlyHeaders(ReadOnlyHeaders);
         }
     }

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -29,7 +31,7 @@ namespace Steeltoe.Integration.Channel.Test
     public class MixedDispatcherConfigurationScenarioTest
     {
         private const int TOTAL_EXECUTIONS = 40;
-        private readonly IMessage message = new GenericMessage("test");
+        private readonly IMessage message = Message.Create("test");
         private readonly CountdownEvent allDone;
         private readonly CountdownEvent start;
         private readonly Mock<IMessageHandler> handlerA;
@@ -42,6 +44,9 @@ namespace Steeltoe.Integration.Channel.Test
         public MixedDispatcherConfigurationScenarioTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
@@ -60,7 +65,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider, null, "noLoadBalancerNoFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null);
             channel.Failover = false;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -89,7 +94,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider, null, "noLoadBalancerNoFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerNoFailover", null);
             channel.Failover = false;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -143,7 +148,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverNoLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor", null);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, "noLoadBalancerNoFailoverExecutor", null);
             channel.Failover = false;
             handlerA.Setup((h) => h.HandleMessage(message)).Callback(() =>
             {
@@ -189,7 +194,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancing()
         {
-            var channel = new DirectChannel(provider, "loadBalancerNoFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null);
             channel.Failover = false;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -235,7 +240,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider, "loadBalancerNoFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), "loadBalancerNoFailover", null);
             channel.Failover = false;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -294,7 +299,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void NoFailoverLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default, null);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null);
             channel.Failover = false;
 
             var dispatcher = channel.Dispatcher;
@@ -354,7 +359,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancing()
         {
-            var channel = new DirectChannel(provider, null, "loadBalancerNoFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "loadBalancerNoFailover", null);
             channel.Failover = true;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -387,7 +392,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancingConcurrent()
         {
-            var channel = new DirectChannel(provider, null, "noLoadBalancerFailover", null);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>(), null, "noLoadBalancerFailover", null);
             channel.Failover = true;
             handlerA.Setup((h) => h.HandleMessage(message)).Throws(new MessageRejectedException(message, null));
             var dispatcher = channel.Dispatcher;
@@ -446,7 +451,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void FailoverNoLoadBalancingWithExecutorConcurrent()
         {
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default, null, null);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default, null, null);
             channel.Failover = true;
 
             var dispatcher = channel.Dispatcher;

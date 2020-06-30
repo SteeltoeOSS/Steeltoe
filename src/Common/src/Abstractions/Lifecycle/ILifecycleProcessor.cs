@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Lifecycle
@@ -19,7 +20,7 @@ namespace Steeltoe.Common.Lifecycle
     /// <summary>
     /// Interface for processing lifecycle based services.
     /// </summary>
-    public interface ILifecycleProcessor
+    public interface ILifecycleProcessor : IDisposable
     {
         /// <summary>
         /// Start this component

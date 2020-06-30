@@ -13,8 +13,9 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
-using Steeltoe.Integration.Retry;
+using Steeltoe.Common.Retry;
 using Steeltoe.Stream.Config;
 using System;
 using System.Collections.Generic;
@@ -26,12 +27,12 @@ namespace Steeltoe.Stream.Binder
         private const string GROUP_INDEX_DELIMITER = ".";
 
         private readonly IEvaluationContext _evaluationContext;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
 
-        protected AbstractBinder(IServiceProvider serviceProvider)
+        protected AbstractBinder(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
-            _evaluationContext = serviceProvider.GetService<IEvaluationContext>();
+            _context = context;
+            _evaluationContext = context.GetService<IEvaluationContext>();
         }
 
         public static string ApplyPrefix(string prefix, string name)
@@ -82,9 +83,9 @@ namespace Steeltoe.Stream.Binder
             get { return _evaluationContext; }
         }
 
-        protected virtual IServiceProvider ServiceProvider
+        protected virtual IApplicationContext ApplicationContext
         {
-            get { return _serviceProvider; }
+            get { return _context; }
         }
 
         protected virtual string GroupedName(string name, string group)

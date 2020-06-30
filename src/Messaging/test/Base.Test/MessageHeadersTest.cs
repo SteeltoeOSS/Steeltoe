@@ -24,14 +24,14 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestTimestamp()
         {
-            var headers = new MessageHeaders(null);
+            var headers = new MessageHeaders();
             Assert.NotNull(headers.Timestamp);
         }
 
         [Fact]
         public void TestTimestampOverwritten()
         {
-            var headers1 = new MessageHeaders(null);
+            var headers1 = new MessageHeaders();
             Thread.Sleep(50);
             var headers2 = new MessageHeaders(headers1);
             Assert.NotEqual(headers1.Timestamp, headers2.Timestamp);
@@ -47,7 +47,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestTimestampProvidedNullValue()
         {
-            IDictionary<string, object> input = new Dictionary<string, object>() { { MessageHeaders.TIMESTAMP, 1L } };
+            var input = new Dictionary<string, object>() { { MessageHeaders.TIMESTAMP, 1L } };
             var headers = new MessageHeaders(input, null, null);
             Assert.NotNull(headers.Timestamp);
         }
@@ -62,7 +62,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestIdOverwritten()
         {
-            var headers1 = new MessageHeaders(null);
+            var headers1 = new MessageHeaders();
             var headers2 = new MessageHeaders(headers1);
             Assert.NotEqual(headers1.Id, headers2.Id);
         }
@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestId()
         {
-            var headers = new MessageHeaders(null);
+            var headers = new MessageHeaders();
             Assert.NotNull(headers.Id);
         }
 
@@ -78,15 +78,15 @@ namespace Steeltoe.Messaging.Test
         public void TestIdProvided()
         {
             var id = Guid.NewGuid();
-            var headers = new MessageHeaders(null, id, null);
-            Assert.Equal(id, headers.Id);
+            var headers = new MessageHeaders(null, id.ToString(), null);
+            Assert.Equal(id.ToString(), headers.Id);
         }
 
         [Fact]
         public void TestIdProvidedNullValue()
         {
             var id = Guid.NewGuid();
-            IDictionary<string, object> input = new Dictionary<string, object>() { { MessageHeaders.ID, id } };
+            var input = new Dictionary<string, object>() { { MessageHeaders.ID, id } };
             var headers = new MessageHeaders(input, null, null);
             Assert.NotNull(headers.Id);
         }
@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestNonTypedAccessOfHeaderValue()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Add("test", 123);
             var headers = new MessageHeaders(map);
             Assert.Equal(123, headers["test"]);
@@ -110,7 +110,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestTypedAccessOfHeaderValue()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Add("test", 123);
             var headers = new MessageHeaders(map);
             Assert.Equal(123, headers.Get<int>("test"));
@@ -119,7 +119,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestHeaderValueAccessWithIncorrectType()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Add("test", 123);
             var headers = new MessageHeaders(map);
             Assert.Throws<InvalidCastException>(() => headers.Get<string>("test"));
@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestNullHeaderValue()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             var headers = new MessageHeaders(map);
             headers.TryGetValue("nosuchattribute", out var val);
             Assert.Null(val);
@@ -137,7 +137,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestNullHeaderValueWithTypedAccess()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             var headers = new MessageHeaders(map);
             Assert.Null(headers.Get<string>("nosuchattribute"));
         }
@@ -145,7 +145,7 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestHeaderKeys()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
+            var map = new Dictionary<string, object>();
             map.Add("key1", "val1");
             map.Add("key2", 123);
             var headers = new MessageHeaders(map);
@@ -159,14 +159,14 @@ namespace Steeltoe.Messaging.Test
         {
             var id = Guid.NewGuid();
             MessageHeaders headers = new MyMH(id);
-            Assert.Equal(id, headers.Id);
+            Assert.Equal(id.ToString(), headers.Id);
             Assert.Single(headers);
         }
 
         private class MyMH : MessageHeaders
         {
             public MyMH(Guid id)
-                : base(null, id, -1L)
+                : base(null, id.ToString(), -1L)
             {
             }
         }

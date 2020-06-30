@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.Converter
         /// <param name="targetClass">the target type of the conversion</param>
         /// <param name="conversionHint">an extra object passed to the converter which may used for handling the conversion</param>
         /// <returns>the result of the conversion</returns>
-        object FromMessage(IMessage message, Type targetClass, object conversionHint = null);
+        object FromMessage(IMessage message, Type targetClass, object conversionHint);
 
         /// <summary>
         /// Convert the payload of a message to a typed object.
@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Converter
         /// <param name="message">the input message</param>
         /// <param name="conversionHint">an extra object passed to the converter which may used for handling the conversion</param>
         /// <returns>the result of the conversion</returns>
-        T FromMessage<T>(IMessage message, object conversionHint = null);
+        T FromMessage<T>(IMessage message, object conversionHint);
 
         /// <summary>
         /// Create a message whose payload is the result of converting the given payload object
@@ -47,6 +47,6 @@ namespace Steeltoe.Messaging.Converter
         /// <param name="headers">optional headers for the message</param>
         /// <param name="conversionHint">an extra object passed to the converter which may used for handling the conversion</param>
         /// <returns>the new messagee or null if converter does not support the payload type</returns>
-        IMessage ToMessage(object payload, IMessageHeaders headers = null, object conversionHint = null);
+        IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint);
     }
 }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -29,18 +30,18 @@ namespace Steeltoe.Integration.Channel
         protected TaskScheduler _executor;
         protected int _taskSchedulerInterceptorsSize;
 
-        protected AbstractTaskSchedulerChannel(IServiceProvider serviceProvider, IMessageDispatcher dispatcher, ILogger logger = null)
-            : this(serviceProvider, dispatcher, null, logger)
+        protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, ILogger logger = null)
+            : this(context, dispatcher, null, logger)
         {
         }
 
-        protected AbstractTaskSchedulerChannel(IServiceProvider serviceProvider, IMessageDispatcher dispatcher, TaskScheduler executor, ILogger logger = null)
-            : this(serviceProvider, dispatcher, executor, null, logger)
+        protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, TaskScheduler executor, ILogger logger = null)
+            : this(context, dispatcher, executor, null, logger)
         {
         }
 
-        protected AbstractTaskSchedulerChannel(IServiceProvider serviceProvider, IMessageDispatcher dispatcher, TaskScheduler executor, string name, ILogger logger = null)
-            : base(serviceProvider, dispatcher, name, logger)
+        protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, TaskScheduler executor, string name, ILogger logger = null)
+            : base(context, dispatcher, name, logger)
         {
             _executor = executor;
         }

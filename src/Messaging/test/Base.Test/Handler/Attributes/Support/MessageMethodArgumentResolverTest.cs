@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithPayloadTypeAsObject()
         {
-            var message = MessageBuilder<string>.WithPayload("test").Build();
+            var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[0];
 
             Assert.True(resolver.SupportsParameter(parameter));
@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithMatchingPayloadType()
         {
-            var message = MessageBuilder<int>.WithPayload(123).Build();
+            var message = MessageBuilder.WithPayload(123).Build();
             var parameter = method.GetParameters()[1];
 
             Assert.True(resolver.SupportsParameter(parameter));
@@ -66,11 +66,11 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithConversion()
         {
-            var message = MessageBuilder<string>.WithPayload("test").Build();
+            var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[1];
             mock.Setup((c) => c.FromMessage(message, typeof(int))).Returns(4);
 
-            var actual = (IMessage<int>)resolver.ResolveArgument(parameter, message);
+            var actual = (IMessage)resolver.ResolveArgument(parameter, message);
 
             Assert.NotNull(actual);
             Assert.Equal(message.Headers, actual.Headers);
@@ -80,7 +80,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithConversionNoMatchingConverter()
         {
-            var message = MessageBuilder<string>.WithPayload("test").Build();
+            var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[1];
 
             Assert.True(resolver.SupportsParameter(parameter));
@@ -92,7 +92,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithConversionEmptyPayload()
         {
-            var message = MessageBuilder<string>.WithPayload(string.Empty).Build();
+            var message = MessageBuilder.WithPayload(string.Empty).Build();
             var parameter = method.GetParameters()[1];
             Assert.True(resolver.SupportsParameter(parameter));
             var ex = Assert.Throws<MessageConversionException>(() => resolver.ResolveArgument(parameter, message));
@@ -145,7 +145,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         // public void ResolveWithWrongMessageType()
         // {
         //    var ex1 = new InvalidOperationException();
-        //    IMessage<Exception> message = new GenericMessage<Exception>(ex1);
+        //    IMessage<Exception> message = GenericMessage.Create<Exception>(ex1);
         //    ParameterInfo parameter = this.method.GetParameters()[0];
 
         // Assert.True(this.resolver.SupportsParameter(parameter));
@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             resolver = new MessageMethodArgumentResolver();
 
-            var message = MessageBuilder<string>.WithPayload("test").Build();
+            var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[0];
             Assert.True(resolver.SupportsParameter(parameter));
             Assert.Same(message, resolver.ResolveArgument(parameter, message));
@@ -169,7 +169,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             resolver = new MessageMethodArgumentResolver();
 
-            var message = MessageBuilder<string>.WithPayload("test").Build();
+            var message = MessageBuilder.WithPayload("test").Build();
             var parameter = method.GetParameters()[1];
             Assert.True(resolver.SupportsParameter(parameter));
             var ex = Assert.Throws<MessageConversionException>(() => resolver.ResolveArgument(parameter, message));
@@ -182,7 +182,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             resolver = new MessageMethodArgumentResolver();
 
-            var message = MessageBuilder<string>.WithPayload(string.Empty).Build();
+            var message = MessageBuilder.WithPayload(string.Empty).Build();
             var parameter = method.GetParameters()[1];
             Assert.True(resolver.SupportsParameter(parameter));
             var ex = Assert.Throws<MessageConversionException>(() => resolver.ResolveArgument(parameter, message));
@@ -194,7 +194,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveWithNewtonJSonConverter()
         {
-            var inMessage = MessageBuilder<string>.WithPayload("{\"prop\":\"bar\"}").Build();
+            var inMessage = MessageBuilder.WithPayload("{\"prop\":\"bar\"}").Build();
             var parameter = method.GetParameters()[5];
 
             resolver = new MessageMethodArgumentResolver(new NewtonJsonMessageConverter());

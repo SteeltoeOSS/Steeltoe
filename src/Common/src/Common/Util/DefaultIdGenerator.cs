@@ -18,9 +18,9 @@ namespace Steeltoe.Common.Util
 {
     public class DefaultIdGenerator : IIDGenerator
     {
-        public Guid GenerateId()
+        public string GenerateId()
         {
-            return Guid.NewGuid();
+            return Guid.NewGuid().ToString();
         }
     }
 }

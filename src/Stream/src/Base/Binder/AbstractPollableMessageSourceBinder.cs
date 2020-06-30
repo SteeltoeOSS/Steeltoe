@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Common.Retry;
 using Steeltoe.Integration;
-using Steeltoe.Integration.Retry;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
@@ -26,20 +27,20 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChannelBinder, IPollableConsumerBinder<IMessageHandler>
     {
         protected AbstractPollableMessageSourceBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider)
-        : this(serviceProvider, headersToEmbed, provisioningProvider, null, null)
+        : this(context, headersToEmbed, provisioningProvider, null, null)
         {
         }
 
         protected AbstractPollableMessageSourceBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
             IMessageSourceCustomizer sourceCustomizer)
-            : base(serviceProvider, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer)
+            : base(context, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer)
         {
         }
 

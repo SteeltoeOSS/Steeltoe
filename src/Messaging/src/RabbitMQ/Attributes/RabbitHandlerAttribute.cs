@@ -24,6 +24,6 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             IsDefault = isDefault;
         }
 
-        public bool IsDefault { get; }
+        public bool IsDefault { get; set; }
     }
 }

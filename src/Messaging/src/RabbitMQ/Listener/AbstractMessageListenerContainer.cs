@@ -17,10 +17,11 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Rabbit.Batch;
+using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Data;
 using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.Rabbit.Extensions;
 using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
 using Steeltoe.Messaging.Rabbit.Listener.Support;
 using Steeltoe.Messaging.Rabbit.Support;
@@ -36,7 +37,7 @@ using R = RabbitMQ.Client;
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public abstract class AbstractMessageListenerContainer : RabbitAccessor, IMessageListenerContainer
+    public abstract class AbstractMessageListenerContainer : IMessageListenerContainer
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         public const int DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL = 5000;
@@ -49,29 +50,53 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         protected readonly object _lock = new object();
         protected readonly object _lifecycleMonitor = new object();
         protected readonly ILogger _logger;
+        protected readonly ILoggerFactory _loggerFactory;
 
+        protected int _recoveryInterval = DEFAULT_RECOVERY_INTERVAL;
         private string _listenerid;
+        private IConnectionFactory _connectionFactory;
 
-        private List<Config.Queue> Queues { get; set; } = new List<Config.Queue>();
+        private List<IQueue> Queues { get; set; } = new List<IQueue>();
 
-        protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILogger logger = null)
-            : base(connectionFactory)
+        protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
         {
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory?.CreateLogger(GetType());
             ApplicationContext = applicationContext;
-            _logger = logger;
+            ConnectionFactory = connectionFactory;
             ErrorHandler = new ConditionalRejectingErrorHandler(_logger);
-            MessagePropertiesConverter = new DefaultMessagePropertiesConverter(_logger);
+            MessageHeadersConverter = new DefaultMessageHeadersConverter(_logger);
             ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
             BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
             TransactionAttribute = new DefaultTransactionAttribute();
-            Name = name ?? GetType().Name + "@" + GetHashCode();
+            ServiceName = name ?? GetType().Name + "@" + GetHashCode();
         }
+
+        public virtual IConnectionFactory ConnectionFactory
+        {
+            get
+            {
+                if (_connectionFactory == null)
+                {
+                    _connectionFactory = ApplicationContext.GetService<IConnectionFactory>();
+                }
+
+                return _connectionFactory;
+            }
+
+            set
+            {
+                _connectionFactory = value;
+            }
+        }
+
+        public virtual bool IsChannelTransacted { get; set; }
 
         public IApplicationContext ApplicationContext { get; set; }
 
         public virtual AcknowledgeMode AcknowledgeMode { get; set; } = AcknowledgeMode.AUTO;
 
-        public virtual string Name { get; set; }
+        public virtual string ServiceName { get; set; }
 
         public virtual bool ExposeListenerChannel { get; set; } = true;
 
@@ -93,7 +118,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             get
             {
-                return _listenerid != null ? _listenerid : Name;
+                return _listenerid != null ? _listenerid : ServiceName;
             }
 
             set
@@ -118,13 +143,21 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public virtual long IdleEventInterval { get; set; }
 
-        public virtual long RecoveryInterval { get; set; }
+        public virtual int RecoveryInterval
+        {
+            get => _recoveryInterval;
+            set
+            {
+                _recoveryInterval = value;
+                RecoveryBackOff = new FixedBackOff(_recoveryInterval, FixedBackOff.UNLIMITED_ATTEMPTS);
+            }
+        }
 
         public IBackOff RecoveryBackOff { get; set; } = new FixedBackOff(DEFAULT_RECOVERY_INTERVAL, FixedBackOff.UNLIMITED_ATTEMPTS);
 
-        public virtual IMessagePropertiesConverter MessagePropertiesConverter { get; set; }
+        public virtual IMessageHeadersConverter MessageHeadersConverter { get; set; }
 
-        public virtual IAmqpAdmin AmqpAdmin { get; set; }
+        public virtual IRabbitAdmin AmqpAdmin { get; set; }
 
         public virtual bool MissingQueuesFatal { get; set; } = true;
 
@@ -164,7 +197,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 throw new ArgumentNullException(nameof(queueNames));
             }
 
-            var qs = new Config.Queue[queueNames.Length];
+            var qs = new IQueue[queueNames.Length];
             var index = 0;
             foreach (var name in queueNames)
             {
@@ -184,7 +217,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return QueuesToNames().ToArray();
         }
 
-        public virtual void SetQueues(params Config.Queue[] queues)
+        public virtual void SetQueues(params IQueue[] queues)
         {
             if (queues == null)
             {
@@ -200,7 +233,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         throw new ArgumentNullException("queue cannot be null");
                     }
 
-                    if (string.IsNullOrEmpty(queue.Name))
+                    if (string.IsNullOrEmpty(queue.QueueName))
                     {
                         throw new ArgumentException("Cannot add broker-named queues dynamically");
                     }
@@ -217,7 +250,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 throw new ArgumentNullException(nameof(queueNames));
             }
 
-            var qs = new Config.Queue[queueNames.Length];
+            var qs = new IQueue[queueNames.Length];
             var index = 0;
             foreach (var name in queueNames)
             {
@@ -232,7 +265,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             AddQueues(qs);
         }
 
-        public virtual void AddQueues(params Config.Queue[] queues)
+        public virtual void AddQueues(params IQueue[] queues)
         {
             if (queues == null)
             {
@@ -248,14 +281,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         throw new ArgumentNullException("queue cannot be null");
                     }
 
-                    if (string.IsNullOrEmpty(queue.Name))
+                    if (string.IsNullOrEmpty(queue.QueueName))
                     {
                         throw new ArgumentException("Cannot add broker-named queues dynamically");
                     }
                 }
             }
 
-            var newQueues = new List<Config.Queue>(Queues);
+            var newQueues = new List<IQueue>(Queues);
             newQueues.AddRange(queues);
             Queues = newQueues;
         }
@@ -278,13 +311,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 toRemove.Add(name);
             }
 
-            var copy = new List<Config.Queue>(Queues);
+            var copy = new List<IQueue>(Queues);
             var filtered = copy.Where((q) => !toRemove.Contains(q.ActualName)).ToList();
             Queues = filtered;
             return filtered.Count != copy.Count;
         }
 
-        public virtual void RemoveQueues(params Config.Queue[] queues)
+        public virtual void RemoveQueues(params IQueue[] queues)
         {
             if (queues == null)
             {
@@ -419,7 +452,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (Exception e)
             {
-                _logger?.LogError("Error initializing listener container", e);
+                _logger?.LogError(e, "Error initializing listener container");
                 throw ConvertRabbitAccessException(e);
             }
         }
@@ -452,7 +485,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (Exception ex)
             {
-                _logger?.LogError("DoShutdown erroro", ex);
+                _logger?.LogError(ex, "DoShutdown error");
                 throw ConvertRabbitAccessException(ex);
             }
             finally
@@ -485,14 +518,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             try
             {
-                _logger?.LogDebug("Starting RabbitMQ listener container.");
+                _logger?.LogDebug("Starting RabbitMQ listener container {name}", ServiceName);
                 ConfigureAdminIfNeeded();
                 CheckMismatchedQueues();
                 DoStart();
             }
             catch (Exception ex)
             {
-                _logger?.LogError("Error Starting RabbitMQ listener container.", ex);
+                _logger?.LogError(ex, "Error Starting RabbitMQ listener container {name}", ServiceName);
                 throw ConvertRabbitAccessException(ex);
             }
             finally
@@ -511,7 +544,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (Exception ex)
             {
-                _logger?.LogError("Error Stopping RabbitMQ listener container.", ex);
+                _logger?.LogError(ex, "Error stopping RabbitMQ listener container {name}", ServiceName);
                 throw ConvertRabbitAccessException(ex);
             }
             finally
@@ -563,6 +596,21 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             IsLazyLoad = true;
         }
 
+        protected virtual IConnection CreateConnection()
+        {
+            return ConnectionFactory.CreateConnection();
+        }
+
+        protected virtual RabbitResourceHolder GetTransactionalResourceHolder()
+        {
+            return ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, IsChannelTransacted);
+        }
+
+        protected virtual Exception ConvertRabbitAccessException(Exception ex)
+        {
+            return RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
+        }
+
         protected virtual void RedeclareElementsIfNecessary()
         {
             lock (_lock)
@@ -576,12 +624,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     }
                     catch (Exception e)
                     {
-                        if (RabbitUtils.IsMismatchedQueueArgs(e))
+                        if (RabbitUtils.IsMismatchedQueueArgs(e) && MismatchedQueuesFatal)
                         {
                             throw new FatalListenerStartupException("Mismatched queues", e);
                         }
 
-                        _logger?.LogError("Failed to check/redeclare auto-delete queue(s).", e);
+                        _logger?.LogError(e, "Failed to check/redeclare auto-delete queue(s). Container: {name}", ServiceName);
                     }
                 }
             }
@@ -597,43 +645,37 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Execution of Rabbit message listener failed, and the error handler threw an exception", e);
+                    _logger?.LogError(e, "Execution of Rabbit message listener failed, and the error handler threw an exception. Container: {name}", ServiceName);
                     throw;
                 }
             }
             else
             {
-                _logger?.LogWarning("Execution of Rabbit message listener failed, and no ErrorHandler has been set.", ex);
+                _logger?.LogWarning(ex, "Execution of Rabbit message listener failed, and no ErrorHandler has been set. Container: {name}", ServiceName);
             }
         }
 
-        protected virtual void ExecuteListener(R.IModel channel, object data)
+        protected virtual void ExecuteListener(R.IModel channel, IMessage message)
         {
             if (!IsRunning)
             {
-                _logger?.LogWarning("Rejecting received message(s) because the listener container has been stopped: " + data);
+                _logger?.LogWarning("Rejecting received message(s) because the listener container {name} has been stopped {message}", ServiceName, message);
                 throw new MessageRejectedWhileStoppingException();
             }
 
             try
             {
-                DoExecuteListener(channel, data);
+                DoExecuteListener(channel, message);
             }
             catch (Exception ex)
             {
-                var message = data as Message;
-                if (message == null && data is IList<Message> asList && asList.Count > 0)
-                {
-                    message = asList[0];
-                }
-
                 CheckStatefulRetry(ex, message);
                 HandleListenerException(ex);
                 throw;
             }
         }
 
-        protected virtual void ActualInvokeListener(R.IModel channel, object data)
+        protected virtual void ActualInvokeListener(R.IModel channel, List<IMessage> data)
         {
             var listener = MessageListener;
             if (listener is IChannelAwareMessageListener chanListener)
@@ -645,7 +687,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
                 if (bindChannel)
                 {
-                    var resourceHolder = new RabbitResourceHolder(channel, false, _logger);
+                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
                     resourceHolder.SynchronizedWithTransaction = true;
                     TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
                 }
@@ -669,60 +711,58 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, object data)
+        protected virtual void ActualInvokeListener(R.IModel channel, IMessage message)
         {
-            Message message = null;
+            var listener = MessageListener;
+            if (listener is IChannelAwareMessageListener chanListener)
+            {
+                DoInvokeListener(chanListener, channel, message);
+            }
+            else if (listener != null)
+            {
+                var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
+                if (bindChannel)
+                {
+                    var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
+                    resourceHolder.SynchronizedWithTransaction = true;
+                    TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
+                }
+
+                try
+                {
+                    DoInvokeListener(listener, message);
+                }
+                finally
+                {
+                    if (bindChannel)
+                    {
+                        // unbind if we bound
+                        TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
+                    }
+                }
+            }
+            else
+            {
+                throw new FatalListenerExecutionException("No message listener specified - see property 'messageListener'");
+            }
+        }
+
+        protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, List<IMessage> data)
+        {
             RabbitResourceHolder resourceHolder = null;
             var channelToUse = channel;
             var boundHere = false;
             try
             {
-                if (!ExposeListenerChannel)
-                {
-                    // We need to expose a separate Channel.
-                    resourceHolder = GetTransactionalResourceHolder();
-                    channelToUse = resourceHolder.GetChannel();
-                    /*
-                     * If there is a real transaction, the resource will have been bound; otherwise
-                     * we need to bind it temporarily here. Any work done on this channel
-                     * will be committed in the finally block.
-                     */
-                    if (IsChannelLocallyTransacted &&
-                            !TransactionSynchronizationManager.IsActualTransactionActive())
-                    {
-                        resourceHolder.SynchronizedWithTransaction = true;
-                        TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
-                        boundHere = true;
-                    }
-                }
-                else
-                {
-                    // if locally transacted, bind the current channel to make it available to RabbitTemplate
-                    if (IsChannelLocallyTransacted)
-                    {
-                        var localResourceHolder = new RabbitResourceHolder(channelToUse, false);
-                        localResourceHolder.SynchronizedWithTransaction = true;
-                        TransactionSynchronizationManager.BindResource(ConnectionFactory, localResourceHolder);
-                        boundHere = true;
-                    }
-                }
+                boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
 
                 // Actually invoke the message listener...
                 try
                 {
-                    if (data is List<Message> asList)
-                    {
-                        listener.OnMessageBatch(asList, channelToUse);
-                    }
-                    else
-                    {
-                        message = (Message)data;
-                        listener.OnMessage(message, channelToUse);
-                    }
+                    listener.OnMessageBatch(data, channelToUse);
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Exception in OnMessage call", e);
                     throw WrapToListenerExecutionFailedExceptionIfNeeded(e, data);
                 }
             }
@@ -732,40 +772,110 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        protected virtual void DoInvokeListener(IMessageListener listener, object data)
+        protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, IMessage message)
         {
-            Message message = null;
+            RabbitResourceHolder resourceHolder = null;
+            var channelToUse = channel;
+            var boundHere = false;
             try
             {
-                if (data is List<Message> asList)
+                boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
+
+                // Actually invoke the message listener...
+                try
                 {
-                    listener.OnMessageBatch(asList);
+                    listener.OnMessage(message, channelToUse);
                 }
-                else
+                catch (Exception e)
                 {
-                    message = (Message)data;
-                    listener.OnMessage(message);
+                    throw WrapToListenerExecutionFailedExceptionIfNeeded(e, message);
                 }
+            }
+            finally
+            {
+                CleanUpAfterInvoke(resourceHolder, channelToUse, boundHere);
+            }
+        }
+
+        protected virtual void DoInvokeListener(IMessageListener listener, List<IMessage> data)
+        {
+            try
+            {
+                listener.OnMessageBatch(data);
             }
             catch (Exception e)
             {
+                _logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
                 throw WrapToListenerExecutionFailedExceptionIfNeeded(e, data);
             }
         }
 
-        protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, object data)
+        protected virtual void DoInvokeListener(IMessageListener listener, IMessage message)
+        {
+            try
+            {
+                listener.OnMessage(message);
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
+                throw WrapToListenerExecutionFailedExceptionIfNeeded(e, message);
+            }
+        }
+
+        protected virtual bool HandleChannelAwareTransaction(R.IModel channel, out R.IModel channelToUse, out RabbitResourceHolder resourceHolder)
+        {
+            resourceHolder = null;
+            channelToUse = channel;
+            var boundHere = false;
+            if (!ExposeListenerChannel)
+            {
+                // We need to expose a separate Channel.
+                resourceHolder = GetTransactionalResourceHolder();
+                channelToUse = resourceHolder.GetChannel();
+                /*
+                 * If there is a real transaction, the resource will have been bound; otherwise
+                 * we need to bind it temporarily here. Any work done on this channel
+                 * will be committed in the finally block.
+                 */
+                if (IsChannelLocallyTransacted &&
+                        !TransactionSynchronizationManager.IsActualTransactionActive())
+                {
+                    resourceHolder.SynchronizedWithTransaction = true;
+                    TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
+                    boundHere = true;
+                }
+            }
+            else
+            {
+                // if locally transacted, bind the current channel to make it available to RabbitTemplate
+                if (IsChannelLocallyTransacted)
+                {
+                    var localResourceHolder = new RabbitResourceHolder(channelToUse, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>());
+                    localResourceHolder.SynchronizedWithTransaction = true;
+                    TransactionSynchronizationManager.BindResource(ConnectionFactory, localResourceHolder);
+                    boundHere = true;
+                }
+            }
+
+            return boundHere;
+        }
+
+        protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)
         {
             if (!(exception is ListenerExecutionFailedException listnerExcep))
             {
-                // Wrap exception to ListenerExecutionFailedException.
-                if (data is List<Message> asList)
-                {
-                    return new ListenerExecutionFailedException("Listener threw exception", exception, asList.ToArray());
-                }
-                else
-                {
-                    return new ListenerExecutionFailedException("Listener threw exception", exception, (Message)data);
-                }
+                return new ListenerExecutionFailedException("Listener threw exception", exception, data.ToArray());
+            }
+
+            return (ListenerExecutionFailedException)exception;
+        }
+
+        protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, IMessage message)
+        {
+            if (!(exception is ListenerExecutionFailedException listnerExcep))
+            {
+                return new ListenerExecutionFailedException("Listener threw exception", exception, message);
             }
 
             return (ListenerExecutionFailedException)exception;
@@ -783,7 +893,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 // Rare case: listener thread failed after container shutdown.
                 // Log at debug level, to avoid spamming the shutdown log.
-                _logger?.LogDebug("Listener exception after container shutdown", exception);
+                _logger?.LogDebug(exception, "Listener exception after container shutdown. Container: {name}", ServiceName);
             }
         }
 
@@ -797,9 +907,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual void ConfigureAdminIfNeeded()
         {
-            if (AmqpAdmin == null)
+            if (AmqpAdmin == null && ApplicationContext != null)
             {
-                var admins = ApplicationContext.GetServices<IAmqpAdmin>();
+                var admins = ApplicationContext.GetServices<IRabbitAdmin>();
                 if (admins.Count() == 1)
                 {
                     AmqpAdmin = admins.Single();
@@ -808,16 +918,23 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     if (AutoDeclare || MismatchedQueuesFatal)
                     {
-                        _logger?.LogDebug("For 'autoDeclare' and 'mismatchedQueuesFatal' to work, there must be exactly one "
-                                + "AmqpAdmin in the context or you must inject one into this container; found: "
-                                + admins.Count() + " for container " + ToString());
+                        _logger?.LogDebug(
+                            "For 'autoDeclare' and 'mismatchedQueuesFatal' to work, there must be exactly one "
+                            + "RabbitAdmin in the context or you must inject one into this container; found: {count}"
+                            + " for container {container}",
+                            admins.Count(),
+                            ToString());
                     }
 
                     if (MismatchedQueuesFatal)
                     {
-                        throw new InvalidOperationException("When 'mismatchedQueuesFatal' is 'true', there must be exactly "
-                                + "one AmqpAdmin in the context or you must inject one into this container; found: "
-                                + admins.Count() + " for container " + ToString());
+                        throw new InvalidOperationException(
+                            string.Format(
+                                "When 'mismatchedQueuesFatal' is 'true', there must be exactly "
+                                + "one RabbitAdmin in the context or you must inject one into this container; found: {0} "
+                                + " for container {1}",
+                                admins.Count(),
+                                ToString()));
                     }
                 }
             }
@@ -831,11 +948,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     AmqpAdmin.Initialize();
                 }
-                catch (AmqpConnectException e)
+                catch (RabbitConnectException e)
                 {
-                    _logger?.LogInformation("Broker not available; cannot check queue declarations", e);
+                    _logger?.LogInformation(e, "Broker not available; cannot check queue declarations. Container: {name}", ServiceName);
                 }
-                catch (AmqpIOException e)
+                catch (RabbitIOException e)
                 {
                     if (RabbitUtils.IsMismatchedQueueArgs(e))
                     {
@@ -843,7 +960,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     }
                     else
                     {
-                        _logger?.LogInformation("Failed to get connection during start(): ", e);
+                        _logger?.LogInformation(e, "Failed to get connection during Start()");
                     }
                 }
             }
@@ -859,7 +976,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogInformation("Broker not available; cannot force queue declarations during start: " + e.Message);
+                    _logger?.LogInformation(e, "Broker not available; cannot force queue declarations during start");
                 }
             }
         }
@@ -907,7 +1024,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual IRoutingConnectionFactory GetRoutingConnectionFactory()
         {
-            return GetConnectionFactory() is IRoutingConnectionFactory ? (IRoutingConnectionFactory)ConnectionFactory : null;
+            return ConnectionFactory as IRoutingConnectionFactory;
         }
 
         protected virtual long LastReceive { get; private set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -933,7 +1050,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return new HashSet<string>(QueuesToNames());
         }
 
-        protected virtual Dictionary<string, Config.Queue> GetQueueNamesToQueues()
+        protected virtual Dictionary<string, IQueue> GetQueueNamesToQueues()
         {
             return Queues.ToDictionary((q) => q.ActualName);
         }
@@ -946,11 +1063,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var cause = exception.InnerException;
             while (cause != null)
             {
-                if (cause is ImmediateAcknowledgeAmqpException)
+                if (cause is ImmediateAcknowledgeException)
                 {
                     return true;
                 }
-                else if (cause is AmqpRejectAndDontRequeueException)
+                else if (cause is RabbitRejectAndDontRequeueException)
                 {
                     return false;
                 }
@@ -970,24 +1087,24 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        private void AttemptDeclarations(IAmqpAdmin admin)
+        private void AttemptDeclarations(IRabbitAdmin admin)
         {
             var queueNames = GetQueueNamesAsSet();
-            var queueBeans = ApplicationContext.GetServices<Config.Queue>();
+            var queueBeans = ApplicationContext.GetServices<IQueue>();
             foreach (var entry in queueBeans)
             {
-                if (MismatchedQueuesFatal || (queueNames.Contains(entry.Name) && admin.GetQueueProperties(entry.Name) == null))
+                if (MismatchedQueuesFatal || (queueNames.Contains(entry.QueueName) && admin.GetQueueProperties(entry.QueueName) == null))
                 {
-                    _logger?.LogDebug("Redeclaring context exchanges, queues, bindings.");
+                    _logger?.LogDebug("Redeclaring context exchanges, queues, bindings. Container: {name}", ServiceName);
                     admin.Initialize();
                     break;
                 }
             }
         }
 
-        private void CheckStatefulRetry(Exception ex, Message message)
+        private void CheckStatefulRetry(Exception ex, IMessage message)
         {
-            if (message.MessageProperties.IsFinalRetryForMessageWithNoId)
+            if (message.Headers.IsFinalRetryForMessageWithNoId())
             {
                 if (StatefulRetryFatalWithNullMessageId)
                 {
@@ -997,7 +1114,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     throw new ListenerExecutionFailedException(
                         "Cannot retry message more than once without an ID",
-                        new AmqpRejectAndDontRequeueException("Not retryable; rejecting and not requeuing", ex),
+                        new RabbitRejectAndDontRequeueException("Not retryable; rejecting and not requeuing", ex),
                         message);
                 }
             }
@@ -1029,34 +1146,34 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        private void DoExecuteListener(R.IModel channel, object data)
+        private void DoExecuteListener(R.IModel channel, IMessage message)
         {
-            if (data is Message asMessage)
+            if (AfterReceivePostProcessors != null)
             {
-                if (AfterReceivePostProcessors != null)
+                IMessage postProcessed = message;
+                foreach (var processor in AfterReceivePostProcessors)
                 {
-                    foreach (var processor in AfterReceivePostProcessors)
+                    postProcessed = processor.PostProcessMessage(postProcessed);
+                    if (postProcessed == null)
                     {
-                        asMessage = processor.PostProcessMessage(asMessage);
-                        if (asMessage == null)
-                        {
-                            throw new ImmediateAcknowledgeAmqpException("Message Post Processor returned 'null', discarding message");
-                        }
+                        throw new ImmediateAcknowledgeException("Message Post Processor returned 'null', discarding message");
                     }
                 }
 
-                if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(asMessage.MessageProperties))
+                message = postProcessed as IMessage<byte[]>;
+                if (message == null)
                 {
-                    BatchingStrategy.DeBatch(asMessage, (fragment) => ActualInvokeListener(channel, fragment));
+                    throw new InvalidOperationException("AfterReceivePostProcessors failed to return a IMessage<byte[]>");
                 }
-                else
-                {
-                    ActualInvokeListener(channel, asMessage);
-                }
+            }
+
+            if (IsDeBatchingEnabled && BatchingStrategy.CanDebatch(message.Headers))
+            {
+                BatchingStrategy.DeBatch(message, (fragment) => ActualInvokeListener(channel, fragment));
             }
             else
             {
-                ActualInvokeListener(channel, data);
+                ActualInvokeListener(channel, message);
             }
         }
 
@@ -1066,7 +1183,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var queues = Queues;
             foreach (var q in queues)
             {
-                sb.Append(q.Name);
+                sb.Append(q.QueueName);
                 sb.Append(",");
             }
 
@@ -1075,7 +1192,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private List<string> QueuesToNames()
         {
-            return Queues.Select((q) => q.Name).ToList();
+            return Queues.Select((q) => q.ActualName).ToList();
         }
 
         private void CheckMissingQueuesFatalFromProperty()
@@ -1135,7 +1252,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             public void Log(ILogger logger, string message, object cause)
             {
-                logger.LogError("Unexpected invocation of " + GetType() + ", with message: " + message, cause);
+                logger.LogError("Unexpected invocation of {type}, with {message}:{cause}", GetType(), message, cause);
             }
         }
     }

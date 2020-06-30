@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -23,7 +24,6 @@ using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,6 +32,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 {
     public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownListener
     {
+        public const string DEFAULT_SERVICE_NAME = "ccFactory";
+
         public enum CachingMode
         {
             CHANNEL,
@@ -53,9 +55,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         internal readonly LinkedList<ChannelCachingConnectionProxy> _idleConnections = new LinkedList<ChannelCachingConnectionProxy>();
         internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionNonTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
         internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
+        internal bool _stopped;
 
         private const int DEFAULT_CHANNEL_CACHE_SIZE = 25;
-        private readonly ChannelCachingConnectionProxy _connection;
+        internal readonly ChannelCachingConnectionProxy _connection;
         private readonly object _connectionMonitor = new object();
         private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new Dictionary<int, AtomicInteger>();
         private readonly AtomicInteger _connectionHighWaterMark = new AtomicInteger();
@@ -68,37 +71,39 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         private ConfirmType _confirmType = ConfirmType.NONE;
         private int _channelCheckoutTimeout = 0;
         private IConditionalExceptionLogger _closeExceptionLogger = new DefaultChannelCloseLogger();
-        private bool _stopped;
         private bool _active = true;
 
-        public CachingConnectionFactory(ILogger logger = null)
-            : this((string)null, -1, CachingMode.CHANNEL, logger)
+        public CachingConnectionFactory(ILoggerFactory loggerFactory = null)
+            : this((string)null, -1, loggerFactory)
         {
         }
 
-        public CachingConnectionFactory(IOptionsMonitor<RabbitOptions> optionsMonitor, ILogger logger = null)
-            : base(NewRabbitConnectionFactory(), logger)
+        [ActivatorUtilitiesConstructor]
+        public CachingConnectionFactory(IOptionsMonitor<RabbitOptions> optionsMonitor, ILoggerFactory loggerFactory = null)
+            : base(NewRabbitConnectionFactory(), loggerFactory)
         {
             _optionsMonitor = optionsMonitor;
+            _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
             ConfigureRabbitConnectionFactory(Options);
-            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true);
-            _connection = new ChannelCachingConnectionProxy(this, null, logger);
+            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+            PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
             Configure(Options);
             InitCacheWaterMarks();
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        public CachingConnectionFactory(string hostname, ILogger logger = null)
-            : this(hostname, -1, CachingMode.CHANNEL, logger)
+        public CachingConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
+            : this(hostname, -1, loggerFactory)
         {
         }
 
-        public CachingConnectionFactory(int port, ILogger logger = null)
-            : this(null, port, CachingMode.CHANNEL, logger)
+        public CachingConnectionFactory(int port, ILoggerFactory loggerFactory = null)
+            : this(null, port, loggerFactory)
         {
         }
 
-        public CachingConnectionFactory(string hostNameArg, int port, CachingMode cachingMode = CachingMode.CHANNEL, ILogger logger = null)
-            : base(NewRabbitConnectionFactory(), logger)
+        public CachingConnectionFactory(string hostNameArg, int port, ILoggerFactory loggerFactory = null)
+            : base(NewRabbitConnectionFactory(), loggerFactory)
         {
             var hostname = hostNameArg;
             if (string.IsNullOrEmpty(hostname))
@@ -106,52 +111,56 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 hostname = GetDefaultHostName();
             }
 
+            _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
             Host = hostname;
             Port = port;
-            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true);
-            _connection = new ChannelCachingConnectionProxy(this, null, logger);
-            CacheMode = cachingMode;
+            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+            PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
             InitCacheWaterMarks();
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        public CachingConnectionFactory(Uri uri, ILogger logger = null)
-            : this(uri, CachingMode.CHANNEL, logger)
+        public CachingConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
+            : this(uri, CachingMode.CHANNEL, loggerFactory)
         {
         }
 
-        public CachingConnectionFactory(Uri uri, CachingMode cachingMode = CachingMode.CHANNEL, ILogger logger = null)
-            : base(NewRabbitConnectionFactory(), logger)
+        public CachingConnectionFactory(Uri uri, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
+            : base(NewRabbitConnectionFactory(), loggerFactory)
         {
+            _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
             CacheMode = cachingMode;
             Uri = uri;
-            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true);
-            _connection = new ChannelCachingConnectionProxy(this, null, logger);
+            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, cachingMode, loggerFactory);
+            PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
             InitCacheWaterMarks();
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, ILogger logger = null)
-            : this(rabbitConnectionFactory, false, CachingMode.CHANNEL, logger)
+        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+            : this(rabbitConnectionFactory, false, CachingMode.CHANNEL, loggerFactory)
         {
         }
 
-        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.CHANNEL, ILogger logger = null)
-            : base(rabbitConnectionFactory, logger)
+        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
+            : base(rabbitConnectionFactory, loggerFactory)
         {
             CacheMode = cachingMode;
-            _connection = new ChannelCachingConnectionProxy(this, null, logger);
+            _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+            PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
             if (!isPublisherFactory)
             {
                 if (RabbitConnectionFactory != null && RabbitConnectionFactory.AutomaticRecoveryEnabled)
                 {
                     RabbitConnectionFactory.AutomaticRecoveryEnabled = false;
-                    logger?.LogWarning("***\nAutomatic Recovery was Enabled in the provided connection factory;\n"
+                    _logger?.LogWarning("***\nAutomatic Recovery was Enabled in the provided connection factory;\n"
                             + "while Steeltoe is generally compatible with this feature, there\n"
                             + "are some corner cases where problems arise. Steeltoe\n"
                             + "prefers to use its own recovery mechanisms; when this option is true, you may receive\n"
                             + "odd Exception's until the connection is recovered.\n");
                 }
 
-                PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, cachingMode, logger);
+                PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, cachingMode, loggerFactory);
             }
             else
             {
@@ -159,6 +168,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
 
             InitCacheWaterMarks();
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
         private static ConnectionFactory NewRabbitConnectionFactory()
@@ -205,7 +215,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public CachingMode CacheMode { get; private set; }
+        public CachingMode CacheMode { get; set; } = CachingMode.CHANNEL;
 
         public int ConnectionCacheSize
         {
@@ -219,11 +229,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 if (value < 1)
                 {
                     throw new ArgumentException(nameof(ConnectionCacheSize));
-                }
-
-                if (CacheMode == CachingMode.CHANNEL && value != 1)
-                {
-                    throw new ArgumentException("When the cache mode is 'CHANNEL', the connection cache size cannot be configured.");
                 }
 
                 _connectionCacheSize = value;
@@ -335,7 +340,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public IPublisherCallbackChannelFactory PublisherCallbackChannelFactory { get; set; } = new DefaultPublisherCallbackFactory();
+        public IPublisherCallbackChannelFactory PublisherCallbackChannelFactory { get; set; }
 
         protected internal RabbitOptions Options
         {
@@ -368,25 +373,17 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public void ShutdownCompleted(object sender, ShutdownEventArgs args)
+        public void ChannelShutdownCompleted(object sender, ShutdownEventArgs args)
         {
             _closeExceptionLogger.Log(_logger, "Channel shutdown", args.Cause);
-            int protocolClassId = args.ClassId;
-            if (protocolClassId == RabbitUtils.ChannelClose_ClassId)
-            {
-                ChannelListener.OnShutDown(args);
-            }
-            else if (protocolClassId == RabbitUtils.ConnectionClose_ClassId)
-            {
-                ConnectionListener.OnShutDown(args);
-            }
+            ChannelListener.OnShutDown(args);
         }
 
         public override IConnection CreateConnection()
         {
             if (_stopped)
             {
-                throw new AmqpApplicationContextClosedException("The ConnectionFactory is disposed and can no longer create connections.");
+                throw new RabbitApplicationContextClosedException("The ConnectionFactory is disposed and can no longer create connections.");
             }
 
             lock (_connectionMonitor)
@@ -430,23 +427,61 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             _stopped = true;
         }
 
-        // Used in unit test
-        internal int CountOpenConnections()
+        public IDictionary<string, object> GetCacheProperties()
         {
-            var n = 0;
-            foreach (var proxy in _allocatedConnections)
+            var props = new Dictionary<string, object>();
+            props.Add("cacheMode", CacheMode.ToString());
+            lock (_connectionMonitor)
             {
-                if (proxy.IsOpen)
+                props.Add("channelCacheSize", _channelCacheSize);
+                if (CacheMode == CachingMode.CONNECTION)
                 {
-                    n++;
+                    props.Add("connectionCacheSize", _connectionCacheSize);
+                    props.Add("openConnections", CountOpenConnections());
+                    props.Add("idleConnections", _idleConnections.Count);
+                    props.Add("idleConnectionsHighWater", _connectionHighWaterMark.Value);
+                    foreach (var proxy in _allocatedConnections)
+                    {
+                        PutConnectionName(props, proxy, ":" + proxy.LocalPort);
+                    }
+
+                    foreach (var entry in _allocatedConnectionTransactionalChannels)
+                    {
+                        var port = entry.Key.LocalPort;
+                        if (port > 0 && entry.Key.IsOpen)
+                        {
+                            var channelList = entry.Value;
+                            props.Add("idleChannelsTx:" + port, channelList.Count);
+                            props.Add("idleChannelsTxHighWater:" + port, _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
+                        }
+                    }
+
+                    foreach (var entry in _allocatedConnectionNonTransactionalChannels)
+                    {
+                        var port = entry.Key.LocalPort;
+                        if (port > 0 && entry.Key.IsOpen)
+                        {
+                            var channelList = entry.Value;
+                            props.Add("idleChannelsNotTx:" + port, channelList.Count);
+                            props.Add("idleChannelsNotTxHighWater:" + port, _channelHighWaterMarks[RuntimeHelpers.GetHashCode(channelList)].Value);
+                        }
+                    }
+                }
+                else
+                {
+                    props.Add("localPort", _connection.Target == null ? 0 : _connection.LocalPort);
+                    props.Add("idleChannelsTx", _cachedChannelsTransactional.Count);
+                    props.Add("idleChannelsNotTx", _cachedChannelsNonTransactional.Count);
+                    props.Add("idleChannelsTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsTransactional)].Value);
+                    props.Add("idleChannelsNotTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsNonTransactional)].Value);
+                    PutConnectionName(props, _connection, string.Empty);
                 }
             }
 
-            return n;
+            return props;
         }
 
-        #region Protected
-        protected void ResetConnection()
+        public void ResetConnection()
         {
             lock (_connectionMonitor)
             {
@@ -473,6 +508,23 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 PublisherCachingConnectionFactory.ResetConnection();
             }
         }
+
+        // Used in unit test
+        internal int CountOpenConnections()
+        {
+            var n = 0;
+            foreach (var proxy in _allocatedConnections)
+            {
+                if (proxy.IsOpen)
+                {
+                    n++;
+                }
+            }
+
+            return n;
+        }
+
+        #region Protected
 
         protected void Reset(LinkedList<IChannelProxy> channels, LinkedList<IChannelProxy> txChannels, Dictionary<IModel, IChannelProxy> channelsAwaitingAcks)
         {
@@ -503,7 +555,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogTrace("Could not close cached Rabbit Channel", ex);
+                    _logger?.LogTrace(ex, "Could not close cached Rabbit Channel");
                 }
             }
         }
@@ -532,6 +584,23 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             if (cacheConnection.Size.HasValue)
             {
                 ConnectionCacheSize = cacheConnection.Size.Value;
+            }
+        }
+
+        private void PutConnectionName(IDictionary<string, object> props, IConnectionProxy connection, string keySuffix)
+        {
+            var targetConnection = connection.TargetConnection; // NOSONAR (close())
+            if (targetConnection != null)
+            {
+                var del = targetConnection.Connection;
+                if (del != null)
+                {
+                    var name = del.ClientProvidedName;
+                    if (name != null)
+                    {
+                        props.Add("connectionName" + keySuffix, name);
+                    }
+                }
             }
         }
 
@@ -610,7 +679,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 channel = FindOpenChannel(channelList, channel);
                 if (channel != null)
                 {
-                    _logger?.LogTrace("Found cached Rabbit Channel: " + channel.ToString());
+                    _logger?.LogTrace("Found cached Rabbit Channel:{channel}", channel);
                 }
             }
 
@@ -625,7 +694,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     if (permits != null)
                     {
                         permits.Release();
-                        _logger?.LogDebug("Could not get channel; released permit for " + connection + ", remaining:" + permits.CurrentCount);
+                        _logger?.LogDebug("Could not get channel; released permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
                     }
 
                     throw;
@@ -643,14 +712,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     if (!permits.Wait(ChannelCheckoutTimeout))
                     {
-                        throw new AmqpTimeoutException("No available channels");
+                        throw new RabbitTimeoutException("No available channels");
                     }
 
-                    _logger?.LogDebug("Acquired permit for " + connection + ", remaining:" + permits.CurrentCount);
+                    _logger?.LogDebug("Acquired permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
                 }
                 catch (ObjectDisposedException e)
                 {
-                    throw new AmqpTimeoutException("Failure while acquiring a channel", e);
+                    throw new RabbitTimeoutException("Failure while acquiring a channel", e);
                 }
             }
             else
@@ -670,7 +739,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     channel = channelList.First.Value;
                     channelList.RemoveFirst();
-                    _logger?.LogTrace(channel + " retrieved from cache");
+                    _logger?.LogTrace("{channel} retrieved from cache", channel);
                     if (channel.IsOpen)
                     {
                         break;
@@ -702,15 +771,15 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             catch (AlreadyClosedException)
             {
-                _logger?.LogTrace(channel + " is already closed");
+                _logger?.LogTrace("{channel} is already closed", channel);
             }
             catch (TimeoutException e)
             {
-                _logger?.LogWarning("TimeoutException closing channel " + e.Message);
+                _logger?.LogWarning(e, "TimeoutException closing channel {channel}", channel);
             }
             catch (Exception e)
             {
-                _logger?.LogDebug("Unexpected Exception closing channel " + e.Message);
+                _logger?.LogDebug(e, "Unexpected Exception closing channel {channel}", channel);
             }
         }
 
@@ -751,15 +820,15 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         private IChannelProxy GetCachedChannelProxy(ChannelCachingConnectionProxy connection, LinkedList<IChannelProxy> channelList, bool transactional)
         {
             var targetChannel = CreateBareChannel(connection, transactional);
-            _logger?.LogDebug("Creating cached Rabbit Channel from " + targetChannel);
+            _logger?.LogDebug("Creating cached Rabbit Channel from {targetChannel}", targetChannel);
             ChannelListener.OnCreate(targetChannel, transactional);
             if (_confirmType == ConfirmType.CORRELATED || IsPublisherReturns)
             {
-                return new CachedPublisherCallbackChannelProxy(this, connection, targetChannel, channelList, transactional, _logger);
+                return new CachedPublisherCallbackChannelProxy(this, connection, targetChannel, channelList, transactional, _loggerFactory?.CreateLogger<CachedPublisherCallbackChannelProxy>());
             }
             else
             {
-                return new CachedChannelProxy(this, connection, targetChannel, channelList, transactional, _logger);
+                return new CachedChannelProxy(this, connection, targetChannel, channelList, transactional, _loggerFactory?.CreateLogger<CachedChannelProxy>());
             }
         }
 
@@ -814,9 +883,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     channel.ConfirmSelect();
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
-                    _logger?.LogError("Could not configure the channel to receive publisher confirms", e);
+                    _logger?.LogError(e, "Could not configure the channel to receive publisher confirms");
                 }
             }
 
@@ -828,7 +897,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             if (channel != null)
             {
                 // channel.AddShutdownListener(this);
-                channel.ModelShutdown += ShutdownCompleted;
+                channel.ModelShutdown += ChannelShutdownCompleted;
             }
 
             return channel; // NOSONAR - Simple connection throws exception
@@ -853,11 +922,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 if (CountOpenConnections() >= ConnectionLimit
                         && CurrentTimeMillis() - now >= ChannelCheckoutTimeout)
                 {
-                    throw new AmqpTimeoutException("Timed out attempting to get a connection");
+                    throw new RabbitTimeoutException("Timed out attempting to get a connection");
                 }
 
                 cachedConnection = new ChannelCachingConnectionProxy(this, CreateBareConnection(), _logger);
-                _logger?.LogDebug("Adding new connection '" + cachedConnection + "'");
+                _logger?.LogDebug("Adding new connection '{connection}'", cachedConnection);
 
                 _allocatedConnections.Add(cachedConnection);
 
@@ -886,7 +955,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             else
             {
-                _logger?.LogDebug("Obtained connection '" + cachedConnection + "' from cache");
+                _logger?.LogDebug("Obtained connection '{connection}' from cache", cachedConnection);
             }
 
             return cachedConnection;
@@ -908,8 +977,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Exception while waiting for a connection", e);
-                        throw new AmqpException("Interrupted while waiting for a connection", e);
+                        _logger?.LogError(e, "Exception while waiting for a connection");
+                        throw new RabbitException("Interrupted while waiting for a connection", e);
                     }
                 }
             }
@@ -929,7 +998,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     _idleConnections.RemoveFirst();
                     if (!cachedConnection.IsOpen)
                     {
-                        _logger?.LogDebug("Skipping closed connection '" + cachedConnection + "'");
+                        _logger?.LogDebug("Skipping closed connection '{connection}'", cachedConnection);
                         cachedConnection.NotifyCloseIfNecessary();
                         _idleConnections.AddLast(cachedConnection);
 
@@ -964,7 +1033,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             connection.Target = CreateBareConnection();
             connection._closeNotified = 0;
             ConnectionListener.OnCreate(connection);
-            _logger?.LogDebug("Refreshed existing connection '" + connection + "'");
+            _logger?.LogDebug("Refreshed existing connection '{connection}'", connection);
         }
 
         private void InitCacheWaterMarks()
@@ -1175,16 +1244,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             {
                 get
                 {
-                    try
-                    {
-                        PreInvoke();
-                        return _target.IsClosed;
-                    }
-                    catch (Exception e)
-                    {
-                        PostException(e);
-                        throw;
-                    }
+                    return _target == null || _target.IsClosed;
                 }
             }
 
@@ -2138,7 +2198,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 if (_target == null || !_target.IsOpen)
                 {
                     // Basic re-connection logic...
-                    _logger?.LogDebug("Detected closed channel on exception.  Re-initializing: " + _target);
+                    _logger?.LogDebug(e, "Detected closed channel on exception.  Re-initializing: {target} ", _target);
                     _target = null;
 
                     lock (_targetMonitor)
@@ -2158,7 +2218,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     if (_target is IPublisherCallbackChannel)
                     {
                         _target.Close();
-                        throw new AmqpException("PublisherCallbackChannel is closed");
+                        throw new RabbitException("PublisherCallbackChannel is closed");
                     }
                     else if (_txStarted)
                     {
@@ -2198,11 +2258,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     if (_factory._checkoutPermits.TryGetValue(_theConnection, out var permits))
                     {
                         permits.Release();
-                        _logger?.LogDebug("Released permit for '" + _theConnection + "', remaining: " + permits.CurrentCount);
+                        _logger?.LogDebug("Released permit for '{connection}', remaining: {permits}", _theConnection, permits.CurrentCount);
                     }
                     else
                     {
-                        _logger?.LogError("LEAKAGE: No permits map entry for " + _theConnection);
+                        _logger?.LogError("LEAKAGE: No permits map entry for {connection} ", _theConnection);
                     }
                 }
             }
@@ -2233,7 +2293,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     {
                         if (!_channelList.Contains(this))
                         {
-                            _logger?.LogTrace("Returning cached Channel: " + _target);
+                            _logger?.LogTrace("Returning cached channel: {channel}", _target);
                             ReleasePermitIfNecessary();
                             _channelList.AddLast(this);
                             SetHighWaterMark();
@@ -2249,7 +2309,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                             }
                             catch (Exception e)
                             {
-                                _logger?.LogError("Exception while doing PhysicalClose()", e);
+                                _logger?.LogError(e, "Exception while doing PhysicalClose()");
                             }
                         }
                     }
@@ -2311,7 +2371,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             protected virtual void PhysicalClose()
             {
-                _logger?.LogDebug("Closing cached Channel: " + _target);
+                _logger?.LogDebug("Closing cached channel: {channel} ", _target);
                 if (_target == null)
                 {
                     return;
@@ -2336,7 +2396,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
                 catch (AlreadyClosedException e)
                 {
-                    _logger?.LogTrace(_target + " is already closed", e);
+                    _logger?.LogTrace(e, "{channel} is already closed", _target);
                 }
                 finally
                 {
@@ -2372,7 +2432,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError("Exception in AsyncClose processing", e);
+                            _logger?.LogError(e, "Exception in AsyncClose processing");
                         }
                         finally
                         {
@@ -2382,7 +2442,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                             }
                             catch (Exception e)
                             {
-                                _logger?.LogError("Exception in AsyncClose issued channel close", e);
+                                _logger?.LogError(e, "Exception in AsyncClose issued channel close");
                             }
                             finally
                             {
@@ -2394,7 +2454,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Exception while running AsyncClose processing", e);
+                    _logger?.LogError(e, "Exception while running AsyncClose processing");
 
                     // _factory._inFlightAsyncCloses.release(channel);
                 }
@@ -2484,11 +2544,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                         {
                             if (!IsOpen || CountOpenIdleConnections() >= _factory.ConnectionCacheSize)
                             {
-                                _logger?.LogDebug("Completely closing connection '" + this + "'");
+                                _logger?.LogDebug("Completely closing connection '{connection}'", this);
                                 Dispose();
                             }
 
-                            _logger?.LogDebug("Returning connection '" + this + "' to cache");
+                            _logger?.LogDebug("Returning connection '{connection}' to cache", this);
 
                             _factory._idleConnections.AddLast(this);
                             var idleConnectionsSize = _factory._idleConnections.Count;
@@ -2583,7 +2643,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             public void Log(ILogger logger, string message, object cause)
             {
-                logger?.LogError("Unexpected invocation of " + GetType() + ", with message: " + message, cause);
+                logger?.LogError("Unexpected invocation of {type}, with {message}:{cause} ", GetType(), message, cause);
             }
         }
         #endregion

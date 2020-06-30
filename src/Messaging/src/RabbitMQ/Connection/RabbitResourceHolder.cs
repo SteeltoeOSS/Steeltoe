@@ -15,9 +15,9 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.Rabbit.Support;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
@@ -126,8 +126,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
             catch (Exception e)
             {
-                _logger?.LogError("failed to commit RabbitMQ transaction", e);
-                throw new AmqpException("failed to commit RabbitMQ transaction", e);
+                _logger?.LogError(e, "failed to commit RabbitMQ transaction");
+                throw new RabbitException("failed to commit RabbitMQ transaction", e);
             }
         }
 
@@ -143,12 +143,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     }
                     else
                     {
-                        _logger?.LogDebug("Skipping close of consumer channel: " + channel.ToString());
+                        _logger?.LogDebug("Skipping close of consumer channel: {channel} ", channel);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogDebug("Could not close synchronized Rabbit Channel after transaction", ex);
+                    _logger?.LogDebug(ex, "Could not close synchronized Rabbit Channel after transaction");
                 }
             }
 
@@ -174,7 +174,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             foreach (var channel in _channels)
             {
-                _logger?.LogDebug("Rolling back messages to channel: " + channel);
+                _logger?.LogDebug("Rolling back messages to channel: {channel}", channel);
 
                 RabbitUtils.RollbackIfNecessary(channel);
                 if (_deliveryTags.TryGetValue(channel, out var tags))
@@ -185,10 +185,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                         {
                             channel.BasicReject(deliveryTag, RequeueOnRollback);
                         }
-                        catch (IOException ex)
+                        catch (Exception ex)
                         {
-                            _logger?.LogError("Error Rolling back messages to channel: " + channel, ex);
-                            throw new AmqpIOException(ex);
+                            _logger?.LogError(ex, "Error Rolling back messages to {channel} ", channel);
+                            throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
                         }
                     }
 

@@ -29,7 +29,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var startedBeans = new ConcurrentQueue<ILifecycle>();
             var bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
             bean.IsAutoStartup = true;
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean }, new List<ISmartLifecycle>());
             Assert.False(bean.IsRunning);
             await processor.OnRefresh();
             Assert.True(bean.IsRunning);
@@ -44,7 +44,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var startedBeans = new ConcurrentQueue<ILifecycle>();
             var bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
             bean.IsAutoStartup = false;
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean }, new List<ISmartLifecycle>());
             Assert.False(bean.IsRunning);
             await processor.OnRefresh();
             Assert.False(bean.IsRunning);
@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var bean2 = TestSmartLifecycleBean.ForStartupTests(2, startedBeans);
             var bean3 = TestSmartLifecycleBean.ForStartupTests(3, startedBeans);
             var beanMax = TestSmartLifecycleBean.ForStartupTests(int.MaxValue, startedBeans);
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean3, beanMin, bean2, beanMax, bean1 });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean3, beanMin, bean2, beanMax, bean1 }, new List<ISmartLifecycle>());
 
             Assert.False(beanMin.IsRunning);
             Assert.False(bean1.IsRunning);
@@ -99,7 +99,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
             var smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
             var smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { simpleBean1, simpleBean2, smartBean1, smartBean2 });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { simpleBean1, simpleBean2, smartBean1, smartBean2 }, new List<ISmartLifecycle>());
 
             Assert.False(simpleBean1.IsRunning);
             Assert.False(simpleBean2.IsRunning);
@@ -139,7 +139,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
             var smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
             var smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { simpleBean1, simpleBean2, smartBean1, smartBean2 });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { simpleBean1, simpleBean2, smartBean1, smartBean2 }, new List<ISmartLifecycle>());
 
             Assert.False(simpleBean1.IsRunning);
             Assert.False(simpleBean2.IsRunning);
@@ -193,7 +193,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var bean6 = TestSmartLifecycleBean.ForShutdownTests(int.MaxValue, 200, stoppedBeans);
             var bean7 = TestSmartLifecycleBean.ForShutdownTests(3, 200, stoppedBeans);
 
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean1, bean2, bean3, bean4, bean5, bean6, bean7 });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean1, bean2, bean3, bean4, bean5, bean6, bean7 }, new List<ISmartLifecycle>());
             await processor.OnRefresh();
             await processor.Stop();
             var stopped = stoppedBeans.ToArray();
@@ -212,7 +212,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var stoppedBeans = new ConcurrentQueue<ILifecycle>();
             var bean = TestSmartLifecycleBean.ForShutdownTests(99, 300, stoppedBeans);
 
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean }, new List<ISmartLifecycle>());
             await processor.OnRefresh();
             Assert.True(bean.IsRunning);
             await processor.Stop();
@@ -226,7 +226,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             var stoppedBeans = new ConcurrentQueue<ILifecycle>();
             ILifecycle bean = new TestLifecycleBean(null, stoppedBeans);
 
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean }, new List<ISmartLifecycle>());
             Assert.False(bean.IsRunning);
             await processor.OnRefresh();
             Assert.False(bean.IsRunning);
@@ -250,7 +250,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             ILifecycle bean6 = TestSmartLifecycleBean.ForShutdownTests(-1, 100, stoppedBeans);
             ILifecycle bean7 = TestSmartLifecycleBean.ForShutdownTests(int.MinValue, 300, stoppedBeans);
 
-            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean1, bean2, bean3, bean4, bean5, bean6, bean7 });
+            var processor = new DefaultLifecycleProcessor(new List<ILifecycle>() { bean1, bean2, bean3, bean4, bean5, bean6, bean7 }, new List<ISmartLifecycle>());
             await processor.OnRefresh();
 
             Assert.True(bean2.IsRunning);

@@ -21,12 +21,16 @@ namespace Steeltoe.Integration.Support.Converter
 {
     public class DefaultDatatypeChannelMessageConverter : IMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(DefaultDatatypeChannelMessageConverter);
+
         private readonly IConversionService _conversionService;
 
         public DefaultDatatypeChannelMessageConverter(IConversionService conversionService = null)
         {
             _conversionService = conversionService ?? DefaultConversionService.Singleton;
         }
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public object FromMessage(IMessage message, Type targetClass)
         {
@@ -45,7 +49,7 @@ namespace Steeltoe.Integration.Support.Converter
             return (T)FromMessage(message, typeof(T));
         }
 
-        public IMessage ToMessage(object payload, IMessageHeaders headers = null)
+        public IMessage ToMessage(object payload, IMessageHeaders headers)
         {
             throw new NotImplementedException("This converter does not support this method");
         }

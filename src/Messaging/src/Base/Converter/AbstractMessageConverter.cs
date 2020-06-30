@@ -107,12 +107,14 @@ namespace Steeltoe.Messaging.Converter
             }
         }
 
+        public abstract string ServiceName { get;  set; }
+
         public virtual T FromMessage<T>(IMessage message)
         {
             return (T)FromMessage(message, typeof(T), null);
         }
 
-        public virtual T FromMessage<T>(IMessage message, object conversionHint = null)
+        public virtual T FromMessage<T>(IMessage message, object conversionHint)
         {
             return (T)FromMessage(message, typeof(T), null);
         }
@@ -122,7 +124,7 @@ namespace Steeltoe.Messaging.Converter
             return FromMessage(message, targetClass, null);
         }
 
-        public virtual object FromMessage(IMessage message, Type targetClass, object conversionHint = null)
+        public virtual object FromMessage(IMessage message, Type targetClass, object conversionHint)
         {
             if (!CanConvertFrom(message, targetClass))
             {
@@ -132,17 +134,12 @@ namespace Steeltoe.Messaging.Converter
             return ConvertFromInternal(message, targetClass, conversionHint);
         }
 
-        public virtual bool CanConvertFrom(IMessage message, Type targetClass)
-        {
-            return Supports(targetClass) && SupportsMimeType(message.Headers);
-        }
-
-        public virtual IMessage ToMessage(object payload, IMessageHeaders headers = null)
+        public virtual IMessage ToMessage(object payload, IMessageHeaders headers)
         {
             return ToMessage(payload, headers, null);
         }
 
-        public virtual IMessage ToMessage(object payload, IMessageHeaders headers = null, object conversionHint = null)
+        public virtual IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
         {
             if (!CanConvertTo(payload, headers))
             {
@@ -158,7 +155,7 @@ namespace Steeltoe.Messaging.Converter
             var mimeType = GetDefaultContentType(payloadToUse);
             if (headers != null)
             {
-                var accessor = MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(headers, typeof(MessageHeaderAccessor));
+                var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
                 if (accessor != null && accessor.IsMutable)
                 {
                     if (mimeType != null)
@@ -166,11 +163,11 @@ namespace Steeltoe.Messaging.Converter
                         accessor.SetHeaderIfAbsent(MessageHeaders.CONTENT_TYPE, mimeType);
                     }
 
-                    return MessageBuilder<object>.CreateMessage(payloadToUse, accessor.MessageHeaders);
+                    return MessageBuilder.CreateMessage(payloadToUse, accessor.MessageHeaders);
                 }
             }
 
-            var builder = MessageBuilder<object>.WithPayload(payloadToUse);
+            var builder = MessageBuilder.WithPayload(payloadToUse);
             if (headers != null)
             {
                 builder.CopyHeaders(headers);
@@ -184,15 +181,20 @@ namespace Steeltoe.Messaging.Converter
             return builder.Build();
         }
 
+        public virtual bool CanConvertFrom(IMessage message, Type targetClass)
+        {
+            return Supports(targetClass) && SupportsMimeType(message.Headers);
+        }
+
+        public virtual bool CanConvertTo(object payload, IMessageHeaders headers = null)
+        {
+            return Supports(payload.GetType()) && SupportsMimeType(headers);
+        }
+
         protected virtual MimeType GetDefaultContentType(object payload)
         {
             var mimeTypes = SupportedMimeTypes;
-            return mimeTypes.SingleOrDefault();
-        }
-
-        protected virtual bool CanConvertTo(object payload, IMessageHeaders headers = null)
-        {
-            return Supports(payload.GetType()) && SupportsMimeType(headers);
+            return mimeTypes.ElementAt(0);
         }
 
         protected virtual bool SupportsMimeType(IMessageHeaders headers)

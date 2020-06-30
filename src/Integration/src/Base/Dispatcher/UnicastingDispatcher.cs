@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -25,13 +26,13 @@ namespace Steeltoe.Integration.Dispatcher
 {
     public class UnicastingDispatcher : AbstractDispatcher
     {
-        public UnicastingDispatcher(IServiceProvider serviceProvider, ILogger logger = null)
-            : base(serviceProvider, null, logger)
+        public UnicastingDispatcher(IApplicationContext context, ILogger logger = null)
+            : base(context, null, logger)
         {
         }
 
-        public UnicastingDispatcher(IServiceProvider serviceProvider, TaskScheduler executor, ILogger logger = null)
-            : base(serviceProvider, executor, logger)
+        public UnicastingDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+            : base(context, executor, logger)
         {
         }
 

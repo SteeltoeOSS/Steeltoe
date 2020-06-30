@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,6 +25,18 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class PublishSubscribeChannelTest
     {
+        private IServiceProvider provider;
+
+        public PublishSubscribeChannelTest()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+            provider = services.BuildServiceProvider();
+        }
+
         [Fact]
         public void TestSend()
         {
@@ -29,9 +44,9 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(channel.Send(message));
             Assert.Equal(1, handler.Count);
         }
@@ -43,9 +58,9 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(await channel.SendAsync(message));
             Assert.Equal(1, handler.Count);
         }
@@ -57,9 +72,9 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(channel.Send(message));
             for (var i = 0; i < 10000000; i++)
             {
@@ -76,9 +91,9 @@ namespace Steeltoe.Integration.Channel.Test
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(await channel.SendAsync(message));
             for (var i = 0; i < 10000000; i++)
             {
@@ -96,10 +111,10 @@ namespace Steeltoe.Integration.Channel.Test
             var provider = services.BuildServiceProvider();
             var handler1 = new CounterHandler();
             var handler2 = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(handler1);
             channel.Subscribe(handler2);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             for (var i = 0; i < 10000000; i++)
             {
                 await channel.SendAsync(message);

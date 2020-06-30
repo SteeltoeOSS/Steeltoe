@@ -24,20 +24,20 @@ namespace Steeltoe.Messaging.Core
     {
         public const string CONVERSION_HINT_HEADER = "conversionHint";
 
-        private D _defaultDestination;
+        private D _defaultSendDestination;
 
         private IMessageConverter _converter = new SimpleMessageConverter();
 
-        public virtual D DefaultDestination
+        public virtual D DefaultSendDestination
         {
             get
             {
-                return _defaultDestination;
+                return _defaultSendDestination;
             }
 
             set
             {
-                _defaultDestination = value;
+                _defaultSendDestination = value;
             }
         }
 
@@ -71,7 +71,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual Task ConvertAndSendAsync(object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
         {
-            return ConvertAndSendAsync(RequiredDefaultDestination, payload, postProcessor, cancellationToken);
+            return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor, cancellationToken);
         }
 
         public virtual Task ConvertAndSendAsync(D destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
@@ -87,7 +87,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual Task SendAsync(IMessage message, CancellationToken cancellationToken = default)
         {
-            return SendAsync(RequiredDefaultDestination, message, cancellationToken);
+            return SendAsync(RequiredDefaultSendDestination, message, cancellationToken);
         }
 
         public virtual Task SendAsync(D destination, IMessage message, CancellationToken cancellationToken = default)
@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual void ConvertAndSend(object payload, IMessagePostProcessor postProcessor)
         {
-            ConvertAndSend(RequiredDefaultDestination, payload, postProcessor);
+            ConvertAndSend(RequiredDefaultSendDestination, payload, postProcessor);
         }
 
         public virtual void ConvertAndSend(D destination, object payload, IMessagePostProcessor postProcessor)
@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual void Send(IMessage message)
         {
-            Send(RequiredDefaultDestination, message);
+            Send(RequiredDefaultSendDestination, message);
         }
 
         public virtual void Send(D destination, IMessage message)
@@ -140,16 +140,16 @@ namespace Steeltoe.Messaging.Core
 
         protected abstract void DoSend(D destination, IMessage message);
 
-        protected virtual D RequiredDefaultDestination
+        protected virtual D RequiredDefaultSendDestination
         {
             get
             {
-                if (_defaultDestination == null)
+                if (_defaultSendDestination == null)
                 {
                     throw new InvalidOperationException("No default destination configured");
                 }
 
-                return _defaultDestination;
+                return _defaultSendDestination;
             }
         }
 
@@ -162,13 +162,13 @@ namespace Steeltoe.Messaging.Core
             var headersToUse = ProcessHeadersToSend(headers);
             if (headersToUse != null)
             {
-                if (headersToUse is IMessageHeaders)
+                if (headersToUse is MessageHeaders)
                 {
-                    messageHeaders = (IMessageHeaders)headersToUse;
+                    messageHeaders = (MessageHeaders)headersToUse;
                 }
                 else
                 {
-                    messageHeaders = new MessageHeaders(headersToUse);
+                    messageHeaders = new MessageHeaders(headersToUse, null, null);
                 }
             }
 

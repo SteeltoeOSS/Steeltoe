@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
 using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
 
@@ -20,7 +21,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
     /// <summary>
     /// A factory for invokable handler methods that is suitable to process an incoming message
     /// </summary>
-    public interface IMessageHandlerMethodFactory
+    public interface IMessageHandlerMethodFactory : IServiceNameAware
     {
         /// <summary>
         /// Create the invokable handler method that can process the specified method endpoint.
@@ -29,5 +30,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         /// <param name="method">the method to invoke</param>
         /// <returns>a suitable invokable handler for the method</returns>
         IInvocableHandlerMethod CreateInvocableHandlerMethod(object instance, MethodInfo method);
+
+        void Initialize();
     }
 }

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
+using RabbitMQ.Client.Impl;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using System;
 using System.IO;
@@ -29,52 +29,53 @@ namespace Steeltoe.Messaging.Rabbit.Support
                 throw new ArgumentNullException(nameof(exception));
             }
 
-            if (exception is AmqpException)
+            if (exception is RabbitException)
             {
-                return (AmqpException)exception;
+                return (RabbitException)exception;
             }
 
-            if (exception is ShutdownSignalException)
+            if (exception is ChannelAllocationException)
             {
-                return new AmqpConnectException((ShutdownSignalException)exception);
+                return new RabbitResourceNotAvailableException(exception);
+            }
+
+            if (exception is ProtocolException || exception is ShutdownSignalException)
+            {
+                return new RabbitConnectException(exception);
             }
 
             if (exception is ConnectFailureException || exception is BrokerUnreachableException)
             {
-                return new AmqpConnectException(exception);
+                return new RabbitConnectException(exception);
             }
 
             if (exception is PossibleAuthenticationFailureException)
             {
-                return new AmqpAuthenticationException(exception);
+                return new RabbitAuthenticationException(exception);
             }
 
-            if (exception is ProtocolViolationException || exception is UnsupportedMethodFieldException || exception is UnsupportedMethodException)
+            if (exception is OperationInterruptedException)
             {
-                return new AmqpUnsupportedEncodingException(exception);
+                return new RabbitIOException(exception);
             }
 
             if (exception is IOException)
             {
-                return new AmqpIOException((IOException)exception);
+                return new RabbitIOException(exception);
             }
 
             if (exception is TimeoutException)
             {
-                return new AmqpTimeoutException(exception);
+                return new RabbitTimeoutException(exception);
             }
 
-            // if (ex is ConsumerCancelledException)
-            // {
-            //    return new org.springframework.amqp.rabbit.support.ConsumerCancelledException(ex);
-            // }
             if (exception is ConsumerCancelledException)
             {
-                return exception;
+                throw exception;
             }
 
             // fallback
-            return new UncategorizedAmqpException(exception);
+            return new RabbitUncategorizedException(exception);
         }
     }
 }

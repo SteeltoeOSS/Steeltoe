@@ -1,6 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
@@ -30,13 +32,16 @@ public class Program
     public void DirectChannel_Send_10_000_000_SingleHandler()
     {
         var services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var directChannel = new DirectChannel(provider);
+        var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         directChannel.Subscribe(handler);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         directChannel.Send(message);
         for (var i = 0; i < 10_000_000; i++)
         {
@@ -55,11 +60,11 @@ public class Program
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var directChannel = new DirectChannel(provider);
+        var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         directChannel.Subscribe(handler);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         await directChannel.SendAsync(message);
         for (var i = 0; i < 10_000_000; i++)
         {
@@ -79,12 +84,12 @@ public class Program
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var channel = new DirectChannel(provider);
+        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         channel.Subscribe(count1);
         channel.Subscribe(count2);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
@@ -108,7 +113,7 @@ public class Program
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var channel = new DirectChannel(provider);
+        var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         var count3 = new CounterHandler();
@@ -117,7 +122,7 @@ public class Program
         channel.Subscribe(count2);
         channel.Subscribe(count3);
         channel.Subscribe(count4);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
@@ -149,11 +154,11 @@ public class Program
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var channel = new PublishSubscribeChannel(provider);
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         channel.Send(message);
         for (var i = 0; i < 10_000_000; i++)
         {
@@ -171,12 +176,12 @@ public class Program
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         var provider = services.BuildServiceProvider();
-        var channel = new PublishSubscribeChannel(provider);
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler1 = new CounterHandler();
         var handler2 = new CounterHandler();
         channel.Subscribe(handler1);
         channel.Subscribe(handler2);
-        var message = new GenericMessage("test");
+        var message = Message.Create("test");
         for (var i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);

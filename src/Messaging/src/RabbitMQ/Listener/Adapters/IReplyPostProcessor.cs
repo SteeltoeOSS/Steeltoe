@@ -12,12 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Messaging.Rabbit.Data;
-
 namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 {
     public interface IReplyPostProcessor
     {
-        Message Apply(Message arg1, Message arg2);
+        IMessage Apply(IMessage arg1, IMessage arg2);
     }
 }

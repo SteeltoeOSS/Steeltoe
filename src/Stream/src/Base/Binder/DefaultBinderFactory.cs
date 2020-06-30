@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Util;
 using System;
@@ -27,7 +28,7 @@ namespace Steeltoe.Stream.Binder
         private readonly object _lock = new object();
         private readonly IBinderConfigurations _binderConfigurations;
         private readonly List<IBinderFactoryListener> _listeners; // TODO: implement listener callback
-        private readonly IServiceProvider _services;
+        private readonly IApplicationContext _context;
         private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
         private Dictionary<string, IBinder> _binderInstanceCache;
 
@@ -47,14 +48,14 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        public DefaultBinderFactory(IServiceProvider services, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations, IEnumerable<IBinderFactoryListener> listeners = null)
+        public DefaultBinderFactory(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations, IEnumerable<IBinderFactoryListener> listeners = null)
         {
             if (binderConfigurations == null)
             {
                 throw new ArgumentNullException(nameof(binderConfigurations));
             }
 
-            _services = services;
+            _context = context;
             _optionsMonitor = optionsMonitor;
             _binderConfigurations = binderConfigurations;
             _listeners = listeners?.ToList();
@@ -82,7 +83,7 @@ namespace Steeltoe.Stream.Binder
         {
             var binderName = !string.IsNullOrEmpty(name) ? name : DefaultBinder;
             IBinder result = null;
-            var binders = _services.GetServices<IBinder>();
+            var binders = _context.GetServices<IBinder>();
 
             if (!string.IsNullOrEmpty(binderName))
             {
@@ -192,7 +193,7 @@ namespace Steeltoe.Stream.Binder
                     if (_binderInstanceCache == null)
                     {
                         _binderInstanceCache = new Dictionary<string, IBinder>();
-                        var binders = _services.GetServices<IBinder>();
+                        var binders = _context.GetServices<IBinder>();
                         foreach (var binder in binders)
                         {
                             var binderName = binder.Name;

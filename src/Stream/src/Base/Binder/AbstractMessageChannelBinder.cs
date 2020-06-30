@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
@@ -41,26 +42,26 @@ namespace Steeltoe.Stream.Binder
         protected bool _producerBindingExist;
 
         protected AbstractMessageChannelBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider)
-        : this(serviceProvider, headersToEmbed, provisioningProvider, null, null)
+        : this(context, headersToEmbed, provisioningProvider, null, null)
         {
         }
 
         protected AbstractMessageChannelBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
             IMessageSourceCustomizer sourceCustomizer)
-            : base(serviceProvider)
+            : base(context)
         {
             _headersToEmbed = headersToEmbed ?? (new string[0]);
             _provisioningProvider = provisioningProvider;
             ListenerContainerCustomizer = containerCustomizer;
             MessageSourceCustomizer = sourceCustomizer;
-            _destinationRegistry = ServiceProvider.GetService<IDestinationRegistry>();
+            _destinationRegistry = ApplicationContext.GetService<IDestinationRegistry>();
         }
 
         public override Type TargetType { get; } = typeof(IMessageChannel);
@@ -101,7 +102,7 @@ namespace Steeltoe.Stream.Binder
 
             PostProcessOutputChannel(outboundTarget, producerOptions);
 
-            ((ISubscribableChannel)outboundTarget).Subscribe(new SendingHandler(ServiceProvider, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions)));
+            ((ISubscribableChannel)outboundTarget).Subscribe(new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions)));
 
             IBinding binding = new DefaultProducingMessageChannelBinding(
                 this,
@@ -223,18 +224,18 @@ namespace Steeltoe.Stream.Binder
             }
             else
             {
-                errorChannel = new BinderErrorChannel(ServiceProvider, errorChannelName);
+                errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName);
                 _destinationRegistry.Register(errorChannelName, errorChannel);
             }
 
             ErrorMessageSendingRecoverer recoverer;
             if (errorMessageStrategy == null)
             {
-                recoverer = new ErrorMessageSendingRecoverer(ServiceProvider, errorChannel);
+                recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel);
             }
             else
             {
-                recoverer = new ErrorMessageSendingRecoverer(ServiceProvider, errorChannel, errorMessageStrategy);
+                recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel, errorMessageStrategy);
             }
 
             var recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
@@ -281,7 +282,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (IsSubscribable(errorChannel))
                 {
-                    var errorBridge = new BridgeHandler(ServiceProvider)
+                    var errorBridge = new BridgeHandler(ApplicationContext)
                     {
                         OutputChannel = defaultErrorChannel
                     };
@@ -369,7 +370,7 @@ namespace Steeltoe.Stream.Binder
             }
             else
             {
-                errorChannel = new PublishSubscribeChannel(ServiceProvider);
+                errorChannel = new PublishSubscribeChannel(ApplicationContext);
                 _destinationRegistry.Register(errorChannelName, errorChannel);
             }
 
@@ -377,7 +378,7 @@ namespace Steeltoe.Stream.Binder
 
             if (defaultErrorChannel != null)
             {
-                var errorBridge = new BridgeHandler(ServiceProvider)
+                var errorBridge = new BridgeHandler(ApplicationContext)
                 {
                     OutputChannel = defaultErrorChannel
                 };
@@ -604,8 +605,8 @@ namespace Steeltoe.Stream.Binder
 
             private readonly bool useNativeEncoding;
 
-            public SendingHandler(IServiceProvider serviceProvider, IMessageHandler handler, bool embedHeaders, string[] headersToEmbed, bool useNativeEncoding)
-                : base(serviceProvider)
+            public SendingHandler(IApplicationContext context, IMessageHandler handler, bool embedHeaders, string[] headersToEmbed, bool useNativeEncoding)
+                : base(context)
             {
                 this.handler = handler;
                 this.embedHeaders = embedHeaders;

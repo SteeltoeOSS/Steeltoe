@@ -14,7 +14,6 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Support;
 using System;
 using System.IO;
 using System.Threading;
@@ -35,8 +34,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAsync()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             var actual = await template.ReceiveAsync();
 
@@ -47,8 +46,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void Receive()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             var actual = template.Receive();
 
@@ -71,7 +70,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAsyncFromDestination()
         {
-            IMessage expected = new GenericMessage("payload");
+            IMessage expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var actual = await template.ReceiveAsync("somewhere");
 
@@ -82,7 +81,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveFromDestination()
         {
-            IMessage expected = new GenericMessage("payload");
+            IMessage expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var actual = template.Receive("somewhere");
 
@@ -93,8 +92,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAsyncAndConvert()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             var payload = await template.ReceiveAndConvertAsync<string>();
             Assert.Equal("home", template.Destination);
@@ -104,8 +103,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveAndConvert()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             var payload = template.ReceiveAndConvert<string>();
             Assert.Equal("home", template.Destination);
@@ -115,7 +114,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAndConvertAsyncFromDestination()
         {
-            IMessage expected = new GenericMessage("payload");
+            IMessage expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var payload = await template.ReceiveAndConvertAsync<string>("somewhere");
             Assert.Equal("somewhere", template.Destination);
@@ -125,7 +124,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveAndConverFromDestination()
         {
-            IMessage expected = new GenericMessage("payload");
+            IMessage expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var payload = template.ReceiveAndConvert<string>("somewhere");
             Assert.Equal("somewhere", template.Destination);
@@ -135,7 +134,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAndConvertAsyncFailed()
         {
-            IMessage expected = new GenericMessage("not a number test");
+            IMessage expected = Message.Create("not a number test");
             template.ReceiveMessage = expected;
             template.MessageConverter = new GenericMessageConverter();
             var ext = await Assert.ThrowsAsync<MessageConversionException>(() => template.ReceiveAndConvertAsync<int>("somewhere"));
@@ -145,7 +144,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveAndConvertFailed()
         {
-            IMessage expected = new GenericMessage("not a number test");
+            IMessage expected = Message.Create("not a number test");
             template.ReceiveMessage = expected;
             template.MessageConverter = new GenericMessageConverter();
             var ext = Assert.Throws<MessageConversionException>(() => template.ReceiveAndConvert<int>("somewhere"));
@@ -155,8 +154,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveAndConvertNoConverter()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             template.MessageConverter = new GenericMessageConverter();
             try
@@ -173,8 +172,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAndConvertAsyncNoConverter()
         {
-            IMessage expected = new GenericMessage("payload");
-            template.DefaultDestination = "home";
+            IMessage expected = Message.Create("payload");
+            template.DefaultReceiveDestination = "home";
             template.ReceiveMessage = expected;
             template.MessageConverter = new GenericMessageConverter();
             try

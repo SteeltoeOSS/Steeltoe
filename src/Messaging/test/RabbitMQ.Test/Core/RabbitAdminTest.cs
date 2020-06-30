@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Exceptions;
@@ -25,14 +26,18 @@ using Steeltoe.Messaging.Rabbit.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Messaging.Rabbit.Config.Binding;
+using IConnectionFactory = Steeltoe.Messaging.Rabbit.Connection.IConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public class RabbitAdminTest
+    public class RabbitAdminTest : AbstractTest
     {
         [Fact]
         public void TestSettingOfNullConnectionFactory()
@@ -44,14 +49,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void TestNoFailOnStartupWithMissingBroker()
         {
-            var serviceCollection = new ServiceCollection();
+            var serviceCollection = CreateContainer();
             serviceCollection.AddRabbitQueue(new Config.Queue("foo"));
-
-            var connectionFactory = new SingleConnectionFactory("foo")
+            serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
             {
-                Port = 434343
-            };
-            var applicationContext = GetApplicationContext(serviceCollection);
+                f.Host = "foo";
+                f.Port = 434343;
+            });
+            var provider = serviceCollection.BuildServiceProvider();
+            var applicationContext = provider.GetService<IApplicationContext>();
+            var connectionFactory = applicationContext.GetService<IConnectionFactory>();
+
             var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
             {
                 AutoStartup = true
@@ -62,27 +70,36 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void TestFailOnFirstUseWithMissingBroker()
         {
-            var serviceCollection = new ServiceCollection();
+            var serviceCollection = CreateContainer();
             serviceCollection.AddRabbitQueue(new Config.Queue("foo"));
-            var connectionFactory = new SingleConnectionFactory("localhost")
+            serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
             {
-                Port = 434343
-            };
-            var applicationContext = GetApplicationContext(serviceCollection);
+                f.Host = "localhost";
+                f.Port = 434343;
+            });
+
+            var provider = serviceCollection.BuildServiceProvider();
+            var applicationContext = provider.GetService<IApplicationContext>();
+            var connectionFactory = applicationContext.GetService<IConnectionFactory>();
             var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
             {
                 AutoStartup = true
             };
-            Assert.Throws<AmqpConnectException>(() => rabbitAdmin.DeclareQueue());
+            Assert.Throws<RabbitConnectException>(() => rabbitAdmin.DeclareQueue());
             connectionFactory.Destroy();
         }
 
-        [Fact(Skip = "Requires Broker")]
+        [Fact]
         public async Task TestGetQueueProperties()
         {
-            var serviceCollection = new ServiceCollection();
-            var connectionFactory = new SingleConnectionFactory("localhost");
-            var applicationContext = GetApplicationContext(serviceCollection);
+            var serviceCollection = CreateContainer();
+            serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+            {
+                f.Host = "localhost";
+            });
+            var provider = serviceCollection.BuildServiceProvider();
+            var applicationContext = provider.GetService<IApplicationContext>();
+            var connectionFactory = applicationContext.GetService<IConnectionFactory>();
             var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory);
             var queueName = "test.properties." + DateTimeOffset.Now.ToUnixTimeMilliseconds();
             try
@@ -120,10 +137,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        [Fact(Skip = "Requires Broker")]
+        [Fact]
         public void TestTemporaryLogs()
         {
-            var serviceCollection = new ServiceCollection();
+            var serviceCollection = CreateContainer();
             serviceCollection.AddRabbitQueue(new Config.Queue("testq.nonDur", false, false, false));
             serviceCollection.AddRabbitQueue(new Config.Queue("testq.ad", true, false, true));
             serviceCollection.AddRabbitQueue(new Config.Queue("testq.excl", true, true, false));
@@ -131,8 +148,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
             serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.nonDur", false, false));
             serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.ad", true, true));
             serviceCollection.AddRabbitExchange(new Config.DirectExchange("testex.all", false, true));
-            var connectionFactory = new SingleConnectionFactory("localhost");
-            var applicationContext = GetApplicationContext(serviceCollection);
+            serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((p, f) =>
+            {
+                f.Host = "localhost";
+            });
+            var provider = serviceCollection.BuildServiceProvider();
+            var applicationContext = provider.GetService<IApplicationContext>();
+            var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
             var logs = new List<string>();
             var mockLogger = new Mock<ILogger>();
@@ -148,9 +170,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 connectionFactory.CreateConnection().Close();
                 logs.Sort();
                 Assert.NotEmpty(logs);
-                Assert.Contains("(testex.ad) durable:True, auto-delete:True", logs[0]);
-                Assert.Contains("(testex.all) durable:False, auto-delete:True", logs[1]);
-                Assert.Contains("(testex.nonDur) durable:False, auto-delete:False", logs[2]);
+                Assert.Contains("(testex.ad), durable:True, auto-delete:True", logs[0]);
+                Assert.Contains("(testex.all), durable:False, auto-delete:True", logs[1]);
+                Assert.Contains("(testex.nonDur), durable:False, auto-delete:False", logs[2]);
                 Assert.Contains("(testq.ad) durable:True, auto-delete:True, exclusive:False", logs[3]);
                 Assert.Contains("(testq.all) durable:False, auto-delete:True, exclusive:True", logs[4]);
                 Assert.Contains("(testq.excl) durable:True, auto-delete:False, exclusive:True", logs[5]);
@@ -163,10 +185,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        [Fact(Skip = "Requires Broker")]
+        [Fact]
         public void TestMultiEntities()
         {
-            var serviceCollection = CreateContainer();
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            serviceCollection.AddRabbitServices();
+            serviceCollection.AddRabbitAdmin();
             var e1 = new Config.DirectExchange("e1", false, true);
             serviceCollection.AddRabbitExchange(e1);
             var q1 = new Config.Queue("q1", false, false, true);
@@ -195,16 +220,16 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 new Binding("b3", "q4", DestinationType.QUEUE, "e4", "k4", null));
             serviceCollection.AddSingleton(ds);
             var provider = serviceCollection.BuildServiceProvider();
-            var admin = provider.GetRabbitAdmin();
-            var template = provider.GetRabbitTempate();
+            var admin = provider.GetRabbitAdmin() as RabbitAdmin;
+            var template = admin.RabbitTemplate;
             template.ConvertAndSend("e1", "k1", "foo");
             template.ConvertAndSend("e2", "k2", "bar");
             template.ConvertAndSend("e3", "k3", "baz");
             template.ConvertAndSend("e4", "k4", "qux");
-            Assert.Equal("foo", template.ReceiveAndConvert("q1"));
-            Assert.Equal("bar", template.ReceiveAndConvert("q2"));
-            Assert.Equal("baz", template.ReceiveAndConvert("q3"));
-            Assert.Equal("qux", template.ReceiveAndConvert("q4"));
+            Assert.Equal("foo", template.ReceiveAndConvert<string>("q1"));
+            Assert.Equal("bar", template.ReceiveAndConvert<string>("q2"));
+            Assert.Equal("baz", template.ReceiveAndConvert<string>("q3"));
+            Assert.Equal("qux", template.ReceiveAndConvert<string>("q4"));
             admin.DeleteQueue("q1");
             admin.DeleteQueue("q2");
             admin.DeleteQueue("q3");
@@ -217,18 +242,18 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var ctx = provider.GetService<IApplicationContext>();
             var mixedDeclarables = ctx.GetService<Declarables>("ds");
             Assert.NotNull(mixedDeclarables);
-            var queues = mixedDeclarables.GetDeclarablesByType<Queue>();
+            var queues = mixedDeclarables.GetDeclarablesByType<IQueue>();
             Assert.Single(queues);
-            Assert.Equal("q4", queues.Single().Name);
+            Assert.Equal("q4", queues.Single().QueueName);
             var exchanges = mixedDeclarables.GetDeclarablesByType<IExchange>();
             Assert.Single(exchanges);
-            Assert.Equal("e4", exchanges.Single().Name);
-            var bindings = mixedDeclarables.GetDeclarablesByType<Binding>();
+            Assert.Equal("e4", exchanges.Single().ExchangeName);
+            var bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
             Assert.Single(bindings);
             Assert.Equal("q4", bindings.Single().Destination);
         }
 
-        [Fact(Skip = "Requires Broker")]
+        [Fact]
         public void TestAvoidHangAMQP_508()
         {
             var cf = new CachingConnectionFactory("localhost");
@@ -253,6 +278,145 @@ namespace Steeltoe.Messaging.Rabbit.Core
             cf.Destroy();
         }
 
+        [Fact]
+        public void TestIgnoreDeclarationExceptionsTimeout()
+        {
+            var rabbitConnectionFactory = new Mock<RabbitMQ.Client.IConnectionFactory>();
+            var toBeThrown = new TimeoutException("test");
+            rabbitConnectionFactory.Setup((c) => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
+            var ccf = new CachingConnectionFactory(rabbitConnectionFactory.Object);
+            var admin = new RabbitAdmin(ccf);
+            admin.IgnoreDeclarationExceptions = true;
+
+            admin.DeclareQueue(new AnonymousQueue("test"));
+            var lastEvent = admin.LastDeclarationExceptionEvent;
+            Assert.Same(admin, lastEvent.Source);
+            Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
+            Assert.IsType<AnonymousQueue>(lastEvent.Declarable);
+
+            admin.DeclareQueue();
+            lastEvent = admin.LastDeclarationExceptionEvent;
+            Assert.Same(admin, lastEvent.Source);
+            Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
+            Assert.Null(lastEvent.Declarable);
+
+            admin.DeclareExchange(new DirectExchange("foo"));
+            lastEvent = admin.LastDeclarationExceptionEvent;
+            Assert.Same(admin, lastEvent.Source);
+            Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
+            Assert.IsType<DirectExchange>(lastEvent.Declarable);
+
+            admin.DeclareBinding(new Binding("foo", "foo", DestinationType.QUEUE, "bar", "baz", null));
+            lastEvent = admin.LastDeclarationExceptionEvent;
+            Assert.Same(admin, lastEvent.Source);
+            Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
+            Assert.IsType<Binding>(lastEvent.Declarable);
+        }
+
+        [Fact]
+        public void TestWithinInvoke()
+        {
+            var connectionFactory = new Mock<Connection.IConnectionFactory>();
+            var connection = new Mock<Connection.IConnection>();
+            connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
+
+            var channel1 = new Mock<IModel>();
+            var channel2 = new Mock<IModel>();
+
+            connection.SetupSequence((c) => c.CreateChannel(false)).Returns(channel1.Object).Returns(channel2.Object);
+            var declareOk = new QueueDeclareOk("foo", 0, 0);
+            channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Returns(declareOk);
+            var template = new RabbitTemplate(connectionFactory.Object);
+            var admin = new RabbitAdmin(template);
+
+            template.Invoke<object>((o) =>
+            {
+                admin.DeclareQueue();
+                admin.DeclareQueue();
+                admin.DeclareQueue();
+                admin.DeclareQueue();
+                return null;
+            });
+            connection.Verify((c) => c.CreateChannel(false), Times.Once);
+            channel1.Verify((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(4));
+            channel1.Verify((c) => c.Close(), Times.Once);
+            channel2.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public void TestRetry()
+        {
+            var connectionFactory = new Mock<RabbitMQ.Client.IConnectionFactory>();
+            var connection = new Mock<RabbitMQ.Client.IConnection>();
+            connection.Setup(c => c.IsOpen).Returns(true);
+            connectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
+
+            var channel1 = new Mock<IModel>();
+            channel1.Setup(c => c.IsOpen).Returns(true);
+            connection.Setup(c => c.CreateModel()).Returns(channel1.Object);
+            channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Throws<Exception>();
+            var ccf = new CachingConnectionFactory(connectionFactory.Object);
+
+            var rtt = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
+            var serviceCollection = CreateContainer();
+            serviceCollection.AddSingleton<IConnectionFactory>(ccf);
+            serviceCollection.AddRabbitAdmin((p, a) =>
+            {
+                a.RetryTemplate = rtt;
+            });
+            var foo = new Config.AnonymousQueue("foo");
+            serviceCollection.AddRabbitQueue(foo);
+            var provider = serviceCollection.BuildServiceProvider();
+            var admin = provider.GetRabbitAdmin();
+            Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
+            channel1.Verify((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
+        }
+
+        [Fact]
+        public async Task TestMasterLocator()
+        {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.Uri = new Uri("amqp://guest:guest@localhost:5672/");
+            var cf = new CachingConnectionFactory(factory);
+            var admin = new RabbitAdmin(cf);
+            var queue = new AnonymousQueue();
+            admin.DeclareQueue(queue);
+            var client = new HttpClient();
+            var authToken = Encoding.ASCII.GetBytes("guest:guest");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
+
+            var result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);
+            int n = 0;
+            while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
+            {
+                await Task.Delay(100);
+                result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + queue.QueueName);
+            }
+
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var content = await result.Content.ReadAsStringAsync();
+            Assert.Contains("x-queue-master-locator", content);
+            Assert.Contains("client-local", content);
+
+            queue = new AnonymousQueue();
+            queue.MasterLocator = null;
+            admin.DeclareQueue(queue);
+
+            result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);
+            n = 0;
+            while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
+            {
+                await Task.Delay(100);
+                result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + queue.QueueName);
+            }
+
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            content = await result.Content.ReadAsStringAsync();
+            Assert.DoesNotContain("x-queue-master-locator", content);
+            Assert.DoesNotContain("client-local", content);
+            cf.Destroy();
+        }
+
         private void CleanQueuesAndExchanges(RabbitAdmin rabbitAdmin)
         {
             rabbitAdmin.DeleteQueue("testq.nonDur");
@@ -269,36 +433,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var info = rabbitAdmin.GetQueueInfo(queueName);
             Assert.NotNull(info);
             return info.MessageCount;
-        }
-
-        private ServiceCollection CreateContainer(ConfigurationBuilder configurationBuilder = null)
-        {
-            var services = new ServiceCollection();
-            if (configurationBuilder == null)
-            {
-                configurationBuilder = new ConfigurationBuilder();
-            }
-
-            var configuration = configurationBuilder.Build();
-            services.AddSingleton(configuration);
-            services.AddSingleton<IConfiguration>((p) => p.GetRequiredService<IConfigurationRoot>());
-            services.AddOptions();
-            services.AddRabbitServices();
-            services.AddRabbitAdmin();
-            services.AddRabbitTemplate();
-            return services;
-        }
-
-        private IApplicationContext GetApplicationContext(ServiceCollection serviceCollection, ConfigurationBuilder builder = null)
-        {
-            if (builder == null)
-            {
-                return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), null);
-            }
-            else
-            {
-                return new GenericApplicationContext(serviceCollection.BuildServiceProvider(), builder.Build());
-            }
         }
     }
 }

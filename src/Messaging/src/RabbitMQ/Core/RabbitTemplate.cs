@@ -12,20 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Serialization;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using RabbitMQ.Client.Impl;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Retry;
+using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Data;
 using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.Rabbit.Extensions;
 using Steeltoe.Messaging.Rabbit.Listener;
 using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -36,9 +42,22 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public class RabbitTemplate : RabbitAccessor, IRabbitOperations, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+    public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IServiceNameAware, IDisposable
     {
-        public const string DEFAULT_RABBIT_TEMPLATE_SERVICE_NAME = "rabbitTemplate";
+        public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
+
+        internal bool _evaluatedFastReplyTo;
+        internal bool _usingFastReplyTo;
+
+        internal readonly object _lock = new object();
+        internal readonly ConcurrentDictionary<IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<IModel, RabbitTemplate>();
+        internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
+        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
+        internal readonly AsyncLocal<IModel> _dedicatedChannels = new AsyncLocal<IModel>();
+        internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
+
+        protected readonly ILogger _logger;
 
         private const string RETURN_CORRELATION_KEY = "spring_request_return_correlation";
         private const string DEFAULT_EXCHANGE = "";
@@ -46,63 +65,62 @@ namespace Steeltoe.Messaging.Rabbit.Core
         private const int DEFAULT_REPLY_TIMEOUT = 5000;
         private const int DEFAULT_CONSUME_TIMEOUT = 10000;
 
-        private readonly object _lock = new object();
-        private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<IModel, RabbitTemplate>();
-        private readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
-        private readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
-        private readonly AsyncLocal<IModel> _dedicatedChannels = new AsyncLocal<IModel>();
-        private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
         private int _activeTemplateCallbacks;
         private int _messageTagProvider;
         private int _containerInstance;
         private bool _isListener = false;
-        private volatile bool _usingFastReplyTo;
-        private volatile bool _evaluatedFastReplyTo;
         private bool? _confirmsOrReturnsCapable;
         private bool _publisherConfirms;
         private string _replyAddress;
 
-        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, Support.Converter.IMessageConverter messageConverter, ILogger logger = null)
-            : base(connectionFactory)
+        [ActivatorUtilitiesConstructor]
+        public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+            : base()
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
-            MessageConverter = messageConverter;
+            MessageConverter = messageConverter ?? new Support.Converter.SimpleMessageConverter();
             _logger = logger;
             Configure(Options);
         }
 
         public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(connectionFactory)
+            : base()
         {
             _optionsMonitor = optionsMonitor;
             ConnectionFactory = connectionFactory;
-            MessageConverter = new SimpleMessageConverter();
+            MessageConverter = new Support.Converter.SimpleMessageConverter();
             _logger = logger;
             Configure(Options);
         }
 
         public RabbitTemplate(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(connectionFactory)
+            : base()
         {
             ConnectionFactory = connectionFactory;
-            MessageConverter = new SimpleMessageConverter();
+            MessageConverter = new Support.Converter.SimpleMessageConverter();
+            DefaultSendDestination = string.Empty + "/" + string.Empty;
+            DefaultReceiveDestination = null;
             _logger = logger;
         }
+
+        public RabbitTemplate(ILogger logger = null)
+            : base()
+        {
+            MessageConverter = new Support.Converter.SimpleMessageConverter();
+            DefaultSendDestination = string.Empty + "/" + string.Empty;
+            DefaultReceiveDestination = null;
+            _logger = logger;
+        }
+
+        public virtual Connection.IConnectionFactory ConnectionFactory { get; set; }
+
+        public virtual bool IsChannelTransacted { get; set; }
 
         #region Properties
 
         public AcknowledgeMode ContainerAckMode { get; set; }
-
-        public Support.Converter.IMessageConverter MessageConverter { get; set; }
-
-        public string Exchange { get; set; } = DEFAULT_EXCHANGE;
-
-        public string RoutingKey { get; set; } = DEFAULT_ROUTING_KEY;
-
-        public string DefaultReceiveQueue { get; set; }
 
         public Encoding Encoding { get; set; } = EncodingUtils.Utf8;
 
@@ -124,7 +142,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public int ReplyTimeout { get; set; } = DEFAULT_REPLY_TIMEOUT;
 
-        public IMessagePropertiesConverter MessagePropertiesConverter { get; set; } = new DefaultMessagePropertiesConverter();
+        public IMessageHeadersConverter MessagePropertiesConverter { get; set; } = new DefaultMessageHeadersConverter();
 
         public IConfirmCallback ConfirmCallback { get; set; }
 
@@ -167,7 +185,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public string UserIdExpressionString { get; set; }
 
-        public string Name { get; set; } = DEFAULT_RABBIT_TEMPLATE_SERVICE_NAME;
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public bool UseCorrelationId { get; set; }
 
@@ -207,10 +225,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 return null;
             }
         }
-
-        #endregion
+        #endregion Properties
 
         #region Public
+
+        #region PostProcessors
         public void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
         {
             if (beforePublishPostProcessors == null)
@@ -270,7 +289,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public void SetAfterReceivePostProcessors(params IMessagePostProcessor[] afterReceivePostProcessors)
         {
-            if (AfterReceivePostProcessors == null)
+            if (afterReceivePostProcessors == null)
             {
                 throw new ArgumentNullException(nameof(afterReceivePostProcessors));
             }
@@ -318,13 +337,104 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
                 var copy = new List<IMessagePostProcessor>(existing);
                 var result = copy.Remove(afterReceivePostProcessor);
-                BeforePublishPostProcessors = copy;
+                AfterReceivePostProcessors = copy;
                 return result;
             }
 
             return false;
         }
+        #endregion PostProcessors
 
+        #region IPublisherCallbackChannel.IListener
+
+        public void HandleConfirm(PendingConfirm pendingConfirm, bool ack)
+        {
+            if (ConfirmCallback != null)
+            {
+                ConfirmCallback.Confirm(pendingConfirm.CorrelationInfo, ack, pendingConfirm.Cause);
+            }
+        }
+
+        public void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+        {
+            var callback = ReturnCallback;
+            if (callback == null)
+            {
+                if (properties.Headers.Remove(RETURN_CORRELATION_KEY, out var messageTagHeader))
+                {
+                    var messageTag = messageTagHeader.ToString();
+                    if (_replyHolder.TryGetValue(messageTag, out var pendingReply))
+                    {
+                        callback = new PendingReplyReturn(pendingReply);
+                    }
+                    else
+                    {
+                        _logger?.LogWarning("Returned request message but caller has timed out");
+                    }
+                }
+                else
+                {
+                    _logger?.LogWarning("Returned message but no callback available");
+                }
+            }
+
+            if (callback != null)
+            {
+                properties.Headers.Remove(PublisherCallbackChannel.RETURN_LISTENER_CORRELATION_KEY);
+                var messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
+                var returnedMessage = Message.Create(body, messageProperties);
+                callback.ReturnedMessage(returnedMessage, replyCode, replyText, exchange, routingKey);
+            }
+        }
+
+        public void Revoke(IModel channel)
+        {
+            _publisherConfirmChannels.Remove(channel, out _);
+            _logger?.LogDebug("Removed publisher confirm channel: {channel} from map, size now {size}", channel, _publisherConfirmChannels.Count);
+        }
+
+        #endregion IPublisherCallbackChannel.IListener
+
+        #region IMessageListener
+
+        public void OnMessageBatch(List<IMessage> messages)
+        {
+            throw new NotSupportedException("This listener does not support message batches");
+        }
+
+        public void OnMessage(IMessage message)
+        {
+            _logger?.LogTrace("Message received {message}", message);
+            object messageTag;
+            if (CorrelationKey == null)
+            {
+                // using standard correlationId property
+                messageTag = message.Headers.CorrelationId();
+            }
+            else
+            {
+                messageTag = message.Headers.Get<object>(CorrelationKey);
+            }
+
+            if (messageTag == null)
+            {
+                throw new RabbitRejectAndDontRequeueException("No correlation header in reply");
+            }
+
+            if (!_replyHolder.TryGetValue((string)messageTag, out var pendingReply))
+            {
+                _logger?.LogWarning("Reply received after timeout for " + messageTag);
+                throw new RabbitRejectAndDontRequeueException("Reply received after timeout");
+            }
+            else
+            {
+                RestoreProperties(message, pendingReply);
+                pendingReply.Reply(message);
+            }
+        }
+        #endregion IMessageListener
+
+        #region IListenerContainerAware
         public List<string> GetExpectedQueueNames()
         {
             _isListener = true;
@@ -342,11 +452,669 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
                 else
                 {
-                    _logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: " + ReplyAddress);
+                    _logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: {replyAddres}", ReplyAddress);
                 }
             }
 
             return replyQueue;
+        }
+
+        #endregion IListenerContainerAware
+
+        #region RabbitSend
+        public void Send(string routingKey, IMessage message)
+        {
+            Send(GetDefaultExchange(), routingKey, message);
+        }
+
+        public void Send(string exchange, string routingKey, IMessage message)
+        {
+            Send(exchange, routingKey, message, null);
+        }
+
+        public virtual void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
+        {
+            var mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id)))
+                            && MandatoryExpression.GetValue<bool>(EvaluationContext, message);
+            Execute<object>(
+                channel =>
+                {
+                    DoSend(channel, exchange, routingKey, message, mandatory, correlationData, default);
+                    return null;
+                }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
+        }
+
+        public Task SendAsync(string routingKey, IMessage message, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(GetDefaultExchange(), routingKey, message, cancellationToken);
+        }
+
+        public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(exchange, routingKey, message, null, cancellationToken);
+        }
+
+        public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            var mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id)))
+                            && MandatoryExpression.GetValue<bool>(EvaluationContext, message);
+            return Task.Run(
+                () => Execute<object>(
+                channel =>
+                {
+                    DoSend(channel, exchange, routingKey, message, mandatory, correlationData, cancellationToken);
+                    return null;
+                }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message)), cancellationToken);
+        }
+
+        #endregion RabbitSend
+
+        #region RabbitConvertAndSend
+
+        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor)
+        {
+            ConvertAndSend(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null);
+        }
+
+        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            ConvertAndSend(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData);
+        }
+
+        public void ConvertAndSend(string routingKey, object message)
+        {
+            ConvertAndSend(GetDefaultExchange(), routingKey, message, null, null);
+        }
+
+        public void ConvertAndSend(string routingKey, object message, CorrelationData correlationData)
+        {
+            ConvertAndSend(GetDefaultExchange(), routingKey, message, null, correlationData);
+        }
+
+        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            ConvertAndSend(GetDefaultExchange(), routingKey, message, messagePostProcessor, null);
+        }
+
+        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            ConvertAndSend(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData);
+        }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message)
+        {
+            ConvertAndSend(exchange, routingKey, message, (CorrelationData)null);
+        }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message, CorrelationData correlationData)
+        {
+            ConvertAndSend(exchange, routingKey, message, null, correlationData);
+        }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            ConvertAndSend(exchange, routingKey, message, messagePostProcessor, null);
+        }
+
+        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            var messageToSend = ConvertMessageIfNecessary(message);
+            if (messagePostProcessor != null)
+            {
+                messageToSend = messagePostProcessor.PostProcessMessage(messageToSend, correlationData);
+            }
+
+            Send(exchange, routingKey, messageToSend, correlationData);
+        }
+
+        public Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string routingKey, object message, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, null, null, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string exchange, string routingKey, object message, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(exchange, routingKey, message, null, null, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string exchange, string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(exchange, routingKey, message, null, correlationData, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertAndSendAsync(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            var messageToSend = ConvertMessageIfNecessary(message);
+            if (messagePostProcessor != null)
+            {
+                messageToSend = messagePostProcessor.PostProcessMessage(messageToSend, correlationData);
+            }
+
+            return SendAsync(exchange, routingKey, messageToSend, correlationData, cancellationToken);
+        }
+
+        #endregion RabbitConvertAndSend
+
+        #region RabbitReceive
+        public Task<IMessage> ReceiveAsync(string queueName, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => DoReceive(queueName, ReceiveTimeout, cancellationToken), cancellationToken);
+        }
+
+        public Task<IMessage> ReceiveAsync(int timeoutMillis, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => DoReceive(GetRequiredQueue(), timeoutMillis, cancellationToken), cancellationToken);
+        }
+
+        public Task<IMessage> ReceiveAsync(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => DoReceive(queueName, timeoutMillis, cancellationToken), cancellationToken);
+        }
+
+        public IMessage Receive(int timeoutMillis)
+        {
+            return Receive(GetRequiredQueue(), timeoutMillis);
+        }
+
+        public IMessage Receive(string queueName)
+        {
+            return Receive(queueName, ReceiveTimeout);
+        }
+
+        public IMessage Receive(string queueName, int timeoutMillis)
+        {
+            if (timeoutMillis == 0)
+            {
+                return DoReceiveNoWait(queueName);
+            }
+            else
+            {
+                return DoReceive(queueName, timeoutMillis, default);
+            }
+        }
+
+        #endregion RabbitReceive
+
+        #region RabbitReceiveAndConvert
+
+        public T ReceiveAndConvert<T>(int timeoutMillis)
+        {
+            return (T)ReceiveAndConvert(GetRequiredQueue(), timeoutMillis, typeof(T));
+        }
+
+        public T ReceiveAndConvert<T>(string queueName)
+        {
+            return (T)ReceiveAndConvert(queueName, ReceiveTimeout, typeof(T));
+        }
+
+        public T ReceiveAndConvert<T>(string queueName, int timeoutMillis)
+        {
+            return (T)ReceiveAndConvert(queueName, timeoutMillis, typeof(T));
+        }
+
+        public object ReceiveAndConvert(Type type)
+        {
+            return ReceiveAndConvert(GetRequiredQueue(), ReceiveTimeout, type);
+        }
+
+        public object ReceiveAndConvert(string queueName, Type type)
+        {
+            return ReceiveAndConvert(queueName, ReceiveTimeout, type);
+        }
+
+        public object ReceiveAndConvert(int timeoutMillis, Type type)
+        {
+            return ReceiveAndConvert(GetRequiredQueue(), timeoutMillis, type);
+        }
+
+        public object ReceiveAndConvert(string queueName, int timeoutMillis, Type type)
+        {
+            return DoReceiveAndConvert(queueName, timeoutMillis, type, default);
+        }
+
+        public Task<T> ReceiveAndConvertAsync<T>(int timeoutMillis, CancellationToken cancellationToken = default)
+        {
+            return ReceiveAndConvertAsync<T>(GetRequiredQueue(), timeoutMillis, cancellationToken);
+        }
+
+        public Task<T> ReceiveAndConvertAsync<T>(string queueName, CancellationToken cancellationToken = default)
+        {
+            return ReceiveAndConvertAsync<T>(queueName, ReceiveTimeout, cancellationToken);
+        }
+
+        public Task<T> ReceiveAndConvertAsync<T>(string queueName, int timeoutMillis, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                return (T)DoReceiveAndConvert(queueName, timeoutMillis, typeof(T), cancellationToken);
+            });
+        }
+
+        public Task<object> ReceiveAndConvertAsync(Type type, CancellationToken cancellation = default)
+        {
+            return ReceiveAndConvertAsync(GetRequiredQueue(), ReceiveTimeout, type, cancellation);
+        }
+
+        public Task<object> ReceiveAndConvertAsync(string queueName, Type type, CancellationToken cancellationToken = default)
+        {
+            return ReceiveAndConvertAsync(queueName, ReceiveTimeout, type, cancellationToken);
+        }
+
+        public Task<object> ReceiveAndConvertAsync(int timeoutMillis, Type type, CancellationToken cancellationToken = default)
+        {
+            return ReceiveAndConvertAsync(GetRequiredQueue(), timeoutMillis, type, cancellationToken);
+        }
+
+        public Task<object> ReceiveAndConvertAsync(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                return DoReceiveAndConvert(queueName, timeoutMillis, type, cancellationToken);
+            });
+        }
+
+        #endregion RabbitReceiveAndConvert
+
+        #region RabbitReceiveAndReply
+        public bool ReceiveAndReply<R, S>(Func<R, S> callback)
+            where R : class
+            where S : class
+        {
+            return ReceiveAndReply(GetRequiredQueue(), callback);
+        }
+
+        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
+            where R : class
+            where S : class
+        {
+            return ReceiveAndReply(queueName, callback, (request, replyto) => GetReplyToAddress(request));
+        }
+
+        public bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
+            where R : class
+            where S : class
+        {
+            return ReceiveAndReply(GetRequiredQueue(), callback, exchange, routingKey);
+        }
+
+        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
+            where R : class
+            where S : class
+        {
+            return ReceiveAndReply(queueName, callback, (request, reply) => new Address(replyExchange, replyRoutingKey));
+        }
+
+        public bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
+            where R : class
+            where S : class
+        {
+            return ReceiveAndReply(GetRequiredQueue(), callback, replyToAddressCallback);
+        }
+
+        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
+            where R : class
+            where S : class
+        {
+            return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
+        }
+        #endregion RabbitReceiveAndReply
+
+        #region RabbitSendAndReceive
+        public IMessage SendAndReceive(IMessage message, CorrelationData correlationData)
+        {
+            return DoSendAndReceive(GetDefaultExchange(), GetDefaultRoutingKey(), message, correlationData, default);
+        }
+
+        public IMessage SendAndReceive(string routingKey, IMessage message)
+        {
+            return DoSendAndReceive(GetDefaultExchange(), routingKey, message, null, default);
+        }
+
+        public IMessage SendAndReceive(string routingKey, IMessage message, CorrelationData correlationData)
+        {
+            return DoSendAndReceive(GetDefaultExchange(), routingKey, message, correlationData, default);
+        }
+
+        public IMessage SendAndReceive(string exchange, string routingKey, IMessage message)
+        {
+            return DoSendAndReceive(exchange, routingKey, message, null, default);
+        }
+
+        public IMessage SendAndReceive(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
+        {
+            return DoSendAndReceive(exchange, routingKey, message, correlationData, default);
+        }
+
+        public Task<IMessage> SendAndReceiveAsync(IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return SendAndReceiveAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, correlationData, cancellationToken);
+        }
+
+        public Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CancellationToken cancellationToken = default)
+        {
+            return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
+        }
+
+        public Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
+        }
+
+        public Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CancellationToken cancellationToken = default)
+        {
+            return SendAndReceiveAsync(exchange, routingKey, message, null, cancellationToken);
+        }
+
+        public Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() => DoSendAndReceive(exchange, routingKey, message, correlationData, cancellationToken), cancellationToken);
+        }
+
+        #endregion RabbitSendAndReceive
+
+        #region RabbitConvertSendAndReceive
+
+        public T ConvertSendAndReceive<T>(object message, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(object message, IMessagePostProcessor messagePostProcessor)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string routingKey, object message)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, null, null, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string routingKey, object message, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, null, correlationData, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string exchange, string routingKey, object message)
+        {
+            return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, null, null, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string exchange, string routingKey, object message, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, null, correlationData, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
+        {
+            return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, null, typeof(T));
+        }
+
+        public T ConvertSendAndReceive<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
+        }
+
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, null, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, null, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, correlationData, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
+        }
+
+        public Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
+            }, cancellationToken);
+        }
+
+        public object ConvertSendAndReceiveAsType(object message, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(object message, CorrelationData correlationData, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(object message, IMessagePostProcessor messagePostProcessor, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string routingKey, object message, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, null, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string routingKey, object message, CorrelationData correlationData, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, null, correlationData, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type)
+        {
+            return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, Type type)
+        {
+            return ConvertSendAndReceiveAsType(exchange, routingKey, message, null, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, CorrelationData correlationData, Type type)
+        {
+            return ConvertSendAndReceiveAsType(exchange, routingKey, message, null, correlationData, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type)
+        {
+            return ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, null, type);
+        }
+
+        public object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type)
+        {
+            var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
+            if (replyMessage == null)
+            {
+                return default;
+            }
+
+            var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
+
+            if (value is Exception && ThrowReceivedExceptions)
+            {
+                throw (Exception)value;
+            }
+
+            return value;
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, correlationData, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, correlationData, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+        {
+            return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, messagePostProcessor, null, type, cancellationToken);
+        }
+
+        public Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+        {
+            return Task.Run(() =>
+            {
+                var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
+                if (replyMessage == null)
+                {
+                    return default;
+                }
+
+                var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
+
+                if (value is Exception && ThrowReceivedExceptions)
+                {
+                    throw (Exception)value;
+                }
+
+                return value;
+            }, cancellationToken);
+        }
+
+
+        #endregion RabbitConvertSendAndReceive
+
+        #region General
+
+        public void CorrelationConvertAndSend(object message, CorrelationData correlationData)
+        {
+            ConvertAndSend(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData);
         }
 
         public ICollection<CorrelationData> GetUnconfirmed(long age)
@@ -383,446 +1151,44 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     .Sum();
         }
 
-        public async Task Start()
+        public void Execute(Action<IModel> action)
         {
-            await DoStart();
+            _ = Execute<object>(
+                (channel) =>
+            {
+                action(channel);
+                return null;
+            }, ConnectionFactory);
         }
 
-        public async Task Stop()
+        public T Execute<T>(Func<IModel, T> action)
         {
-            lock (_directReplyToContainers)
+            return Execute(action, ConnectionFactory);
+        }
+
+        public void AddListener(IModel channel)
+        {
+            if (channel is IPublisherCallbackChannel publisherCallbackChannel)
             {
-                foreach (var c in _directReplyToContainers.Values)
+                var key = channel is IChannelProxy ? ((IChannelProxy)channel).TargetChannel : channel;
+                if (_publisherConfirmChannels.TryAdd(key, this))
                 {
-                    if (c.IsRunning)
-                    {
-                        c.Stop();
-                    }
+                    publisherCallbackChannel.AddListener(this);
+                    _logger?.LogDebug("Added publisher confirm channel: {channel} to map, size now {size}", channel, _publisherConfirmChannels.Count);
                 }
-
-                _directReplyToContainers.Clear();
-            }
-
-            await DoStop();
-        }
-
-        public async Task Destroy() => await Stop();
-
-        public void Send(Message message)
-        {
-            Send(Exchange, RoutingKey, message);
-        }
-
-        public void Send(string routingKey, Message message)
-        {
-            Send(Exchange, routingKey, message);
-        }
-
-        public void Send(string exchange, string routingKey, Message message)
-        {
-            Send(exchange, routingKey, message, null);
-        }
-
-        public void Send(string exchange, string routingKey, Message message, CorrelationData correlationData)
-        {
-            var mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id)))
-                            && MandatoryExpression.GetValue<bool>(EvaluationContext, message);
-            Execute<object>(
-                channel =>
-            {
-                DoSend(channel, exchange, routingKey, message, mandatory, correlationData);
-                return null;
-            }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
-        }
-
-        public void ConvertAndSend(object message)
-        {
-            ConvertAndSend(Exchange, RoutingKey, message, (CorrelationData)null);
-        }
-
-        public void ConvertAndSend(string routingKey, object message)
-        {
-            ConvertAndSend(Exchange, routingKey, message, (CorrelationData)null);
-        }
-
-        public void ConvertAndSend(string routingKey, object message, CorrelationData correlationData)
-        {
-            ConvertAndSend(Exchange, routingKey, message, correlationData);
-        }
-
-        public void ConvertAndSend(string exchange, string routingKey, object message)
-        {
-            ConvertAndSend(exchange, routingKey, message, (CorrelationData)null);
-        }
-
-        public void ConvertAndSend(string exchange, string routingKey, object message, CorrelationData correlationData)
-        {
-            Send(exchange, routingKey, ConvertMessageIfNecessary(message), correlationData);
-        }
-
-        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor)
-        {
-            ConvertAndSend(Exchange, RoutingKey, message, messagePostProcessor);
-        }
-
-        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor)
-        {
-            ConvertAndSend(Exchange, routingKey, message, messagePostProcessor, null);
-        }
-
-        public void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            ConvertAndSend(Exchange, RoutingKey, message, messagePostProcessor, correlationData);
-        }
-
-        public void ConvertAndSend(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            ConvertAndSend(Exchange, routingKey, message, messagePostProcessor, correlationData);
-        }
-
-        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
-        {
-            ConvertAndSend(exchange, routingKey, message, messagePostProcessor, null);
-        }
-
-        public void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            var messageToSend = ConvertMessageIfNecessary(message);
-            messageToSend = messagePostProcessor.PostProcessMessage(messageToSend, correlationData);
-            Send(exchange, routingKey, messageToSend, correlationData);
-        }
-
-        public void CorrelationConvertAndSend(object message, CorrelationData correlationData)
-        {
-            ConvertAndSend(Exchange, RoutingKey, message, correlationData);
-        }
-
-        public Message Receive()
-        {
-            return Receive(GetRequiredQueue());
-        }
-
-        public Message Receive(string queueName)
-        {
-            if (ReceiveTimeout == 0)
-            {
-                return DoReceiveNoWait(queueName);
             }
             else
             {
-                return Receive(queueName, ReceiveTimeout);
+                throw new InvalidOperationException("Channel does not support confirms or returns; is the connection factory configured for confirms or returns?");
             }
         }
 
-        public Message Receive(int timeoutMillis)
+        public T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations)
         {
-            var queue = GetRequiredQueue();
-            if (timeoutMillis == 0)
-            {
-                return DoReceiveNoWait(queue);
-            }
-            else
-            {
-                return Receive(queue, timeoutMillis);
-            }
+            return Invoke<T>(rabbitOperations, null, null);
         }
 
-        public Message Receive(string queueName, int timeoutMillis)
-        {
-            var message = Execute(
-                channel =>
-                {
-                    var delivery = ConsumeDelivery(channel, queueName, timeoutMillis);
-                    if (delivery == null)
-                    {
-                        return null;
-                    }
-                    else
-                    {
-                        if (IsChannelLocallyTransacted(channel))
-                        {
-                            channel.BasicAck(delivery.Envelope.DeliveryTag, false);
-                            channel.TxCommit();
-                        }
-                        else if (IsChannelTransacted)
-                        {
-                            ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, delivery.Envelope.DeliveryTag);
-                        }
-                        else
-                        {
-                            channel.BasicAck(delivery.Envelope.DeliveryTag, false);
-                        }
-
-                        return BuildMessageFromDelivery(delivery);
-                    }
-                });
-
-            LogReceived(message);
-            return message;
-        }
-
-        public object ReceiveAndConvert()
-        {
-            return ReceiveAndConvert(GetRequiredQueue());
-        }
-
-        public object ReceiveAndConvert(string queueName)
-        {
-            return ReceiveAndConvert(queueName, ReceiveTimeout);
-        }
-
-        public object ReceiveAndConvert(int timeoutMillis)
-        {
-            return ReceiveAndConvert(GetRequiredQueue(), timeoutMillis);
-        }
-
-        public object ReceiveAndConvert(string queueName, int timeoutMillis)
-        {
-            var response = timeoutMillis == 0 ? DoReceiveNoWait(queueName) : Receive(queueName, timeoutMillis);
-            if (response != null)
-            {
-                return GetRequiredMessageConverter().FromMessage(response);
-            }
-
-            return null;
-        }
-
-        public T ReceiveAndConvert<T>(Type type)
-        {
-            return ReceiveAndConvert<T>(GetRequiredQueue(), type);
-        }
-
-        public T ReceiveAndConvert<T>(string queueName, Type type)
-        {
-            return ReceiveAndConvert<T>(queueName, ReceiveTimeout, type);
-        }
-
-        public T ReceiveAndConvert<T>(int timeoutMillis, Type type)
-        {
-            return ReceiveAndConvert<T>(GetRequiredQueue(), timeoutMillis, type);
-        }
-
-        public T ReceiveAndConvert<T>(string queueName, int timeoutMillis, Type type)
-        {
-            var response = timeoutMillis == 0 ? DoReceiveNoWait(queueName) : Receive(queueName, timeoutMillis);
-            if (response != null)
-            {
-                return (T)GetRequiredSmartMessageConverter().FromMessage(response, type);
-            }
-
-            return default;
-        }
-
-        public bool ReceiveAndReply<R, S>(Func<R, S> callback)
-            where R : class
-            where S : class
-        {
-            return ReceiveAndReply(GetRequiredQueue(), callback);
-        }
-
-        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
-            where R : class
-            where S : class
-        {
-            return ReceiveAndReply(queueName, callback, (request, replyto) => GetReplyToAddress(request));
-        }
-
-        public bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
-            where R : class
-            where S : class
-        {
-            return ReceiveAndReply(GetRequiredQueue(), callback, exchange, routingKey);
-        }
-
-        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class
-        {
-            return ReceiveAndReply(queueName, callback, (request, reply) => new Address(replyExchange, replyRoutingKey));
-        }
-
-        public bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<Message, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class
-        {
-            return ReceiveAndReply(GetRequiredQueue(), callback, replyToAddressCallback);
-        }
-
-        public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<Message, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class
-        {
-            return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
-        }
-
-        public Message SendAndReceive(Message message)
-        {
-            return SendAndReceive(message, null);
-        }
-
-        public Message SendAndReceive(Message message, CorrelationData correlationData)
-        {
-            return DoSendAndReceive(Exchange, RoutingKey, message, correlationData);
-        }
-
-        public Message SendAndReceive(string routingKey, Message message)
-        {
-            return SendAndReceive(routingKey, message, null);
-        }
-
-        public Message SendAndReceive(string routingKey, Message message, CorrelationData correlationData)
-        {
-            return DoSendAndReceive(Exchange, routingKey, message, correlationData);
-        }
-
-        public Message SendAndReceive(string exchange, string routingKey, Message message)
-        {
-            return SendAndReceive(exchange, routingKey, message, null);
-        }
-
-        public Message SendAndReceive(string exchange, string routingKey, Message message, CorrelationData correlationData)
-        {
-            return DoSendAndReceive(exchange, routingKey, message, correlationData);
-        }
-
-        public object ConvertSendAndReceive(object message)
-        {
-            return ConvertSendAndReceive(message, (CorrelationData)null);
-        }
-
-        public object ConvertSendAndReceive(object message, CorrelationData correlationData)
-        {
-            return ConvertSendAndReceive(Exchange, RoutingKey, message, null, correlationData);
-        }
-
-        public object ConvertSendAndReceive(string routingKey, object message)
-        {
-            return ConvertSendAndReceive(routingKey, message, (CorrelationData)null);
-        }
-
-        public object ConvertSendAndReceive(string routingKey, object message, CorrelationData correlationData)
-        {
-            return ConvertSendAndReceive(Exchange, routingKey, message, null, correlationData);
-        }
-
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message)
-        {
-            return ConvertSendAndReceive(exchange, routingKey, message, (CorrelationData)null);
-        }
-
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message, CorrelationData correlationData)
-        {
-            return ConvertSendAndReceive(exchange, routingKey, message, null, correlationData);
-        }
-
-        public object ConvertSendAndReceive(object message, IMessagePostProcessor messagePostProcessor)
-        {
-            return ConvertSendAndReceive(message, messagePostProcessor, null);
-        }
-
-        public object ConvertSendAndReceive(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            return ConvertSendAndReceive(Exchange, RoutingKey, message, messagePostProcessor, correlationData);
-        }
-
-        public object ConvertSendAndReceive(string routingKey, object message, IMessagePostProcessor messagePostProcessor)
-        {
-            return ConvertSendAndReceive(routingKey, message, messagePostProcessor, null);
-        }
-
-        public object ConvertSendAndReceive(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            return ConvertSendAndReceive(Exchange, routingKey, message, messagePostProcessor, correlationData);
-        }
-
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor)
-        {
-            return ConvertSendAndReceive(exchange, routingKey, message, messagePostProcessor, null);
-        }
-
-        public object ConvertSendAndReceive(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
-        {
-            var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
-            if (replyMessage == null)
-            {
-                return null;
-            }
-
-            return GetRequiredMessageConverter().FromMessage(replyMessage);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(object message, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(message, (CorrelationData)null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(object message, CorrelationData correlationData, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(Exchange, RoutingKey, message, null, correlationData, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string routingKey, object message, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(routingKey, message, (CorrelationData)null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string routingKey, object message, CorrelationData correlationData, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(Exchange, routingKey, message, null, correlationData, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string exchange, string routingKey, object message, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(exchange, routingKey, message, (CorrelationData)null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(object message, IMessagePostProcessor messagePostProcessor, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(message, messagePostProcessor, null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(Exchange, RoutingKey, message, messagePostProcessor, correlationData, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(routingKey, message, messagePostProcessor, null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(Exchange, routingKey, message, messagePostProcessor, correlationData, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(exchange, routingKey, message, messagePostProcessor, null, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string exchange, string routingKey, object message, CorrelationData correlationData, Type responseType)
-        {
-            return ConvertSendAndReceiveAsType<T>(exchange, routingKey, message, null, correlationData, responseType);
-        }
-
-        public T ConvertSendAndReceiveAsType<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type responseType)
-        {
-            var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
-            if (replyMessage == null)
-            {
-                return default;
-            }
-
-            return (T)GetRequiredSmartMessageConverter().FromMessage(replyMessage, responseType);
-        }
-
-        public bool IsMandatoryFor(Message message)
-        {
-            return MandatoryExpression.GetValue<bool>(EvaluationContext, message);
-        }
-
-        public T Invoke<T>(Func<IRabbitOperations, T> rabbitOperations, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)
+        public T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)
         {
             var currentChannel = _dedicatedChannels.Value;
             if (currentChannel != null)
@@ -875,7 +1241,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Exception thrown while creating channel", e);
+                    _logger?.LogError(e, "Exception thrown while creating channel");
                     RabbitUtils.CloseConnection(connection);
                     throw;
                 }
@@ -906,7 +1272,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception thrown during WaitForConfirms", e);
+                _logger?.LogError(e, "Exception thrown during WaitForConfirms");
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }
         }
@@ -925,230 +1291,76 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
             catch (Exception e)
             {
-                _logger?.LogError("Exception thrown during WaitForConfirmsOrDie", e);
+                _logger?.LogError(e, "Exception thrown during WaitForConfirmsOrDie");
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }
         }
 
-        public void DetermineConfirmsReturnsCapability(Connection.IConnectionFactory connectionFactory)
+        public virtual void DetermineConfirmsReturnsCapability(Connection.IConnectionFactory connectionFactory)
         {
             _publisherConfirms = connectionFactory.IsPublisherConfirms;
             _confirmsOrReturnsCapable = _publisherConfirms || connectionFactory.IsPublisherReturns;
         }
 
-        public void DoSend(IModel channel, string exchangeArg, string routingKeyArg, Message message, bool mandatory, CorrelationData correlationData)
+        public bool IsMandatoryFor(IMessage message)
         {
-            var exch = exchangeArg;
-            var rKey = routingKeyArg;
-            if (exch == null)
-            {
-                exch = Exchange;
-            }
-
-            if (rKey == null)
-            {
-                rKey = RoutingKey;
-            }
-
-            _logger?.LogTrace("Original message to publish: " + message);
-
-            var messageToUse = message;
-            var messageProperties = messageToUse.MessageProperties;
-            if (mandatory)
-            {
-                messageProperties.Headers[PublisherCallbackChannel.RETURN_LISTENER_CORRELATION_KEY] = UUID;
-            }
-
-            if (BeforePublishPostProcessors != null)
-            {
-                var processors = BeforePublishPostProcessors;
-                foreach (var processor in processors)
-                {
-                    messageToUse = processor.PostProcessMessage(messageToUse, correlationData);
-                }
-            }
-
-            SetupConfirm(channel, messageToUse, correlationData);
-            if (UserIdExpression != null && messageProperties.UserId == null)
-            {
-                var userId = UserIdExpression.GetValue<string>(EvaluationContext, messageToUse);
-                if (userId != null)
-                {
-                    messageProperties.UserId = userId;
-                }
-            }
-
-            _logger?.LogDebug("Publishing message [" + messageToUse + "] on exchange [" + exch + "], routingKey = [" + rKey + "]");
-            SendToRabbit(channel, exch, rKey, mandatory, messageToUse);
-
-            // Check if commit needed
-            if (IsChannelLocallyTransacted(channel))
-            {
-                // Transacted channel created by this template -> commit.
-                RabbitUtils.CommitIfNecessary(channel);
-            }
+            return MandatoryExpression.GetValue<bool>(EvaluationContext, message);
         }
 
-        public void AddListener(IModel channel)
+        public void Dispose()
         {
-            if (channel is IPublisherCallbackChannel publisherCallbackChannel)
-            {
-                var key = channel is IChannelProxy ? ((IChannelProxy)channel).TargetChannel : channel;
-                if (_publisherConfirmChannels.TryAdd(key, this))
-                {
-                    publisherCallbackChannel.AddListener(this);
-                    _logger?.LogDebug("Added publisher confirm channel: " + channel + " to map, size now " + _publisherConfirmChannels.Count);
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("Channel does not support confirms or returns; is the connection factory configured for confirms or returns?");
-            }
+            Stop().Wait();
         }
 
-        public void HandleConfirm(PendingConfirm pendingConfirm, bool ack)
+        public async Task Start()
         {
-            if (ConfirmCallback != null)
-            {
-                ConfirmCallback.Confirm(pendingConfirm.CorrelationInfo, ack, pendingConfirm.Cause);
-            }
+            await DoStart();
         }
 
-        public void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+        public async Task Stop()
         {
-            var callback = ReturnCallback;
-            if (callback == null)
+            lock (_directReplyToContainers)
             {
-                if (properties.Headers.Remove(RETURN_CORRELATION_KEY, out var messageTagHeader))
+                foreach (var c in _directReplyToContainers.Values)
                 {
-                    var messageTag = messageTagHeader.ToString();
-                    if (_replyHolder.TryGetValue(messageTag, out var pendingReply))
+                    if (c.IsRunning)
                     {
-                        callback = new PendingReplyReturn(pendingReply);
-                    }
-                    else
-                    {
-                        _logger?.LogWarning("Returned request message but caller has timed out");
+                        c.Stop();
                     }
                 }
-                else
-                {
-                    _logger?.LogWarning("Returned message but no callback available");
-                }
+
+                _directReplyToContainers.Clear();
             }
 
-            if (callback != null)
-            {
-                properties.Headers.Remove(PublisherCallbackChannel.RETURN_LISTENER_CORRELATION_KEY);
-                var messageProperties = MessagePropertiesConverter.ToMessageProperties(properties, null, Encoding);
-                var returnedMessage = new Message(body, messageProperties);
-                callback.ReturnedMessage(returnedMessage, replyCode, replyText, exchange, routingKey);
-            }
+            await DoStop();
         }
 
-        public void Revoke(IModel channel)
-        {
-            _publisherConfirmChannels.Remove(channel, out _);
-            _logger?.LogDebug("Removed publisher confirm channel: " + channel + " from map, size now " + _publisherConfirmChannels.Count);
-        }
+        #endregion General
 
-        public void OnMessageBatch(List<Message> messages)
-        {
-            throw new NotSupportedException("This listener does not support message batches");
-        }
-
-        public void OnMessage(Message message)
-        {
-            _logger?.LogTrace("Message received " + message);
-            object messageTag;
-            if (CorrelationKey == null)
-            {
-                // using standard correlationId property
-                messageTag = message.MessageProperties.CorrelationId;
-            }
-            else
-            {
-                message.MessageProperties.Headers.TryGetValue(CorrelationKey, out messageTag);
-            }
-
-            if (messageTag == null)
-            {
-                throw new AmqpRejectAndDontRequeueException("No correlation header in reply");
-            }
-
-            if (!_replyHolder.TryGetValue((string)messageTag, out var pendingReply))
-            {
-                _logger?.LogWarning("Reply received after timeout for " + messageTag);
-                throw new AmqpRejectAndDontRequeueException("Reply received after timeout");
-            }
-            else
-            {
-                RestoreProperties(message, pendingReply);
-                pendingReply.Reply(message);
-            }
-        }
-
-        public T Execute<T>(Func<IModel, T> action)
-        {
-            return Execute(action, ConnectionFactory);
-        }
-
-        #endregion
+        #endregion Public
 
         #region Protected
-
-        protected Message ConvertSendAndReceiveRaw(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        protected internal virtual IMessage ConvertMessageIfNecessary(object message)
         {
-            var requestMessage = ConvertMessageIfNecessary(message);
-            if (messagePostProcessor != null)
+            if (message is IMessage<byte[]>)
             {
-                requestMessage = messagePostProcessor.PostProcessMessage(requestMessage, correlationData);
+                return (IMessage)message;
             }
 
-            return DoSendAndReceive(exchange, routingKey, requestMessage, correlationData);
+            return GetRequiredMessageConverter().ToMessage(message, new MessageHeaders());
         }
 
-        protected Message ConvertMessageIfNecessary(object message)
-        {
-            return message is Message ? (Message)message : GetRequiredMessageConverter().ToMessage(message, new MessageProperties());
-        }
-
-        protected Message DoSendAndReceive(string exchange, string routingKey, Message message, CorrelationData correlationData)
-        {
-            if (!_evaluatedFastReplyTo)
-            {
-                lock (_lock)
-                {
-                    if (!_evaluatedFastReplyTo)
-                    {
-                        EvaluateFastReplyTo();
-                    }
-                }
-            }
-
-            if (_usingFastReplyTo && UseDirectReplyToContainer)
-            {
-                return DoSendAndReceiveWithDirect(exchange, routingKey, message, correlationData);
-            }
-            else if (ReplyAddress == null || _usingFastReplyTo)
-            {
-                return DoSendAndReceiveWithTemporary(exchange, routingKey, message, correlationData);
-            }
-            else
-            {
-                return DoSendAndReceiveWithFixed(exchange, routingKey, message, correlationData);
-            }
-        }
-
-        protected Message DoSendAndReceiveWithTemporary(string exchange, string routingKey, Message message, CorrelationData correlationData)
+        protected internal virtual IMessage DoSendAndReceiveWithTemporary(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
         {
             return Execute(
                 channel =>
                 {
-                    if (message.MessageProperties.ReplyTo == null)
+                    if (message.Headers.ReplyTo() != null)
                     {
-                        throw new ArgumentException("Send-and-receive methods can only be used  if the Message does not already have a replyTo property.");
+                        throw new ArgumentException("Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
                     }
+
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     var pendingReply = new PendingReply();
                     var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
@@ -1164,17 +1376,27 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         replyTo = queueDeclaration.QueueName;
                     }
 
-                    message.MessageProperties.ReplyTo = replyTo;
+                    var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+                    accessor.ReplyTo = replyTo;
 
                     var consumerTag = Guid.NewGuid().ToString();
 
                     var consumer = new DoSendAndReceiveTemplateConsumer(this, channel, pendingReply);
 
+                    channel.ModelShutdown += (sender, args) =>
+                    {
+                        if (!RabbitUtils.IsNormalChannelClose(args))
+                        {
+                            var exception = new ShutdownSignalException(args);
+                            pendingReply.CompleteExceptionally(exception);
+                        }
+                    };
+
                     channel.BasicConsume(replyTo, true, consumerTag, NoLocalReplyConsumer, true, null, consumer);
-                    Message reply = null;
+                    IMessage reply = null;
                     try
                     {
-                        reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag);
+                        reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag, cancellationToken);
                     }
                     finally
                     {
@@ -1189,7 +1411,111 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
         }
 
-        protected Message DoSendAndReceiveWithFixed(string exchange, string routingKey, Message message, CorrelationData correlationData)
+        protected virtual object DoReceiveAndConvert(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
+        {
+            var response = timeoutMillis == 0 ? DoReceiveNoWait(queueName) : DoReceive(queueName, timeoutMillis, cancellationToken);
+            if (response != null)
+            {
+                return GetRequiredSmartMessageConverter().FromMessage(response, type);
+            }
+
+            return default;
+        }
+
+        protected virtual IMessage DoReceive(string queueName, int timeoutMillis, CancellationToken cancellationToken)
+        {
+            var message = Execute(
+                channel =>
+                {
+                    var delivery = ConsumeDelivery(channel, queueName, timeoutMillis, cancellationToken);
+                    if (delivery == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        if (IsChannelLocallyTransacted(channel))
+                        {
+                            channel.BasicAck(delivery.Envelope.DeliveryTag, false);
+                            channel.TxCommit();
+                        }
+                        else if (IsChannelTransacted)
+                        {
+                            ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, delivery.Envelope.DeliveryTag);
+                        }
+                        else
+                        {
+                            channel.BasicAck(delivery.Envelope.DeliveryTag, false);
+                        }
+
+                        return BuildMessageFromDelivery(delivery);
+                    }
+                });
+
+            LogReceived(message);
+            return message;
+        }
+
+        protected override IMessage DoReceive(RabbitDestination destination)
+        {
+            if (ReceiveTimeout == 0)
+            {
+                return DoReceiveNoWait(destination.QueueName);
+            }
+            else
+            {
+                return DoReceive(destination.QueueName, ReceiveTimeout, default);
+            }
+        }
+
+        protected override Task<IMessage> DoReceiveAsync(RabbitDestination destination, CancellationToken cancellationToken)
+        {
+            return ReceiveAsync(destination.QueueName, cancellationToken);
+        }
+
+        protected override Task DoSendAsync(RabbitDestination destination, IMessage message, CancellationToken cancellationToken)
+        {
+            return SendAsync(destination.ExchangeName, destination.RoutingKey, message, cancellationToken);
+        }
+
+        protected override Task<IMessage> DoSendAndReceiveAsync(RabbitDestination destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+        {
+            return SendAndReceiveAsync(destination.ExchangeName, destination.RoutingKey, requestMessage, cancellationToken);
+        }
+
+        protected override IMessage DoSendAndReceive(RabbitDestination destination, IMessage requestMessage)
+        {
+            return DoSendAndReceive(destination.ExchangeName, destination.RoutingKey, requestMessage, null, default);
+        }
+
+        protected virtual IMessage DoSendAndReceive(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
+        {
+            if (!_evaluatedFastReplyTo)
+            {
+                lock (_lock)
+                {
+                    if (!_evaluatedFastReplyTo)
+                    {
+                        EvaluateFastReplyTo();
+                    }
+                }
+            }
+
+            if (_usingFastReplyTo && UseDirectReplyToContainer)
+            {
+                return DoSendAndReceiveWithDirect(exchange, routingKey, message, correlationData, cancellationToken);
+            }
+            else if (ReplyAddress == null || _usingFastReplyTo)
+            {
+                return DoSendAndReceiveWithTemporary(exchange, routingKey, message, correlationData, cancellationToken);
+            }
+            else
+            {
+                return DoSendAndReceiveWithFixed(exchange, routingKey, message, correlationData, cancellationToken);
+            }
+        }
+
+        protected virtual IMessage DoSendAndReceiveWithFixed(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
         {
             if (!_isListener)
             {
@@ -1199,38 +1525,98 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return Execute(
                 channel =>
                 {
-                    return DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel);
+                    return DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken);
                 }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
         }
 
-        protected virtual void ReplyTimedOut(string correlationId)
+        protected virtual IMessage DoSendAndReceiveWithDirect(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
         {
+            var connectionFactory = ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message);
+            if (UsePublisherConnection && connectionFactory.PublisherConnectionFactory != null)
+            {
+                connectionFactory = connectionFactory.PublisherConnectionFactory;
+            }
+
+            if (!_directReplyToContainers.TryGetValue(connectionFactory, out var container))
+            {
+                lock (_directReplyToContainers)
+                {
+                    if (!_directReplyToContainers.TryGetValue(connectionFactory, out container))
+                    {
+                        container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
+                        container.MessageListener = this;
+                        container.ServiceName = ServiceName + "#" + Interlocked.Increment(ref _containerInstance);
+
+                        // if (this.taskExecutor != null)
+                        // {
+                        //    container.setTaskExecutor(this.taskExecutor);
+                        // }
+                        if (AfterReceivePostProcessors != null)
+                        {
+                            container.SetAfterReceivePostProcessors(AfterReceivePostProcessors.ToArray());
+                        }
+
+                        container.NoLocal = NoLocalReplyConsumer;
+                        if (ReplyErrorHandler != null)
+                        {
+                            container.ErrorHandler = ReplyErrorHandler;
+                        }
+
+                        container.Start();
+                        _directReplyToContainers.TryAdd(connectionFactory, container);
+                        _replyAddress = Address.AMQ_RABBITMQ_REPLY_TO;
+                    }
+                }
+            }
+
+            var channelHolder = container.GetChannelHolder();
+            try
+            {
+                var channel = channelHolder.Channel;
+                if (_confirmsOrReturnsCapable.HasValue && _confirmsOrReturnsCapable.Value)
+                {
+                    AddListener(channel);
+                }
+
+                return DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
+            }
+            finally
+            {
+                container.ReleaseConsumerFor(channelHolder, false, null);
+            }
         }
 
-        protected Message DoReceiveNoWait(string queueName)
+        protected virtual IMessage DoReceiveNoWait(string queueName, CancellationToken cancellationToken = default)
         {
             var message = Execute(
                 channel =>
                 {
-                    var response = channel.BasicGet(queueName, !IsChannelTransacted);
-
-                    // Response can be null is the case that there is no message on the queue.
-                    if (response != null)
+                    if (!cancellationToken.IsCancellationRequested)
                     {
-                        var deliveryTag = response.DeliveryTag;
-                        if (IsChannelLocallyTransacted(channel))
-                        {
-                            channel.BasicAck(deliveryTag, false);
-                            channel.TxCommit();
-                        }
-                        else if (IsChannelTransacted)
-                        {
-                            // Not locally transacted but it is transacted so it
-                            // could be synchronized with an external transaction
-                            ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, deliveryTag);
-                        }
+                        var response = channel.BasicGet(queueName, !IsChannelTransacted);
 
-                        return BuildMessageFromResponse(response);
+                        // Response can be null is the case that there is no message on the queue.
+                        if (response != null)
+                        {
+                            var deliveryTag = response.DeliveryTag;
+                            if (IsChannelLocallyTransacted(channel))
+                            {
+                                channel.BasicAck(deliveryTag, false);
+                                channel.TxCommit();
+                            }
+                            else if (IsChannelTransacted)
+                            {
+                                // Not locally transacted but it is transacted so it
+                                // could be synchronized with an external transaction
+                                ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, deliveryTag);
+                            }
+
+                            return BuildMessageFromResponse(response);
+                        }
                     }
 
                     return null;
@@ -1240,19 +1626,132 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return message;
         }
 
-        protected virtual Task DoStart()
+        protected virtual void DoSend(IModel channel, string exchangeArg, string routingKeyArg, IMessage message, bool mandatory, CorrelationData correlationData, CancellationToken cancellationToken)
         {
-            return Task.CompletedTask;
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var exch = exchangeArg;
+            var rKey = routingKeyArg;
+            if (exch == null)
+            {
+                exch = GetDefaultExchange();
+            }
+
+            if (rKey == null)
+            {
+                rKey = GetDefaultRoutingKey();
+            }
+
+            _logger?.LogTrace("Original message to publish: {message}", message);
+
+            var messageToUse = message;
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageToUse);
+            if (mandatory)
+            {
+                accessor.SetHeader(PublisherCallbackChannel.RETURN_LISTENER_CORRELATION_KEY, UUID);
+            }
+
+            if (BeforePublishPostProcessors != null)
+            {
+                var processors = BeforePublishPostProcessors;
+                foreach (var processor in processors)
+                {
+                    messageToUse = processor.PostProcessMessage(messageToUse, correlationData);
+                }
+            }
+
+            SetupConfirm(channel, messageToUse, correlationData);
+            if (UserIdExpression != null && accessor.UserId == null)
+            {
+                var userId = UserIdExpression.GetValue<string>(EvaluationContext, messageToUse);
+                if (userId != null)
+                {
+                    accessor.UserId = userId;
+                }
+            }
+
+            _logger?.LogDebug("Publishing message [{message}] on exchange [{exchange}], routingKey = [{routingKey}]", messageToUse, exch, rKey);
+            SendToRabbit(channel, exch, rKey, mandatory, messageToUse);
+
+            // Check if commit needed
+            if (IsChannelLocallyTransacted(channel))
+            {
+                // Transacted channel created by this template -> commit.
+                RabbitUtils.CommitIfNecessary(channel);
+            }
         }
 
-        protected virtual Task DoStop()
+        protected override void DoSend(RabbitDestination destination, IMessage message)
         {
-            return Task.CompletedTask;
+            Send(destination.ExchangeName, destination.RoutingKey, message, null);
         }
 
-        protected void InitDefaultStrategies()
+        protected virtual void SendToRabbit(IModel channel, string exchange, string routingKey, bool mandatory, IMessage message)
         {
-            MessageConverter = new Support.Converter.SimpleMessageConverter();
+            byte[] body = message.Payload as byte[];
+            if (body == null)
+            {
+                // TODO: If content type is byte but payload is string .. do conversion?
+                throw new InvalidOperationException("Unable to publish IMessage, payload must be a byte[]");
+            }
+
+            var convertedMessageProperties = channel.CreateBasicProperties();
+            MessagePropertiesConverter.FromMessageHeaders(message.Headers, convertedMessageProperties, Encoding);
+            channel.BasicPublish(exchange, routingKey, mandatory, convertedMessageProperties, body);
+        }
+
+        protected virtual bool IsChannelLocallyTransacted(IModel channel)
+        {
+            return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
+        }
+
+        protected virtual Connection.IConnection CreateConnection()
+        {
+            return ConnectionFactory.CreateConnection();
+        }
+
+        protected virtual RabbitResourceHolder GetTransactionalResourceHolder()
+        {
+            return ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, IsChannelTransacted);
+        }
+
+        protected virtual Exception ConvertRabbitAccessException(Exception ex)
+        {
+            return RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
+        }
+
+        protected IMessage ConvertSendAndReceiveRaw(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+        {
+            var requestMessage = ConvertMessageIfNecessary(message);
+            if (messagePostProcessor != null)
+            {
+                requestMessage = messagePostProcessor.PostProcessMessage(requestMessage, correlationData);
+            }
+
+            return DoSendAndReceive(exchange, routingKey, requestMessage, correlationData, default);
+        }
+
+        protected virtual string GetDefaultExchange()
+        {
+            if (DefaultSendDestination != null)
+            {
+                return DefaultSendDestination.ExchangeName;
+            }
+
+            return DEFAULT_EXCHANGE;
+        }
+
+        protected virtual string GetDefaultRoutingKey()
+        {
+            if (DefaultSendDestination != null)
+            {
+                return DefaultSendDestination.RoutingKey;
+
+                // var dest = ParseDestination(DefaultSendDestination);
+                // return dest.Item2;
+            }
+
+            return DEFAULT_ROUTING_KEY;
         }
 
         protected virtual bool UseDirectReplyTo()
@@ -1279,7 +1778,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         return true;
                     });
                 }
-                catch (AmqpException ex) when (ex is AmqpConnectException || ex is AmqpIOException)
+                catch (RabbitException ex) when (ex is RabbitConnectException || ex is RabbitIOException)
                 {
                     if (ShouldRethrow(ex))
                     {
@@ -1291,23 +1790,30 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return false;
         }
 
-        protected bool IsChannelLocallyTransacted(IModel channel)
+        protected virtual void ReplyTimedOut(string correlationId)
         {
-            return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
 
-        protected void SendToRabbit(IModel channel, string exchange, string routingKey, bool mandatory, Message message)
+        protected virtual Task DoStart()
         {
-            var convertedMessageProperties = channel.CreateBasicProperties();
-            MessagePropertiesConverter.FromMessageProperties(message.MessageProperties, convertedMessageProperties, Encoding);
-            channel.BasicPublish(exchange, routingKey, mandatory, convertedMessageProperties, message.Body);
+            return Task.CompletedTask;
         }
 
-        #endregion
+        protected virtual Task DoStop()
+        {
+            return Task.CompletedTask;
+        }
+
+        #endregion Protected
 
         #region Private
         private void Configure(RabbitOptions options)
         {
+            if (options == null)
+            {
+                return;
+            }
+
             var templateOptions = options.Template;
             if (templateOptions.Mandatory)
             {
@@ -1341,94 +1847,94 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 ReplyTimeout = asMillis;
             }
 
-            Exchange = templateOptions.Exchange;
-            RoutingKey = templateOptions.RoutingKey;
-
-            if (templateOptions.DefaultReceiveQueue != null)
-            {
-                DefaultReceiveQueue = templateOptions.DefaultReceiveQueue;
-            }
+            DefaultSendDestination = templateOptions.Exchange + "/" + templateOptions.RoutingKey;
+            DefaultReceiveDestination = templateOptions.DefaultReceiveQueue;
         }
 
-        private void RestoreProperties(Message message, PendingReply pendingReply)
+        private void RestoreProperties(IMessage message, PendingReply pendingReply)
         {
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             if (!UseCorrelationId)
             {
                 // Restore the inbound correlation data
                 var savedCorrelation = pendingReply.SavedCorrelation;
                 if (CorrelationKey == null)
                 {
-                    message.MessageProperties.CorrelationId = savedCorrelation;
+                    accessor.CorrelationId = savedCorrelation;
                 }
                 else
                 {
                     if (savedCorrelation != null)
                     {
-                        message.MessageProperties.SetHeader(CorrelationKey, savedCorrelation);
+                        accessor.SetHeader(CorrelationKey, savedCorrelation);
                     }
                     else
                     {
-                        message.MessageProperties.Headers.Remove(CorrelationKey);
+                        accessor.RemoveHeader(CorrelationKey);
                     }
                 }
             }
 
             // Restore any inbound replyTo
             var savedReplyTo = pendingReply.SavedReplyTo;
-            message.MessageProperties.ReplyTo = savedReplyTo;
+            accessor.ReplyTo = savedReplyTo;
             if (savedReplyTo != null)
             {
-                _logger?.LogDebug("Restored replyTo to " + savedReplyTo);
+                _logger?.LogDebug("Restored replyTo to: {replyTo} ", savedReplyTo);
             }
         }
 
-        private Message BuildMessageFromDelivery(Delivery delivery)
+        private IMessage BuildMessageFromDelivery(Delivery delivery)
         {
             return BuildMessage(delivery.Envelope, delivery.Properties, delivery.Body, null);
         }
 
-        private Message BuildMessageFromResponse(BasicGetResult response)
+        private IMessage BuildMessageFromResponse(BasicGetResult response)
         {
             return BuildMessage(new Envelope(response.DeliveryTag, response.Redelivered, response.Exchange, response.RoutingKey), response.BasicProperties, response.Body, response.MessageCount);
         }
 
-        private Message BuildMessage(Envelope envelope, IBasicProperties properties, byte[] body, uint? msgCount)
+        private IMessage BuildMessage(Envelope envelope, IBasicProperties properties, byte[] body, uint? msgCount)
         {
-            var messageProps = MessagePropertiesConverter.ToMessageProperties(properties, envelope, Encoding);
+            var messageProps = MessagePropertiesConverter.ToMessageHeaders(properties, envelope, Encoding);
             if (msgCount.HasValue)
             {
-                messageProps.MessageCount = msgCount.Value;
+                var accessor = RabbitHeaderAccessor.GetAccessor<RabbitHeaderAccessor>(messageProps);
+                accessor.MessageCount = msgCount.Value;
             }
 
-            var message = new Message(body, messageProps);
+            IMessage message = Message.Create(body, messageProps);
             if (AfterReceivePostProcessors != null)
             {
                 var processors = AfterReceivePostProcessors;
+                var postProcessed = message;
                 foreach (var processor in processors)
                 {
-                    message = processor.PostProcessMessage(message);
+                    postProcessed = processor.PostProcessMessage(postProcessed);
                 }
+
+                message = postProcessed;
             }
 
             return message;
         }
 
-        private Support.Converter.IMessageConverter GetRequiredMessageConverter()
+        private IMessageConverter GetRequiredMessageConverter()
         {
             var converter = MessageConverter;
             if (converter == null)
             {
-                throw new AmqpIllegalStateException("No 'messageConverter' specified. Check configuration of RabbitTemplate.");
+                throw new RabbitIllegalStateException("No 'messageConverter' specified. Check configuration of RabbitTemplate.");
             }
 
             return converter;
         }
 
-        private Support.Converter.ISmartMessageConverter GetRequiredSmartMessageConverter()
+        private ISmartMessageConverter GetRequiredSmartMessageConverter()
         {
-            if (!(GetRequiredMessageConverter() is Support.Converter.ISmartMessageConverter converter))
+            if (!(GetRequiredMessageConverter() is ISmartMessageConverter converter))
             {
-                throw new AmqpIllegalStateException("template's message converter must be a SmartMessageConverter");
+                throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
             }
 
             return converter;
@@ -1436,115 +1942,59 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private string GetRequiredQueue()
         {
-            var name = DefaultReceiveQueue;
+            var name = DefaultReceiveDestination;
             if (name == null)
             {
-                throw new AmqpIllegalStateException("No 'queue' specified. Check configuration of RabbitTemplate.");
+                throw new RabbitIllegalStateException("No 'queue' specified. Check configuration of RabbitTemplate.");
             }
 
             return name;
         }
 
-        private Address GetReplyToAddress(Message request)
+        private Address GetReplyToAddress(IMessage request)
         {
-            var replyTo = request.MessageProperties.ReplyToAddress;
+            var replyTo = request.Headers.ReplyToAddress();
             if (replyTo == null)
             {
-                if (Exchange == null)
+                var exchange = GetDefaultExchange();
+                var routingKey = GetDefaultRoutingKey();
+                if (exchange == null)
                 {
-                    throw new AmqpException("Cannot determine ReplyTo message property value: Request message does not contain reply-to property, and no default Exchange was set.");
+                    throw new RabbitException("Cannot determine ReplyTo message property value: Request message does not contain reply-to property, and no default Exchange was set.");
                 }
 
-                replyTo = new Address(Exchange, RoutingKey);
+                replyTo = new Address(exchange, routingKey);
             }
 
             return replyTo;
         }
 
-        private void SetupConfirm(IModel channel, Message message, CorrelationData correlationDataArg)
+        private void SetupConfirm(IModel channel, IMessage message, CorrelationData correlationDataArg)
         {
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel)
             {
                 var publisherCallbackChannel = (IPublisherCallbackChannel)channel;
                 var correlationData = CorrelationDataPostProcessor != null ? CorrelationDataPostProcessor.PostProcess(message, correlationDataArg) : correlationDataArg;
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
-                message.MessageProperties.PublishSequenceNumber = nextPublishSeqNo;
+                accessor.PublishSequenceNumber = nextPublishSeqNo;
                 publisherCallbackChannel.AddPendingConfirm(this, nextPublishSeqNo, new PendingConfirm(correlationData, DateTimeOffset.Now.ToUnixTimeMilliseconds()));
                 if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
                 {
-                    message.MessageProperties.SetHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY, correlationData.Id);
+                    accessor.SetHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY, correlationData.Id);
                 }
             }
             else if (channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
             {
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
-                message.MessageProperties.PublishSequenceNumber = nextPublishSeqNo;
+                accessor.PublishSequenceNumber = nextPublishSeqNo;
             }
         }
 
-        private Message DoSendAndReceiveWithDirect(string exchange, string routingKey, Message message, CorrelationData correlationData)
+        private IMessage DoSendAndReceiveAsListener(string exchange, string routingKey, IMessage message, CorrelationData correlationData, IModel channel, CancellationToken cancellationToken)
         {
-            var connectionFactory = ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message);
-            if (UsePublisherConnection && connectionFactory.PublisherConnectionFactory != null)
-            {
-                connectionFactory = connectionFactory.PublisherConnectionFactory;
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            if (!_directReplyToContainers.TryGetValue(connectionFactory, out var container))
-            {
-                lock (_directReplyToContainers)
-                {
-                    if (!_directReplyToContainers.TryGetValue(connectionFactory, out container))
-                    {
-                        container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
-                        container.MessageListener = this;
-                        container.Name = Name + "#" + Interlocked.Increment(ref _containerInstance);
-
-                        // if (this.taskExecutor != null)
-                        // {
-                        //    container.setTaskExecutor(this.taskExecutor);
-                        // }
-                        if (AfterReceivePostProcessors != null)
-                        {
-                            container.SetAfterReceivePostProcessors(AfterReceivePostProcessors.ToArray());
-                        }
-
-                        container.NoLocal = NoLocalReplyConsumer;
-                        if (ReplyErrorHandler != null)
-                        {
-                            container.ErrorHandler = ReplyErrorHandler;
-                        }
-
-                        container.Start();
-                        _directReplyToContainers.TryAdd(connectionFactory, container);
-                        ReplyAddress = Address.AMQ_RABBITMQ_REPLY_TO;
-                    }
-                }
-            }
-
-            var channelHolder = container.GetChannelHolder();
-            try
-            {
-                var channel = channelHolder.Channel;
-                if (_confirmsOrReturnsCapable.HasValue && _confirmsOrReturnsCapable.Value)
-                {
-                    AddListener(channel);
-                }
-
-                return DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel);
-            }
-            catch (Exception e)
-            {
-                throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
-            }
-            finally
-            {
-                container.ReleaseConsumerFor(channelHolder, false, null);
-            }
-        }
-
-        private Message DoSendAndReceiveAsListener(string exchange, string routingKey, Message message, CorrelationData correlationData, IModel channel)
-        {
             var pendingReply = new PendingReply();
             var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
             if (UseCorrelationId)
@@ -1552,11 +2002,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 object correlationId;
                 if (CorrelationKey != null)
                 {
-                    message.MessageProperties.Headers.TryGetValue(CorrelationKey, out correlationId);
+                    correlationId = message.Headers.Get<object>(CorrelationKey);
                 }
                 else
                 {
-                    correlationId = message.MessageProperties.CorrelationId;
+                    correlationId = message.Headers.CorrelationId();
                 }
 
                 if (correlationId == null)
@@ -1575,18 +2025,21 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             SaveAndSetProperties(message, pendingReply, messageTag);
 
-            _logger?.LogDebug("Sending message with tag " + messageTag);
-            Message reply = null;
+            _logger?.LogDebug("Sending message with tag {tag}", messageTag);
+            IMessage reply = null;
             try
             {
-                reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag);
+                reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag, cancellationToken);
                 if (reply != null && AfterReceivePostProcessors != null)
                 {
                     var processors = AfterReceivePostProcessors;
+                    var postProcessed = reply;
                     foreach (var processor in processors)
                     {
-                        reply = processor.PostProcessMessage(reply);
+                        postProcessed = processor.PostProcessMessage(postProcessed);
                     }
+
+                    reply = postProcessed;
                 }
             }
             finally
@@ -1597,24 +2050,25 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return reply;
         }
 
-        private void SaveAndSetProperties(Message message, PendingReply pendingReply, string messageTag)
+        private void SaveAndSetProperties(IMessage message, PendingReply pendingReply, string messageTag)
         {
             // Save any existing replyTo and correlation data
-            var savedReplyTo = message.MessageProperties.ReplyTo;
+            var savedReplyTo = message.Headers.ReplyTo();
             pendingReply.SavedReplyTo = savedReplyTo;
             if (!string.IsNullOrEmpty(savedReplyTo))
             {
-                _logger?.LogDebug("Replacing replyTo header: " + savedReplyTo + " in favor of template's configured reply-queue: " + ReplyAddress);
+                _logger?.LogDebug("Replacing replyTo header: {savedReplyTo} in favor of template's configured reply-queue: {replyAddress}", savedReplyTo, ReplyAddress);
             }
 
-            message.MessageProperties.ReplyTo = ReplyAddress;
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            accessor.ReplyTo = ReplyAddress;
             if (!UseCorrelationId)
             {
                 object savedCorrelation = null;
                 if (CorrelationKey == null)
                 {
                     // using standard correlationId property
-                    var correlationId = message.MessageProperties.CorrelationId;
+                    var correlationId = accessor.CorrelationId;
                     if (correlationId != null)
                     {
                         savedCorrelation = correlationId;
@@ -1622,38 +2076,39 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
                 else
                 {
-                    message.MessageProperties.Headers.TryGetValue(CorrelationKey, out savedCorrelation);
+                    savedCorrelation = accessor.GetHeader(CorrelationKey);
                 }
 
                 pendingReply.SavedCorrelation = (string)savedCorrelation;
                 if (CorrelationKey == null)
                 {
                     // using standard correlationId property
-                    message.MessageProperties.CorrelationId = messageTag;
+                    accessor.CorrelationId = messageTag;
                 }
                 else
                 {
-                    message.MessageProperties.SetHeader(CorrelationKey, messageTag);
+                    accessor.SetHeader(CorrelationKey, messageTag);
                 }
             }
         }
 
-        private Message ExchangeMessages(string exchange, string routingKey, Message message, CorrelationData correlationData, IModel channel, PendingReply pendingReply, string messageTag)
+        private IMessage ExchangeMessages(string exchange, string routingKey, IMessage message, CorrelationData correlationData, IModel channel, PendingReply pendingReply, string messageTag, CancellationToken cancellationToken)
         {
-            Message reply;
+            IMessage reply;
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             var mandatory = IsMandatoryFor(message);
             if (mandatory && ReturnCallback == null)
             {
-                message.MessageProperties.Headers[RETURN_CORRELATION_KEY] = messageTag;
+                accessor.SetHeader(RETURN_CORRELATION_KEY, messageTag);
             }
 
-            DoSend(channel, exchange, routingKey, message, mandatory, correlationData);
+            DoSend(channel, exchange, routingKey, message, mandatory, correlationData, cancellationToken);
 
             reply = ReplyTimeout < 0 ? pendingReply.Get() : pendingReply.Get(ReplyTimeout);
-            _logger?.LogDebug("Reply: " + reply);
+            _logger?.LogDebug("Reply: {reply} ", reply);
             if (reply == null)
             {
-                ReplyTimedOut(message.MessageProperties.CorrelationId);
+                ReplyTimedOut(accessor.CorrelationId);
             }
 
             return reply;
@@ -1664,14 +2119,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
             RabbitUtils.Cancel(channel, consumer.ConsumerTag);
         }
 
-        private bool DoReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<Message, S, Address> replyToAddressCallback)
+        private bool DoReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
             where R : class
             where S : class
         {
             var result = Execute(
                 channel =>
                 {
-                    var receiveMessage = ReceiveForReply(queueName, channel);
+                    var receiveMessage = ReceiveForReply(queueName, channel, default);
                     if (receiveMessage != null)
                     {
                         return SendReply(callback, replyToAddressCallback, channel, receiveMessage);
@@ -1682,11 +2137,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return result;
         }
 
-        private Message ReceiveForReply(string queueName, IModel channel)
+        private IMessage ReceiveForReply(string queueName, IModel channel, CancellationToken cancellationToken)
         {
             var channelTransacted = IsChannelTransacted;
             var channelLocallyTransacted = IsChannelLocallyTransacted(channel);
-            Message receiveMessage = null;
+            IMessage receiveMessage = null;
             if (ReceiveTimeout == 0)
             {
                 var response = channel.BasicGet(queueName, !channelTransacted);
@@ -1712,7 +2167,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
             else
             {
-                var delivery = ConsumeDelivery(channel, queueName, ReceiveTimeout);
+                var delivery = ConsumeDelivery(channel, queueName, ReceiveTimeout, cancellationToken);
                 if (delivery != null)
                 {
                     var deliveryTag2 = delivery.Envelope.DeliveryTag;
@@ -1735,7 +2190,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return receiveMessage;
         }
 
-        private Delivery ConsumeDelivery(IModel channel, string queueName, int timeoutMillis)
+        private Delivery ConsumeDelivery(IModel channel, string queueName, int timeoutMillis, CancellationToken cancellationToken)
         {
             Delivery delivery = null;
             Exception exception = null;
@@ -1744,7 +2199,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
             DefaultBasicConsumer consumer = null;
             try
             {
-                consumer = CreateConsumer(queueName, channel, future, timeoutMillis < 0 ? DEFAULT_CONSUME_TIMEOUT : timeoutMillis);
+                var consumeTimeout = timeoutMillis < 0 ? DEFAULT_CONSUME_TIMEOUT : timeoutMillis;
+                consumer = CreateConsumer(queueName, channel, future, consumeTimeout, cancellationToken);
+
                 if (timeoutMillis < 0)
                 {
                     delivery = future.Task.Result;
@@ -1760,12 +2217,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         RabbitUtils.SetPhysicalCloseRequired(channel, true);
                     }
                 }
+
+                cancellationToken.ThrowIfCancellationRequested();
             }
             catch (AggregateException e)
             {
                 var cause = e.InnerExceptions.FirstOrDefault();
 
-                _logger?.LogError("Consumer failed to receive message: " + consumer, cause);
+                _logger?.LogError(cause, "Consumer {consumer} failed to receive message", consumer);
                 exception = RabbitExceptionTranslator.ConvertRabbitAccessException(cause);
                 throw exception;
             }
@@ -1780,7 +2239,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return delivery;
         }
 
-        private void LogReceived(Message message)
+        private void LogReceived(IMessage message)
         {
             if (message == null)
             {
@@ -1788,11 +2247,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
             else
             {
-                _logger?.LogDebug("Received: " + message);
+                _logger?.LogDebug("Received: {message}", message);
             }
         }
 
-        private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<Message, S, Address> replyToAddressCallback, IModel channel, Message receiveMessage)
+        private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage)
             where R : class
             where S : class
         {
@@ -1821,24 +2280,24 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return true;
         }
 
-        private void DoSendReply<S>(Func<Message, S, Address> replyToAddressCallback, IModel channel, Message receiveMessage, S reply)
+        private void DoSendReply<S>(Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage, S reply)
             where S : class
         {
             var replyTo = replyToAddressCallback(receiveMessage, reply);
 
             var replyMessage = ConvertMessageIfNecessary(reply);
 
-            var receiveMessageProperties = receiveMessage.MessageProperties;
-            var replyMessageProperties = replyMessage.MessageProperties;
+            var receiveMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(receiveMessage);
+            var replyMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
 
             object correlation;
             if (CorrelationKey == null)
             {
-                correlation = receiveMessageProperties.CorrelationId;
+                correlation = receiveMessageAccessor.CorrelationId;
             }
             else
             {
-                receiveMessageProperties.Headers.TryGetValue(CorrelationKey, out correlation);
+                correlation = receiveMessageAccessor.GetHeader(CorrelationKey);
             }
 
             if (CorrelationKey == null || correlation == null)
@@ -1846,31 +2305,35 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 // using standard correlationId property
                 if (correlation == null)
                 {
-                    var messageId = receiveMessageProperties.MessageId;
+                    var messageId = receiveMessageAccessor.MessageId;
                     if (messageId != null)
                     {
                         correlation = messageId;
                     }
                 }
 
-                replyMessageProperties.CorrelationId = (string)correlation;
+                receiveMessageAccessor.CorrelationId = (string)correlation;
             }
             else
             {
-                replyMessageProperties.SetHeader(CorrelationKey, correlation);
+                replyMessageAccessor.SetHeader(CorrelationKey, correlation);
             }
 
             // 'doSend()' takes care of 'channel.txCommit()'.
-            DoSend(channel, replyTo.ExchangeName, replyTo.RoutingKey, replyMessage, ReturnCallback != null && IsMandatoryFor(replyMessage), null);
+            DoSend(channel, replyTo.ExchangeName, replyTo.RoutingKey, replyMessage, ReturnCallback != null && IsMandatoryFor(replyMessage), null, default);
         }
 
-        private DefaultBasicConsumer CreateConsumer(string queueName, IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis)
+        private DefaultBasicConsumer CreateConsumer(string queueName, IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancelationToken)
         {
-            channel.BasicQos(0, 1, false); // TODO: Verify
+            // TODO: Verify
+            channel.BasicQos(0, 1, false);
             var latch = new CountdownEvent(1);
-            var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName);
+            var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
 
-            var consumeResult = channel.BasicConsume(queueName, false, consumer); // Verify autoack false
+            // TODO: Verify autoack false
+            var consumeResult = channel.BasicConsume(queueName, false, consumer);
+
+            // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit
             if (!latch.Wait(TimeSpan.FromMilliseconds(timeoutMillis)))
             {
                 if (channel is IChannelProxy asProxy)
@@ -1878,7 +2341,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     asProxy.TargetChannel.Close();
                 }
 
-                future.TrySetException(new ConsumeOkNotReceivedException("Blocking receive, consumer failed to consume within " + timeoutMillis + " ms: " + consumer));
+                future.TrySetException(new ConsumeOkNotReceivedException("Blocking receive, consumer failed to consume within  ms: " + timeoutMillis + " for consumer " + consumer));
             }
 
             return consumer;
@@ -1928,7 +2391,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError("Exception executing DoExecute in retry", e);
+                    _logger?.LogError(e, "Exception executing DoExecute in retry");
                     throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
                 }
             }
@@ -1987,7 +2450,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Exception while creating channel", e);
+                        _logger?.LogError(e, "Exception while creating channel");
                         RabbitUtils.CloseConnection(connection);
                         throw;
                     }
@@ -2029,7 +2492,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 AddListener(channel);
             }
 
-            _logger?.LogDebug("Executing callback on RabbitMQ Channel: " + channel);
+            _logger?.LogDebug("Executing callback on RabbitMQ Channel: {channel}", channel);
             return channelCallback(channel);
         }
 
@@ -2080,24 +2543,24 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private bool ShouldRethrow(AmqpException ex)
+        private bool ShouldRethrow(RabbitException ex)
         {
             Exception cause = ex;
-            while (cause != null && !(cause is ShutdownSignalException))
+            while (cause != null && !(cause is ShutdownSignalException) && !(cause is ProtocolException))
             {
                 cause = cause.InnerException;
             }
 
-            if (cause != null && RabbitUtils.IsPassiveDeclarationChannelClose((ShutdownSignalException)cause))
+            if (cause != null && RabbitUtils.IsPassiveDeclarationChannelClose(cause))
             {
                 _logger?.LogWarning("Broker does not support fast replies via 'amq.rabbitmq.reply-to', temporary " + "queues will be used: " + cause.Message + ".");
-                ReplyAddress = null;
+                _replyAddress = null;
                 return false;
             }
 
             if (ex != null)
             {
-                _logger?.LogDebug("IO error, deferring directReplyTo detection: " + ex.ToString());
+                _logger?.LogDebug(ex, "IO error, deferring directReplyTo detection");
             }
 
             return true;
@@ -2127,15 +2590,16 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
                 var messageProperties = _template
                     .MessagePropertiesConverter
-                    .ToMessageProperties(properties, new Envelope(deliveryTag, redelivered, exchange, routingKey), _template.Encoding);
-                var reply = new Message(body, messageProperties);
-                _template._logger?.LogTrace("Message received " + reply);
+                    .ToMessageHeaders(properties, new Envelope(deliveryTag, redelivered, exchange, routingKey), _template.Encoding);
+                var reply = Message.Create(body, messageProperties);
+                _template._logger?.LogTrace("Message received {reply}", reply);
                 if (_template.AfterReceivePostProcessors != null)
                 {
                     var processors = _template.AfterReceivePostProcessors;
+                    IMessage postProcessed = reply;
                     foreach (var processor in processors)
                     {
-                        reply = processor.PostProcessMessage(reply);
+                        postProcessed = processor.PostProcessMessage(postProcessed);
                     }
                 }
 
@@ -2161,13 +2625,21 @@ namespace Steeltoe.Messaging.Rabbit.Core
             private readonly CountdownEvent _latch;
             private readonly TaskCompletionSource<Delivery> _completionSource;
             private readonly string _queueName;
+            private readonly CancellationToken _cancellationToken;
 
-            public DefaultTemplateConsumer(IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName)
+            public DefaultTemplateConsumer(IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
                 : base(channel)
             {
                 _latch = latch;
                 _completionSource = completionSource;
                 _queueName = queueName;
+                _cancellationToken = cancelationToken;
+                _cancellationToken.Register(() =>
+                {
+                    Signal();
+                    _completionSource.TrySetCanceled();
+                    channel.BasicCancel(ConsumerTag);
+                });
             }
 
             public override void HandleBasicCancel(string consumerTag)
@@ -2178,14 +2650,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             public override void HandleBasicConsumeOk(string consumerTag)
             {
-                base.HandleBasicConsumeOk(consumerTag);
                 Signal();
+                base.HandleBasicConsumeOk(consumerTag);
             }
 
             public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, byte[] body)
             {
                 base.HandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
-                _completionSource.SetResult(new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, _queueName));
+                _completionSource.TrySetResult(new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, _queueName));
                 Signal();
             }
 
@@ -2202,13 +2674,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             private void Signal()
             {
-                try
+                if (!_latch.IsSet)
                 {
                     _latch.Signal();
-                }
-                catch (Exception)
-                {
-                    // Ignore
                 }
             }
         }
@@ -2226,15 +2694,15 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        protected class PendingReply
+        protected internal class PendingReply
         {
-            private readonly TaskCompletionSource<Message> _future = new TaskCompletionSource<Message>();
+            private readonly TaskCompletionSource<IMessage> _future = new TaskCompletionSource<IMessage>();
 
             public string SavedReplyTo { get; set; }
 
             public string SavedCorrelation { get; set; }
 
-            public Message Get()
+            public IMessage Get()
             {
                 try
                 {
@@ -2246,7 +2714,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
             }
 
-            public Message Get(int timeout)
+            public IMessage Get(int timeout)
             {
                 try
                 {
@@ -2265,12 +2733,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
             }
 
-            public void Reply(Message reply)
+            public void Reply(IMessage reply)
             {
                 _future.TrySetResult(reply);
             }
 
-            public void Returned(AmqpMessageReturnedException e)
+            public void Returned(RabbitMessageReturnedException e)
             {
                 CompleteExceptionally(e);
             }
@@ -2328,16 +2796,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 _pendingReply = pendingReply;
             }
 
-            public void ReturnedMessage(Message message, int replyCode, string replyText, string exchange, string routingKey)
+            public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
             {
-                _pendingReply.Returned(new AmqpMessageReturnedException("Message returned", message, replyCode, replyText, exchange, routingKey));
+                _pendingReply.Returned(new RabbitMessageReturnedException("Message returned", message, replyCode, replyText, exchange, routingKey));
             }
         }
 
         public interface IReturnCallback
         {
-            void ReturnedMessage(Message message, int replyCode, string replyText, string exchange, string routingKey);
+            void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey);
         }
         #endregion
     }
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
 }

@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Services;
@@ -22,7 +24,6 @@ using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,9 +31,9 @@ using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public class RabbitAdmin : IAmqpAdmin, IConnectionListener, IServiceNameAware
+    public class RabbitAdmin : IRabbitAdmin, IConnectionListener, IServiceNameAware
     {
-        public const string DEFAULT_RABBIT_ADMIN_SERVICE_NAME = "rabbitAdmin";
+        public const string DEFAULT_SERVICE_NAME = "rabbitAdmin";
 
         public const string QUEUE_NAME = "QUEUE_NAME";
         public const string QUEUE_MESSAGE_COUNT = "QUEUE_MESSAGE_COUNT";
@@ -48,6 +49,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         private ILogger _logger;
         private int _initializing = 0;
 
+        [ActivatorUtilitiesConstructor]
         public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
         {
             if (connectionFactory == null)
@@ -67,11 +69,29 @@ namespace Steeltoe.Messaging.Rabbit.Core
         {
         }
 
+        public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
+        {
+            if (template == null)
+            {
+                throw new ArgumentNullException(nameof(template));
+            }
+
+            if (template.ConnectionFactory == null)
+            {
+                throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
+            }
+
+            _logger = logger;
+            RabbitTemplate = template;
+            ConnectionFactory = template.ConnectionFactory;
+            DoInitialize();
+        }
+
         public IApplicationContext ApplicationContext { get; set; }
 
-        public string Name { get; set; } = DEFAULT_RABBIT_ADMIN_SERVICE_NAME;
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public Connection.IConnectionFactory ConnectionFactory { get; }
+        public Connection.IConnectionFactory ConnectionFactory { get; set; }
 
         public RabbitTemplate RabbitTemplate { get; }
 
@@ -91,7 +111,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public bool RetryDisabled { get; set; } = false;
 
-        public void DeclareBinding(Binding binding)
+        public void DeclareBinding(IBinding binding)
         {
             try
             {
@@ -102,7 +122,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         return null;
                     });
             }
-            catch (AmqpException e)
+            catch (RabbitException e)
             {
                 LogOrRethrowDeclarationException(binding, "binding", e);
             }
@@ -118,13 +138,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
                    return null;
                });
             }
-            catch (AmqpException e)
+            catch (RabbitException e)
             {
                 LogOrRethrowDeclarationException(exchange, "exchange", e);
             }
         }
 
-        public Queue DeclareQueue()
+        public IQueue DeclareQueue()
         {
             try
             {
@@ -135,14 +155,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     });
                 return new Queue(declareOk.QueueName, false, true, true); // NOSONAR never null
             }
-            catch (AmqpException e)
+            catch (RabbitException e)
             {
                 LogOrRethrowDeclarationException(null, "queue", e);
                 return null;
             }
         }
 
-        public string DeclareQueue(Queue queue)
+        public string DeclareQueue(IQueue queue)
         {
             try
             {
@@ -153,7 +173,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         return declared.Count > 0 ? declared[0].QueueName : null;
                     });
             }
-            catch (AmqpException e)
+            catch (RabbitException e)
             {
                 LogOrRethrowDeclarationException(queue, "queue", e);
                 return null;
@@ -172,11 +192,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
                     try
                     {
-                        channel.ExchangeDelete(exchangeName, true);
+                        channel.ExchangeDelete(exchangeName, false);
                     }
-                    catch (IOException e)
+                    catch (RabbitMQClientException e)
                     {
-                        _logger?.LogError("Exception while issuing ExchangeDelete", e);
+                        _logger?.LogError(e, "Exception while issuing ExchangeDelete");
                         return false;
                     }
 
@@ -194,9 +214,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         channel.QueueDelete(queueName);
                         return true;
                     }
-                    catch (IOException e)
+                    catch (RabbitMQClientException e)
                     {
-                        _logger?.LogError("Exception while issuing QueueDelete", e);
+                        _logger?.LogError(e, "Exception while issuing QueueDelete");
                         return false;
                     }
                 });
@@ -232,9 +252,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         var declareOk = channel.QueueDeclarePassive(queueName);
                         return new QueueInformation(declareOk.QueueName, declareOk.MessageCount, declareOk.ConsumerCount);
                     }
-                    catch (IOException e)
+                    catch (RabbitMQClientException e)
                     {
-                        _logger?.LogError("Exception while fetching Queue properties: '" + queueName + "'", e);
+                        _logger?.LogError(e, "Exception while fetching Queue properties for '{queueName}'", queueName);
                         try
                         {
                             if (channel is IChannelProxy)
@@ -244,14 +264,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         }
                         catch (Exception ex)
                         {
-                            _logger?.LogError("Exception while closing channel '" + queueName + "'", ex);
+                            _logger?.LogError(ex, "Exception while closing {channel}", channel);
                         }
 
                         return null;
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError("Queue '" + queueName + "' does not exist", e);
+                        _logger?.LogError(e, "Queue '{queueName}' does not exist", queueName);
                         return null;
                     }
                 });
@@ -292,12 +312,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 channel =>
                 {
                     var queuePurged = channel.QueuePurge(queueName);
-                    _logger?.LogDebug("Purged queue: " + queueName + ", " + queuePurged);
+                    _logger?.LogDebug("Purged queue: {queuename} : {result}", queueName, queuePurged);
                     return queuePurged;
                 });
         }
 
-        public void RemoveBinding(Binding binding)
+        public void RemoveBinding(IBinding binding)
         {
             RabbitTemplate.Execute<object>(
                 channel =>
@@ -323,7 +343,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         #region IConnectionListener
         public void OnCreate(Connection.IConnection connection)
         {
-            _logger?.LogDebug("OnCreate for connection: ", connection?.ToString());
+            _logger?.LogDebug("OnCreate for connection: {connection}", connection?.ToString());
 
             if (Interlocked.CompareExchange(ref _initializing, 1, 0) != 0)
             {
@@ -359,12 +379,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public void OnClose(Connection.IConnection connection)
         {
-            _logger?.LogDebug("OnClose for connection: ", connection?.ToString());
+            _logger?.LogDebug("OnClose for connection: {connection}", connection?.ToString());
         }
 
         public void OnShutDown(ShutdownEventArgs args)
         {
-            _logger?.LogDebug("OnShutDown for connection: ", args.ToString());
+            _logger?.LogDebug("OnShutDown for connection: {args}", args.ToString());
         }
         #endregion
 
@@ -378,8 +398,8 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
 
             var contextExchanges = ApplicationContext.GetServices<IExchange>().ToList();
-            var contextQueues = ApplicationContext.GetServices<Queue>().ToList();
-            var contextBindings = ApplicationContext.GetServices<Binding>().ToList();
+            var contextQueues = ApplicationContext.GetServices<IQueue>().ToList();
+            var contextBindings = ApplicationContext.GetServices<IBinding>().ToList();
             var customizers = ApplicationContext.GetServices<IDeclarableCustomizer>().ToList();
 
             ProcessDeclarables(contextExchanges, contextQueues, contextBindings);
@@ -392,24 +412,26 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
                 if (!exchange.IsDurable || exchange.IsAutoDelete)
                 {
-                    _logger?.LogInformation("Auto-declaring a non-durable or auto-delete Exchange ("
-                            + exchange.Name
-                            + ") durable:" + exchange.IsDurable + ", auto-delete:" + exchange.IsAutoDelete + ". "
-                            + "It will be deleted by the broker if it shuts down, and can be redeclared by closing and "
-                            + "reopening the connection.");
+                    _logger?.LogInformation(
+                        "Auto-declaring a non-durable or auto-delete Exchange ({exchange}), durable:{durable}, auto-delete:{autodelete}. "
+                        + "It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.",
+                        exchange.ExchangeName,
+                        exchange.IsDurable,
+                        exchange.IsAutoDelete);
                 }
             }
 
             foreach (var queue in queues)
             {
-                if (!queue.Durable || queue.AutoDelete || queue.Exclusive)
+                if (!queue.IsDurable || queue.IsAutoDelete || queue.IsExclusive)
                 {
-                    _logger?.LogInformation("Auto-declaring a non-durable, auto-delete, or exclusive Queue ("
-                            + queue.Name
-                            + ") durable:" + queue.Durable + ", auto-delete:" + queue.AutoDelete + ", exclusive:"
-                            + queue.Exclusive + ". "
-                            + "It will be redeclared if the broker stops and is restarted while the connection factory is "
-                            + "alive, but all messages will be lost.");
+                    _logger?.LogInformation(
+                        "Auto-declaring a non-durable, auto-delete, or exclusive Queue ({queueName}) durable:{durable}, auto-delete:{autodelete}, exclusive:{exclusive}."
+                         + "It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.",
+                        queue.QueueName,
+                        queue.IsDurable,
+                        queue.IsAutoDelete,
+                        queue.IsExclusive);
                 }
             }
 
@@ -431,7 +453,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             _logger?.LogDebug("Declarations finished");
         }
 
-        private void ProcessDeclarables(List<IExchange> contextExchanges, List<Queue> contextQueues, List<Binding> contextBindings)
+        private void ProcessDeclarables(List<IExchange> contextExchanges, List<IQueue> contextQueues, List<IBinding> contextBindings)
         {
             var declarables = ApplicationContext.GetServices<Declarables>();
             foreach (var declarable in declarables)
@@ -442,13 +464,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     {
                         contextExchanges.Add((IExchange)d);
                     }
-                    else if (d is Queue)
+                    else if (d is IQueue)
                     {
-                        contextQueues.Add((Queue)d);
+                        contextQueues.Add((IQueue)d);
                     }
-                    else if (d is Binding)
+                    else if (d is IBinding)
                     {
-                        contextBindings.Add((Binding)d);
+                        contextBindings.Add((IBinding)d);
                     }
                 }
             }
@@ -466,16 +488,20 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     if (customizerCounts == 0)
                     {
                         results.Add(dec);
-                    }
-
-                    foreach (var customizer in customizers)
+                    } 
+                    else
                     {
-                        var result = customizer.Apply(dec);
-                        if (result != null)
+                        IDeclarable customized = dec;
+                        foreach (var customizer in customizers)
                         {
-                            results.Add((T)result);
+                            customized = customizer.Apply(customized);
+                        }
+                        if (customized != null)
+                        {
+                            results.Add((T)customized);
                         }
                     }
+
                 }
             }
 
@@ -485,21 +511,21 @@ namespace Steeltoe.Messaging.Rabbit.Core
         private bool ShouldDeclare<T>(T declarable)
             where T : IDeclarable
         {
-            if (!declarable.Declare)
+            if (!declarable.ShouldDeclare)
             {
                 return false;
             }
 
-            return (declarable.Admins.Count == 0 && !ExplicitDeclarationsOnly)
-                    || declarable.Admins.Contains(this)
-                    || (Name != null && declarable.Admins.Contains(Name));
+            return (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly)
+                    || declarable.DeclaringAdmins.Contains(this)
+                    || (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
         }
 
         private void DeclareExchanges(IModel channel, params IExchange[] exchanges)
         {
             foreach (var exchange in exchanges)
             {
-                _logger?.LogDebug("declaring Exchange '" + exchange.Name + "'");
+                _logger?.LogDebug("Declaring exchange '{exchange}'", exchange.ExchangeName);
 
                 if (!IsDeclaringDefaultExchange(exchange))
                 {
@@ -520,15 +546,15 @@ namespace Steeltoe.Messaging.Rabbit.Core
                             arguments["x-delayed-type"] = exchange.Type;
 
                             // TODO: exchange.IsInternal
-                            channel.ExchangeDeclare(exchange.Name, DELAYED_MESSAGE_EXCHANGE, exchange.IsDurable, exchange.IsAutoDelete, arguments);
+                            channel.ExchangeDeclare(exchange.ExchangeName, DELAYED_MESSAGE_EXCHANGE, exchange.IsDurable, exchange.IsAutoDelete, arguments);
                         }
                         else
                         {
                             // TODO: exchange.IsInternal
-                            channel.ExchangeDeclare(exchange.Name, exchange.Type, exchange.IsDurable, exchange.IsAutoDelete, exchange.Arguments);
+                            channel.ExchangeDeclare(exchange.ExchangeName, exchange.Type, exchange.IsDurable, exchange.IsAutoDelete, exchange.Arguments);
                         }
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         LogOrRethrowDeclarationException(exchange, "exchange", e);
                     }
@@ -536,17 +562,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private List<QueueDeclareOk> DeclareQueues(IModel channel, params Queue[] queues)
+        private List<QueueDeclareOk> DeclareQueues(IModel channel, params IQueue[] queues)
         {
             var declareOks = new List<QueueDeclareOk>(queues.Length);
             for (var i = 0; i < queues.Length; i++)
             {
                 var queue = queues[i];
-                if (!queue.Name.StartsWith("amq."))
+                if (!queue.QueueName.StartsWith("amq."))
                 {
-                    _logger?.LogDebug("declaring Queue '" + queue.Name + "'");
+                    _logger?.LogDebug("Declaring Queue '{queueName}'", queue.QueueName);
 
-                    if (queue.Name.Length > 255)
+                    if (queue.QueueName.Length > 255)
                     {
                         throw new ArgumentException("Queue names limited to < 255 characters");
                     }
@@ -555,7 +581,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     {
                         try
                         {
-                            var declareOk = channel.QueueDeclare(queue.Name, queue.Durable, queue.Exclusive, queue.AutoDelete, queue.Arguments);
+                            var declareOk = channel.QueueDeclare(queue.QueueName, queue.IsDurable, queue.IsExclusive, queue.IsAutoDelete, queue.Arguments);
                             if (!string.IsNullOrEmpty(declareOk.QueueName))
                             {
                                 queue.ActualName = declareOk.QueueName;
@@ -563,29 +589,29 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
                             declareOks.Add(declareOk);
                         }
-                        catch (Exception e)
+                        catch (ArgumentException e)
                         {
                             CloseChannelAfterIllegalArg(channel, queue);
-                            throw new IOException(string.Empty, e);
+                            throw;
                         }
                     }
-                    catch (IOException e)
+                    catch (Exception e)
                     {
                         LogOrRethrowDeclarationException(queue, "queue", e);
                     }
                 }
                 else
                 {
-                    _logger?.LogDebug(queue.Name + ": Queue with name that starts with 'amq.' cannot be declared.");
+                    _logger?.LogDebug("Queue with name: {queueName} that starts with 'amq.' cannot be declared.", queue.QueueName);
                 }
             }
 
             return declareOks;
         }
 
-        private void CloseChannelAfterIllegalArg(IModel channel, Queue queue)
+        private void CloseChannelAfterIllegalArg(IModel channel, IQueue queue)
         {
-            _logger?.LogError("Exception while declaring queue: '" + queue.Name + "'");
+            _logger?.LogError("Exception while declaring queue'{queueName}'", queue.QueueName);
             try
             {
                 if (channel is IChannelProxy)
@@ -595,16 +621,15 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
             catch (Exception e1)
             {
-                _logger?.LogError("Failed to close channel after illegal argument", e1);
+                _logger?.LogError(e1, "Failed to close {channel} after illegal argument", channel);
             }
         }
 
-        private void DeclareBindings(IModel channel, params Binding[] bindings)
+        private void DeclareBindings(IModel channel, params IBinding[] bindings)
         {
             foreach (var binding in bindings)
             {
-                _logger?.LogDebug("Binding destination [" + binding.Destination + " (" + binding.Type
-                        + ")] to exchange [" + binding.Exchange + "] with routing key [" + binding.RoutingKey + "]");
+                _logger?.LogDebug("Binding destination [{destination} ({type})] to exchange [{exchange}] with routing key [{routingKey}]", binding.Destination, binding.Type, binding.Exchange, binding.RoutingKey);
 
                 try
                 {
@@ -620,7 +645,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         channel.ExchangeBind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
                     }
                 }
-                catch (IOException e)
+                catch (Exception e)
                 {
                     LogOrRethrowDeclarationException(binding, "binding", e);
                 }
@@ -629,17 +654,23 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private void LogOrRethrowDeclarationException(IDeclarable element, string elementType, Exception exception)
         {
+            PublishDeclarationExceptionEvent(element, exception);
             if (IgnoreDeclarationExceptions || (element != null && element.IgnoreDeclarationExceptions))
             {
-                _logger?.LogDebug("Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...", exception);
+                _logger?.LogDebug(exception, "Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...");
 
                 var cause = exception;
-                if (exception is IOException && exception.InnerException != null)
+                if (exception.InnerException != null)
                 {
                     cause = exception.InnerException;
                 }
 
-                _logger?.LogWarning("Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing... " + cause);
+                _logger?.LogWarning(
+                    exception,
+                    "Failed to declare {elementType}: {element}, continuing... {cause} ",
+                    elementType,
+                    element == null ? "broker-generated" : element.ToString(),
+                    cause);
             }
             else
             {
@@ -647,9 +678,19 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
+        private void PublishDeclarationExceptionEvent(IDeclarable element, Exception exception)
+        {
+            var ev = new DeclarationExceptionEvent(this, element, exception);
+            this.LastDeclarationExceptionEvent = ev;
+
+            // if (this.applicationEventPublisher != null) {
+            //          this.applicationEventPublisher.publishEvent(event);
+            //      }
+        }
+
         private bool IsDeclaringDefaultExchange(IExchange exchange)
         {
-            if (IsDefaultExchange(exchange.Name))
+            if (IsDefaultExchange(exchange.ExchangeName))
             {
                 _logger?.LogDebug("Default exchange is pre-declared by server.");
                 return true;
@@ -674,7 +715,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return exchangeName == string.Empty;
         }
 
-        private bool IsDeclaringImplicitQueueBinding(Binding binding)
+        private bool IsDeclaringImplicitQueueBinding(IBinding binding)
         {
             if (IsImplicitQueueBinding(binding))
             {
@@ -685,7 +726,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return false;
         }
 
-        private bool IsRemovingImplicitQueueBinding(Binding binding)
+        private bool IsRemovingImplicitQueueBinding(IBinding binding)
         {
             if (IsImplicitQueueBinding(binding))
             {
@@ -696,7 +737,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return false;
         }
 
-        private bool IsImplicitQueueBinding(Binding binding)
+        private bool IsImplicitQueueBinding(IBinding binding)
         {
             return IsDefaultExchange(binding.Exchange) && binding.Destination.Equals(binding.RoutingKey);
         }

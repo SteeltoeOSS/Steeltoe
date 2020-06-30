@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Steeltoe.Messaging.Rabbit.Data;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
@@ -27,7 +26,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public string Id { get; set; }
 
-        public Message ReturnedMessage { get; set; }
+        public IMessage ReturnedMessage { get; set; }
 
         public TaskCompletionSource<Confirm> FutureSource { get; }
 

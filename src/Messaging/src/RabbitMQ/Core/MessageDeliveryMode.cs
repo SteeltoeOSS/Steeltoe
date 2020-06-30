@@ -14,10 +14,10 @@
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public enum MessageDeliveryMode
+    public enum MessageDeliveryMode : byte
     {
-        NON_PERSISTENT,
+        NON_PERSISTENT = 1,
 
-        PERSISTENT
+        PERSISTENT = 2
     }
 }

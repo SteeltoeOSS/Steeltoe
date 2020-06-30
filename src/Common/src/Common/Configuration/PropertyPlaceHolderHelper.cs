@@ -62,7 +62,7 @@ namespace Steeltoe.Common.Configuration
             // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
             foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(PREFIX) && e.Value.Contains(SUFFIX)))
             {
-                logger?.LogTrace("Found a property placeholder '{0}' to resolve for key '{1}", entry.Value, entry.Key);
+                logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
                 resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
             }
 
@@ -139,7 +139,7 @@ namespace Steeltoe.Common.Configuration
                         // previously resolved placeholder value.
                         propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
                         result.Replace(startIndex, endIndex + SUFFIX.Length, propVal);
-                        logger?.LogDebug("Resolved placeholder '{0}'", placeholder);
+                        logger?.LogDebug("Resolved placeholder '{placeholder}'", placeholder);
                         startIndex = result.IndexOf(PREFIX, startIndex + propVal.Length);
                     }
                     else

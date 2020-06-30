@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Support.Test
     {
         internal readonly TaskSchedulerSubscribableChannel _channel;
         internal readonly object _payload;
-        internal readonly IMessage<object> _message;
+        internal readonly IMessage _message;
 
         internal IMessageHandler _handler;
 
@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.Support.Test
         {
             _channel = new TaskSchedulerSubscribableChannel();
             _payload = new object();
-            _message = MessageBuilder<object>.WithPayload(_payload).Build();
+            _message = MessageBuilder.WithPayload(_payload).Build();
         }
 
         [Fact]

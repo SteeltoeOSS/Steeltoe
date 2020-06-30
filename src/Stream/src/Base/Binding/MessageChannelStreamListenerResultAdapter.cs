@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using System;
@@ -20,11 +21,11 @@ namespace Steeltoe.Stream.Binding
 {
     public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAdapter
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
 
-        public MessageChannelStreamListenerResultAdapter(IServiceProvider serviceProvider)
+        public MessageChannelStreamListenerResultAdapter(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public bool Supports(Type resultType, Type bindingTarget)
@@ -34,7 +35,7 @@ namespace Steeltoe.Stream.Binding
 
         public IDisposable Adapt(IMessageChannel streamListenerResult, IMessageChannel bindingTarget)
         {
-            var handler = new BridgeHandler(_serviceProvider);
+            var handler = new BridgeHandler(_context);
             handler.OutputChannel = bindingTarget;
 
             ((ISubscribableChannel)streamListenerResult).Subscribe(handler);

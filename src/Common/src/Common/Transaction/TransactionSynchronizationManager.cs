@@ -52,7 +52,7 @@ namespace Steeltoe.Common.Transaction
             var value = DoGetResource(key);
             if (value != null)
             {
-                logger?.LogTrace("Retrieved value [" + value + "] for key [" + key + "] bound to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+                logger?.LogTrace("Retrieved value [{value}] for key [{key}] bound to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
             }
 
             return value;
@@ -88,7 +88,7 @@ namespace Steeltoe.Common.Transaction
                 throw new InvalidOperationException("Already value [" + oldValue + "] for key [" + key + "] bound to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
             }
 
-            logger?.LogTrace("Bound value [" + value + "] for key [" + key + "] to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+            logger?.LogTrace("Bound value [{value}] for key [{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         public static object UnbindResource(object key, ILogger logger = null)
@@ -264,7 +264,7 @@ namespace Steeltoe.Common.Transaction
                 value = null;
             }
 
-            logger?.LogTrace("Removed value [" + value + "] for key [" + actualKey + "] from thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+            logger?.LogTrace("Removed value [{value}] for key [{key}] from thread [{thread}]", value, actualKey, Thread.CurrentThread.ManagedThreadId);
             return value;
         }
 

@@ -42,7 +42,7 @@ namespace Steeltoe.Common.Transaction
 
         public object SuspendedResources { get; }
 
-        public override bool IsNewTransaction => HasTransaction && IsNewTransaction;
+        public override bool IsNewTransaction => HasTransaction && NewTransaction;
 
         public bool IsTransactionSavepointManager => Transaction is ISavepointManager;
 

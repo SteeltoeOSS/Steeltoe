@@ -38,7 +38,7 @@ namespace Steeltoe.Common.Transaction
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError("TransactionSynchronization.beforeCompletion threw exception", ex);
+                    logger?.LogError(ex, "TransactionSynchronization.beforeCompletion threw exception");
                 }
             }
         }
@@ -52,7 +52,7 @@ namespace Steeltoe.Common.Transaction
         {
             if (synchronizations != null)
             {
-                foreach (var synchronization in TransactionSynchronizationManager.GetSynchronizations())
+                foreach (var synchronization in synchronizations)
                 {
                     synchronization.AfterCommit();
                 }
@@ -63,7 +63,7 @@ namespace Steeltoe.Common.Transaction
         {
             if (synchronizations != null)
             {
-                foreach (var synchronization in TransactionSynchronizationManager.GetSynchronizations())
+                foreach (var synchronization in synchronizations)
                 {
                     try
                     {
@@ -71,7 +71,7 @@ namespace Steeltoe.Common.Transaction
                     }
                     catch (Exception ex)
                     {
-                        logger.LogError("TransactionSynchronization.afterCompletion threw exception", ex);
+                        logger.LogError(ex, "TransactionSynchronization.afterCompletion threw exception");
                     }
                 }
             }

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
@@ -24,16 +25,19 @@ namespace Steeltoe.Integration.Channel
 {
     public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandler
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(MessagePublishingErrorHandler);
         private const int DEFAULT_SEND_TIMEOUT = 1000;
 
         private static IErrorMessageStrategy DEFAULT_ERROR_MESSAGE_STRATEGY { get; } = new DefaultErrorMessageStrategy();
 
-        public MessagePublishingErrorHandler(IServiceProvider serviceProvider, ILogger logger = null)
-            : base(serviceProvider, logger)
+        public MessagePublishingErrorHandler(IApplicationContext context, ILogger logger = null)
+            : base(context, logger)
         {
             ErrorMessageStrategy = DEFAULT_ERROR_MESSAGE_STRATEGY;
             SendTimeout = DEFAULT_SEND_TIMEOUT;
         }
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public IMessageChannel DefaultErrorChannel
         {

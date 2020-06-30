@@ -65,7 +65,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveRequired()
         {
-            IMessage message = MessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+            IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
             var actual = resolver.ResolveArgument(paramAnnotated, message);
             Assert.Equal("ABC", actual);
         }
@@ -73,14 +73,14 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveRequiredEmpty()
         {
-            IMessage message = MessageBuilder<string>.WithPayload(string.Empty).Build();
+            IMessage message = MessageBuilder.WithPayload(string.Empty).Build();
             Assert.Throws<MethodArgumentNotValidException>(() => resolver.ResolveArgument(paramAnnotated, message));
         }
 
         [Fact]
         public void ResolveRequiredEmptyNonAnnotatedParameter()
         {
-            IMessage message = MessageBuilder<string>.WithPayload(string.Empty).Build();
+            IMessage message = MessageBuilder.WithPayload(string.Empty).Build();
             Assert.Throws<MethodArgumentNotValidException>(() => resolver.ResolveArgument(paramNotAnnotated, message));
         }
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Messaging.Converter
@@ -20,7 +21,7 @@ namespace Steeltoe.Messaging.Converter
     /// A converter to turn the payload of a message from serialized form to a typed
     /// object and vice versa.
     /// </summary>
-    public interface IMessageConverter
+    public interface IMessageConverter : IServiceNameAware
     {
         /// <summary>
         /// Convert the payload of a message to a typed object.
@@ -45,6 +46,6 @@ namespace Steeltoe.Messaging.Converter
         /// <param name="payload">the object to convert</param>
         /// <param name="headers">optional headers for the message</param>
         /// <returns>the new messagee or null if converter does not support the payload type</returns>
-        IMessage ToMessage(object payload, IMessageHeaders headers = null);
+        IMessage ToMessage(object payload, IMessageHeaders headers);
     }
 }

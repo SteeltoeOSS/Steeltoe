@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,16 +26,25 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class DirectChannelWriterTest
     {
+        private ServiceCollection services;
+
+        public DirectChannelWriterTest()
+        {
+            services = new ServiceCollection();
+            services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        }
+
         [Fact]
         public async Task TestWriteAsync()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var target = new ThreadNameExtractingTestTarget();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(target);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             var currentId = Task.CurrentId;
             var curThreadId = Thread.CurrentThread.ManagedThreadId;
             await channel.Writer.WriteAsync(message);
@@ -43,13 +55,11 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void TestTryWrite()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var target = new ThreadNameExtractingTestTarget();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(target);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             var currentId = Task.CurrentId;
             var curThreadId = Thread.CurrentThread.ManagedThreadId;
             Assert.True(channel.Writer.TryWrite(message));
@@ -60,11 +70,9 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public async Task TestWaitToWriteAsync()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
             var target = new ThreadNameExtractingTestTarget();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(target);
             Assert.True(await channel.Writer.WaitToWriteAsync());
             channel.Unsubscribe(target);
@@ -74,10 +82,8 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void TestTryComplete()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             Assert.False(channel.Writer.TryComplete());
         }
     }

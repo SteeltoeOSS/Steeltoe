@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Messaging.Core
@@ -52,6 +53,6 @@ namespace Steeltoe.Messaging.Core
         /// <summary>
         /// Gets the underlying service provider the registry may be using during name lookup
         /// </summary>
-        IServiceProvider ServiceProvider { get; }
+        IApplicationContext ApplicationContext { get; }
     }
 }

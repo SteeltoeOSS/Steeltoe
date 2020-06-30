@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
 
-            invocableHandlerMethod.Invoke(MessageBuilder<SampleBean>.WithPayload(sample).Build());
+            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(sample).Build());
             AssertMethodInvocation(sample, "SimpleString");
         }
 
@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
             var instance = CreateInstance(conversionService);
             Assert.False(conversionService.CanConvert(typeof(int), typeof(string)));
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
-            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder<int>.WithPayload(123).Build()));
+            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
         }
 
         [Fact]
@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
             var instance = CreateInstance(messageConverter);
 
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
-            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder<int>.WithPayload(123).Build()));
+            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
 
-            invocableHandlerMethod.Invoke(MessageBuilder<int>.WithPayload(123).Build());
+            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build());
             AssertMethodInvocation(sample, "CustomArgumentResolver");
         }
 
@@ -82,7 +82,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
             customResolvers.Add(new CustomHandlerMethodArgumentResolver());
             instance.SetArgumentResolvers(customResolvers); // Override defaults
 
-            var message = MessageBuilder<string>.WithPayload("sample").Build();
+            var message = MessageBuilder.WithPayload("sample").Build();
 
             // This will work as the local resolver is set
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
@@ -99,7 +99,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         {
             var instance = new DefaultMessageHandlerMethodFactory();
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
-            invocableHandlerMethod.Invoke(MessageBuilder<string>.WithPayload("failure").Build());
+            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload("failure").Build());
             AssertMethodInvocation(sample, "PayloadValidation");
         }
 

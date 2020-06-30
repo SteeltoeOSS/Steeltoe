@@ -14,6 +14,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -30,23 +31,23 @@ namespace Steeltoe.Integration.Dispatcher
 
         private IMessageBuilderFactory _messageBuilderFactory;
 
-        public BroadcastingDispatcher(IServiceProvider serviceProvider, ILogger logger = null)
-            : this(serviceProvider, null, false, logger)
+        public BroadcastingDispatcher(IApplicationContext context, ILogger logger = null)
+            : this(context, null, false, logger)
         {
         }
 
-        public BroadcastingDispatcher(IServiceProvider serviceProvider, TaskScheduler executor, ILogger logger = null)
-            : this(serviceProvider, executor, false, logger)
+        public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+            : this(context, executor, false, logger)
         {
         }
 
-        public BroadcastingDispatcher(IServiceProvider serviceProvider, bool requireSubscribers, ILogger logger = null)
-            : this(serviceProvider, null, requireSubscribers, logger)
+        public BroadcastingDispatcher(IApplicationContext context, bool requireSubscribers, ILogger logger = null)
+            : this(context, null, requireSubscribers, logger)
         {
         }
 
-        public BroadcastingDispatcher(IServiceProvider serviceProvider, TaskScheduler executor, bool requireSubscribers, ILogger logger = null)
-            : base(serviceProvider, executor, logger)
+        public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, bool requireSubscribers, ILogger logger = null)
+            : base(context, executor, logger)
         {
             _requireSubscribers = requireSubscribers;
         }
@@ -63,7 +64,7 @@ namespace Steeltoe.Integration.Dispatcher
             {
                 if (_messageBuilderFactory == null)
                 {
-                    _messageBuilderFactory = _serviceProvider.GetService<IMessageBuilderFactory>();
+                    _messageBuilderFactory = _context.GetService<IMessageBuilderFactory>();
                 }
 
                 if (_messageBuilderFactory == null)
@@ -95,7 +96,7 @@ namespace Steeltoe.Integration.Dispatcher
 
             var sequenceSize = handlers.Count;
             var messageToSend = message;
-            Guid? sequenceId = null;
+            string sequenceId = null;
 
             if (ApplySequence)
             {

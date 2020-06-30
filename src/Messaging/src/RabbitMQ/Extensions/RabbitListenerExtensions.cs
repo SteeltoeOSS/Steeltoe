@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.Rabbit.Config;
 using System;
@@ -20,22 +21,31 @@ namespace Steeltoe.Messaging.Rabbit.Extensions
 {
     public static class RabbitListenerExtensions
     {
-        public static IServiceCollection AddRabbitListeners<T>(this IServiceCollection services)
-            where T : class
+        public static IServiceCollection AddRabbitListeners(this IServiceCollection services, IConfiguration config, params Type[] listenerServices)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            var metadata = RabbitListenerMetadata.BuildMetadata(typeof(T));
-            if (metadata != null)
+            foreach (var t in listenerServices)
             {
-                services.AddSingleton(metadata);
-                services.AddSingleton<T>();
+                var metadata = RabbitListenerMetadata.BuildMetadata(services, t);
+                if (metadata != null)
+                {
+                    services.AddSingleton(metadata);
+                }
+
+                RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, config, t);
             }
 
             return services;
+        }
+
+        public static IServiceCollection AddRabbitListeners<T>(this IServiceCollection services, IConfiguration config = null)
+            where T : class
+        {
+            return services.AddRabbitListeners(config, typeof(T));
         }
     }
 }

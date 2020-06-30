@@ -1,0 +1,703 @@
+﻿// Copyright 2017 the original author or authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// https://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.Support;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+
+namespace Steeltoe.Messaging.Rabbit.Support
+{
+#pragma warning disable SA1402 // File may only contain a single type
+    public static class RabbitMessageBuilder
+    {
+        public static AbstractRabbitMessageBuilder FromMessage<P>(IMessage<P> message)
+        {
+            return new RabbitMessageBuilder<P>(message);
+        }
+
+        public static AbstractRabbitMessageBuilder FromMessage(IMessage message, Type payloadType = null)
+        {
+            var genParamType = GetGenericParamType(message, payloadType);
+            var typeToCreate = typeof(RabbitMessageBuilder<>).MakeGenericType(genParamType);
+
+            return (AbstractRabbitMessageBuilder)Activator.CreateInstance(
+                  typeToCreate,
+                  BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+                  null,
+                  new object[] { message },
+                  null,
+                  null);
+        }
+
+        public static AbstractRabbitMessageBuilder WithPayload<P>(P payload)
+        {
+            return new RabbitMessageBuilder<P>(payload, new RabbitHeaderAccessor());
+        }
+
+        public static AbstractRabbitMessageBuilder WithPayload(object payload, Type payloadType = null)
+        {
+            var genParamType = GetGenericParamType(payload, payloadType);
+            var typeToCreate = typeof(RabbitMessageBuilder<>).MakeGenericType(genParamType);
+
+            return (AbstractRabbitMessageBuilder)Activator.CreateInstance(
+                  typeToCreate,
+                  BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+                  null,
+                  new object[] { payload, new RabbitHeaderAccessor() },
+                  null,
+                  null);
+        }
+
+        public static IMessage CreateMessage(object payload, IMessageHeaders messageHeaders, Type payloadType = null)
+        {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
+            if (messageHeaders == null)
+            {
+                throw new ArgumentNullException(nameof(messageHeaders));
+            }
+
+            return Message.Create(payload, messageHeaders, payloadType);
+        }
+
+        private static Type GetGenericParamType(IMessage target, Type messagePayloadType)
+        {
+            if (target == null && messagePayloadType == null)
+            {
+                return typeof(object);
+            }
+
+            if (messagePayloadType != null)
+            {
+                return messagePayloadType;
+            }
+
+            var targetType = target.GetType();
+            if (targetType.IsGenericType)
+            {
+                return targetType.GetGenericArguments()[0];
+            }
+
+            return typeof(object);
+        }
+
+        private static Type GetGenericParamType(object payload, Type messagePayloadType)
+        {
+            if (payload == null && messagePayloadType == null)
+            {
+                return typeof(object);
+            }
+
+            if (messagePayloadType != null)
+            {
+                return messagePayloadType;
+            }
+
+            return payload.GetType();
+        }
+    }
+
+    public abstract class AbstractRabbitMessageBuilder 
+    {
+        protected readonly object payload;
+
+        protected readonly IMessage originalMessage;
+
+        protected RabbitHeaderAccessor headerAccessor;
+
+        protected internal AbstractRabbitMessageBuilder()
+        {
+        }
+
+        protected internal AbstractRabbitMessageBuilder(IMessage message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            payload = message.Payload;
+            originalMessage = message;
+            headerAccessor = new RabbitHeaderAccessor(message);
+        }
+
+        protected internal AbstractRabbitMessageBuilder(RabbitHeaderAccessor accessor)
+        {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
+            payload = null;
+            originalMessage = null;
+            headerAccessor = accessor;
+        }
+
+        protected internal AbstractRabbitMessageBuilder(object payload, RabbitHeaderAccessor accessor)
+        {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
+            payload = null;
+            originalMessage = null;
+            headerAccessor = accessor;
+        }
+
+        public abstract AbstractRabbitMessageBuilder SetHeaders(RabbitHeaderAccessor accessor);
+
+        public abstract AbstractRabbitMessageBuilder SetHeader(string headerName, object headerValue);
+
+        public abstract AbstractRabbitMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue);
+
+        public abstract AbstractRabbitMessageBuilder RemoveHeaders(params string[] headerPatterns);
+
+        public abstract AbstractRabbitMessageBuilder RemoveHeader(string headerName);
+
+        public abstract AbstractRabbitMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy);
+
+        public abstract AbstractRabbitMessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyChannel(IMessageChannel replyChannel);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyChannelName(string replyChannelName);
+
+        public abstract AbstractRabbitMessageBuilder SetErrorChannel(IMessageChannel errorChannel);
+
+        public abstract AbstractRabbitMessageBuilder SetErrorChannelName(string errorChannelName);
+
+        public abstract AbstractRabbitMessageBuilder SetTimestamp(long timestamp);
+
+        public abstract AbstractRabbitMessageBuilder SetMessageId(string messageId);
+
+        public abstract AbstractRabbitMessageBuilder SetUserId(string userId);
+
+        public abstract AbstractRabbitMessageBuilder SetAppId(string appId);
+
+        public abstract AbstractRabbitMessageBuilder SetClusterId(string clusterId);
+
+        public abstract AbstractRabbitMessageBuilder SetType(string type);
+
+        public abstract AbstractRabbitMessageBuilder SetCorrelationId(string correlationId);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyTo(string replyTo);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyToAddress(Address replyTo);
+
+        public abstract AbstractRabbitMessageBuilder SetContentType(string contentType);
+
+        public abstract AbstractRabbitMessageBuilder SetContentEncoding(string contentEncoding);
+
+        public abstract AbstractRabbitMessageBuilder SetContentLength(long contentLength);
+
+        public abstract AbstractRabbitMessageBuilder SetDeliveryMode(MessageDeliveryMode deliveryMode);
+
+        public abstract AbstractRabbitMessageBuilder SetExpiration(string expiration);
+
+        public abstract AbstractRabbitMessageBuilder SetPriority(int priority);
+
+        public abstract AbstractRabbitMessageBuilder SetReceivedExchange(string receivedExchange);
+
+        public abstract AbstractRabbitMessageBuilder SetReceivedRoutingKey(string receivedRoutingKey);
+
+        public abstract AbstractRabbitMessageBuilder SetRedelivered(bool redelivered);
+
+        public abstract AbstractRabbitMessageBuilder SetDeliveryTag(ulong deliveryTag);
+
+        public abstract AbstractRabbitMessageBuilder SetMessageCount(uint messageCount);
+
+        public abstract AbstractRabbitMessageBuilder SetTimestampIfAbsent(long timestamp);
+
+        public abstract AbstractRabbitMessageBuilder SetMessageIdIfAbsent(string messageId);
+
+        public abstract AbstractRabbitMessageBuilder SetUserIdIfAbsent(string userId);
+
+        public abstract AbstractRabbitMessageBuilder SetAppIdIfAbsent(string appId);
+
+        public abstract AbstractRabbitMessageBuilder SetClusterIdIfAbsent(string clusterId);
+
+        public abstract AbstractRabbitMessageBuilder SetTypeIfAbsent(string type);
+
+        public abstract AbstractRabbitMessageBuilder SetCorrelationIdIfAbsent(string correlationId);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyToIfAbsent(string replyTo);
+
+        public abstract AbstractRabbitMessageBuilder SetReplyToAddressIfAbsent(Address replyTo);
+
+        public abstract AbstractRabbitMessageBuilder SetContentTypeIfAbsent(string contentType);
+
+        public abstract AbstractRabbitMessageBuilder SetContentEncodingIfAbsent(string contentEncoding);
+
+        public abstract AbstractRabbitMessageBuilder SetContentLengthIfAbsent(long contentLength);
+
+        public abstract AbstractRabbitMessageBuilder SetDeliveryModeIfAbsent(MessageDeliveryMode deliveryMode);
+
+        public abstract AbstractRabbitMessageBuilder SetExpirationIfAbsent(string expiration);
+
+        public abstract AbstractRabbitMessageBuilder SetPriorityIfAbsent(int priority);
+
+        public abstract AbstractRabbitMessageBuilder SetReceivedExchangeIfAbsent(string receivedExchange);
+
+        public abstract AbstractRabbitMessageBuilder SetReceivedRoutingKeyIfAbsent(string receivedRoutingKey);
+
+        public abstract AbstractRabbitMessageBuilder SetRedeliveredIfAbsent(bool redelivered);
+
+        public abstract AbstractRabbitMessageBuilder SetDeliveryTagIfAbsent(ulong deliveryTag);
+
+        public abstract AbstractRabbitMessageBuilder SetMessageCountIfAbsent(uint messageCount);
+
+        public virtual IMessage Build()
+        {
+            if (originalMessage != null && !headerAccessor.IsModified)
+            {
+                return originalMessage;
+            }
+
+            var headersToUse = headerAccessor.ToMessageHeaders();
+            return Message.Create(payload, headersToUse, payload.GetType());
+        }
+    }
+
+    public class RabbitMessageBuilder<P> : AbstractRabbitMessageBuilder
+    {
+        protected internal RabbitMessageBuilder()
+        {
+        }
+
+        protected internal RabbitMessageBuilder(IMessage<P> message)
+            : base(message)
+        {
+        }
+
+        protected internal RabbitMessageBuilder(IMessage message)
+            : base(message)
+        {
+        }
+
+        protected internal RabbitMessageBuilder(RabbitHeaderAccessor accessor)
+            : base(accessor)
+        {
+        }
+
+        protected internal RabbitMessageBuilder(P payload, RabbitHeaderAccessor accessor)
+            : base(payload, accessor)
+        {
+        }
+
+        public override AbstractRabbitMessageBuilder SetHeaders(RabbitHeaderAccessor accessor)
+        {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
+            headerAccessor = accessor;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetHeader(string headerName, object headerValue)
+        {
+            headerAccessor.SetHeader(headerName, headerValue);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
+        {
+            headerAccessor.SetHeaderIfAbsent(headerName, headerValue);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder RemoveHeaders(params string[] headerPatterns)
+        {
+            headerAccessor.RemoveHeaders(headerPatterns);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder RemoveHeader(string headerName)
+        {
+            headerAccessor.RemoveHeader(headerName);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy)
+        {
+            headerAccessor.CopyHeaders(headersToCopy);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)
+        {
+            headerAccessor.CopyHeadersIfAbsent(headersToCopy);
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyChannel(IMessageChannel replyChannel)
+        {
+            headerAccessor.ReplyChannel = replyChannel;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyChannelName(string replyChannelName)
+        {
+            headerAccessor.ReplyChannelName = replyChannelName;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetErrorChannel(IMessageChannel errorChannel)
+        {
+            headerAccessor.ErrorChannel = errorChannel;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetErrorChannelName(string errorChannelName)
+        {
+            headerAccessor.ErrorChannelName = errorChannelName;
+            return this;
+        }
+
+        public new IMessage<P> Build()
+        {
+            return (IMessage<P>)base.Build();
+        }
+
+        public override AbstractRabbitMessageBuilder SetTimestamp(long timestamp)
+        {
+            headerAccessor.Timestamp = timestamp;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetMessageId(string messageId)
+        {
+            headerAccessor.MessageId = messageId;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetUserId(string userId)
+        {
+            headerAccessor.UserId = userId;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetAppId(string appId)
+        {
+            headerAccessor.AppId = appId;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetClusterId(string clusterId)
+        {
+            headerAccessor.ClusterId = clusterId;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetType(string type)
+        {
+            headerAccessor.Type = type;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetCorrelationId(string correlationId)
+        {
+            headerAccessor.CorrelationId = correlationId;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyTo(string replyTo)
+        {
+            headerAccessor.ReplyTo = replyTo;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyToAddress(Address replyTo)
+        {
+            headerAccessor.ReplyToAddress = replyTo;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentType(string contentType)
+        {
+            headerAccessor.ContentType = contentType;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentEncoding(string contentEncoding)
+        {
+            headerAccessor.ContentEncoding = contentEncoding;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentLength(long contentLength)
+        {
+            headerAccessor.ContentLength = contentLength;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetDeliveryMode(MessageDeliveryMode deliveryMode)
+        {
+            headerAccessor.DeliveryMode = deliveryMode;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetExpiration(string expiration)
+        {
+            headerAccessor.Expiration = expiration;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetPriority(int priority)
+        {
+            headerAccessor.Priority = priority;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReceivedExchange(string receivedExchange)
+        {
+            headerAccessor.ReceivedExchange = receivedExchange;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReceivedRoutingKey(string receivedRoutingKey)
+        {
+            headerAccessor.ReceivedRoutingKey = receivedRoutingKey;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetRedelivered(bool redelivered)
+        {
+            headerAccessor.Redelivered = redelivered;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetDeliveryTag(ulong deliveryTag)
+        {
+            headerAccessor.DeliveryTag = deliveryTag;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetMessageCount(uint messageCount)
+        {
+            headerAccessor.MessageCount = messageCount;
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetTimestampIfAbsent(long timestamp)
+        {
+            if (!headerAccessor.Timestamp.HasValue)
+            {
+                headerAccessor.Timestamp = timestamp;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetMessageIdIfAbsent(string messageId)
+        {
+            if (headerAccessor.MessageId == null)
+            {
+                headerAccessor.MessageId = messageId;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetUserIdIfAbsent(string userId)
+        {
+            if (headerAccessor.UserId == null)
+            {
+                headerAccessor.UserId = userId;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetAppIdIfAbsent(string appId)
+        {
+            if (headerAccessor.AppId == null)
+            {
+                headerAccessor.AppId = appId;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetClusterIdIfAbsent(string clusterId)
+        {
+            if (headerAccessor.ClusterId == null)
+            {
+                headerAccessor.ClusterId = clusterId;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetTypeIfAbsent(string type)
+        {
+            if (headerAccessor.Type == null)
+            {
+                headerAccessor.Type = type;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetCorrelationIdIfAbsent(string correlationId)
+        {
+            if (headerAccessor.CorrelationId == null)
+            {
+                headerAccessor.CorrelationId = correlationId;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyToIfAbsent(string replyTo)
+        {
+            if (headerAccessor.ReplyTo == null)
+            {
+                headerAccessor.ReplyTo = replyTo;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReplyToAddressIfAbsent(Address replyTo)
+        {
+            if (headerAccessor.ReplyToAddress == null)
+            {
+                headerAccessor.ReplyToAddress = replyTo;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentTypeIfAbsent(string contentType)
+        {
+            if (headerAccessor.ContentType == null)
+            {
+                headerAccessor.ContentType = contentType;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentEncodingIfAbsent(string contentEncoding)
+        {
+            if (headerAccessor.ContentEncoding == null)
+            {
+                headerAccessor.ContentEncoding = contentEncoding;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetContentLengthIfAbsent(long contentLength)
+        {
+            if (!headerAccessor.ContentLength.HasValue)
+            {
+                headerAccessor.ContentLength = contentLength;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetDeliveryModeIfAbsent(MessageDeliveryMode deliveryMode)
+        {
+            if (!headerAccessor.DeliveryMode.HasValue)
+            {
+                headerAccessor.DeliveryMode = deliveryMode;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetExpirationIfAbsent(string expiration)
+        {
+            if (headerAccessor.Expiration == null)
+            {
+                headerAccessor.Expiration = expiration;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetPriorityIfAbsent(int priority)
+        {
+            if (!headerAccessor.Priority.HasValue)
+            {
+                headerAccessor.Priority = priority;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReceivedExchangeIfAbsent(string receivedExchange)
+        {
+            if (headerAccessor.ReceivedExchange == null)
+            {
+                headerAccessor.ReceivedExchange = receivedExchange;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetReceivedRoutingKeyIfAbsent(string receivedRoutingKey)
+        {
+            if (headerAccessor.ReceivedRoutingKey == null)
+            {
+                headerAccessor.ReceivedRoutingKey = receivedRoutingKey;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetRedeliveredIfAbsent(bool redelivered)
+        {
+            if (!headerAccessor.Redelivered.HasValue)
+            {
+                headerAccessor.Redelivered = redelivered;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetDeliveryTagIfAbsent(ulong deliveryTag)
+        {
+            if (!headerAccessor.DeliveryTag.HasValue)
+            {
+                headerAccessor.DeliveryTag = deliveryTag;
+            }
+
+            return this;
+        }
+
+        public override AbstractRabbitMessageBuilder SetMessageCountIfAbsent(uint messageCount)
+        {
+            if (!headerAccessor.MessageCount.HasValue)
+            {
+                headerAccessor.MessageCount = messageCount;
+            }
+
+            return this;
+        }
+    }
+
+#pragma warning restore SA1402 // File may only contain a single type
+}

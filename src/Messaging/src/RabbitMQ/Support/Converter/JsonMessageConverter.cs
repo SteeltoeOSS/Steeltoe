@@ -16,30 +16,42 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Data;
+using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.Support;
 using System;
+using System.Reflection;
 using System.Text;
 
 namespace Steeltoe.Messaging.Rabbit.Support.Converter
 {
-    public class JsonMessageConverter : AbstractMessageConverter, ISmartMessageConverter
+    public class JsonMessageConverter : AbstractMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(JsonMessageConverter);
+
         public const string DEFAULT_CLASSID_FIELD_NAME = "__TypeId__";
         public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = "__ContentTypeId__";
         public const string DEFAULT_KEY_CLASSID_FIELD_NAME = "__KeyTypeId__";
 
-        private readonly ILogger _logger;
+        public JsonSerializerSettings Settings { get; set; }
 
-        private JsonSerializerSettings Settings { get; }
+        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public JsonMessageConverter(ILogger logger = null)
+        public JsonMessageConverter(ILogger<JsonMessageConverter> logger = null)
+            : base(logger)
         {
-            _logger = logger;
+            var contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    ProcessDictionaryKeys = false
+                }
+            };
             Settings = new JsonSerializerSettings()
             {
                 NullValueHandling = NullValueHandling.Ignore,
                 MissingMemberHandling = MissingMemberHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                ContractResolver = contractResolver
             };
         }
 
@@ -49,29 +61,32 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 
         public Encoding DefaultCharset { get; set; } = EncodingUtils.Utf8;
 
-        public override object FromMessage(Message message)
+        public ITypeMapper TypeMapper { get; set; } = new DefaultTypeMapper();
+
+        public TypePrecedence Precedence
         {
-            return FromMessage(message, null);
+            get => TypeMapper.Precedence;
+            set => TypeMapper.Precedence = value;
         }
 
-        public object FromMessage(Message message, object conversionHint)
+        public override object FromMessage(IMessage message, Type targetType, object conversionHint)
         {
             object content = null;
-            var properties = message.MessageProperties;
+            var properties = message.Headers;
             if (properties != null)
             {
-                var contentType = properties.ContentType;
+                var contentType = properties.ContentType();
                 if ((AssumeSupportedContentType
-                    && (contentType == null || contentType.Equals(MessageProperties.DEFAULT_CONTENT_TYPE)))
+                    && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE)))
                     || (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
                 {
-                    var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding);
+                    var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding());
                     if (encoding == null)
                     {
                         encoding = DefaultCharset;
                     }
 
-                    content = DoFromMessage(message, conversionHint, properties, encoding);
+                    content = DoFromMessage(message, targetType, conversionHint, properties, encoding);
                 }
                 else
                 {
@@ -82,18 +97,13 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 
             if (content == null)
             {
-                content = message.Body;
+                content = message.Payload;
             }
 
             return content;
         }
 
-        protected override Message CreateMessage(object payload, MessageProperties messageProperties)
-        {
-            return CreateMessage(payload, messageProperties, null);
-        }
-
-        protected override Message CreateMessage(object objectToConvert, MessageProperties messageProperties, Type genericType)
+        protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object convertionHint)
         {
             byte[] bytes;
             try
@@ -106,57 +116,44 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
                 throw new MessageConversionException("Failed to convert Message content", e);
             }
 
-            messageProperties.ContentType = SupportedContentType.ToString();
-            messageProperties.ContentEncoding = EncodingUtils.GetEncoding(DefaultCharset);
-            messageProperties.ContentLength = bytes.Length;
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            accessor.ContentType = SupportedContentType.ToString();
+            accessor.ContentEncoding = EncodingUtils.GetEncoding(DefaultCharset);
+            accessor.ContentLength = bytes.Length;
+            TypeMapper.FromType(objectToConvert.GetType(), accessor.MessageHeaders);
 
-            // var type =  genericType == null ? objectToConvert.GetType() : genericType;
-            // if (genericType != null && !type.isContainerType()
-            //        && Modifier.isAbstract(type.getRawClass().getModifiers()))
-            // {
-            //    type = this.objectMapper.constructType(objectToConvert.getClass());
-            // }
-            // FromType(type, messageProperties);
-            return new Message(bytes, messageProperties);
+            var message = Message.Create(bytes, headers);
+            return message;
         }
 
-        protected string RetrieveHeaderAsString(MessageProperties properties, string headerName)
+        private object DoFromMessage(IMessage from, Type targetType, object conversionHint, IMessageHeaders headers, Encoding encoding)
         {
-            properties.Headers.TryGetValue(headerName, out var result);
-            string resultString = null;
-            if (result != null)
+            var message = from as IMessage<byte[]>;
+            if (message == null)
             {
-                resultString = result.ToString();
+                throw new MessageConversionException("Failed to convert Message content, message missing byte[] " + from.GetType());
             }
 
-            return resultString;
-        }
-
-        protected string RetrieveHeader(MessageProperties properties, string headerName)
-        {
-            var classId = RetrieveHeaderAsString(properties, headerName);
-            if (classId == null)
-            {
-                throw new MessageConversionException(
-                        "failed to convert Message content. Could not resolve " + headerName + " in header");
-            }
-
-            return classId;
-        }
-
-        private object DoFromMessage(Message message, object conversionHint, MessageProperties properties, Encoding encoding)
-        {
             object content;
             try
             {
-                if (conversionHint is Type)
+                if (conversionHint is ParameterInfo)
                 {
-                    content = ConvertBytesToObject(message.Body, encoding, (Type)conversionHint);
+                    var pinfo = conversionHint as ParameterInfo;
+                    content = ConvertBytesToObject(message.Payload, encoding, pinfo.ParameterType);
+                }
+                else if (targetType != null)
+                {
+                    content = ConvertBytesToObject(message.Payload, encoding, targetType);
+                }
+                else if (TypeMapper != null)
+                {
+                    var target = TypeMapper.ToType(headers);
+                    content = ConvertBytesToObject(message.Payload, encoding, target);
                 }
                 else
                 {
-                    var targetType = ToType(message.MessageProperties);
-                    content = ConvertBytesToObject(message.Body, encoding, targetType);
+                    content = message.Payload;
                 }
             }
             catch (Exception e)
@@ -171,60 +168,6 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         {
             var contentAsString = encoding.GetString(body);
             return JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
-        }
-
-        private Type ToType(MessageProperties properties)
-        {
-            var inferredType = properties.InferredArgumentType;
-            if (inferredType != null && !inferredType.IsAbstract && !inferredType.IsInterface)
-            {
-                return inferredType;
-            }
-
-            var typeIdHeader = RetrieveHeaderAsString(properties, DEFAULT_CLASSID_FIELD_NAME);
-
-            if (typeIdHeader != null)
-            {
-                return FromTypeHeader(properties, typeIdHeader);
-            }
-
-            return typeof(object);
-        }
-
-        private Type FromTypeHeader(MessageProperties properties, string typeIdHeader)
-        {
-            var classType = GetClassIdType(typeIdHeader);
-            if (classType != null)
-            {
-                return classType;
-            }
-
-            return typeof(object);
-
-            // var contentClassType = GetClassIdType(RetrieveHeader(properties, DEFAULT_CONTENT_CLASSID_FIELD_NAME));
-            // if (classType.getKeyType() == null)
-            // {
-            //    return TypeFactory.defaultInstance()
-            //            .constructCollectionLikeType(classType.getRawClass(), contentClassType);
-            // }
-
-            // JavaType keyClassType = getClassIdType(retrieveHeader(properties, getKeyClassIdFieldName()));
-            // return TypeFactory.defaultInstance()
-            //        .constructMapLikeType(classType.getRawClass(), keyClassType, contentClassType);
-        }
-
-        private Type GetClassIdType(string typeIdHeader)
-        {
-            try
-            {
-                return Type.GetType(typeIdHeader, false);
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("Exception during GetClassIdType()", e);
-            }
-
-            return null;
         }
     }
 }

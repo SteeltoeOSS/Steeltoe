@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -27,17 +28,17 @@ namespace Steeltoe.Stream.Binding
         private readonly IMessageChannelConfigurer _messageChannelConfigurer;
         private readonly Lazy<IDestinationRegistry> _registry;
 
-        public SubscribableChannelBindingTargetFactory(IServiceProvider serviceProvider, CompositeMessageChannelConfigurer messageChannelConfigurer)
-            : base(serviceProvider)
+        public SubscribableChannelBindingTargetFactory(IApplicationContext context, CompositeMessageChannelConfigurer messageChannelConfigurer)
+            : base(context)
         {
             _messageChannelConfigurer = messageChannelConfigurer;
-            _registry = new Lazy<IDestinationRegistry>(() => (IDestinationRegistry)serviceProvider.GetService(typeof(IDestinationRegistry)));
+            _registry = new Lazy<IDestinationRegistry>(() => (IDestinationRegistry)context.GetService(typeof(IDestinationRegistry)));
         }
 
         public override ISubscribableChannel CreateInput(string name)
         {
-            var chan = new DirectWithAttributesChannel(_serviceProvider);
-            chan.Name = name;
+            var chan = new DirectWithAttributesChannel(_context);
+            chan.ServiceName = name;
             chan.SetAttribute("type", "input");
             _messageChannelConfigurer.ConfigureInputChannel(chan, name);
 
@@ -53,8 +54,8 @@ namespace Steeltoe.Stream.Binding
 
         public override ISubscribableChannel CreateOutput(string name)
         {
-            var chan = new DirectWithAttributesChannel(_serviceProvider);
-            chan.Name = name;
+            var chan = new DirectWithAttributesChannel(_context);
+            chan.ServiceName = name;
             chan.SetAttribute("type", "output");
             _messageChannelConfigurer.ConfigureOutputChannel(chan, name);
 
@@ -73,7 +74,7 @@ namespace Steeltoe.Stream.Binding
             var aware = chan as IChannelInterceptorAware;
             if (aware != null)
             {
-                var interceptors = _serviceProvider.GetServices<IChannelInterceptor>();
+                var interceptors = _context.GetServices<IChannelInterceptor>();
                 foreach (var interceptor in interceptors)
                 {
                     aware.AddInterceptor(interceptor);

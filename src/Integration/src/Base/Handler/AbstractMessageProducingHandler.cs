@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -36,10 +37,10 @@ namespace Steeltoe.Integration.Handler
 
         private bool _selectiveHeaderPropagation = false;
 
-        protected AbstractMessageProducingHandler(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        protected AbstractMessageProducingHandler(IApplicationContext context)
+            : base(context)
         {
-            _messagingTemplate = new MessagingTemplate(serviceProvider);
+            _messagingTemplate = new MessagingTemplate(context);
         }
 
         public virtual IMessageChannel OutputChannel

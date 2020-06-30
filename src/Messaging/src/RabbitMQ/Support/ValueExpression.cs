@@ -30,12 +30,12 @@ namespace Steeltoe.Messaging.Rabbit.Support
             _asClass = value.GetType();
         }
 
-        public object GetValue()
+        public virtual object GetValue()
         {
             return _value;
         }
 
-        public object GetValue(Type desiredResultType)
+        public virtual object GetValue(Type desiredResultType)
         {
             if (!desiredResultType.IsInstanceOfType(_value))
             {
@@ -45,97 +45,97 @@ namespace Steeltoe.Messaging.Rabbit.Support
             return _value;
         }
 
-        public T GetValue<T>()
+        public virtual T GetValue<T>()
         {
             return (T)GetValue(typeof(T));
         }
 
-        public object GetValue(object rootObject)
+        public virtual object GetValue(object rootObject)
         {
             return _value;
         }
 
-        public object GetValue(object rootObject, Type desiredResultType)
+        public virtual object GetValue(object rootObject, Type desiredResultType)
         {
             return GetValue(desiredResultType);
         }
 
-        public T GetValue<T>(object rootObject)
+        public virtual T GetValue<T>(object rootObject)
         {
             return (T)GetValue(typeof(T));
         }
 
-        public object GetValue(IEvaluationContext context)
+        public virtual object GetValue(IEvaluationContext context)
         {
             return _value;
         }
 
-        public object GetValue(IEvaluationContext context, object rootObject)
+        public virtual object GetValue(IEvaluationContext context, object rootObject)
         {
             return _value;
         }
 
-        public object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType)
+        public virtual object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType)
         {
             return GetValue(desiredResultType);
         }
 
-        public T GetValue<T>(IEvaluationContext context)
+        public virtual T GetValue<T>(IEvaluationContext context)
         {
             return (T)GetValue(typeof(T));
         }
 
-        public T GetValue<T>(IEvaluationContext context, object rootObject)
+        public virtual T GetValue<T>(IEvaluationContext context, object rootObject)
         {
             return (T)GetValue(typeof(T));
         }
 
-        public Type GetValueType()
+        public virtual Type GetValueType()
         {
             return _asClass;
         }
 
-        public Type GetValueType(object rootObject)
+        public virtual Type GetValueType(object rootObject)
         {
             return _asClass;
         }
 
-        public Type GetValueType(IEvaluationContext context)
+        public virtual Type GetValueType(IEvaluationContext context)
         {
             return _asClass;
         }
 
-        public Type GetValueType(IEvaluationContext context, object rootObject)
+        public virtual Type GetValueType(IEvaluationContext context, object rootObject)
         {
             return _asClass;
         }
 
-        public bool IsWritable(object rootObject)
+        public virtual bool IsWritable(object rootObject)
         {
             return false;
         }
 
-        public bool IsWritable(IEvaluationContext context)
+        public virtual bool IsWritable(IEvaluationContext context)
         {
             return false;
         }
 
-        public bool IsWritable(IEvaluationContext context, object rootObject)
+        public virtual bool IsWritable(IEvaluationContext context, object rootObject)
         {
             return false;
         }
 
-        public bool SetValue(object rootObject, object value)
+        public virtual bool SetValue(object rootObject, object value)
         {
             throw new EvaluationException(_value.ToString(), "Cannot call SetValue() on a ValueExpression");
         }
 
-        public bool SetValue(IEvaluationContext context, object value)
+        public virtual bool SetValue(IEvaluationContext context, object value)
         {
             throw new EvaluationException(_value.ToString(), "Cannot call SetValue() on a ValueExpression");
         }
 
-        public bool SetValue(IEvaluationContext context, object rootObject, object value)
+        public virtual bool SetValue(IEvaluationContext context, object rootObject, object value)
         {
             throw new EvaluationException(_value.ToString(), "Cannot call SetValue() on a ValueExpression");
         }
