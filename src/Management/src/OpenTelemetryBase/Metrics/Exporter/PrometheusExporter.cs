@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
@@ -25,8 +15,8 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
     {
         public PrometheusExporter()
         {
-            this.LongMetrics = new List<ProcessedMetric<long>>();
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            LongMetrics = new List<ProcessedMetric<long>>();
+            DoubleMetrics = new List<ProcessedMetric<double>>();
         }
 
         private List<ProcessedMetric<long>> LongMetrics { get; set; }
@@ -42,19 +32,15 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
             // at its own schedule.
             if (typeof(T) == typeof(double))
             {
-                var doubleList = metrics
+                DoubleMetrics = metrics
                 .Select(x => (x as ProcessedMetric<double>))
                 .ToList();
-
-                this.DoubleMetrics.AddRange(doubleList);
             }
             else
             {
-                var longList = metrics
+                LongMetrics = metrics
                 .Select(x => (x as ProcessedMetric<long>))
                 .ToList();
-
-                this.LongMetrics.AddRange(longList);
             }
 
             return Task.FromResult(ExportResult.Success);
@@ -63,16 +49,16 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         internal List<ProcessedMetric<long>> GetAndClearLongMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<long>> current = this.LongMetrics;
-            this.LongMetrics = new List<ProcessedMetric<long>>();
+            var current = LongMetrics;
+            LongMetrics = new List<ProcessedMetric<long>>();
             return current;
         }
 
         internal List<ProcessedMetric<double>> GetAndClearDoubleMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<double>> current = this.DoubleMetrics;
-            this.DoubleMetrics = new List<ProcessedMetric<double>>();
+            var current = DoubleMetrics;
+            DoubleMetrics = new List<ProcessedMetric<double>>();
             return current;
         }
     }

@@ -1,19 +1,11 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Connector.PostgreSql
@@ -57,6 +49,18 @@ namespace Steeltoe.Connector.PostgreSql
 
         public string SearchPath { get; set; }
 
+        public string SslMode { get; set; }
+
+        public string ClientCertificate { get; set; }
+
+        public string ClientKey { get; set; }
+
+        public string SslRootCertificate { get; set; }
+
+        public bool? TrustServerCertificate { get; set; } = null;
+
+        internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
+
         public override string ToString()
         {
             StringBuilder sb;
@@ -76,6 +80,16 @@ namespace Steeltoe.Connector.PostgreSql
             }
 
             AddKeyValue(sb, "Search Path", SearchPath);
+            AddKeyValue(sb, "sslmode", SslMode);
+            AddKeyValue(sb, "Trust Server Certificate", TrustServerCertificate);
+
+            if (Options != null && Options.Any())
+            {
+                foreach (var o in Options)
+                {
+                    AddKeyValue(sb, o.Key, o.Value);
+                }
+            }
 
             return sb.ToString();
         }

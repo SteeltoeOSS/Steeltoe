@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Consul;
 using Microsoft.Extensions.Logging;
@@ -130,7 +120,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             return DeregisterAsyncInternal(registration);
         }
 
-        private async Task DeregisterAsyncInternal(IConsulRegistration registration)
+        private Task DeregisterAsyncInternal(IConsulRegistration registration)
         {
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
@@ -139,7 +129,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
             _logger?.LogInformation("Deregistering service with consul {instanceId} ", registration.InstanceId);
 
-            await _client.Agent.ServiceDeregister(registration.InstanceId).ConfigureAwait(false);
+            return _client.Agent.ServiceDeregister(registration.InstanceId);
         }
 
         /// <inheritdoc/>
@@ -153,20 +143,19 @@ namespace Steeltoe.Discovery.Consul.Registry
             return SetStatusAsyncInternal(registration, status);
         }
 
-        private async Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
+        private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
         {
             if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE).ConfigureAwait(false);
+                return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
             }
-            else if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
+
+            if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
             {
-                await _client.Agent.DisableServiceMaintenance(registration.InstanceId).ConfigureAwait(false);
+                return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
             }
-            else
-            {
-                throw new ArgumentException($"Unknown status: {status}");
-            }
+
+            throw new ArgumentException($"Unknown status: {status}");
         }
 
         /// <inheritdoc/>

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Consul;
 using Microsoft.Extensions.Configuration;
@@ -131,13 +121,37 @@ namespace Steeltoe.Discovery.Client.Test
             configurationBuilder.AddJsonFile(fileName);
             var config = configurationBuilder.Build();
 
-            var services = new ServiceCollection();
-            services.AddOptions();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(config);
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "spring:cloud:inet:defaulthostname", "fromtest" },
+                { "spring:cloud:inet:skipReverseDnsLookup", "true" },
+                { "eureka:client:shouldFetchRegistry", "false" },
+                { "eureka:client:shouldRegisterWithEureka", "false" },
+                { "eureka:instance:useNetUtils", "true" }
+            };
+
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
+            services.AddDiscoveryClient(config);
+
+            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
+            Assert.NotNull(service);
+            var instanceInfo = service.GetLocalServiceInstance();
+            Assert.Equal("fromtest", instanceInfo.Host);
         }
 
         [Fact]
@@ -154,8 +168,7 @@ namespace Steeltoe.Discovery.Client.Test
                 .AddPemFiles("instance.crt", "instance.key")
                 .Build();
 
-            var services = new ServiceCollection();
-            services.AddOptions();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
             services.Configure<CertificateOptions>(config);
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
             services.AddDiscoveryClient(config);
@@ -497,6 +510,37 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.NotNull(service5);
             var service6 = provider.GetService<IHealthContributor>();
             Assert.NotNull(service6);
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsulInetConfiguration_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "spring:cloud:inet:defaulthostname", "fromtest" },
+                { "spring:cloud:inet:skipReverseDnsLookup", "true" },
+                { "consul:discovery:useNetUtils", "true" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" }
+            };
+
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+            services.AddDiscoveryClient(config);
+            var provider = services.BuildServiceProvider();
+
+            Assert.NotNull(provider.GetService<IDiscoveryClient>());
+            Assert.NotNull(provider.GetService<IConsulClient>());
+            Assert.NotNull(provider.GetService<IScheduler>());
+            Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
+            var reg = provider.GetService<IConsulRegistration>();
+            Assert.NotNull(reg);
+            Assert.Equal("fromtest", reg.Host);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
         }
 
         public class TestClientHandlerProvider : IHttpClientHandlerProvider

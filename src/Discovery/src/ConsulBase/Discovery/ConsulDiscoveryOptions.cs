@@ -1,21 +1,9 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Net;
-using System;
 using System.Collections.Generic;
-using System.Net;
 
 namespace Steeltoe.Discovery.Consul.Discovery
 {
@@ -31,8 +19,27 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         public ConsulDiscoveryOptions()
         {
-            _hostName = DnsTools.ResolveHostName();
-            IpAddress = DnsTools.ResolveHostAddress(_hostName);
+            if (!UseNetUtils)
+            {
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
+                _hostName = DnsTools.ResolveHostName();
+                IpAddress = DnsTools.ResolveHostAddress(_hostName);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
+            }
+        }
+
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _hostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
         }
 
         /// <summary>
@@ -44,6 +51,10 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// Gets or sets Tags to use when registering service
         /// </summary>
         public IList<string> Tags { get; set; }
+
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
 
         /// <summary>
         /// Gets or sets values related to Heartbeat
@@ -127,7 +138,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         public string IpAddress { get; set; }
 
         /// <summary>
-        /// Gets or sets Port to register the service under (defaults to listening port)
+        /// Gets or sets Port to register the service under
         /// </summary>
         public int Port { get; set; }
 

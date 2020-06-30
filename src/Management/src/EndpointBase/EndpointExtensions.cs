@@ -1,21 +1,9 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -72,43 +60,35 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
-        public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
+        public static bool ShouldInvoke(this IEndpoint endpoint, IManagementOptions mgmtContext, ILogger logger = null)
         {
-            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out IManagementOptions matchingMgmtContext, exactMatch)
-                && endpoint.IsEnabled(matchingMgmtContext)
-                && endpoint.IsExposed(matchingMgmtContext)
-                && allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            var enabled = endpoint.IsEnabled(mgmtContext);
+            var exposed = endpoint.IsExposed(mgmtContext);
+            logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {mgmtContext.Path}, enabled: {enabled}, exposed: {exposed}");
+            return enabled && exposed;
         }
 
-        private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
+        public static string GetContextPath(this IEndpointOptions options, IManagementOptions mgmtContext)
         {
-            matchingContext = null;
-            var endpointPath = endpoint.Path;
-
-            if (mgmtOptions == null)
+            var contextPath = mgmtContext.Path;
+            if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(options.Path))
             {
-                return exactMatch ? requestPath.Equals(endpointPath) : requestPath.StartsWith(endpointPath);
+                contextPath += "/";
             }
-            else
-            {
-                foreach (var context in mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpointPath))
-                    {
-                        contextPath += "/";
-                    }
 
-                    var fullPath = contextPath + endpointPath;
-                    if (exactMatch ? requestPath.Equals(fullPath) : requestPath.StartsWith(fullPath))
-                    {
-                        matchingContext = context;
-                        return true;
-                    }
+            contextPath += options.Path;
+
+            if (!options.ExactMatch)
+            {
+                if (!contextPath.EndsWith("/"))
+                {
+                    contextPath += "/";
                 }
 
-                return false;
+                contextPath += "{**_}";
             }
+
+            return contextPath;
         }
     }
 }

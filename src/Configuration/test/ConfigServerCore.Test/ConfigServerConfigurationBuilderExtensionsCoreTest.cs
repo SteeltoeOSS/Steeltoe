@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
@@ -26,6 +17,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
 {
     public class ConfigServerConfigurationBuilderExtensionsCoreTest
     {
+        private readonly Dictionary<string, string> quickTests = new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } };
+
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
@@ -54,7 +47,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_AddsConfigServerProviderToProvidersList()
         {
             // Arrange
-            var configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
             var environment = HostingHelpers.GetHostingEnvironment();
 
             // Act and Assert
@@ -70,7 +63,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         public void AddConfigServer_WithLoggerFactorySucceeds()
         {
             // Arrange
-            var configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(quickTests);
             var loggerFactory = new LoggerFactory();
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
@@ -167,7 +160,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     ""spring"": {
                       ""cloud"": {
                         ""config"": {
-                            ""validateCertificates"": false
+                            ""validateCertificates"": false,
+                            ""timeout"": 0
                         }
                       }
                     }
@@ -202,7 +196,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     ""spring"": {
                       ""cloud"": {
                         ""config"": {
-                            ""validate_certificates"": false
+                            ""validate_certificates"": false,
+                            ""timeout"": 0
                         }
                       }
                     }

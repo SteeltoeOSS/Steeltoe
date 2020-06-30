@@ -1,22 +1,13 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
+using Serilog.Context;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
@@ -236,16 +227,81 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         }
 
         [Fact]
+        public void LoggerLogsWithEnrichers()
+        {
+            // arrange
+            var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+
+            // act I - log at all levels, expect Info and above to work
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                using (LogContext.PushProperty("A", 1))
+                {
+                    logger.LogInformation("Carries property A = 1");
+
+                    using (LogContext.PushProperty("A", 2))
+                    using (LogContext.PushProperty("B", 1))
+                    {
+                        logger.LogInformation("Carries A = 2 and B = 1");
+                    }
+
+                    logger.LogInformation("Carries property A = 1, again");
+                }
+
+                // pause the thread to allow the logging to happen
+                Thread.Sleep(100);
+
+                var logged = unConsole.ToString();
+
+                // assert I
+                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries property A = 1", logged);
+                Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries A = 2 and B = 1", logged);
+                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+                Assert.Contains(@"Carries property A = 1, again", logged);
+                Assert.Matches(new Regex(@"ThreadId:<\d+>"), logged);
+            }
+        }
+
+        [Fact]
+        public void LoggerLogsWithDestructuring()
+        {
+            // arrange
+            var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+
+            // act I - log at all levels, expect Info and above to work
+            using (var unConsole = new ConsoleOutputBorrower())
+            {
+                logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
+
+                // pause the thread to allow the logging to happen
+                Thread.Sleep(100);
+
+                var logged = unConsole.ToString();
+
+                // assert I
+                Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
+            }
+        }
+
+        [Fact]
         public void LoggerLogs_At_Configured_Setting()
         {
             // arrange
-             var provider = new SerilogDynamicProvider(GetConfiguration());
-             LoggerFactory fac = new LoggerFactory();
-             fac.AddProvider(provider);
-             ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var provider = new SerilogDynamicProvider(GetConfiguration());
+            LoggerFactory fac = new LoggerFactory();
+            fac.AddProvider(provider);
+            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
-             using (var unConsole = new ConsoleOutputBorrower())
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -264,8 +320,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act II - adjust rules, expect Error and above to work
-             provider.SetLogLevel("A.B.C.D", LogLevel.Error);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A.B.C.D", LogLevel.Error);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -284,8 +340,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act III - adjust rules, expect Trace and above to work
-             provider.SetLogLevel("A", LogLevel.Trace);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.Trace);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -304,8 +360,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act IV - adjust rules, expect nothing to work
-             provider.SetLogLevel("A", LogLevel.None);
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.None);
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -324,8 +380,8 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             }
 
             // act V - reset the rules, expect Info and above to work
-             provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
-             using (var unConsole = new ConsoleOutputBorrower())
+            provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
+            using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
 
@@ -369,6 +425,13 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             };
 
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+            return builder.Build();
+        }
+
+        private IConfiguration GetConfigurationFromFile()
+        {
+            var builder = new ConfigurationBuilder()
+              .AddJsonFile("serilogSettings.json");
             return builder.Build();
         }
     }

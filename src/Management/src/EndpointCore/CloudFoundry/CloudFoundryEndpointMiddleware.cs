@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -18,9 +8,6 @@ using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -34,34 +21,31 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private readonly ICloudFoundryOptions _options;
         private readonly RequestDelegate _next;
 
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
+        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = endpoint.Options as ICloudFoundryOptions;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
-                await HandleCloudFoundryRequestAsync(context).ConfigureAwait(false);
+                return HandleCloudFoundryRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return Task.CompletedTask;
         }
 
-        protected internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
+        protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal string GetRequestUri(HttpRequest request)

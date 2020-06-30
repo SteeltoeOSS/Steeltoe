@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +14,6 @@ using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,12 +31,13 @@ namespace Steeltoe.Management.Endpoint.Mappings
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
-            IEnumerable<IManagementOptions> mgmtOptions,
+            IManagementOptions mgmtOptions,
+            MappingsEndpoint endpoint,
             IRouteMappings routeMappings = null,
             IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
             IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
             ILogger<MappingsEndpointMiddleware> logger = null)
-            : base(mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = options;
@@ -56,19 +46,17 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
-            if (IsMappingsRequest(context))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
-                await HandleMappingsRequestAsync(context).ConfigureAwait(false);
+                return HandleMappingsRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return Task.CompletedTask;
         }
 
-        protected internal async Task HandleMappingsRequestAsync(HttpContext context)
+        protected internal Task HandleMappingsRequestAsync(HttpContext context)
         {
             var result = GetApplicationMappings(context);
             var serialInfo = Serialize(result);
@@ -76,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)
@@ -95,35 +83,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             var contextMappings = new ContextMappings(desc);
             return new ApplicationMappings(contextMappings);
-        }
-
-        protected internal bool IsMappingsRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            var paths = new List<string>();
-            if (_mgmtOptions != null)
-            {
-                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}"));
-            }
-            else
-            {
-                paths.Add(_options.Path);
-            }
-
-            foreach (var path in paths)
-            {
-                var pathString = new PathString(path);
-                if (context.Request.Path.Equals(pathString))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)

@@ -1,72 +1,61 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class ThreadInfo
     {
-        [JsonProperty("blockedCount")]
+        [JsonPropertyName("blockedCount")]
         public long BlockedCount { get; set; } = 0; // Not available
 
-        [JsonProperty("blockedTime")]
+        [JsonPropertyName("blockedTime")]
         public long BlockedTime { get; set; } = -1;  // Not available
 
-        [JsonProperty("lockedMonitors")]
+        [JsonPropertyName("lockedMonitors")]
         public List<MonitorInfo> LockedMonitors { get; set; }
 
-        [JsonProperty("lockedSynchronizers")]
+        [JsonPropertyName("lockedSynchronizers")]
         public List<LockInfo> LockedSynchronizers { get; set; }
 
-        [JsonProperty("lockInfo")]
+        [JsonPropertyName("lockInfo")]
         public LockInfo LockInfo { get; set; }
 
-        [JsonProperty("lockName")]
+        [JsonPropertyName("lockName")]
         public string LockName { get; set; }
 
-        [JsonProperty("lockOwnerId")]
+        [JsonPropertyName("lockOwnerId")]
         public long LockOwnerId { get; set; } = -1;
 
-        [JsonProperty("lockOwnerName")]
+        [JsonPropertyName("lockOwnerName")]
         public string LockOwnerName { get; set; }
 
-        [JsonProperty("stackTrace")]
+        [JsonPropertyName("stackTrace")]
         public List<StackTraceElement> StackTrace { get; set; }
 
-        [JsonProperty("threadId")]
+        [JsonPropertyName("threadId")]
         public long ThreadId { get; set; }
 
-        [JsonProperty("threadName")]
+        [JsonPropertyName("threadName")]
         public string ThreadName { get; set; }
 
-        [JsonProperty("threadState")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("threadState")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public TState ThreadState { get; set; }
 
-        [JsonProperty("waitedCount")]
+        [JsonPropertyName("waitedCount")]
         public long WaitedCount { get; set; } = 0; // Not available
 
-        [JsonProperty("waitedTime")]
+        [JsonPropertyName("waitedTime")]
         public long WaitedTime { get; set; } = -1; // Not available
 
-        [JsonProperty("inNative")]
+        [JsonPropertyName("inNative")]
         public bool IsInNative { get; set; }
 
-        [JsonProperty("suspended")]
+        [JsonPropertyName("suspended")]
         public bool IsSuspended { get; set; }
     }
 }

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -383,12 +373,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public async void RemoteLoadAsync_HostTimesOut()
         {
             // Arrange
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings() { Timeout = 100 });
 
             // Act and Assert
             try
             {
-                HttpRequestException ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new string[] { "http://localhost:9999/app/profile" }, null));
+                var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(new string[] { "http://localhost:9999/app/profile" }, null));
             }
             catch (ThrowsException e)
             {
@@ -734,10 +724,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 Uri = "http://localhost:8888",
                 Name = "myName",
                 FailFast = true,
-                RetryEnabled = true
+                RetryEnabled = true,
+                RetryInitialInterval = 10,
+                Timeout = 10
             };
             server.BaseAddress = new Uri(settings.Uri);
-            ConfigServerConfigurationProvider provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -1160,7 +1152,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var values = new Dictionary<string, string>()
             {
                 { "spring:cloud:config:discovery:enabled", "True" },
-                { "spring:cloud:config:failFast", "True" }
+                { "spring:cloud:config:failFast", "True" },
+                { "eureka:client:eurekaServer:retryCount", "0" }
             };
 
             IConfiguration configuration = new ConfigurationBuilder()
@@ -1171,7 +1164,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 Uri = "http://localhost:8888/",
                 Name = "foo",
-                Environment = "development"
+                Environment = "development",
+                Timeout = 10
             };
             ConfigServerConfigurationSource source = new ConfigServerConfigurationSource(settings, configuration);
             var provider = new ConfigServerConfigurationProvider(source);

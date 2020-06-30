@@ -1,24 +1,14 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Metrics.Configuration;
 using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,6 +19,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
         private readonly HashSet<(string, string)> _meterRegistryKeySet = new HashSet<(string, string)>();
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
         private readonly Task _worker;
+        private readonly MetricProcessor _processor;
 
         private MeterFactory _meterFactory;
         private TimeSpan _collectionInterval;
@@ -37,12 +28,14 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             : base()
         {
             _meterFactory = MeterFactory.Create(processor);
+
+            _processor = processor;
             _collectionInterval = timeSpan;
 
             if (processor != null && timeSpan < TimeSpan.MaxValue)
             {
                 _worker = Task.Factory.StartNew(
-                    s => this.Worker((CancellationToken)s), _cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+                    s => Worker((CancellationToken)s), _cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -80,13 +73,14 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
                     var sw = Stopwatch.StartNew();
 
                     CollectAllMetrics();
+                    (_processor as SteeltoeProcessor)?.ExportMetrics();
 
                     if (cancellationToken.IsCancellationRequested)
                     {
                         return;
                     }
 
-                    var remainingWait = this._collectionInterval - sw.Elapsed;
+                    var remainingWait = _collectionInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);

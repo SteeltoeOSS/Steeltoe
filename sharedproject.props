@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <Authors>Pivotal,dtillman</Authors>
+    <Authors>Steeltoe,VMware</Authors>
     <VersionPrefix>$(VersionPrefix)</VersionPrefix>
     <VersionSuffix>$(VersionSuffix)</VersionSuffix>
     <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
@@ -20,11 +20,15 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <NoWarn>SA1101;SA1124;S1128;SA1201;SA1309;SA1310;SA1314;SA1401;SA1413;SA1600;SA1629;SA1652;1591;S1854</NoWarn>
+    <NoWarn>SA1101;SA1124;S1128;SA1201;SA1309;SA1310;SA1314;SA1401;SA1402;SA1413;SA1600;SA1629;SA1652;1591;S1854</NoWarn>
     <CodeAnalysisRuleSet>..\..\..\..\Steeltoe.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>

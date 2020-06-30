@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
+    <VersionPrefix>3.0.0</VersionPrefix>
+  </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
@@ -6,7 +9,8 @@
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <EFCoreVersion>2.0.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
-    <HttpVersion>4.3.3</HttpVersion>
+    <HttpVersion>4.3.4</HttpVersion>
+    <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
@@ -15,6 +19,7 @@
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
+    <KubernetesClientVersion>2.0.16</KubernetesClientVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
 
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
@@ -31,18 +36,18 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>2.7.0</CoverletVersion>
+    <CoverletVersion>2.9.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <JsonNetVersion>11.0.2</JsonNetVersion>
-    <MockHttpVersion>5.0.0</MockHttpVersion>
+    <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
     <OpenTelemetryVersion>0.2.0-alpha.220</OpenTelemetryVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>16.3.0</TestSdkVersion>
+    <TestSdkVersion>16.6.1</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.1</XunitStudioVersion>

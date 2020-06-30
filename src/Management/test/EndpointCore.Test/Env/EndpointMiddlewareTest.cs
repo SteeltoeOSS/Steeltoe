@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -21,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
@@ -40,7 +31,6 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
         private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
@@ -53,16 +43,17 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mopts = new ActuatorManagementOptions();
+            mopts.EndpointOptions.Add(opts);
             var ep = new EnvEndpoint(opts, config, host);
-            var middle = new EnvEndpointMiddleware(null, ep, mgmtOptions);
+            var middle = new EnvEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/env");
             await middle.HandleEnvRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
             var json = await reader.ReadLineAsync();
-            var expected = "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
+            var expected = "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
             Assert.Equal(expected, json);
         }
 
@@ -86,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
                 Assert.Equal(HttpStatusCode.OK, result.StatusCode);
                 var json = await result.Content.ReadAsStringAsync();
-                var expected = "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointCore.Test\"}},\"name\":\"ChainedConfigurationProvider\"},{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
+                var expected = "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointCore.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
                 Assert.Equal(expected, json);
             }
 
@@ -94,20 +85,13 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         }
 
         [Fact]
-        public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void RoutesByPathAndVerb()
         {
-            var opts = new EnvEndpointOptions();
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(AppSettings);
-            var config = configurationBuilder.Build();
-            var ep = new EnvEndpoint(opts, config, host);
-            var mgmt = new CloudFoundryManagementOptions() { Path = "/" };
-            mgmt.EndpointOptions.Add(opts);
-            var middle = new EnvEndpointMiddleware(null, ep, new List<IManagementOptions> { mgmt });
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/env"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/env"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+            var options = new EnvEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/env", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/env", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

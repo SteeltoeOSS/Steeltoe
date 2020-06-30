@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
     <Description>Steeltoe management endpoints</Description>
     <PackageTags>actuator;management;monitoring;Spring Cloud;</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,8 +19,6 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader" Version="$(SymReaderVersion)" />
     <PackageReference Include="Microsoft.DiaSymReader.PortablePdb" Version="$(SymReaderPortableVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="OpenTelemetry.Exporter.Prometheus" Version="$(OpenTelemetryVersion)" />
   
     <PackageReference Include="System.IO.FileSystem.DriveInfo" Version="$(DriveInfoVersion)" />
   </ItemGroup>

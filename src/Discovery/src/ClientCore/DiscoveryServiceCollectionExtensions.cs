@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +12,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
@@ -145,14 +136,15 @@ namespace Steeltoe.Discovery.Client
 
         private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
         {
+            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
             if (IsEurekaConfigured(config, info))
             {
-                ConfigureEurekaServices(services, config, info);
+                ConfigureEurekaServices(services, config, info, netOptions);
                 AddEurekaServices(services, lifecycle);
             }
             else if (IsConsulConfigured(config, info))
             {
-                ConfigureConsulServices(services, config, info);
+                ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
             else
@@ -161,6 +153,7 @@ namespace Steeltoe.Discovery.Client
             }
 
             services.TryAddTransient<DiscoveryHttpMessageHandler>();
+            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
         }
 
         #region Consul
@@ -171,12 +164,17 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0;
         }
 
-        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
             services.Configure<ConsulOptions>(consulSection);
             var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
             services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
+            services.PostConfigure<ConsulDiscoveryOptions>(options =>
+            {
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
+            });
         }
 
         private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
@@ -197,7 +195,6 @@ namespace Steeltoe.Discovery.Client
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
             services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
-            services.AddSingleton<IServiceInstanceProvider, ConsulDiscoveryClient>();
             services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
         }
         #endregion Consul
@@ -210,7 +207,7 @@ namespace Steeltoe.Discovery.Client
             return childCount > 0 || info is EurekaServiceInfo;
         }
 
-        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info)
+        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
         {
             var einfo = info as EurekaServiceInfo;
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -224,7 +221,15 @@ namespace Steeltoe.Discovery.Client
             services.Configure<EurekaInstanceOptions>(instSection);
             services.PostConfigure<EurekaInstanceOptions>((options) =>
             {
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+                IApplicationInstanceInfo appInfo = null;
+                if (einfo?.ApplicationInfo == null)
+                {
+                    appInfo = services.GetApplicationInstanceInfo();
+                }
+
+                options.NetUtils = new InetUtils(netOptions);
+                options.ApplyNetUtils();
+                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
             });
         }
 
@@ -256,7 +261,6 @@ namespace Steeltoe.Discovery.Client
                 return eurekaService;
             });
 
-            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<EurekaDiscoveryClient>());
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
             var serviceProvider = services.BuildServiceProvider();

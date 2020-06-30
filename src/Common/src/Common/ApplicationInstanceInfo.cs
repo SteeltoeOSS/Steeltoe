@@ -1,20 +1,11 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Options;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -28,6 +19,7 @@ namespace Steeltoe.Common
         public readonly string EurekaRoot = "eureka";
         public readonly string ConfigServerRoot = "spring:cloud:config";
         public readonly string ConsulRoot = "consul";
+        public readonly string KubernetesRoot = "spring:cloud:kubernetes";
         public readonly string ManagementRoot = "management";
 
         public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
@@ -41,6 +33,8 @@ namespace Steeltoe.Common
         public string ConsulInstanceNameKey => ConsulRoot + ":serviceName";
 
         public string EurekaInstanceNameKey => EurekaRoot + ":instance:appName";
+
+        public string KubernetesNameKey => KubernetesRoot + ":config:name";
 
         public string ManagementNameKey => ManagementRoot + ":name";
 
@@ -69,15 +63,22 @@ namespace Steeltoe.Common
             }
         }
 
-        private readonly IConfiguration configuration;
+        protected IConfiguration configuration;
 
         public ApplicationInstanceInfo()
         {
             SecondChanceSetIdProperties();
         }
 
-        public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix = "")
-            : base(configuration, BuildConfigString(configPrefix, "application"))
+        public ApplicationInstanceInfo(IConfiguration configuration)
+            : base(configuration)
+        {
+            this.configuration = configuration;
+            SecondChanceSetIdProperties(this.configuration);
+        }
+
+        public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
+            : base(configuration, BuildConfigString(configPrefix, ApplicationRoot))
         {
             this.configuration = configuration;
             SecondChanceSetIdProperties(this.configuration);
@@ -107,12 +108,15 @@ namespace Steeltoe.Common
             {
                 SteeltoeComponent.Configuration => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, ConfigServerNameKey, PlatformNameKey, AppNameKey),
                 SteeltoeComponent.Discovery => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, EurekaInstanceNameKey, ConsulInstanceNameKey, PlatformNameKey, AppNameKey),
+                SteeltoeComponent.Kubernetes => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, KubernetesNameKey, PlatformNameKey, AppNameKey),
                 SteeltoeComponent.Management => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, ManagementNameKey, PlatformNameKey, AppNameKey),
                 _ => ConfigurationValuesHelper.GetPreferredSetting(configuration, DefaultAppName, additionalSearchPath, PlatformNameKey, AppNameKey)
             };
         }
 
         public virtual string ApplicationVersion { get; set; }
+
+        public virtual string EnvironmentName { get; set; } = string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")) ? "Production" : Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
         public virtual int InstanceIndex { get; set; } = -1;
 

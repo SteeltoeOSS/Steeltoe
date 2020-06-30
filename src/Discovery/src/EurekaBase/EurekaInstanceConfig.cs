@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -56,6 +46,20 @@ namespace Steeltoe.Discovery.Eureka
             MetadataMap = new Dictionary<string, string>();
             DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
             PreferIpAddress = false;
+        }
+
+        public void ApplyNetUtils()
+        {
+            if (UseNetUtils && NetUtils != null)
+            {
+                var host = NetUtils.FindFirstNonLoopbackHostInfo();
+                if (host.Hostname != null)
+                {
+                    _thisHostName = host.Hostname;
+                }
+
+                IpAddress = host.IpAddress;
+            }
         }
 
         // eureka:instance:instanceId, spring:application:instance_id, null
@@ -132,11 +136,22 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual IEnumerable<string> DefaultAddressResolutionOrder { get; set; }
 
+        public bool UseNetUtils { get; set; }
+
+        public InetUtils NetUtils { get; set; }
+
         public virtual string GetHostName(bool refresh)
         {
             if (refresh || string.IsNullOrEmpty(_thisHostName))
             {
-                _thisHostName = DnsTools.ResolveHostName();
+                if (UseNetUtils && NetUtils != null)
+                {
+                    return NetUtils.FindFirstNonLoopbackHostInfo().Hostname;
+                }
+                else
+                {
+                    _thisHostName = DnsTools.ResolveHostName();
+                }
             }
 
             return _thisHostName;
@@ -146,10 +161,17 @@ namespace Steeltoe.Discovery.Eureka
         {
             if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
-                var hostName = GetHostName(refresh);
-                if (!string.IsNullOrEmpty(hostName))
+                if (UseNetUtils && NetUtils != null)
                 {
-                    _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
+                    _thisHostAddress = NetUtils.FindFirstNonLoopbackAddress().ToString();
+                }
+                else
+                {
+                    var hostName = GetHostName(refresh);
+                    if (!string.IsNullOrEmpty(hostName))
+                    {
+                        _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
+                    }
                 }
             }
 

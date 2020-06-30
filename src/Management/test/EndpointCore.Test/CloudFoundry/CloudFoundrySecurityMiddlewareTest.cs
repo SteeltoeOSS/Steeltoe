@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -55,6 +45,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
+            // Application Id Missing
             using (var server = new TestServer(builder))
             {
                 var client = server.CreateClient();
@@ -81,6 +72,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var builder2 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings2));
 
+            // CloudFoundry Api missing
             using (var server = new TestServer(builder2))
             {
                 var client = server.CreateClient();
@@ -108,10 +100,38 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var builder3 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings3));
 
+            // Endpoint not configured
             using (var server = new TestServer(builder3))
             {
                 var client = server.CreateClient();
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
+                Assert.Equal(HttpStatusCode.ServiceUnavailable, result.StatusCode);
+            }
+
+            var appSettings4 = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["info:application:name"] = "foobar",
+                ["info:application:version"] = "1.0.0",
+                ["info:application:date"] = "5/1/2008",
+                ["info:application:time"] = "8:30:52 AM",
+                ["info:NET:type"] = "Core",
+                ["info:NET:version"] = "2.0.0",
+                ["info:NET:ASPNET:type"] = "Core",
+                ["info:NET:ASPNET:version"] = "2.0.0",
+                ["vcap:application:application_id"] = "foobar",
+                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+            };
+
+            var builder4 = new WebHostBuilder().UseStartup<StartupWithSecurity>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings4));
+
+            using (var server = new TestServer(builder4))
+            {
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }
@@ -148,6 +168,20 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
+        }
+
+        [Fact]
+        public async void CloudFoundrySecurityMiddleware_ReturnsError()
+        {
+            var mgmtOptions = new CloudFoundryManagementOptions();
+
+            var options = new CloudFoundryEndpointOptions();
+            mgmtOptions.EndpointOptions.Add(options);
+            options.ApplicationId = "foo";
+            options.CloudFoundryApi = "http://localhost:9999/foo";
+            var middle = new CloudFoundrySecurityMiddleware(null, options, mgmtOptions);
+            var context = CreateRequest("Get", "/cloudfoundryapplication");
+            await middle.Invoke(context);
         }
 
         [Fact]
@@ -226,7 +260,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public void GetAccessToken_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var token = middle.GetAccessToken(context.Request);
@@ -242,7 +277,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         public async void GetPermissions_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var middle = new CloudFoundrySecurityMiddleware(null, opts, mgmtOptions, null);
             var context = CreateRequest("GET", "/");
             var result = await middle.GetPermissions(context);
@@ -264,6 +300,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             {
                 TraceIdentifier = Guid.NewGuid().ToString()
             };
+
             context.Response.Body = new MemoryStream();
             context.Request.Method = method;
             context.Request.Path = new PathString(path);

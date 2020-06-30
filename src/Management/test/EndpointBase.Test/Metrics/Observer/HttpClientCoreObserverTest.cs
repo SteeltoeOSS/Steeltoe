@@ -1,31 +1,15 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics.Configuration;
-using OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
-using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
-using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
-using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -51,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var obs = new HttpClientCoreObserver(options, stats, null);
 
@@ -65,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -82,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetStatusCode_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -103,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetTagContext_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
 
@@ -121,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleStopEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
             var factory = stats.Factory;
@@ -144,8 +128,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var timeSummary = processor.GetMetricByName<double>("http.client.request.time");
             Assert.NotNull(timeSummary);
             var average = timeSummary.Sum / timeSummary.Count;
-            Assert.InRange(average, 995.0, 1200.0);
-            Assert.InRange(timeSummary.Max, 995.0, 1200.0);
+            Assert.InRange(average, 975.0, 1200.0);
+            Assert.InRange(timeSummary.Max, 975.0, 1200.0);
 
             var countSummary = processor.GetMetricByName<long>("http.client.request.count");
             Assert.Equal(2, countSummary.Count);
@@ -157,7 +141,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleExceptionEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
+            var options = new MetricsObserverOptions();
             var stats = new TestOpenTelemetryMetrics();
             var observer = new HttpClientCoreObserver(options, stats, null);
             var factory = stats.Factory;
