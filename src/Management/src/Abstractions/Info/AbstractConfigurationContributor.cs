@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Info.Contributor
+namespace Steeltoe.Management.Info
 {
     public abstract class AbstractConfigurationContributor
     {

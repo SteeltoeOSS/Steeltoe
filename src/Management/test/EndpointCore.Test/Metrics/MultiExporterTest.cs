@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using Xunit;
 using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
-namespace Steeltoe.Management.EndpointCore.Test.Metrics
+namespace Steeltoe.Management.Endpoint.Test.Metrics
 {
     public class MultiExporterTest
     {

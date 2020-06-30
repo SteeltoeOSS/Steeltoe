@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Info;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -33,9 +34,9 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             services.AddInfoActuator(config);
 
             IInfoContributor extra = new TestInfoContributor();
-            services.AddSingleton<IInfoContributor>(extra);
+            services.AddSingleton(extra);
             ILogger<InfoEndpoint> logger = new TestLogger();
-            services.AddSingleton<ILogger<InfoEndpoint>>(logger);
+            services.AddSingleton(logger);
 
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<IInfoOptions>();
@@ -44,13 +45,14 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             Assert.NotNull(contribs);
             var listOfContribs = contribs.ToList();
-            Assert.Equal(3, listOfContribs.Count);
+            Assert.Equal(4, listOfContribs.Count);
 
             Assert.Contains(contribs, (item) =>
             {
                 return
                 item.GetType() == typeof(GitInfoContributor) ||
                 item.GetType() == typeof(AppSettingsInfoContributor) ||
+                item.GetType() == typeof(BuildInfoContributor) ||
                 item.GetType() == typeof(TestInfoContributor);
             });
 

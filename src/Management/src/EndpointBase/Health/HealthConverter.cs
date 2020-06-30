@@ -2,24 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.HealthChecks;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthConverter : JsonConverter<HealthCheckResult>
+    public class HealthConverter : JsonConverter<HealthEndpointResponse>
     {
-        public override HealthCheckResult Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             throw new NotImplementedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, HealthCheckResult value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, HealthEndpointResponse value, JsonSerializerOptions options)
         {
             writer.WriteStartObject();
-            if (value is HealthCheckResult health)
+            if (value is HealthEndpointResponse health)
             {
                 writer.WriteString("status", health.Status.ToString());
                 if (!string.IsNullOrEmpty(health.Description))

@@ -25,16 +25,21 @@ namespace Steeltoe.Common.Kubernetes
             }
 
             var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
-            if (appInfo != null)
+
+            if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(KubernetesApplicationOptions)) != true)
             {
-                serviceCollection.Remove(appInfo);
+                if (appInfo != null)
+                {
+                    serviceCollection.Remove(appInfo);
+                }
+
+                var sp = serviceCollection.BuildServiceProvider();
+                var config = sp.GetRequiredService<IConfiguration>();
+
+                var newAppInfo = new KubernetesApplicationOptions(config);
+                serviceCollection.AddSingleton(newAppInfo);
+                serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
             }
-
-            var sp = serviceCollection.BuildServiceProvider();
-            var config = sp.GetRequiredService<IConfiguration>();
-
-            var newAppInfo = new KubernetesApplicationOptions(config);
-            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
 
             return serviceCollection;
         }
@@ -73,9 +78,8 @@ namespace Steeltoe.Common.Kubernetes
             var appInfo = serviceCollection.GetKubernetesApplicationOptions() as KubernetesApplicationOptions;
 
             var sp = serviceCollection.BuildServiceProvider();
-            var config = sp.GetRequiredService<IConfiguration>();
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
-            serviceCollection.AddSingleton((serviceProvider) => KubernetesClientHelpers.GetKubernetesClient(config, appInfo, kubernetesClientConfiguration, logger));
+            serviceCollection.AddSingleton((serviceProvider) => KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger));
 
             return serviceCollection;
         }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Extensions.Logging.DynamicLogger;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -20,6 +20,7 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
+using Steeltoe.Management.Info;
 using System;
 
 namespace Steeltoe.Management.Endpoint

@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Info
+namespace Steeltoe.Management.Info
 {
     public class InfoBuilder : IInfoBuilder
     {

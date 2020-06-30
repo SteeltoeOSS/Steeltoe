@@ -32,12 +32,9 @@ namespace Steeltoe.Management.Endpoint.Health
             try
             {
                 var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
-                healthCheckResult = new HealthCheckResult()
-                {
-                    Status = res.Status.ToHealthStatus(),
-                    Description = res.Description,
-                    Details = res.Data?.ToDictionary(i => i.Key, i => i.Value)
-                };
+                healthCheckResult.Status = res.Status.ToHealthStatus();
+                healthCheckResult.Description = res.Description;
+                healthCheckResult.Details = res.Data?.ToDictionary(i => i.Key, i => i.Value);
 
                 if (res.Exception != null && !string.IsNullOrEmpty(res.Exception.Message))
                 {

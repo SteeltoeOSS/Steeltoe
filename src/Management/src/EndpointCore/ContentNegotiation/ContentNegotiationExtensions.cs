@@ -5,10 +5,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
 using System.Linq;
 
-namespace Steeltoe.Management.EndpointCore.ContentNegotiation
+namespace Steeltoe.Management.Endpoint.ContentNegotiation
 {
     public static class ContentNegotiationExtensions
     {

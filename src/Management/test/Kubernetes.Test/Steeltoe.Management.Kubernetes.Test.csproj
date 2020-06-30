@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedtest.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Kubernetes\Steeltoe.Management.Kubernetes.csproj" />
+  </ItemGroup>
+
+</Project>
