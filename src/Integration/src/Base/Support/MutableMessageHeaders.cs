@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Support
         {
         }
 
-        public MutableMessageHeaders(IDictionary<string, object> headers, Guid? id, long? timestamp)
+        public MutableMessageHeaders(IDictionary<string, object> headers, string id, long? timestamp)
         : base(headers, id, timestamp)
         {
         }
@@ -55,22 +55,22 @@ namespace Steeltoe.Integration.Support
             return headers.Remove(key);
         }
 
-        private static Guid? ExtractId(IDictionary<string, object> headers)
+        private static string ExtractId(IDictionary<string, object> headers)
         {
             if (headers != null && headers.ContainsKey(ID))
             {
                 var id = headers[ID];
                 if (id is string)
                 {
-                    return Guid.Parse((string)id);
+                    return id as string;
                 }
                 else if (id is byte[])
                 {
-                    return new Guid((byte[])id);
+                    return new Guid((byte[])id).ToString();
                 }
-                else
+                else if (id is Guid)
                 {
-                    return (Guid)id;
+                    return ((Guid)id).ToString();
                 }
             }
 

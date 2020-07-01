@@ -18,15 +18,16 @@ namespace Steeltoe.Integration.Support.Test
             var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             var payload = new object();
-            var headerDictionary = new Dictionary<string, object>();
-
-            headerDictionary.Add(MessageHeaders.ID, uuid);
-            headerDictionary.Add(MessageHeaders.TIMESTAMP, timestamp);
+            var headerDictionary = new Dictionary<string, object>
+            {
+                { MessageHeaders.ID, uuid },
+                { MessageHeaders.TIMESTAMP, timestamp }
+            };
 
             var mutableMessage = new MutableMessage<object>(payload, headerDictionary);
             var headers = mutableMessage.Headers as MutableMessageHeaders;
 
-            Assert.Equal(uuid, headers.RawHeaders[MessageHeaders.ID]);
+            Assert.Equal(uuid.ToString(), headers.RawHeaders[MessageHeaders.ID]);
             Assert.Equal(timestamp, headers.RawHeaders[MessageHeaders.TIMESTAMP]);
         }
 
@@ -58,9 +59,11 @@ namespace Steeltoe.Integration.Support.Test
             var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
             // UUID as string; timestamp as string
-            var headerDictionarystrings = new Dictionary<string, object>();
-            headerDictionarystrings.Add(MessageHeaders.ID, uuid.ToString());
-            headerDictionarystrings.Add(MessageHeaders.TIMESTAMP, timestamp.ToString());
+            var headerDictionarystrings = new Dictionary<string, object>
+            {
+                { MessageHeaders.ID, uuid.ToString() },
+                { MessageHeaders.TIMESTAMP, timestamp.ToString() }
+            };
             var mutableMessagestrings = new MutableMessage<object>(payload, headerDictionarystrings);
             Assert.Equal(uuid.ToString(), mutableMessagestrings.Headers.Id);
             Assert.Equal(timestamp, mutableMessagestrings.Headers.Timestamp);

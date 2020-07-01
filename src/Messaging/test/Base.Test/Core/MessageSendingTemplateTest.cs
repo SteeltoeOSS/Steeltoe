@@ -26,8 +26,10 @@ namespace Steeltoe.Messaging.Core.Test
         {
             template = new TestMessageSendingTemplate();
             postProcessor = new TestMessagePostProcessor();
-            headers = new Dictionary<string, object>();
-            headers.Add("key", "value");
+            headers = new Dictionary<string, object>
+            {
+                { "key", "value" }
+            };
         }
 
         [Fact]

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Moq;
 using Steeltoe.Common.Util;
@@ -33,7 +23,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         [Fact]
         public void TestRequeue()
         {
-            Exception ex = new Exception();
+            var ex = new Exception();
             TestRequeueOrNotDefaultYes(ex, true);
         }
 
@@ -52,7 +42,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         [Fact]
         public void TestDontRequeueNested()
         {
-            Exception ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
+            var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
             TestRequeueOrNotDefaultYes(ex, false);
         }
 
@@ -77,7 +67,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         [Fact]
         public void TestDontRequeueNestedDefaultNot()
         {
-            Exception ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
+            var ex = new Exception(string.Empty, new Exception(string.Empty, new RabbitRejectAndDontRequeueException("fail")));
             TestRequeueOrNotDefaultNo(ex, false);
         }
 
@@ -97,7 +87,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
             connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
-            AtomicBoolean throws = new AtomicBoolean(false);
+            var throws = new AtomicBoolean(false);
             channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>()))
                 .Callback<string>((arg) =>
                 {
@@ -114,7 +104,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     if (throws.Value)
                     {
-                        throw new Exception();
+                        throw new R.Exceptions.OperationInterruptedException(new R.ShutdownEventArgs(R.ShutdownInitiator.Peer, 0, "Expected"));
                     }
 
                     return new R.QueueDeclareOk("any", 0, 0);
@@ -130,10 +120,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 20,
                 null,
                 "good",
-                "bad");
-            blockingQueueConsumer.DeclarationRetries = 1;
-            blockingQueueConsumer.RetryDeclarationInterval = 10;
-            blockingQueueConsumer.FailedDeclarationRetryInterval = 10;
+                "bad")
+            {
+                DeclarationRetries = 1,
+                RetryDeclarationInterval = 10,
+                FailedDeclarationRetryInterval = 10
+            };
             blockingQueueConsumer.Start();
             channel.Verify(c => c.BasicQos(It.IsAny<uint>(), 20, It.IsAny<bool>()));
             blockingQueueConsumer.Stop();
@@ -212,16 +204,16 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     {
                         blockingQueueConsumer.NextMessage(1000);
                     }
-                    catch (ConsumerCancelledException e)
+                    catch (ConsumerCancelledException)
                     {
                         latch.Signal();
                         break;
                     }
-                    catch (ShutdownSignalException e)
+                    catch (ShutdownSignalException)
                     {
                         // Noop
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         // noop
                     }
@@ -270,8 +262,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         private void TestRequeueOrNotGuts(Exception ex, bool expectedRequeue, Mock<R.IModel> channel, BlockingQueueConsumer blockingQueueConsumer)
         {
             blockingQueueConsumer.Channel = channel.Object;
-            var deliveryTags = new HashSet<ulong>();
-            deliveryTags.Add(1UL);
+            var deliveryTags = new HashSet<ulong>
+            {
+                1UL
+            };
             blockingQueueConsumer.DeliveryTags = deliveryTags;
             blockingQueueConsumer.RollbackOnExceptionIfNecessary(ex);
             channel.Verify((c) => c.BasicNack(1UL, true, expectedRequeue));

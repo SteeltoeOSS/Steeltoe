@@ -54,8 +54,10 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void CustomArgumentResolver()
         {
-            var customResolvers = new List<IHandlerMethodArgumentResolver>();
-            customResolvers.Add(new CustomHandlerMethodArgumentResolver());
+            var customResolvers = new List<IHandlerMethodArgumentResolver>
+            {
+                new CustomHandlerMethodArgumentResolver()
+            };
             var instance = CreateInstance(customResolvers);
 
             var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
@@ -68,8 +70,10 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         public void OverrideArgumentResolvers()
         {
             var instance = new DefaultMessageHandlerMethodFactory();
-            var customResolvers = new List<IHandlerMethodArgumentResolver>();
-            customResolvers.Add(new CustomHandlerMethodArgumentResolver());
+            var customResolvers = new List<IHandlerMethodArgumentResolver>
+            {
+                new CustomHandlerMethodArgumentResolver()
+            };
             instance.SetArgumentResolvers(customResolvers); // Override defaults
 
             var message = MessageBuilder.WithPayload("sample").Build();

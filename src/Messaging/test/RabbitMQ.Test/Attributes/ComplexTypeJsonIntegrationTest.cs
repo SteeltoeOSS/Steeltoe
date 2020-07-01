@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,28 +19,29 @@ using static Steeltoe.Messaging.Rabbit.Attributes.ComplexTypeJsonIntegrationTest
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
+    [Trait("Category", "RequiresBroker")]
     public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     {
         public const string TEST_QUEUE = "test.complex.send.and.receive";
         public const string TEST_QUEUE2 = "test.complex.receive";
 
-        private ServiceProvider provider;
-        private StartupFixture fixture;
-        private ITestOutputHelper output;
+        private readonly ServiceProvider provider;
+        private readonly StartupFixture fixture;
 
-        public ComplexTypeJsonIntegrationTest(StartupFixture fix, ITestOutputHelper outp)
+        public ComplexTypeJsonIntegrationTest(StartupFixture fix)
         {
             fixture = fix;
             provider = fixture.Provider;
-            output = outp;
         }
 
         public static Foo<Bar<Baz, Qux>> MakeAFoo()
         {
             var foo = new Foo<Bar<Baz, Qux>>();
-            var bar = new Bar<Baz, Qux>();
-            bar.AField = new Baz("foo");
-            bar.BField = new Qux(42);
+            var bar = new Bar<Baz, Qux>
+            {
+                AField = new Baz("foo"),
+                BField = new Qux(42)
+            };
             foo.Field = bar;
             return foo;
         }
@@ -145,7 +136,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class StartupFixture : IDisposable
         {
-            private IServiceCollection services;
+            private readonly IServiceCollection services;
 
             public ServiceProvider Provider { get; set; }
 
@@ -217,7 +208,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public override string ToString()
             {
-                return "Foo [field=" + this.Field + "]";
+                return "Foo [field=" + Field + "]";
             }
         }
 
@@ -229,7 +220,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public override string ToString()
             {
-                return "Bar [aField=" + this.AField + ", bField=" + this.BField + "]";
+                return "Bar [aField=" + AField + ", bField=" + BField + "]";
             }
         }
 
@@ -259,7 +250,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public override string ToString()
             {
-                return "Qux [qux=" + this.QuxField + "]";
+                return "Qux [qux=" + QuxField + "]";
             }
         }
     }

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using System.Collections.Generic;
 using System.Text;
@@ -20,25 +10,29 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 {
     public class JsonMessageConverterTest
     {
-        private JsonMessageConverter converter;
-        private JsonMessageConverter jsonConverterWithDefaultType;
-        private SimpleTrade trade;
+        private readonly JsonMessageConverter converter;
+        private readonly JsonMessageConverter jsonConverterWithDefaultType;
+        private readonly SimpleTrade trade;
 
         public JsonMessageConverterTest()
         {
             converter = new JsonMessageConverter();
-            trade = new SimpleTrade();
-            trade.AccountName = "Acct1";
-            trade.BuyRequest = true;
-            trade.OrderType = "Market";
-            trade.Price = 103.30M;
-            trade.Quantity = 100;
-            trade.RequestId = "R123";
-            trade.Ticker = "VMW";
-            trade.UserName = "Joe Trader";
+            trade = new SimpleTrade
+            {
+                AccountName = "Acct1",
+                BuyRequest = true,
+                OrderType = "Market",
+                Price = 103.30M,
+                Quantity = 100,
+                RequestId = "R123",
+                Ticker = "VMW",
+                UserName = "Joe Trader"
+            };
             jsonConverterWithDefaultType = new JsonMessageConverter();
-            var classMapper = new DefaultTypeMapper();
-            classMapper.DefaultType = typeof(Foo);
+            var classMapper = new DefaultTypeMapper
+            {
+                DefaultType = typeof(Foo)
+            };
             jsonConverterWithDefaultType.TypeMapper = classMapper;
         }
 
@@ -65,9 +59,11 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void Dictionary()
         {
-            var hashtable = new Dictionary<string, string>();
-            hashtable.Add("TICKER", "VMW");
-            hashtable.Add("PRICE", "103.2");
+            var hashtable = new Dictionary<string, string>
+            {
+                { "TICKER", "VMW" },
+                { "PRICE", "103.2" }
+            };
 
             var message = converter.ToMessage(hashtable, new MessageHeaders());
             var marhsalledHashtable = converter.FromMessage<Dictionary<string, string>>(message);
@@ -100,12 +96,16 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestDefaultType()
         {
             var bytes = Encoding.UTF8.GetBytes("{\"name\" : \"foo\" }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json"
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var converter = new JsonMessageConverter();
-            var classMapper = new DefaultTypeMapper();
-            classMapper.DefaultType = typeof(Foo);
+            var classMapper = new DefaultTypeMapper
+            {
+                DefaultType = typeof(Foo)
+            };
             converter.TypeMapper = classMapper;
             var foo = converter.FromMessage(message, null);
             Assert.IsType<Foo>(foo);
@@ -115,8 +115,10 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestDefaultTypeConfig()
         {
             var bytes = Encoding.UTF8.GetBytes("{\"name\" : \"foo\" }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json"
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var foo = jsonConverterWithDefaultType.FromMessage(message, null);
             Assert.IsType<Foo>(foo);
@@ -136,11 +138,13 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact(Skip = "Need to handle nested dictionaries")]
         public void TestNoTypeInfo()
         {
-            byte[] bytes = Encoding.UTF8.GetBytes("{\"name\" : { \"foo\" : \"bar\" } }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
+            var bytes = Encoding.UTF8.GetBytes("{\"name\" : { \"foo\" : \"bar\" } }");
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json"
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
-            var foo = this.converter.FromMessage(message, null);
+            var foo = converter.FromMessage(message, null);
             Assert.IsType<Dictionary<object, object>>(foo);
             var fooDict = foo as Dictionary<object, object>;
             var nameObj = fooDict["name"];
@@ -152,9 +156,11 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestInferredTypeInfo()
         {
             var bytes = Encoding.UTF8.GetBytes("{\"name\" : \"foo\" }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
-            messageProperties.InferredArgumentType = typeof(Foo);
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json",
+                InferredArgumentType = typeof(Foo)
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var foo = converter.FromMessage(message, null);
             Assert.IsType<Foo>(foo);
@@ -164,9 +170,11 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestInferredGenericTypeInfo()
         {
             var bytes = Encoding.UTF8.GetBytes("[ {\"name\" : \"foo\" } ]");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
-            messageProperties.InferredArgumentType = typeof(List<Foo>);
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json",
+                InferredArgumentType = typeof(List<Foo>)
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var foo = converter.FromMessage(message, null);
             Assert.IsType<List<Foo>>(foo);
@@ -178,9 +186,11 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestInferredGenericMap1()
         {
             var bytes = Encoding.UTF8.GetBytes("{\"qux\" : [ { \"foo\" : { \"name\" : \"bar\" } } ] }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
-            messageProperties.InferredArgumentType = typeof(Dictionary<string, List<Bar>>);
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json",
+                InferredArgumentType = typeof(Dictionary<string, List<Bar>>)
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var foo = converter.FromMessage(message, null);
             Assert.IsType<Dictionary<string, List<Bar>>>(foo);
@@ -194,9 +204,11 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         public void TestInferredGenericMap2()
         {
             var bytes = Encoding.UTF8.GetBytes("{\"qux\" : { \"baz\" : { \"foo\" : { \"name\" : \"bar\" } } } }");
-            var messageProperties = new RabbitHeaderAccessor();
-            messageProperties.ContentType = "application/json";
-            messageProperties.InferredArgumentType = typeof(Dictionary<string, Dictionary<string, Bar>>);
+            var messageProperties = new RabbitHeaderAccessor
+            {
+                ContentType = "application/json",
+                InferredArgumentType = typeof(Dictionary<string, Dictionary<string, Bar>>)
+            };
             var message = Message.Create(bytes, messageProperties.MessageHeaders);
             var foo = converter.FromMessage(message, null);
             Assert.IsType<Dictionary<string, Dictionary<string, Bar>>>(foo);
@@ -213,8 +225,10 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
             var messageProperties = new MessageHeaders();
             var message = Message.Create(bytes, messageProperties);
             var j2Converter = new JsonMessageConverter();
-            var typeMapper = new DefaultTypeMapper();
-            typeMapper.DefaultType = typeof(Foo);
+            var typeMapper = new DefaultTypeMapper
+            {
+                DefaultType = typeof(Foo)
+            };
             j2Converter.TypeMapper = typeMapper;
             var foo = j2Converter.FromMessage(message, null);
             Assert.IsType<Foo>(foo);
@@ -291,8 +305,8 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 
             public override int GetHashCode()
             {
-                int prime = 31;
-                int result = 1;
+                var prime = 31;
+                var result = 1;
                 result = (prime * result) + ((Foo == null) ? 0 : Foo.GetHashCode());
                 result = (prime * result) + ((Name == null) ? 0 : Name.GetHashCode());
                 return result;

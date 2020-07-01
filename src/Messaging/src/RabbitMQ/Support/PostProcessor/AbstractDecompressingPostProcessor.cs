@@ -1,4 +1,8 @@
-﻿using Steeltoe.Common.Order;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Steeltoe.Common.Order;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Exceptions;
@@ -14,8 +18,9 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
     {
         protected AbstractDecompressingPostProcessor()
             : this(false)
-        { 
+        {
         }
+
         protected AbstractDecompressingPostProcessor(bool alwaysDecompress)
         {
             AlwaysDecompress = alwaysDecompress;
@@ -28,7 +33,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
         public virtual IMessage PostProcessMessage(IMessage message)
         {
             var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
-            if (AlwaysDecompress || autoDecompress != null && autoDecompress.Value)
+            if (AlwaysDecompress || (autoDecompress != null && autoDecompress.Value))
             {
                 try
                 {
@@ -45,10 +50,12 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
                     {
                         encoding = encoding.Substring(0, colonAt);
                     }
+
                     if (!GetEncoding().Equals(encoding))
                     {
                         throw new InvalidOperationException("Content encoding must be:" + GetEncoding() + ", was:" + encoding);
                     }
+
                     if (colonAt < 0)
                     {
                         headers.ContentEncoding = null;
@@ -57,6 +64,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
                     {
                         headers.ContentEncoding = headers.ContentEncoding.Substring(colonAt + 1);
                     }
+
                     headers.RemoveHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
                     return Message.Create(outStream.ToArray(), headers.ToMessageHeaders());
                 }

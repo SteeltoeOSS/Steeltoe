@@ -21,9 +21,11 @@ namespace Steeltoe.Messaging.Core.Test
         public GenericMessagingTemplateTest()
         {
             MessageChannel = new StubMessageChannel();
-            Template = new MessageChannelTemplate();
-            Template.DefaultSendDestination = MessageChannel;
-            Template.DestinationResolver = new TestDestinationResolver(this);
+            Template = new MessageChannelTemplate
+            {
+                DefaultSendDestination = MessageChannel,
+                DestinationResolver = new TestDestinationResolver(this)
+            };
         }
 
         [Fact]
@@ -88,8 +90,10 @@ namespace Steeltoe.Messaging.Core.Test
                 .Callback<IMessage, CancellationToken>((m, t) => sent = m)
                 .Returns(new ValueTask<bool>(true));
 
-            var accessor = new MessageHeaderAccessor();
-            accessor.LeaveMutable = true;
+            var accessor = new MessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
             var message = Message.Create<string>("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             await Template.SendAsync(channel, message);
@@ -111,8 +115,10 @@ namespace Steeltoe.Messaging.Core.Test
                 .Callback<IMessage, int>((m, t) => sent = m)
                 .Returns(true);
 
-            var accessor = new MessageHeaderAccessor();
-            accessor.LeaveMutable = true;
+            var accessor = new MessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
             var message = Message.Create<string>("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             Template.Send(channel, message);

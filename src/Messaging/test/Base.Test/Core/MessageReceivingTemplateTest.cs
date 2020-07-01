@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Core.Test
 {
     public class MessageReceivingTemplateTest
     {
-        private TestMessagingTemplate template;
+        private readonly TestMessagingTemplate template;
 
         public MessageReceivingTemplateTest()
         {

@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +25,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
+    [Trait("Category", "RequiresBroker")]
     public class EnableRabbitTest
     {
         [Fact]
@@ -214,8 +205,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             var container = new DirectMessageListenerContainer(context);
             endpoint.SetupListenerContainer(container);
             var listener = container.MessageListener as MessagingMessageListenerAdapter;
-            var accessor = new RabbitHeaderAccessor();
-            accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
+            var accessor = new RabbitHeaderAccessor
+            {
+                ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("Hello"), accessor.MessageHeaders);
             var mockChannel = new Mock<R.IModel>();
 
@@ -267,8 +260,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         private void CheckAdmins(List<object> admins)
         {
             Assert.Single(admins);
-            var admin = admins[0] as RabbitAdmin;
-            if (admin != null)
+            if (admins[0] is RabbitAdmin admin)
             {
                 Assert.Equal("myAdmin", admin.ServiceName);
             }
@@ -290,7 +282,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
-                AtomicReference<string> queueName = new AtomicReference<string>();
+                var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
@@ -336,7 +328,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
-                AtomicReference<string> queueName = new AtomicReference<string>();
+                var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
@@ -411,7 +403,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
-                AtomicReference<string> queueName = new AtomicReference<string>();
+                var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
@@ -453,7 +445,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
-                AtomicReference<string> queueName = new AtomicReference<string>();
+                var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
@@ -551,7 +543,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
-                AtomicReference<string> queueName = new AtomicReference<string>();
+                var queueName = new AtomicReference<string>();
                 mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
@@ -585,8 +577,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             public void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar)
             {
                 registrar.EndpointRegistry = _registry;
-                var endpoint = new SimpleRabbitListenerEndpoint(_context);
-                endpoint.Id = "myCustomEndpointId";
+                var endpoint = new SimpleRabbitListenerEndpoint(_context)
+                {
+                    Id = "myCustomEndpointId"
+                };
                 endpoint.SetQueueNames("myQueue");
                 endpoint.MessageListener = new MessageListenerAdapter(_context);
                 registrar.RegisterEndpoint(endpoint);
@@ -595,12 +589,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class RabbitCustomContainerFactoryConfig : IRabbitListenerConfigurer
         {
-            private readonly IRabbitListenerEndpointRegistry _registry;
             private readonly IApplicationContext _context;
 
-            public RabbitCustomContainerFactoryConfig(IApplicationContext context, IRabbitListenerEndpointRegistry registry)
+            public RabbitCustomContainerFactoryConfig(IApplicationContext context)
             {
-                _registry = registry;
                 _context = context;
             }
 

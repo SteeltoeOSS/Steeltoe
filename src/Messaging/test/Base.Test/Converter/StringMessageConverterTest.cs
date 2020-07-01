@@ -79,8 +79,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessage()
         {
-            var map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN }
+            };
             var headers = new MessageHeaders(map);
             var converter = new StringMessageConverter();
             var message = converter.ToMessage("ABC", headers);

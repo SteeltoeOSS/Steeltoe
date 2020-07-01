@@ -146,14 +146,18 @@ namespace Steeltoe.Messaging.Support.Test
         public void TestCopySameHeaderValuesNotModifiedSameIMessage()
         {
             var current = DateTime.Now;
-            IDictionary<string, object> originalHeaders = new Dictionary<string, object>();
-            originalHeaders.Add("b", "xyz");
-            originalHeaders.Add("c", current);
+            IDictionary<string, object> originalHeaders = new Dictionary<string, object>
+            {
+                { "b", "xyz" },
+                { "c", current }
+            };
             var original = MessageBuilder.WithPayload("foo").SetHeader("a", 123).CopyHeaders(originalHeaders).Build();
-            IDictionary<string, object> newHeaders = new Dictionary<string, object>();
-            newHeaders.Add("a", 123);
-            newHeaders.Add("b", "xyz");
-            newHeaders.Add("c", current);
+            IDictionary<string, object> newHeaders = new Dictionary<string, object>
+            {
+                { "a", 123 },
+                { "b", "xyz" },
+                { "c", current }
+            };
             var result = MessageBuilder.FromMessage(original).CopyHeaders(newHeaders).Build();
             Assert.Equal(original, result);
         }
@@ -161,8 +165,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestBuildIMessageWithMutableHeaders()
         {
-            var accessor = new MessageHeaderAccessor();
-            accessor.LeaveMutable = true;
+            var accessor = new MessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
             var headers = accessor.MessageHeaders;
             var message = MessageBuilder.CreateMessage("payload", headers);
             accessor.SetHeader("foo", "bar");
@@ -186,8 +192,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestBuildIMessageWithoutIdAndTimestamp()
         {
-            var headerAccessor = new MessageHeaderAccessor();
-            headerAccessor.IdGenerator = new TestIdGenerater();
+            var headerAccessor = new MessageHeaderAccessor
+            {
+                IdGenerator = new TestIdGenerater()
+            };
 
             var message = MessageBuilder.CreateMessage("foo", headerAccessor.MessageHeaders);
             Assert.Null(message.Headers.Id);
@@ -201,13 +209,13 @@ namespace Steeltoe.Messaging.Support.Test
             var messageBuilder = MessageBuilder.WithPayload("payload").SetHeaders(headerAccessor);
 
             headerAccessor.SetHeader("foo", "bar1");
-            IMessage message1 = messageBuilder.Build();
+            var message1 = messageBuilder.Build();
 
             headerAccessor.SetHeader("foo", "bar2");
-            IMessage message2 = messageBuilder.Build();
+            var message2 = messageBuilder.Build();
 
             headerAccessor.SetHeader("foo", "bar3");
-            IMessage message3 = messageBuilder.Build();
+            var message3 = messageBuilder.Build();
 
             Assert.Equal("bar1", message1.Headers.Get<string>("foo"));
             Assert.Equal("bar2", message2.Headers.Get<string>("foo"));

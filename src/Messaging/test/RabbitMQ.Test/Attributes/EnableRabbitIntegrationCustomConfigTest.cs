@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,25 +29,26 @@ using static Steeltoe.Messaging.Rabbit.Attributes.EnableRabbitIntegrationCustomC
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
+    [Trait("Category", "RequiresBroker")]
     public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
     {
-        private ServiceProvider provider;
-        private CustomStartupFixture fixture;
-        private ITestOutputHelper output;
+        private readonly ServiceProvider provider;
+        private readonly CustomStartupFixture fixture;
 
-        public EnableRabbitIntegrationCustomConfigTest(CustomStartupFixture fix, ITestOutputHelper outp)
+        public EnableRabbitIntegrationCustomConfigTest(CustomStartupFixture fix)
         {
             fixture = fix;
             provider = fixture.Provider;
-            output = outp;
         }
 
         [Fact]
         public void TestConverted()
         {
             var template = provider.GetRabbitTemplate();
-            Foo1 foo1 = new Foo1();
-            foo1.Bar = "bar";
+            var foo1 = new Foo1
+            {
+                Bar = "bar"
+            };
             var ctx = provider.GetService<IApplicationContext>();
             var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DEFAULT_SERVICE_NAME) as JsonMessageConverter;
             converter.TypeMapper.DefaultType = typeof(Dictionary<string, object>);
@@ -169,9 +160,9 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class CustomStartupFixture : IDisposable
         {
-            private CachingConnectionFactory adminCf;
-            private RabbitAdmin admin;
-            private IServiceCollection services;
+            private readonly CachingConnectionFactory adminCf;
+            private readonly RabbitAdmin admin;
+            private readonly IServiceCollection services;
 
             public ServiceProvider Provider { get; set; }
 
@@ -400,8 +391,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public Foo2 Convert(Foo1 source)
             {
-                var foo2 = new Foo2();
-                foo2.Bar = source.Bar;
+                var foo2 = new Foo2
+                {
+                    Bar = source.Bar
+                };
                 return foo2;
             }
 

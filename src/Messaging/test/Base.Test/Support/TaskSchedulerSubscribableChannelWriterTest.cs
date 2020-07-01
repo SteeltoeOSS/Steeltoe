@@ -155,8 +155,10 @@ namespace Steeltoe.Messaging.Support.Test
             var mock2 = new Mock<IMessage>();
             var expected = mock2.Object;
 
-            var interceptor = new BeforeHandleInterceptor();
-            interceptor.MessageToReturn = expected;
+            var interceptor = new BeforeHandleInterceptor
+            {
+                MessageToReturn = expected
+            };
             _channel.AddInterceptor(interceptor);
             _channel.Subscribe(_handler);
             await _channel.Writer.WriteAsync(_message);

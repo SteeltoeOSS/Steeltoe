@@ -197,10 +197,10 @@ namespace Steeltoe.Messaging.Rabbit.Support
             }
             else if (value is object[] array)
             {
-                var writableList = new List<object>();
+                var writableList = new object[array.Length];
                 for (var i = 0; i < array.Length; i++)
                 {
-                    writableList.Add(ConvertHeaderValueIfNecessary(array[i]));
+                    writableList[i] = ConvertHeaderValueIfNecessary(array[i]);
                 }
 
                 value = writableList;
@@ -249,6 +249,16 @@ namespace Steeltoe.Messaging.Rabbit.Support
                 {
                     // Log
                 }
+            }
+            else if (valueArg is List<object>)
+            {
+                var convertedList = new List<object>();
+                foreach (var listValue in (List<object>)valueArg)
+                {
+                    convertedList.Add(ConvertLongStringIfNecessary(listValue, charset));
+                }
+
+                return convertedList;
             }
 
             return valueArg;

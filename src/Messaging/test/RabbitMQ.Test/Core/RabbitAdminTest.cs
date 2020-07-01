@@ -27,6 +27,7 @@ using IConnectionFactory = Steeltoe.Messaging.Rabbit.Connection.IConnectionFacto
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
+    [Trait("Category", "RequiresBroker")]
     public class RabbitAdminTest : AbstractTest
     {
         [Fact]
@@ -275,8 +276,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var toBeThrown = new TimeoutException("test");
             rabbitConnectionFactory.Setup((c) => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
             var ccf = new CachingConnectionFactory(rabbitConnectionFactory.Object);
-            var admin = new RabbitAdmin(ccf);
-            admin.IgnoreDeclarationExceptions = true;
+            var admin = new RabbitAdmin(ccf)
+            {
+                IgnoreDeclarationExceptions = true
+            };
 
             admin.DeclareQueue(new AnonymousQueue("test"));
             var lastEvent = admin.LastDeclarationExceptionEvent;
@@ -365,8 +368,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public async Task TestMasterLocator()
         {
-            ConnectionFactory factory = new ConnectionFactory();
-            factory.Uri = new Uri("amqp://guest:guest@localhost:5672/");
+            var factory = new ConnectionFactory
+            {
+                Uri = new Uri("amqp://guest:guest@localhost:5672/")
+            };
             var cf = new CachingConnectionFactory(factory);
             var admin = new RabbitAdmin(cf);
             var queue = new AnonymousQueue();
@@ -376,7 +381,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
             var result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);
-            int n = 0;
+            var n = 0;
             while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
             {
                 await Task.Delay(100);
@@ -388,8 +393,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             Assert.Contains("x-queue-master-locator", content);
             Assert.Contains("client-local", content);
 
-            queue = new AnonymousQueue();
-            queue.MasterLocator = null;
+            queue = new AnonymousQueue
+            {
+                MasterLocator = null
+            };
             admin.DeclareQueue(queue);
 
             result = await client.GetAsync("http://localhost:15672/api/queues/%3F/" + queue.QueueName);

@@ -1,4 +1,8 @@
-﻿using Steeltoe.Common.Order;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Steeltoe.Common.Order;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Extensions;
@@ -23,7 +27,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
 
         public void AddDecompressor(string contentEncoding, IMessagePostProcessor decompressor)
         {
-            this.decompressors[contentEncoding] =  decompressor;
+            this.decompressors[contentEncoding] = decompressor;
         }
 
         public IMessagePostProcessor RemoveDecompressor(string contentEncoding)
@@ -32,11 +36,10 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
             return result;
         }
 
-
         public void SetDecompressors(Dictionary<string, IMessagePostProcessor> decompressors)
         {
             this.decompressors.Clear();
-            foreach(var d in decompressors)
+            foreach (var d in decompressors)
             {
                 decompressors.Add(d.Key, d.Value);
             }
@@ -61,6 +64,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
                 {
                     encoding = encoding.Substring(0, colonAt);
                 }
+
                 decompressors.TryGetValue(encoding, out var decompressor);
                 if (decompressor != null)
                 {

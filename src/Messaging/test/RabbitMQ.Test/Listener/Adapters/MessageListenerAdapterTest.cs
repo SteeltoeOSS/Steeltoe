@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -33,7 +23,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
     {
         private readonly SimpleService simpleService = new SimpleService();
 
-        private MessageHeaders messageProperties;
+        private readonly MessageHeaders messageProperties;
 
         private MessageListenerAdapter adapter;
 
@@ -96,9 +86,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         [Fact]
         public void TestMappedListenerMethod()
         {
-            var map = new Dictionary<string, string>();
-            map.Add("foo", "Handle");
-            map.Add("bar", "NotDefinedOnInterface");
+            var map = new Dictionary<string, string>
+            {
+                { "foo", "Handle" },
+                { "bar", "NotDefinedOnInterface" }
+            };
             adapter.DefaultListenerMethod = "AnotherHandle";
             adapter.SetQueueOrTagToMethodName(map);
             adapter.Instance = simpleService;
@@ -157,9 +149,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         {
             var called = new CountdownEvent(1);
             var dele = new TestAsyncDelegate();
-            adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod");
-            adapter.ContainerAckMode = AcknowledgeMode.MANUAL;
-            adapter.ResponseExchange = "default";
+            adapter = new MessageListenerAdapter(null, dele, "MyPojoMessageMethod")
+            {
+                ContainerAckMode = AcknowledgeMode.MANUAL,
+                ResponseExchange = "default"
+            };
             var mockChannel = new Mock<IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             mockChannel.Setup(c => c.BasicAck(It.IsAny<ulong>(), false))
@@ -172,9 +166,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         public class TestRecoveryCallback : IRecoveryCallback
         {
-            private AtomicReference<IMessage> replyMessage;
-            private AtomicReference<Address> replyAddress;
-            private AtomicReference<Exception> throwable;
+            private readonly AtomicReference<IMessage> replyMessage;
+            private readonly AtomicReference<Address> replyAddress;
+            private readonly AtomicReference<Exception> throwable;
 
             public TestRecoveryCallback(AtomicReference<IMessage> replyMessage, AtomicReference<Address> replyAddress, AtomicReference<Exception> throwable)
             {
@@ -240,7 +234,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         private class TestDelegate2
         {
-            private AtomicBoolean called;
+            private readonly AtomicBoolean called;
 
             public TestDelegate2(AtomicBoolean called)
             {
@@ -256,7 +250,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         private class TestDelegate1
         {
-            private AtomicBoolean called;
+            private readonly AtomicBoolean called;
 
             public TestDelegate1(AtomicBoolean called)
             {
@@ -272,7 +266,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         private class TestDelegate
         {
-            private AtomicBoolean called;
+            private readonly AtomicBoolean called;
 
             public TestDelegate(AtomicBoolean called)
             {

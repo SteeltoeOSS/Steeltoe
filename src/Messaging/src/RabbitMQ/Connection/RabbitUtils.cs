@@ -59,7 +59,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     channel.Close();
                 }
-                catch (AlreadyClosedException ace)
+                catch (AlreadyClosedException)
                 {
                     // empty
                 }
@@ -293,14 +293,16 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             Exception cause = e;
             ShutdownEventArgs args = null;
-            while(cause != null && args == null)
+            while (cause != null && args == null)
             {
                 if (cause is OperationInterruptedException)
                 {
                     args = ((OperationInterruptedException)cause).ShutdownReason;
                 }
+
                 cause = cause.InnerException;
             }
+
             if (args == null)
             {
                 return false;

@@ -61,7 +61,7 @@ namespace Steeltoe.Stream.Binder
             Assert.NotNull(extractedWithRequestHeaders["timestamp"]);
             Assert.NotNull(extractedWithRequestHeaders["id"]);
             Assert.IsType<long>(extractedWithRequestHeaders["timestamp"]);
-            Assert.IsType<Guid>(extractedWithRequestHeaders["id"]);
+            Assert.IsType<string>(extractedWithRequestHeaders["id"]);
         }
 
         [Fact]

@@ -42,7 +42,7 @@ namespace Steeltoe.Stream.Config
             }
 
             payload = ConvertPayload(message, parameter, targetPayloadType);
-            return MessageBuilder.CreateMessage(payload, message.Headers);
+            return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
         }
 
         protected override bool IsEmptyPayload(object payload)

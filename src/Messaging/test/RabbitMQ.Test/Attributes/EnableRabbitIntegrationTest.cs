@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -51,17 +41,16 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
+    [Trait("Category", "RequiresBroker")]
     public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
-        private ServiceProvider provider;
-        private StartupFixture fixture;
-        private ITestOutputHelper output;
+        private readonly ServiceProvider provider;
+        private readonly StartupFixture fixture;
 
-        public EnableRabbitIntegrationTest(StartupFixture fix, ITestOutputHelper outp)
+        public EnableRabbitIntegrationTest(StartupFixture fix)
         {
             fixture = fix;
             provider = fixture.Provider;
-            output = outp;
         }
 
         [Fact]
@@ -223,14 +212,18 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         [Fact]
         public void MultiListener()
         {
-            var foo = new Foo();
-            foo.Field = "foo";
+            var foo = new Foo
+            {
+                Field = "foo"
+            };
             var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
             var reply = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", foo);
             Assert.Equal("FOO: foo handled by default handler", reply);
 
-            var bar = new Bar();
-            bar.Field = "bar";
+            var bar = new Bar
+            {
+                Field = "bar"
+            };
             template.ConvertAndSend("multi.exch", "multi.rk", bar);
             template.ReceiveTimeout = 10000;
             var reply2 = template.ReceiveAndConvert<string>("sendTo.replies");
@@ -242,13 +235,17 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             Assert.Equal("CRASHCRASH Test reply from error handler", reply3);
             bar.Field = "bar";
 
-            var baz = new Baz();
-            baz.Field = "baz";
+            var baz = new Baz
+            {
+                Field = "baz"
+            };
             var reply4 = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", baz);
             Assert.Equal("BAZ: baz", reply4);
 
-            var qux = new Qux();
-            qux.Field = "qux";
+            var qux = new Qux
+            {
+                Field = "qux"
+            };
             var beanMethodHeaders = new List<string>();
             var mpp = new MultiListenerMessagePostProcessor(beanMethodHeaders);
             template.SetAfterReceivePostProcessors(mpp);
@@ -278,20 +275,26 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         public void MultiListenerJson()
         {
             var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
-            Bar bar = new Bar();
-            bar.Field = "bar";
+            var bar = new Bar
+            {
+                Field = "bar"
+            };
             var exchange = "multi.json.exch";
             var routingKey = "multi.json.rk";
             var reply = template.ConvertSendAndReceive<string>(exchange, routingKey, bar);
             Assert.Equal("BAR: barMultiListenerJsonService", reply);
 
-            Baz baz = new Baz();
-            baz.Field = "baz";
+            var baz = new Baz
+            {
+                Field = "baz"
+            };
             reply = template.ConvertSendAndReceive<string>(exchange, routingKey, baz);
             Assert.Equal("BAZ: baz", reply);
 
-            Qux qux = new Qux();
-            qux.Field = "qux";
+            var qux = new Qux
+            {
+                Field = "qux"
+            };
             reply = template.ConvertSendAndReceive<string>(exchange, routingKey, qux);
             Assert.Equal("QUX: qux: multi.json.rk", reply);
 
@@ -410,8 +413,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         [Fact]
         public void TestDifferentTypes()
         {
-            Foo1 foo = new Foo1();
-            foo.Bar = "bar";
+            var foo = new Foo1
+            {
+                Bar = "bar"
+            };
             var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
             var service = provider.GetService<MyService>();
             service.Latch.Reset();
@@ -431,8 +436,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         [Fact]
         public void TestDifferentTypesWithConcurrency()
         {
-            Foo1 foo = new Foo1();
-            foo.Bar = "bar";
+            var foo = new Foo1
+            {
+                Bar = "bar"
+            };
             var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
             var service = provider.GetService<MyService>();
             service.Latch.Reset();
@@ -662,9 +669,9 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class StartupFixture : IDisposable
         {
-            private CachingConnectionFactory adminCf;
-            private RabbitAdmin admin;
-            private IServiceCollection services;
+            private readonly CachingConnectionFactory adminCf;
+            private readonly RabbitAdmin admin;
+            private readonly IServiceCollection services;
 
             public ServiceProvider Provider { get; set; }
 
@@ -882,34 +889,44 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
                 services.AddSingleton<IErrorHandler>((p) =>
                 {
-                    var result = new ConditionalRejectingErrorHandler1(ErrorHandlerLatch, ErrorHandlerError);
-                    result.ServiceName = "errorHandler";
+                    var result = new ConditionalRejectingErrorHandler1(ErrorHandlerLatch, ErrorHandlerError)
+                    {
+                        ServiceName = "errorHandler"
+                    };
                     return result;
                 });
 
                 services.AddSingleton<IConsumerTagStrategy>((p) =>
                 {
-                    var result = new ConsumerTagStrategy();
-                    result.ServiceName = "consumerTagStrategy";
+                    var result = new ConsumerTagStrategy
+                    {
+                        ServiceName = "consumerTagStrategy"
+                    };
                     return result;
                 });
 
                 services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
                 {
-                    var result = new UpcaseAndRepeatListenerErrorHandler();
-                    result.ServiceName = "upcaseAndRepeatErrorHandler";
+                    var result = new UpcaseAndRepeatListenerErrorHandler
+                    {
+                        ServiceName = "upcaseAndRepeatErrorHandler"
+                    };
                     return result;
                 });
                 services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
                 {
-                    var result = new AlwaysBarListenerErrorHandler();
-                    result.ServiceName = "alwaysBARHandler";
+                    var result = new AlwaysBarListenerErrorHandler
+                    {
+                        ServiceName = "alwaysBARHandler"
+                    };
                     return result;
                 });
                 services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
                 {
-                    var result = new ThrowANewExceptionErrorHandler(ErrorHandlerChannel);
-                    result.ServiceName = "throwANewException";
+                    var result = new ThrowANewExceptionErrorHandler(ErrorHandlerChannel)
+                    {
+                        ServiceName = "throwANewException"
+                    };
                     return result;
                 });
                 return services;
@@ -960,7 +977,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class MyService
         {
-            private IApplicationContext _context;
+            private readonly IApplicationContext _context;
 
             public MyService(IApplicationContext context)
             {
@@ -1186,8 +1203,10 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             [RabbitListener("test.messaging.message", ContainerFactory = "jsonListenerContainerFactory")]
             public IMessage<Bar> MessagingMessage(string input)
             {
-                var bar = new Bar();
-                bar.Field = input.ToUpper();
+                var bar = new Bar
+                {
+                    Field = input.ToUpper()
+                };
                 var headers = new MessageHeaders(new Dictionary<string, object>() { { "foo", "bar" } });
                 return Message.Create<Bar>(bar, headers);
             }
@@ -1489,7 +1508,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
             {
-                Bar barPayload = message.Payload as Bar;
+                var barPayload = message.Payload as Bar;
                 var upperPayload = barPayload.Field.ToUpper();
                 return upperPayload + upperPayload + " " + exception.InnerException.Message;
             }

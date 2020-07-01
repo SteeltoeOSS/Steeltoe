@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Moq;
 using RabbitMQ.Client.Exceptions;
@@ -36,7 +26,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void ReturnConnectionAfterCommit()
         {
-            TransactionTemplate txTemplate = new TransactionTemplate(new TestTransactionManager());
+            var txTemplate = new TransactionTemplate(new TestTransactionManager());
             var mockConnectionFactory = new Mock<R.IConnectionFactory>();
             var mockConnection = new Mock<R.IConnection>();
             var mockChannel = new Mock<R.IModel>();
@@ -47,8 +37,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
             var connectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.IsChannelTransacted = true;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                IsChannelTransacted = true
+            };
 
             txTemplate.Execute(status =>
             {
@@ -66,7 +58,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestConvertBytes()
         {
             var template = new RabbitTemplate();
-            byte[] payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
+            var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
             var message = template.ConvertMessageIfNecessary(payload);
             Assert.Same(payload, message.Payload);
         }
@@ -85,7 +77,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestConvertMessage()
         {
             var template = new RabbitTemplate();
-            byte[] payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
+            var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
             var input = Message.Create(payload, new MessageHeaders());
             var message = template.ConvertMessageIfNecessary(input);
             Assert.Same(message, input);
@@ -109,8 +101,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             mockChannel.Setup((c) => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
                 .Callback<string, bool, string, bool, bool, IDictionary<string, object>, R.IBasicConsumer>((arg1, arg2, arg3, arg4, arg5, arg6, arg7) => consumer.Value = arg7);
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.ReplyTimeout = 1;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                ReplyTimeout = 1
+            };
             var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
             var input = Message.Create(payload, new MessageHeaders());
             template.DoSendAndReceiveWithTemporary("foo", "bar", input, null, default);
@@ -129,8 +123,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 .Throws(new AuthenticationFailureException("foo"));
 
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1)
+            };
             try
             {
                 template.ConvertAndSend("foo", "bar", "baz");
@@ -181,8 +177,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 .Returns(() => new R.QueueDeclareOk("foo", 0, 0));
             mockChannel.Setup((c) => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO)).Throws(new ShutdownSignalException(new R.ShutdownEventArgs(R.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.Queue_ClassId, RabbitUtils.Declare_MethodId)));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.ReplyTimeout = 1;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                ReplyTimeout = 1
+            };
             template.ConvertSendAndReceive<object>("foo");
             Assert.True(template._evaluatedFastReplyTo);
             Assert.False(template._usingFastReplyTo);
@@ -203,8 +201,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             mockChannel.Setup((c) => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
                  .Returns(() => new R.QueueDeclareOk(Address.AMQ_RABBITMQ_REPLY_TO, 0, 0));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.ReplyTimeout = 1;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                ReplyTimeout = 1
+            };
             template.ConvertSendAndReceive<object>("foo");
             Assert.True(template._evaluatedFastReplyTo);
             Assert.True(template._usingFastReplyTo);
@@ -219,8 +219,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 .Callback(() => count.IncrementAndGet())
                 .Throws(new AuthenticationFailureException("foo"));
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1)
+            };
 
             var recoverInvoked = new AtomicBoolean();
             template.RecoveryCallback = new TestRecoveryRecoveryCallback(recoverInvoked);
@@ -249,15 +251,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void TestNoListenerAllowed1()
         {
-            RabbitTemplate template = new RabbitTemplate();
+            var template = new RabbitTemplate();
             Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
         }
 
         [Fact]
         public void TestNoListenerAllowed2()
         {
-            RabbitTemplate template = new RabbitTemplate();
-            template.ReplyAddress = Address.AMQ_RABBITMQ_REPLY_TO;
+            var template = new RabbitTemplate
+            {
+                ReplyAddress = Address.AMQ_RABBITMQ_REPLY_TO
+            };
             Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
         }
 
@@ -289,8 +293,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 .Returns(() => new R.QueueDeclareOk("foo", 0, 0));
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
 
-            var rabbitTemplate = new RabbitTemplate(ccf);
-            rabbitTemplate.IsChannelTransacted = true;
+            var rabbitTemplate = new RabbitTemplate(ccf)
+            {
+                IsChannelTransacted = true
+            };
             var admin = new RabbitAdmin(rabbitTemplate);
             var mockContext = new Mock<IApplicationContext>();
             mockContext.Setup((c) => c.GetServices<IQueue>()).Returns(new List<IQueue>() { new Config.Queue("foo") });
@@ -338,8 +344,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     shutdownLatch.Signal();
                 });
             var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
-            var template = new RabbitTemplate(connectionFactory);
-            template.ReplyTimeout = 60_000;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                ReplyTimeout = 60_000
+            };
             var input = Message.Create(EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!"), new MessageHeaders());
             Task.Run(() =>
             {
@@ -347,7 +355,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 {
                     shutdownLatch.Wait(TimeSpan.FromSeconds(10));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Ignore
                 }
@@ -404,8 +412,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var cf = new Mock<IConnectionFactory>();
             var pcf = new Mock<IConnectionFactory>();
             cf.SetupGet((c) => c.PublisherConnectionFactory).Returns(pcf.Object);
-            var template = new RabbitTemplate(cf.Object);
-            template.UsePublisherConnection = true;
+            var template = new RabbitTemplate(cf.Object)
+            {
+                UsePublisherConnection = true
+            };
 
             var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<IPublisherCallbackChannel>();
@@ -423,9 +433,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var cf = new Mock<IConnectionFactory>();
             var pcf = new Mock<IConnectionFactory>();
             cf.SetupGet((c) => c.PublisherConnectionFactory).Returns(pcf.Object);
-            var template = new RabbitTemplate(cf.Object);
-            template.UsePublisherConnection = true;
-            template.IsChannelTransacted = true;
+            var template = new RabbitTemplate(cf.Object)
+            {
+                UsePublisherConnection = true,
+                IsChannelTransacted = true
+            };
 
             var mockConnection = new Mock<IConnection>();
             var mockChannel = new Mock<R.IModel>();

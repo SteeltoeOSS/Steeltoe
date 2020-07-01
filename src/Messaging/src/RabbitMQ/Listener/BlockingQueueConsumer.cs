@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Rabbit.Connection;
@@ -25,56 +29,79 @@ namespace Steeltoe.Messaging.Rabbit.Listener
     public class BlockingQueueConsumer
     {
         private static int DEFAULT_DECLARATION_RETRIES = 3;
-
         private static int DEFAULT_RETRY_DECLARATION_INTERVAL = 60000;
 
-
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory,
-                IMessageHeadersConverter messagePropertiesConverter,
-                ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode,
-                bool transactional, ushort prefetchCount, ILoggerFactory loggerFactory, params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter,
-                    acknowledgeMode, transactional, prefetchCount, true, loggerFactory, queues)
+        public BlockingQueueConsumer(
+            IConnectionFactory connectionFactory,
+            IMessageHeadersConverter messagePropertiesConverter,
+            ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
+            AcknowledgeMode acknowledgeMode,
+            bool transactional,
+            ushort prefetchCount,
+            ILoggerFactory loggerFactory,
+            params string[] queues)
+            : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, true, loggerFactory, queues)
         {
         }
 
-
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory,
-                IMessageHeadersConverter messagePropertiesConverter,
-                ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode,
-                bool transactional, ushort prefetchCount, bool defaultRequeueRejected, ILoggerFactory loggerFactory, params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional,
-                    prefetchCount, defaultRequeueRejected, null, loggerFactory, queues)
+        public BlockingQueueConsumer(
+            IConnectionFactory connectionFactory,
+            IMessageHeadersConverter messagePropertiesConverter,
+            ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
+            AcknowledgeMode acknowledgeMode,
+            bool transactional,
+            ushort prefetchCount,
+            bool defaultRequeueRejected,
+            ILoggerFactory loggerFactory,
+            params string[] queues)
+            : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, null, loggerFactory, queues)
         {
         }
 
-
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory,
-                IMessageHeadersConverter messagePropertiesConverter,
-                ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode,
-                bool transactional, ushort prefetchCount, bool defaultRequeueRejected,
-                 Dictionary<string, object> consumerArgs, ILoggerFactory loggerFactory, params string[] queues)
-            : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional,
-                    prefetchCount, defaultRequeueRejected, consumerArgs, false, loggerFactory, queues)
+        public BlockingQueueConsumer(
+            IConnectionFactory connectionFactory,
+            IMessageHeadersConverter messagePropertiesConverter,
+            ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
+            AcknowledgeMode acknowledgeMode,
+            bool transactional,
+            ushort prefetchCount,
+            bool defaultRequeueRejected,
+            Dictionary<string, object> consumerArgs,
+            ILoggerFactory loggerFactory,
+            params string[] queues)
+            : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, consumerArgs, false, loggerFactory, queues)
         {
         }
 
-
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory,
-                IMessageHeadersConverter messagePropertiesConverter,
-                ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode,
-                bool transactional, ushort prefetchCount, bool defaultRequeueRejected,
-                 Dictionary<string, object> consumerArgs, bool exclusive, ILoggerFactory loggerFactory, params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional,
-                    prefetchCount, defaultRequeueRejected, consumerArgs, false, exclusive, loggerFactory, queues)
+        public BlockingQueueConsumer(
+            IConnectionFactory connectionFactory,
+            IMessageHeadersConverter messagePropertiesConverter,
+            ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
+            AcknowledgeMode acknowledgeMode,
+            bool transactional,
+            ushort prefetchCount,
+            bool defaultRequeueRejected,
+            Dictionary<string, object> consumerArgs,
+            bool exclusive,
+            ILoggerFactory loggerFactory,
+            params string[] queues)
+            : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, consumerArgs, false, exclusive, loggerFactory, queues)
         {
         }
 
-        public BlockingQueueConsumer(IConnectionFactory connectionFactory,
-                IMessageHeadersConverter messagePropertiesConverter,
-                ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode,
-                bool transactional, ushort prefetchCount, bool defaultRequeueRejected,
-                Dictionary<string, object> consumerArgs, bool noLocal, bool exclusive, ILoggerFactory loggerFactory, params string[] queues)
+        public BlockingQueueConsumer(
+            IConnectionFactory connectionFactory,
+            IMessageHeadersConverter messagePropertiesConverter,
+            ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
+            AcknowledgeMode acknowledgeMode,
+            bool transactional,
+            ushort prefetchCount,
+            bool defaultRequeueRejected,
+            Dictionary<string, object> consumerArgs,
+            bool noLocal,
+            bool exclusive,
+            ILoggerFactory loggerFactory,
+            params string[] queues)
         {
             ConnectionFactory = connectionFactory;
             MessageHeadersConverter = messagePropertiesConverter;
@@ -85,8 +112,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             DefaultRequeueRejected = defaultRequeueRejected;
             if (consumerArgs != null && consumerArgs.Count > 0)
             {
-                foreach (var arg in consumerArgs) { ConsumerArgs.Add(arg.Key, arg.Value); }
+                foreach (var arg in consumerArgs)
+                {
+                    ConsumerArgs.Add(arg.Key, arg.Value);
+                }
             }
+
             NoLocal = noLocal;
             Exclusive = exclusive;
             Queues = queues.ToList();
@@ -94,6 +125,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             LoggerFactory = loggerFactory;
             Logger = loggerFactory?.CreateLogger<BlockingQueueConsumer>();
         }
+
         public ILogger<BlockingQueueConsumer> Logger { get; }
 
         public IMessageHeadersConverter MessageHeadersConverter { get; set; }
@@ -126,8 +158,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public Dictionary<string, object> ConsumerArgs { get; } = new Dictionary<string, object>();
 
-        private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new ConcurrentDictionary<string, InternalConsumer>();
-
         public R.ShutdownEventArgs Shutdown { get; private set; }
 
         public HashSet<ulong> DeliveryTags { get; internal set; } = new HashSet<ulong>();
@@ -152,25 +182,24 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public bool LocallyTransacted { get; set; }
 
-        public List<string> ConsumerTags
-        {
-            get
-            {
-                return Consumers
-                    .Values
-                    .Select((c) => c.ConsumerTag)
-                    .Where((tag) => tag != null)
-                    .ToList();
-            }
-        }
-
         public int QueueCount => Queues.Count;
 
         public HashSet<string> MissingQueues => new HashSet<string>();
-        
+
         public long LastRetryDeclaration { get; set; }
 
         public RabbitResourceHolder ResourceHolder { get; set; }
+
+        private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new ConcurrentDictionary<string, InternalConsumer>();
+
+        public List<string> GetConsumerTags()
+        {
+            return Consumers
+                .Values
+                .Select((c) => c.ConsumerTag)
+                .Where((tag) => tag != null)
+                .ToList();
+        }
 
         public void ClearDeliveryTags()
         {
@@ -191,12 +220,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 CheckMissingQueues();
             }
+
             Queue.TryTake(out var item, timeout);
             var message = Handle(item);
             if (message == null && Cancel.Value)
             {
                 throw new ConsumerCancelledException();
             }
+
             return message;
         }
 
@@ -207,12 +238,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 ResourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, Transactional);
                 Channel = ResourceHolder.GetChannel();
-                //ClosingRecoveryListener.AddRecoveryListenerIfNecessary(Channel);
+
+                // ClosingRecoveryListener.AddRecoveryListenerIfNecessary(Channel);
             }
             catch (RabbitAuthenticationException e)
             {
                 throw new FatalListenerStartupException("Authentication failure", e);
             }
+
             DeliveryTags.Clear();
             ActiveObjectCounter.Add(this);
             PassiveDeclarations();
@@ -225,24 +258,27 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 AbortStarted = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
+
             if (!Cancelled)
             {
                 try
                 {
-                    RabbitUtils.CloseMessageConsumer(Channel, ConsumerTags, Transactional);
+                    RabbitUtils.CloseMessageConsumer(Channel, GetConsumerTags(), Transactional);
                 }
                 catch (Exception e)
                 {
                     Logger?.LogDebug(e, "Error closing consumer: {consumer}", ToString());
                 }
             }
+
             Logger?.LogDebug("Closing Rabbit Channel : {channel}", Channel);
             RabbitUtils.SetPhysicalCloseRequired(Channel, true);
             ConnectionFactoryUtils.ReleaseResources(ResourceHolder);
             DeliveryTags.Clear();
-            Consumers.TakeWhile((kvp) => Consumers.Count > 0);
-            Queue.TakeWhile((d) => Queue.Count > 0);
+            _ = Consumers.TakeWhile((kvp) => Consumers.Count > 0);
+            _ = Queue.TakeWhile((d) => Queue.Count > 0);
         }
+
         public void RollbackOnExceptionIfNecessary(Exception ex)
         {
             bool ackRequired = !AcknowledgeMode.IsAutoAck() && (!AcknowledgeMode.IsManual() || ContainerUtils.IsRejectManual(ex));
@@ -253,14 +289,15 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     Logger?.LogDebug(ex, "Initiating transaction rollback on application exception");
                     RabbitUtils.RollbackIfNecessary(Channel);
                 }
+
                 if (ackRequired)
                 {
-                    
                     if (DeliveryTags.Count > 0)
                     {
-                            ulong deliveryTag = DeliveryTags.Max();
-                            Channel.BasicNack(deliveryTag, true, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, ex, Logger));
+                        ulong deliveryTag = DeliveryTags.Max();
+                        Channel.BasicNack(deliveryTag, true, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, ex, Logger));
                     }
+
                     if (Transactional)
                     {
                         // Need to commit the reject (=nack)
@@ -281,7 +318,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public bool CommitIfNecessary(bool localTx)
         {
-
             if (DeliveryTags.Count == 0)
             {
                 return false;
@@ -290,7 +326,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var isLocallyTransacted = localTx || (Transactional && TransactionSynchronizationManager.GetResource(ConnectionFactory) == null);
             try
             {
-
                 var ackRequired = !AcknowledgeMode.IsAutoAck() && !AcknowledgeMode.IsManual();
                 if (ackRequired && (!Transactional || isLocallyTransacted))
                 {
@@ -303,7 +338,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     // For manual acks we still need to commit
                     RabbitUtils.CommitIfNecessary(Channel);
                 }
-
             }
             finally
             {
@@ -311,13 +345,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
 
             return true;
-
         }
 
         public override string ToString()
         {
             return "Consumer@" + RuntimeHelpers.GetHashCode(this) + ": "
-                    + "tags=[" + string.Join(',', ConsumerTags)
+                    + "tags=[" + string.Join(',', GetConsumerTags())
                     + "], channel=" + Channel
                     + ", acknowledgeMode=" + AcknowledgeMode + " local queue size=" + Queue.Count;
         }
@@ -333,12 +366,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             get
             {
-                return Cancel.Value || 
+                return Cancel.Value ||
                     (AbortStarted > 0 && (AbortStarted + ShutdownTimeout) > DateTimeOffset.Now.ToUnixTimeMilliseconds()) ||
                     !ActiveObjectCounter.IsActive;
             }
         }
-        
+
         protected void BasicCancel()
         {
             BasicCancel(false);
@@ -347,7 +380,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         protected void BasicCancel(bool expected)
         {
             NormalCancel = expected;
-            ConsumerTags.ForEach(consumerTag => 
+            GetConsumerTags().ForEach(consumerTag =>
             {
                 if (Channel.IsOpen)
                 {
@@ -370,6 +403,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     break;
                 }
+
                 try
                 {
                     AttemptPassiveDeclarations();
@@ -377,6 +411,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     {
                         Logger?.LogInformation("Queue declaration succeeded after retrying");
                     }
+
                     passiveDeclareRetries = 0;
                 }
                 catch (DeclarationException e)
@@ -436,7 +471,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 catch (Exception e1)
                 {
                     Declaring = false;
-                    //Thread.currentThread().interrupt();
                     ActiveObjectCounter.Release(this);
                     throw RabbitExceptionTranslator.ConvertRabbitAccessException(e1);
                 }
@@ -451,14 +485,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         MissingQueues.Add(q);
                     }
                 }
+
                 LastRetryDeclaration = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             }
             else
             {
                 Declaring = false;
                 ActiveObjectCounter.Release(this);
-                throw new QueuesNotAvailableException("Cannot prepare queue for listener. "
-                        + "Either the queue doesn't exist or the broker will not allow us to use it.", e);
+                throw new QueuesNotAvailableException("Cannot prepare queue for listener. Either the queue doesn't exist or the broker will not allow us to use it.", e);
             }
         }
 
@@ -468,7 +502,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var consumerTag = Channel.BasicConsume(
                                     queue,
                                     AcknowledgeMode.IsAutoAck(),
-                                    (TagStrategy != null ? TagStrategy.CreateConsumerTag(queue) : ""),
+                                    TagStrategy != null ? TagStrategy.CreateConsumerTag(queue) : string.Empty,
                                     NoLocal,
                                     Exclusive,
                                     ConsumerArgs,
@@ -505,9 +539,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                                 ((IChannelProxy)Channel).TargetChannel.Close();
                             }
                         }
-                        catch (TimeoutException e1) 
+                        catch (TimeoutException)
                         {
                         }
+
                         throw new FatalListenerStartupException("Illegal Argument on Queue Declaration", e);
                     }
                 }
@@ -518,10 +553,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     {
                         throw new RabbitIOException(e);
                     }
+
                     if (failures == null)
                     {
                         failures = new DeclarationException(e);
                     }
+
                     failures.AddFailedQueue(queueName);
                 }
             }
@@ -537,31 +574,32 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             if (now - RetryDeclarationInterval > LastRetryDeclaration)
             {
-                lock(MissingQueues)
+                lock (MissingQueues)
                 {
                     List<string> toRemove = new List<string>();
                     Exception error = null;
-                    foreach(var queueToCheck in MissingQueues)
+                    foreach (var queueToCheck in MissingQueues)
                     {
                         bool available = true;
-                        IConnection connection = null; 
+                        IConnection connection = null;
                         R.IModel channelForCheck = null;
                         try
                         {
                             channelForCheck = ConnectionFactory.CreateConnection().CreateChannel(false);
                             channelForCheck.QueueDeclarePassive(queueToCheck);
-                                Logger?.LogInformation("Queue '{queue}' is now available", queueToCheck);
+                            Logger?.LogInformation("Queue '{queue}' is now available", queueToCheck);
                         }
                         catch (Exception e)
                         {
                             available = false;
-                                Logger?.LogWarning("Queue '{queue}' is not available", queueToCheck);
+                            Logger?.LogWarning(e, "Queue '{queue}' is not available", queueToCheck);
                         }
                         finally
                         {
                             RabbitUtils.CloseChannel(channelForCheck);
                             RabbitUtils.CloseConnection(connection);
                         }
+
                         if (available)
                         {
                             try
@@ -569,7 +607,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                                 ConsumeFromQueue(queueToCheck);
                                 toRemove.Add(queueToCheck);
                             }
-                            catch(Exception e)
+                            catch (Exception e)
                             {
                                 error = e;
                                 break;
@@ -590,6 +628,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         throw RabbitExceptionTranslator.ConvertRabbitAccessException(error);
                     }
                 }
+
                 LastRetryDeclaration = now;
             }
         }
@@ -613,6 +652,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 return null;
             }
+
             var body = delivery.Body;
             var messageProperties = MessageHeadersConverter.ToMessageHeaders(delivery.Properties, delivery.Envelope, EncodingUtils.Utf8);
             var accesor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
@@ -624,10 +664,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 DeliveryTags.Add(messageProperties.DeliveryTag().Value);
             }
+
             if (Transactional && !LocallyTransacted)
             {
                 ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, Channel, delivery.Envelope.DeliveryTag);
             }
+
             return message;
         }
 
@@ -654,11 +696,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 base.HandleBasicConsumeOk(consumerTag);
                 ConsumerTag = consumerTag;
                 Logger?.LogDebug("ConsumeOK: {consumer} {consumerTag}", Consumer.ToString(), consumerTag);
-                //if (BlockingQueueConsumer.this.applicationEventPublisher != null) {
+
+                // if (BlockingQueueConsumer.this.applicationEventPublisher != null) {
                 //    BlockingQueueConsumer.this.applicationEventPublisher
                 //            .publishEvent(new ConsumeOkEvent(this, this.queueName, consumerTag));
-                //}
+                // }
             }
+
             public override void HandleModelShutdown(object model, R.ShutdownEventArgs reason)
             {
                 base.HandleModelShutdown(model, reason);
@@ -700,11 +744,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         if (!Consumer.Queue.TryAdd(delivery, Consumer.ShutdownTimeout))
                         {
                             RabbitUtils.SetPhysicalCloseRequired(Model, true);
-                            Consumer.Queue.TakeWhile((d) => Consumer.Queue.Count > 0);
+                            _ = Consumer.Queue.TakeWhile((d) => Consumer.Queue.Count > 0);
                             if (!Canceled)
                             {
                                 RabbitUtils.Cancel(Model, consumerTag);
                             }
+
                             try
                             {
                                 Model.Close();
@@ -737,7 +782,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         private class DeclarationException : RabbitException
         {
             public DeclarationException()
-                : base ("Failed to declare queue(s):")
+                : base("Failed to declare queue(s):")
             {
             }
 

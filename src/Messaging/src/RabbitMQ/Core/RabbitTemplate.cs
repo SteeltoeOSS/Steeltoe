@@ -37,15 +37,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
     {
         public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
 
-        internal bool _evaluatedFastReplyTo;
-        internal bool _usingFastReplyTo;
-
         internal readonly object _lock = new object();
         internal readonly ConcurrentDictionary<IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<IModel, RabbitTemplate>();
         internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
         internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
         internal readonly AsyncLocal<IModel> _dedicatedChannels = new AsyncLocal<IModel>();
         internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
+        internal bool _evaluatedFastReplyTo;
+        internal bool _usingFastReplyTo;
 
         protected readonly ILogger _logger;
 
@@ -54,7 +53,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
         private const string DEFAULT_ROUTING_KEY = "";
         private const int DEFAULT_REPLY_TIMEOUT = 5000;
         private const int DEFAULT_CONSUME_TIMEOUT = 10000;
-
 
         private int _activeTemplateCallbacks;
         private int _messageTagProvider;
@@ -138,7 +136,18 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public IReturnCallback ReturnCallback { get; set; }
 
-        public bool Mandatory { get; set; }
+        public bool Mandatory
+        {
+            get
+            {
+                return MandatoryExpression.GetValue<bool>();
+            }
+
+            set
+            {
+                MandatoryExpression = new ValueExpression<bool>(value);
+            }
+        }
 
         public IExpression MandatoryExpression { get; set; } = new ValueExpression<bool>(false);
 
@@ -350,9 +359,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var callback = ReturnCallback;
             if (callback == null)
             {
-                if (properties.Headers.Remove(RETURN_CORRELATION_KEY, out var messageTagHeader))
+                var messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
+                var messageTagHeader = messageProperties.Get<string>(RETURN_CORRELATION_KEY);
+                if (messageTagHeader != null)
                 {
-                    var messageTag = messageTagHeader.ToString();
+                    var messageTag = messageTagHeader;
                     if (_replyHolder.TryGetValue(messageTag, out var pendingReply))
                     {
                         callback = new PendingReplyReturn(pendingReply);
@@ -888,7 +899,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
         }
 
-
         public Task<T> ConvertSendAndReceiveAsync<T>(object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
         {
             return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, cancellationToken);
@@ -941,7 +951,8 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
+            return Task.Run(
+            () =>
             {
                 return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
             }, cancellationToken);
@@ -1077,7 +1088,8 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
         {
-            return Task.Run(() =>
+            return Task.Run(
+            () =>
             {
                 var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
                 if (replyMessage == null)
@@ -1095,7 +1107,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 return value;
             }, cancellationToken);
         }
-
 
         #endregion RabbitConvertSendAndReceive
 
@@ -2563,6 +2574,61 @@ namespace Steeltoe.Messaging.Rabbit.Core
         #endregion
 
         #region Nested Types
+        protected internal class PendingReply
+        {
+            private readonly TaskCompletionSource<IMessage> _future = new TaskCompletionSource<IMessage>();
+
+            public string SavedReplyTo { get; set; }
+
+            public string SavedCorrelation { get; set; }
+
+            public IMessage Get()
+            {
+                try
+                {
+                    return _future.Task.Result;
+                }
+                catch (Exception e)
+                {
+                    throw RabbitExceptionTranslator.ConvertRabbitAccessException(e.InnerException);
+                }
+            }
+
+            public IMessage Get(int timeout)
+            {
+                try
+                {
+                    if (_future.Task.Wait(TimeSpan.FromMilliseconds(timeout)))
+                    {
+                        return _future.Task.Result;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw RabbitExceptionTranslator.ConvertRabbitAccessException(e.InnerException);
+                }
+            }
+
+            public void Reply(IMessage reply)
+            {
+                _future.TrySetResult(reply);
+            }
+
+            public void Returned(RabbitMessageReturnedException e)
+            {
+                CompleteExceptionally(e);
+            }
+
+            public void CompleteExceptionally(Exception exception)
+            {
+                _future.TrySetException(exception);
+            }
+        }
+
         protected class DoSendAndReceiveTemplateConsumer : AbstractTemplateConsumer
         {
             private readonly RabbitTemplate _template;
@@ -2680,61 +2746,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
             public override string ToString()
             {
                 return "TemplateConsumer [channel=" + Model + ", consumerTag=" + ConsumerTag + "]";
-            }
-        }
-
-        protected internal class PendingReply
-        {
-            private readonly TaskCompletionSource<IMessage> _future = new TaskCompletionSource<IMessage>();
-
-            public string SavedReplyTo { get; set; }
-
-            public string SavedCorrelation { get; set; }
-
-            public IMessage Get()
-            {
-                try
-                {
-                    return _future.Task.Result;
-                }
-                catch (Exception e)
-                {
-                    throw RabbitExceptionTranslator.ConvertRabbitAccessException(e.InnerException);
-                }
-            }
-
-            public IMessage Get(int timeout)
-            {
-                try
-                {
-                    if (_future.Task.Wait(TimeSpan.FromMilliseconds(timeout)))
-                    {
-                        return _future.Task.Result;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                catch (Exception e)
-                {
-                    throw RabbitExceptionTranslator.ConvertRabbitAccessException(e.InnerException);
-                }
-            }
-
-            public void Reply(IMessage reply)
-            {
-                _future.TrySetResult(reply);
-            }
-
-            public void Returned(RabbitMessageReturnedException e)
-            {
-                CompleteExceptionally(e);
-            }
-
-            public void CompleteExceptionally(Exception exception)
-            {
-                _future.TrySetException(exception);
             }
         }
 

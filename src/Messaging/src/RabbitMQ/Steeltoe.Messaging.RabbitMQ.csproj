@@ -28,10 +28,5 @@
     <PackageReference Include="RabbitMQ.Client" Version="6.0.0-rc1" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Data\" />
-  </ItemGroup>
-
   
 </Project>

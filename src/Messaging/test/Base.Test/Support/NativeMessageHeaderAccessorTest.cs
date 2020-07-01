@@ -13,9 +13,11 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CreateFromNativeHeaderMap()
         {
-            var inputNativeHeaders = new Dictionary<string, List<string>>();
-            inputNativeHeaders.Add("foo", new List<string>() { "bar" });
-            inputNativeHeaders.Add("bar", new List<string>() { "baz" });
+            var inputNativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } },
+                { "bar", new List<string>() { "baz" } }
+            };
 
             var headerAccessor = new NativeMessageHeaderAccessor(inputNativeHeaders);
             var actual = headerAccessor.ToDictionary();
@@ -29,13 +31,17 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CreateFromMessage()
         {
-            var inputNativeHeaders = new Dictionary<string, List<string>>();
-            inputNativeHeaders.Add("foo", new List<string>() { "bar" });
-            inputNativeHeaders.Add("bar", new List<string>() { "baz" });
+            var inputNativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } },
+                { "bar", new List<string>() { "baz" } }
+            };
 
-            var inputHeaders = new Dictionary<string, object>();
-            inputHeaders.Add("a", "b");
-            inputHeaders.Add(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
+            var inputHeaders = new Dictionary<string, object>
+            {
+                { "a", "b" },
+                { NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders }
+            };
 
             var message = Message.Create<string>("p", inputHeaders);
             var headerAccessor = new NativeMessageHeaderAccessor(message);
@@ -63,13 +69,17 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CreateFromMessageAndModify()
         {
-            var inputNativeHeaders = new Dictionary<string, List<string>>();
-            inputNativeHeaders.Add("foo", new List<string>() { "bar" });
-            inputNativeHeaders.Add("bar", new List<string>() { "baz" });
+            var inputNativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } },
+                { "bar", new List<string>() { "baz" } }
+            };
 
-            var nativeHeaders = new Dictionary<string, object>();
-            nativeHeaders.Add("a", "b");
-            nativeHeaders.Add(NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders);
+            var nativeHeaders = new Dictionary<string, object>
+            {
+                { "a", "b" },
+                { NativeMessageHeaderAccessor.NATIVE_HEADERS, inputNativeHeaders }
+            };
 
             var message = Message.Create<string>("p", nativeHeaders);
 
@@ -93,8 +103,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void SetNativeHeader()
         {
-            var nativeHeaders = new Dictionary<string, List<string>>();
-            nativeHeaders.Add("foo", new List<string>() { "bar" });
+            var nativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } }
+            };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.SetNativeHeader("foo", "baz");
@@ -105,8 +117,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void SetNativeHeaderNullValue()
         {
-            var nativeHeaders = new Dictionary<string, List<string>>();
-            nativeHeaders.Add("foo", new List<string>() { "bar" });
+            var nativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } }
+            };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.SetNativeHeader("foo", null);
@@ -146,8 +160,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void AddNativeHeader()
         {
-            var nativeHeaders = new Dictionary<string, List<string>>();
-            nativeHeaders.Add("foo", new List<string>() { "bar" });
+            var nativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } }
+            };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.AddNativeHeader("foo", "baz");
@@ -158,8 +174,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void AddNativeHeaderNullValue()
         {
-            var nativeHeaders = new Dictionary<string, List<string>>();
-            nativeHeaders.Add("foo", new List<string>() { "bar" });
+            var nativeHeaders = new Dictionary<string, List<string>>
+            {
+                { "foo", new List<string>() { "bar" } }
+            };
 
             var headers = new NativeMessageHeaderAccessor(nativeHeaders);
             headers.AddNativeHeader("foo", null);

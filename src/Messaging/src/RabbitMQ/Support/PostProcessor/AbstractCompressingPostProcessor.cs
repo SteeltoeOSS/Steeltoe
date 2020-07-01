@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Order;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
@@ -43,7 +47,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
                 compressor.Close();
 
                 byte[] compressed = zipped.ToArray();
-  
+
                 _logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 
                 return CreateMessage(message, compressed);
@@ -71,6 +75,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
             {
                 headers.SetHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS, true);
             }
+
             if (message.Headers.ContentEncoding() == null)
             {
                 headers.ContentEncoding = GetEncoding();

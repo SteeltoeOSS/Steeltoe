@@ -61,8 +61,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void CanConvertFromStrictContentTypeMatch()
         {
-            var converter = new TestMessageConverter(new List<MimeType>() { MimeTypeUtils.TEXT_PLAIN });
-            converter.StrictContentTypeMatch = true;
+            var converter = new TestMessageConverter(new List<MimeType>() { MimeTypeUtils.TEXT_PLAIN })
+            {
+                StrictContentTypeMatch = true
+            };
 
             var message = MessageBuilder.WithPayload("ABC").Build();
             Assert.False(converter.CanConvertFrom(message, typeof(string)));
@@ -82,8 +84,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessageWithHeaders()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
+            var map = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
             var headers = new MessageHeaders(map);
             var converter = new TestMessageConverter();
             var message = converter.ToMessage("ABC", headers);

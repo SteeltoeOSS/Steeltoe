@@ -158,6 +158,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             {
                 tags.Add(deliveryTag);
             }
+            else
+            {
+                tags = new List<ulong>();
+                tags.Add(deliveryTag);
+                _deliveryTags.Add(channel, tags);
+            }
         }
 
         public void RollbackAll()

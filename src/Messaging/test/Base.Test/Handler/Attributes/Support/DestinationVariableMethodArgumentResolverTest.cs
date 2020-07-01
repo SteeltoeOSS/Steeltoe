@@ -26,9 +26,11 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgument()
         {
-            var vars = new Dictionary<string, object>();
-            vars.Add("foo", "bar");
-            vars.Add("name", "value");
+            var vars = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "name", "value" }
+            };
 
             var message = MessageBuilder.WithPayload(new byte[0]).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
 

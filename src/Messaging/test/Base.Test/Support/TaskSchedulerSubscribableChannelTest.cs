@@ -146,8 +146,10 @@ namespace Steeltoe.Messaging.Support.Test
             var mock2 = new Mock<IMessage>();
             var expected = mock2.Object;
 
-            var interceptor = new BeforeHandleInterceptor();
-            interceptor.MessageToReturn = expected;
+            var interceptor = new BeforeHandleInterceptor
+            {
+                MessageToReturn = expected
+            };
             _channel.AddInterceptor(interceptor);
             _channel.Subscribe(_handler);
             _channel.Send(_message);
@@ -204,8 +206,8 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class UnsubscribeHandler : IMessageHandler
         {
-            private TaskSchedulerSubscribableChannelTest _test;
-            private TaskSchedulerSubscribableChannelWriterTest _test2;
+            private readonly TaskSchedulerSubscribableChannelTest _test;
+            private readonly TaskSchedulerSubscribableChannelWriterTest _test2;
 
             public UnsubscribeHandler(TaskSchedulerSubscribableChannelTest test)
             {

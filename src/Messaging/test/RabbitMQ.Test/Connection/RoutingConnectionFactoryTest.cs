@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Moq;
 using RabbitMQ.Client;
@@ -31,15 +21,19 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var connectionFactory1 = new Mock<IConnectionFactory>();
             var connectionFactory2 = new Mock<IConnectionFactory>();
-            var factories = new Dictionary<object, IConnectionFactory>();
-            factories.Add(true, connectionFactory1.Object);
-            factories.Add(false, connectionFactory2.Object);
+            var factories = new Dictionary<object, IConnectionFactory>
+            {
+                { true, connectionFactory1.Object },
+                { false, connectionFactory2.Object }
+            };
             var defaultConnectionFactory = new Mock<IConnectionFactory>();
 
             var lookupFlag = new AtomicBoolean(true);
             var count = new AtomicInteger();
-            var connectionFactory = new TestAbstractRoutingConnectionFactoryFactory(lookupFlag, count);
-            connectionFactory.DefaultTargetConnectionFactory = defaultConnectionFactory.Object;
+            var connectionFactory = new TestAbstractRoutingConnectionFactoryFactory(lookupFlag, count)
+            {
+                DefaultTargetConnectionFactory = defaultConnectionFactory.Object
+            };
             connectionFactory.SetTargetConnectionFactories(factories);
 
             for (var i = 0; i < 5; i++)
@@ -57,9 +51,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var connectionFactory1 = new Mock<IConnectionFactory>();
             var connectionFactory2 = new Mock<IConnectionFactory>();
-            var factories = new Dictionary<object, IConnectionFactory>();
-            factories.Add("foo", connectionFactory1.Object);
-            factories.Add("bar", connectionFactory2.Object);
+            var factories = new Dictionary<object, IConnectionFactory>
+            {
+                { "foo", connectionFactory1.Object },
+                { "bar", connectionFactory2.Object }
+            };
 
             var connectionFactory = new SimpleRoutingConnectionFactory();
             connectionFactory.SetTargetConnectionFactories(factories);
@@ -142,13 +138,17 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             channel2.Setup(c => c.IsOpen).Returns(true);
             defaultChannel.Setup(c => c.IsOpen).Returns(true);
 
-            var factories = new Dictionary<object, IConnectionFactory>();
-            factories.Add("[baz]", connectionFactory1.Object);
-            factories.Add("[foo,bar]", connectionFactory2.Object);
+            var factories = new Dictionary<object, IConnectionFactory>
+            {
+                { "[baz]", connectionFactory1.Object },
+                { "[foo,bar]", connectionFactory2.Object }
+            };
 
-            var connectionFactory = new SimpleRoutingConnectionFactory();
-            connectionFactory.LenientFallback = true;
-            connectionFactory.DefaultTargetConnectionFactory = defaultConnectionFactory.Object;
+            var connectionFactory = new SimpleRoutingConnectionFactory
+            {
+                LenientFallback = true,
+                DefaultTargetConnectionFactory = defaultConnectionFactory.Object
+            };
             connectionFactory.SetTargetConnectionFactories(factories);
 
             var container = new DirectMessageListenerContainer(null, connectionFactory);
@@ -190,8 +190,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             var connection1 = new Mock<IConnection>();
             var channel1 = new Mock<IModel>();
 
-            var factories = new Dictionary<object, IConnectionFactory>();
-            factories.Add("xxx[foo]", connectionFactory1.Object);
+            var factories = new Dictionary<object, IConnectionFactory>
+            {
+                { "xxx[foo]", connectionFactory1.Object }
+            };
 
             var connectionFactory = new SimpleRoutingConnectionFactory();
 
@@ -234,9 +236,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             var connection1 = new Mock<IConnection>();
             var channel1 = new Mock<IModel>();
 
-            var factories = new Dictionary<object, IConnectionFactory>();
-            factories.Add("xxx[foo]", connectionFactory1.Object);
-            factories.Add("xxx[amq.rabbitmq.reply-to]", connectionFactory1.Object);
+            var factories = new Dictionary<object, IConnectionFactory>
+            {
+                { "xxx[foo]", connectionFactory1.Object },
+                { "xxx[amq.rabbitmq.reply-to]", connectionFactory1.Object }
+            };
 
             var connectionFactory = new SimpleRoutingConnectionFactory();
             SimpleResourceHolder.Bind(connectionFactory, "foo");
@@ -258,9 +262,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             connectionFactory.SetTargetConnectionFactories(factories);
             var connectionMakerKey2 = new AtomicReference<object>();
 
-            var container = new TestDirectReplyToMessageListenerContainer(connectionFactory, connectionMakerKey2);
-            container.LookupKeyQualifier = "xxx";
-            container.ShutdownTimeout = 10;
+            var container = new TestDirectReplyToMessageListenerContainer(connectionFactory, connectionMakerKey2)
+            {
+                LookupKeyQualifier = "xxx",
+                ShutdownTimeout = 10
+            };
             container.Initialize();
             await container.Start();
 
@@ -324,8 +330,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private class TestAbstractRoutingConnectionFactoryFactory : AbstractRoutingConnectionFactory
         {
-            private AtomicBoolean lookupFlag;
-            private AtomicInteger count;
+            private readonly AtomicBoolean lookupFlag;
+            private readonly AtomicInteger count;
 
             public TestAbstractRoutingConnectionFactoryFactory(AtomicBoolean lookupFlag, AtomicInteger count)
             {

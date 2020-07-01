@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -31,6 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
+    [Trait("Category", "RequiresBroker")]
     public class ContainerInitializationTest : AbstractTest, IDisposable
     {
         public const string TEST_MISMATCH = "test.mismatch";
@@ -110,7 +101,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             services.AddRabbitAdmin();
             provider = services.BuildServiceProvider();
 
-            CountdownEvent[] latches = SetUpChannelLatches(provider);
+            var latches = SetUpChannelLatches(provider);
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
             var container = provider.GetService<DirectMessageListenerContainer>();
             Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
@@ -150,7 +141,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             services.AddRabbitAdmin();
             provider = services.BuildServiceProvider();
 
-            CountdownEvent[] latches = SetUpChannelLatches(provider);
+            var latches = SetUpChannelLatches(provider);
             await provider.GetRequiredService<IHostedService>().StartAsync(default);
             var container = provider.GetService<DirectMessageListenerContainer>();
             Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
@@ -174,8 +165,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public void Dispose()
         {
-            var admin = provider.GetService<IRabbitAdmin>() as RabbitAdmin;
-            if (admin != null)
+            if (provider.GetService<IRabbitAdmin>() is RabbitAdmin admin)
             {
                 admin.IgnoreDeclarationExceptions = true;
                 try
@@ -217,9 +207,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private class TestListener : IShutDownChannelListener
         {
-            private CountdownEvent cancelLatch;
-            private CountdownEvent mismatchLatch;
-            private CountdownEvent preventContainerRedeclareQueueLatch;
+            private readonly CountdownEvent cancelLatch;
+            private readonly CountdownEvent mismatchLatch;
+            private readonly CountdownEvent preventContainerRedeclareQueueLatch;
 
             public TestListener(CountdownEvent cancelLatch, CountdownEvent mismatchLatch, CountdownEvent preventContainerRedeclareQueueLatch)
             {

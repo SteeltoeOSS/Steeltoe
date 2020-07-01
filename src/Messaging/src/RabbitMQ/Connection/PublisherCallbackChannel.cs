@@ -446,20 +446,16 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         private void HandleReturn(object sender, BasicReturnEventArgs args)
         {
             var properties = args.BasicProperties;
+            var messageProperties = _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
             if (properties.Headers.TryGetValue(RETURNED_MESSAGE_CORRELATION_KEY, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm))
             {
-                var messageProperties = _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
                 if (confirm.CorrelationInfo != null)
                 {
                     confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
                 }
             }
 
-            string uuidObject = null;
-            if (properties.Headers.TryGetValue(RETURN_LISTENER_CORRELATION_KEY, out var returnListenerHeader))
-            {
-                uuidObject = returnListenerHeader.ToString();
-            }
+            string uuidObject = messageProperties.Get<string>(RETURN_LISTENER_CORRELATION_KEY);
 
             IListener listener = null;
             if (uuidObject != null)
@@ -480,25 +476,21 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 // _hasReturned = true;
                 var listenerToInvoke = listener;
 
-                // TODO: Not sure this needs its own thread .. probably does .. but need to explore Rabbit client threading model
-                Task.Run(() =>
+                try
                 {
-                    try
-                    {
-                        listenerToInvoke.HandleReturn(args.ReplyCode, args.ReplyText, args.Exchange, args.RoutingKey, properties, args.Body);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger?.LogError(e, "Exception delivering returned message ");
-                    }
-                    finally
-                    {
-                        // TODO: Not sure this latch is needed ..
-                        // I think its is to ensure the callback for return and confirm are not done at same time?
-                        // Returns should happen first and then confirms
-                        // _returnLatch.countDown();
-                    }
-                });
+                    listenerToInvoke.HandleReturn(args.ReplyCode, args.ReplyText, args.Exchange, args.RoutingKey, properties, args.Body);
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogError(e, "Exception delivering returned message ");
+                }
+                finally
+                {
+                    // TODO: Not sure this latch is needed ..
+                    // I think its is to ensure the callback for return and confirm are not done at same time?
+                    // Returns should happen first and then confirms
+                    // _returnLatch.countDown();
+                }
             }
         }
 

@@ -478,7 +478,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     if (customizerCounts == 0)
                     {
                         results.Add(dec);
-                    } 
+                    }
                     else
                     {
                         IDeclarable customized = dec;
@@ -486,12 +486,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
                         {
                             customized = customizer.Apply(customized);
                         }
+
                         if (customized != null)
                         {
                             results.Add((T)customized);
                         }
                     }
-
                 }
             }
 
@@ -579,7 +579,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
                             declareOks.Add(declareOk);
                         }
-                        catch (ArgumentException e)
+                        catch (ArgumentException)
                         {
                             CloseChannelAfterIllegalArg(channel, queue);
                             throw;

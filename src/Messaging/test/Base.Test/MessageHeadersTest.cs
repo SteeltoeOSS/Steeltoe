@@ -91,8 +91,10 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestNonTypedAccessOfHeaderValue()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("test", 123);
+            var map = new Dictionary<string, object>
+            {
+                { "test", 123 }
+            };
             var headers = new MessageHeaders(map);
             Assert.Equal(123, headers["test"]);
         }
@@ -100,8 +102,10 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestTypedAccessOfHeaderValue()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("test", 123);
+            var map = new Dictionary<string, object>
+            {
+                { "test", 123 }
+            };
             var headers = new MessageHeaders(map);
             Assert.Equal(123, headers.Get<int>("test"));
         }
@@ -109,8 +113,10 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestHeaderValueAccessWithIncorrectType()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("test", 123);
+            var map = new Dictionary<string, object>
+            {
+                { "test", 123 }
+            };
             var headers = new MessageHeaders(map);
             Assert.Throws<InvalidCastException>(() => headers.Get<string>("test"));
         }
@@ -135,9 +141,11 @@ namespace Steeltoe.Messaging.Test
         [Fact]
         public void TestHeaderKeys()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("key1", "val1");
-            map.Add("key2", 123);
+            var map = new Dictionary<string, object>
+            {
+                { "key1", "val1" },
+                { "key2", 123 }
+            };
             var headers = new MessageHeaders(map);
             var keys = headers.Keys;
             Assert.True(keys.Contains("key1"));

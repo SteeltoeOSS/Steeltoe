@@ -22,9 +22,11 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void ExistingHeaders()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
             var message = Message.Create<string>("payload", map);
 
             var accessor = new MessageHeaderAccessor(message);
@@ -38,9 +40,11 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void ExistingHeadersModification()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
             var message = Message.Create<string>("payload", map);
 
             Thread.Sleep(50);
@@ -68,7 +72,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestRemoveHeaderEvenIfNull()
         {
-            IMessage<string> message = Message.Create<string>("payload", SingletonMap("foo", null));
+            var message = Message.Create<string>("payload", SingletonMap("foo", null));
             var accessor = new MessageHeaderAccessor(message);
             accessor.RemoveHeader("foo");
             var headers = accessor.ToDictionary();
@@ -78,9 +82,11 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void RemoveHeaders()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
             var message = Message.Create<string>("payload", map);
             var accessor = new MessageHeaderAccessor(message);
 
@@ -95,14 +101,18 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CopyHeaders()
         {
-            IDictionary<string, object> map1 = new Dictionary<string, object>();
-            map1.Add("foo", "bar");
+            IDictionary<string, object> map1 = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
             var message = Message.Create<string>("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
-            IDictionary<string, object> map2 = new Dictionary<string, object>();
-            map2.Add("foo", "BAR");
-            map2.Add("bar", "baz");
+            IDictionary<string, object> map2 = new Dictionary<string, object>
+            {
+                { "foo", "BAR" },
+                { "bar", "baz" }
+            };
             accessor.CopyHeaders(map2);
 
             var actual = accessor.MessageHeaders;
@@ -114,14 +124,18 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CopyHeadersIfAbsent()
         {
-            IDictionary<string, object> map1 = new Dictionary<string, object>();
-            map1.Add("foo", "bar");
+            IDictionary<string, object> map1 = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
             var message = Message.Create<string>("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
-            IDictionary<string, object> map2 = new Dictionary<string, object>();
-            map2.Add("foo", "BAR");
-            map2.Add("bar", "baz");
+            IDictionary<string, object> map2 = new Dictionary<string, object>
+            {
+                { "foo", "BAR" },
+                { "bar", "baz" }
+            };
             accessor.CopyHeadersIfAbsent(map2);
 
             var actual = accessor.MessageHeaders;
@@ -206,8 +220,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void GetMutableAccessorSameInstance()
         {
-            var expected = new TestMessageHeaderAccessor();
-            expected.LeaveMutable = true;
+            var expected = new TestMessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
             var message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
 
             var actual = MessageHeaderAccessor.GetMutableAccessor(message);
@@ -222,7 +238,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void GetMutableAccessorNewInstance()
         {
-            IMessage message = MessageBuilder.WithPayload("payload").Build();
+            var message = MessageBuilder.WithPayload("payload").Build();
 
             var actual = MessageHeaderAccessor.GetMutableAccessor(message);
             Assert.NotNull(actual);
@@ -246,8 +262,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TimestampEnabled()
         {
-            var accessor = new MessageHeaderAccessor();
-            accessor.EnableTimestamp = true;
+            var accessor = new MessageHeaderAccessor
+            {
+                EnableTimestamp = true
+            };
             Assert.NotNull(accessor.MessageHeaders.Timestamp);
         }
 
@@ -262,10 +280,12 @@ namespace Steeltoe.Messaging.Support.Test
         public void IdGeneratorCustom()
         {
             var id = Guid.NewGuid();
-            var accessor = new MessageHeaderAccessor();
-            accessor.IdGenerator = new TestIdGenerator()
+            var accessor = new MessageHeaderAccessor
             {
-                Id = id.ToString()
+                IdGenerator = new TestIdGenerator()
+                {
+                    Id = id.ToString()
+                }
             };
             Assert.Equal(id.ToString(), accessor.MessageHeaders.Id);
         }
@@ -280,13 +300,15 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void IdTimestampWithMutableHeaders()
         {
-            var accessor = new MessageHeaderAccessor();
-            accessor.IdGenerator = new TestIdGenerator()
+            var accessor = new MessageHeaderAccessor
             {
-                Id = MessageHeaders.ID_VALUE_NONE
+                IdGenerator = new TestIdGenerator()
+                {
+                    Id = MessageHeaders.ID_VALUE_NONE
+                },
+                EnableTimestamp = false,
+                LeaveMutable = true
             };
-            accessor.EnableTimestamp = false;
-            accessor.LeaveMutable = true;
             var headers = accessor.MessageHeaders;
 
             Assert.Null(headers.Id);

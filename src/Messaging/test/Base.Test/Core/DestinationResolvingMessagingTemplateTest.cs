@@ -28,8 +28,10 @@ namespace Steeltoe.Messaging.Core.Test
             myChannel = new TaskSchedulerSubscribableChannel();
             resolver.RegisterMessageChannel("myChannel", myChannel);
 
-            template = new TestDestinationResolvingMessagingTemplate();
-            template.DestinationResolver = resolver;
+            template = new TestDestinationResolvingMessagingTemplate
+            {
+                DestinationResolver = resolver
+            };
 
             headers = new Dictionary<string, object>() { { "key", "value" } };
 
@@ -60,7 +62,7 @@ namespace Steeltoe.Messaging.Core.Test
         public Task SendAsyncNoDestinationResolver()
         {
             var template = new TestDestinationResolvingMessagingTemplate();
-            return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", new GenericMessage("payload")));
+            return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", Message.Create("payload")));
         }
 
         [Fact]

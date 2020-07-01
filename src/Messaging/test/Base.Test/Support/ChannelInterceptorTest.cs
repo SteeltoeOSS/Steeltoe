@@ -28,8 +28,10 @@ namespace Steeltoe.Messaging.Support.Test
         public void PreSendInterceptorReturningModifiedMessage()
         {
             var expected = new Mock<IMessage>().Object;
-            var interceptor = new PreSendInterceptor();
-            interceptor.MessageToReturn = expected;
+            var interceptor = new PreSendInterceptor
+            {
+                MessageToReturn = expected
+            };
             channel.AddInterceptor(interceptor);
             channel.Send(MessageBuilder.WithPayload("test").Build());
 
@@ -108,8 +110,10 @@ namespace Steeltoe.Messaging.Support.Test
         public void AfterCompletionWithPreSendException()
         {
             var interceptor1 = new PreSendInterceptor();
-            var interceptor2 = new PreSendInterceptor();
-            interceptor2.ExceptionToRaise = new Exception("Simulated exception");
+            var interceptor2 = new PreSendInterceptor
+            {
+                ExceptionToRaise = new Exception("Simulated exception")
+            };
             channel.AddInterceptor(interceptor1);
             channel.AddInterceptor(interceptor2);
             try

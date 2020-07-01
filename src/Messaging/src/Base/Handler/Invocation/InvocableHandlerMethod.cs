@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 {
                     args[i] = MessageMethodArgumentResolvers.ResolveArgument(parameter, message);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // Leave stack trace for later, exception may actually be resolved and handled..
                     // if (logger.isDebugEnabled())

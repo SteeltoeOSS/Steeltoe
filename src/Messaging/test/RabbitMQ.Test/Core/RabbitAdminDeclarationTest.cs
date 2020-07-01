@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,15 +22,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
 {
     public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTestStartupFixture>
     {
-        private ServiceProvider provider;
-        private RabbitAdminDeclarationTestStartupFixture fixture;
-        private ITestOutputHelper output;
+        private readonly RabbitAdminDeclarationTestStartupFixture fixture;
 
-        public RabbitAdminDeclarationTest(RabbitAdminDeclarationTestStartupFixture fix, ITestOutputHelper outp)
+        public RabbitAdminDeclarationTest(RabbitAdminDeclarationTestStartupFixture fix)
         {
             fixture = fix;
-            provider = fixture.Provider;
-            output = outp;
         }
 
         [Fact]
@@ -266,14 +252,20 @@ namespace Steeltoe.Messaging.Rabbit.Core
             cf.Setup((f) => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                 .Callback<IConnectionListener>((l) => listener.Value = l);
 
-            var queue = new Queue("foo");
-            queue.ShouldDeclare = false;
+            var queue = new Queue("foo")
+            {
+                ShouldDeclare = false
+            };
             services.AddRabbitQueue(queue);
-            var exchange = new DirectExchange("bar");
-            exchange.ShouldDeclare = false;
+            var exchange = new DirectExchange("bar")
+            {
+                ShouldDeclare = false
+            };
             services.AddRabbitExchange(exchange);
-            var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null);
-            binding.ShouldDeclare = false;
+            var binding = new Binding("baz", "foo", Binding.DestinationType.QUEUE, "bar", "foo", null)
+            {
+                ShouldDeclare = false
+            };
             services.AddRabbitBinding(binding);
             var provider = services.BuildServiceProvider();
             var context = provider.GetApplicationContext();
@@ -306,9 +298,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             fixture.Listener3.Value.OnCreate(fixture.Conn3.Object);
             fixture.Channel3.Verify(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
-            var args = new Dictionary<string, object>();
-            args.Add("added.by.customizer.1", true);
-            args.Add("added.by.customizer.2", true);
+            var args = new Dictionary<string, object>
+            {
+                { "added.by.customizer.1", true },
+                { "added.by.customizer.2", true }
+            };
             fixture.Channel3.Verify(c => c.QueueDeclare("baz", true, false, false, args));
             fixture.Channel3.Verify(c => c.QueueDeclare("qux", true, false, false, It.IsAny<IDictionary<string, object>>()), Times.Never);
             fixture.Channel3.Verify(c => c.ExchangeDeclare("bar", "direct", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
@@ -350,7 +344,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public class RabbitAdminDeclarationTestStartupFixture : IDisposable
         {
-            private IServiceCollection services;
+            private readonly IServiceCollection services;
 
             public ServiceProvider Provider { get; set; }
 
@@ -412,7 +406,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     Conn1.Setup((c) => c.CreateChannel(false)).Returns(Channel1.Object);
                     Conn1.Setup((c) => c.IsOpen).Returns(true);
                     Channel1.Setup((c) => c.IsOpen).Returns(true);
-                    AtomicReference<string> queueName = new AtomicReference<string>();
+                    var queueName = new AtomicReference<string>();
                     Channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                         .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0));
@@ -432,7 +426,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     Conn2.Setup((c) => c.CreateChannel(false)).Returns(Channel2.Object);
                     Conn2.Setup((c) => c.IsOpen).Returns(true);
                     Channel2.Setup((c) => c.IsOpen).Returns(true);
-                    AtomicReference<string> queueName = new AtomicReference<string>();
+                    var queueName = new AtomicReference<string>();
                     Channel2.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                          .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0));
@@ -452,7 +446,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     Conn3.Setup((c) => c.CreateChannel(false)).Returns(Channel3.Object);
                     Conn3.Setup((c) => c.IsOpen).Returns(true);
                     Channel3.Setup((c) => c.IsOpen).Returns(true);
-                    AtomicReference<string> queueName = new AtomicReference<string>();
+                    var queueName = new AtomicReference<string>();
                     Channel3.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
                         .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, a2, a3, a4, a5) => queueName.Value = a1)
                         .Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0));
@@ -465,8 +459,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 {
                     var context = p.GetApplicationContext();
                     var cf1 = context.GetService<IConnectionFactory>("cf1");
-                    var admin = new RabbitAdmin(context, cf1, p.GetService<ILogger<RabbitAdmin>>());
-                    admin.ServiceName = "admin1";
+                    var admin = new RabbitAdmin(context, cf1, p.GetService<ILogger<RabbitAdmin>>())
+                    {
+                        ServiceName = "admin1"
+                    };
                     return admin;
                 });
                 services.AddSingleton<IRabbitAdmin>(p =>
@@ -479,8 +475,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 {
                     var context = p.GetApplicationContext();
                     var cf2 = context.GetService<IConnectionFactory>("cf2");
-                    var admin = new RabbitAdmin(context, cf2, p.GetService<ILogger<RabbitAdmin>>());
-                    admin.ServiceName = "admin2";
+                    var admin = new RabbitAdmin(context, cf2, p.GetService<ILogger<RabbitAdmin>>())
+                    {
+                        ServiceName = "admin2"
+                    };
                     return admin;
                 });
                 services.AddSingleton<IRabbitAdmin>(p =>
@@ -493,9 +491,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 {
                     var context = p.GetApplicationContext();
                     var cf3 = context.GetService<IConnectionFactory>("cf3");
-                    var admin = new RabbitAdmin(context, cf3, p.GetService<ILogger<RabbitAdmin>>());
-                    admin.ExplicitDeclarationsOnly = true;
-                    admin.ServiceName = "admin3";
+                    var admin = new RabbitAdmin(context, cf3, p.GetService<ILogger<RabbitAdmin>>())
+                    {
+                        ExplicitDeclarationsOnly = true,
+                        ServiceName = "admin3"
+                    };
                     return admin;
                 });
                 services.AddSingleton<IRabbitAdmin>(p =>
@@ -538,8 +538,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
                 public IDeclarable Apply(IDeclarable declarable)
                 {
-                    var queue = declarable as IQueue;
-                    if (queue != null && queue.QueueName == "baz")
+                    if (declarable is IQueue queue && queue.QueueName == "baz")
                     {
                         queue.AddArgument("added.by.customizer.1", true);
                     }
@@ -552,8 +551,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
                 public IDeclarable Apply(IDeclarable declarable)
                 {
-                    var queue = declarable as IQueue;
-                    if (queue != null && queue.QueueName == "baz")
+                    if (declarable is IQueue queue && queue.QueueName == "baz")
                     {
                         queue.AddArgument("added.by.customizer.2", true);
                     }

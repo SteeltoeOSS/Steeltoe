@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,11 +17,12 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
+    [Trait("Category", "RequiresBroker")]
     public class RabbitBindingIntegrationTest : IDisposable
     {
         private const string QueueName = "test.queue.RabbitBindingIntegrationTests";
         private readonly Queue queue = new Queue(QueueName);
-        private ServiceCollection services;
+        private readonly ServiceCollection services;
         private ServiceProvider provider;
 
         public RabbitBindingIntegrationTest()
@@ -76,7 +67,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 template.Execute(c =>
                 {
                     var consumer = CreateConsumer(template.ConnectionFactory);
-                    var tag = consumer.ConsumerTags[0];
+                    var tag = consumer.GetConsumerTags()[0];
                     Assert.NotNull(tag);
                     template.ConvertAndSend("foo", "message");
                     try
@@ -114,7 +105,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 template.Execute(c =>
                 {
                     var consumer = CreateConsumer(template.ConnectionFactory);
-                    var tag = consumer.ConsumerTags[0];
+                    var tag = consumer.GetConsumerTags()[0];
                     Assert.NotNull(tag);
                     template.ConvertAndSend("topic", "foo", "message");
                     try
@@ -150,13 +141,15 @@ namespace Steeltoe.Messaging.Rabbit.Core
             admin.DeclareBinding(binding);
 
             var cachingConnectionFactory = new CachingConnectionFactory("localhost");
-            var template1 = new RabbitTemplate(cachingConnectionFactory);
-            template1.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
+            var template1 = new RabbitTemplate(cachingConnectionFactory)
+            {
+                DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty)
+            };
 
-            BlockingQueueConsumer consumer = template1.Execute(channel =>
+            var consumer = template1.Execute(channel =>
             {
                 var consumer1 = CreateConsumer(template1.ConnectionFactory);
-                var tag = consumer1.ConsumerTags[0];
+                var tag = consumer1.GetConsumerTags()[0];
                 Assert.NotNull(tag);
 
                 return consumer1;
@@ -192,7 +185,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 template.Execute(c =>
                 {
                     var consumer = CreateConsumer(template.ConnectionFactory);
-                    var tag = consumer.ConsumerTags[0];
+                    var tag = consumer.GetConsumerTags()[0];
                     Assert.NotNull(tag);
                     try
                     {
@@ -209,7 +202,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 template.Execute(c =>
                 {
                     var consumer = CreateConsumer(template.ConnectionFactory);
-                    var tag = consumer.ConsumerTags[0];
+                    var tag = consumer.GetConsumerTags()[0];
                     Assert.NotNull(tag);
                     try
                     {
@@ -245,7 +238,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 template.Execute(channel =>
                 {
                     var consumer = CreateConsumer(template.ConnectionFactory);
-                    var tag = consumer.ConsumerTags[0];
+                    var tag = consumer.GetConsumerTags()[0];
                     Assert.NotNull(tag);
 
                     try
@@ -279,7 +272,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private BlockingQueueConsumer CreateConsumer(IConnectionFactory connectionFactory)
         {
-            BlockingQueueConsumer consumer = new BlockingQueueConsumer(
+            var consumer = new BlockingQueueConsumer(
                 connectionFactory,
                 new DefaultMessageHeadersConverter(),
                 new ActiveObjectCounter<BlockingQueueConsumer>(),

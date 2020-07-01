@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,11 +24,12 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
+    [Trait("Category", "RequiresBroker")]
     public class BatchingRabbitTemplateTest : IDisposable
     {
         public const string ROUTE = "test.queue.BatchingRabbitTemplateTests";
-        private CachingConnectionFactory connectionFactory;
-        private ITestOutputHelper testOutputHelper;
+        private readonly CachingConnectionFactory connectionFactory;
+        private readonly ITestOutputHelper testOutputHelper;
 
         public BatchingRabbitTemplateTest(ITestOutputHelper testOutputHelper)
         {
@@ -58,8 +49,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatch()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -72,8 +65,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchTimeout()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 50);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             var recv = Receive(template);
@@ -84,8 +79,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchTimeoutMultiple()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 50);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             template.Send(string.Empty, ROUTE, message);
@@ -97,8 +94,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchBufferLimit()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, 8, 50);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -113,8 +112,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchBufferLimitMultiple()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, 15, 30000);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             template.Send(string.Empty, ROUTE, message);
@@ -131,8 +132,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchBiggerThanBufferLimit()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, 2, 30000);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -147,8 +150,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchBiggerThanBufferLimitMultiple()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, 6, 30000);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("f"));
             template.Send(string.Empty, ROUTE, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -163,8 +168,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchTwoEqualBufferLimit()
         {
             var batchingStrategy = new SimpleBatchingStrategy(10, 14, 30000);
-            var template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
             template.Send(string.Empty, ROUTE, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -190,8 +197,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             try
             {
                 var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-                var template = new BatchingRabbitTemplate(batchingStrategy);
-                template.ConnectionFactory = connectionFactory;
+                var template = new BatchingRabbitTemplate(batchingStrategy)
+                {
+                    ConnectionFactory = connectionFactory
+                };
                 var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
                 template.Send(string.Empty, ROUTE, message);
                 message = Message.Create(Encoding.UTF8.GetBytes("bar"));
@@ -233,8 +242,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             try
             {
                 var batchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
-                var template = new BatchingRabbitTemplate(batchingStrategy);
-                template.ConnectionFactory = connectionFactory;
+                var template = new BatchingRabbitTemplate(batchingStrategy)
+                {
+                    ConnectionFactory = connectionFactory
+                };
                 var accessor = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders());
                 accessor.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
                 var message = Message.Create(new byte[256], accessor.MessageHeaders);
@@ -271,8 +282,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
             container.Start();
             try
             {
-                RabbitTemplate template = new RabbitTemplate();
-                template.ConnectionFactory = connectionFactory;
+                var template = new RabbitTemplate
+                {
+                    ConnectionFactory = connectionFactory
+                };
                 var headers = new MessageHeaders(new Dictionary<string, object>() { { RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4 } });
                 var message = Message.Create(Encoding.UTF8.GetBytes("\u0000\u0000\u0000\u0004foo"), headers);
                 template.Send(string.Empty, ROUTE, message);
@@ -290,8 +303,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZipped()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var gZipPostProcessor = new GZipPostProcessor();
             Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
             template.SetBeforePublishPostProcessors(gZipPostProcessor);
@@ -302,7 +317,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             template.Send(string.Empty, ROUTE, message);
             var result = Receive(template);
             Assert.Equal("gzip", result.Headers.ContentEncoding());
-            GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+            var unzipper = new GUnzipPostProcessor();
             var unzip = unzipper.PostProcessMessage(result);
             Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])unzip.Payload));
         }
@@ -311,8 +326,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedUsingAdd()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var gZipPostProcessor = new GZipPostProcessor();
             Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
             template.AddBeforePublishPostProcessors(gZipPostProcessor);
@@ -323,7 +340,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             template.Send(string.Empty, ROUTE, message);
             var result = Receive(template);
             Assert.Equal("gzip", result.Headers.ContentEncoding());
-            GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+            var unzipper = new GUnzipPostProcessor();
             var unzip = unzipper.PostProcessMessage(result);
             Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])unzip.Payload));
         }
@@ -332,8 +349,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedUsingAddAndRemove()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var gZipPostProcessor = new GZipPostProcessor();
             Assert.Equal(CompressionLevel.Fastest, gZipPostProcessor.Level);
             template.AddBeforePublishPostProcessors(gZipPostProcessor);
@@ -347,7 +366,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             template.Send(string.Empty, ROUTE, message);
             var result = Receive(template);
             Assert.Equal("gzip", result.Headers.ContentEncoding());
-            GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+            var unzipper = new GUnzipPostProcessor();
             var unzip = unzipper.PostProcessMessage(result);
             Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])unzip.Payload));
             Assert.Null(unzip.Headers.Get<string>("someHeader"));
@@ -357,10 +376,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedConfiguredUnzipper()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var gZipPostProcessor = new GZipPostProcessor();
-            gZipPostProcessor.Level = CompressionLevel.Optimal;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var gZipPostProcessor = new GZipPostProcessor
+            {
+                Level = CompressionLevel.Optimal
+            };
             Assert.Equal(CompressionLevel.Optimal, gZipPostProcessor.Level);
             template.SetBeforePublishPostProcessors(gZipPostProcessor);
             template.SetAfterReceivePostProcessors(new GUnzipPostProcessor());
@@ -378,10 +401,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedConfiguredUnzipperUsingAdd()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var gZipPostProcessor = new GZipPostProcessor();
-            gZipPostProcessor.Level = CompressionLevel.Optimal;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var gZipPostProcessor = new GZipPostProcessor
+            {
+                Level = CompressionLevel.Optimal
+            };
             Assert.Equal(CompressionLevel.Optimal, gZipPostProcessor.Level);
             template.AddBeforePublishPostProcessors(gZipPostProcessor);
             template.AddAfterReceivePostProcessors(new GUnzipPostProcessor());
@@ -399,12 +426,16 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedWithEncoding()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var gZipPostProcessor = new GZipPostProcessor();
             template.SetBeforePublishPostProcessors(gZipPostProcessor);
-            var accessor = new RabbitHeaderAccessor(new MessageHeaders());
-            accessor.ContentEncoding = "foo";
+            var accessor = new RabbitHeaderAccessor(new MessageHeaders())
+            {
+                ContentEncoding = "foo"
+            };
             var props = accessor.ToMessageHeaders();
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
             template.Send(string.Empty, ROUTE, message);
@@ -412,7 +443,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             template.Send(string.Empty, ROUTE, message);
             var result = Receive(template);
             Assert.Equal("gzip:foo", result.Headers.ContentEncoding());
-            GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+            var unzipper = new GUnzipPostProcessor();
             var unzip = unzipper.PostProcessMessage(result);
             Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])unzip.Payload));
         }
@@ -421,13 +452,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchGZippedWithEncodingInflated()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
             var gZipPostProcessor = new GZipPostProcessor();
             template.SetBeforePublishPostProcessors(gZipPostProcessor);
             template.SetAfterReceivePostProcessors(new DelegatingDecompressingPostProcessor());
-            var accessor = new RabbitHeaderAccessor(new MessageHeaders());
-            accessor.ContentEncoding = "foo";
+            var accessor = new RabbitHeaderAccessor(new MessageHeaders())
+            {
+                ContentEncoding = "foo"
+            };
             var props = accessor.ToMessageHeaders();
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
             template.Send(string.Empty, ROUTE, message);
@@ -443,10 +478,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchZippedBestCompression()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var zipPostProcessor = new ZipPostProcessor();
-            zipPostProcessor.Level = CompressionLevel.Optimal;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var zipPostProcessor = new ZipPostProcessor
+            {
+                Level = CompressionLevel.Optimal
+            };
             template.SetBeforePublishPostProcessors(zipPostProcessor);
             var accessor = new RabbitHeaderAccessor(new MessageHeaders());
             var props = accessor.ToMessageHeaders();
@@ -465,13 +504,19 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchZippedWithEncoding()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var zipPostProcessor = new ZipPostProcessor();
-            zipPostProcessor.Level = CompressionLevel.Optimal;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var zipPostProcessor = new ZipPostProcessor
+            {
+                Level = CompressionLevel.Optimal
+            };
             template.SetBeforePublishPostProcessors(zipPostProcessor);
-            var accessor = new RabbitHeaderAccessor(new MessageHeaders());
-            accessor.ContentEncoding = "foo";
+            var accessor = new RabbitHeaderAccessor(new MessageHeaders())
+            {
+                ContentEncoding = "foo"
+            };
             var props = accessor.ToMessageHeaders();
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
             template.Send(string.Empty, ROUTE, message);
@@ -488,10 +533,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchDeflater()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var deflatorPostProcessor = new DeflaterPostProcessor();
-            deflatorPostProcessor.Level = CompressionLevel.Optimal;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var deflatorPostProcessor = new DeflaterPostProcessor
+            {
+                Level = CompressionLevel.Optimal
+            };
             template.SetBeforePublishPostProcessors(deflatorPostProcessor);
             var accessor = new RabbitHeaderAccessor(new MessageHeaders());
             var props = accessor.ToMessageHeaders();
@@ -510,10 +559,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchDeflaterFastestCompression()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var deflatorPostProcessor = new DeflaterPostProcessor();
-            deflatorPostProcessor.Level = CompressionLevel.Fastest;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var deflatorPostProcessor = new DeflaterPostProcessor
+            {
+                Level = CompressionLevel.Fastest
+            };
             template.SetBeforePublishPostProcessors(deflatorPostProcessor);
             var accessor = new RabbitHeaderAccessor(new MessageHeaders());
             var props = accessor.ToMessageHeaders();
@@ -532,13 +585,19 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSimpleBatchDeflaterWithEncoding()
         {
             var batchingStrategy = new SimpleBatchingStrategy(2, int.MaxValue, 30000);
-            BatchingRabbitTemplate template = new BatchingRabbitTemplate(batchingStrategy);
-            template.ConnectionFactory = connectionFactory;
-            var deflatorPostProcessor = new DeflaterPostProcessor();
-            deflatorPostProcessor.Level = CompressionLevel.Fastest;
+            var template = new BatchingRabbitTemplate(batchingStrategy)
+            {
+                ConnectionFactory = connectionFactory
+            };
+            var deflatorPostProcessor = new DeflaterPostProcessor
+            {
+                Level = CompressionLevel.Fastest
+            };
             template.SetBeforePublishPostProcessors(deflatorPostProcessor);
-            var accessor = new RabbitHeaderAccessor(new MessageHeaders());
-            accessor.ContentEncoding = "foo";
+            var accessor = new RabbitHeaderAccessor(new MessageHeaders())
+            {
+                ContentEncoding = "foo"
+            };
             var props = accessor.ToMessageHeaders();
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
             template.Send(string.Empty, ROUTE, message);

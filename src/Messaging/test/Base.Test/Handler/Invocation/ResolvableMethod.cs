@@ -66,9 +66,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         internal class Builder<T>
         {
-            private Type objectClass;
+            private readonly Type objectClass;
 
-            private List<IPredicate<MethodInfo>> filters = new List<IPredicate<MethodInfo>>();
+            private readonly List<IPredicate<MethodInfo>> filters = new List<IPredicate<MethodInfo>>();
 
             public Builder()
             {
@@ -281,7 +281,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             private readonly List<IPredicate<ParameterInfo>> filters = new List<IPredicate<ParameterInfo>>();
 
-            private ResolvableMethod resolvable;
+            private readonly ResolvableMethod resolvable;
 
             public ArgResolver(ResolvableMethod resolvable, params IPredicate<ParameterInfo>[] filters)
             {
@@ -408,7 +408,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             internal class FuncPredicate : IPredicate<ParameterInfo>
             {
-                private Func<ParameterInfo, bool> func;
+                private readonly Func<ParameterInfo, bool> func;
 
                 public FuncPredicate(Func<ParameterInfo, bool> func)
                 {
@@ -429,9 +429,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         internal class LabeledPredicate<T> : IPredicate<T>
         {
-            private string label;
+            private readonly string label;
 
-            private Func<T, bool> del;
+            private readonly Func<T, bool> del;
 
             public LabeledPredicate(string label, Func<T, bool> del)
             {

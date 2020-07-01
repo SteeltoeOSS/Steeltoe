@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client;
 using Steeltoe.Messaging.Rabbit.Core;
@@ -24,17 +14,20 @@ using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
+    [Trait("Category", "RequiresBroker")]
     public class CachingConnectionFactoryIntegrationTests : IDisposable
     {
         public const string CF_INTEGRATION_TEST_QUEUE = "cfIntegrationTest";
         private const string CF_INTEGRATION_CONNECTION_NAME = "cfIntegrationTestConnectionName";
 
-        private CachingConnectionFactory connectionFactory;
+        private readonly CachingConnectionFactory connectionFactory;
 
         public CachingConnectionFactoryIntegrationTests()
         {
-            connectionFactory = new CachingConnectionFactory("localhost");
-            connectionFactory.ServiceName = CF_INTEGRATION_CONNECTION_NAME;
+            connectionFactory = new CachingConnectionFactory("localhost")
+            {
+                ServiceName = CF_INTEGRATION_CONNECTION_NAME
+            };
         }
 
         public void Dispose()
@@ -47,9 +40,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             connectionFactory.CacheMode = CachingMode.CONNECTION;
             connectionFactory.ConnectionCacheSize = 5;
-            var connections = new List<IConnection>();
-            connections.Add(connectionFactory.CreateConnection());
-            connections.Add(connectionFactory.CreateConnection());
+            var connections = new List<IConnection>
+            {
+                connectionFactory.CreateConnection(),
+                connectionFactory.CreateConnection()
+            };
             Assert.NotSame(connections[0], connections[1]);
             connections.Add(connectionFactory.CreateConnection());
             connections.Add(connectionFactory.CreateConnection());
@@ -84,11 +79,15 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             connectionFactory.ConnectionCacheSize = 2;
             connectionFactory.ChannelCacheSize = 1;
             connectionFactory.ChannelCheckoutTimeout = 10;
-            var connections = new List<IConnection>();
-            connections.Add(connectionFactory.CreateConnection());
-            connections.Add(connectionFactory.CreateConnection());
-            var channels = new List<IModel>();
-            channels.Add(connections[0].CreateChannel(false));
+            var connections = new List<IConnection>
+            {
+                connectionFactory.CreateConnection(),
+                connectionFactory.CreateConnection()
+            };
+            var channels = new List<IModel>
+            {
+                connections[0].CreateChannel(false)
+            };
             try
             {
                 channels.Add(connections[0].CreateChannel(false));
@@ -132,14 +131,16 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             connectionFactory.CacheMode = CachingMode.CONNECTION;
             connectionFactory.ConnectionCacheSize = 1;
             connectionFactory.ChannelCacheSize = 3;
-            var connections = new List<IConnection>();
-            connections.Add(connectionFactory.CreateConnection());
-            connections.Add(connectionFactory.CreateConnection());
+            var connections = new List<IConnection>
+            {
+                connectionFactory.CreateConnection(),
+                connectionFactory.CreateConnection()
+            };
             var allocatedConnections = connectionFactory._allocatedConnections;
             Assert.Equal(2, allocatedConnections.Count);
             Assert.NotSame(connections[0], connections[1]);
             var channels = new List<IModel>();
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 channels.Add(connections[0].CreateChannel(false));
                 channels.Add(connections[1].CreateChannel(false));

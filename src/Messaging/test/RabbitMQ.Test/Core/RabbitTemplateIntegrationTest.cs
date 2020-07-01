@@ -1,16 +1,6 @@
-﻿// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Transaction;
@@ -23,6 +13,8 @@ using Steeltoe.Messaging.Rabbit.Support;
 using Steeltoe.Messaging.Rabbit.Support.Converter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -30,6 +22,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
+    [Trait("Category", "RequiresBroker")]
     public class RabbitTemplateIntegrationTest : IDisposable
     {
         public const string ROUTE = "test.queue.RabbitTemplateIntegrationTests";
@@ -38,15 +31,18 @@ namespace Steeltoe.Messaging.Rabbit.Core
         protected RabbitTemplate template;
         protected RabbitAdmin admin;
         protected string testName;
-        private Queue replyQueue = new Queue(REPLY_QUEUE_NAME);
-        private CachingConnectionFactory connectionFactory;
+        private readonly CachingConnectionFactory connectionFactory;
 
         public RabbitTemplateIntegrationTest()
         {
-            connectionFactory = new CachingConnectionFactory("localhost");
-            connectionFactory.IsPublisherReturns = true;
-            template = new RabbitTemplate(connectionFactory);
-            template.ReplyTimeout = 10000;
+            connectionFactory = new CachingConnectionFactory("localhost")
+            {
+                IsPublisherReturns = true
+            };
+            template = new RabbitTemplate(connectionFactory)
+            {
+                ReplyTimeout = 10000
+            };
             admin = new RabbitAdmin(connectionFactory);
             admin.DeclareQueue(new Queue(ROUTE));
             admin.DeclareQueue(new Queue(REPLY_QUEUE_NAME));
@@ -165,8 +161,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestReceiveConsumerCanceled()
         {
             var connectionFactory = new MockSingleConnectionFactory("localhost");
-            template = new RabbitTemplate(connectionFactory);
-            template.ReceiveTimeout = 10000;
+            template = new RabbitTemplate(connectionFactory)
+            {
+                ReceiveTimeout = 10000
+            };
             Assert.Throws<ConsumerCancelledException>(() => template.Receive(ROUTE));
         }
 
@@ -234,7 +232,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestReceiveBlockingGlobalTx()
         {
             template.ConvertAndSend(ROUTE, "blockGTXNoTO");
-            RabbitResourceHolder resourceHolder = ConnectionFactoryUtils
+            var resourceHolder = ConnectionFactoryUtils
                     .GetTransactionalResourceHolder(template.ConnectionFactory, true);
             TransactionSynchronizationManager.SetActualTransactionActive(true);
             ConnectionFactoryUtils.BindResourceToTransaction(resourceHolder, template.ConnectionFactory, true);
@@ -300,9 +298,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
         {
             template.Mandatory = true;
             var ex = Assert.Throws<RabbitMessageReturnedException>(() => template.ConvertSendAndReceive<string>(ROUTE + "xxxxxx", "undeliverable"));
-            var body = ex.ReturnedMessage.Payload as string;
+            var body = ex.ReturnedMessage.Payload as byte[];
             Assert.NotNull(body);
-            Assert.Equal("undeliverable", body);
+            Assert.Equal("undeliverable", EncodingUtils.Utf8.GetString(body));
             Assert.Contains(ex.ReplyText, "NO_ROUTE");
             Assert.Empty(template._replyHolder);
         }
@@ -322,8 +320,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestSendAndReceiveTransactedWithUncachedConnection()
         {
             var singleConnectionFactory = new SingleConnectionFactory("localhost");
-            RabbitTemplate template = new RabbitTemplate(singleConnectionFactory);
-            template.IsChannelTransacted = true;
+            var template = new RabbitTemplate(singleConnectionFactory)
+            {
+                IsChannelTransacted = true
+            };
             template.ConvertAndSend(ROUTE, "message");
             var result = template.ReceiveAndConvert<string>(ROUTE);
             Assert.Equal("message", result);
@@ -340,12 +340,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             // Rollback of manual receive is implicit because the channel is
             // closed...
-            Assert.Throws<PlannedException>(() => template.Execute((c) =>
+            var ex = Assert.Throws<RabbitUncategorizedException>(() => template.Execute((c) =>
             {
                 c.BasicGet(ROUTE, false);
                 c.BasicRecover(true);
                 throw new PlannedException();
             }));
+            Assert.IsType<PlannedException>(ex.InnerException);
             var result = template.ReceiveAndConvert<string>(ROUTE);
             Assert.Equal("message", result);
             result = template.ReceiveAndConvert<string>(ROUTE);
@@ -410,7 +411,8 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 new TransactionTemplate(new TestTransactionManager()).Execute(
                     status =>
                     {
-                        template.ReceiveAndConvert<string>(ROUTE);
+                        var result = template.ReceiveAndConvert<string>(ROUTE);
+                        Assert.NotNull(result);
                         throw new PlannedException();
                     });
             });
@@ -482,7 +484,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var cachingConnectionFactory = new CachingConnectionFactory("localhost");
             var template = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
             template.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
-            template.DefaultSendDestination = new RabbitDestination(ROUTE);
+            template.DefaultReceiveDestination = new RabbitDestination(ROUTE);
             var task = Task.Run<IMessage>(() =>
             {
                 IMessage message = null;
@@ -510,8 +512,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         protected RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
         {
-            var template = new RabbitTemplate(connectionFactory);
-            template.UseDirectReplyToContainer = false;
+            var template = new RabbitTemplate(connectionFactory)
+            {
+                UseDirectReplyToContainer = false
+            };
             return template;
         }
 
@@ -564,13 +568,16 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             public IMessage PostProcessMessage(IMessage message)
             {
-                var strings = message.Headers.Get<string[]>("strings");
+                var strings = message.Headers.Get<object>("strings") as List<object>;
+                Assert.NotNull(strings);
                 Assert.Contains("1", strings);
                 Assert.Contains("2", strings);
-                var objects = message.Headers.Get<object[]>("objects");
+                var objects = message.Headers.Get<object>("objects") as List<object>;
+                Assert.NotNull(objects);
                 Assert.Equal("FooAsAString", objects[0]);
                 Assert.Equal("FooAsAString", objects[1]);
-                var bytes = message.Headers.Get<byte[]>("bytes");
+                var asObjects = message.Headers.Get<object>("bytes") as List<object>;
+                var bytes = asObjects.Cast<byte>().ToArray();
                 Assert.Equal("abc", EncodingUtils.Utf8.GetString(bytes));
                 return message;
             }

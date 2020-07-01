@@ -45,10 +45,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         internal readonly LinkedList<ChannelCachingConnectionProxy> _idleConnections = new LinkedList<ChannelCachingConnectionProxy>();
         internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionNonTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
         internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionTransactionalChannels = new Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>>();
+        internal readonly ChannelCachingConnectionProxy _connection;
         internal bool _stopped;
 
         private const int DEFAULT_CHANNEL_CACHE_SIZE = 25;
-        internal readonly ChannelCachingConnectionProxy _connection;
+
         private readonly object _connectionMonitor = new object();
         private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new Dictionary<int, AtomicInteger>();
         private readonly AtomicInteger _connectionHighWaterMark = new AtomicInteger();
