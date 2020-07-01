@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging.DynamicLogger;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
@@ -22,6 +23,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using Xunit;
+using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -43,8 +45,11 @@ namespace Steeltoe.Management.Endpoint
             get
             {
                 Func<Type, bool> query = t => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(query).ToList();
-                types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(query));
+                Func<Type, bool> supportedOnPlatform = t => !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump"))
+                                                            || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows)
+                                                            || (t.Name.StartsWith("HeapDump") && EndpointServiceCollectionExtensions.IsHeapDumpSupported());
+                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(query).Where(supportedOnPlatform).ToList();
+                types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(query).Where(supportedOnPlatform));
                 var auths = new bool[] { true, false };
                 return from t in types
                        from a in auths
