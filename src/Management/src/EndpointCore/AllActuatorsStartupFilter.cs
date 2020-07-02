@@ -10,14 +10,23 @@ namespace Steeltoe.Management.Endpoint
 {
     public class AllActuatorsStartupFilter : IStartupFilter
     {
+        public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
+        {
+            _configureConventions = configureConventions;
+        }
+
+        private readonly Action<IEndpointConventionBuilder> _configureConventions;
+
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
                 next(app);
+
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapAllActuators();
+                    var builder = endpoints.MapAllActuators();
+                    _configureConventions?.Invoke(builder);
                 });
             };
         }

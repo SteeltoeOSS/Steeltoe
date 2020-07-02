@@ -45,13 +45,16 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
+                    if (!string.IsNullOrEmpty(opt.Id))
                     {
-                        links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Path));
-                    }
-                    else if (links._links.ContainsKey(opt.Id))
-                    {
-                        _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        if (!links._links.ContainsKey(opt.Id))
+                        {
+                            links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Path));
+                        }
+                        else if (links._links.ContainsKey(opt.Id))
+                        {
+                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        }
                     }
                 }
             }

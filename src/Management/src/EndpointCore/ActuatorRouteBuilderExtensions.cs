@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -54,19 +55,69 @@ namespace Steeltoe.Management.Endpoint
         /// Generic routebuilder extension for Actuators.
         /// </summary>
         /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
+        /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
         /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
         /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
-        public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints)
+        public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder = null)
         where TEndpoint : IEndpoint
+        {
+            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
+        }
+
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
+        {
+            var conventionBuilder = new EndpointCollectionConventionBuilder();
+            endpoints.Map<ActuatorEndpoint>(conventionBuilder);
+
+            if (Platform.IsWindows)
+            {
+                if (version == MediaTypeVersion.V2)
+                {
+                    endpoints.Map<ThreadDumpEndpoint_v2>(conventionBuilder);
+                }
+                else
+                {
+                    endpoints.Map<ThreadDumpEndpoint>(conventionBuilder);
+                }
+            }
+
+            if (Platform.IsWindows || Platform.IsLinux)
+            {
+                endpoints.Map<HeapDumpEndpoint>(conventionBuilder);
+            }
+
+            endpoints.Map<EnvEndpoint>(conventionBuilder);
+            endpoints.Map<RefreshEndpoint>(conventionBuilder);
+            endpoints.Map<InfoEndpoint>(conventionBuilder);
+            endpoints.Map<HealthEndpoint>(conventionBuilder);
+            endpoints.Map<LoggersEndpoint>(conventionBuilder);
+            if (version == MediaTypeVersion.V2)
+            {
+                endpoints.Map<HttpTraceEndpoint>(conventionBuilder);
+            }
+            else
+            {
+                endpoints.Map<TraceEndpoint>(conventionBuilder);
+            }
+
+            endpoints.Map<MappingsEndpoint>(conventionBuilder);
+            endpoints.Map<MetricsEndpoint>(conventionBuilder);
+            endpoints.Map<PrometheusScraperEndpoint>(conventionBuilder);
+
+            return conventionBuilder;
+        }
+
+        internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
         {
             if (endpoints == null)
             {
                 throw new ArgumentNullException(nameof(endpoints));
             }
 
-            var (middleware, optionsType) = LookupMiddleware(typeof(TEndpoint));
+            var (middleware, optionsType) = LookupMiddleware(typeEndpoint);
             var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
             var mgmtOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
+            var builder = conventionBuilder ?? new EndpointCollectionConventionBuilder();
 
             foreach (var mgmtOptions in mgmtOptionsCollection)
             {
@@ -83,47 +134,31 @@ namespace Steeltoe.Management.Endpoint
                     .Build();
                 var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
 
-                endpoints.MapMethods(fullPath, allowedVerbs, pipeline);
+                builder.AddConventionBuilder(endpoints.MapMethods(fullPath, allowedVerbs, pipeline));
             }
+
+            return builder;
+        }
+    }
+
+    /// <summary>
+    /// Represents a collection of ConventionBuilders which need the same convention applied to all of them.
+    /// </summary>
+    public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
+    {
+        private List<IEndpointConventionBuilder> conventionBuilders = new List<IEndpointConventionBuilder>();
+
+        public void AddConventionBuilder(IEndpointConventionBuilder builder)
+        {
+            conventionBuilders.Add(builder);
         }
 
-        public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
+        public void Add(Action<EndpointBuilder> convention)
         {
-            endpoints.Map<ActuatorEndpoint>();
-            if (Platform.IsWindows)
+            foreach (var conventionBuilder in conventionBuilders)
             {
-                if (version == MediaTypeVersion.V2)
-                {
-                    endpoints.Map<ThreadDumpEndpoint_v2>();
-                }
-                else
-                {
-                    endpoints.Map<ThreadDumpEndpoint>();
-                }
+                conventionBuilder.Add(convention);
             }
-
-            if (Platform.IsWindows || Platform.IsLinux)
-            {
-                endpoints.Map<HeapDumpEndpoint>();
-            }
-
-            endpoints.Map<EnvEndpoint>();
-            endpoints.Map<RefreshEndpoint>();
-            endpoints.Map<InfoEndpoint>();
-            endpoints.Map<HealthEndpoint>();
-            endpoints.Map<LoggersEndpoint>();
-            if (version == MediaTypeVersion.V2)
-            {
-                endpoints.Map<HttpTraceEndpoint>();
-            }
-            else
-            {
-                endpoints.Map<TraceEndpoint>();
-            }
-
-            endpoints.Map<MappingsEndpoint>();
-            endpoints.Map<MetricsEndpoint>();
-            endpoints.Map<PrometheusScraperEndpoint>();
         }
     }
 }

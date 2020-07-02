@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
@@ -504,7 +505,25 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddaLLActuators_IHostBuilder()
+        public async Task AddAllActuatorsWithConventions_IHostBuilder_IStartupFilterFires()
+        {
+            // Arrange
+            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithSecureRouting);
+
+            // Act
+            var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
+
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+        }
+
+        [Fact]
+        public void AddAllActuators_IHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -534,5 +553,15 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        private Action<IWebHostBuilder> testServerWithSecureRouting =
+            builder => builder.UseTestServer()
+            .ConfigureServices(s =>
+            {
+                s.AddRouting();
+                s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
+                .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
+                s.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
+            })
+            .Configure(a => a.UseRouting().UseAuthentication().UseAuthorization());
     }
 }
