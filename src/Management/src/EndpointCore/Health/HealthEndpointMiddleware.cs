@@ -5,16 +5,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
-using Steeltoe.Management.EndpointCore;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
-    public class HealthEndpointMiddleware : EndpointMiddleware<HealthCheckResult, ISecurityContext>
+    public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointResponse, ISecurityContext>
     {
         private readonly RequestDelegate _next;
 

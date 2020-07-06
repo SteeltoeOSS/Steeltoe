@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using NSubstitute;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
+using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -86,6 +90,67 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
             Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
             Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+        }
+
+        [Fact]
+        public void InvokeWithLivenessGroupReturnsGroupResults()
+        {
+            // arrange
+            var opts = new HealthEndpointOptions();
+            var appAvailability = new ApplicationAvailability();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var context = Substitute.For<ISecurityContext>();
+            context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
+            appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
+
+            // act
+            var result = ep.Invoke(context);
+
+            // assert
+            Assert.Equal(HealthStatus.UP, result.Status);
+            Assert.True(result.Details.Keys.Count == 1);
+            Assert.True(result.Groups.Count() == 2);
+        }
+
+        [Fact]
+        public void InvokeWithReadinessGroupReturnsGroupResults()
+        {
+            // arrange
+            var opts = new HealthEndpointOptions();
+            var appAvailability = new ApplicationAvailability();
+            var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var context = Substitute.For<ISecurityContext>();
+            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+            appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+
+            // act
+            var result = ep.Invoke(context);
+
+            // assert
+            Assert.Equal(HealthStatus.UP, result.Status);
+            Assert.True(result.Details.Keys.Count == 1);
+            Assert.True(result.Groups.Count() == 2);
+        }
+
+        [Fact]
+        public void InvokeWithInvalidGroupReturnsAllContributors()
+        {
+            // arrange
+            var opts = new HealthEndpointOptions();
+            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
+            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            var context = Substitute.For<ISecurityContext>();
+            context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
+
+            // act
+            var result = ep.Invoke(context);
+
+            // assert
+            Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+            Assert.True(result.Details.Keys.Count == 4);
+            Assert.True(result.Groups.Count() == 2);
         }
     }
 }

@@ -7,13 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.Console;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 using System;
-using System.Linq;
 
 namespace Steeltoe.Management.CloudFoundry
 {
@@ -48,7 +44,7 @@ namespace Steeltoe.Management.CloudFoundry
         public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return webHostBuilder
-                .ConfigureLogging(ConfigureDynamicLogging)
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
                 .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 
@@ -61,31 +57,9 @@ namespace Steeltoe.Management.CloudFoundry
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return hostBuilder
-                .ConfigureLogging(ConfigureDynamicLogging)
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
                 .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
-
-        private static readonly Action<ILoggingBuilder> ConfigureDynamicLogging = (logbuilder) =>
-        {
-            var dynamicDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IDynamicLoggerProvider));
-            if (dynamicDescriptor == null)
-            {
-                // remove the original ConsoleLoggerProvider to prevent duplicate logging
-                var serviceDescriptor = logbuilder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-                if (serviceDescriptor != null)
-                {
-                    logbuilder.Services.Remove(serviceDescriptor);
-                }
-
-                // make sure logger provider configurations are available
-                if (!logbuilder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-                {
-                    logbuilder.AddConfiguration();
-                }
-
-                logbuilder.AddDynamicConsole();
-            }
-        };
 
         private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
         {

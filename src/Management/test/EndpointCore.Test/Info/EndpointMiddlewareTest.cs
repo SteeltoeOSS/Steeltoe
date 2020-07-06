@@ -11,6 +11,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -64,39 +65,37 @@ namespace Steeltoe.Management.Endpoint.Info.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/management/infomanagement");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(json);
-                Assert.NotNull(dict);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/management/infomanagement");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+            var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(json);
+            Assert.NotNull(dict);
 
-                Assert.Equal(3, dict.Count);
-                Assert.True(dict.ContainsKey("application"));
-                Assert.True(dict.ContainsKey("NET"));
-                Assert.True(dict.ContainsKey("git"));
+            Assert.Equal(5, dict.Count);
+            Assert.True(dict.ContainsKey("application"));
+            Assert.True(dict.ContainsKey("NET"));
+            Assert.True(dict.ContainsKey("git"));
 
-                var appNode = dict["application"] as Dictionary<string, object>;
-                Assert.NotNull(appNode);
-                Assert.Equal("foobar", appNode["name"]);
+            var appNode = dict["application"] as Dictionary<string, object>;
+            Assert.NotNull(appNode);
+            Assert.Equal("foobar", appNode["name"]);
 
-                var netNode = dict["NET"] as Dictionary<string, object>;
-                Assert.NotNull(netNode);
-                Assert.Equal("Core", netNode["type"]);
+            var netNode = dict["NET"] as Dictionary<string, object>;
+            Assert.NotNull(netNode);
+            Assert.Equal("Core", netNode["type"]);
 
-                var gitNode = dict["git"] as Dictionary<string, object>;
-                Assert.NotNull(gitNode);
-                Assert.True(gitNode.ContainsKey("build"));
-                Assert.True(gitNode.ContainsKey("branch"));
-                Assert.True(gitNode.ContainsKey("commit"));
-                Assert.True(gitNode.ContainsKey("closest"));
-                Assert.True(gitNode.ContainsKey("dirty"));
-                Assert.True(gitNode.ContainsKey("remote"));
-                Assert.True(gitNode.ContainsKey("tags"));
-            }
+            var gitNode = dict["git"] as Dictionary<string, object>;
+            Assert.NotNull(gitNode);
+            Assert.True(gitNode.ContainsKey("build"));
+            Assert.True(gitNode.ContainsKey("branch"));
+            Assert.True(gitNode.ContainsKey("commit"));
+            Assert.True(gitNode.ContainsKey("closest"));
+            Assert.True(gitNode.ContainsKey("dirty"));
+            Assert.True(gitNode.ContainsKey("remote"));
+            Assert.True(gitNode.ContainsKey("tags"));
         }
 
         [Fact]

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
@@ -21,17 +22,15 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthActuator_ThrowsOnNulls()
         {
             // Arrange
-            IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
-            IConfigurationRoot config2 = new ConfigurationBuilder().Build();
+            var config2 = new ConfigurationBuilder().Build();
             IHealthAggregator aggregator = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
+            Assert.Contains("services", ex.Message);
+            var ex2 = Assert.Throws<InvalidOperationException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2));
+            Assert.Equal("No service for type 'Microsoft.Extensions.Configuration.IConfiguration' has been registered.", ex2.Message);
             var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
             Assert.Contains(nameof(aggregator), ex3.Message);
         }
@@ -93,7 +92,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
-            Assert.Single(contribsList);
+            Assert.Equal(3, contribsList.Count);
+            var availability = serviceProvider.GetService<ApplicationAvailability>();
+            Assert.NotNull(availability);
         }
 
         [Fact]

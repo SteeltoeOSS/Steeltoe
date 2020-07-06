@@ -16,9 +16,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         {
         }
 
-        public override HealthCheckResult Invoke(ISecurityContext securityContext)
+        public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
         {
-            return new HealthCheckResult();
+            return new HealthEndpointResponse(null);
         }
     }
 }

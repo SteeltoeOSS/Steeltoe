@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using System.IO;

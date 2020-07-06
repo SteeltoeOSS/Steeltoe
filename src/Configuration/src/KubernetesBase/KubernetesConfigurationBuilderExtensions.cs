@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 var lowercaseAppName = appInfo.Name.ToLowerInvariant();
                 var lowercaseAppEnvName = (appInfo.Name + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
 
-                var k8sClient = KubernetesClientHelpers.GetKubernetesClient(configurationBuilder.Build(), appInfo, kubernetesClientConfiguration, logger);
+                var k8sClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
 
                 if (appInfo.Config.Enabled)
                 {

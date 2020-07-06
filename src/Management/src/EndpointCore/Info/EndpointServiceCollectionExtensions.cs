@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 
@@ -19,9 +20,18 @@ namespace Steeltoe.Management.Endpoint.Info
         /// </summary>
         /// <param name="services">Service collection to add info to</param>
         /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:info)</param>
-        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null)
         {
-            services.AddInfoActuator(config, new GitInfoContributor(), new AppSettingsInfoContributor(config));
+            var serviceProvider = services.BuildServiceProvider();
+            config ??= serviceProvider.GetRequiredService<IConfiguration>();
+            var otherInfoContributors = serviceProvider.GetServices<IInfoContributor>();
+            var allContributors = new List<IInfoContributor> { new GitInfoContributor(), new AppSettingsInfoContributor(config), new BuildInfoContributor() };
+            foreach (var o in otherInfoContributors)
+            {
+                allContributors.Add(o);
+            }
+
+            services.AddInfoActuator(config, allContributors.ToArray());
         }
 
         /// <summary>
@@ -53,10 +63,10 @@ namespace Steeltoe.Management.Endpoint.Info
 
         private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)
         {
-            List<ServiceDescriptor> descriptors = new List<ServiceDescriptor>();
+            var descriptors = new List<ServiceDescriptor>();
             foreach (var instance in contributors)
             {
-                descriptors.Add(ServiceDescriptor.Singleton<IInfoContributor>(instance));
+                descriptors.Add(ServiceDescriptor.Singleton(instance));
             }
 
             services.TryAddEnumerable(descriptors);

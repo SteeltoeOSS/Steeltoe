@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
+using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -17,6 +19,9 @@ namespace Steeltoe.Management.Endpoint.Health
         {
             Id = "health";
             RequiredPermissions = Permissions.RESTRICTED;
+            ExactMatch = false;
+
+            AddDefaultGroups();
         }
 
         public HealthEndpointOptions(IConfiguration config)
@@ -40,6 +45,23 @@ namespace Steeltoe.Management.Endpoint.Health
                     Value = Role
                 };
             }
+
+            ExactMatch = false;
+
+            AddDefaultGroups();
+        }
+
+        private void AddDefaultGroups()
+        {
+            if (!Groups.ContainsKey("liveness"))
+            {
+                Groups.Add("liveness", new HealthGroupOptions { Include = "liveness" });
+            }
+
+            if (!Groups.ContainsKey("readiness"))
+            {
+                Groups.Add("readiness", new HealthGroupOptions { Include = "readiness" });
+            }
         }
 
         public ShowDetails ShowDetails { get; set; }
@@ -47,5 +69,7 @@ namespace Steeltoe.Management.Endpoint.Health
         public EndpointClaim Claim { get; set; }
 
         public string Role { get; set; }
+
+        public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new Dictionary<string, HealthGroupOptions>(StringComparer.InvariantCultureIgnoreCase);
     }
 }
