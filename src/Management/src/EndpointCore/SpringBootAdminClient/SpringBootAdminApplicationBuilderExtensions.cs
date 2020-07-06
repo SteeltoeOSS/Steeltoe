@@ -8,9 +8,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 
@@ -50,21 +51,28 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             var app = new Application()
             {
                 Name = options.ApplicationName ?? "Steeltoe",
-                HealthUrl = new Uri($"{basePath}/{mgmtOptions.Path}/{healthOptions.Path}"),
-                ManagementUrl = new Uri($"{basePath}/{mgmtOptions.Path}"),
+                HealthUrl = new Uri($"{basePath}{mgmtOptions.Path}/{healthOptions.Path}"),
+                ManagementUrl = new Uri($"{basePath}{mgmtOptions.Path}"),
                 ServiceUrl = new Uri($"{basePath}/"),
-                Metadata = new Metadata() { Startup = DateTime.Now }
+                Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
             };
+
+            app.Metadata.Merge(options.Metadata);
+
             var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
             lifetime.ApplicationStarted.Register(() =>
             {
                 logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
-                httpClient ??= HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
+                httpClient ??= Common.Http.HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
 
                 var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
                 if (result.IsSuccessStatusCode)
                 {
-                    RegistrationResult = result.Content.ReadAsJsonAsync<RegistrationResult>().GetAwaiter().GetResult();
+                    RegistrationResult = result.Content.ReadFromJsonAsync<RegistrationResult>().GetAwaiter().GetResult();
+                }
+                else
+                {
+                    logger.LogError($"Error registering with SpringBootAdmin {result}");
                 }
             });
 
@@ -75,9 +83,12 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                     return;
                 }
 
-                httpClient ??= HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
+                httpClient ??= Common.Http.HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
                 _ = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").GetAwaiter().GetResult();
             });
         }
+
+        private static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
+            from?.ToList().ForEach(item => to.Add(item));
     }
 }
