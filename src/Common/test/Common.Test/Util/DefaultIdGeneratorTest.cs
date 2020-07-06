@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Util.Test
         [Fact]
         public void TestGenerateId()
         {
-            Assert.NotEqual(default(Guid), new DefaultIdGenerator().GenerateId());
+            Assert.NotEqual(default(Guid).ToString(), new DefaultIdGenerator().GenerateId());
         }
     }
 }

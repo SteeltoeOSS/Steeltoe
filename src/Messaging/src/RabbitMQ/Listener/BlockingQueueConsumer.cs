@@ -28,8 +28,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public class BlockingQueueConsumer
     {
-        private static int DEFAULT_DECLARATION_RETRIES = 3;
-        private static int DEFAULT_RETRY_DECLARATION_INTERVAL = 60000;
+        private const int DEFAULT_DECLARATION_RETRIES = 3;
+        private const int DEFAULT_RETRY_DECLARATION_INTERVAL = 60000;
 
         public BlockingQueueConsumer(
             IConnectionFactory connectionFactory,

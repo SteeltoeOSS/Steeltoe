@@ -447,12 +447,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var properties = args.BasicProperties;
             var messageProperties = _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
-            if (properties.Headers.TryGetValue(RETURNED_MESSAGE_CORRELATION_KEY, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm))
+            if (properties.Headers.TryGetValue(RETURNED_MESSAGE_CORRELATION_KEY, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm) && confirm.CorrelationInfo != null)
             {
-                if (confirm.CorrelationInfo != null)
-                {
-                    confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
-                }
+                confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
             }
 
             string uuidObject = messageProperties.Get<string>(RETURN_LISTENER_CORRELATION_KEY);
