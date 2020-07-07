@@ -14,6 +14,7 @@ using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
