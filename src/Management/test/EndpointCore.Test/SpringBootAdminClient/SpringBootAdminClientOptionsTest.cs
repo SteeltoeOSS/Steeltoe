@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
             Assert.Equal("http://localhost:8080", opts.BasePath);
             Assert.Equal("http://springbootadmin:9090", opts.Url);
 
-            Assert.Contains(new KeyValuePair<string,object>("user.name", "userName"), opts.Metadata);
+            Assert.Contains(new KeyValuePair<string, object>("user.name", "userName"), opts.Metadata);
             Assert.Contains(new KeyValuePair<string, object>("user.password", "userPassword"), opts.Metadata);
         }
 
