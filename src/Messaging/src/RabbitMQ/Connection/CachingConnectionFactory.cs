@@ -501,19 +501,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         }
 
         // Used in unit test
-        internal int CountOpenConnections()
-        {
-            var n = 0;
-            foreach (var proxy in _allocatedConnections)
-            {
-                if (proxy.IsOpen)
-                {
-                    n++;
-                }
-            }
-
-            return n;
-        }
+        internal int CountOpenConnections() => _allocatedConnections.Count(conn => conn.IsOpen);
 
         #region Protected
 
