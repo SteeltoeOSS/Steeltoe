@@ -34,21 +34,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public bool IsAutoStartup => true;
 
-        public bool IsRunning
-        {
-            get
-            {
-                foreach (var listenerContainer in GetListenerContainers())
-                {
-                    if (listenerContainer.IsRunning)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
+        public bool IsRunning => GetListenerContainers().Any(listener => listener.IsRunning);
 
         public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
