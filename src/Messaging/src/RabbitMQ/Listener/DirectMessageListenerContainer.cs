@@ -340,21 +340,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     throw new InvalidOperationException("Listener expects queues that the container is not listening on");
                 }
 
-                var found = false;
-                foreach (var queueName in queueNames)
-                {
-                    if (expectedQueueNames.Contains(queueName))
-                    {
-                        found = true;
-                    }
-                    else
-                    {
-                        found = false;
-                        break;
-                    }
-                }
-
-                if (!found)
+                if (!queueNames.Any(name => expectedQueueNames.Contains(name)))
                 {
                     throw new InvalidOperationException("Listener expects queues that the container is not listening on");
                 }
