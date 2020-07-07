@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
@@ -22,15 +23,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
         public Uri ServiceUrl { get; set; }
 
         [JsonPropertyName("metadata")]
-        public Metadata Metadata { get; set; }
-    }
-
-#pragma warning disable SA1402 // File may only contain a single type
-    internal class Metadata
-#pragma warning restore SA1402 // File may only contain a single type
-    {
-        [JsonPropertyName("startup")]
-        public DateTimeOffset Startup { get; set; }
+        public Dictionary<string, object> Metadata { get; set; }
     }
 
 #pragma warning disable SA1402 // File may only contain a single type

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
@@ -19,6 +20,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
         public string ApplicationName { get; set; }
 
         public string BasePath { get; set; }
+
+        public Dictionary<string, object> Metadata { get; set; }
 
         public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
         {
