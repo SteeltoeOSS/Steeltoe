@@ -9,11 +9,18 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
-    public class RabbitListenerEndpointRegistrar
+    public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistrar);
+
         private readonly List<AmqpListenerEndpointDescriptor> _endpointDescriptors = new List<AmqpListenerEndpointDescriptor>();
 
-        public RabbitListenerEndpointRegistry EndpointRegistry { get; set; }
+        public RabbitListenerEndpointRegistrar(IMessageHandlerMethodFactory messageHandlerMethodFactory = null)
+        {
+            MessageHandlerMethodFactory = messageHandlerMethodFactory;
+        }
+
+        public IRabbitListenerEndpointRegistry EndpointRegistry { get; set; }
 
         public IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
 
@@ -24,6 +31,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         public IApplicationContext ApplicationContext { get; set; }
 
         public bool StartImmediately { get; set; }
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public void Initialize()
         {

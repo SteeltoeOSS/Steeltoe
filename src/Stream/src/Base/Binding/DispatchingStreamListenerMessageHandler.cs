@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
@@ -17,10 +18,10 @@ namespace Steeltoe.Stream.Binding
         private readonly IEvaluationContext _evaluationContext;
 
         internal DispatchingStreamListenerMessageHandler(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             ICollection<ConditionalStreamListenerMessageHandlerWrapper> handlerMethods,
             IEvaluationContext evaluationContext = null)
-            : base(serviceProvider)
+            : base(context)
         {
             if (handlerMethods == null || handlerMethods.Count == 0)
             {

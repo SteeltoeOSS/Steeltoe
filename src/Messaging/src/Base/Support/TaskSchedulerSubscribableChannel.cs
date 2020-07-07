@@ -197,7 +197,7 @@ namespace Steeltoe.Messaging.Support
                     if (messageToUse == null)
                     {
                         var name = interceptor.GetType().Name;
-                        channel.Logger?.LogDebug(name + " returned null from beforeHandle, i.e. precluding the send.");
+                        channel.Logger?.LogDebug("{name} returned null from beforeHandle, i.e. precluding the send.", name);
                         TriggerAfterMessageHandled(message, null);
                         return null;
                     }
@@ -224,7 +224,7 @@ namespace Steeltoe.Messaging.Support
                     }
                     catch (Exception ex2)
                     {
-                        channel.Logger?.LogError("Exception from afterMessageHandled in " + interceptor, ex2);
+                        channel.Logger?.LogError(ex2, "Exception from afterMessageHandled in {interceptor}", interceptor);
                     }
                 }
             }

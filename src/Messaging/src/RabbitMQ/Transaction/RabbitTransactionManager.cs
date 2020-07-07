@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.Rabbit.Transaction
             try
             {
                 resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, true);
-                _logger?.LogDebug("Created AMQP transaction on channel [" + resourceHolder.GetChannel() + "]");
+                _logger?.LogDebug("Created AMQP transaction on channel [{channel}]", resourceHolder.GetChannel());
 
                 txObject.ResourceHolder = resourceHolder;
                 txObject.ResourceHolder.SynchronizedWithTransaction = true;
@@ -68,7 +68,7 @@ namespace Steeltoe.Messaging.Rabbit.Transaction
 
                 TransactionSynchronizationManager.BindResource(ConnectionFactory, txObject.ResourceHolder);
             }
-            catch (AmqpException ex)
+            catch (RabbitException ex)
             {
                 if (resourceHolder != null)
                 {

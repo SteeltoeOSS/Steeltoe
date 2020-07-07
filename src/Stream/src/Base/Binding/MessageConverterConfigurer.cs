@@ -351,7 +351,7 @@ namespace Steeltoe.Stream.Binding
         internal readonly IBindingOptions _bindingOptions;
 
         internal readonly PartitionHandler _partitionHandler;
-        internal readonly IMessageBuilderFactory _messageBuilderFactory = new MutableMessageBuilderFactory();
+        internal readonly IMessageBuilderFactory _messageBuilderFactory = new MutableIntegrationMessageBuilderFactory();
 
         public PartitioningInterceptor(IExpressionParser expressionParser, IEvaluationContext evaluationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
         {

@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -21,20 +23,23 @@ namespace Steeltoe.Integration.Handler.Test
         public BridgeHandlerTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             provider = services.BuildServiceProvider();
-            handler = new BridgeHandler(provider);
+            handler = new BridgeHandler(provider.GetService<IApplicationContext>());
         }
 
         [Fact]
         public void SimpleBridge()
         {
-            var outputChannel = new QueueChannel(provider);
+            var outputChannel = new QueueChannel(provider.GetService<IApplicationContext>());
             handler.OutputChannel = outputChannel;
-            var request = new GenericMessage("test");
+            var request = Message.Create("test");
             handler.HandleMessage(request);
             var reply = outputChannel.Receive(0);
             Assert.NotNull(reply);
@@ -45,7 +50,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void MissingOutputChannelVerifiedAtRuntime()
         {
-            var request = new GenericMessage("test");
+            var request = Message.Create("test");
             var ex = Assert.Throws<MessageHandlingException>(() => handler.HandleMessage(request));
             Assert.IsType<DestinationResolutionException>(ex.InnerException);
         }
@@ -53,8 +58,8 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void MissingOutputChannelAllowedForReplyChannelMessages()
         {
-            var replyChannel = new QueueChannel(provider);
-            var request = Integration.Support.MessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
+            var replyChannel = new QueueChannel(provider.GetService<IApplicationContext>());
+            var request = Integration.Support.IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
             handler.HandleMessage(request);
             var reply = replyChannel.Receive();
             Assert.NotNull(reply);

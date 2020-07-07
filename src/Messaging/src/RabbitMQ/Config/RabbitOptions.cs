@@ -25,7 +25,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
             Cache = new CacheOptions();
             Listener = new ListenerOptions();
             Template = new TemplateOptions();
-            Cache = new CacheOptions();
         }
 
         public string Host { get; set; } = DEFAULT_HOST;
@@ -219,7 +218,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
             public int? Prefetch { get; set; }
 
-            public bool DefaultRequeueRejected { get; set; }
+            public bool DefaultRequeueRejected { get; set; } = true;
 
             public TimeSpan? IdleEventInterval { get; set; }
 
@@ -228,6 +227,8 @@ namespace Steeltoe.Messaging.Rabbit.Config
             public bool MissingQueuesFatal { get; set; } = false;
 
             public int? ConsumersPerQueue { get; set; }
+
+            public bool PossibleAuthenticationFailureFatal { get; set; } = true;
         }
 
         public class RetryOptions

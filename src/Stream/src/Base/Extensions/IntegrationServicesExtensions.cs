@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Attributes;
@@ -38,14 +39,14 @@ namespace Steeltoe.Stream.Extensions
 
             services.AddSingleton<IMessageChannel>((p) =>
            {
-               return new PublishSubscribeChannel(p, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+               return new PublishSubscribeChannel(p.GetService<IApplicationContext>(), IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
            });
             services.AddSingleton<ILifecycle>((p) =>
            {
                var logger = p.GetRequiredService<ILogger<LoggingHandler>>();
-               var handler = new LoggingHandler(p, LogLevel.Error, logger);
-               var chan = GetRequiredChannel<ISubscribableChannel>(p, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
-               return new EventDrivenConsumerEndpoint(p, chan, handler);
+               var handler = new LoggingHandler(p.GetService<IApplicationContext>(), LogLevel.Error, logger);
+               var chan = GetRequiredChannel<ISubscribableChannel>(p.GetService<IApplicationContext>(), IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+               return new EventDrivenConsumerEndpoint(p.GetService<IApplicationContext>(), chan, handler);
            });
 
             // SpringIntegrationProperties
@@ -102,10 +103,10 @@ namespace Steeltoe.Stream.Extensions
         //    services.AddStreamListener(method, attribute);
         //    return services;
         // }
-        private static T GetRequiredChannel<T>(IServiceProvider services, string name)
+        private static T GetRequiredChannel<T>(IApplicationContext context, string name)
             where T : class
         {
-            T result = services.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.Name == name) as T;
+            T result = context.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.ServiceName == name) as T;
 
             if (result == null)
             {

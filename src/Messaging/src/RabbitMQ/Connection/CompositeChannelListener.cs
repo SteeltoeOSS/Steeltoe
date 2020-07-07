@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Collections.Generic;
 
@@ -10,11 +11,18 @@ namespace Steeltoe.Messaging.Rabbit.Connection
     public class CompositeChannelListener : IChannelListener
     {
         private readonly object _lock = new object();
+        private readonly ILogger _logger;
 
         private List<IChannelListener> _channelListeners = new List<IChannelListener>();
 
+        public CompositeChannelListener(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
         public void OnCreate(IModel channel, bool transactional)
         {
+            _logger?.LogDebug("OnCreate");
             var listeners = _channelListeners;
             foreach (var listener in listeners)
             {
@@ -24,6 +32,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public void OnShutDown(ShutdownEventArgs @event)
         {
+            _logger?.LogDebug("OnShutDown");
             var listeners = _channelListeners;
             foreach (var listener in listeners)
             {

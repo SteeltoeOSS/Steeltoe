@@ -19,7 +19,7 @@ namespace Steeltoe.Stream.Config
         {
             var resolver = new SmartPayloadArgumentResolver(new TestMessageConverter());
             var payload = Encoding.UTF8.GetBytes("hello");
-            var message = new GenericMessage(payload);
+            var message = Message.Create(payload);
             var parameter = this.GetType().GetMethod("ByteArray").GetParameters()[0];
             var resolvedArgument = resolver.ResolveArgument(parameter, message);
             Assert.Same(payload, resolvedArgument);
@@ -29,7 +29,7 @@ namespace Steeltoe.Stream.Config
             Assert.True(resolvedArgument is IMessage);
 
             var payload2 = new Dictionary<object, object>();
-            var message2 = new GenericMessage(payload2);
+            var message2 = Message.Create(payload2);
             parameter = this.GetType().GetMethod("Dict").GetParameters()[0];
             resolvedArgument = resolver.ResolveArgument(parameter, message2);
             Assert.Same(payload2, resolvedArgument);
@@ -59,6 +59,10 @@ namespace Steeltoe.Stream.Config
 
         private class TestMessageConverter : IMessageConverter
         {
+            public const string DEFAULT_SERVICE_NAME = nameof(TestMessageConverter);
+
+            public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
             public object FromMessage(IMessage message, Type targetClass)
             {
                 return message;
@@ -71,7 +75,7 @@ namespace Steeltoe.Stream.Config
 
             public IMessage ToMessage(object payload, IMessageHeaders headers = null)
             {
-                return new GenericMessage(payload);
+                return Message.Create(payload);
             }
         }
     }

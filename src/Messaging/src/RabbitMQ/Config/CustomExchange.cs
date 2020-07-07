@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class CustomExchange : AbstractExchange
+    public class CustomExchange : AbstractExchange, ICustomExchange
     {
         public CustomExchange(string name, string type)
         : base(name)

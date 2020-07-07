@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
@@ -14,13 +15,13 @@ namespace Steeltoe.Stream.TestBinder
     public class TestChannelBinderProvisioner : IProvisioningProvider
     {
         private readonly Dictionary<string, ISubscribableChannel> provisionedDestinations = new Dictionary<string, ISubscribableChannel>();
-        private readonly IServiceProvider serviceProvider;
+        private readonly IApplicationContext context;
 
-        public TestChannelBinderProvisioner(IServiceProvider serviceProvider, InputDestination inputDestination, OutputDestination outputDestination)
+        public TestChannelBinderProvisioner(IApplicationContext context, InputDestination inputDestination, OutputDestination outputDestination)
         {
             InputDestination = inputDestination;
             OutputDestination = outputDestination;
-            this.serviceProvider = serviceProvider;
+            this.context = context;
         }
 
         public InputDestination InputDestination { get; }
@@ -53,14 +54,14 @@ namespace Steeltoe.Stream.TestBinder
             {
                 if (pubSub)
                 {
-                    destination = new PublishSubscribeChannel(serviceProvider);
+                    destination = new PublishSubscribeChannel(context);
                 }
                 else
                 {
-                    destination = new DirectChannel(serviceProvider);
+                    destination = new DirectChannel(context);
                 }
 
-                ((AbstractMessageChannel)destination).Name = destinationName;
+                ((AbstractMessageChannel)destination).ServiceName = destinationName;
                 provisionedDestinations.Add(destinationName, destination);
             }
 

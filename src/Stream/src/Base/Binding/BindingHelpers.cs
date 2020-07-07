@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Stream.Attributes;
 using System;
@@ -13,14 +14,14 @@ namespace Steeltoe.Stream.Binding
 {
     public static class BindingHelpers
     {
-        public static T GetBindable<T>(IServiceProvider provider, string name)
+        public static T GetBindable<T>(IApplicationContext context, string name)
         {
-            return (T)GetBindableTarget(provider, name);
+            return (T)GetBindableTarget(context, name);
         }
 
-        public static object GetBindableTarget(IServiceProvider provider, string name)
+        public static object GetBindableTarget(IApplicationContext context, string name)
         {
-            var registry = provider.GetRequiredService<IDestinationRegistry>();
+            var registry = context.GetService<IDestinationRegistry>();
             return registry.Lookup(name);
         }
 

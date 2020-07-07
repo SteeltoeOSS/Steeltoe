@@ -14,8 +14,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void Resolve()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON }
+            };
             var headers = new MessageHeaders(map);
             var resolver = new DefaultContentTypeResolver();
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));
@@ -24,8 +26,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ResolvestringContentType()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON_VALUE);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON_VALUE }
+            };
             var headers = new MessageHeaders(map);
             var resolver = new DefaultContentTypeResolver();
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));
@@ -34,8 +38,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ResolveInvalidstringContentType()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, "invalidContentType");
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, "invalidContentType" }
+            };
             var headers = new MessageHeaders(map);
             var resolver = new DefaultContentTypeResolver();
             Assert.Throws<ArgumentException>(() => resolver.Resolve(headers));
@@ -44,8 +50,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ResolveUnknownHeaderType()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, 1);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, 1 }
+            };
             var headers = new MessageHeaders(map);
             var resolver = new DefaultContentTypeResolver();
             Assert.Throws<ArgumentException>(() => resolver.Resolve(headers));
@@ -62,8 +70,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ResolveDefaultMimeType()
         {
-            var resolver = new DefaultContentTypeResolver();
-            resolver.DefaultMimeType = MimeTypeUtils.APPLICATION_JSON;
+            var resolver = new DefaultContentTypeResolver
+            {
+                DefaultMimeType = MimeTypeUtils.APPLICATION_JSON
+            };
             var headers = new MessageHeaders(new Dictionary<string, object>());
 
             Assert.Equal(MimeTypeUtils.APPLICATION_JSON, resolver.Resolve(headers));

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
 using System;
@@ -15,18 +16,18 @@ namespace Steeltoe.Integration.Channel
     /// </summary>
     public class DirectChannel : AbstractSubscribableChannel
     {
-        public DirectChannel(IServiceProvider serviceProvider, ILogger logger = null)
-            : this(serviceProvider, new RoundRobinLoadBalancingStrategy(), null, logger)
+        public DirectChannel(IApplicationContext context, ILogger logger = null)
+            : this(context, new RoundRobinLoadBalancingStrategy(), null, logger)
         {
         }
 
-        public DirectChannel(IServiceProvider serviceProvider, string name, ILogger logger = null)
-            : this(serviceProvider, new RoundRobinLoadBalancingStrategy(), name, logger)
+        public DirectChannel(IApplicationContext context, string name, ILogger logger = null)
+            : this(context, new RoundRobinLoadBalancingStrategy(), name, logger)
         {
         }
 
-        public DirectChannel(IServiceProvider serviceProvider, ILoadBalancingStrategy loadBalancingStrategy, string name, ILogger logger = null)
-            : base(serviceProvider, new UnicastingDispatcher(serviceProvider), name, logger)
+        public DirectChannel(IApplicationContext context, ILoadBalancingStrategy loadBalancingStrategy, string name, ILogger logger = null)
+            : base(context, new UnicastingDispatcher(context), name, logger)
         {
             Dispatcher.LoadBalancingStrategy = loadBalancingStrategy;
             Dispatcher.MaxSubscribers = int.MaxValue;

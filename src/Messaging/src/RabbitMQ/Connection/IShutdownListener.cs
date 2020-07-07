@@ -9,6 +9,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
     // TODO: This is an RabbitMQ type
     public interface IShutdownListener
     {
-        void ShutdownCompleted(object sender, ShutdownEventArgs args);
+        void ChannelShutdownCompleted(object sender, ShutdownEventArgs args);
     }
 }

@@ -9,6 +9,8 @@ namespace Steeltoe.Messaging.Converter
 {
     public class CompositeMessageConverter : ISmartMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(CompositeMessageConverter);
+
         public CompositeMessageConverter(ICollection<IMessageConverter> converters)
         {
             if (converters == null || converters.Count == 0)
@@ -18,6 +20,8 @@ namespace Steeltoe.Messaging.Converter
 
             Converters = new List<IMessageConverter>(converters);
         }
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public object FromMessage(IMessage message, Type targetClass)
         {
@@ -33,7 +37,7 @@ namespace Steeltoe.Messaging.Converter
             return null;
         }
 
-        public object FromMessage(IMessage message, Type targetClass, object conversionHint = null)
+        public object FromMessage(IMessage message, Type targetClass, object conversionHint)
         {
             foreach (var converter in Converters)
             {
@@ -49,7 +53,7 @@ namespace Steeltoe.Messaging.Converter
             return null;
         }
 
-        public T FromMessage<T>(IMessage message, object conversionHint = null)
+        public T FromMessage<T>(IMessage message, object conversionHint)
         {
             return (T)FromMessage(message, typeof(T), conversionHint);
         }
@@ -59,7 +63,7 @@ namespace Steeltoe.Messaging.Converter
             return (T)FromMessage(message, typeof(T), null);
         }
 
-        public IMessage ToMessage(object payload, IMessageHeaders headers = null)
+        public IMessage ToMessage(object payload, IMessageHeaders headers)
         {
             foreach (var converter in Converters)
             {
@@ -73,7 +77,7 @@ namespace Steeltoe.Messaging.Converter
             return null;
         }
 
-        public IMessage ToMessage(object payload, IMessageHeaders headers = null, object conversionHint = null)
+        public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
         {
             foreach (var converter in Converters)
             {

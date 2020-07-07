@@ -4,12 +4,12 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Rabbit.Batch;
 using Steeltoe.Messaging.Rabbit.Config;
 using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Expressions;
 using Steeltoe.Messaging.Rabbit.Listener.Adapters;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -19,18 +19,20 @@ namespace Steeltoe.Messaging.Rabbit.Listener
     public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
     {
         protected readonly ILogger _logger;
+        protected readonly ILoggerFactory _loggerFactory;
 
-        protected AbstractRabbitListenerEndpoint(IApplicationContext applicationContext, ILogger logger = null)
+        protected AbstractRabbitListenerEndpoint(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
         {
             ApplicationContext = applicationContext;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory?.CreateLogger(this.GetType());
         }
 
         public IApplicationContext ApplicationContext { get; set; }
 
         public string Id { get; set; }
 
-        public List<Queue> Queues { get; } = new List<Queue>();
+        public List<IQueue> Queues { get; } = new List<IQueue>();
 
         public List<string> QueueNames { get; } = new List<string>();
 
@@ -40,11 +42,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public int? Concurrency { get; set; }
 
-        public IAmqpAdmin Admin { get; set; }
+        public IRabbitAdmin Admin { get; set; }
 
         public bool? AutoStartup { get; set; }
 
-        public IMessageConverter MessageConverter { get; set; }
+        public ISmartMessageConverter MessageConverter { get; set; }
 
         public bool BatchListener { get; set; }
 
@@ -54,7 +56,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public IReplyPostProcessor ReplyPostProcessor { get; set; }
 
-        public void SetQueues(params Queue[] queues)
+        public string Group { get; set; }
+
+        public void SetQueues(params IQueue[] queues)
         {
             if (queues == null)
             {

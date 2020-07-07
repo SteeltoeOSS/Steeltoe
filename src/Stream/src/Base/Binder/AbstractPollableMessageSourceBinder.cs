@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Integration.Retry;
+using Steeltoe.Common.Retry;
+using Steeltoe.Integration;
+using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
@@ -14,20 +17,20 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChannelBinder, IPollableConsumerBinder<IMessageHandler>
     {
         protected AbstractPollableMessageSourceBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider)
-        : this(serviceProvider, headersToEmbed, provisioningProvider, null, null)
+        : this(context, headersToEmbed, provisioningProvider, null, null)
         {
         }
 
         protected AbstractPollableMessageSourceBinder(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
             IMessageSourceCustomizer sourceCustomizer)
-            : base(serviceProvider, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer)
+            : base(context, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer)
         {
         }
 

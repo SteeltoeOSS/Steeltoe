@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Invocation;
@@ -16,8 +17,8 @@ namespace Steeltoe.Stream.Binding
 
         private readonly bool _copyHeaders;
 
-        public StreamListenerMessageHandler(IServiceProvider serviceProvider, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
-            : base(serviceProvider)
+        public StreamListenerMessageHandler(IApplicationContext context, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
+            : base(context)
         {
             _invocableHandlerMethod = invocableHandlerMethod;
             _copyHeaders = copyHeaders;

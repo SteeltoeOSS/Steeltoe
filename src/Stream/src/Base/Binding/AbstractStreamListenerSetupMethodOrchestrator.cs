@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Attributes;
 using System;
 using System.Reflection;
@@ -10,11 +11,11 @@ namespace Steeltoe.Stream.Binding
 {
     public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamListenerSetupMethodOrchestrator
     {
-        protected readonly IServiceProvider _serviceProvider;
+        protected readonly IApplicationContext _context;
 
-        protected AbstractStreamListenerSetupMethodOrchestrator(IServiceProvider serviceProvider)
+        protected AbstractStreamListenerSetupMethodOrchestrator(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters)
@@ -42,7 +43,7 @@ namespace Steeltoe.Stream.Binding
 
                 if (targetReferenceValue != null)
                 {
-                    var targetBean = BindingHelpers.GetBindableTarget(_serviceProvider, targetReferenceValue);
+                    var targetBean = BindingHelpers.GetBindableTarget(_context, targetReferenceValue);
 
                     // Iterate existing parameter adapters first
                     foreach (var streamListenerParameterAdapter in streamListenerParameterAdapters)

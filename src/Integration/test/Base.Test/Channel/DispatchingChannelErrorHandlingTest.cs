@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -17,37 +19,44 @@ namespace Steeltoe.Integration.Channel.Test
     {
         private readonly CountdownEvent latch = new CountdownEvent(1);
 
+        private IServiceCollection services;
+
+        public DispatchingChannelErrorHandlingTest()
+        {
+            services = new ServiceCollection();
+            services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        }
+
         [Fact]
         public void HandlerThrowsExceptionPublishSubscribeWithoutScheduler()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
             var provider = services.BuildServiceProvider();
-            var channel = new PublishSubscribeChannel(provider);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             var handler = new ThrowingHandler();
             channel.Subscribe(handler);
-            var message = MessageBuilder.WithPayload("test").Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").Build();
             Assert.Throws<MessageDeliveryException>(() => channel.Send(message));
         }
 
         [Fact]
         public void HandlerThrowsExceptionPublishSubscribeWithExecutor()
         {
-            var services = new ServiceCollection();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p, "errorChannel"));
+            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
             var provider = services.BuildServiceProvider();
 
             var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
-            var channel = new PublishSubscribeChannel(provider, TaskScheduler.Default);
+            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var resultHandler = new ResultHandler(latch);
             var throwingHandler = new ThrowMessageExceptionHandler();
             channel.Subscribe(throwingHandler);
             defaultErrorChannel.Subscribe(resultHandler);
-            var message = MessageBuilder.WithPayload("test").Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").Build();
             channel.Send(message);
             Assert.True(latch.Wait(10000));
             var errorMessage = resultHandler.LastMessage;
@@ -61,21 +70,19 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void HandlerThrowsExceptionExecutorChannel()
         {
-            var services = new ServiceCollection();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p, "errorChannel"));
+            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
             var provider = services.BuildServiceProvider();
 
             var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
-            var channel = new TaskSchedulerChannel(provider, TaskScheduler.Default);
+            var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             var resultHandler = new ResultHandler(latch);
             var throwingHandler = new ThrowMessageExceptionHandler();
             channel.Subscribe(throwingHandler);
             defaultErrorChannel.Subscribe(resultHandler);
-            var message = MessageBuilder.WithPayload("test").Build();
+            var message = IntegrationMessageBuilder.WithPayload("test").Build();
             channel.Send(message);
             Assert.True(latch.Wait(10000));
             var errorMessage = resultHandler.LastMessage;

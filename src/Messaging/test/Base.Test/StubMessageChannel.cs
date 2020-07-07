@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Test
 
         private readonly List<IMessageHandler> handlers = new List<IMessageHandler>();
 
-        public string Name => "StubMessageChannel";
+        public string ServiceName { get; set; } = "StubMessageChannel";
 
         public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken)
         {

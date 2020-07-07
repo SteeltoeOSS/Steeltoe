@@ -5,6 +5,7 @@
 using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace Steeltoe.Messaging.Support
@@ -13,59 +14,110 @@ namespace Steeltoe.Messaging.Support
     {
         public static readonly Encoding DEFAULT_CHARSET = Encoding.UTF8;
 
+        protected AccessorMessageHeaders headers;
+
         private static readonly MimeType[] READABLE_MIME_TYPES = new MimeType[]
         {
-            MimeTypeUtils.APPLICATION_JSON, MimeTypeUtils.APPLICATION_XML,
-            new MimeType("text", "*"), new MimeType("application", "*+json"), new MimeType("application", "*+xml")
+            MimeTypeUtils.APPLICATION_JSON,
+            MimeTypeUtils.APPLICATION_XML,
+            new MimeType("text", "*"),
+            new MimeType("application", "*+json"),
+            new MimeType("application", "*+xml")
         };
 
-        private readonly MutableMessageHeaders headers;
-
         private bool leaveMutable = false;
-
         private bool modified = false;
 
         public MessageHeaderAccessor()
-        : this(null)
+        : this((IMessage)null)
         {
         }
 
         public MessageHeaderAccessor(IMessage message)
         {
-            headers = new MutableMessageHeaders(this, message?.Headers);
+            headers = new AccessorMessageHeaders(this, message?.Headers);
         }
 
-        public static T GetAccessor<T>(IMessage message, Type requiredType)
+        public MessageHeaderAccessor(MessageHeaders headers)
+        {
+            this.headers = new AccessorMessageHeaders(this, headers);
+        }
+
+        public static T GetAccessor<T>(IMessage message)
             where T : MessageHeaderAccessor
         {
-            return GetAccessor<T>(message.Headers, requiredType);
+            return (T)GetAccessor(message.Headers, typeof(T));
         }
 
-        public static T GetAccessor<T>(IMessageHeaders messageHeaders, Type requiredType)
-                 where T : MessageHeaderAccessor
+        public static MessageHeaderAccessor GetAccessor(IMessage message, Type accessorType)
         {
-            if (messageHeaders is MutableMessageHeaders mutableHeaders)
+            return GetAccessor(message.Headers, accessorType);
+        }
+
+        public static T GetAccessor<T>(IMessageHeaders messageHeaders)
+            where T : MessageHeaderAccessor
+        {
+            return (T)GetAccessor(messageHeaders, typeof(T));
+        }
+
+        public static MessageHeaderAccessor GetAccessor(IMessageHeaders messageHeaders, Type accessorType)
+        {
+            if (messageHeaders is AccessorMessageHeaders accessorMessageHeaders)
             {
-                var headerAccessor = mutableHeaders.Accessor;
-                if (requiredType == null || requiredType.IsInstanceOfType(headerAccessor))
+                var headerAccessor = accessorMessageHeaders.Accessor;
+                if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
                 {
-                    return (T)headerAccessor;
+                    return headerAccessor;
                 }
             }
 
             return null;
         }
 
-        public static MessageHeaderAccessor GetMutableAccessor(IMessage message)
+        public static T GetMutableAccessor<T>(IMessage message)
+            where T : MessageHeaderAccessor
         {
-            if (message.Headers is MutableMessageHeaders mutableHeaders)
+            return (T)GetMutableAccessor(message, typeof(T));
+        }
+
+        public static T GetMutableAccessor<T>(IMessageHeaders messageHeaders)
+            where T : MessageHeaderAccessor
+        {
+            return (T)GetMutableAccessor(messageHeaders, typeof(T));
+        }
+
+        public static MessageHeaderAccessor GetMutableAccessor(IMessage message, Type accessorType = null)
+        {
+            return GetMutableAccessor(message.Headers, accessorType);
+        }
+
+        public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers, Type accessorType = null)
+        {
+            MessageHeaderAccessor messageHeaderAccessor = null;
+            if (headers is AccessorMessageHeaders accessorMessageHeaders)
             {
-                var accessor = mutableHeaders.Accessor;
-                return accessor.IsMutable ? accessor : accessor.CreateAccessor(message);
+                var headerAccessor = accessorMessageHeaders.Accessor;
+                if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
+                {
+                    messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
+                }
+}
+
+            if (messageHeaderAccessor == null && accessorType == null)
+            {
+                var msgHeaders = headers as MessageHeaders;
+                if (msgHeaders != null)
+                {
+                    messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
+                }
             }
 
-            return new MessageHeaderAccessor(message);
+            return messageHeaderAccessor;
         }
+
+        public virtual bool EnableTimestamp { get; set; } = false;
+
+        public virtual IIDGenerator IdGenerator { get; set; }
 
         public virtual bool LeaveMutable
         {
@@ -83,11 +135,6 @@ namespace Steeltoe.Messaging.Support
 
                 leaveMutable = value;
             }
-        }
-
-        public virtual void SetImmutable()
-        {
-            headers.SetImmutable();
         }
 
         public virtual bool IsMutable
@@ -112,6 +159,82 @@ namespace Steeltoe.Messaging.Support
 
                 return headers;
             }
+        }
+
+        public virtual string Id
+        {
+            get
+            {
+                var value = GetHeader(Messaging.MessageHeaders.ID);
+                if (value == null)
+                {
+                    return null;
+                }
+
+                return value.ToString();
+            }
+        }
+
+        public virtual long? Timestamp
+        {
+            get
+            {
+                var value = GetHeader(Messaging.MessageHeaders.TIMESTAMP);
+                if (value == null)
+                {
+                    return null;
+                }
+
+                return value is long ? (long)value : long.Parse(value.ToString());
+            }
+        }
+
+        public virtual string ContentType
+        {
+            get
+            {
+                var value = GetHeader(Messaging.MessageHeaders.CONTENT_TYPE);
+                if (value == null)
+                {
+                    return null;
+                }
+
+                return value.ToString();
+            }
+
+            set
+            {
+                SetHeader(Messaging.MessageHeaders.CONTENT_TYPE, value);
+            }
+        }
+
+        public virtual string ReplyChannelName
+        {
+            get { return GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL) as string; }
+            set { SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value); }
+        }
+
+        public virtual object ReplyChannel
+        {
+            get { return GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL); }
+            set { SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value); }
+        }
+
+        public virtual string ErrorChannelName
+        {
+            get { return GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL) as string; }
+            set { SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value); }
+        }
+
+        public virtual object ErrorChannel
+        {
+            get { return GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL); }
+            set { SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value); }
+        }
+
+        public virtual void SetImmutable()
+        {
+            headers.SetImmutable();
         }
 
         public virtual IMessageHeaders ToMessageHeaders()
@@ -232,77 +355,6 @@ namespace Steeltoe.Messaging.Support
             }
         }
 
-        public virtual Guid? Id
-        {
-            get
-            {
-                var value = GetHeader(Messaging.MessageHeaders.ID);
-                if (value == null)
-                {
-                    return null;
-                }
-
-                return value is Guid ? (Guid)value : Guid.Parse(value.ToString());
-            }
-        }
-
-        public virtual long? Timestamp
-        {
-            get
-            {
-                var value = GetHeader(Messaging.MessageHeaders.TIMESTAMP);
-                if (value == null)
-                {
-                    return null;
-                }
-
-                return value is long ? (long)value : long.Parse(value.ToString());
-            }
-        }
-
-        public virtual MimeType ContentType
-        {
-            get
-            {
-                var value = GetHeader(Messaging.MessageHeaders.CONTENT_TYPE);
-                if (value == null)
-                {
-                    return null;
-                }
-
-                return value is MimeType ? (MimeType)value : MimeType.ToMimeType(value.ToString());
-            }
-
-            set
-            {
-                SetHeader(Messaging.MessageHeaders.CONTENT_TYPE, value);
-            }
-        }
-
-        public virtual string ReplyChannelName
-        {
-            get { return GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL) as string; }
-            set { SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value); }
-        }
-
-        public virtual object ReplyChannel
-        {
-            get { return GetHeader(Messaging.MessageHeaders.REPLY_CHANNEL); }
-            set { SetHeader(Messaging.MessageHeaders.REPLY_CHANNEL, value); }
-        }
-
-        public virtual string ErrorChannelName
-        {
-            get { return GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL) as string; }
-            set { SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value); }
-        }
-
-        public virtual object ErrorChannel
-        {
-            get { return GetHeader(Messaging.MessageHeaders.ERROR_CHANNEL); }
-            set { SetHeader(Messaging.MessageHeaders.ERROR_CHANNEL, value); }
-        }
-
         // Log message stuff
         public virtual string GetShortLogMessage(object payload)
         {
@@ -319,21 +371,28 @@ namespace Steeltoe.Messaging.Support
             return GetType().Name + " [headers=" + headers + "]";
         }
 
-        public bool EnableTimestamp { get; set; } = false;
-
-        public IIDGenerator IdGenerator { get; set; }
-
-        protected internal virtual MessageHeaderAccessor CreateAccessor(IMessage message)
+        protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessage message)
         {
-            return new MessageHeaderAccessor(message);
+            return CreateMutableAccessor(message.Headers);
         }
 
-        protected internal virtual bool IsReadOnly(string headerName)
+        protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
+        {
+            var asHeaders = messageHeaders as MessageHeaders;
+            if (asHeaders == null)
+            {
+                throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
+            }
+
+            return new MessageHeaderAccessor(asHeaders);
+        }
+
+        protected virtual bool IsReadOnly(string headerName)
         {
             return Messaging.MessageHeaders.ID.Equals(headerName) || Messaging.MessageHeaders.TIMESTAMP.Equals(headerName);
         }
 
-        protected internal virtual void VerifyType(string headerName, object headerValue)
+        protected virtual void VerifyType(string headerName, object headerValue)
         {
             if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ERROR_CHANNEL.Equals(headerName) ||
                         Messaging.MessageHeaders.REPLY_CHANNEL.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
@@ -343,7 +402,7 @@ namespace Steeltoe.Messaging.Support
             }
         }
 
-        protected internal virtual string GetShortPayloadLogMessage(object payload)
+        protected virtual string GetShortPayloadLogMessage(object payload)
         {
             if (payload is string)
             {
@@ -374,7 +433,7 @@ namespace Steeltoe.Messaging.Support
             }
         }
 
-        protected internal virtual string GetDetailedPayloadLogMessage(object payload)
+        protected virtual string GetDetailedPayloadLogMessage(object payload)
         {
             if (payload is string)
             {
@@ -397,9 +456,9 @@ namespace Steeltoe.Messaging.Support
             }
         }
 
-        protected internal virtual bool IsReadableContentType()
+        protected virtual bool IsReadableContentType()
         {
-            var contentType = ContentType;
+            var contentType = MimeType.ToMimeType(ContentType);
             foreach (var mimeType in READABLE_MIME_TYPES)
             {
                 if (mimeType.Includes(contentType))
@@ -434,19 +493,25 @@ namespace Steeltoe.Messaging.Support
         {
             get
             {
-                var contentType = ContentType;
+                var contentType = MimeType.ToMimeType(ContentType);
                 var charset = contentType?.Encoding;
                 return charset ?? DEFAULT_CHARSET;
             }
         }
 
-        private class MutableMessageHeaders : MessageHeaders
+        protected class AccessorMessageHeaders : MessageHeaders
         {
-            private readonly MessageHeaderAccessor accessor;
+            protected MessageHeaderAccessor accessor;
             private bool mutable = true;
 
-            public MutableMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
-            : base(headers, ID_VALUE_NONE, -1L)
+            public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
+                : base(headers, ID_VALUE_NONE, -1L)
+            {
+                this.accessor = accessor;
+            }
+
+            public AccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders other)
+                : base(other)
             {
                 this.accessor = accessor;
             }
@@ -464,12 +529,12 @@ namespace Steeltoe.Messaging.Support
                 }
             }
 
-            public bool IsMutable
+            public virtual bool IsMutable
             {
                 get { return mutable; }
             }
 
-            public void SetImmutable()
+            public virtual void SetImmutable()
             {
                 if (!mutable)
                 {
@@ -479,7 +544,7 @@ namespace Steeltoe.Messaging.Support
                 if (Id == null)
                 {
                     var idGenerator = accessor.IdGenerator != null ? accessor.IdGenerator : IdGenerator;
-                    var id = idGenerator.GenerateId();
+                    var id = idGenerator.GenerateId().ToString();
                     if (id != ID_VALUE_NONE)
                     {
                         RawHeaders[ID] = id;
@@ -494,7 +559,7 @@ namespace Steeltoe.Messaging.Support
                 mutable = false;
             }
 
-            public MessageHeaderAccessor Accessor
+            public virtual MessageHeaderAccessor Accessor
             {
                 get { return accessor; }
             }

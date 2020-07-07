@@ -44,7 +44,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             var value = DoGet(key);
             if (value != null)
             {
-                logger?.LogTrace("Retrieved value [" + value + FOR_KEY + key + BOUND_TO_THREAD + Thread.CurrentThread.ManagedThreadId + "]");
+                logger?.LogTrace("Retrieved value [{value}]" + FOR_KEY + "{key}" + BOUND_TO_THREAD + "{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
             }
 
             return value;
@@ -52,7 +52,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public static void Bind(object key, object value, ILogger logger = null)
         {
-            if (value != null)
+            if (value == null)
             {
                 throw new ArgumentNullException(nameof(value));
             }
@@ -73,7 +73,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 throw new InvalidOperationException("Already value [" + oldValue + FOR_KEY + key + BOUND_TO_THREAD + Thread.CurrentThread.ManagedThreadId + "]");
             }
 
-            logger?.LogTrace("Bound value [" + value + FOR_KEY + key + "] to thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+            logger?.LogTrace("Bound value [{value}" + FOR_KEY + "{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         public static void Push(object key, object value, ILogger logger = null)
@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             if (value != null)
             {
-                logger?.LogTrace("Removed value [" + value + FOR_KEY + key + "] from thread [" + Thread.CurrentThread.ManagedThreadId + "]");
+                logger?.LogTrace("Removed value [{value}" + FOR_KEY + "{key}] from thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
             }
 
             return value;

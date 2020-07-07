@@ -16,6 +16,11 @@ namespace Steeltoe.Common.Util
         public static readonly Encoding Utf32 = new UTF32Encoding(false, false);
         public static readonly Encoding Utf32be = new UTF32Encoding(true, false);
 
+        public static Encoding GetDefaultEncoding()
+        {
+            return GetEncoding(Encoding.Default.WebName);
+        }
+
         public static Encoding GetEncoding(string name)
         {
             if (name == null)

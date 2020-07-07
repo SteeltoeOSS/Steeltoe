@@ -3,14 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Data;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    public interface IMessagePostProcessor
+    public interface IMessagePostProcessor : Messaging.Core.IMessagePostProcessor
     {
-        Message PostProcessMessage(Message message);
-
-        Message PostProcessMessage(Message message, CorrelationData correlation);
+        IMessage PostProcessMessage(IMessage message, CorrelationData correlation);
     }
 }

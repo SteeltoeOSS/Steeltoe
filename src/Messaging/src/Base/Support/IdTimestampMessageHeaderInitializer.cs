@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.Support
 
         internal class DisabledIDGenerator : IIDGenerator
         {
-            public Guid GenerateId()
+            public string GenerateId()
             {
                 return MessageHeaders.ID_VALUE_NONE;
             }

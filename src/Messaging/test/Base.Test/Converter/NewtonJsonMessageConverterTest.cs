@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.Converter.Test
                     "\"bool\":true," +
                     "\"fraction\":42.0}";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
             var actual = (MyBean)converter.FromMessage(message, typeof(MyBean));
 
             Assert.Equal("Foo", actual.String);
@@ -73,7 +73,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var payload = "{\"bytes\":\"AQI=\",\"array\":[\"Foo\",\"Bar\"],"
                     + "\"number\":42,\"string\":\"Foo\",\"bool\":true,\"fraction\":42.0}";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
 
             var actual = converter.FromMessage<Dictionary<string, object>>(message);
 
@@ -90,7 +90,7 @@ namespace Steeltoe.Messaging.Converter.Test
         {
             var myBean = new MyBean();
             var converter = new NewtonJsonMessageConverter();
-            IMessage message = MessageBuilder<MyBean>.WithPayload(myBean).Build();
+            var message = MessageBuilder.WithPayload(myBean).Build();
             Assert.Same(myBean, converter.FromMessage(message, typeof(MyBean)));
         }
 
@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var converter = new NewtonJsonMessageConverter();
             var payload = "FooBar";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
             Assert.Throws<MessageConversionException>(() => converter.FromMessage<MyBean>(message));
         }
 
@@ -111,7 +111,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var converter = new NewtonJsonMessageConverter();
             var payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
             var myBean = converter.FromMessage<MyBean>(message);
             Assert.Equal("string", myBean.String);
         }
@@ -122,7 +122,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var converter = new NewtonJsonMessageConverter();
             var payload = "[1, 2, 3, 4, 5, 6, 7, 8, 9]";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
 
             var info = GetType().GetMethod("HandleList", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
             var actual = converter.FromMessage(message, typeof(List<long>), info);
@@ -137,7 +137,7 @@ namespace Steeltoe.Messaging.Converter.Test
             var converter = new NewtonJsonMessageConverter();
             var payload = "{\"string\":\"foo\"}";
             var bytes = Encoding.UTF8.GetBytes(payload);
-            IMessage message = MessageBuilder<byte[]>.WithPayload(bytes).Build();
+            var message = MessageBuilder.WithPayload(bytes).Build();
 
             var info = GetType().GetMethod("HandleMessage", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
             var actual = converter.FromMessage(message, typeof(MyBean), info);
@@ -150,13 +150,15 @@ namespace Steeltoe.Messaging.Converter.Test
         public void ToMessage()
         {
             var converter = new NewtonJsonMessageConverter();
-            var payload = new MyBean();
-            payload.String = "Foo";
-            payload.Number = 42;
-            payload.Fraction = 42F;
-            payload.Array = new string[] { "Foo", "Bar" };
-            payload.Bool = true;
-            payload.Bytes = new byte[] { 0x1, 0x2 };
+            var payload = new MyBean
+            {
+                String = "Foo",
+                Number = 42,
+                Fraction = 42F,
+                Array = new string[] { "Foo", "Bar" },
+                Bool = true,
+                Bytes = new byte[] { 0x1, 0x2 }
+            };
 
             var message = converter.ToMessage(payload, null);
 
@@ -178,8 +180,10 @@ namespace Steeltoe.Messaging.Converter.Test
             var converter = new NewtonJsonMessageConverter();
             var encoding = new UnicodeEncoding(true, false);
             var contentType = new MimeType("application", "json", encoding);
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, contentType);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, contentType }
+            };
             var headers = new MessageHeaders(map);
             var payload = "H\u00e9llo W\u00f6rld";
             var message = converter.ToMessage(payload, headers);
@@ -192,12 +196,16 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessageUtf16String()
         {
-            var converter = new NewtonJsonMessageConverter();
-            converter.SerializedPayloadClass = typeof(string);
+            var converter = new NewtonJsonMessageConverter
+            {
+                SerializedPayloadClass = typeof(string)
+            };
             var encoding = new UnicodeEncoding(true, false);
             var contentType = new MimeType("application", "json", encoding);
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add(MessageHeaders.CONTENT_TYPE, contentType);
+            var map = new Dictionary<string, object>
+            {
+                { MessageHeaders.CONTENT_TYPE, contentType }
+            };
             var headers = new MessageHeaders(map);
             var payload = "H\u00e9llo W\u00f6rld";
             var message = converter.ToMessage(payload, headers);

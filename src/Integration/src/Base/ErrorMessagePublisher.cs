@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
@@ -17,16 +18,16 @@ namespace Steeltoe.Integration
         protected readonly MessagingTemplate _messagingTemplate;
         protected readonly ILogger _logger;
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
         private IDestinationResolver<IMessageChannel> _channelResolver;
         private IMessageChannel _channel;
         private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
 
-        public ErrorMessagePublisher(IServiceProvider serviceProvider, ILogger logger = null)
+        public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
             _logger = logger;
-            _messagingTemplate = new MessagingTemplate(serviceProvider);
+            _messagingTemplate = new MessagingTemplate(context);
         }
 
         public virtual IErrorMessageStrategy ErrorMessageStrategy
@@ -78,7 +79,7 @@ namespace Steeltoe.Integration
             {
                 if (_channelResolver == null)
                 {
-                    _channelResolver = (IDestinationResolver<IMessageChannel>)_serviceProvider.GetService(typeof(IDestinationResolver<IMessageChannel>));
+                    _channelResolver = (IDestinationResolver<IMessageChannel>)_context.GetService(typeof(IDestinationResolver<IMessageChannel>));
                 }
 
                 return _channelResolver;

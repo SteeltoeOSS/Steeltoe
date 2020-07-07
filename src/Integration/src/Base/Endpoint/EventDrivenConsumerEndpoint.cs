@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using System;
@@ -15,8 +16,8 @@ namespace Steeltoe.Integration.Endpoint
 
         private readonly IMessageHandler _handler;
 
-        public EventDrivenConsumerEndpoint(IServiceProvider serviceProvider, ISubscribableChannel inputChannel, IMessageHandler handler)
-            : base(serviceProvider)
+        public EventDrivenConsumerEndpoint(IApplicationContext context, ISubscribableChannel inputChannel, IMessageHandler handler)
+            : base(context)
         {
             _handler = handler ?? throw new ArgumentNullException(nameof(handler));
             _inputChannel = inputChannel ?? throw new ArgumentNullException(nameof(inputChannel));

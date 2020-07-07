@@ -6,19 +6,57 @@ using System;
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
     public class RabbitListenerAttribute : Attribute
     {
-        public RabbitListenerAttribute(params string[] queueNames)
+        public RabbitListenerAttribute(params string[] queues)
         {
-            Queues = queueNames;
+            Queues = queues;
         }
 
         public string Id { get; set; } = string.Empty;
 
         public string ContainerFactory { get; set; } = string.Empty;
 
+        public string Queue
+        {
+            get
+            {
+                if (Queues.Length == 0)
+                {
+                    return null;
+                }
+
+                return Queues[0];
+            }
+
+            set
+            {
+                Queues = new string[] { value };
+            }
+        }
+
         public string[] Queues { get; set; }
+
+        public string Binding
+        {
+            get
+            {
+                if (Bindings.Length == 0)
+                {
+                    return null;
+                }
+
+                return Bindings[0];
+            }
+
+            set
+            {
+                Bindings = new string[] { value };
+            }
+        }
+
+        public string[] Bindings { get; set; } = new string[0];
 
         public bool Exclusive { get; set; } = false;
 
@@ -37,5 +75,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
         public string AckMode { get; set; } = string.Empty;
 
         public string ReplyPostProcessor { get; set; } = string.Empty;
+
+        public string Group { get; set; }
     }
 }

@@ -25,10 +25,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var destinationPrefixes = new List<string>() { "/test" };
 
-            messageHandler = new TestMethodMessageHandler();
-
-            // this.messageHandler.setApplicationContext(new StaticApplicationContext());
-            messageHandler.DestinationPrefixes = destinationPrefixes;
+            messageHandler = new TestMethodMessageHandler
+            {
+                // this.messageHandler.setApplicationContext(new StaticApplicationContext());
+                DestinationPrefixes = destinationPrefixes
+            };
 
             // this.messageHandler.afterPropertiesSet();
             testController = new TestController();
@@ -95,7 +96,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         private IMessage ToDestination(string destination)
         {
-            return MessageBuilder<byte[]>.WithPayload(new byte[0]).SetHeader(DESTINATION_HEADER, destination).Build();
+            return MessageBuilder.WithPayload(new byte[0]).SetHeader(DESTINATION_HEADER, destination).Build();
         }
 
         internal class TestController
@@ -169,8 +170,10 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             protected override IList<IHandlerMethodArgumentResolver> InitArgumentResolvers()
             {
-                var resolvers = new List<IHandlerMethodArgumentResolver>();
-                resolvers.Add(new MessageMethodArgumentResolver(new SimpleMessageConverter()));
+                var resolvers = new List<IHandlerMethodArgumentResolver>
+                {
+                    new MessageMethodArgumentResolver(new SimpleMessageConverter())
+                };
                 resolvers.AddRange(CustomArgumentResolvers);
                 return resolvers;
             }

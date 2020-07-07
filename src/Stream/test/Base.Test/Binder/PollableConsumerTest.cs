@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Integration.Util;
@@ -38,7 +39,7 @@ namespace Steeltoe.Stream.Binder
             var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
             Assert.NotNull(configurer);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
@@ -74,7 +75,7 @@ namespace Steeltoe.Stream.Binder
             var messageSource = new TestMessageSource("{\"foo\":\"bar\"}");
             setter.Invoke(binder, new object[] { messageSource });
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
             var properties = new ConsumerOptions()
@@ -121,7 +122,7 @@ namespace Steeltoe.Stream.Binder
             var messageSource = new TestMessageSource("foo");
             setter.Invoke(binder, new object[] { messageSource });
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             var properties = new ConsumerOptions()
             {
@@ -163,7 +164,7 @@ namespace Steeltoe.Stream.Binder
             var messageSource = new TestMessageSource("[{\"foo\":\"bar\"},{\"foo\":\"baz\"}]");
             setter.Invoke(binder, new object[] { messageSource });
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
             var properties = new ConsumerOptions()
@@ -201,7 +202,7 @@ namespace Steeltoe.Stream.Binder
             var messageSource = new TestMessageSource("{\"qux\":{\"foo\":\"bar\"}}");
             setter.Invoke(binder, new object[] { messageSource });
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
             var properties = new ConsumerOptions()
@@ -253,7 +254,7 @@ namespace Steeltoe.Stream.Binder
                     Assert.NotNull(e);
                 }
 
-                return new GenericMessage<byte[]>(payload);
+                return Message.Create<byte[]>(payload);
             });
 
             setter.Invoke(binder, new object[] { messageSource });
@@ -262,7 +263,7 @@ namespace Steeltoe.Stream.Binder
             options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
             Assert.Equal(HeaderMode.EmbeddedHeaders, bindingOptions.Consumer.HeaderMode);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestEmbededChannelInterceptor());
 
@@ -292,7 +293,7 @@ namespace Steeltoe.Stream.Binder
             var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
             Assert.NotNull(configurer);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
@@ -306,7 +307,7 @@ namespace Steeltoe.Stream.Binder
 
             var latch = new CountdownEvent(2);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.Name == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
             var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
             errorChan.Subscribe(errorChanHandler);
 
@@ -353,7 +354,7 @@ namespace Steeltoe.Stream.Binder
             var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
             Assert.NotNull(configurer);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
             pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
 
@@ -365,7 +366,7 @@ namespace Steeltoe.Stream.Binder
 
             var latch = new CountdownEvent(1);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.Name == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
             var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
             errorChan.Subscribe(errorChanHandler);
 
@@ -392,7 +393,7 @@ namespace Steeltoe.Stream.Binder
             var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
             Assert.NotNull(configurer);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider, messageConverter);
+            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
             configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
             var mockCallback = new Mock<IAcknowledgmentCallback>(MockBehavior.Default);
@@ -475,7 +476,7 @@ namespace Steeltoe.Stream.Binder
 
             public IMessage Receive()
             {
-                return new GenericMessage<byte[]>(Encoding.UTF8.GetBytes(payload));
+                return Message.Create<byte[]>(Encoding.UTF8.GetBytes(payload));
             }
         }
 

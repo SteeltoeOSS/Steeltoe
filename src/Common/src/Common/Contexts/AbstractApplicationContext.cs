@@ -34,7 +34,7 @@ namespace Steeltoe.Common.Contexts
             {
                 if (service is IServiceNameAware nameAware)
                 {
-                    return nameAware.Name == name;
+                    return nameAware.ServiceName == name;
                 }
 
                 return false;
@@ -59,7 +59,7 @@ namespace Steeltoe.Common.Contexts
             {
                 if (service is IServiceNameAware nameAware)
                 {
-                    return nameAware.Name == name;
+                    return nameAware.ServiceName == name;
                 }
 
                 return false;
@@ -76,6 +76,11 @@ namespace Steeltoe.Common.Contexts
         public T GetService<T>()
         {
             return ServiceProvider.GetService<T>();
+        }
+
+        public object GetService(Type serviceType)
+        {
+            return ServiceProvider.GetService(serviceType);
         }
 
         public IEnumerable<T> GetServices<T>()

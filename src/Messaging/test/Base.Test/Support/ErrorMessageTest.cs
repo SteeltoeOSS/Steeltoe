@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.Support.Test
             var emString = em.ToString();
             Assert.DoesNotContain("original", emString);
 
-            em = new ErrorMessage(new Exception("foo"), new GenericMessage<string>("bar"));
+            em = new ErrorMessage(new Exception("foo"), Message.Create<string>("bar"));
             emString = em.ToString();
             Assert.Contains("original", emString);
             Assert.Contains(em.OriginalMessage.ToString(), emString);

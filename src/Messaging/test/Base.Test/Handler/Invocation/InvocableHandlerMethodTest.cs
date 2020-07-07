@@ -146,8 +146,10 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         private object Invoke(object handler, MethodInfo method, params object[] providedArgs)
         {
-            var handlerMethod = new InvocableHandlerMethod(handler, method);
-            handlerMethod.MessageMethodArgumentResolvers = resolvers;
+            var handlerMethod = new InvocableHandlerMethod(handler, method)
+            {
+                MessageMethodArgumentResolvers = resolvers
+            };
             return handlerMethod.Invoke(message, providedArgs);
         }
 

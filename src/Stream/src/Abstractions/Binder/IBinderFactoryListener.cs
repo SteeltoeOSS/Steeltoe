@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Stream.Binder
@@ -16,6 +17,6 @@ namespace Steeltoe.Stream.Binder
         /// </summary>
         /// <param name="configurationName">the binders configuration name</param>
         /// <param name="binderContext">the configured service provider</param>
-        void AfterBinderInitialized(string configurationName, IServiceProvider binderContext);
+        void AfterBinderInitialized(string configurationName, IApplicationContext binderContext);
     }
 }

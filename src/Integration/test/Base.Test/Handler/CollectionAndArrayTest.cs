@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -21,20 +23,23 @@ namespace Steeltoe.Integration.Handler.Test
         public CollectionAndArrayTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             provider = services.BuildServiceProvider();
-            handler = new TestAbstractReplyProducingMessageHandler(provider);
+            handler = new TestAbstractReplyProducingMessageHandler(provider.GetService<IApplicationContext>());
         }
 
         [Fact]
         public void ListWithRequestReplyHandler()
         {
             handler.ReturnValue = new List<string>() { "foo", "bar" };
-            var channel = new QueueChannel(provider);
-            var message = MessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+            var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);
             var reply1 = channel.Receive(0);
             var reply2 = channel.Receive(0);
@@ -48,8 +53,8 @@ namespace Steeltoe.Integration.Handler.Test
         public void SetWithRequestReplyHandler()
         {
             handler.ReturnValue = new HashSet<string>(new string[] { "foo", "bar" });
-            var channel = new QueueChannel(provider);
-            var message = MessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+            var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);
             var reply1 = channel.Receive(0);
             var reply2 = channel.Receive(0);
@@ -63,8 +68,8 @@ namespace Steeltoe.Integration.Handler.Test
         public void ArrayWithRequestReplyHandler()
         {
             handler.ReturnValue = new string[] { "foo", "bar" };
-            var channel = new QueueChannel(provider);
-            var message = MessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+            var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+            var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
             handler.HandleMessage(message);
             var reply1 = channel.Receive(0);
             var reply2 = channel.Receive(0);
@@ -78,8 +83,8 @@ namespace Steeltoe.Integration.Handler.Test
         {
             public object ReturnValue;
 
-            public TestAbstractReplyProducingMessageHandler(IServiceProvider serviceProvider)
-                : base(serviceProvider)
+            public TestAbstractReplyProducingMessageHandler(IApplicationContext context)
+                : base(context)
             {
             }
 

@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using System;
 using System.Collections.Generic;
@@ -18,31 +19,31 @@ namespace Steeltoe.Integration.Channel
         private readonly int _capacity = -1;
         private int _size;
 
-        public QueueChannel(IServiceProvider serviceProvider, ILogger logger = null)
-            : this(serviceProvider, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+        public QueueChannel(IApplicationContext context, ILogger logger = null)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
         {
             _capacity = int.MaxValue;
         }
 
-        public QueueChannel(IServiceProvider serviceProvider, string name, ILogger logger = null)
-            : this(serviceProvider, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), name, logger)
+        public QueueChannel(IApplicationContext context, string name, ILogger logger = null)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), name, logger)
         {
             _capacity = int.MaxValue;
         }
 
-        public QueueChannel(IServiceProvider serviceProvider, int capacity, ILogger logger = null)
-            : this(serviceProvider, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+        public QueueChannel(IApplicationContext context, int capacity, ILogger logger = null)
+            : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
         {
             _capacity = capacity;
         }
 
-        public QueueChannel(IServiceProvider serviceProvider, Channels.Channel<IMessage> channel, ILogger logger = null)
-            : this(serviceProvider, channel, null, logger)
+        public QueueChannel(IApplicationContext context, Channels.Channel<IMessage> channel, ILogger logger = null)
+            : this(context, channel, null, logger)
         {
         }
 
-        public QueueChannel(IServiceProvider serviceProvider, Channels.Channel<IMessage> channel, string name, ILogger logger = null)
-            : base(serviceProvider, name, logger)
+        public QueueChannel(IApplicationContext context, Channels.Channel<IMessage> channel, string name, ILogger logger = null)
+            : base(context, name, logger)
         {
             if (channel == null)
             {

@@ -44,7 +44,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             }
 
             payload = ConvertPayload(message, parameter, targetPayloadType);
-            return MessageBuilder.CreateMessage(payload, message.Headers);
+            return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
         }
 
         public virtual bool SupportsParameter(ParameterInfo parameter)

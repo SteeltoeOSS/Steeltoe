@@ -6,8 +6,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class ExchangeBinding : Binding
+    public class ExchangeBinding : Binding, IExchangeBinding
     {
+        public ExchangeBinding(string bindingName)
+            : base(bindingName)
+        {
+        }
+
         public ExchangeBinding(string name, string exchangeDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
             : base(name, exchangeDestination, DestinationType.EXCHANGE, exchange, routingKey, arguments)
         {

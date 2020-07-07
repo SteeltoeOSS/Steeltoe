@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class FanoutExchange : AbstractExchange
+    public class FanoutExchange : AbstractExchange, IFanoutExchange
     {
         public FanoutExchange(string name)
         : base(name)
@@ -23,6 +23,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
         }
 
-        public override string Type { get; } = ExchangeTypes.FANOUT;
+        public override string Type { get; } = ExchangeType.FANOUT;
     }
 }

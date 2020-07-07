@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
-    public interface IMessageListenerContainer : ISmartLifecycle, IDisposable
+    public interface IMessageListenerContainer : ISmartLifecycle, IDisposable, IServiceNameAware
     {
         /// <summary>
         /// Setup the message listener to use.

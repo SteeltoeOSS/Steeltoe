@@ -14,16 +14,18 @@ namespace Steeltoe.Messaging.Core.Test
 {
     public class GenericMessagingTemplateTest
     {
-        internal GenericMessagingTemplate Template;
+        internal MessageChannelTemplate Template;
 
         internal StubMessageChannel MessageChannel;
 
         public GenericMessagingTemplateTest()
         {
             MessageChannel = new StubMessageChannel();
-            Template = new GenericMessagingTemplate();
-            Template.DefaultDestination = MessageChannel;
-            Template.DestinationResolver = new TestDestinationResolver(this);
+            Template = new MessageChannelTemplate
+            {
+                DefaultSendDestination = MessageChannel,
+                DestinationResolver = new TestDestinationResolver(this)
+            };
         }
 
         [Fact]
@@ -39,16 +41,16 @@ namespace Steeltoe.Messaging.Core.Test
                 .Returns(true);
 
             var message = MessageBuilder.WithPayload("request")
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
             Template.Send(channel, message);
 
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
             Assert.NotNull(sent);
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
         }
 
         [Fact]
@@ -64,16 +66,16 @@ namespace Steeltoe.Messaging.Core.Test
                 .Returns(new ValueTask<bool>(true));
 
             var message = MessageBuilder.WithPayload("request")
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
             await Template.SendAsync(channel, message);
 
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
             Assert.NotNull(sent);
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
         }
 
         [Fact]
@@ -88,15 +90,17 @@ namespace Steeltoe.Messaging.Core.Test
                 .Callback<IMessage, CancellationToken>((m, t) => sent = m)
                 .Returns(new ValueTask<bool>(true));
 
-            var accessor = new MessageHeaderAccessor();
-            accessor.LeaveMutable = true;
-            var message = new GenericMessage<string>("request", accessor.MessageHeaders);
-            accessor.SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
+            var accessor = new MessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
+            var message = Message.Create<string>("request", accessor.MessageHeaders);
+            accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             await Template.SendAsync(channel, message);
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
             Assert.NotNull(sent);
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
         }
 
         [Fact]
@@ -111,15 +115,17 @@ namespace Steeltoe.Messaging.Core.Test
                 .Callback<IMessage, int>((m, t) => sent = m)
                 .Returns(true);
 
-            var accessor = new MessageHeaderAccessor();
-            accessor.LeaveMutable = true;
-            var message = new GenericMessage<string>("request", accessor.MessageHeaders);
-            accessor.SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
+            var accessor = new MessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
+            var message = Message.Create<string>("request", accessor.MessageHeaders);
+            accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
             Template.Send(channel, message);
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
             Assert.NotNull(sent);
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-            Assert.False(sent.Headers.ContainsKey(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
+            Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
         }
 
         [Fact]
@@ -207,8 +213,8 @@ namespace Steeltoe.Messaging.Core.Test
                 .Returns(true);
 
             var message = MessageBuilder.WithPayload("request")
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
             var result = Template.SendAndReceive(channel, message);
@@ -236,8 +242,8 @@ namespace Steeltoe.Messaging.Core.Test
                 .Returns(new ValueTask<bool>(true));
 
             var message = MessageBuilder.WithPayload("request")
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-                    .SetHeader(GenericMessagingTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
+                    .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
             var result = await Template.SendAndReceiveAsync(channel, message);
@@ -326,7 +332,7 @@ namespace Steeltoe.Messaging.Core.Test
                 {
                     Thread.Sleep(1000);
                     var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
-                    replyChannel.Send(new GenericMessage<string>("response"));
+                    replyChannel.Send(Message.Create<string>("response"));
                     Failure = new InvalidOperationException("Expected exception");
                 }
                 catch (MessageDeliveryException ex)
@@ -356,7 +362,7 @@ namespace Steeltoe.Messaging.Core.Test
             public void HandleMessage(IMessage message)
             {
                 var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
-                replyChannel.Send(new GenericMessage<string>("response"));
+                replyChannel.Send(Message.Create<string>("response"));
                 return;
             }
         }

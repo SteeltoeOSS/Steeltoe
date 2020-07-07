@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Messaging.Converter
@@ -10,7 +11,7 @@ namespace Steeltoe.Messaging.Converter
     /// A converter to turn the payload of a message from serialized form to a typed
     /// object and vice versa.
     /// </summary>
-    public interface IMessageConverter
+    public interface IMessageConverter : IServiceNameAware
     {
         /// <summary>
         /// Convert the payload of a message to a typed object.
@@ -35,6 +36,6 @@ namespace Steeltoe.Messaging.Converter
         /// <param name="payload">the object to convert</param>
         /// <param name="headers">optional headers for the message</param>
         /// <returns>the new messagee or null if converter does not support the payload type</returns>
-        IMessage ToMessage(object payload, IMessageHeaders headers = null);
+        IMessage ToMessage(object payload, IMessageHeaders headers);
     }
 }

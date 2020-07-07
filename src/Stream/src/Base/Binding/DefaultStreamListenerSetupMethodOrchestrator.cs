@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using System;
 using System.Collections.Generic;
@@ -19,10 +21,10 @@ namespace Steeltoe.Stream.Binding
 
         public DefaultStreamListenerSetupMethodOrchestrator(
             StreamListenerAttributeProcessor processor,
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters,
             IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters)
-            : base(serviceProvider)
+            : base(context)
         {
             _streamListenerParameterAdapters = streamListenerParameterAdapters.ToList();
             _streamListenerResultAdapters = streamListenerResultAdapters.ToList();
@@ -33,7 +35,7 @@ namespace Steeltoe.Stream.Binding
         {
             var methodAnnotatedInboundName = streamListener.Target;
 
-            var streamListenerMethod = new StreamListenerMethodValidator(method, _serviceProvider, _streamListenerParameterAdapters);
+            var streamListenerMethod = new StreamListenerMethodValidator(method, _context, _streamListenerParameterAdapters);
             streamListenerMethod.Validate(methodAnnotatedInboundName, streamListener.Condition);
 
             var isDeclarative = streamListenerMethod.CheckDeclarativeMethod(methodAnnotatedInboundName);
@@ -58,7 +60,7 @@ namespace Steeltoe.Stream.Binding
         {
             try
             {
-                var bean = ActivatorUtilities.CreateInstance(_serviceProvider, implementation);
+                var bean = ActivatorUtilities.CreateInstance(_context.ServiceProvider, implementation);
                 if (typeof(void).Equals(method.ReturnType))
                 {
                     method.Invoke(bean, arguments);
@@ -80,7 +82,7 @@ namespace Steeltoe.Stream.Binding
                         }
                     }
 
-                    var targetBean = BindingHelpers.GetBindableTarget(_serviceProvider, outboundName);
+                    var targetBean = BindingHelpers.GetBindableTarget(_context, outboundName);
                     foreach (var streamListenerResultAdapter in _streamListenerResultAdapters)
                     {
                         if (streamListenerResultAdapter.Supports(result.GetType(), targetBean.GetType()))

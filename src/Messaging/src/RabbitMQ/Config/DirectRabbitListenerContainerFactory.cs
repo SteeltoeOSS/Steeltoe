@@ -2,42 +2,39 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
     public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContainerFactory<DirectMessageListenerContainer>
     {
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILogger logger = null)
-        : base(applicationContext, logger)
+        public const string DEFAULT_SERVICE_NAME = "rabbitListenerContainerFactory";
+
+        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, loggerFactory)
         {
         }
 
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(applicationContext, connectionFactory, logger)
+        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+            : base(applicationContext, connectionFactory, loggerFactory)
         {
         }
 
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(applicationContext, optionsMonitor, connectionFactory, logger)
-        {
-            Configure(Options);
-        }
-
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, IMessageConverter messageConverter, ILogger logger = null)
-            : base(applicationContext, optionsMonitor, connectionFactory, messageConverter, logger)
+        [ActivatorUtilitiesConstructor]
+        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+            : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
         {
             Configure(Options);
         }
 
-        public int MonitorInterval { get; set; }
+        public int? MonitorInterval { get; set; }
 
-        public int? ConsumersPerQueue { get; set; }
+        public int? ConsumersPerQueue { get; set; } = 1;
 
         public int? MessagesPerAck { get; set; }
 
@@ -45,18 +42,42 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         protected override DirectMessageListenerContainer CreateContainerInstance()
         {
-            return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _logger);
+            return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _loggerFactory);
         }
 
         protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
         {
             base.InitializeContainer(instance, endpoint);
+            if (MonitorInterval.HasValue)
+            {
+                instance.MonitorInterval = MonitorInterval.Value;
+            }
+
+            if (MessagesPerAck.HasValue)
+            {
+                instance.MessagesPerAck = MessagesPerAck.Value;
+            }
+
+            if (AckTimeout.HasValue)
+            {
+                instance.AckTimeout = AckTimeout.Value;
+            }
+
+            if (endpoint != null && endpoint.Concurrency.HasValue)
+            {
+                instance.ConsumersPerQueue = endpoint.Concurrency.Value;
+            }
+            else if (ConsumersPerQueue.HasValue)
+            {
+                instance.ConsumersPerQueue = ConsumersPerQueue.Value;
+            }
         }
 
         private void Configure(RabbitOptions options)
         {
             var containerOptions = options.Listener.Direct;
             AutoStartup = containerOptions.AutoStartup;
+            PossibleAuthenticationFailureFatal = containerOptions.PossibleAuthenticationFailureFatal;
             if (containerOptions.AcknowledgeMode.HasValue)
             {
                 AcknowledgeMode = containerOptions.AcknowledgeMode.Value;

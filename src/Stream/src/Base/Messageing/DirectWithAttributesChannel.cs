@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using System;
 using System.Collections.Generic;
@@ -12,8 +13,8 @@ namespace Steeltoe.Stream.Messaging
     {
         private readonly IDictionary<string, object> _attributes = new Dictionary<string, object>();
 
-        public DirectWithAttributesChannel(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        public DirectWithAttributesChannel(IApplicationContext context)
+            : base(context)
         {
         }
 

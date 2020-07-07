@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
             }
 
             DeclarableList = new List<IDeclarable>(declarables);
-            Name = name;
+            ServiceName = name;
         }
 
         public Declarables(string name, List<IDeclarable> declarables)
@@ -40,12 +40,12 @@ namespace Steeltoe.Messaging.Rabbit.Config
             }
 
             DeclarableList = new List<IDeclarable>(declarables);
-            Name = name;
+            ServiceName = name;
         }
 
         public List<IDeclarable> DeclarableList { get; }
 
-        public string Name { get; }
+        public string ServiceName { get; set; }
 
         public IEnumerable<T> GetDeclarablesByType<T>()
         {

@@ -6,12 +6,15 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Rabbit.Exceptions;
 using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
+using Steeltoe.Messaging.Rabbit.Support;
 using System;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public class ConditionalRejectingErrorHandler : IErrorHandler
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(ConditionalRejectingErrorHandler);
+
         private readonly ILogger _logger;
         private readonly IFatalExceptionStrategy _exceptionStrategy;
 
@@ -27,13 +30,15 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             _exceptionStrategy = exceptionStrategy;
         }
 
-        public bool DiscardFatalsWithXDeath { get; set; } = true;
+        public virtual bool DiscardFatalsWithXDeath { get; set; } = true;
 
-        public bool RejectManual { get; set; } = true;
+        public virtual bool RejectManual { get; set; } = true;
 
-        public bool HandleError(Exception exception)
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+        public virtual bool HandleError(Exception exception)
         {
-            _logger?.LogWarning("Execution of Rabbit message listener failed.", exception);
+            _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
             if (!CauseChainContainsARADRE(exception) && _exceptionStrategy.IsFatal(exception))
             {
                 if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException)
@@ -41,28 +46,30 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     var failed = ((ListenerExecutionFailedException)exception).FailedMessage;
                     if (failed != null)
                     {
-                        var xDeath = failed.MessageProperties.GetXDeathHeader();
+                        var accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
+                        var xDeath = accessor.GetXDeathHeader();
                         if (xDeath != null && xDeath.Count > 0)
                         {
-                            _logger?.LogError("x-death header detected on a message with a fatal exception; "
-                                    + "perhaps requeued from a DLQ? - discarding: " + failed);
-                            throw new ImmediateAcknowledgeAmqpException("Fatal and x-death present");
+                            _logger?.LogError(
+                                "x-death header detected on a message with a fatal exception; "
+                                + "perhaps requeued from a DLQ? - discarding: {failedMessage} ", failed);
+                            throw new ImmediateAcknowledgeException("Fatal and x-death present");
                         }
                     }
                 }
 
-                throw new AmqpRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
+                throw new RabbitRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
             }
 
             return true;
         }
 
-        protected bool CauseChainContainsARADRE(Exception exception)
+        protected virtual bool CauseChainContainsARADRE(Exception exception)
         {
             var cause = exception.InnerException;
             while (cause != null)
             {
-                if (cause is AmqpRejectAndDontRequeueException)
+                if (cause is RabbitRejectAndDontRequeueException)
                 {
                     return true;
                 }

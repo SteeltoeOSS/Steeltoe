@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Extensions;
@@ -40,7 +41,7 @@ namespace Steeltoe.Stream
             container.AddLogging((b) => b.AddDebug());
 
             container.AddSingleton<IConfiguration>(configuration);
-
+            container.AddSingleton<IApplicationContext, GenericApplicationContext>();
             container.AddStreamConfiguration(configuration);
             container.AddCoreServices();
             container.AddIntegrationServices(configuration);

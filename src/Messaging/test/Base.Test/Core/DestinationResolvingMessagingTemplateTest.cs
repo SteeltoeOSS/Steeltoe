@@ -28,8 +28,10 @@ namespace Steeltoe.Messaging.Core.Test
             myChannel = new TaskSchedulerSubscribableChannel();
             resolver.RegisterMessageChannel("myChannel", myChannel);
 
-            template = new TestDestinationResolvingMessagingTemplate();
-            template.DestinationResolver = resolver;
+            template = new TestDestinationResolvingMessagingTemplate
+            {
+                DestinationResolver = resolver
+            };
 
             headers = new Dictionary<string, object>() { { "key", "value" } };
 
@@ -39,7 +41,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAsync()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             await template.SendAsync("myChannel", message);
 
             Assert.Same(myChannel, template.MessageChannel);
@@ -49,7 +51,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void Send()
         {
-            var message = new GenericMessage("payload");
+            var message = Message.Create("payload");
             template.Send("myChannel", message);
 
             Assert.Same(myChannel, template.MessageChannel);
@@ -60,14 +62,14 @@ namespace Steeltoe.Messaging.Core.Test
         public Task SendAsyncNoDestinationResolver()
         {
             var template = new TestDestinationResolvingMessagingTemplate();
-            return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", new GenericMessage("payload")));
+            return Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAsync("myChannel", Message.Create("payload")));
         }
 
         [Fact]
         public void SendNoDestinationResolver()
         {
             var template = new TestDestinationResolvingMessagingTemplate();
-            Assert.Throws<InvalidOperationException>(() => template.Send("myChannel", new GenericMessage("payload")));
+            Assert.Throws<InvalidOperationException>(() => template.Send("myChannel", Message.Create("payload")));
         }
 
         [Fact]
@@ -167,7 +169,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAsync()
         {
-            var expected = new GenericMessage("payload");
+            var expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var actual = await template.ReceiveAsync("myChannel");
 
@@ -178,7 +180,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void Receive()
         {
-            var expected = new GenericMessage("payload");
+            var expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var actual = template.Receive("myChannel");
 
@@ -189,7 +191,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ReceiveAndConvertAsync()
         {
-            var expected = new GenericMessage("payload");
+            var expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var payload = await template.ReceiveAndConvertAsync<string>("myChannel");
 
@@ -200,7 +202,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ReceiveAndConvert()
         {
-            var expected = new GenericMessage("payload");
+            var expected = Message.Create("payload");
             template.ReceiveMessage = expected;
             var payload = template.ReceiveAndConvert<string>("myChannel");
 
@@ -211,8 +213,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAndReceiveAsync()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.SendAndReceiveAsync("myChannel", requestMessage);
 
@@ -224,8 +226,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void SendAndReceive()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.SendAndReceive("myChannel", requestMessage);
 
@@ -237,7 +239,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertSendAndReceiveAsync()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request");
 
@@ -249,7 +251,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertSendAndReceive()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.ConvertSendAndReceive<string>("myChannel", "request");
 
@@ -261,7 +263,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertSendAndReceiveAsyncWithHeaders()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", headers);
 
@@ -274,7 +276,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertSendAndReceiveWithHeaders()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.ConvertSendAndReceive<string>("myChannel", "request", headers);
 
@@ -287,7 +289,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertSendAndReceiveAsyncWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", postProcessor);
 
@@ -300,7 +302,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertSendAndReceiveWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.ConvertSendAndReceive<string>("myChannel", "request", postProcessor);
 
@@ -313,7 +315,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertSendAndReceiveAsyncWithHeadersAndPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.ConvertSendAndReceiveAsync<string>("myChannel", "request", headers, postProcessor);
 
@@ -327,7 +329,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertSendAndReceiveWithHeadersAndPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.ConvertSendAndReceive<string>("myChannel", "request", headers, postProcessor);
 

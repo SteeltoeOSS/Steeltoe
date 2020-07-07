@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.CSharp;
@@ -16,6 +17,7 @@ namespace Steeltoe.Stream.Extensions
     {
         public static IServiceCollection AddCoreServices(this IServiceCollection services)
         {
+            services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
             services.TryAddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.TryAddSingleton<IConversionService>(DefaultConversionService.Singleton);
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();

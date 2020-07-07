@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Services;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,13 +11,8 @@ namespace Steeltoe.Messaging
     /// <summary>
     /// An abstraction that defines methods for sending messages;
     /// </summary>
-    public interface IMessageChannel
+    public interface IMessageChannel : IServiceNameAware
     {
-        /// <summary>
-        /// Gets the name of this channel
-        /// </summary>
-        string Name { get; }
-
         /// <summary>
         /// Send a message to this channel.
         /// </summary>

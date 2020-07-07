@@ -9,19 +9,24 @@ namespace Steeltoe.Messaging.Rabbit.Config
     public interface IDeclarable
     {
         /// <summary>
-        /// Gets a value indicating whether this object should be declared
+        /// Gets or sets a value indicating whether this object should be declared
         /// </summary>
-        bool Declare { get; }
+        bool ShouldDeclare { get; set; }
 
         /// <summary>
-        /// Gets a collection of Admins that should declare this object
+        /// Gets or sets a collection of Admins that should declare this object
         /// </summary>
-        List<object> Admins { get; }
+        List<object> DeclaringAdmins { get; set; }
 
         /// <summary>
-        /// Gets a value indicating whether should ignore exceptions
+        /// Gets or sets a value indicating whether should ignore exceptions
         /// </summary>
-        public bool IgnoreDeclarationExceptions { get; }
+        public bool IgnoreDeclarationExceptions { get; set; }
+
+        /// <summary>
+        /// Gets or sets the arguments for this declarable
+        /// </summary>
+        public Dictionary<string, object> Arguments { get; set; }
 
         /// <summary>
         /// Adds an argument to the declarable

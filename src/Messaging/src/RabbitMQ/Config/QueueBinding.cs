@@ -6,8 +6,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class QueueBinding : Binding
+    public class QueueBinding : Binding, IQueueBinding
     {
+        public QueueBinding(string bindingName)
+            : base(bindingName)
+        {
+        }
+
         public QueueBinding(string name, string queueDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
             : base(name, queueDestination, DestinationType.QUEUE, exchange, routingKey, arguments)
         {

@@ -8,8 +8,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public interface IRabbitListenerContainerFactory : IServiceNameAware
     {
-        public const string DEFAULT_RABBIT_LISTENER_CONTAINER_FACTORY_SERVICE_NAME = "rabbitListenerContainerFactory";
-
         IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
 
         IMessageListenerContainer CreateListenerContainer()

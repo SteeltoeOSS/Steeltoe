@@ -32,7 +32,7 @@ namespace Steeltoe.Stream.Tck
             var writer = new StringWriter();
             serializer.Serialize(writer, person);
 
-            return MessageBuilder<string>.WithPayload(writer.ToString()).Build();
+            return (IMessage<string>)MessageBuilder.WithPayload<string>(writer.ToString()).Build();
         }
     }
 }

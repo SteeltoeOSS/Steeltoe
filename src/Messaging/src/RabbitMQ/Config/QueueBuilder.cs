@@ -156,7 +156,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
             return WithArgument("x-single-active-consumer", true);
         }
 
-        public QueueBuilder Wuorum()
+        public QueueBuilder Quorum()
         {
             return WithArgument("x-queue-type", "quorum");
         }
@@ -166,7 +166,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
             return WithArgument("x-delivery-limit", limit);
         }
 
-        public Queue Build()
+        public IQueue Build()
         {
             return new Queue(_name, _durable, _exclusive, _autoDelete, Arguments);
         }

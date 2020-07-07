@@ -6,7 +6,7 @@ using Steeltoe.Messaging.Rabbit.Exceptions;
 
 namespace Steeltoe.Messaging.Rabbit.Support
 {
-    public class ConsumeOkNotReceivedException : AmqpException
+    public class ConsumeOkNotReceivedException : RabbitException
     {
         public ConsumeOkNotReceivedException(string message)
         : base(message)

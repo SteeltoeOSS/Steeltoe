@@ -2,9 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -13,16 +16,25 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class DirectChannelTest
     {
-        [Fact]
-        public void TestSend()
+        private IServiceProvider provider;
+
+        public DirectChannelTest()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+            provider = services.BuildServiceProvider();
+        }
+
+        [Fact]
+        public void TestSend()
+        {
             var target = new ThreadNameExtractingTestTarget();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(target);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             var currentId = Task.CurrentId;
             var curThreadId = Thread.CurrentThread.ManagedThreadId;
             Assert.True(channel.Send(message));
@@ -33,13 +45,10 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public async Task TestSendAsync()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
             var target = new ThreadNameExtractingTestTarget();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             channel.Subscribe(target);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(await channel.SendAsync(message));
         }
 
@@ -55,14 +64,11 @@ namespace Steeltoe.Integration.Channel.Test
              *
              *  29 million per second with increment counter in the handler
              */
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
 
             var handler = new CounterHandler();
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(channel.Send(message));
             for (var i = 0; i < 10000000; i++)
             {
@@ -75,14 +81,11 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public async Task TestSendAsyncOneHandler_10_000_000()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
 
             var handler = new CounterHandler();
             channel.Subscribe(handler);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             Assert.True(await channel.SendAsync(message));
             for (var i = 0; i < 10000000; i++)
             {
@@ -102,15 +105,12 @@ namespace Steeltoe.Integration.Channel.Test
              *  3. remove LB rwlock from UnicastingDispatcher 7.2 million/sec
              *  4. Move single handler optimization to dispatcher 7.3 million/sec
              */
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             var count1 = new CounterHandler();
             var count2 = new CounterHandler();
             channel.Subscribe(count1);
             channel.Subscribe(count2);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             for (var i = 0; i < 10000000; i++)
             {
                 channel.Send(message);
@@ -123,10 +123,7 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void TestSendFourHandlers_10_000_000()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             var count1 = new CounterHandler();
             var count2 = new CounterHandler();
             var count3 = new CounterHandler();
@@ -135,7 +132,7 @@ namespace Steeltoe.Integration.Channel.Test
             channel.Subscribe(count2);
             channel.Subscribe(count3);
             channel.Subscribe(count4);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             for (var i = 0; i < 10000000; i++)
             {
                 channel.Send(message);
@@ -150,14 +147,11 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void TestSendInSeparateThread()
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
             var latch = new CountdownEvent(1);
-            var channel = new DirectChannel(provider);
+            var channel = new DirectChannel(provider.GetService<IApplicationContext>());
             var target = new ThreadNameExtractingTestTarget(latch);
             channel.Subscribe(target);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             var thread = new Thread(() => channel.Send(message));
             thread.Name = "test-thread";
             thread.Start();

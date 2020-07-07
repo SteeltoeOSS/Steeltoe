@@ -18,7 +18,6 @@ namespace Steeltoe.Stream.Extensions
         {
             var registry = new DefaultBinderTypeRegistry();
             services.TryAddSingleton<IBinderTypeRegistry>(registry);
-
             services.AddBinderServices(registry, configuration);
 
             return services;

@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.Support
 
             if (!type.IsAssignableFrom(value.GetType()))
             {
-                _logger?.LogDebug("Skipping header '" + name + "': expected type [" + type + "], but got [" + value.GetType() + "]");
+                _logger?.LogDebug("Skipping header '{headerName}': expected type [{type}], but got [{valueType}]", name, type, value.GetType());
                 return default;
             }
             else

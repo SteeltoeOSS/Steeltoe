@@ -10,6 +10,10 @@ namespace Steeltoe.Messaging.Converter
 {
     public class SimpleMessageConverter : IMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
         public virtual object FromMessage(IMessage message, Type targetClass)
         {
             var payload = message.Payload;
@@ -21,18 +25,18 @@ namespace Steeltoe.Messaging.Converter
             return (T)FromMessage(message, typeof(T));
         }
 
-        public virtual IMessage ToMessage(object payload, IMessageHeaders headers = null)
+        public virtual IMessage ToMessage(object payload, IMessageHeaders headers)
         {
             if (headers != null)
             {
-                var accessor = MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(headers, typeof(MessageHeaderAccessor));
+                var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
                 if (accessor != null && accessor.IsMutable)
                 {
-                    return MessageBuilder<object>.CreateMessage(payload, accessor.MessageHeaders);
+                    return MessageBuilder.CreateMessage(payload, accessor.MessageHeaders);
                 }
             }
 
-            return MessageBuilder<object>.WithPayload(payload).CopyHeaders(headers).Build();
+            return MessageBuilder.WithPayload(payload).CopyHeaders(headers).Build();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void SupportsTargetClass()
         {
-            var message = MessageBuilder<string>.WithPayload("ABC").Build();
+            var message = MessageBuilder.WithPayload("ABC").Build();
             var converter = new TestMessageConverter();
             Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
 
@@ -25,7 +25,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void SupportsMimeType()
         {
-            var message = MessageBuilder<string>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
             var converter = new TestMessageConverter();
             Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void SupportsMimeTypeNotSupported()
         {
-            var message = MessageBuilder<string>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON).Build();
             var converter = new TestMessageConverter();
             Assert.Null(converter.FromMessage(message, typeof(string)));
@@ -43,7 +43,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void SupportsMimeTypeNotSpecified()
         {
-            var message = MessageBuilder<string>.WithPayload("ABC").Build();
+            var message = MessageBuilder.WithPayload("ABC").Build();
             var converter = new TestMessageConverter();
             Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
         }
@@ -51,7 +51,7 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void SupportsMimeTypeNoneConfigured()
         {
-            var message = MessageBuilder<string>.WithPayload(
+            var message = MessageBuilder.WithPayload(
                     "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON).Build();
             var converter = new TestMessageConverter(new List<MimeType>());
 
@@ -61,13 +61,15 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void CanConvertFromStrictContentTypeMatch()
         {
-            var converter = new TestMessageConverter(new List<MimeType>() { MimeTypeUtils.TEXT_PLAIN });
-            converter.StrictContentTypeMatch = true;
+            var converter = new TestMessageConverter(new List<MimeType>() { MimeTypeUtils.TEXT_PLAIN })
+            {
+                StrictContentTypeMatch = true
+            };
 
-            var message = MessageBuilder<string>.WithPayload("ABC").Build();
+            var message = MessageBuilder.WithPayload("ABC").Build();
             Assert.False(converter.CanConvertFrom(message, typeof(string)));
 
-            message = MessageBuilder<string>.WithPayload("ABC")
+            message = MessageBuilder.WithPayload("ABC")
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
             Assert.True(converter.CanConvertFrom(message, typeof(string)));
         }
@@ -82,8 +84,10 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void ToMessageWithHeaders()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
+            var map = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
             var headers = new MessageHeaders(map);
             var converter = new TestMessageConverter();
             var message = converter.ToMessage("ABC", headers);
@@ -121,6 +125,8 @@ namespace Steeltoe.Messaging.Converter.Test
 
         private class TestMessageConverter : AbstractMessageConverter
         {
+            public override string ServiceName { get; set; } = nameof(TestMessageConverter);
+
             public TestMessageConverter()
                 : base(MimeTypeUtils.TEXT_PLAIN)
             {

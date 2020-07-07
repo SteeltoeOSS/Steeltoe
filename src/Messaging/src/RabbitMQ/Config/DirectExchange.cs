@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class DirectExchange : AbstractExchange
+    public class DirectExchange : AbstractExchange, IDirectExchange
     {
         public static readonly DirectExchange DEFAULT = new DirectExchange(string.Empty);
 
@@ -25,6 +25,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
         }
 
-        public override string Type { get; } = ExchangeTypes.DIRECT;
+        public override string Type { get; } = ExchangeType.DIRECT;
     }
 }

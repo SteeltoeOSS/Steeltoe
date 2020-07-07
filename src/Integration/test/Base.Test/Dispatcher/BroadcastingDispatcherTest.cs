@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -31,6 +33,9 @@ namespace Steeltoe.Integration.Dispatcher.Test
         public BroadcastingDispatcherTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             provider = services.BuildServiceProvider();
         }
@@ -38,7 +43,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void SingleTargetWithoutTaskExecutor()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.Dispatch(messageMock.Object);
             targetMock1.Verify((h) => h.HandleMessage(messageMock.Object));
@@ -49,7 +54,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         {
             var latch = new CountdownEvent(1);
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            var dispatcher = new BroadcastingDispatcher(provider, TaskScheduler.Default);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.Dispatch(messageMock.Object);
             Assert.True(latch.Wait(3000));
@@ -59,7 +64,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void MultipleTargetsWithoutTaskExecutor()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -76,7 +81,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            var dispatcher = new BroadcastingDispatcher(provider, TaskScheduler.Default);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -94,7 +99,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            var dispatcher = new BroadcastingDispatcher(provider, new PartialFailingTaskScheduler(false, true, true));
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, true, true));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -112,7 +117,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            var dispatcher = new BroadcastingDispatcher(provider, new PartialFailingTaskScheduler(true, false, true));
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, false, true));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -130,7 +135,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock2.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
             targetMock3.Setup((h) => h.HandleMessage(messageMock.Object)).Callback(() => latch.Signal());
-            var dispatcher = new BroadcastingDispatcher(provider, new PartialFailingTaskScheduler(true, true, false));
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(true, true, false));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -144,7 +149,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void MultipleTargetsAllFail()
         {
-            var dispatcher = new BroadcastingDispatcher(provider, new PartialFailingTaskScheduler(false, false, false));
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), new PartialFailingTaskScheduler(false, false, false));
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -157,7 +162,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void NoDuplicateSubscription()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock1.Object);
@@ -168,7 +173,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void RemoveConsumerBeforeSend()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -182,7 +187,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void RemoveConsumerBetweenSends()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             dispatcher.AddHandler(targetMock2.Object);
             dispatcher.AddHandler(targetMock3.Object);
@@ -197,13 +202,13 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void ApplySequenceDisabledByDefault()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             var messages = new ConcurrentQueue<IMessage>();
             var target1 = new MessageStoringTestEndpoint(messages);
             var target2 = new MessageStoringTestEndpoint(messages);
             dispatcher.AddHandler(target1);
             dispatcher.AddHandler(target2);
-            dispatcher.Dispatch(new GenericMessage("test"));
+            dispatcher.Dispatch(Message.Create("test"));
             Assert.Equal(2, messages.Count);
 
             Assert.True(messages.TryDequeue(out var message));
@@ -222,7 +227,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void ApplySequenceEnabled()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.ApplySequence = true;
             var messages = new ConcurrentQueue<IMessage>();
             var target1 = new MessageStoringTestEndpoint(messages);
@@ -231,7 +236,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             dispatcher.AddHandler(target1);
             dispatcher.AddHandler(target2);
             dispatcher.AddHandler(target3);
-            IMessage inputMessage = new GenericMessage("test");
+            IMessage inputMessage = Message.Create("test");
             var originalId = inputMessage.Headers.Id;
             dispatcher.Dispatch(inputMessage);
             Assert.Equal(3, messages.Count);
@@ -264,7 +269,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void TestExceptionEnhancement()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException("Mock Exception"));
 
@@ -282,10 +287,10 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void TestNoExceptionEnhancement()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             dispatcher.AddHandler(targetMock1.Object);
             targetMock1.Object.HandleMessage(messageMock.Object);
-            var dontReplaceThisMessage = Support.MessageBuilder.WithPayload("x").Build();
+            var dontReplaceThisMessage = Support.IntegrationMessageBuilder.WithPayload("x").Build();
             targetMock1.Setup((h) => h.HandleMessage(messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
 
             try
@@ -302,21 +307,21 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void TestNoHandler()
         {
-            var dispatcher = new BroadcastingDispatcher(provider);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>());
             Assert.True(dispatcher.Dispatch(messageMock.Object));
         }
 
         [Fact]
         public void TestNoHandlerWithExecutor()
         {
-            var dispatcher = new BroadcastingDispatcher(provider, TaskScheduler.Default);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
             Assert.True(dispatcher.Dispatch(messageMock.Object));
         }
 
         [Fact]
         public void TestNoHandlerWithRequiredSubscriber()
         {
-            var dispatcher = new BroadcastingDispatcher(provider, true);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), true);
             try
             {
                 dispatcher.Dispatch(messageMock.Object);
@@ -331,7 +336,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
         [Fact]
         public void TestNoHandlerWithExecutorWithRequiredSubscriber()
         {
-            var dispatcher = new BroadcastingDispatcher(provider, TaskScheduler.Default, true);
+            var dispatcher = new BroadcastingDispatcher(provider.GetService<IApplicationContext>(), TaskScheduler.Default, true);
             try
             {
                 dispatcher.Dispatch(messageMock.Object);

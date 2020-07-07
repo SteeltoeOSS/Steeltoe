@@ -11,11 +11,15 @@ namespace Steeltoe.Stream.Converter
 {
     public class ObjectStringMessageConverter : AbstractMessageConverter
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(ObjectStringMessageConverter);
+
         public ObjectStringMessageConverter()
         : base(new MimeType("text", "*", EncodingUtils.Utf8))
         {
             StrictContentTypeMatch = true;
         }
+
+        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public override bool CanConvertFrom(IMessage message, Type targetClass)
         {

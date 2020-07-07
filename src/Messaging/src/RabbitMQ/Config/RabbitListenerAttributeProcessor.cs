@@ -7,6 +7,7 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Order;
+using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Rabbit.Attributes;
@@ -24,51 +25,59 @@ using System.Threading;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class RabbitListenerAttributeProcessor
+    public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcessor, IOrdered
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerAttributeProcessor);
+
         private readonly List<RabbitListenerMetadata> _rabbitListenerMetadata;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private int _counter;
 
         public RabbitListenerAttributeProcessor(
             IApplicationContext applicationContext,
-            RabbitListenerEndpointRegistry endpointRegistry,
+            IRabbitListenerEndpointRegistry endpointRegistry,
+            IRabbitListenerEndpointRegistrar registrar,
+            IMessageHandlerMethodFactory messageHandlerMethodFactory,
             IEnumerable<RabbitListenerMetadata> rabbitListeners,
-            ILogger logger = null)
+            ILoggerFactory loggerFactory = null)
         {
             ApplicationContext = applicationContext;
             EndpointRegistry = endpointRegistry;
-            Registrar = new RabbitListenerEndpointRegistrar()
-            {
-                EndpointRegistry = endpointRegistry
-            };
-            MessageHandlerMethodFactory = new RabbitHandlerMethodFactoryAdapter(this);
+            registrar.EndpointRegistry = endpointRegistry;
+            Registrar = registrar;
+            MessageHandlerMethodFactory = messageHandlerMethodFactory;
             _rabbitListenerMetadata = rabbitListeners.ToList();
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory?.CreateLogger<RabbitListenerAttributeProcessor>();
         }
 
         public IApplicationContext ApplicationContext { get; set; }
 
         public int Order { get; } = AbstractOrdered.LOWEST_PRECEDENCE;
 
-        public IServiceExpressionResolver Resolver { get; set; } // = new StandardBeanExpressionResolver();
+        public IServiceExpressionResolver Resolver { get; set; } // = new StandardBeanExpressionResolver(_loggerFactory?.CreateLogger<StandardBeanExpressionResolver>());
 
         public IServiceExpressionContext ExpressionContext { get; set; }
 
         public IServiceResolver ServiceResolver { get; set; }
 
-        public RabbitListenerEndpointRegistrar Registrar { get; }
+        public IRabbitListenerEndpointRegistrar Registrar { get; }
 
-        public RabbitListenerEndpointRegistry EndpointRegistry { get; }
+        public IRabbitListenerEndpointRegistry EndpointRegistry { get; }
 
-        public Encoding Charset { get; set; }
+        public Encoding Charset { get; set; } = EncodingUtils.Utf8;
 
-        public string ContainerFactoryServiceName { get; set; } = IRabbitListenerContainerFactory.DEFAULT_RABBIT_LISTENER_CONTAINER_FACTORY_SERVICE_NAME;
+        public string ContainerFactoryServiceName { get; set; } = DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME;
 
-        private RabbitHandlerMethodFactoryAdapter MessageHandlerMethodFactory { get; }
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+        internal IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
 
         public void Initialize()
         {
+            _logger?.LogDebug("RabbitListenerAttributeProcessor initializing");
+
             foreach (var metadata in _rabbitListenerMetadata)
             {
                 var bean = CreateTargetBean(metadata.TargetClass);
@@ -102,9 +111,10 @@ namespace Steeltoe.Messaging.Rabbit.Config
             var handlerMethodFactory = Registrar.MessageHandlerMethodFactory;
             if (handlerMethodFactory != null)
             {
-                MessageHandlerMethodFactory.Factory = handlerMethodFactory;
+                MessageHandlerMethodFactory = handlerMethodFactory;
             }
 
+            _logger?.LogDebug("Initializing IRabbitListenerEndpointRegistrar");
             Registrar.Initialize();
         }
 
@@ -131,12 +141,13 @@ namespace Steeltoe.Messaging.Rabbit.Config
                     defaultMethod = method;
                 }
 
+                _logger?.LogDebug("Adding RabbitHandler method {handlerMethod} from type {type}", method.ToString(), method.DeclaringType);
                 checkedMethods.Add(method);
             }
 
             foreach (var classLevelListener in classLevelListeners)
             {
-                var endpoint = new MultiMethodRabbitListenerEndpoint(ApplicationContext, checkedMethods, defaultMethod, bean);
+                var endpoint = new MultiMethodRabbitListenerEndpoint(ApplicationContext, checkedMethods, defaultMethod, bean, _loggerFactory);
                 ProcessListener(endpoint, classLevelListener, bean, bean.GetType(), beanName);
             }
         }
@@ -146,36 +157,27 @@ namespace Steeltoe.Messaging.Rabbit.Config
             endpoint.MessageHandlerMethodFactory = MessageHandlerMethodFactory;
             endpoint.Id = GetEndpointId(rabbitListener);
             endpoint.SetQueueNames(ResolveQueues(rabbitListener));
-            endpoint.Concurrency = ResolveExpressionAsInteger(rabbitListener.Concurrency, "concurrency");
+            endpoint.Concurrency = ResolveExpressionAsInteger(rabbitListener.Concurrency, "Concurrency");
             endpoint.ApplicationContext = ApplicationContext;
-            endpoint.ReturnExceptions = ResolveExpressionAsBoolean(rabbitListener.ReturnExceptions);
-            var errorHandler = ResolveExpression(rabbitListener.ErrorHandler);
-            if (errorHandler is IRabbitListenerErrorHandler)
+            endpoint.ReturnExceptions = ResolveExpressionAsBoolean(rabbitListener.ReturnExceptions, "ReturnExceptions");
+
+            var group = rabbitListener.Group;
+            if (!string.IsNullOrEmpty(group))
             {
-                endpoint.ErrorHandler = (IRabbitListenerErrorHandler)errorHandler;
-            }
-            else if (errorHandler is string errorHandlerName)
-            {
-                if (!string.IsNullOrEmpty(errorHandlerName))
-                {
-                    endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("Error handler must be a service name or IRabbitListenerErrorHandler, not a " + errorHandler.GetType().ToString());
+                endpoint.Group = group;
             }
 
             var autoStartup = rabbitListener.AutoStartup;
             if (!string.IsNullOrEmpty(autoStartup))
             {
-                endpoint.AutoStartup = ResolveExpressionAsBoolean(autoStartup);
+                endpoint.AutoStartup = ResolveExpressionAsBoolean(autoStartup, "AutoStartup");
             }
 
             endpoint.Exclusive = rabbitListener.Exclusive;
 
-            endpoint.Priority = ResolveExpressionAsInteger(rabbitListener.Priority, "priority");
+            endpoint.Priority = ResolveExpressionAsInteger(rabbitListener.Priority, "Priority");
 
+            ResolveErrorHandler(endpoint, rabbitListener);
             ResolveAdmin(endpoint, rabbitListener, target);
             ResolveAckMode(endpoint, rabbitListener);
             ResolvePostProcessor(endpoint, rabbitListener, target, beanName);
@@ -186,7 +188,8 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
         {
-            var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _logger);
+            _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method.ToString(), method.DeclaringType);
+            var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory);
             endpoint.Method = method;
             ProcessListener(endpoint, rabbitListener, bean, method, beanName);
         }
@@ -227,7 +230,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
                 if (factory == null)
                 {
                     throw new InvalidOperationException("Could not register rabbit listener endpoint on [" +
-                            factoryTarget + "], no IRabbitListenerContainerFactory with id '" + name + "' was found");
+                            factoryTarget + "], no IRabbitListenerContainerFactory with id '" + containerFactoryBeanName + "' was found");
                 }
             }
 
@@ -244,7 +247,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
                     throw new InvalidOperationException("IApplicationContext must be set to resolve RabbitAdmin by name");
                 }
 
-                endpoint.Admin = ApplicationContext.GetService<IAmqpAdmin>(rabbitAdmin);
+                endpoint.Admin = ApplicationContext.GetService<IRabbitAdmin>(rabbitAdmin);
                 if (endpoint.Admin == null)
                 {
                     throw new InvalidOperationException("Could not register rabbit listener endpoint on [" +
@@ -253,69 +256,96 @@ namespace Steeltoe.Messaging.Rabbit.Config
             }
         }
 
-        private void ResolveAckMode(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener)
+        private void ResolveErrorHandler(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener)
         {
-            var ackModeAttr = rabbitListener.AckMode;
-            if (!string.IsNullOrEmpty(ackModeAttr))
+            if (!string.IsNullOrEmpty(rabbitListener.ErrorHandler))
             {
-                var ackMode = ResolveExpression(ackModeAttr);
-                if (ackMode is string)
+                var errorHandler = ResolveExpression(rabbitListener.ErrorHandler, typeof(IRabbitListenerErrorHandler), "ErrorHandler");
+                if (errorHandler is IRabbitListenerErrorHandler)
                 {
-                    endpoint.AckMode = (AcknowledgeMode)Enum.Parse(typeof(AcknowledgeMode), (string)ackMode);
+                    endpoint.ErrorHandler = (IRabbitListenerErrorHandler)errorHandler;
                 }
-                else if (ackMode is AcknowledgeMode)
+                else if (errorHandler is string errorHandlerName)
                 {
-                    endpoint.AckMode = (AcknowledgeMode)ackMode;
+                    if (ApplicationContext == null)
+                    {
+                        throw new InvalidOperationException("IApplicationContext must be set to resolve ErrorHandler by name");
+                    }
+
+                    endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
+                    if (endpoint.ErrorHandler == null)
+                    {
+                        throw new InvalidOperationException("Failed to resolve ErrorHandler by name using: " + errorHandlerName);
+                    }
                 }
                 else
                 {
-                    throw new InvalidOperationException("AckMode must resolve to a String or AcknowledgeMode");
+                    throw new InvalidOperationException("ErrorHandler must resolve to a String or IRabbitListenerErrorHandler");
                 }
             }
         }
 
-        private bool ResolveExpressionAsBoolean(string value, bool defaultValue = false)
+        private void ResolveAckMode(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener)
         {
-            var resolved = ResolveExpression(value);
-            if (resolved is bool)
+            if (!string.IsNullOrEmpty(rabbitListener.AckMode))
             {
-                return (bool)resolved;
+                var ackMode = ResolveExpression(rabbitListener.AckMode, typeof(AcknowledgeMode), "AckMode");
+                if (ackMode is AcknowledgeMode mode)
+                {
+                    endpoint.AckMode = mode;
+                }
+                else if (ackMode is string ackModeString)
+                {
+                    endpoint.AckMode = (AcknowledgeMode)Enum.Parse(typeof(AcknowledgeMode), ackModeString);
+                }
+                else
+                {
+                    throw new InvalidOperationException("AckMode must resolve to a String or AcknowledgeMode enumeration");
+                }
             }
-            else if (resolved is string)
+        }
+
+        private bool ResolveExpressionAsBoolean(string value, string propertyName, bool defaultValue = false)
+        {
+            if (!string.IsNullOrEmpty(value))
             {
-                if (bool.TryParse((string)resolved, out var result))
+                var resolved = ResolveExpression(value, typeof(bool), propertyName);
+                if (resolved is bool)
+                {
+                    return (bool)resolved;
+                }
+                else if (resolved is string resolvedString)
+                {
+                    if (bool.TryParse((string)resolvedString, out var result))
+                    {
+                        return result;
+                    }
+
+                    throw new InvalidOperationException("Unable to resolve " + propertyName + " to a bool using " + resolvedString);
+                }
+            }
+
+            return defaultValue;
+        }
+
+        private int? ResolveExpressionAsInteger(string value, string propertyName)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                var resolved = ResolveExpression(value, typeof(int), propertyName);
+                if (resolved is int)
+                {
+                    return (int)resolved;
+                }
+                else if (resolved is string resolvedString && int.TryParse((string)resolvedString, out var result))
                 {
                     return result;
                 }
 
-                return defaultValue;
-            }
-            else
-            {
-                return defaultValue;
-            }
-        }
-
-        private int? ResolveExpressionAsInteger(string value, string attribute)
-        {
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
+                throw new InvalidOperationException("Unable to resolve " + propertyName + " to an int using " + resolved);
             }
 
-            var resolved = ResolveExpression(value);
-            if (resolved is string && int.TryParse((string)resolved, out var result))
-            {
-                return result;
-            }
-            else if (resolved is int)
-            {
-                return (int)resolved;
-            }
-            else
-            {
-                throw new InvalidOperationException("The [" + attribute + "] must resolve to a int?. Resolved to [" + resolved.GetType() + "] for [" + value + "]");
-            }
+            return null;
         }
 
         private string[] ResolveQueues(RabbitListenerAttribute rabbitListener)
@@ -327,11 +357,55 @@ namespace Steeltoe.Messaging.Rabbit.Config
             {
                 for (var i = 0; i < queues.Length; i++)
                 {
-                    ResolveAsString(ResolveExpression(queues[i]), result, true, "Queues");
+                    var queueExpression = queues[i];
+                    ResolveQueue(queueExpression, result);
                 }
             }
 
+            var bindings = rabbitListener.Bindings;
+            if (bindings.Length > 0)
+            {
+                ResolveBindingDeclaration(rabbitListener, result);
+            }
+
             return result.ToArray();
+        }
+
+        private void ResolveQueue(string queueExpression, List<string> results)
+        {
+            string qRef = queueExpression;
+            var queue = ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") as IQueue;
+            if (queue == null)
+            {
+                qRef = Resolve(queueExpression);
+                queue = ApplicationContext.GetService<IQueue>(qRef);
+            }
+
+            if (queue != null)
+            {
+                qRef = queue.QueueName;
+            }
+
+            results.Add(qRef);
+        }
+
+        private void ResolveBindingDeclaration(RabbitListenerAttribute rabbitListener, List<string> results)
+        {
+            foreach (var bindingExpression in rabbitListener.Bindings)
+            {
+                var binding = ResolveExpression(bindingExpression, typeof(IBinding), "Binding(s)") as IBinding;
+                if (binding == null)
+                {
+                    var bindingName = Resolve(bindingExpression);
+                    binding = ApplicationContext.GetService<IBinding>(bindingName);
+                    if (binding == null)
+                    {
+                        throw new InvalidOperationException("Unable to resolve binding: " + bindingExpression + " using: " + bindingName);
+                    }
+                }
+
+                ResolveQueue(binding.Destination, results);
+            }
         }
 
         private void ResolveAsString(object resolvedValue, List<string> result, bool canBeQueue, string what)
@@ -342,13 +416,14 @@ namespace Steeltoe.Messaging.Rabbit.Config
                 resolvedValueToUse = new List<string>((string[])resolvedValue);
             }
 
-            if (canBeQueue && resolvedValueToUse is Config.Queue)
+            if (canBeQueue && resolvedValueToUse is Config.IQueue)
             {
-                result.Add(((Config.Queue)resolvedValueToUse).Name);
+                result.Add(((Config.IQueue)resolvedValueToUse).QueueName);
             }
             else if (resolvedValueToUse is string)
             {
-                result.Add((string)resolvedValueToUse);
+                var asString = resolvedValueToUse as string;
+                result.Add(asString);
             }
             else if (resolvedValueToUse is IEnumerable)
             {
@@ -360,18 +435,63 @@ namespace Steeltoe.Messaging.Rabbit.Config
             else
             {
                 throw new InvalidOperationException(
-                    string.Format("RabbitListenerAttribute." + what + " can't resolve {0} as a String[] or a String " + (canBeQueue ? "or a Queue" : string.Empty), resolvedValue));
+                    string.Format("RabbitListenerAttribute " + what + " can't resolve {0} as a String[] or a String " + (canBeQueue ? "or a Queue" : string.Empty), resolvedValue));
             }
         }
 
-        private object ResolveExpression(string value)
+        private object ResolveExpression(string value, Type expectedType, string propertyName)
         {
             var resolvedValue = Resolve(value);
 
-            // TODO: This needs to handle #{} and !{} with beanreferences '@'
-            if (Resolver != null && ExpressionContext != null)
+            // TODO: This needs to handle #{} with beanreferences '@'
+            if (ConfigUtils.IsExpression(resolvedValue))
             {
-                return Resolver.Evaluate(resolvedValue, ExpressionContext);
+                var expression = ConfigUtils.ExtractExpressionString(resolvedValue);
+
+                // could be prop placeholder inside #{ ${foo:bar?xyz} }
+                expression = Resolve(expression);
+                if (expectedType == typeof(string))
+                {
+                    return expression;
+                }
+                else if (expectedType == typeof(int))
+                {
+                    // We assume its an int literal: eg. #{100}
+                    if (int.TryParse(expression, out var result))
+                    {
+                        return result;
+                    }
+                }
+                else if (expectedType.IsEnum)
+                {
+                    var result = Enum.Parse(expectedType, expression, true);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+                else if (expectedType == typeof(bool) && bool.TryParse(expression, out bool result))
+                {
+                    return result;
+                }
+
+                // Handle #{@bean} and #{@bean}
+                if (ApplicationContext == null)
+                {
+                    throw new InvalidOperationException("Unable to resolve expressions, no ApplicationContext present");
+                }
+
+                // Strip @ if present
+                var servicename = ConfigUtils.ExtractServiceName(expression);
+
+                // use service name to lookup
+                var reference = ApplicationContext.GetService(servicename, expectedType);
+                if (reference != null)
+                {
+                    return reference;
+                }
+
+                throw new InvalidOperationException(string.Format("Unable to resolve expression {0} for RabbitListener property {1}", value, propertyName));
             }
 
             return resolvedValue;
@@ -379,16 +499,17 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         private string Resolve(string value)
         {
+            string result = value;
             if (ApplicationContext != null)
             {
                 var config = ApplicationContext.Configuration;
                 if (config != null)
                 {
-                    return PropertyPlaceholderHelper.ResolvePlaceholders(value, config, _logger);
+                    result = PropertyPlaceholderHelper.ResolvePlaceholders(value, config, _logger);
                 }
             }
 
-            return value;
+            return result;
         }
 
         private string GetEndpointId(RabbitListenerAttribute rabbitListener)
@@ -407,78 +528,14 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
             try
             {
+                _logger?.LogDebug("Creating RabbitListener service {serviceType}.", implementation.ToString());
                 return ApplicationContext.ServiceProvider.GetService(implementation);
             }
             catch (Exception e)
             {
                 // Log
+                _logger?.LogError(e, "Error creating RabbitListener service {serviceType}.", implementation);
                 throw new InvalidOperationException("Unable to CreateInstance of type containing RabbitListener method, Type: " + implementation, e);
-            }
-        }
-
-        private class RabbitHandlerMethodFactoryAdapter : IMessageHandlerMethodFactory
-        {
-            private readonly RabbitListenerAttributeProcessor _processor;
-            private IMessageHandlerMethodFactory _factory;
-
-            public IMessageHandlerMethodFactory Factory
-            {
-                get
-                {
-                    if (_factory == null)
-                    {
-                        _factory = CreateDefaultMessageHandlerMethodFactory();
-                    }
-
-                    return _factory;
-                }
-
-                set
-                {
-                    _factory = value;
-                }
-            }
-
-            public RabbitHandlerMethodFactoryAdapter(RabbitListenerAttributeProcessor processor)
-            {
-                _processor = processor;
-            }
-
-            public IInvocableHandlerMethod CreateInvocableHandlerMethod(object bean, MethodInfo method)
-            {
-                return Factory.CreateInvocableHandlerMethod(bean, method);
-            }
-
-            private IMessageHandlerMethodFactory CreateDefaultMessageHandlerMethodFactory()
-            {
-                var defaultFactory = new DefaultMessageHandlerMethodFactory();
-                var conversionService = new DefaultConversionService();
-                conversionService.AddConverter(new BytesToStringConverter(_processor.Charset));
-                defaultFactory.ConversionService = conversionService;
-                return defaultFactory;
-            }
-        }
-
-        private class BytesToStringConverter : IGenericConverter
-        {
-            private readonly Encoding _charset;
-
-            public BytesToStringConverter(Encoding charset)
-            {
-                _charset = charset;
-                ConvertibleTypes = new HashSet<(Type Source, Type Target)>() { (typeof(byte[]), typeof(string)) };
-            }
-
-            public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
-
-            public object Convert(object source, Type sourceType, Type targetType)
-            {
-                if (!(source is byte[] asByteArray))
-                {
-                    return null;
-                }
-
-                return _charset.GetString(asByteArray);
             }
         }
     }

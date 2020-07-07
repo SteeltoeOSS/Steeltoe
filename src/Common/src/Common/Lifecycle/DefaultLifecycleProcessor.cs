@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Lifecycle
 {
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class DefaultLifecycleProcessor : ILifecycleProcessor
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         private readonly List<ILifecycle> _lifecyclesServices;
 
-        public DefaultLifecycleProcessor(IEnumerable<ILifecycle> lifecyclesServices)
+        public DefaultLifecycleProcessor(IEnumerable<ILifecycle> lifecyclesServices, IEnumerable<ISmartLifecycle> smartLifecyclesServices)
         {
-            _lifecyclesServices = lifecyclesServices.ToList();
+            var lifecycles = lifecyclesServices.ToList();
+            lifecycles.AddRange(smartLifecyclesServices);
+            _lifecyclesServices = lifecycles;
         }
 
         public int TimeoutPerShutdownPhase { get; set; } = 30000;
@@ -45,6 +49,8 @@ namespace Steeltoe.Common.Lifecycle
             await StopServices();
             IsRunning = false;
         }
+
+        public void Dispose() => OnClose().Wait();
 
         internal static int GetPhase(ILifecycle bean)
         {

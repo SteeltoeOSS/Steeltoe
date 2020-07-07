@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
@@ -13,23 +14,23 @@ namespace Steeltoe.Integration.Channel
 {
     public class PublishSubscribeChannel : AbstractTaskSchedulerChannel
     {
-        public PublishSubscribeChannel(IServiceProvider serviceProvider, ILogger logger = null)
-        : this(serviceProvider, null, null, logger)
+        public PublishSubscribeChannel(IApplicationContext context, ILogger logger = null)
+        : this(context, null, null, logger)
         {
         }
 
-        public PublishSubscribeChannel(IServiceProvider serviceProvider, string name, ILogger logger = null)
-            : this(serviceProvider, null, name, logger)
+        public PublishSubscribeChannel(IApplicationContext context, string name, ILogger logger = null)
+            : this(context, null, name, logger)
         {
         }
 
-        public PublishSubscribeChannel(IServiceProvider serviceProvider, TaskScheduler executor, ILogger logger = null)
-            : this(serviceProvider, executor, null, logger)
+        public PublishSubscribeChannel(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+            : this(context, executor, null, logger)
         {
         }
 
-        public PublishSubscribeChannel(IServiceProvider serviceProvider, TaskScheduler executor, string name, ILogger logger = null)
-            : base(serviceProvider, new BroadcastingDispatcher(serviceProvider, executor), executor, name, logger)
+        public PublishSubscribeChannel(IApplicationContext context, TaskScheduler executor, string name, ILogger logger = null)
+            : base(context, new BroadcastingDispatcher(context, executor), executor, name, logger)
         {
             BroadcastingDispatcher.IgnoreFailures = false;
             BroadcastingDispatcher.ApplySequence = false;

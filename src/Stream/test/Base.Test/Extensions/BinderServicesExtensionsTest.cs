@@ -4,7 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Xunit;
@@ -20,6 +22,8 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddConsole());
             var config = new ConfigurationBuilder().Build();
+            container.AddSingleton<IConfiguration>(config);
+            container.AddSingleton<IApplicationContext, GenericApplicationContext>();
             container.AddBinderServices(config);
             var serviceProvider = container.BuildServiceProvider();
 

@@ -7,23 +7,41 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class Binding : AbstractDeclarable, IServiceNameAware
+    public class Binding : AbstractDeclarable, IServiceNameAware, IBinding
     {
+        internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
+        {
+            if (destinationType == DestinationType.EXCHANGE)
+            {
+                return new ExchangeBinding(bindingName, destination, exchange, routingKey, arguments);
+            }
+
+            return new QueueBinding(bindingName, destination, exchange, routingKey, arguments);
+        }
+
         public enum DestinationType
         {
             QUEUE,
             EXCHANGE
         }
 
-        public Binding(string name, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
+        public Binding(string bindingName)
+            : base(null)
+        {
+            BindingName = ServiceName = bindingName;
+        }
+
+        public Binding(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
             : base(arguments)
         {
-            Name = name;
+            BindingName = ServiceName = bindingName;
             Destination = destination;
             Type = destinationType;
             Exchange = exchange;
             RoutingKey = routingKey;
         }
+
+        public string ServiceName { get; set; }
 
         public string Destination { get; set; }
 
@@ -35,11 +53,11 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
         public bool IsDestinationQueue => Type == DestinationType.QUEUE;
 
-        public string Name { get; set; }
+        public string BindingName { get; set; }
 
         public override string ToString()
         {
-            return "Binding [destination=" + Destination + ", exchange=" + Exchange + ", routingKey="
+            return "Binding [bindingName=" + BindingName + ", destination=" + Destination + ", exchange=" + Exchange + ", routingKey="
                         + RoutingKey + ", arguments=" + Arguments + "]";
         }
     }

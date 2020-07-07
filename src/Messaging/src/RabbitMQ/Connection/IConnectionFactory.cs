@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Services;
 using System;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
-    public interface IConnectionFactory : IDisposable
+    public interface IConnectionFactory : IDisposable, IServiceNameAware
     {
         /// <summary>
         /// Gets the host name for the connection factory

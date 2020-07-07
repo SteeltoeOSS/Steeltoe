@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Core
     {
         public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default)
         {
-            return ConvertSendAndReceiveAsync<T>(RequiredDefaultDestination, request, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(RequiredDefaultSendDestination, request, cancellationToken);
         }
 
         public virtual Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, CancellationToken cancellationToken = default)
@@ -29,7 +29,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
         {
-            return ConvertSendAndReceiveAsync<T>(RequiredDefaultDestination, request, requestPostProcessor, cancellationToken);
+            return ConvertSendAndReceiveAsync<T>(RequiredDefaultSendDestination, request, requestPostProcessor, cancellationToken);
         }
 
         public virtual Task<T> ConvertSendAndReceiveAsync<T>(D destination, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
@@ -43,15 +43,15 @@ namespace Steeltoe.Messaging.Core
             var replyMessage = await SendAndReceiveAsync(destination, requestMessage);
             if (replyMessage != null)
             {
-                return MessageConverter.FromMessage<T>(replyMessage);
+                return DoConvert<T>(replyMessage);
             }
 
-            return await Task.FromResult(default(T));
+            return default(T);
         }
 
         public virtual Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken = default)
         {
-            return SendAndReceiveAsync(RequiredDefaultDestination, requestMessage, cancellationToken);
+            return SendAndReceiveAsync(RequiredDefaultSendDestination, requestMessage, cancellationToken);
         }
 
         public virtual Task<IMessage> SendAndReceiveAsync(D destination, IMessage requestMessage, CancellationToken cancellationToken = default)
@@ -61,7 +61,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual T ConvertSendAndReceive<T>(object request)
         {
-            return ConvertSendAndReceive<T>(RequiredDefaultDestination, request);
+            return ConvertSendAndReceive<T>(RequiredDefaultSendDestination, request);
         }
 
         public virtual T ConvertSendAndReceive<T>(D destination, object request)
@@ -76,7 +76,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual T ConvertSendAndReceive<T>(object request, IMessagePostProcessor requestPostProcessor)
         {
-            return ConvertSendAndReceive<T>(RequiredDefaultDestination, request, requestPostProcessor);
+            return ConvertSendAndReceive<T>(RequiredDefaultSendDestination, request, requestPostProcessor);
         }
 
         public virtual T ConvertSendAndReceive<T>(D destination, object request, IMessagePostProcessor requestPostProcessor)
@@ -90,7 +90,7 @@ namespace Steeltoe.Messaging.Core
             var replyMessage = SendAndReceive(destination, requestMessage);
             if (replyMessage != null)
             {
-                return MessageConverter.FromMessage<T>(replyMessage);
+                return DoConvert<T>(replyMessage);
             }
 
             return default;
@@ -98,7 +98,7 @@ namespace Steeltoe.Messaging.Core
 
         public virtual IMessage SendAndReceive(IMessage requestMessage)
         {
-            return SendAndReceive(RequiredDefaultDestination, requestMessage);
+            return SendAndReceive(RequiredDefaultSendDestination, requestMessage);
         }
 
         public virtual IMessage SendAndReceive(D destination, IMessage requestMessage)

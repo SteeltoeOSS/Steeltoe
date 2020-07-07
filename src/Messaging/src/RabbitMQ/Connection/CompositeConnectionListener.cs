@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using System.Collections.Generic;
 
@@ -10,12 +11,20 @@ namespace Steeltoe.Messaging.Rabbit.Connection
     public class CompositeConnectionListener : IConnectionListener
     {
         private readonly object _lock = new object();
+        private readonly ILogger _logger;
 
         private List<IConnectionListener> _connectionListeners = new List<IConnectionListener>();
 
+        public CompositeConnectionListener(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
         public void OnClose(IConnection connection)
         {
-            foreach (var listener in _connectionListeners)
+            _logger?.LogDebug("OnClose");
+            var listeners = _connectionListeners;
+            foreach (var listener in listeners)
             {
                 listener.OnClose(connection);
             }
@@ -23,7 +32,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public void OnCreate(IConnection connection)
         {
-            foreach (var listener in _connectionListeners)
+            _logger?.LogDebug("OnCreate");
+            var listeners = _connectionListeners;
+            foreach (var listener in listeners)
             {
                 listener.OnCreate(connection);
             }
@@ -31,37 +42,39 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public void OnShutDown(ShutdownEventArgs args)
         {
-            foreach (var listener in _connectionListeners)
+            _logger?.LogDebug("OnShutDown");
+            var listeners = _connectionListeners;
+            foreach (var listener in listeners)
             {
                 listener.OnShutDown(args);
             }
         }
 
-        public void SetListeners(List<IConnectionListener> channelListeners)
+        public void SetListeners(List<IConnectionListener> connectionListeners)
         {
-            _connectionListeners = channelListeners;
+            _connectionListeners = connectionListeners;
         }
 
-        public void AddListener(IConnectionListener channelListener)
+        public void AddListener(IConnectionListener connectionListener)
         {
             lock (_lock)
             {
                 var listeners = new List<IConnectionListener>(_connectionListeners)
                 {
-                    channelListener
+                    connectionListener
                 };
                 _connectionListeners = listeners;
             }
         }
 
-        public bool RemoveListener(IConnectionListener channelListener)
+        public bool RemoveListener(IConnectionListener connectionListener)
         {
             lock (_lock)
             {
-                if (_connectionListeners.Contains(channelListener))
+                if (_connectionListeners.Contains(connectionListener))
                 {
                     var listeners = new List<IConnectionListener>(_connectionListeners);
-                    listeners.Remove(channelListener);
+                    listeners.Remove(connectionListener);
                     _connectionListeners = listeners;
                     return true;
                 }

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
@@ -21,7 +22,7 @@ namespace Steeltoe.Stream.Binding
     {
         internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> _mappedListenerMethods = new Dictionary<string, List<StreamListenerHandlerMethodMapping>>();
 
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
         private readonly IOptionsMonitor<SpringIntegrationOptions> _springIntegrationOptionsMonitor;
         private readonly IDestinationResolver<IMessageChannel> _binderAwareChannelResolver;
         private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
@@ -29,7 +30,7 @@ namespace Steeltoe.Stream.Binding
         private readonly List<IStreamListenerMethod> _streamListenerMethods;
 
         public StreamListenerAttributeProcessor(
-            IServiceProvider serviceProvider,
+            IApplicationContext context,
             IOptionsMonitor<SpringIntegrationOptions> springIntegrationOptionsMonitor,
             IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters,
             IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters,
@@ -38,13 +39,13 @@ namespace Steeltoe.Stream.Binding
             IEnumerable<IStreamListenerSetupMethodOrchestrator> methodOrchestrators,
             IEnumerable<IStreamListenerMethod> methods)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
             _springIntegrationOptionsMonitor = springIntegrationOptionsMonitor;
             _binderAwareChannelResolver = binderAwareChannelResolver;
             _messageHandlerMethodFactory = messageHandlerMethodFactory;
             _streamListenerMethods = methods.ToList();
             _methodOrchestrators = methodOrchestrators.ToList();
-            _methodOrchestrators.Add(new DefaultStreamListenerSetupMethodOrchestrator(this, serviceProvider, streamListenerParameterAdapters, streamListenerResultAdapters));
+            _methodOrchestrators.Add(new DefaultStreamListenerSetupMethodOrchestrator(this, context, streamListenerParameterAdapters, streamListenerResultAdapters));
         }
 
         private SpringIntegrationOptions IntegrationOptions
@@ -75,7 +76,7 @@ namespace Steeltoe.Stream.Binding
                     var targetBean = CreateTargetBean(mapping.Implementation);
 
                     var invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetBean, mapping.Method);
-                    var streamListenerMessageHandler = new StreamListenerMessageHandler(_serviceProvider, invocableHandlerMethod, mapping.CopyHeaders, IntegrationOptions.MessageHandlerNotPropagatedHeaders);
+                    var streamListenerMessageHandler = new StreamListenerMessageHandler(_context, invocableHandlerMethod, mapping.CopyHeaders, IntegrationOptions.MessageHandlerNotPropagatedHeaders);
 
                     if (!string.IsNullOrEmpty(mapping.DefaultOutputChannel))
                     {
@@ -84,7 +85,7 @@ namespace Steeltoe.Stream.Binding
 
                     if (!string.IsNullOrEmpty(mapping.Condition))
                     {
-                        var parser = _serviceProvider.GetService<IExpressionParser>();
+                        var parser = _context.GetService<IExpressionParser>();
                         if (parser == null)
                         {
                             throw new InvalidOperationException("StreamListener attribute contains a 'Condition', but no Expression parser is configured");
@@ -115,8 +116,8 @@ namespace Steeltoe.Stream.Binding
 
                 if (handlers.Count > 1 || handlers[0].Condition != null)
                 {
-                    var evaluationContext = _serviceProvider.GetService<IEvaluationContext>();
-                    handler = new DispatchingStreamListenerMessageHandler(_serviceProvider, handlers, evaluationContext);
+                    var evaluationContext = _context.GetService<IEvaluationContext>();
+                    handler = new DispatchingStreamListenerMessageHandler(_context, handlers, evaluationContext);
                 }
                 else
                 {
@@ -130,7 +131,7 @@ namespace Steeltoe.Stream.Binding
                 //        handler.getClass().getSimpleName() + handler.hashCode(), handler);
                 // this.applicationContext
                 //    .getBean(mappedBindingEntry.getKey(), typeof(ISubscribableChannel))
-                var channel = BindingHelpers.GetBindable<ISubscribableChannel>(_serviceProvider, mappedBindingEntry.Key);
+                var channel = BindingHelpers.GetBindable<ISubscribableChannel>(_context, mappedBindingEntry.Key);
                 channel.Subscribe(handler);
             }
 
@@ -169,7 +170,7 @@ namespace Steeltoe.Stream.Binding
         {
             try
             {
-                return _serviceProvider.GetService(implementation);
+                return _context.GetService(implementation);
             }
             catch (Exception e)
             {

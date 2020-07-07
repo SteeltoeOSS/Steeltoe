@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Lifecycle
@@ -9,7 +10,7 @@ namespace Steeltoe.Common.Lifecycle
     /// <summary>
     /// Interface for processing lifecycle based services.
     /// </summary>
-    public interface ILifecycleProcessor
+    public interface ILifecycleProcessor : IDisposable
     {
         /// <summary>
         /// Start this component

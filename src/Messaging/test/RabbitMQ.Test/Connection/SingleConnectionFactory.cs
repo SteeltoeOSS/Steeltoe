@@ -12,25 +12,27 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 {
     public class SingleConnectionFactory : AbstractConnectionFactory
     {
+        public const string DEFAULT_SERVICE_NAME = "scFactory";
+
         private readonly object _connectionMonitor = new object();
 
-        public SingleConnectionFactory()
-            : this((string)null)
+        public SingleConnectionFactory(ILoggerFactory loggerFactory = null)
+            : this((string)null, loggerFactory)
         {
         }
 
-        public SingleConnectionFactory(int port)
-            : this(null, port)
+        public SingleConnectionFactory(int port, ILoggerFactory loggerFactory = null)
+            : this(null, port, loggerFactory)
         {
         }
 
-        public SingleConnectionFactory(string hostname)
-            : this(hostname, RabbitOptions.DEFAULT_PORT)
+        public SingleConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
+            : this(hostname, RabbitOptions.DEFAULT_PORT, loggerFactory)
         {
         }
 
-        public SingleConnectionFactory(string hostname, int port)
-            : base(new RabbitMQ.Client.ConnectionFactory())
+        public SingleConnectionFactory(string hostname, int port, ILoggerFactory loggerFactory = null)
+            : base(new RabbitMQ.Client.ConnectionFactory(), loggerFactory)
         {
             if (string.IsNullOrEmpty(hostname))
             {
@@ -39,17 +41,20 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             Host = hostname;
             Port = port;
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        public SingleConnectionFactory(Uri uri)
-            : base(new RabbitMQ.Client.ConnectionFactory())
+        public SingleConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
+            : base(new RabbitMQ.Client.ConnectionFactory(), loggerFactory)
         {
             Uri = uri;
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        public SingleConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory)
-            : base(rabbitConnectionFactory)
+        public SingleConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+            : base(rabbitConnectionFactory, loggerFactory)
         {
+            ServiceName = DEFAULT_SERVICE_NAME;
         }
 
         public SharedConnectionProxy Connection { get; private set; }

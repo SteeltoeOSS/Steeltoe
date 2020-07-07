@@ -9,9 +9,15 @@ namespace Steeltoe.Messaging.Rabbit.Config
 {
     public class AnonymousQueue : Queue
     {
-        public AnonymousQueue(string name)
-            : base(name, false, true, true, null)
+        public AnonymousQueue()
+            : this((Dictionary<string, object>)null)
         {
+        }
+
+        public AnonymousQueue(string serviceName)
+            : this(Base64UrlNamingStrategy.DEFAULT, null)
+        {
+            ServiceName = serviceName;
         }
 
         public AnonymousQueue(Dictionary<string, object> arguments)

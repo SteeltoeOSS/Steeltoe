@@ -18,7 +18,7 @@ namespace Steeltoe.Messaging.Support
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            var accessor = MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(message, typeof(MessageHeaderAccessor));
+            var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
             if (accessor != null && accessor.IsMutable)
             {
                 accessor.SetImmutable();

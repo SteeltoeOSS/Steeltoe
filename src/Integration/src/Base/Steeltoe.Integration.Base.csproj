@@ -20,8 +20,4 @@
     <PackageReference Include="Steeltoe.Integration.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Polly" Version="$(PollyVersion)" />
-    <PackageReference Include="Polly.Contrib.WaitAndRetry" Version="$(PollyContribVersion)" />
-  </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using System;
 
@@ -9,8 +10,8 @@ namespace Steeltoe.Integration.Handler
 {
     public abstract class AbstractReplyProducingMessageHandler : AbstractMessageProducingHandler
     {
-        protected AbstractReplyProducingMessageHandler(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        protected AbstractReplyProducingMessageHandler(IApplicationContext context)
+            : base(context)
         {
         }
 

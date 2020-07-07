@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -27,6 +28,7 @@ namespace Steeltoe.Stream.Binder
         private readonly IBinder<IMessageChannel> binder;
         private readonly SubscribableChannelBindingTargetFactory bindingTargetFactory;
         private readonly IOptions<BindingServiceOptions> options;
+        private readonly IApplicationContext context;
 
         public BinderAwareChannelResolverTest()
         {
@@ -39,6 +41,7 @@ namespace Steeltoe.Stream.Binder
             bindingTargetFactory = serviceProvider.GetServices<IBindingTargetFactory>().OfType<SubscribableChannelBindingTargetFactory>().Single();
             resolver = serviceProvider.GetService<IDestinationResolver<IMessageChannel>>() as BinderAwareChannelResolver;
             options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
+            context = serviceProvider.GetService<IApplicationContext>();
 
             Assert.NotNull(binder);
             Assert.NotNull(bindingTargetFactory);
@@ -63,7 +66,7 @@ namespace Steeltoe.Stream.Binder
             Assert.Empty(bindable.Inputs);
             Assert.Single(bindable.Outputs);
 
-            var testChannel = new DirectChannel(serviceProvider, "INPUT");
+            var testChannel = new DirectChannel(context, "INPUT");
             var latch = new CountdownEvent(1);
             IList<IMessage> received = new List<IMessage>();
             testChannel.Subscribe(new LatchedMessageHandler()

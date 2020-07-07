@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -12,12 +13,12 @@ namespace Steeltoe.Integration.Handler
 {
     public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
     {
-        protected IServiceProvider _serviceProvider;
+        protected IApplicationContext _context;
         private IIntegrationServices _integrationServices;
 
-        protected AbstractMessageHandler(IServiceProvider serviceProvider)
+        protected AbstractMessageHandler(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public IIntegrationServices IntegrationServices
@@ -26,7 +27,7 @@ namespace Steeltoe.Integration.Handler
             {
                 if (_integrationServices == null)
                 {
-                    _integrationServices = _serviceProvider.GetService<IIntegrationServices>();
+                    _integrationServices = _context.GetService<IIntegrationServices>();
                 }
 
                 return _integrationServices;

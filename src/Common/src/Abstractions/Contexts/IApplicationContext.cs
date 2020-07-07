@@ -20,6 +20,8 @@ namespace Steeltoe.Common.Contexts
 
         T GetService<T>();
 
+        object GetService(Type serviceType);
+
         IEnumerable<T> GetServices<T>();
 
         bool ContainsService(string name, Type serviceType);

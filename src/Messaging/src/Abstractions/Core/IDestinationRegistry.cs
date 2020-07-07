@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Messaging.Core
@@ -42,6 +43,6 @@ namespace Steeltoe.Messaging.Core
         /// <summary>
         /// Gets the underlying service provider the registry may be using during name lookup
         /// </summary>
-        IServiceProvider ServiceProvider { get; }
+        IApplicationContext ApplicationContext { get; }
     }
 }

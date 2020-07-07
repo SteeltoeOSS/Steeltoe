@@ -39,7 +39,13 @@ namespace Steeltoe.Common.Retry
         {
             get
             {
-                return (int)GetAttribute(RETRY_COUNT);
+                var result = (int?)GetAttribute(RETRY_COUNT);
+                if (result == null)
+                {
+                    return 0;
+                }
+
+                return result.Value;
             }
 
 #pragma warning disable S4275 // Getters and setters should access the expected fields

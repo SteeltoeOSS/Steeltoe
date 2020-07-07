@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
@@ -26,62 +28,65 @@ namespace Steeltoe.Integration.Endpoint.Test
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         }
 
         [Fact]
         public async Task ValidateExceptionIfNoErrorChannel()
         {
             var provider = services.BuildServiceProvider();
-            var outChannel = new DirectChannel(provider);
+            var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var handler = new ExceptionHandler();
             outChannel.Subscribe(handler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider);
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
 
             mps.OutputChannel = outChannel;
 
             await mps.Start();
-            Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(new GenericMessage("hello")));
+            Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
         }
 
         [Fact]
         public async Task ValidateExceptionIfSendToErrorChannelFails()
         {
             var provider = services.BuildServiceProvider();
-            var outChannel = new DirectChannel(provider);
+            var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var handler = new ExceptionHandler();
             outChannel.Subscribe(handler);
-            var errorChannel = new PublishSubscribeChannel(provider);
+            var errorChannel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             errorChannel.Subscribe(handler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider);
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
 
             mps.OutputChannel = outChannel;
             mps.ErrorChannel = errorChannel;
 
             await mps.Start();
-            Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(new GenericMessage("hello")));
+            Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
         }
 
         [Fact]
         public async Task ValidateSuccessfulErrorFlowDoesNotThrowErrors()
         {
             var provider = services.BuildServiceProvider();
-            var outChannel = new DirectChannel(provider);
+            var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
             var handler = new ExceptionHandler();
             outChannel.Subscribe(handler);
-            var errorChannel = new PublishSubscribeChannel(provider);
+            var errorChannel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
             var errorService = new SuccessfulErrorService();
-            var errorHandler = new ServiceActivatingHandler(provider, errorService);
+            var errorHandler = new ServiceActivatingHandler(provider.GetService<IApplicationContext>(), errorService);
             errorChannel.Subscribe(errorHandler);
 
-            var mps = new TestMessageProducerSupportEndpoint(provider);
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
 
             mps.OutputChannel = outChannel;
             mps.ErrorChannel = errorChannel;
 
             await mps.Start();
-            var message = new GenericMessage("hello");
+            var message = Message.Create("hello");
             mps.SendMessage(message);
             Assert.IsType<ErrorMessage>(errorService.LastMessage);
             Assert.IsType<MessageDeliveryException>(errorService.LastMessage.Payload);
@@ -92,20 +97,20 @@ namespace Steeltoe.Integration.Endpoint.Test
         [Fact]
         public async Task TestWithChannelName()
         {
-            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p, "foo"));
+            services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
             var provider = services.BuildServiceProvider();
-            var mps = new TestMessageProducerSupportEndpoint(provider);
+            var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>());
             mps.OutputChannelName = "foo";
             await mps.Start();
             Assert.NotNull(mps.OutputChannel);
-            Assert.Equal("foo", mps.OutputChannel.Name);
+            Assert.Equal("foo", mps.OutputChannel.ServiceName);
         }
 
         [Fact]
         public async Task CustomDoStop()
         {
             var provider = services.BuildServiceProvider();
-            var endpoint = new CustomEndpoint(provider);
+            var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
             Assert.Equal(0, endpoint.Count);
             Assert.False(endpoint.IsRunning);
             await endpoint.Start();
@@ -120,8 +125,8 @@ namespace Steeltoe.Integration.Endpoint.Test
 
         private class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
         {
-            public TestMessageProducerSupportEndpoint(IServiceProvider serviceProvider)
-                : base(serviceProvider)
+            public TestMessageProducerSupportEndpoint(IApplicationContext context)
+                : base(context)
             {
             }
         }
@@ -154,8 +159,8 @@ namespace Steeltoe.Integration.Endpoint.Test
             public int Count;
             public bool Stopped;
 
-            public CustomEndpoint(IServiceProvider provider)
-                : base(provider)
+            public CustomEndpoint(IApplicationContext context)
+                : base(context)
             {
             }
 

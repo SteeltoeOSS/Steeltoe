@@ -103,8 +103,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChanel2.Setup((c) => c.BasicGet("foo", false)).Returns(new R.BasicGetResult(0, false, null, null, 1, null, null));
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
             mockChanel2.Setup((c) => c.IsOpen).Returns(true);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 2;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 2
+            };
             var con = ccf.CreateConnection();
             var channel1 = con.CreateChannel(false);
             var channel2 = con.CreateChannel(false);
@@ -154,8 +156,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChanel2.Setup((c) => c.IsOpen).Returns(true);
             mockChanel3.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1
+            };
 
             var con = ccf.CreateConnection();
 
@@ -206,9 +210,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 10
+            };
 
             var con = ccf.CreateConnection();
 
@@ -218,7 +224,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -250,7 +256,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection.Object)
-                .Throws(new AmqpConnectException(null)) // Happens when brokerdown
+                .Throws(new RabbitConnectException(null)) // Happens when brokerdown
                 .Returns(mockConnection.Object);
 
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
@@ -258,9 +264,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.IsOpen).Returns(() => !brokerDown.Value);
             mockChannel1.Setup((c) => c.IsOpen).Returns(() => !brokerDown.Value);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 10
+            };
 
             var con = ccf.CreateConnection(); // .Returns(mockConnection.Object)
 
@@ -270,7 +278,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -288,7 +296,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 con.CreateChannel(false);
                 throw new Exception("Exception expected");
             }
-            catch (AmqpConnectException)
+            catch (RabbitConnectException)
             {
             }
 
@@ -310,10 +318,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
-            ccf.ChannelCacheSize = 1;
-            ccf.ConnectionLimit = 1;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+            {
+                ChannelCacheSize = 1,
+                ConnectionLimit = 1,
+                ChannelCheckoutTimeout = 10
+            };
 
             var con1 = ccf.CreateConnection(); // .Returns(mockConnection.Object)
             try
@@ -321,7 +331,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 ccf.CreateConnection();
                 throw new Exception("Exception expected");
             }
-            catch (AmqpTimeoutException)
+            catch (RabbitTimeoutException)
             {
             }
 
@@ -375,9 +385,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 10_000;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 10_000
+            };
 
             var con = ccf.CreateConnection();
             var channelOne = new AtomicReference<IModel>();
@@ -439,10 +451,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChannel1.Setup((c) => c.NextPublishSeqNo).Returns(1);
             mockChannel1.Setup((c) => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()))
                 .Callback(() => open.Value = false);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 1;
-            ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 1,
+                PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            };
             var rabbitTemplate = new RabbitTemplate(ccf);
             rabbitTemplate.ConvertAndSend("foo", "bar");
             open.Value = true;
@@ -460,9 +474,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 10
+            };
 
             var con = ccf.CreateConnection();
 
@@ -502,9 +518,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel1.Object);
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 10
+            };
 
             var con = ccf.CreateConnection();
 
@@ -542,8 +560,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
             mockChannel2.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1
+            };
 
             var con = ccf.CreateConnection();
 
@@ -588,8 +608,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChannel1.Setup((c) => c.IsOpen).Returns(true);
             mockChannel2.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1
+            };
 
             var con = ccf.CreateConnection();
             var channel1 = con.CreateChannel(true);
@@ -650,8 +672,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChannel2.Setup((c) => c.IsOpen).Returns(true);
             mockChannel3.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 2;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 2
+            };
             var con = ccf.CreateConnection();
 
             // This will return a proxy that surpresses calls to close
@@ -1008,9 +1032,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 })
                 .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
-            ccf.ConnectionCacheSize = 2;
-            ccf.ChannelCacheSize = 2;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+            {
+                ConnectionCacheSize = 2,
+                ChannelCacheSize = 2
+            };
 
             Assert.Empty(ccf._allocatedConnections);
             Assert.Empty(ccf._idleConnections);
@@ -1210,8 +1236,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 })
                 .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
-            ccf.ConnectionCacheSize = 5;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+            {
+                ConnectionCacheSize = 5
+            };
 
             Assert.Empty(ccf._allocatedConnections);
             Assert.Empty(ccf._idleConnections);
@@ -1260,8 +1288,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public void SetAddressesEmpty()
         {
             var mock = new Mock<R.ConnectionFactory>();
-            var ccf = new CachingConnectionFactory(mock.Object);
-            ccf.Host = "abc";
+            var ccf = new CachingConnectionFactory(mock.Object)
+            {
+                Host = "abc"
+            };
             ccf.SetAddresses(string.Empty);
             ccf.CreateConnection();
             mock.VerifyGet((f) => f.AutomaticRecoveryEnabled);
@@ -1309,9 +1339,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var uri = new Uri("amqp://localhost:1234/%2f");
             var mock = new Mock<R.IConnectionFactory>();
-            var ccf = new CachingConnectionFactory(mock.Object);
-
-            ccf.Uri = uri;
+            var ccf = new CachingConnectionFactory(mock.Object)
+            {
+                Uri = uri
+            };
             ccf.CreateConnection();
             mock.VerifySet((f) => f.Uri = uri);
             mock.Verify((f) => f.CreateConnection(It.IsAny<string>()));
@@ -1349,8 +1380,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            };
 
             var pccMock = new Mock<IPublisherCallbackChannel>();
             pccMock.Setup((p) => p.IsOpen).Returns(true);
@@ -1393,8 +1426,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
             mockConnection.Setup((c) => c.IsOpen).Returns(true);
             mockChannel.Setup((c) => c.IsOpen).Returns(true);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION);
-            ccf.ChannelCheckoutTimeout = 60_000;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.CONNECTION)
+            {
+                ChannelCheckoutTimeout = 60_000
+            };
             var t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             ccf.CreateConnection();
             Assert.True((DateTimeOffset.Now.ToUnixTimeMilliseconds() - t1) < 30_000);
@@ -1434,8 +1469,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public void ConfirmsSimple()
         {
             var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var cf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE;
+            var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE
+            };
             Assert.False(cf.IsSimplePublisherConfirms);
             cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.SIMPLE;
             Assert.True(cf.IsSimplePublisherConfirms);
@@ -1449,8 +1486,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public void ConfirmsCorrelated()
         {
             var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var cf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE;
+            var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                PublisherConfirmType = CachingConnectionFactory.ConfirmType.NONE
+            };
             Assert.False(cf.IsPublisherConfirms);
             cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
             Assert.True(cf.IsPublisherConfirms);
@@ -1460,9 +1499,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             Assert.False(cf.PublisherConnectionFactory.IsPublisherConfirms);
         }
 
-        protected override AbstractConnectionFactory CreateConnectionFactory(R.IConnectionFactory connectionFactory, ILogger logger = null)
+        protected override AbstractConnectionFactory CreateConnectionFactory(R.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
         {
-            return new CachingConnectionFactory(connectionFactory, logger);
+            return new CachingConnectionFactory(connectionFactory, loggerFactory);
         }
 
         private void TestConsumerChannelPhysicallyClosedWhenNotIsOpenGuts(bool confirms)
@@ -1539,10 +1578,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChannel.SetupAdd((c) => c.BasicAcks += It.IsAny<EventHandler<BasicAckEventArgs>>());
 
             mockChannel.Setup((c) => c.NextPublishSeqNo).Returns(1);
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-            ccf.ChannelCacheSize = 1;
-            ccf.ChannelCheckoutTimeout = 1;
-            ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
+            {
+                ChannelCacheSize = 1,
+                ChannelCheckoutTimeout = 1,
+                PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED
+            };
 
             var con = ccf.CreateConnection();
             var rabbitTemplate = new RabbitTemplate(ccf);
@@ -1557,7 +1598,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 rabbitTemplate.ConvertAndSend("foo", "bar"); // pending confirm
             }
 
-            Assert.Throws<AmqpTimeoutException>(() => con.CreateChannel(false));
+            Assert.Throws<RabbitTimeoutException>(() => con.CreateChannel(false));
             var n = 0;
             if (physicalClose)
             {
@@ -1624,9 +1665,11 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             mockChanel3.Setup((c) => c.IsOpen).Returns(true);
             mockChanel4.Setup((c) => c.IsOpen).Returns(true);
 
-            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, mode);
-            ccf.ChannelCacheSize = 2;
-            ccf.ChannelCheckoutTimeout = 10;
+            var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, mode)
+            {
+                ChannelCacheSize = 2,
+                ChannelCheckoutTimeout = 10
+            };
 
             ccf.AddConnectionListener(new TestCheckoutsWithRefreshedConnectionGutsListener());
             var con = ccf.CreateConnection();
@@ -1668,7 +1711,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private class TestOrderlyShutdownPublisherCallbackChannelFactory : IPublisherCallbackChannelFactory
         {
-            private Mock<IPublisherCallbackChannel> pccMock;
+            private readonly Mock<IPublisherCallbackChannel> pccMock;
 
             public TestOrderlyShutdownPublisherCallbackChannelFactory(Mock<IPublisherCallbackChannel> pccMock)
             {
@@ -1683,8 +1726,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private class TestWithConnectionFactoryCachedConnectionListener : IConnectionListener
         {
-            private AtomicReference<R.IConnection> createNotification;
-            private AtomicReference<R.IConnection> closedNotification;
+            private readonly AtomicReference<R.IConnection> createNotification;
+            private readonly AtomicReference<R.IConnection> closedNotification;
 
             public TestWithConnectionFactoryCachedConnectionListener(AtomicReference<R.IConnection> createNotification, AtomicReference<R.IConnection> closedNotification)
             {
@@ -1744,7 +1787,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private class TestWithChannelListenerListener : IChannelListener
         {
-            private AtomicInteger _atomicInteger;
+            private readonly AtomicInteger _atomicInteger;
 
             public TestWithChannelListenerListener(AtomicInteger atomicInteger)
             {

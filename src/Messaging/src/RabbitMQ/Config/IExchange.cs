@@ -3,22 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Services;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
     public interface IExchange : IDeclarable, IServiceNameAware
     {
+        string ExchangeName { get; set; }
+
         string Type { get; }
 
-        bool IsDurable { get; }
+        bool IsDurable { get; set; }
 
-        bool IsAutoDelete { get; }
+        bool IsAutoDelete { get; set; }
 
-        Dictionary<string, object> Arguments { get; }
+        bool IsDelayed { get; set; }
 
-        bool IsDelayed { get; }
-
-        bool IsInternal { get; }
+        bool IsInternal { get; set; }
     }
 }

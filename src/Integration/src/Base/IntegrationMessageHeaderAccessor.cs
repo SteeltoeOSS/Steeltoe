@@ -129,12 +129,12 @@ namespace Steeltoe.Integration
             }
         }
 
-        protected internal override bool IsReadOnly(string headerName)
+        public new bool IsReadOnly(string headerName)
         {
             return base.IsReadOnly(headerName) || readOnlyHeaders.Contains(headerName);
         }
 
-        protected internal override void VerifyType(string headerName, object headerValue)
+        protected override void VerifyType(string headerName, object headerValue)
         {
             if (headerName != null && headerValue != null)
             {

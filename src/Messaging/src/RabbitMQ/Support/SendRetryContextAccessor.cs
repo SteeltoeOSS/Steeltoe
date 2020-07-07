@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Data;
 
 namespace Steeltoe.Messaging.Rabbit.Support
 {
@@ -13,12 +12,12 @@ namespace Steeltoe.Messaging.Rabbit.Support
         public const string MESSAGE = "message";
         public const string ADDRESS = "address";
 
-        public static Message GetMessage(RetryContext context)
+        public static IMessage GetMessage(IRetryContext context)
         {
-            return (Message)context.GetAttribute(MESSAGE);
+            return (IMessage)context.GetAttribute(MESSAGE);
         }
 
-        public static Address GetAddress(RetryContext context)
+        public static Address GetAddress(IRetryContext context)
         {
             return (Address)context.GetAttribute(ADDRESS);
         }

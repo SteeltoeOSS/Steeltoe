@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Rabbit.Batch;
 using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Listener.Adapters;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         void SetupListenerContainer(IMessageListenerContainer messageListenerContainer);
 
-        IMessageConverter MessageConverter { get; set; }
+        ISmartMessageConverter MessageConverter { get; set; }
 
         bool BatchListener { get; set; }
 
@@ -31,5 +31,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         AcknowledgeMode? AckMode { get; set; }
 
         IReplyPostProcessor ReplyPostProcessor { get; set; }
+
+        string Group { get; set; }
     }
 }

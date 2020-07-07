@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -29,9 +28,9 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAndReceiveAsync()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
             var actual = await template.SendAndReceiveAsync(requestMessage);
 
@@ -43,9 +42,9 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void SendAndReceive()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
             var actual = template.SendAndReceive(requestMessage);
 
@@ -57,20 +56,20 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task SendAndReceiveAsyncMissingDestination()
         {
-            await Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAndReceiveAsync(new GenericMessage("request")));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => template.SendAndReceiveAsync(Message.Create("request")));
         }
 
         [Fact]
         public void SendAndReceiveMissingDestination()
         {
-            Assert.Throws<InvalidOperationException>(() => template.SendAndReceive(new GenericMessage("request")));
+            Assert.Throws<InvalidOperationException>(() => template.SendAndReceive(Message.Create("request")));
         }
 
         [Fact]
         public async Task SendAndReceiveAsyncToDestination()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = await template.SendAndReceiveAsync("somewhere", requestMessage);
             Assert.Equal("somewhere", template.Destination);
@@ -81,8 +80,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void SendAndReceiveToDestination()
         {
-            var requestMessage = new GenericMessage("request");
-            var responseMessage = new GenericMessage("response");
+            var requestMessage = Message.Create("request");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var actual = template.SendAndReceive("somewhere", requestMessage);
             Assert.Equal("somewhere", template.Destination);
@@ -93,8 +92,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsync()
         {
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
 
             var response = await template.ConvertSendAndReceiveAsync<string>("request");
@@ -106,8 +105,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSend()
         {
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
 
             var response = template.ConvertSendAndReceive<string>("request");
@@ -119,7 +118,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncToDestination()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request");
             Assert.Equal("somewhere", template.Destination);
@@ -130,7 +129,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendToDestination()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = template.ConvertSendAndReceive<string>("somewhere", "request");
             Assert.Equal("somewhere", template.Destination);
@@ -141,7 +140,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncToDestinationWithHeaders()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", headers);
             Assert.Equal("somewhere", template.Destination);
@@ -153,7 +152,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendToDestinationWithHeaders()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = template.ConvertSendAndReceive<string>("somewhere", "request", headers);
             Assert.Equal("somewhere", template.Destination);
@@ -165,8 +164,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
             var response = await template.ConvertSendAndReceiveAsync<string>((object)"request", postProcessor);
 
@@ -179,8 +178,8 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
-            template.DefaultDestination = "home";
+            var responseMessage = Message.Create("response");
+            template.DefaultSendDestination = "home";
             template.ReceiveMessage = responseMessage;
             var response = template.ConvertSendAndReceive<string>((object)"request", postProcessor);
 
@@ -193,7 +192,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncToDestinationWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", (IMessagePostProcessor)postProcessor);
             Assert.Equal("somewhere", template.Destination);
@@ -205,7 +204,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendToDestinationWithPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = template.ConvertSendAndReceive<string>("somewhere", "request", (IMessagePostProcessor)postProcessor);
             Assert.Equal("somewhere", template.Destination);
@@ -217,7 +216,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public async Task ConvertAndSendAsyncToDestinationWithHeadersAndPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = await template.ConvertSendAndReceiveAsync<string>("somewhere", "request", headers, postProcessor);
             Assert.Equal("somewhere", template.Destination);
@@ -230,7 +229,7 @@ namespace Steeltoe.Messaging.Core.Test
         [Fact]
         public void ConvertAndSendToDestinationWithHeadersAndPostProcessor()
         {
-            var responseMessage = new GenericMessage("response");
+            var responseMessage = Message.Create("response");
             template.ReceiveMessage = responseMessage;
             var response = template.ConvertSendAndReceive<string>("somewhere", "request", headers, postProcessor);
             Assert.Equal("somewhere", template.Destination);

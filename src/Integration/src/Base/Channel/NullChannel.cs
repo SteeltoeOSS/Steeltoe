@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Channel
     {
         private readonly ILogger _logger;
 
-        public string Name => IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
+        public string ServiceName { get; set; } = IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
 
         public NullChannel(ILogger logger = null)
         {

@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Support.Test
     {
         internal readonly TaskSchedulerSubscribableChannel _channel;
         internal readonly object _payload;
-        internal readonly IMessage<object> _message;
+        internal readonly IMessage _message;
 
         internal IMessageHandler _handler;
 
@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.Support.Test
         {
             _channel = new TaskSchedulerSubscribableChannel();
             _payload = new object();
-            _message = MessageBuilder<object>.WithPayload(_payload).Build();
+            _message = MessageBuilder.WithPayload(_payload).Build();
         }
 
         [Fact]
@@ -155,8 +155,10 @@ namespace Steeltoe.Messaging.Support.Test
             var mock2 = new Mock<IMessage>();
             var expected = mock2.Object;
 
-            var interceptor = new BeforeHandleInterceptor();
-            interceptor.MessageToReturn = expected;
+            var interceptor = new BeforeHandleInterceptor
+            {
+                MessageToReturn = expected
+            };
             _channel.AddInterceptor(interceptor);
             _channel.Subscribe(_handler);
             await _channel.Writer.WriteAsync(_message);

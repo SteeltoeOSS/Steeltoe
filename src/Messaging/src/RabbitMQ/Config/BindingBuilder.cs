@@ -10,14 +10,14 @@ namespace Steeltoe.Messaging.Rabbit.Config
 {
     public class BindingBuilder
     {
-        public static DestinationConfigurer Bind(Queue queue)
+        public static DestinationConfigurer Bind(IQueue queue)
         {
-            return new DestinationConfigurer(queue.Name, DestinationType.QUEUE);
+            return new DestinationConfigurer(queue.QueueName, DestinationType.QUEUE);
         }
 
         public static DestinationConfigurer Bind(IExchange exchange)
         {
-            return new DestinationConfigurer(exchange.Name, DestinationType.EXCHANGE);
+            return new DestinationConfigurer(exchange.ExchangeName, DestinationType.EXCHANGE);
         }
 
         private static Dictionary<string, object> CreateMapForKeys(params string[] keys)
@@ -43,10 +43,10 @@ namespace Steeltoe.Messaging.Rabbit.Config
                 Type = type;
             }
 
-            public Binding To(FanoutExchange exchange)
+            public IBinding To(FanoutExchange exchange)
             {
-                var bindingName = exchange.Name + "." + Name;
-                return new Binding(bindingName, Name, Type, exchange.Name, string.Empty, new Dictionary<string, object>());
+                var bindingName = exchange.ExchangeName + "." + Name;
+                return Binding.Create(bindingName, Name, Type, exchange.ExchangeName, string.Empty, new Dictionary<string, object>());
             }
 
             public HeadersExchangeMapConfigurer To(HeadersExchange exchange)
@@ -123,28 +123,28 @@ namespace Steeltoe.Messaging.Rabbit.Config
                     _configurer = configurer;
                 }
 
-                public Binding Exists()
+                public IBinding Exists()
                 {
-                    var bindingName = _configurer.Exchange.Name + "." + _configurer.Destination.Name;
-                    return new Binding(
+                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
                         _configurer.Destination.Type,
-                        _configurer.Exchange.Name,
+                        _configurer.Exchange.ExchangeName,
                         string.Empty,
                         CreateMapForKeys(_key));
                 }
 
-                public Binding Matches(object value)
+                public IBinding Matches(object value)
                 {
                     var map = new Dictionary<string, object>();
                     map[_key] = value;
-                    var bindingName = _configurer.Exchange.Name + "." + _configurer.Destination.Name;
-                    return new Binding(
+                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
                         _configurer.Destination.Type,
-                        _configurer.Exchange.Name,
+                        _configurer.Exchange.ExchangeName,
                         string.Empty,
                         map);
                 }
@@ -167,14 +167,14 @@ namespace Steeltoe.Messaging.Rabbit.Config
                     _configurer = configurer;
                 }
 
-                public Binding Exist()
+                public IBinding Exist()
                 {
-                    var bindingName = _configurer.Exchange.Name + "." + _configurer.Destination.Name;
-                    return new Binding(
+                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
                         _configurer.Destination.Type,
-                        _configurer.Exchange.Name,
+                        _configurer.Exchange.ExchangeName,
                         string.Empty,
                         _headerMap);
                 }
@@ -197,14 +197,14 @@ namespace Steeltoe.Messaging.Rabbit.Config
                     _configurer = configurer;
                 }
 
-                public Binding Match()
+                public IBinding Match()
                 {
-                    var bindingName = _configurer.Exchange.Name + "." + _configurer.Destination.Name;
-                    return new Binding(
+                    var bindingName = _configurer.Exchange.ExchangeName + "." + _configurer.Destination.Name;
+                    return Binding.Create(
                         bindingName,
                         _configurer.Destination.Name,
                         _configurer.Destination.Type,
-                        _configurer.Exchange.Name,
+                        _configurer.Exchange.ExchangeName,
                         string.Empty,
                         _headerMap);
                 }
@@ -227,27 +227,27 @@ namespace Steeltoe.Messaging.Rabbit.Config
         public class TopicExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
         {
             public TopicExchangeRoutingKeyConfigurer(DestinationConfigurer destination, TopicExchange exchange)
-             : base(destination, exchange.Name)
+             : base(destination, exchange.ExchangeName)
             {
             }
 
-            public Binding With(string routingKey)
+            public IBinding With(string routingKey)
             {
                 var bindingName = ExchangeName + "." + Destination.Name;
-                return new Binding(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
+                return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
             }
 
-            public Binding With(Enum routingKeyEnum)
+            public IBinding With(Enum routingKeyEnum)
             {
                 var bindingName = ExchangeName + "." + Destination.Name;
-                return new Binding(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
+                return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
             }
         }
 
         public class GenericExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
         {
             public GenericExchangeRoutingKeyConfigurer(DestinationConfigurer destination, IExchange exchange)
-             : base(destination, exchange.Name)
+             : base(destination, exchange.ExchangeName)
             {
             }
 
@@ -274,43 +274,53 @@ namespace Steeltoe.Messaging.Rabbit.Config
                 _routingKey = routingKey;
             }
 
-            public Binding And(Dictionary<string, object> map)
+            public IBinding And(Dictionary<string, object> map)
             {
                 var bindingName = _configurer.ExchangeName + "." + _configurer.Destination.Name;
-                return new Binding(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, map);
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, map);
             }
 
-            public Binding Noargs()
+            public IBinding NoArgs()
             {
                 var bindingName = _configurer.ExchangeName + "." + _configurer.Destination.Name;
-                return new Binding(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, new Dictionary<string, object>());
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, new Dictionary<string, object>());
             }
         }
 
         public class DirectExchangeRoutingKeyConfigurer : AbstractRoutingKeyConfigurer
         {
             public DirectExchangeRoutingKeyConfigurer(DestinationConfigurer destination, DirectExchange exchange)
-            : base(destination, exchange.Name)
+            : base(destination, exchange.ExchangeName)
             {
             }
 
-            public Binding With(string routingKey)
+            public IBinding With(string routingKey)
             {
                 var bindingName = ExchangeName + "." + Destination.Name;
-                return new Binding(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
+                return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
             }
 
-            public Binding With(Enum routingKeyEnum)
+            public IBinding With(Enum routingKeyEnum)
             {
                 var bindingName = ExchangeName + "." + Destination.Name;
-                return new Binding(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
+                return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
             }
 
-            public Binding WithQueueName()
+            public IBinding WithQueueName()
             {
                 var bindingName = ExchangeName + "." + Destination.Name;
-                return new Binding(bindingName, Destination.Name, Destination.Type, ExchangeName, Destination.Name, new Dictionary<string, object>());
+                return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, Destination.Name, new Dictionary<string, object>());
             }
+        }
+
+        public static IBinding Create(string bindingName, DestinationType type)
+        {
+            if (type == DestinationType.EXCHANGE)
+            {
+                return new ExchangeBinding(bindingName);
+            }
+
+            return new QueueBinding(bindingName);
         }
     }
 }

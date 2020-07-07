@@ -13,20 +13,32 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 {
     public class MultiMethodRabbitListenerEndpoint : MethodRabbitListenerEndpoint
     {
-        public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, object instance, ILogger logger = null)
-        : this(applicationContext, methods, null, instance, logger)
+        public MultiMethodRabbitListenerEndpoint(
+            IApplicationContext applicationContext,
+            List<MethodInfo> methods,
+            object instance,
+            ILoggerFactory loggerFactory = null)
+        : this(applicationContext, methods, null, instance, loggerFactory)
         {
         }
 
-        public MultiMethodRabbitListenerEndpoint(IApplicationContext applicationContext, List<MethodInfo> methods, MethodInfo defaultMethod, object instance, ILogger logger = null)
-            : base(applicationContext, defaultMethod, instance, logger)
+        public MultiMethodRabbitListenerEndpoint(
+            IApplicationContext applicationContext,
+            List<MethodInfo> methods,
+            MethodInfo defaultMethod,
+            object instance,
+            ILoggerFactory loggerFactory = null)
+            : base(applicationContext, null, instance, loggerFactory)
         {
             Methods = methods;
+            DefaultMethod = defaultMethod;
         }
 
         public List<MethodInfo> Methods { get; }
 
-        protected HandlerAdapter ConfigureListenerAdapter(IMessagingMessageListenerAdapter messageListener)
+        public MethodInfo DefaultMethod { get; }
+
+        protected override HandlerAdapter ConfigureListenerAdapter(MessagingMessageListenerAdapter messageListener)
         {
             var invocableHandlerMethods = new List<IInvocableHandlerMethod>();
             IInvocableHandlerMethod defaultHandler = null;
@@ -34,7 +46,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
                 var handler = MessageHandlerMethodFactory.CreateInvocableHandlerMethod(Instance, method);
                 invocableHandlerMethods.Add(handler);
-                if (method.Equals(Method))
+                if (method.Equals(DefaultMethod))
                 {
                     defaultHandler = handler;
                 }

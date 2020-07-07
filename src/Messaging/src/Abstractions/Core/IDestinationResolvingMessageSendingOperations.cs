@@ -27,49 +27,45 @@ namespace Steeltoe.Messaging.Core
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="cancellationToken">token used to signal cancelation</param>
         /// <returns>a task to signal completion</returns>
-        Task ConvertAndSendAsync<T>(string destinationName, T payload, CancellationToken cancellationToken = default);
+        Task ConvertAndSendAsync(string destinationName, object payload, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message with the given headers, and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="headers">the headers to send</param>
         /// <param name="cancellationToken">token used to signal cancelation</param>
         /// <returns>a task to signal completion</returns>
-        Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
+        Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message, apply the post processor, and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="postProcessor">the post processor to apply</param>
         /// <param name="cancellationToken">token used to signal cancelation</param>
         /// <returns>a task to signal completion</returns>
-        Task ConvertAndSendAsync<T>(string destinationName, T payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
+        Task ConvertAndSendAsync(string destinationName, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message with the given headers, apply the post processor and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="headers">the headers to send</param>
         /// <param name="postProcessor">the post processor to apply</param>
         /// <param name="cancellationToken">token used to signal cancelation</param>
         /// <returns>a task to signal completion</returns>
-        Task ConvertAndSendAsync<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
+        Task ConvertAndSendAsync(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Resolve the given destination name to a destination and send a message to it.
@@ -82,40 +78,36 @@ namespace Steeltoe.Messaging.Core
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
-        void ConvertAndSend<T>(string destinationName, T payload);
+        void ConvertAndSend(string destinationName, object payload);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message with the given headers, and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="headers">the headers to send</param>
-        void ConvertAndSend<T>(string destinationName, T payload, IDictionary<string, object> headers);
+        void ConvertAndSend(string destinationName, object payload, IDictionary<string, object> headers);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message, apply the post processor, and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="postProcessor">the post processor to apply</param>
-        void ConvertAndSend<T>(string destinationName, T payload, IMessagePostProcessor postProcessor);
+        void ConvertAndSend(string destinationName, object payload, IMessagePostProcessor postProcessor);
 
         /// <summary>
         /// Resolve the given destination name to a destination, convert the payload object to serialized form, possibly using a
         /// message converter, wrap it as a message with the given headers, apply the post processor and send it to the resolved destination.
         /// </summary>
-        /// <typeparam name="T">the type of the payload</typeparam>
         /// <param name="destinationName">the destination name to resolve</param>
         /// <param name="payload">the payload to send</param>
         /// <param name="headers">the headers to send</param>
         /// <param name="postProcessor">the post processor to apply</param>
-        void ConvertAndSend<T>(string destinationName, T payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor);
+        void ConvertAndSend(string destinationName, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor);
     }
 }

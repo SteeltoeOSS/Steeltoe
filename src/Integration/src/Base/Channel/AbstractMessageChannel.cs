@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
@@ -23,29 +24,29 @@ namespace Steeltoe.Integration.Channel
     {
         protected const int INDEFINITE_TIMEOUT = -1;
         private readonly Lazy<IIntegrationServices> _integrationServices;
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IApplicationContext _context;
         private Lazy<IMessageConverter> _messageConverter;
 
-        protected AbstractMessageChannel(IServiceProvider serviceProvider, ILogger logger = null)
-            : this(serviceProvider, null, logger)
+        protected AbstractMessageChannel(IApplicationContext context, ILogger logger = null)
+            : this(context, null, logger)
         {
         }
 
-        protected AbstractMessageChannel(IServiceProvider serviceProvider, string name, ILogger logger = null)
+        protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
             _integrationServices = new Lazy<IIntegrationServices>(() =>
-                _serviceProvider.GetService<IIntegrationServices>());
-            _messageConverter = new Lazy<IMessageConverter>(() => (IMessageConverter)_serviceProvider.GetService(typeof(DefaultDatatypeChannelMessageConverter)));
+                _context.GetService<IIntegrationServices>());
+            _messageConverter = new Lazy<IMessageConverter>(() => (IMessageConverter)_context.GetService(typeof(DefaultDatatypeChannelMessageConverter)));
             Logger = logger;
-            Name = name ?? GetType().Name + "@" + GetHashCode();
+            ServiceName = name ?? GetType().Name + "@" + GetHashCode();
         }
 
         public IIntegrationServices IntegrationServices => _integrationServices.Value;
 
         public virtual string ComponentType { get; } = "channel";
 
-        public virtual string Name { get; set; }
+        public virtual string ServiceName { get; set; }
 
         public virtual string ComponentName { get; set; }
 
@@ -148,7 +149,7 @@ namespace Steeltoe.Integration.Channel
                     message = ConvertPayloadIfNecessary(message);
                 }
 
-                Logger?.LogDebug("PreSend on channel '" + Name + "', message: " + message);
+                Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
 
                 if (Interceptors.Count > 0)
                 {
@@ -162,7 +163,7 @@ namespace Steeltoe.Integration.Channel
 
                 sent = DoSendInternal(message, cancellationToken);
 
-                Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + Name + "', message: " + message);
+                Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
 
                 if (interceptorStack != null)
                 {
@@ -179,7 +180,7 @@ namespace Steeltoe.Integration.Channel
                     Interceptors.AfterSendCompletion(message, this, sent, e, interceptorStack);
                 }
 
-                var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "failed to send Message to channel '" + Name + "'", e);
+                var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "failed to send Message to channel '" + ServiceName + "'", e);
                 if (wrapped != e)
                 {
                     throw wrapped;
@@ -223,7 +224,7 @@ namespace Steeltoe.Integration.Channel
 
             throw new MessageDeliveryException(
                 message,
-                "Channel '" + Name + "' expected one of the following datataypes [" + string.Join(",", DataTypes) + "], but received [" + message.Payload.GetType() + "]");
+                "Channel '" + ServiceName + "' expected one of the following datataypes [" + string.Join(",", DataTypes) + "], but received [" + message.Payload.GetType() + "]");
         }
 
         internal class ChannelInterceptorList

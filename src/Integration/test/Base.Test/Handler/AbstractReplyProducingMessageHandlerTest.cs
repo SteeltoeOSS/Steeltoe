@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -24,14 +26,17 @@ namespace Steeltoe.Integration.Handler.Test
         public AbstractReplyProducingMessageHandlerTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             provider = services.BuildServiceProvider();
-            handler = new TestAbstractReplyProducingMessageHandler(provider);
+            handler = new TestAbstractReplyProducingMessageHandler(provider.GetService<IApplicationContext>());
             mockChannel = new Mock<IMessageChannel>();
-            message = Integration.Support.MessageBuilder.WithPayload("test").Build();
+            message = Integration.Support.IntegrationMessageBuilder.WithPayload("test").Build();
         }
 
         [Fact]
@@ -54,7 +59,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagate()
         {
-            handler.ReturnValue = new GenericMessage("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
             handler.NotPropagatedHeaders = new List<string>() { "f*", "*r" };
             handler.OutputChannel = mockChannel.Object;
@@ -62,7 +67,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.MessageBuilder.WithPayload("hello")
+            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")
@@ -77,7 +82,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagateAddWhenNonExist()
         {
-            handler.ReturnValue = new GenericMessage("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
             handler.AddNotPropagatedHeaders("boom");
             handler.OutputChannel = mockChannel.Object;
@@ -85,7 +90,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.MessageBuilder.WithPayload("hello")
+            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("boom", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")
@@ -100,7 +105,7 @@ namespace Steeltoe.Integration.Handler.Test
         [Fact]
         public void TestNotPropagateAdd()
         {
-            handler.ReturnValue = new GenericMessage("world", new Dictionary<string, object>() { { "bar", "RAB" } });
+            handler.ReturnValue = Message.Create("world", new Dictionary<string, object>() { { "bar", "RAB" } });
             Assert.Empty(handler.NotPropagatedHeaders);
             handler.NotPropagatedHeaders = new List<string>() { "foo" };
             handler.AddNotPropagatedHeaders("b*r");
@@ -109,7 +114,7 @@ namespace Steeltoe.Integration.Handler.Test
             mockChannel.Setup((c) => c.Send(It.IsAny<IMessage>(), It.IsAny<int>())).Returns(true).Callback<IMessage, int>((m, t) => captor = m);
             mockChannel.Setup((c) => c.ToString()).Returns("testChannel");
 
-            handler.HandleMessage(Integration.Support.MessageBuilder.WithPayload("hello")
+            handler.HandleMessage(Integration.Support.IntegrationMessageBuilder.WithPayload("hello")
                     .SetHeader("foo", "FOO")
                     .SetHeader("bar", "BAR")
                     .SetHeader("baz", "BAZ")
@@ -125,8 +130,8 @@ namespace Steeltoe.Integration.Handler.Test
         {
             public object ReturnValue;
 
-            public TestAbstractReplyProducingMessageHandler(IServiceProvider serviceProvider)
-                : base(serviceProvider)
+            public TestAbstractReplyProducingMessageHandler(IApplicationContext context)
+                : base(context)
             {
             }
 

@@ -22,10 +22,12 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void ExistingHeaders()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
-            var message = new GenericMessage<string>("payload", map);
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
+            var message = Message.Create<string>("payload", map);
 
             var accessor = new MessageHeaderAccessor(message);
             var actual = accessor.MessageHeaders;
@@ -38,10 +40,12 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void ExistingHeadersModification()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
-            var message = new GenericMessage<string>("payload", map);
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
+            var message = Message.Create<string>("payload", map);
 
             Thread.Sleep(50);
 
@@ -58,7 +62,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestRemoveHeader()
         {
-            IMessage message = new GenericMessage<string>("payload", SingletonMap("foo", "bar"));
+            IMessage message = Message.Create<string>("payload", SingletonMap("foo", "bar"));
             var accessor = new MessageHeaderAccessor(message);
             accessor.RemoveHeader("foo");
             var headers = accessor.ToDictionary();
@@ -68,7 +72,7 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TestRemoveHeaderEvenIfNull()
         {
-            IMessage<string> message = new GenericMessage<string>("payload", SingletonMap("foo", null));
+            var message = Message.Create<string>("payload", SingletonMap("foo", null));
             var accessor = new MessageHeaderAccessor(message);
             accessor.RemoveHeader("foo");
             var headers = accessor.ToDictionary();
@@ -78,10 +82,12 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void RemoveHeaders()
         {
-            IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            map.Add("bar", "baz");
-            var message = new GenericMessage<string>("payload", map);
+            IDictionary<string, object> map = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "bar", "baz" }
+            };
+            var message = Message.Create<string>("payload", map);
             var accessor = new MessageHeaderAccessor(message);
 
             accessor.RemoveHeaders("fo*");
@@ -95,14 +101,18 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CopyHeaders()
         {
-            IDictionary<string, object> map1 = new Dictionary<string, object>();
-            map1.Add("foo", "bar");
-            var message = new GenericMessage<string>("payload", map1);
+            IDictionary<string, object> map1 = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
+            var message = Message.Create<string>("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
-            IDictionary<string, object> map2 = new Dictionary<string, object>();
-            map2.Add("foo", "BAR");
-            map2.Add("bar", "baz");
+            IDictionary<string, object> map2 = new Dictionary<string, object>
+            {
+                { "foo", "BAR" },
+                { "bar", "baz" }
+            };
             accessor.CopyHeaders(map2);
 
             var actual = accessor.MessageHeaders;
@@ -114,14 +124,18 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void CopyHeadersIfAbsent()
         {
-            IDictionary<string, object> map1 = new Dictionary<string, object>();
-            map1.Add("foo", "bar");
-            var message = new GenericMessage<string>("payload", map1);
+            IDictionary<string, object> map1 = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
+            var message = Message.Create<string>("payload", map1);
             var accessor = new MessageHeaderAccessor(message);
 
-            IDictionary<string, object> map2 = new Dictionary<string, object>();
-            map2.Add("foo", "BAR");
-            map2.Add("bar", "baz");
+            IDictionary<string, object> map2 = new Dictionary<string, object>
+            {
+                { "foo", "BAR" },
+                { "bar", "baz" }
+            };
             accessor.CopyHeadersIfAbsent(map2);
 
             var actual = accessor.MessageHeaders;
@@ -171,12 +185,12 @@ namespace Steeltoe.Messaging.Support.Test
             accessor.SetHeader("foo", "bar");
             accessor.LeaveMutable = true;
             var headers = accessor.MessageHeaders;
-            var message = MessageBuilder<string>.CreateMessage("payload", headers);
+            var message = MessageBuilder.CreateMessage("payload", headers);
 
             accessor.SetHeader("foo", "baz");
 
             Assert.Equal("baz", headers.Get<string>("foo"));
-            Assert.Same(accessor, MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(message, typeof(MessageHeaderAccessor)));
+            Assert.Same(accessor, MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor)));
         }
 
         [Fact]
@@ -185,52 +199,59 @@ namespace Steeltoe.Messaging.Support.Test
             var accessor = new MessageHeaderAccessor();
             accessor.SetHeader("foo", "bar");
             var headers = accessor.MessageHeaders;
-            var message = MessageBuilder<string>.CreateMessage("payload", headers);
+            var message = MessageBuilder.CreateMessage("payload", headers);
 
             Assert.Throws<InvalidOperationException>(() => accessor.LeaveMutable = true);
 
             Assert.Throws<InvalidOperationException>(() => accessor.SetHeader("foo", "baz"));
 
             Assert.Equal("bar", headers.Get<string>("foo"));
-            Assert.Same(accessor, MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(message, typeof(MessageHeaderAccessor)));
+            Assert.Same(accessor, MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor)));
         }
 
         [Fact]
         public void GetAccessor()
         {
             var expected = new MessageHeaderAccessor();
-            var message = MessageBuilder<string>.CreateMessage("payload", expected.MessageHeaders);
-            Assert.Same(expected, MessageHeaderAccessor.GetAccessor<MessageHeaderAccessor>(message, typeof(MessageHeaderAccessor)));
+            var message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
+            Assert.Same(expected, MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor)));
         }
 
         [Fact]
         public void GetMutableAccessorSameInstance()
         {
-            var expected = new TestMessageHeaderAccessor();
-            expected.LeaveMutable = true;
-            var message = MessageBuilder<string>.CreateMessage("payload", expected.MessageHeaders);
+            var expected = new TestMessageHeaderAccessor
+            {
+                LeaveMutable = true
+            };
+            var message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
 
             var actual = MessageHeaderAccessor.GetMutableAccessor(message);
             Assert.NotNull(actual);
             Assert.True(actual.IsMutable);
             Assert.Same(expected, actual);
+
+            actual.SetHeader("foo", "bar");
+            Assert.Equal("bar", message.Headers.Get<string>("foo"));
         }
 
         [Fact]
         public void GetMutableAccessorNewInstance()
         {
-            IMessage message = MessageBuilder<string>.WithPayload("payload").Build();
+            var message = MessageBuilder.WithPayload("payload").Build();
 
             var actual = MessageHeaderAccessor.GetMutableAccessor(message);
             Assert.NotNull(actual);
             Assert.True(actual.IsMutable);
+
+            actual.SetHeader("foo", "bar");
         }
 
         [Fact]
         public void GetMutableAccessorNewInstanceMatchingType()
         {
             var expected = new TestMessageHeaderAccessor();
-            IMessage message = MessageBuilder<string>.CreateMessage("payload", expected.MessageHeaders);
+            IMessage message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
 
             var actual = MessageHeaderAccessor.GetMutableAccessor(message);
             Assert.NotNull(actual);
@@ -241,8 +262,10 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void TimestampEnabled()
         {
-            var accessor = new MessageHeaderAccessor();
-            accessor.EnableTimestamp = true;
+            var accessor = new MessageHeaderAccessor
+            {
+                EnableTimestamp = true
+            };
             Assert.NotNull(accessor.MessageHeaders.Timestamp);
         }
 
@@ -257,12 +280,14 @@ namespace Steeltoe.Messaging.Support.Test
         public void IdGeneratorCustom()
         {
             var id = Guid.NewGuid();
-            var accessor = new MessageHeaderAccessor();
-            accessor.IdGenerator = new TestIdGenerator()
+            var accessor = new MessageHeaderAccessor
             {
-                Id = id
+                IdGenerator = new TestIdGenerator()
+                {
+                    Id = id.ToString()
+                }
             };
-            Assert.Equal(id, accessor.MessageHeaders.Id);
+            Assert.Equal(id.ToString(), accessor.MessageHeaders.Id);
         }
 
         [Fact]
@@ -275,13 +300,15 @@ namespace Steeltoe.Messaging.Support.Test
         [Fact]
         public void IdTimestampWithMutableHeaders()
         {
-            var accessor = new MessageHeaderAccessor();
-            accessor.IdGenerator = new TestIdGenerator()
+            var accessor = new MessageHeaderAccessor
             {
-                Id = MessageHeaders.ID_VALUE_NONE
+                IdGenerator = new TestIdGenerator()
+                {
+                    Id = MessageHeaders.ID_VALUE_NONE
+                },
+                EnableTimestamp = false,
+                LeaveMutable = true
             };
-            accessor.EnableTimestamp = false;
-            accessor.LeaveMutable = true;
             var headers = accessor.MessageHeaders;
 
             Assert.Null(headers.Id);
@@ -290,13 +317,13 @@ namespace Steeltoe.Messaging.Support.Test
             var id = Guid.NewGuid();
             accessor.IdGenerator = new TestIdGenerator()
             {
-                Id = id
+                Id = id.ToString()
             };
 
             accessor.EnableTimestamp = true;
             accessor.SetImmutable();
 
-            Assert.Equal(id, accessor.MessageHeaders.Id);
+            Assert.Equal(id.ToString(), accessor.MessageHeaders.Id);
             Assert.NotNull(headers.Timestamp);
         }
 
@@ -307,9 +334,9 @@ namespace Steeltoe.Messaging.Support.Test
 
         private class TestIdGenerator : IIDGenerator
         {
-            public Guid Id;
+            public string Id;
 
-            public Guid GenerateId()
+            public string GenerateId()
             {
                 return Id;
             }
@@ -326,14 +353,19 @@ namespace Steeltoe.Messaging.Support.Test
             {
             }
 
-            public static TestMessageHeaderAccessor Wrap(IMessage message)
+            private TestMessageHeaderAccessor(MessageHeaders headers)
+            : base(headers)
+            {
+            }
+
+            protected override MessageHeaderAccessor CreateMutableAccessor(IMessage message)
             {
                 return new TestMessageHeaderAccessor(message);
             }
 
-            protected internal override MessageHeaderAccessor CreateAccessor(IMessage message)
+            protected override MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders headers)
             {
-                return Wrap(message);
+                return new TestMessageHeaderAccessor((MessageHeaders)headers);
             }
         }
     }

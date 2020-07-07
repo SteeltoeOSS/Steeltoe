@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using System;
 using System.Threading.Tasks;
@@ -11,13 +12,13 @@ namespace Steeltoe.Integration.Endpoint
 {
     public abstract class AbstractEndpoint : ISmartLifecycle
     {
-        protected IServiceProvider _serviceProvider;
+        protected IApplicationContext _context;
         private readonly object _lifecyclelock = new object();
         private IIntegrationServices _integrationServices;
 
-        protected AbstractEndpoint(IServiceProvider serviceProvider)
+        protected AbstractEndpoint(IApplicationContext context)
         {
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public IIntegrationServices IntegrationServices
@@ -26,7 +27,7 @@ namespace Steeltoe.Integration.Endpoint
             {
                 if (_integrationServices == null)
                 {
-                    _integrationServices = _serviceProvider.GetService<IIntegrationServices>();
+                    _integrationServices = _context.GetService<IIntegrationServices>();
                 }
 
                 return _integrationServices;

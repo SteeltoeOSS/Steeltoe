@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    public class TopicExchange : AbstractExchange
+    public class TopicExchange : AbstractExchange, ITopicExchange
     {
         public TopicExchange(string name)
         : base(name)
@@ -23,6 +23,6 @@ namespace Steeltoe.Messaging.Rabbit.Config
         {
         }
 
-        public override string Type { get; } = ExchangeTypes.TOPIC;
+        public override string Type { get; } = ExchangeType.TOPIC;
     }
 }

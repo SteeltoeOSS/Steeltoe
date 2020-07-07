@@ -4,202 +4,53 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Steeltoe.Messaging.Support
 {
-#pragma warning disable SA1402 // File may only contain a single type
-    public class MessageBuilder<T> : MessageBuilder
-#pragma warning restore SA1402 // File may only contain a single type
+    public static class MessageBuilder
     {
-        protected new T payload;
-
-        protected MessageBuilder(IMessage<T> originalMessage)
-            : base(originalMessage)
+        public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
         {
-            payload = originalMessage.Payload;
+            return new MessageBuilder<P>(message);
         }
 
-        protected MessageBuilder(T payload, MessageHeaderAccessor accessor)
-            : base(accessor)
+        public static AbstractMessageBuilder FromMessage(IMessage message, Type payloadType = null)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
+            var genParamType = GetGenericParamType(message, payloadType);
+            var typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
 
-            this.payload = payload;
+            return (AbstractMessageBuilder)Activator.CreateInstance(
+                  typeToCreate,
+                  BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+                  null,
+                  new object[] { message },
+                  null,
+                  null);
         }
 
-        public static MessageBuilder<T> FromMessage(IMessage<T> message)
+        public static AbstractMessageBuilder WithPayload<P>(P payload)
         {
-            return new MessageBuilder<T>(message);
+            return new MessageBuilder<P>(payload, new MessageHeaderAccessor());
         }
 
-        public static MessageBuilder<T> WithPayload(T payload)
+        public static AbstractMessageBuilder WithPayload(object payload, Type payloadType = null)
         {
-            return new MessageBuilder<T>(payload, new MessageHeaderAccessor());
+            var genParamType = GetGenericParamType(payload, payloadType);
+            var typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
+
+            return (AbstractMessageBuilder)Activator.CreateInstance(
+                  typeToCreate,
+                  BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+                  null,
+                  new object[] { payload, new MessageHeaderAccessor() },
+                  null,
+                  null);
         }
 
-        public static IMessage<T> CreateMessage(T payload, IMessageHeaders messageHeaders)
+        public static IMessage<P> CreateMessage<P>(P payload, IMessageHeaders messageHeaders)
         {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (messageHeaders == null)
-            {
-                throw new ArgumentNullException(nameof(messageHeaders));
-            }
-
-            if (payload is Exception)
-            {
-                return (IMessage<T>)new ErrorMessage((Exception)(object)payload, messageHeaders);
-            }
-            else
-            {
-                return new GenericMessage<T>(payload, messageHeaders);
-            }
-        }
-
-        public new MessageBuilder<T> SetHeaders(MessageHeaderAccessor accessor)
-        {
-            base.SetHeaders(accessor);
-            return this;
-        }
-
-        public new MessageBuilder<T> SetHeader(string headerName, object headerValue)
-        {
-            base.SetHeader(headerName, headerValue);
-            return this;
-        }
-
-        public new MessageBuilder<T> SetHeaderIfAbsent(string headerName, object headerValue)
-        {
-            base.SetHeaderIfAbsent(headerName, headerValue);
-            return this;
-        }
-
-        public new MessageBuilder<T> RemoveHeaders(params string[] headerPatterns)
-        {
-            base.RemoveHeaders(headerPatterns);
-            return this;
-        }
-
-        public new MessageBuilder<T> RemoveHeader(string headerName)
-        {
-            base.RemoveHeader(headerName);
-            return this;
-        }
-
-        public new MessageBuilder<T> CopyHeaders(IDictionary<string, object> headersToCopy)
-        {
-            base.CopyHeaders(headersToCopy);
-            return this;
-        }
-
-        public new MessageBuilder<T> CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)
-        {
-            base.CopyHeadersIfAbsent(headersToCopy);
-            return this;
-        }
-
-        public new MessageBuilder<T> SetReplyChannel(IMessageChannel replyChannel)
-        {
-            headerAccessor.ReplyChannel = replyChannel;
-            return this;
-        }
-
-        public new MessageBuilder<T> SetReplyChannelName(string replyChannelName)
-        {
-            base.SetReplyChannelName(replyChannelName);
-            return this;
-        }
-
-        public new MessageBuilder<T> SetErrorChannel(IMessageChannel errorChannel)
-        {
-            base.SetErrorChannel(errorChannel);
-            return this;
-        }
-
-        public new MessageBuilder<T> SetErrorChannelName(string errorChannelName)
-        {
-            base.SetErrorChannelName(errorChannelName);
-            return this;
-        }
-
-        public new IMessage<T> Build()
-        {
-            if (originalMessage != null && !headerAccessor.IsModified)
-            {
-                return (IMessage<T>)originalMessage;
-            }
-
-            var headersToUse = headerAccessor.ToMessageHeaders();
-            return CreateMessage(payload, headersToUse);
-        }
-    }
-
-    public class MessageBuilder
-    {
-        protected readonly object payload;
-
-        protected IMessage originalMessage;
-
-        protected MessageHeaderAccessor headerAccessor;
-
-        protected MessageBuilder()
-        {
-        }
-
-        protected MessageBuilder(IMessage originalMessage)
-        {
-            if (originalMessage == null)
-            {
-                throw new ArgumentNullException(nameof(originalMessage));
-            }
-
-            payload = originalMessage.Payload;
-            this.originalMessage = originalMessage;
-            headerAccessor = new MessageHeaderAccessor(originalMessage);
-        }
-
-        protected MessageBuilder(MessageHeaderAccessor accessor)
-        {
-            if (accessor == null)
-            {
-                throw new ArgumentNullException(nameof(accessor));
-            }
-
-            originalMessage = null;
-            headerAccessor = accessor;
-        }
-
-        protected MessageBuilder(object payload, MessageHeaderAccessor accessor)
-        {
-            if (payload == null)
-            {
-                throw new ArgumentNullException(nameof(payload));
-            }
-
-            if (accessor == null)
-            {
-                throw new ArgumentNullException(nameof(accessor));
-            }
-
-            this.payload = payload;
-            originalMessage = null;
-            headerAccessor = accessor;
-        }
-
-        public static MessageBuilder FromMessage(IMessage message)
-        {
-            return new MessageBuilder(message);
-        }
-
-        public static MessageBuilder WithPayload(object payload)
-        {
-            return new MessageBuilder(payload, new MessageHeaderAccessor());
+            return (IMessage<P>)CreateMessage(payload, messageHeaders, typeof(P));
         }
 
         public static IMessage CreateMessage(object payload, IMessageHeaders messageHeaders, Type payloadType = null)
@@ -214,23 +65,160 @@ namespace Steeltoe.Messaging.Support
                 throw new ArgumentNullException(nameof(messageHeaders));
             }
 
-            if (payload is Exception)
-            {
-                return (IMessage)new ErrorMessage((Exception)(object)payload, messageHeaders);
-            }
-            else
-            {
-                if (payloadType == null)
-                {
-                    payloadType = payload.GetType();
-                }
-
-                var messageType = typeof(GenericMessage<>).MakeGenericType(payloadType);
-                return (IMessage)Activator.CreateInstance(messageType, payload, messageHeaders);
-            }
+            return Message.Create(payload, messageHeaders, payloadType);
         }
 
-        public virtual MessageBuilder SetHeaders(MessageHeaderAccessor accessor)
+        public static Type GetGenericParamType(IMessage target, Type messagePayloadType)
+        {
+            if (target == null && messagePayloadType == null)
+            {
+                return typeof(object);
+            }
+
+            if (messagePayloadType != null)
+            {
+                return messagePayloadType;
+            }
+
+            var targetType = target.GetType();
+            if (targetType.IsGenericType)
+            {
+                return targetType.GetGenericArguments()[0];
+            }
+
+            return typeof(object);
+        }
+
+        public static Type GetGenericParamType(object payload, Type messagePayloadType)
+        {
+            if (payload == null && messagePayloadType == null)
+            {
+                return typeof(object);
+            }
+
+            if (messagePayloadType != null)
+            {
+                return messagePayloadType;
+            }
+
+            return payload.GetType();
+        }
+    }
+
+    public abstract class AbstractMessageBuilder
+    {
+        protected readonly object payload;
+
+        protected readonly IMessage originalMessage;
+
+        protected MessageHeaderAccessor headerAccessor;
+
+        protected internal AbstractMessageBuilder()
+        {
+        }
+
+        protected internal AbstractMessageBuilder(IMessage message)
+        {
+            if (message == null)
+            {
+                throw new ArgumentNullException(nameof(message));
+            }
+
+            payload = message.Payload;
+            originalMessage = message;
+            headerAccessor = new MessageHeaderAccessor(message);
+        }
+
+        protected internal AbstractMessageBuilder(MessageHeaderAccessor accessor)
+        {
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
+            payload = null;
+            originalMessage = null;
+            headerAccessor = accessor;
+        }
+
+        protected internal AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
+        {
+            if (payload == null)
+            {
+                throw new ArgumentNullException(nameof(payload));
+            }
+
+            if (accessor == null)
+            {
+                throw new ArgumentNullException(nameof(accessor));
+            }
+
+            this.payload = payload;
+            originalMessage = null;
+            headerAccessor = accessor;
+        }
+
+        public abstract AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor);
+
+        public abstract AbstractMessageBuilder SetHeader(string headerName, object headerValue);
+
+        public abstract AbstractMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue);
+
+        public abstract AbstractMessageBuilder RemoveHeaders(params string[] headerPatterns);
+
+        public abstract AbstractMessageBuilder RemoveHeader(string headerName);
+
+        public abstract AbstractMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy);
+
+        public abstract AbstractMessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy);
+
+        public abstract AbstractMessageBuilder SetReplyChannel(IMessageChannel replyChannel);
+
+        public abstract AbstractMessageBuilder SetReplyChannelName(string replyChannelName);
+
+        public abstract AbstractMessageBuilder SetErrorChannel(IMessageChannel errorChannel);
+
+        public abstract AbstractMessageBuilder SetErrorChannelName(string errorChannelName);
+
+        public virtual IMessage Build()
+        {
+            if (originalMessage != null && !headerAccessor.IsModified)
+            {
+                return originalMessage;
+            }
+
+            var headersToUse = headerAccessor.ToMessageHeaders();
+            return Message.Create(payload, headersToUse, payload.GetType());
+        }
+    }
+
+    public class MessageBuilder<P> : AbstractMessageBuilder
+    {
+        protected internal MessageBuilder()
+        {
+        }
+
+        protected internal MessageBuilder(IMessage<P> message)
+            : base(message)
+        {
+        }
+
+        protected internal MessageBuilder(IMessage message)
+            : base(message)
+        {
+        }
+
+        protected internal MessageBuilder(MessageHeaderAccessor accessor)
+            : base(accessor)
+        {
+        }
+
+        protected internal MessageBuilder(P payload, MessageHeaderAccessor accessor)
+            : base(payload, accessor)
+        {
+        }
+
+        public override AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor)
         {
             if (accessor == null)
             {
@@ -241,75 +229,69 @@ namespace Steeltoe.Messaging.Support
             return this;
         }
 
-        public virtual MessageBuilder SetHeader(string headerName, object headerValue)
+        public override AbstractMessageBuilder SetHeader(string headerName, object headerValue)
         {
             headerAccessor.SetHeader(headerName, headerValue);
             return this;
         }
 
-        public virtual MessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
+        public override AbstractMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue)
         {
             headerAccessor.SetHeaderIfAbsent(headerName, headerValue);
             return this;
         }
 
-        public virtual MessageBuilder RemoveHeaders(params string[] headerPatterns)
+        public override AbstractMessageBuilder RemoveHeaders(params string[] headerPatterns)
         {
             headerAccessor.RemoveHeaders(headerPatterns);
             return this;
         }
 
-        public virtual MessageBuilder RemoveHeader(string headerName)
+        public override AbstractMessageBuilder RemoveHeader(string headerName)
         {
             headerAccessor.RemoveHeader(headerName);
             return this;
         }
 
-        public virtual MessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy)
+        public override AbstractMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy)
         {
             headerAccessor.CopyHeaders(headersToCopy);
             return this;
         }
 
-        public virtual MessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)
+        public override AbstractMessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)
         {
             headerAccessor.CopyHeadersIfAbsent(headersToCopy);
             return this;
         }
 
-        public virtual MessageBuilder SetReplyChannel(IMessageChannel replyChannel)
+        public override AbstractMessageBuilder SetReplyChannel(IMessageChannel replyChannel)
         {
             headerAccessor.ReplyChannel = replyChannel;
             return this;
         }
 
-        public virtual MessageBuilder SetReplyChannelName(string replyChannelName)
+        public override AbstractMessageBuilder SetReplyChannelName(string replyChannelName)
         {
             headerAccessor.ReplyChannelName = replyChannelName;
             return this;
         }
 
-        public virtual MessageBuilder SetErrorChannel(IMessageChannel errorChannel)
+        public override AbstractMessageBuilder SetErrorChannel(IMessageChannel errorChannel)
         {
             headerAccessor.ErrorChannel = errorChannel;
             return this;
         }
 
-        public virtual MessageBuilder SetErrorChannelName(string errorChannelName)
+        public override AbstractMessageBuilder SetErrorChannelName(string errorChannelName)
         {
             headerAccessor.ErrorChannelName = errorChannelName;
             return this;
         }
 
-        public virtual IMessage Build()
+        public new IMessage<P> Build()
         {
-            if (originalMessage != null && !headerAccessor.IsModified)
-            {
-                return originalMessage;
-            }
-
-            var headersToUse = headerAccessor.ToMessageHeaders();
-            return CreateMessage(payload, headersToUse);
+            return (IMessage<P>)base.Build();
         }
     }
 }

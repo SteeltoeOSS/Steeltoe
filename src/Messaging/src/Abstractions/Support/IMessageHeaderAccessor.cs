@@ -8,16 +8,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.Support
 {
-    /// <summary>
-    /// TODO:  Try to make this internal
-    /// </summary>
     public interface IMessageHeaderAccessor
     {
-        Guid? Id { get; }
+        string Id { get; }
 
         long? Timestamp { get; }
 
-        MimeType ContentType { get; set; }
+        string ContentType { get; set; }
 
         bool LeaveMutable { get; set; }
 

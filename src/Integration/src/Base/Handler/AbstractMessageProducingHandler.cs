@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -26,10 +27,10 @@ namespace Steeltoe.Integration.Handler
 
         private bool _selectiveHeaderPropagation = false;
 
-        protected AbstractMessageProducingHandler(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        protected AbstractMessageProducingHandler(IApplicationContext context)
+            : base(context)
         {
-            _messagingTemplate = new MessagingTemplate(serviceProvider);
+            _messagingTemplate = new MessagingTemplate(context);
         }
 
         public virtual IMessageChannel OutputChannel

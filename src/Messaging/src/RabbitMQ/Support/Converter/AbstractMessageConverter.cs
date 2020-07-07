@@ -2,45 +2,73 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Data;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Rabbit.Extensions;
 using System;
+using System.Net.Sockets;
 
 namespace Steeltoe.Messaging.Rabbit.Support.Converter
 {
-    public abstract class AbstractMessageConverter : IMessageConverter
+    public abstract class AbstractMessageConverter : ISmartMessageConverter
     {
+        protected readonly ILogger _logger;
+
+        protected AbstractMessageConverter(ILogger logger = null)
+        {
+            _logger = logger;
+        }
+
         public bool CreateMessageIds { get; set; }
 
-        public abstract object FromMessage(Message message);
+        public abstract string ServiceName { get; set; }
 
-        public Message ToMessage(object payload, MessageProperties messageProperties)
+        public abstract object FromMessage(IMessage message, Type targetClass, object conversionHint);
+
+        public T FromMessage<T>(IMessage message, object conversionHint)
+        {
+            return (T)FromMessage(message, typeof(T), conversionHint);
+        }
+
+        public object FromMessage(IMessage message, Type targetClass)
+        {
+            return FromMessage(message, targetClass, null);
+        }
+
+        public T FromMessage<T>(IMessage message)
+        {
+            return (T)FromMessage(message, typeof(T), null);
+        }
+
+        public IMessage ToMessage(object payload, IMessageHeaders messageProperties)
         {
             return ToMessage(payload, messageProperties, null);
         }
 
-        public Message ToMessage(object payload, MessageProperties messagePropertiesArg, Type genericType)
+        public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
         {
-            var messageProperties = messagePropertiesArg;
+            var messageProperties = headers;
             if (messageProperties == null)
             {
-                messageProperties = new MessageProperties();
+                messageProperties = new MessageHeaders();
             }
 
-            var message = CreateMessage(payload, messageProperties, genericType);
-            messageProperties = message.MessageProperties;
-            if (CreateMessageIds && messageProperties.MessageId == null)
+            var message = CreateMessage(payload, messageProperties, conversionHint);
+
+            if (CreateMessageIds && message.Headers.MessageId() == null)
             {
-                messageProperties.MessageId = Guid.NewGuid().ToString();
+                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+                accessor.MessageId = Guid.NewGuid().ToString();
             }
 
             return message;
         }
 
-        protected virtual Message CreateMessage(object payload, MessageProperties messageProperties, Type genericType)
-        {
-            return CreateMessage(payload, messageProperties);
-        }
+        protected abstract IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint);
 
-        protected abstract Message CreateMessage(object payload, MessageProperties messageProperties);
+        protected virtual IMessage CreateMessage(object payload, IMessageHeaders messageProperties)
+        {
+            return CreateMessage(payload, messageProperties, null);
+        }
     }
 }

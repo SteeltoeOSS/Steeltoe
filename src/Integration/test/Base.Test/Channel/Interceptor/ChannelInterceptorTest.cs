@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -22,12 +24,15 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         public ChannelInterceptorTest()
         {
             var services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
             services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             provider = services.BuildServiceProvider();
-            channel = new QueueChannel(provider);
+            channel = new QueueChannel(provider.GetService<IApplicationContext>());
         }
 
         [Fact]
@@ -35,7 +40,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             var interceptor = new PreSendReturnsMessageInterceptor();
             channel.AddInterceptor(interceptor);
-            channel.Send(new GenericMessage("test"));
+            channel.Send(Message.Create("test"));
             var result = channel.Receive(0);
             Assert.NotNull(result);
             Assert.Equal("test", result.Payload);
@@ -48,13 +53,13 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             var interceptor = new PreSendReturnsNullInterceptor();
             channel.AddInterceptor(interceptor);
-            IMessage message = new GenericMessage("test");
+            IMessage message = Message.Create("test");
             channel.Send(message);
             Assert.Equal(1, interceptor.Counter);
 
             Assert.True(channel.RemoveInterceptor(interceptor));
 
-            channel.Send(new GenericMessage("TEST"));
+            channel.Send(Message.Create("TEST"));
             Assert.Equal(1, interceptor.Counter);
 
             var result = channel.Receive(0);
@@ -67,26 +72,26 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             var interceptor = new TestPostSendInterceptorWithSentMessageInterceptor();
             channel.AddInterceptor(interceptor);
-            channel.Send(new GenericMessage("test"));
+            channel.Send(Message.Create("test"));
             Assert.True(interceptor.Invoked);
         }
 
         [Fact]
         public void TestPostSendInterceptorWithUnsentMessage()
         {
-            var singleItemChannel = new QueueChannel(provider, 1);
+            var singleItemChannel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
             var interceptor = new TestPostSendInterceptorWithUnsentMessageInterceptor();
             singleItemChannel.AddInterceptor(interceptor);
             Assert.Equal(0, interceptor.InvokedCounter);
             Assert.Equal(0, interceptor.SentCounter);
-            singleItemChannel.Send(new GenericMessage("test1"));
+            singleItemChannel.Send(Message.Create("test1"));
             Assert.Equal(1, interceptor.InvokedCounter);
             Assert.Equal(1, interceptor.SentCounter);
-            singleItemChannel.Send(new GenericMessage("test2"), 0);
+            singleItemChannel.Send(Message.Create("test2"), 0);
             Assert.Equal(2, interceptor.InvokedCounter);
             Assert.Equal(1, interceptor.SentCounter);
             Assert.NotNull(singleItemChannel.RemoveInterceptor(0));
-            singleItemChannel.Send(new GenericMessage("test2"), 0);
+            singleItemChannel.Send(Message.Create("test2"), 0);
             Assert.Equal(2, interceptor.InvokedCounter);
             Assert.Equal(1, interceptor.SentCounter);
         }
@@ -94,7 +99,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         [Fact]
         public void AfterCompletionWithSendException()
         {
-            AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(provider);
+            AbstractMessageChannel testChannel = new AfterCompletionWithSendExceptionChannel(provider.GetService<IApplicationContext>());
 
             var interceptor1 = new AfterCompletionTestInterceptor();
             var interceptor2 = new AfterCompletionTestInterceptor();
@@ -102,7 +107,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             testChannel.AddInterceptor(interceptor2);
             try
             {
-                testChannel.Send(Support.MessageBuilder.WithPayload("test").Build());
+                testChannel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
             }
             catch (Exception ex)
             {
@@ -123,7 +128,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             channel.AddInterceptor(interceptor2);
             try
             {
-                channel.Send(Support.MessageBuilder.WithPayload("test").Build());
+                channel.Send(Support.IntegrationMessageBuilder.WithPayload("test").Build());
             }
             catch (Exception ex)
             {
@@ -139,7 +144,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             var interceptor = new PreReceiveReturnsTrueInterceptor();
             channel.AddInterceptor(interceptor);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             channel.Send(message);
             var result = channel.Receive(0);
             Assert.Equal(1, interceptor.Counter);
@@ -152,7 +157,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
         {
             var interceptor = new PreReceiveReturnsFalseInterceptor();
             channel.AddInterceptor(interceptor);
-            var message = new GenericMessage("test");
+            var message = Message.Create("test");
             channel.Send(message);
             var result = channel.Receive(0);
             Assert.Equal(1, interceptor.Counter);
@@ -167,7 +172,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
 
             channel.Receive(0);
             Assert.Equal(0, interceptor.Counter);
-            channel.Send(new GenericMessage("test"));
+            channel.Send(Message.Create("test"));
             var result = channel.Receive(0);
             Assert.NotNull(result);
             Assert.Equal(1, interceptor.Counter);
@@ -209,8 +214,8 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
 
         public class AfterCompletionWithSendExceptionChannel : AbstractMessageChannel
         {
-            public AfterCompletionWithSendExceptionChannel(IServiceProvider serviceProvider, ILogger logger = null)
-                : base(serviceProvider, logger)
+            public AfterCompletionWithSendExceptionChannel(IApplicationContext context, ILogger logger = null)
+                : base(context, logger)
             {
             }
 
@@ -266,7 +271,7 @@ namespace Steeltoe.Integration.Channel.Interceptor.Test
             {
                 Assert.NotNull(message);
                 var value = Interlocked.Increment(ref Counter);
-                return Support.MessageBuilder.FromMessage(message)
+                return Support.IntegrationMessageBuilder.FromMessage(message)
                         .SetHeader(GetType().Name, value)
                         .Build();
             }

@@ -26,11 +26,13 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgument()
         {
-            var vars = new Dictionary<string, object>();
-            vars.Add("foo", "bar");
-            vars.Add("name", "value");
+            var vars = new Dictionary<string, object>
+            {
+                { "foo", "bar" },
+                { "name", "value" }
+            };
 
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
+            var message = MessageBuilder.WithPayload(new byte[0]).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
 
             var param = resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
             var result = resolver.ResolveArgument(param, message);
@@ -44,7 +46,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgumentNotFound()
         {
-            var message = MessageBuilder<byte[]>.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder.WithPayload(new byte[0]).Build();
             Assert.Throws<MessageHandlingException>(() => resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
         }
 

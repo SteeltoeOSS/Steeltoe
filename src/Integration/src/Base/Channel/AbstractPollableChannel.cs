@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using System;
@@ -14,13 +15,13 @@ namespace Steeltoe.Integration.Channel
 {
     public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollableChannel, ITaskSchedulerChannelInterceptorAware
     {
-        protected AbstractPollableChannel(IServiceProvider serviceProvider, ILogger logger = null)
-            : base(serviceProvider, logger)
+        protected AbstractPollableChannel(IApplicationContext context, ILogger logger = null)
+            : base(context, logger)
         {
         }
 
-        protected AbstractPollableChannel(IServiceProvider serviceProvider, string name, ILogger logger = null)
-            : base(serviceProvider, name, logger)
+        protected AbstractPollableChannel(IApplicationContext context, string name, ILogger logger = null)
+            : base(context, name, logger)
         {
         }
 
@@ -78,11 +79,11 @@ namespace Steeltoe.Integration.Channel
 
                 if (message == null)
                 {
-                    Logger?.LogTrace("PostReceive on channel '" + Name + "', message is null");
+                    Logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
                 }
                 else
                 {
-                    Logger?.LogDebug("PostReceive on channel '" + Name + "', message: " + message);
+                    Logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
                 }
 
                 if (interceptorStack != null && message != null)

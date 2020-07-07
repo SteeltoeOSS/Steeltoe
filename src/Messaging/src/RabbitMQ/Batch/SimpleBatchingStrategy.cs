@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Data;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
 using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.Rabbit.Batch
         private readonly int _batchSize;
         private readonly int _bufferLimit;
         private readonly long _timeout;
-        private readonly List<Message> _messages = new List<Message>();
+        private readonly List<IMessage<byte[]>> _messages = new List<IMessage<byte[]>>();
         private readonly List<MessageBatch> _empty = new List<MessageBatch>();
 
         private string _exchange;
@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             _timeout = timeout;
         }
 
-        public MessageBatch AddToBatch(string exch, string routKey, Message message)
+        public MessageBatch? AddToBatch(string exch, string routKey, IMessage input)
         {
             if (_exchange != null && _exchange != exch)
             {
@@ -45,10 +45,16 @@ namespace Steeltoe.Messaging.Rabbit.Batch
                 throw new ArgumentException("Cannot send with different routing keys in the same batch");
             }
 
+            var message = input as IMessage<byte[]>;
+            if (message == null)
+            {
+                throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
+            }
+
             _routingKey = routKey;
 
-            var bufferUse = 4 + message.Body.Length;
-            MessageBatch batch = null;
+            var bufferUse = 4 + message.Payload.Length;
+            MessageBatch? batch = null;
             if (_messages.Count > 0 && _currentSize + bufferUse > _bufferLimit)
             {
                 batch = DoReleaseBatch();
@@ -66,11 +72,11 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             return batch;
         }
 
-        public DateTime NextRelease()
+        public DateTime? NextRelease()
         {
             if (_messages.Count == 0 || _timeout <= 0)
             {
-                return default;
+                return null;
             }
             else if (_currentSize >= _bufferLimit)
             {
@@ -92,26 +98,32 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             }
             else
             {
-                return new List<MessageBatch>() { batch };
+                return new List<MessageBatch>() { batch.Value };
             }
         }
 
-        public bool CanDebatch(MessageProperties properties)
+        public bool CanDebatch(IMessageHeaders properties)
         {
-            if (properties.Headers.TryGetValue(MessageProperties.SPRING_BATCH_FORMAT, out var value))
+            if (properties.TryGetValue(RabbitMessageHeaders.SPRING_BATCH_FORMAT, out var value))
             {
-                return (value as string) == MessageProperties.BATCH_FORMAT_LENGTH_HEADER4;
+                return (value as string) == RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4;
             }
 
             return false;
         }
 
-        public void DeBatch(Message message, Action<Message> fragmentConsumer)
+        public void DeBatch(IMessage input, Action<IMessage> fragmentConsumer)
         {
-            var byteBuffer = new Span<byte>(message.Body);
-            var messageProperties = message.MessageProperties;
-            messageProperties.Headers.Remove(MessageProperties.SPRING_BATCH_FORMAT);
-            var bodyLength = message.Body.Length;
+            var message = input as IMessage<byte[]>;
+            if (message == null)
+            {
+                throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
+            }
+
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            var byteBuffer = new Span<byte>(message.Payload);
+            accessor.RemoveHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT);
+            var bodyLength = message.Payload.Length;
             var index = 0;
             while (index < bodyLength)
             {
@@ -128,27 +140,28 @@ namespace Steeltoe.Messaging.Rabbit.Batch
 
                 var body = new byte[length];
                 slice = byteBuffer.Slice(index);
-                for (var i = 0; i < message.Body.Length; i++)
+                for (var i = 0; i < length; i++)
                 {
-                    message.Body[i] = slice[i];
+                    body[i] = slice[i];
                 }
 
                 index = index + length;
 
-                messageProperties.ContentLength = length;
+                accessor.ContentLength = length;
 
                 // Caveat - shared MessageProperties.
-                var fragment = new Message(body, messageProperties);
                 if (index >= bodyLength)
                 {
-                    messageProperties.LastInBatch = true;
+                    accessor.LastInBatch = true;
                 }
+
+                var fragment = Message.Create(body, accessor.MessageHeaders);
 
                 fragmentConsumer(fragment);
             }
         }
 
-        private MessageBatch DoReleaseBatch()
+        private MessageBatch? DoReleaseBatch()
         {
             if (_messages.Count < 1)
             {
@@ -164,14 +177,14 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             return messageBatch;
         }
 
-        private Message AssembleMessage()
+        private IMessage<byte[]> AssembleMessage()
         {
             if (_messages.Count == 1)
             {
                 return _messages[0];
             }
 
-            var messageProperties = _messages[0].MessageProperties;
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(_messages[0]);
             var body = new byte[_currentSize];
 
             var bytes = new Span<byte>(body);
@@ -179,21 +192,21 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             foreach (var message in _messages)
             {
                 var slice = bytes.Slice(index);
-                BinaryPrimitives.WriteInt32BigEndian(slice, message.Body.Length);
+                BinaryPrimitives.WriteInt32BigEndian(slice, message.Payload.Length);
                 index += 4;
 
                 slice = bytes.Slice(index);
-                for (var i = 0; i < message.Body.Length; i++)
+                for (var i = 0; i < message.Payload.Length; i++)
                 {
-                    slice[i] = message.Body[i];
+                    slice[i] = message.Payload[i];
                 }
 
-                index = index + message.Body.Length;
+                index = index + message.Payload.Length;
             }
 
-            messageProperties.Headers[MessageProperties.SPRING_BATCH_FORMAT] = MessageProperties.BATCH_FORMAT_LENGTH_HEADER4;
-            messageProperties.Headers[AmqpHeaders.BATCH_SIZE] = _messages.Count;
-            return new Message(body, messageProperties);
+            accessor.SetHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4);
+            accessor.SetHeader(RabbitMessageHeaders.BATCH_SIZE, _messages.Count);
+            return Message.Create(body, accessor.MessageHeaders);
         }
     }
 }

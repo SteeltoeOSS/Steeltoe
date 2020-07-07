@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Data;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
@@ -17,7 +16,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public string Id { get; set; }
 
-        public Message ReturnedMessage { get; set; }
+        public IMessage ReturnedMessage { get; set; }
 
         public TaskCompletionSource<Confirm> FutureSource { get; }
 

@@ -6,44 +6,63 @@ using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support
 {
     public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(DefaultMessageHandlerMethodFactory);
+
         protected readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new HandlerMethodArgumentResolverComposite();
 
-        public IConversionService ConversionService { get; set; } = new GenericConversionService();
+        public virtual string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public IMessageConverter MessageConverter { get; set; }
+        public virtual IConversionService ConversionService { get; set; }
 
-        public List<IHandlerMethodArgumentResolver> CustomArgumentResolvers { get; set; }
+        public virtual IMessageConverter MessageConverter { get; set; }
+
+        public virtual List<IHandlerMethodArgumentResolver> CustomArgumentResolvers { get; set; }
 
         public DefaultMessageHandlerMethodFactory()
+            : this(null, null, null)
         {
-            AfterPropertiesSet();
         }
 
-        internal DefaultMessageHandlerMethodFactory(IConversionService conversionService)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService)
+           : this(conversionService, null, null)
         {
             ConversionService = conversionService;
-            AfterPropertiesSet();
         }
 
-        internal DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter)
+            : this(conversionService, converter, null)
         {
             ConversionService = conversionService;
             MessageConverter = converter;
-            AfterPropertiesSet();
         }
 
-        internal DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers)
         {
             ConversionService = conversionService;
             MessageConverter = converter;
             CustomArgumentResolvers = resolvers;
-            AfterPropertiesSet();
+
+            if (ConversionService == null)
+            {
+                ConversionService = new GenericConversionService();
+            }
+
+            if (MessageConverter == null)
+            {
+                MessageConverter = new GenericMessageConverter(ConversionService);
+            }
+
+            if (_argumentResolvers.Resolvers.Count == 0)
+            {
+                _argumentResolvers.AddResolvers(InitArgumentResolvers());
+            }
         }
 
         public virtual void SetArgumentResolvers(List<IHandlerMethodArgumentResolver> argumentResolvers)
@@ -69,8 +88,10 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             return handlerMethod;
         }
 
-        protected void AfterPropertiesSet()
+        public virtual void Initialize()
         {
+            _argumentResolvers.Clear();
+
             if (ConversionService == null)
             {
                 ConversionService = new GenericConversionService();
@@ -87,13 +108,9 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             }
         }
 
-        protected virtual List<IHandlerMethodArgumentResolver> InitArgumentResolvers()
+        protected List<IHandlerMethodArgumentResolver> InitArgumentResolvers()
         {
             var resolvers = new List<IHandlerMethodArgumentResolver>();
-
-            // ConfigurableBeanFactory beanFactory = (this.beanFactory instanceof ConfigurableBeanFactory ?
-
-            // (ConfigurableBeanFactory)this.beanFactory : null);
 
             // Annotation-based argument resolution
             resolvers.Add(new HeaderMethodArgumentResolver(ConversionService));

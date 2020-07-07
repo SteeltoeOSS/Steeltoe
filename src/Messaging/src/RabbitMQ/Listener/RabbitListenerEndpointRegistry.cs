@@ -4,21 +4,24 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Lifecycle;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class RabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable
+    public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
+        public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
+
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ConcurrentDictionary<string, IMessageListenerContainer>();
+        private bool _isDisposed;
 
         public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
         {
@@ -32,7 +35,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public bool IsAutoStartup => true;
 
-        public bool IsRunning { get; private set; }
+        public bool IsRunning => GetListenerContainers().Any(listener => listener.IsRunning);
+
+        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
         public IMessageListenerContainer GetListenerContainer(string id)
         {
@@ -88,6 +93,16 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 var container = CreateListenerContainer(endpoint, factory);
                 _listenerContainers.TryAdd(id, container);
 
+                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null)
+                {
+                    var containerCollection =
+                        ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) as MessageListenerContainerCollection;
+                    if (containerCollection != null)
+                    {
+                        containerCollection.AddContainer(container);
+                    }
+                }
+
                 // if (this.contextRefreshed)
                 // {
                 //    container.lazyLoad();
@@ -107,6 +122,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public void Dispose()
         {
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
+
             foreach (var listenerContainer in _listenerContainers.Values)
             {
                 if (listenerContainer is IDisposable)
@@ -160,7 +182,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             foreach (var listenerContainer in _listenerContainers.Values)
             {
-                await listenerContainer.Stop();
+                try
+                {
+                    await listenerContainer.Stop();
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogWarning("Failed to stop listener container [" + listenerContainer + "]", e);
+                }
             }
         }
 

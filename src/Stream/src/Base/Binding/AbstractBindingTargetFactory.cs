@@ -2,20 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Stream.Binding
 {
     public abstract class AbstractBindingTargetFactory<T> : IBindingTargetFactory
     {
-        protected IServiceProvider _serviceProvider;
+        protected IApplicationContext _context;
 
         public Type BindingTargetType { get; }
 
-        protected AbstractBindingTargetFactory(IServiceProvider serviceProvider)
+        protected AbstractBindingTargetFactory(IApplicationContext context)
         {
             BindingTargetType = typeof(T);
-            _serviceProvider = serviceProvider;
+            _context = context;
         }
 
         public virtual bool CanCreate(Type type)

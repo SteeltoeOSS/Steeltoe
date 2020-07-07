@@ -25,6 +25,11 @@ namespace Steeltoe.Common.Retry
         private readonly int _backOffMaxInterval;
         private readonly double _backOffMultiplier;
 
+        public PollyRetryTemplate(int maxAttempts, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier)
+            : this(new Dictionary<Type, bool>(), maxAttempts, true, backOffInitialInterval, backOffMaxInterval, backOffMultiplier)
+        {
+        }
+
         public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier)
         {
             _retryableExceptions = new BinaryExceptionClassifier(retryableExceptions, defaultRetryable);
@@ -70,8 +75,8 @@ namespace Steeltoe.Common.Retry
                     var callbackResult = retryCallback(retryContext);
                     if (recoveryCallback != null)
                     {
-                        var recovered = (bool)retryContext.GetAttribute(RECOVERED);
-                        if (recovered)
+                        var recovered = (bool?)retryContext.GetAttribute(RECOVERED);
+                        if (recovered != null && recovered.Value)
                         {
                             callbackResult = (T)retryContext.GetAttribute(RECOVERED_RESULT);
                         }
@@ -138,6 +143,10 @@ namespace Steeltoe.Common.Retry
                                 result = (T)callback.Recover(retryContext);
                                 retryContext.SetAttribute(RECOVERED, true);
                                 retryContext.SetAttribute(RECOVERED_RESULT, result);
+                            }
+                            else if (delegateResult.Exception != null)
+                            {
+                                throw delegateResult.Exception;
                             }
 
                             return result;

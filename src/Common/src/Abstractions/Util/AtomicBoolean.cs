@@ -33,5 +33,12 @@ namespace Steeltoe.Common.Util
             var updateInt = update ? 1 : 0;
             return Interlocked.CompareExchange(ref _value, updateInt, expectedInt) == expectedInt;
         }
+
+        public bool GetAndSet(bool newValue)
+        {
+            var newValueInt = newValue ? 1 : 0;
+            var previous = Interlocked.Exchange(ref _value, newValueInt);
+            return previous == 1;
+        }
     }
 }

@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Endpoint;
 using Steeltoe.Integration.Handler;
-using Steeltoe.Integration.Retry;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -22,8 +23,8 @@ namespace Steeltoe.Stream.TestBinder
 {
     public class TestChannelBinder : AbstractPollableMessageSourceBinder
     {
-        public TestChannelBinder(IServiceProvider serviceProvider, TestChannelBinderProvisioner provisioningProvider)
-            : base(serviceProvider, new string[] { }, provisioningProvider)
+        public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider)
+            : base(context, new string[] { }, provisioningProvider)
         {
         }
 
@@ -35,7 +36,7 @@ namespace Steeltoe.Stream.TestBinder
 
         protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {
-            var handler = new BridgeHandler(ServiceProvider)
+            var handler = new BridgeHandler(ApplicationContext)
             {
                 OutputChannel = ((SpringIntegrationProducerDestination)destination).Channel
             };
@@ -48,7 +49,7 @@ namespace Steeltoe.Stream.TestBinder
             var siBinderInputChannel = ((SpringIntegrationConsumerDestination)destination).Channel;
 
             var messageListenerContainer = new TestMessageListeningContainer();
-            var endpoint = new TestMessageProducerSupportEndpoint(ServiceProvider, messageListenerContainer);
+            var endpoint = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer);
 
             var groupName = !string.IsNullOrEmpty(group) ? group : "anonymous";
             var errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions);
@@ -99,7 +100,7 @@ namespace Steeltoe.Stream.TestBinder
         {
             public IMessage Receive()
             {
-                var message = new GenericMessage(
+                var message = Message.Create(
                     "polled data",
                     new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "text/plain" } }));
                 return message;
@@ -121,8 +122,8 @@ namespace Steeltoe.Stream.TestBinder
             private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
             private readonly TestMessageListeningContainer _messageListenerContainer;
 
-            public TestMessageProducerSupportEndpoint(IServiceProvider serviceProvider, TestMessageListeningContainer messageListenerContainer)
-                : base(serviceProvider)
+            public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer)
+                : base(context)
             {
                 _messageListenerContainer = messageListenerContainer;
             }

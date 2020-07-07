@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.Binder
 
         public IMessage ToMessage()
         {
-            return MessageBuilder.WithPayload(Payload).CopyHeaders(Headers).Build();
+            return IntegrationMessageBuilder.WithPayload(Payload).CopyHeaders(Headers).Build();
         }
 
         public void CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)

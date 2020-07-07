@@ -31,6 +31,15 @@ namespace Steeltoe.Common.Transaction
 
         public IPlatformTransactionManager TransactionManager { get; set; }
 
+        public void Execute(Action<ITransactionStatus> action)
+        {
+            Execute<object>((s) =>
+            {
+                action(s);
+                return null;
+            });
+        }
+
         public T Execute<T>(Func<ITransactionStatus, T> action)
         {
             if (TransactionManager == null)
@@ -82,20 +91,20 @@ namespace Steeltoe.Common.Transaction
                 throw new InvalidOperationException("No PlatformTransactionManager set");
             }
 
-            _logger?.LogDebug("Initiating transaction rollback on application exception", ex);
+            _logger?.LogDebug(ex, "Initiating transaction rollback on application exception");
             try
             {
                 TransactionManager.Rollback(status);
             }
             catch (TransactionSystemException ex2)
             {
-                _logger?.LogError("Application exception overridden by rollback exception", ex);
+                _logger?.LogError(ex, "Application exception overridden by rollback exception");
                 ex2.InitApplicationException(ex);
                 throw;
             }
             catch (Exception ex2)
             {
-                _logger?.LogError("Application exception overridden by rollback exception", ex);
+                _logger?.LogError(ex2, "Application exception overridden by rollback exception: {original}", ex);
                 throw;
             }
         }

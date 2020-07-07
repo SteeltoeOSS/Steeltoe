@@ -22,6 +22,10 @@ namespace Steeltoe.Stream.Tck
         {
         }
 
+        public const string DEFAULT_SERVICE_NAME = nameof(AlwaysStringMessageConverter);
+
+        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
         protected override bool Supports(Type clazz)
         {
             return clazz == null || typeof(string).IsAssignableFrom(clazz);

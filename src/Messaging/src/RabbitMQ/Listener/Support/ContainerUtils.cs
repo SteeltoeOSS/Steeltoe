@@ -16,12 +16,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Support
             var e = exception;
             while (e != null)
             {
-                if (e is AmqpRejectAndDontRequeueException)
+                if (e is RabbitRejectAndDontRequeueException)
                 {
                     shouldRequeue = false;
                     break;
                 }
-                else if (e is ImmediateRequeueAmqpException)
+                else if (e is ImmediateRequeueException)
                 {
                     shouldRequeue = true;
                     break;
@@ -30,13 +30,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Support
                 e = e.InnerException;
             }
 
-            logger?.LogDebug("Rejecting messages (requeue=" + shouldRequeue + ")");
+            logger?.LogDebug("Rejecting messages (requeue={requeue})", shouldRequeue);
             return shouldRequeue;
         }
 
         public static bool IsRejectManual(Exception exception)
         {
-            return exception is AmqpRejectAndDontRequeueException && ((AmqpRejectAndDontRequeueException)exception).IsRejectManual;
+            return exception is RabbitRejectAndDontRequeueException && ((RabbitRejectAndDontRequeueException)exception).IsRejectManual;
         }
     }
 }
