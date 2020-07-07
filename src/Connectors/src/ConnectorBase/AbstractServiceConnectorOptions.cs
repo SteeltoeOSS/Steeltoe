@@ -33,14 +33,9 @@ namespace Steeltoe.CloudFoundry.Connector
 
         protected AbstractServiceConnectorOptions(char keyValueTerm, char keyValueSep)
         {
-            this._keyValueSep = keyValueSep;
-            this._keyValueTerm = keyValueTerm;
+            _keyValueSep = keyValueSep;
+            _keyValueTerm = keyValueTerm;
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether your service broker UrlEncodes service credentials
-        /// </summary>
-        public bool UrlEncodedCredentials { get; set; } = false;
 
         protected internal void AddKeyValue(StringBuilder sb, string key, int? value)
         {

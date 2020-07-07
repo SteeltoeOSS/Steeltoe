@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
@@ -11,26 +10,26 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 {
     public class UriInfo
     {
-        private char[] _questionMark = new char[] { '?' };
+        private readonly char[] _questionMark = new char[] { '?' };
 
-        private char[] _colon = new char[] { ':' };
+        private readonly char[] _colon = new char[] { ':' };
 
         public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
         {
             Scheme = scheme;
             Host = host;
             Port = port;
-            UserName = username;
-            Password = password;
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             Path = path;
             Query = query;
 
             UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
         }
 
-        public UriInfo(string uristring, bool urlEncodedCredentials = false)
+        public UriInfo(string uristring)
         {
-            Uri uri = MakeUri(uristring);
+            var uri = MakeUri(uristring);
             if (uri != null)
             {
                 Scheme = uri.Scheme;
@@ -43,26 +42,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Path = GetPath(uri.PathAndQuery);
                 Query = GetQuery(uri.PathAndQuery);
 
-                string[] userinfo = GetUserInfo(uri.UserInfo);
-
-                if (urlEncodedCredentials)
-                {
-                    UserName = WebUtility.UrlDecode(userinfo[0]);
-                    Password = WebUtility.UrlDecode(userinfo[1]);
-                }
-                else
-                {
-                    UserName = userinfo[0];
-                    Password = userinfo[1];
-                }
+                var userinfo = GetUserInfo(uri.UserInfo);
+                UserName = userinfo[0];
+                Password = userinfo[1];
             }
 
-            this.UriString = uristring;
+            UriString = uristring;
         }
 
         public UriInfo(string uristring, string username, string password)
         {
-            Uri uri = MakeUri(uristring);
+            var uri = MakeUri(uristring);
             if (uri != null)
             {
                 Scheme = uri.Scheme;
@@ -76,9 +66,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
             }
 
-            this.UserName = username;
-            this.Password = password;
-            this.UriString = uristring;
+            UserName = username;
+            Password = password;
+            UriString = uristring;
         }
 
         public string Scheme { get; internal protected set; }
@@ -99,22 +89,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public string UriString { get; internal protected set; }
 
-        public Uri Uri
-        {
-            get
-            {
-                return MakeUri(UriString);
-            }
-        }
+        public Uri Uri => MakeUri(UriString);
 
-        public override string ToString()
-        {
-            return UriString;
-        }
+        public override string ToString() => UriString;
 
         protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {
-            string cleanedPath = path == null || path.StartsWith("/") ? path : "/" + path;
+            var cleanedPath = path == null || path.StartsWith("/") ? path : "/" + path;
             cleanedPath = query != null ? cleanedPath + "?" + query : cleanedPath;
 
             if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
@@ -124,8 +105,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     Scheme = scheme,
                     Host = host,
                     Port = port,
-                    UserName = username,
-                    Password = password,
+                    UserName = WebUtility.UrlEncode(username),
+                    Password = WebUtility.UrlEncode(password),
                     Path = cleanedPath
                 };
                 return builder.Uri;
@@ -217,7 +198,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return null;
             }
 
-            string[] split = pathAndQuery.Split(_questionMark);
+            var split = pathAndQuery.Split(_questionMark);
             if (split.Length == 0)
             {
                 return null;
@@ -233,7 +214,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return null;
             }
 
-            string[] split = pathAndQuery.Split(_questionMark);
+            var split = pathAndQuery.Split(_questionMark);
             if (split.Length <= 1)
             {
                 return null;
@@ -249,7 +230,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 return new string[2] { null, null };
             }
 
-            string[] split = userPass.Split(_colon);
+            var split = userPass.Split(_colon);
             if (split.Length != 2)
             {
                 throw new ArgumentException(

@@ -9,8 +9,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         public const string POSTGRES_SCHEME = "postgres";
         public const string POSTGRES_JDBC_SCHEME = "postgresql";
 
-        public PostgresServiceInfo(string id, string url, bool urlEncodedCredentials = false)
-            : base(id, url, urlEncodedCredentials)
+        public PostgresServiceInfo(string id, string url)
+            : base(id, url)
         {
         }
     }

@@ -49,8 +49,8 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         public void UseNpgsql_ThrowsIfConfigurationNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
             // Act and Assert
@@ -71,9 +71,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         public void UseNpgsql_ThrowsIfServiceNameNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
             // Act and Assert
@@ -89,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
@@ -107,7 +107,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             services.AddDbContext<GoodDbContext>(options =>
@@ -126,7 +126,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -147,7 +147,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -183,7 +183,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Crunchy);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -219,12 +219,9 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerEncodedVCAP_Crunchy);
 
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["postgres:client:urlEncodedCredentials"] = "true"
-            };
+            var appsettings = new Dictionary<string, string>();
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
             builder.AddCloudFoundry();
             var config = builder.Build();

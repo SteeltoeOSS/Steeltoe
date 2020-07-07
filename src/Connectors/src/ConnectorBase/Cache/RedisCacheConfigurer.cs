@@ -38,14 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             if (!string.IsNullOrEmpty(si.Password))
             {
-                if (configuration.UrlEncodedCredentials)
-                {
-                    configuration.Password = WebUtility.UrlDecode(si.Password);
-                }
-                else
-                {
-                    configuration.Password = si.Password;
-                }
+                configuration.Password = si.Password;
             }
 
             if (si.Scheme == RedisServiceInfo.REDIS_SECURE_SCHEME)
