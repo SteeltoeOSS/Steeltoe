@@ -23,7 +23,7 @@ using static Steeltoe.Messaging.Rabbit.Attributes.AsyncListenerTest;
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class AsyncListenerTest : IClassFixture<StartupFixture>
     {
         private readonly ServiceProvider provider;

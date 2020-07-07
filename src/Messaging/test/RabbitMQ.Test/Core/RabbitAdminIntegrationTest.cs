@@ -23,7 +23,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class RabbitAdminIntegrationTest : IDisposable
     {
         private readonly ServiceCollection services;

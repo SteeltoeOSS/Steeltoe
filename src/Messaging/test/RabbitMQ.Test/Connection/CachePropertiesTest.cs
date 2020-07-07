@@ -7,7 +7,7 @@ using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class CachePropertiesTest
     {
         [Fact]

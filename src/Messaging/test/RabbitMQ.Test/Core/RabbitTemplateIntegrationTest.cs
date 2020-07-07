@@ -22,7 +22,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class RabbitTemplateIntegrationTest : IDisposable
     {
         public const string ROUTE = "test.queue.RabbitTemplateIntegrationTests";

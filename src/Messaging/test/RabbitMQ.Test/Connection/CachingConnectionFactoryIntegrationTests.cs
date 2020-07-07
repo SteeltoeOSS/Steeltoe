@@ -14,7 +14,7 @@ using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class CachingConnectionFactoryIntegrationTests : IDisposable
     {
         public const string CF_INTEGRATION_TEST_QUEUE = "cfIntegrationTest";

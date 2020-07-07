@@ -21,7 +21,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class ContainerInitializationTest : AbstractTest, IDisposable
     {
         public const string TEST_MISMATCH = "test.mismatch";

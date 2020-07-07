@@ -19,7 +19,7 @@ using static Steeltoe.Messaging.Rabbit.Attributes.ComplexTypeJsonIntegrationTest
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     {
         public const string TEST_QUEUE = "test.complex.send.and.receive";

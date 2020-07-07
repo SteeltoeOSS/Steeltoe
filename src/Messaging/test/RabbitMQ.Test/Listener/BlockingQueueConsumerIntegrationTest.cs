@@ -16,7 +16,7 @@ using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class BlockingQueueConsumerIntegrationTest
     {
         public const string QUEUE1_NAME = "test.queue1.BlockingQueueConsumerIntegrationTests";

@@ -24,7 +24,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class BatchingRabbitTemplateTest : IDisposable
     {
         public const string ROUTE = "test.queue.BatchingRabbitTemplateTests";

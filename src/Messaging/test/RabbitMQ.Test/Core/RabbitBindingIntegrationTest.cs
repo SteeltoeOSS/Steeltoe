@@ -17,7 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class RabbitBindingIntegrationTest : IDisposable
     {
         private const string QueueName = "test.queue.RabbitBindingIntegrationTests";

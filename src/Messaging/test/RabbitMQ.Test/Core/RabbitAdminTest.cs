@@ -27,7 +27,7 @@ using IConnectionFactory = Steeltoe.Messaging.Rabbit.Connection.IConnectionFacto
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class RabbitAdminTest : AbstractTest
     {
         [Fact]

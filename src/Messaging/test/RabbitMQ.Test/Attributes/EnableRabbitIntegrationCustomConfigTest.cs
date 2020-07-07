@@ -29,7 +29,7 @@ using static Steeltoe.Messaging.Rabbit.Attributes.EnableRabbitIntegrationCustomC
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
     {
         private readonly ServiceProvider provider;

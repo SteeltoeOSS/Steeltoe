@@ -16,7 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Messaging.Rabbit.Attributes
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class EnableRabbitReturnTypesTest
     {
         public const string Q1 = "EnableRabbitReturnTypesTests.1";

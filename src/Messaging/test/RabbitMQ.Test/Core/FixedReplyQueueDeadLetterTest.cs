@@ -26,7 +26,7 @@ using static Steeltoe.Messaging.Rabbit.Core.FixedReplyQueueDeadLetterTest;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixture>
     {
         private readonly ServiceProvider provider;

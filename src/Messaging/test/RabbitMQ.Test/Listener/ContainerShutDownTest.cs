@@ -15,7 +15,7 @@ using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
 
 namespace Steeltoe.Messaging.Rabbit.Listener
 {
-    [Trait("Category", "RequiresBroker")]
+    [Trait("Category", "Integration")]
     public class ContainerShutDownTest : AbstractTest
     {
         [Fact]
