@@ -10,8 +10,6 @@ using System.Text;
 
 namespace Steeltoe.Messaging
 {
-#pragma warning disable SA1402 // File may only contain a single type
-
     public static class Message
     {
         public static IMessage<T> Create<T>(T payload)
@@ -182,5 +180,4 @@ namespace Steeltoe.Messaging
             return sb.ToString();
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

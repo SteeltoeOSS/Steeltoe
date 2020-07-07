@@ -11,7 +11,6 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Rabbit.Support
 {
-#pragma warning disable SA1402 // File may only contain a single type
     public static class RabbitMessageBuilder
     {
         public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
@@ -94,5 +93,4 @@ namespace Steeltoe.Messaging.Rabbit.Support
         {
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

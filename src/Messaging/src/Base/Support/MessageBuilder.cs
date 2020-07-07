@@ -8,7 +8,6 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Support
 {
-#pragma warning disable SA1402 // File may only contain a single type
     public static class MessageBuilder
     {
         public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
@@ -295,5 +294,4 @@ namespace Steeltoe.Messaging.Support
             return (IMessage<P>)base.Build();
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

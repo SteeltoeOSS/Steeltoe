@@ -8,7 +8,6 @@
     <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
     <!-- 
     https://github.com/SteeltoeOSS/Configuration/issues/43
     <SignAssembly>true</SignAssembly>
