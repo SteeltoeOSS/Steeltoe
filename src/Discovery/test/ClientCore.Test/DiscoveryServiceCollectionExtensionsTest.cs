@@ -13,6 +13,8 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Connector;
+using Steeltoe.Discovery.Client.SimpleClients;
+using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
@@ -29,73 +31,66 @@ namespace Steeltoe.Discovery.Client.Test
     public class DiscoveryServiceCollectionExtensionsTest
     {
         [Fact]
-        public void AddDiscoveryClient_ThrowsIfServiceCollectionNull()
+        public void AddServiceDiscovery_ThrowsIfServiceCollectionNull()
         {
             // Arrange
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
-            DiscoveryOptions options = null;
-            Action<DiscoveryOptions> action = null;
+            IServiceCollection serviceCollection = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-            ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, options));
-            Assert.Contains(nameof(services), ex.Message);
-            ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, action));
-            Assert.Contains(nameof(services), ex.Message);
+            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddServiceDiscovery(serviceCollection, (options) => { }));
+            Assert.Contains(nameof(serviceCollection), ex.Message);
         }
 
         [Fact]
-        public void AddDiscoveryClient_ThrowsIfConfigurtionNull()
+        public void AddServiceDiscovery_AddsNoOpClientIfOptionsActionNull()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
 
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
-            Assert.Contains(nameof(config), ex.Message);
+            // Act
+            services.AddServiceDiscovery();
+            var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
+            Assert.NotNull(client);
+            Assert.IsType<NoOpDiscoveryClient>(client);
         }
 
         [Fact]
-        public void AddDiscoverClient_ThrowsIfDiscoveryOptionsNull()
+        public void AddServiceDiscovery_WithConfiguration_AddsAndWorks()
         {
-            // Arrange
-            IServiceCollection services = new ServiceCollection();
-            DiscoveryOptions discoveryOptions = null;
+            // arrange
+            var appsettings = @"
+{
+    ""discovery"": {
+        ""services"": [
+            { ""serviceId"": ""fruitService"", ""host"": ""fruitball"", ""port"": 443, ""isSecure"": true },
+            { ""serviceId"": ""fruitService"", ""host"": ""fruitballer"", ""port"": 8081 },
+            { ""serviceId"": ""vegetableService"", ""host"": ""vegemite"", ""port"": 443, ""isSecure"": true },
+            { ""serviceId"": ""vegetableService"", ""host"": ""carrot"", ""port"": 8081 },
+        ]
+    }
+}";
+            var path = TestHelpers.CreateTempFile(appsettings);
+            var sCollection = new ServiceCollection()
+                .AddOptions()
+                .AddSingleton<IConfiguration>(
+                    new ConfigurationBuilder()
+                        .SetBasePath(Path.GetDirectoryName(path))
+                        .AddJsonFile(Path.GetFileName(path))
+                        .Build());
 
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, discoveryOptions));
-            Assert.Contains(nameof(discoveryOptions), ex.Message);
+            var services = sCollection.AddServiceDiscovery(options => options.UseConfiguredInstances()).BuildServiceProvider();
+
+            var client = services.GetService<IDiscoveryClient>();
+            Assert.NotNull(client);
+            Assert.IsType<ConfigurationDiscoveryClient>(client);
+            Assert.Contains("fruitService", client.Services);
+            Assert.Contains("vegetableService", client.Services);
+            Assert.Equal(2, client.GetInstances("fruitService").Count);
+            Assert.Equal(2, client.GetInstances("vegetableService").Count);
         }
 
         [Fact]
-        public void AddDiscoverClient_ThrowsIfDiscoveryOptionsClientType_Unknown()
-        {
-            // Arrange
-            IServiceCollection services = new ServiceCollection();
-            var discoveryOptions = new DiscoveryOptions();
-
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, discoveryOptions));
-            Assert.Contains("UNKNOWN", ex.Message);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_ThrowsIfSetupOptionsNull()
-        {
-            // Arrange
-            IServiceCollection services = new ServiceCollection();
-            Action<DiscoveryOptions> setupOptions = null;
-
-            // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, setupOptions));
-            Assert.Contains(nameof(setupOptions), ex.Message);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
+        public void AddServiceDiscovery_WithEurekaConfig_AddsDiscoveryClient()
         {
             // Arrange
             var appsettings = @"
@@ -125,14 +120,14 @@ namespace Steeltoe.Discovery.Client.Test
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(config);
+            services.AddServiceDiscovery((options) => options.UseEureka());
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithEurekaInetConfig_AddsDiscoveryClient()
+        public void AddServiceDiscovery_WithEurekaInetConfig_AddsDiscoveryClient()
         {
             // Arrange
             var appsettings = new Dictionary<string, string>
@@ -148,7 +143,7 @@ namespace Steeltoe.Discovery.Client.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(config);
+            services.AddServiceDiscovery((options) => options.UseEureka());
 
             var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
             Assert.NotNull(service);
@@ -157,7 +152,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
+        public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
         {
             // Arrange
             var appsettings = new Dictionary<string, string>()
@@ -173,7 +168,7 @@ namespace Steeltoe.Discovery.Client.Test
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
             services.Configure<CertificateOptions>(config);
             services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(config);
+            services.AddServiceDiscovery((options) => options.UseEureka());
 
             // act
             var serviceProvider = services.BuildServiceProvider();
@@ -186,199 +181,19 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithNoEurekaConfig_AddsDiscoveryClient_UnknownClientType()
-        {
-            // Arrange
-            var appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                        },
-                    }
-                }";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
-            var config = configurationBuilder.Build();
-
-            var services = new ServiceCollection();
-            Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(config));
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithDiscoveryOptions_AddsDiscoveryClient()
-        {
-            // Arrange
-            var options = new DiscoveryOptions()
-            {
-                ClientType = DiscoveryClientType.EUREKA,
-                ClientOptions = new EurekaClientOptions()
-                {
-                    ShouldFetchRegistry = false,
-                    ShouldRegisterWithEureka = false
-                }
-            };
-
-            var services = new ServiceCollection();
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options);
-
-            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_AddsEurekaServerHealthContributor()
-        {
-            // Arrange
-            var options = new DiscoveryOptions()
-            {
-                ClientType = DiscoveryClientType.EUREKA,
-                ClientOptions = new EurekaClientOptions()
-                {
-                    ShouldFetchRegistry = false,
-                    ShouldRegisterWithEureka = false
-                }
-            };
-
-            var services = new ServiceCollection();
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options);
-
-            var built = services.BuildServiceProvider();
-            var service = built.GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-            var healthContrib = built.GetService<IHealthContributor>();
-            Assert.IsType<EurekaServerHealthContributor>(healthContrib);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WiresUp_HealthCheckerHandler()
-        {
-            // Arrange
-            var options = new DiscoveryOptions()
-            {
-                ClientType = DiscoveryClientType.EUREKA,
-                ClientOptions = new EurekaClientOptions()
-                {
-                    ShouldFetchRegistry = false,
-                    ShouldRegisterWithEureka = false
-                }
-            };
-
-            var services = new ServiceCollection();
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options);
-            services.AddSingleton<IHealthCheckHandler, ScopedEurekaHealthCheckHandler>();
-
-            var built = services.BuildServiceProvider();
-            var service = built.GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-            var eurekaService = service as EurekaDiscoveryClient;
-            Assert.IsType<ScopedEurekaHealthCheckHandler>(eurekaService.HealthCheckHandler);
-            var handler = eurekaService.HealthCheckHandler as ScopedEurekaHealthCheckHandler;
-            Assert.NotNull(handler._scopeFactory);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
-        {
-            // Arrange
-            var options = new DiscoveryOptions()
-            {
-                ClientType = DiscoveryClientType.EUREKA,
-                ClientOptions = null,
-                RegistrationOptions = null
-            };
-
-            var services = new ServiceCollection();
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            Assert.Throws<ArgumentException>(() => services.AddDiscoveryClient(options));
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithSetupAction_AddsDiscoveryClient()
-        {
-            // Arrange
-            var services = new ServiceCollection();
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient((options) =>
-           {
-               options.ClientType = DiscoveryClientType.EUREKA;
-               options.ClientOptions = new EurekaClientOptions()
-               {
-                   ShouldFetchRegistry = false,
-                   ShouldRegisterWithEureka = false
-               };
-               options.RegistrationOptions = new EurekaInstanceOptions();
-           });
-
-            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithDiscoveryOptionsAndHttpClient_AddsDiscoveryClient()
-        {
-            // Arrange
-            var options = new DiscoveryOptions()
-            {
-                ClientType = DiscoveryClientType.EUREKA,
-                ClientOptions = new EurekaClientOptions()
-                {
-                    ShouldFetchRegistry = true,
-                    ShouldRegisterWithEureka = false
-                }
-            };
-
-            var services = new ServiceCollection();
-
-            // Add provider to be injected into HttpClient
-            var hprovider = new TestClientHandlerProvider();
-            services.AddSingleton<IHttpClientHandlerProvider>(hprovider);
-
-            services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
-            services.AddDiscoveryClient(options);
-
-            var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
-            Assert.NotNull(service);
-
-            // Provider should have been called
-            Assert.True(hprovider.Called);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_ThrowsIfServiceNameNull()
+        public void AddServiceDiscovery_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config, serviceName));
-            Assert.Contains(nameof(serviceName), ex.Message);
-        }
-
-        [Fact]
-        public void AddDiscoveryClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
-        {
-            // Arrange
-            IServiceCollection services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
-
-            // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddServiceDiscovery(services, (options) => options.UseEureka("foobar")));
             Assert.Contains("foobar", ex.Message);
         }
 
         [Fact]
-        public void AddDiscoveryClient_MultipleRegistryServices_ThrowsConnectorException()
+        public void AddServiceDiscovery_MultipleRegistryServices_ThrowsConnectorException()
         {
             // Arrange
             var env1 = @"
@@ -452,50 +267,31 @@ namespace Steeltoe.Discovery.Client.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddServiceDiscovery(services, (options) => options.UseEureka()));
             Assert.Contains("Multiple", ex.Message);
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithConsulConfiguration_AddsDiscoveryClient()
+        public void AddServiceDiscovery_WithConsulConfiguration_AddsDiscoveryClient()
         {
             // Arrange
-            var appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                        },
-                    },
-                    ""consul"": {
-                        ""host"": ""foo.bar"",
-                        ""discovery"": {
-                            ""register"": false,
-                            ""deregister"": false,
-                            ""instanceid"": ""instanceid"",
-                            ""port"": 1234
-                        }
-                    }
-                }";
-
-            var path = TestHelpers.CreateTempFile(appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
-
-            configurationBuilder.AddJsonFile(fileName);
-            var config = configurationBuilder.Build();
+            var appSettings = new Dictionary<string, string>()
+            {
+                { "spring:application:name", "myName" },
+                { "consul:host", "foo.bar" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" },
+                { "consul:discovery:instanceid", "instanceid" },
+                { "consul:discovery:port", "1234" },
+            };
 
             var services = new ServiceCollection();
-            services.AddSingleton<IConfiguration>(config);
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
             services.AddOptions();
-            services.AddDiscoveryClient(config);
+            services.AddServiceDiscovery((options) => options.UseConsul());
             var provider = services.BuildServiceProvider();
 
             var service = provider.GetService<IDiscoveryClient>();
@@ -515,7 +311,7 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddDiscoveryClient_WithConsulInetConfiguration_AddsDiscoveryClient()
+        public void AddServiceDiscovery_WithConsulInetConfiguration_AddsDiscoveryClient()
         {
             // Arrange
             var appsettings = new Dictionary<string, string>
@@ -531,7 +327,7 @@ namespace Steeltoe.Discovery.Client.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
-            services.AddDiscoveryClient(config);
+            services.AddServiceDiscovery((options) => options.UseConsul());
             var provider = services.BuildServiceProvider();
 
             Assert.NotNull(provider.GetService<IDiscoveryClient>());
@@ -568,14 +364,14 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Equal("notdefault", options.Value.Namespace);
         }
 
-        public class TestClientHandlerProvider : IHttpClientHandlerProvider
+        internal class TestClientHandlerProvider : IHttpClientHandlerProvider
         {
             public bool Called { get; set; } = false;
 
             public HttpClientHandler GetHttpClientHandler()
             {
                 Called = true;
-                return new System.Net.Http.HttpClientHandler();
+                return new HttpClientHandler();
             }
         }
     }

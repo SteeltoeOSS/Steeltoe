@@ -9,7 +9,7 @@ using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Linq;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.Discovery.Eureka
 {
     public class ScopedEurekaHealthCheckHandler : EurekaHealthCheckHandler
     {

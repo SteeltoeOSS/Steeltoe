@@ -11,10 +11,10 @@ namespace Steeltoe.Discovery.Client
     {
         public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
         {
-            var service = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
+            _ = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
 
             // make sure that the lifcycle object is created
-            var lifecycle = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
+            _ = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
             return app;
         }
     }
