@@ -8,6 +8,10 @@ namespace Steeltoe.Discovery.Client
 {
     public interface IDiscoveryClientExtension
     {
+        /// <summary>
+        /// Implementations of this method will add services required by the <see cref="IDiscoveryClient"/> to the service collection for activation later
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
         void ApplyServices(IServiceCollection services);
     }
 }

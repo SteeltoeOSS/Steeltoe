@@ -36,7 +36,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        [System.Obsolete]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
             // Arrange

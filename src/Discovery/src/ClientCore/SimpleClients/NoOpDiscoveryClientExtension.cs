@@ -9,6 +9,7 @@ namespace Steeltoe.Discovery.Client.SimpleClients
 {
     internal class NoOpDiscoveryClientExtension : IDiscoveryClientExtension
     {
+        /// <inheritdoc/>
         public void ApplyServices(IServiceCollection services)
         {
             services.AddSingleton<IDiscoveryClient>((services) => new NoOpDiscoveryClient(services.GetService<ILogger<NoOpDiscoveryClient>>()));

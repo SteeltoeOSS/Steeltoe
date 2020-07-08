@@ -16,6 +16,7 @@ namespace Steeltoe.Discovery.Consul
 {
     public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
     {
+        /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();

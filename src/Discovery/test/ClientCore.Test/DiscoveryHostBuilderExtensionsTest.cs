@@ -31,6 +31,7 @@ namespace Steeltoe.Discovery.Client.Test
             ["consul:discovery:serviceName"] = "testhost",
             ["consul:discovery:enabled"] = "true",
             ["consul:discovery:failfast"] = "false",
+            ["consul:discovery:register"] = "false",
         };
 
         [Fact]
@@ -40,7 +41,7 @@ namespace Steeltoe.Discovery.Client.Test
             var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
 
             // Act
-            var host = hostBuilder.AddServiceDiscovery(options => options.UseEureka()).Build();
+            var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var filters = host.Services.GetServices<IStartupFilter>();
 
@@ -58,7 +59,7 @@ namespace Steeltoe.Discovery.Client.Test
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
 
             // Act
-            var host = hostBuilder.AddServiceDiscovery(options => options.UseEureka()).Build();
+            var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
@@ -78,7 +79,7 @@ namespace Steeltoe.Discovery.Client.Test
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
 
             // Act
-            var host = await hostBuilder.AddServiceDiscovery(options => options.UseEureka()).StartAsync();
+            var host = await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
 
             // Assert general success...
             //   not sure how to specifically validate that the StartupFilter fired,
@@ -93,7 +94,7 @@ namespace Steeltoe.Discovery.Client.Test
             var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(consulSettings));
 
             // Act
-            var host = hostBuilder.AddServiceDiscovery(options => options.UseConsul()).Build();
+            var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 

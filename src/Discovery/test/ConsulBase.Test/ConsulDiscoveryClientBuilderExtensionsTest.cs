@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.ConsulBase.Test
 {
-    public class ConsulDiscoveryOptionsExtensionTest
+    public class ConsulDiscoveryClientBuilderExtensionsTest
     {
         private Dictionary<string, string> appsettings = new Dictionary<string, string>
             {

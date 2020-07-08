@@ -9,11 +9,14 @@ namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryApplicationBuilderExtensions
     {
+        /// <summary>
+        /// Activates the configured <see cref="IDiscoveryClient"/> and registers shutdown events via <see cref="IDiscoveryLifecycle"/>
+        /// </summary>
         public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
         {
             _ = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
 
-            // make sure that the lifcycle object is created
+            // make sure that the lifecycle object is created
             _ = app.ApplicationServices.GetService<IDiscoveryLifecycle>();
             return app;
         }

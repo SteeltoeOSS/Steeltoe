@@ -25,6 +25,7 @@ namespace Steeltoe.Discovery.Eureka
             ServiceInfoName = serviceInfoName;
         }
 
+        /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
         {
             var serviceProvider = services.BuildServiceProvider();

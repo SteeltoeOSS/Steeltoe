@@ -8,6 +8,10 @@ namespace Steeltoe.Discovery.Client
 {
     public class DiscoveryClientBuilder
     {
+        /// <summary>
+        /// Gets or sets a list of extensions to use to configure an IDiscoveryClient
+        /// </summary>
+        /// <remarks>An application should generally only use one extension</remarks>
         public IList<IDiscoveryClientExtension> Extensions { get; set; } = new List<IDiscoveryClientExtension>();
     }
 }

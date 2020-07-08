@@ -13,6 +13,8 @@ using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client.SimpleClients;
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace Steeltoe.Discovery.Client
@@ -31,25 +33,41 @@ namespace Steeltoe.Discovery.Client
             return services;
         }
 
-        public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> optionsAction = null)
+        /// <summary>
+        /// Adds service discovery to your application. If <paramref name="builderAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// </summary>
+        /// <param name="serviceCollection"><see cref="IServiceCollection"/> to configure</param>
+        /// <param name="builderAction">Provided by the desired <see cref="IDiscoveryClient"/> implementation</param>
+        /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
+        /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
+        public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction = null)
         {
             if (serviceCollection is null)
             {
                 throw new ArgumentNullException(nameof(serviceCollection));
             }
 
-            if (optionsAction is null)
+            if (builderAction is null)
             {
-                optionsAction = (options) => options.Extensions.Add(new NoOpDiscoveryClientExtension());
+                builderAction = (builder) => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
             }
 
-            ApplyDiscoveryOptions(serviceCollection, optionsAction);
+            ApplyDiscoveryOptions(serviceCollection, builderAction);
 
             serviceCollection.TryAddTransient<DiscoveryHttpMessageHandler>();
             serviceCollection.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
+            serviceCollection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
+            serviceCollection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
             return serviceCollection;
         }
 
+        /// <summary>
+        /// Retrieve a single, named <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+        /// </summary>
+        /// <param name="config">The <see cref="IConfiguration"/> to search</param>
+        /// <param name="serviceName">Name of service binding to find</param>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found</exception>
         public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
         {
             var info = config.GetServiceInfo(serviceName);
@@ -66,6 +84,11 @@ namespace Steeltoe.Discovery.Client
             return info;
         }
 
+        /// <summary>
+        /// Retrieve a single <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+        /// </summary>
+        /// <param name="config">The <see cref="IConfiguration"/> to search</param>
+        /// <exception cref="ConnectorException">Thrown if multiple service infos are found</exception>
         public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
         {
             // Note: Could be other discovery type services in future
@@ -84,15 +107,20 @@ namespace Steeltoe.Discovery.Client
             return null;
         }
 
-        private static void ApplyDiscoveryOptions(IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> optionsAction)
+        private static void ApplyDiscoveryOptions(IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction)
         {
             var builder = new DiscoveryClientBuilder();
 
-            optionsAction?.Invoke(builder);
+            builderAction?.Invoke(builder);
 
             foreach (var ext in builder.Extensions)
             {
                 ext.ApplyServices(serviceCollection);
+            }
+
+            if (serviceCollection.Count(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IDiscoveryClient))) > 1)
+            {
+                throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been configured! This is not supported, please only use a single client type.");
             }
         }
 
