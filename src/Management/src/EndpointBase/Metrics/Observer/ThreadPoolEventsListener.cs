@@ -45,13 +45,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         };
 
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly MeasureMetric<long> availableThreads;
+        private readonly MeasureMetric<long> _availableThreads;
 
         public ThreadPoolEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats)
         {
             _logger = logger;
-            availableThreads = Meter.CreateInt64Measure($"clr.threadpool.available");
+            _availableThreads = Meter.CreateInt64Measure($"clr.threadpool.available");
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -112,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 {
                     var activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
                     var available = maxWorker - activeCount;
-                    availableThreads.Record(default(SpanContext), available, GetLabelSet(eventData.EventName).ToList());
+                    _availableThreads.Record(default(SpanContext), available, GetLabelSet(eventData.EventName).ToList());
                 }
             }
         }

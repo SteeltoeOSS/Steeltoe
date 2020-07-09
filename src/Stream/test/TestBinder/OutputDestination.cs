@@ -40,16 +40,16 @@ namespace Steeltoe.Stream.TestBinder
 
         private class MessageHandler : IMessageHandler
         {
-            private readonly OutputDestination outputDestination;
+            private readonly OutputDestination _outputDestination;
 
             public MessageHandler(OutputDestination thiz)
             {
-                outputDestination = thiz;
+                _outputDestination = thiz;
             }
 
             public void HandleMessage(IMessage message)
             {
-                outputDestination._messages.Add(message);
+                _outputDestination._messages.Add(message);
             }
         }
     }

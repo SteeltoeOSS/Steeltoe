@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Connector</RootNamespace>
     <Description>Package for using service connectors in your ASP.NET Core application</Description>
     <PackageTags>connectors;aspnetcore;services</PackageTags>
@@ -13,10 +13,7 @@
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(DiagnosticsExtensionsVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

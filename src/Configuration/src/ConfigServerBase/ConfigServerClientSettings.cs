@@ -121,8 +121,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
         private static readonly char[] COMMA_DELIMIT = new char[] { ',' };
 
-        private string username;
-        private string password;
+        private string _username;
+        private string _password;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConfigServerClientSettings"/> class.
@@ -179,7 +179,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Username
         {
             get { return GetUserName(); }
-            set { this.username = value; }
+            set { this._username = value; }
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Password
         {
             get { return GetPassword(); }
-            set { this.password = value; }
+            set { this._password = value; }
         }
 #pragma warning restore S4275 // Getters and setters should access the expected fields
 
@@ -379,9 +379,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal string GetPassword(string uri)
         {
-            if (!string.IsNullOrEmpty(password))
+            if (!string.IsNullOrEmpty(_password))
             {
-                return password;
+                return _password;
             }
 
             return GetUserPassElement(uri, 1);
@@ -394,9 +394,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal string GetUserName(string uri)
         {
-            if (!string.IsNullOrEmpty(username))
+            if (!string.IsNullOrEmpty(_username))
             {
-                return username;
+                return _username;
             }
 
             return GetUserPassElement(uri, 0);

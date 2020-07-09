@@ -6,13 +6,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class CommandAndCacheKey
     {
-        private readonly string commandName;
-        private readonly string cacheKey;
+        private readonly string _commandName;
+        private readonly string _cacheKey;
 
         public CommandAndCacheKey(string commandName, string cacheKey)
         {
-            this.commandName = commandName;
-            this.cacheKey = cacheKey;
+            this._commandName = commandName;
+            this._cacheKey = cacheKey;
         }
 
         public override bool Equals(object o)
@@ -29,26 +29,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
             CommandAndCacheKey that = (CommandAndCacheKey)o;
 
-            if (!commandName.Equals(that.commandName))
+            if (!_commandName.Equals(that._commandName))
             {
                 return false;
             }
 
-            return cacheKey.Equals(that.cacheKey);
+            return _cacheKey.Equals(that._cacheKey);
         }
 
         public override int GetHashCode()
         {
-            int result = commandName.GetHashCode();
-            result = (31 * result) + cacheKey.GetHashCode();
+            int result = _commandName.GetHashCode();
+            result = (31 * result) + _cacheKey.GetHashCode();
             return result;
         }
 
         public override string ToString()
         {
             return "CommandAndCacheKey{" +
-                    "commandName='" + commandName + '\'' +
-                    ", cacheKey='" + cacheKey + '\'' +
+                    "commandName='" + _commandName + '\'' +
+                    ", cacheKey='" + _cacheKey + '\'' +
                     '}';
         }
     }

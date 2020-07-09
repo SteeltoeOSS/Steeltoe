@@ -22,8 +22,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _eventSourceName = "System.Runtime";
         private readonly string _eventName = "EventCounters";
 
-        private ConcurrentDictionary<string, MeasureMetric<double>> doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
-        private ConcurrentDictionary<string, MeasureMetric<long>> longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
+        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
+        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
 
         public EventCounterListener(IStats stats, ILogger<EventCounterListener> logger = null)
         {
@@ -127,14 +127,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (doubleValue.HasValue)
             {
-                var doubleMetric = doubleMeasureMetrics.GetOrAddEx(
+                var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateDoubleMeasure($"{name}"));
                 doubleMetric.Record(default(SpanContext), doubleValue.Value, labelSet);
             }
             else if (longValue.HasValue)
             {
-                var longMetric = longMeasureMetrics.GetOrAddEx(
+                var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateInt64Measure($"{name}"));
                 longMetric.Record(default(SpanContext), longValue.Value, labelSet);

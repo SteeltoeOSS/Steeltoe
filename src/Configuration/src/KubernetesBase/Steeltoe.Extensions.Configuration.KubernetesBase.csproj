@@ -9,14 +9,9 @@
    <Import Project="..\..\..\..\versions.props" />
    <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Configuration.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Common.Kubernetes" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

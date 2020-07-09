@@ -18,15 +18,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
     public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
     {
-        private ConnectionFactory factory;
-        private IConnection connection;
-        private IModel channel;
+        protected internal ConnectionFactory Factory { get; set; }
 
-        protected internal ConnectionFactory Factory { get => factory; set => factory = value; }
+        protected internal IConnection Connection { get; set; }
 
-        protected internal IConnection Connection { get => connection; set => connection = value; }
-
-        protected internal IModel Channel { get => channel; set => channel = value; }
+        protected internal IModel Channel { get; set; }
 
         public RabbitMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<RabbitMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
             : base(options, stream, logger, discoveryClient)

@@ -8,18 +8,18 @@ namespace Steeltoe.Management.Info
 {
     public class InfoBuilder : IInfoBuilder
     {
-        private readonly Dictionary<string, object> info = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _info = new Dictionary<string, object>();
 
         public Dictionary<string, object> Build()
         {
-            return info;
+            return _info;
         }
 
         public IInfoBuilder WithInfo(string key, object value)
         {
             if (!string.IsNullOrEmpty(key))
             {
-                info[key] = value;
+                _info[key] = value;
             }
 
             return this;
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Info
             {
                 foreach (var pair in items)
                 {
-                    info[pair.Key] = pair.Value;
+                    _info[pair.Key] = pair.Value;
                 }
             }
 

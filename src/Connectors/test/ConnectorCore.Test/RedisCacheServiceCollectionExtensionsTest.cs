@@ -325,7 +325,6 @@ namespace Steeltoe.Connector.Redis.Test
             var appsettings = new Dictionary<string, string>()
             {
                 ["redis:client:AbortOnConnectFail"] = "false",
-                ["redis:client:urlEncodedCredentials"] = "true"
             };
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
@@ -380,11 +379,7 @@ namespace Steeltoe.Connector.Redis.Test
             // Arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBrokerSecure);
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["redis:client:AbortOnConnectFail"] = "false",
-                ["redis:client:urlEncodedCredentials"] = "true"
-            };
+            var appsettings = new Dictionary<string, string>() { ["redis:client:AbortOnConnectFail"] = "false" };
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();

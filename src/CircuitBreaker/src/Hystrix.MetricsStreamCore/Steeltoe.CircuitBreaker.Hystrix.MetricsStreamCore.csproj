@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <Description>Netflix Hystrix metrics event stream for ASP.NET Core over RabbitMQ</Description>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix;turbine;cloudfoundry</PackageTags>
   </PropertyGroup>
-
+  
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
@@ -13,18 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.ConnectorCore.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.CloudFoundry.ConnectorCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Discovery.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  <ItemGroup>
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" PrivateAssets="All" />
   </ItemGroup>
+
 </Project>

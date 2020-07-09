@@ -173,11 +173,11 @@ namespace Steeltoe.Common.Converter
 
         private class NoOpConverter : IGenericConverter
         {
-            private readonly string name;
+            private readonly string _name;
 
             public NoOpConverter(string name)
             {
-                this.name = name;
+                this._name = name;
             }
 
             public ISet<(Type Source, Type Target)> ConvertibleTypes
@@ -195,7 +195,7 @@ namespace Steeltoe.Common.Converter
 
             public override string ToString()
             {
-                return name;
+                return _name;
             }
         }
 
@@ -203,14 +203,14 @@ namespace Steeltoe.Common.Converter
         private sealed class ConverterCacheKey : IComparable<ConverterCacheKey>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
         {
-            private readonly Type sourceType;
+            private readonly Type _sourceType;
 
-            private readonly Type targetType;
+            private readonly Type _targetType;
 
             public ConverterCacheKey(Type sourceType, Type targetType)
             {
-                this.sourceType = sourceType;
-                this.targetType = targetType;
+                this._sourceType = sourceType;
+                this._targetType = targetType;
             }
 
             public override bool Equals(object other)
@@ -226,27 +226,27 @@ namespace Steeltoe.Common.Converter
                 }
 
                 var otherKey = (ConverterCacheKey)other;
-                return sourceType.Equals(otherKey.sourceType) &&
-                        targetType.Equals(otherKey.targetType);
+                return _sourceType.Equals(otherKey._sourceType) &&
+                        _targetType.Equals(otherKey._targetType);
             }
 
             public override int GetHashCode()
             {
-                return (sourceType.GetHashCode() * 29) + targetType.GetHashCode();
+                return (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
             }
 
             public override string ToString()
             {
-                return "ConverterCacheKey [sourceType = " + sourceType +
-                        ", targetType = " + targetType + "]";
+                return "ConverterCacheKey [sourceType = " + _sourceType +
+                        ", targetType = " + _targetType + "]";
             }
 
             public int CompareTo(ConverterCacheKey other)
             {
-                var result = sourceType.ToString().CompareTo(other.sourceType.ToString());
+                var result = _sourceType.ToString().CompareTo(other._sourceType.ToString());
                 if (result == 0)
                 {
-                    result = targetType.ToString().CompareTo(other.targetType.ToString());
+                    result = _targetType.ToString().CompareTo(other._targetType.ToString());
                 }
 
                 return result;
@@ -255,16 +255,16 @@ namespace Steeltoe.Common.Converter
 
         private class ConvertersForPair
         {
-            private readonly LinkedList<IGenericConverter> converters = new LinkedList<IGenericConverter>();
+            private readonly LinkedList<IGenericConverter> _converters = new LinkedList<IGenericConverter>();
 
             public void Add(IGenericConverter converter)
             {
-                converters.AddFirst(converter);
+                _converters.AddFirst(converter);
             }
 
             public IGenericConverter GetConverter(Type sourceType, Type targetType)
             {
-                foreach (var converter in converters)
+                foreach (var converter in _converters)
                 {
                     if (!(converter is IConditionalGenericConverter) ||
                             ((IConditionalGenericConverter)converter).Matches(sourceType, targetType))
@@ -278,15 +278,15 @@ namespace Steeltoe.Common.Converter
 
             public override string ToString()
             {
-                return string.Join(",", converters);
+                return string.Join(",", _converters);
             }
         }
 
         private class Converters
         {
-            private readonly ISet<IGenericConverter> globalConverters = new HashSet<IGenericConverter>();
+            private readonly ISet<IGenericConverter> _globalConverters = new HashSet<IGenericConverter>();
 
-            private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> converters = new Dictionary<(Type Source, Type Target), ConvertersForPair>();
+            private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new Dictionary<(Type Source, Type Target), ConvertersForPair>();
 
             public void Add(IGenericConverter converter)
             {
@@ -298,7 +298,7 @@ namespace Steeltoe.Common.Converter
                         throw new InvalidOperationException("Only conditional converters may return null convertible types");
                     }
 
-                    globalConverters.Add(converter);
+                    _globalConverters.Add(converter);
                 }
                 else
                 {
@@ -375,10 +375,10 @@ namespace Steeltoe.Common.Converter
 
             private ConvertersForPair GetMatchableConverters((Type Source, Type Target) convertiblePair)
             {
-                if (!converters.TryGetValue(convertiblePair, out var convertersForPair))
+                if (!_converters.TryGetValue(convertiblePair, out var convertersForPair))
                 {
                     convertersForPair = new ConvertersForPair();
-                    converters.Add(convertiblePair, convertersForPair);
+                    _converters.Add(convertiblePair, convertersForPair);
                 }
 
                 return convertersForPair;
@@ -387,7 +387,7 @@ namespace Steeltoe.Common.Converter
             private IGenericConverter GetRegisteredConverter(Type sourceType, Type targetType, (Type Source, Type Target) convertiblePair)
             {
                 // Check specifically registered converters
-                if (converters.TryGetValue(convertiblePair, out var convertersForPair))
+                if (_converters.TryGetValue(convertiblePair, out var convertersForPair))
                 {
                     var converter = convertersForPair.GetConverter(sourceType, targetType);
                     if (converter != null)
@@ -397,7 +397,7 @@ namespace Steeltoe.Common.Converter
                 }
 
                 // Check ConditionalConverters for a dynamic match
-                foreach (var globalConverter in globalConverters)
+                foreach (var globalConverter in _globalConverters)
                 {
                     if (((IConditionalConverter)globalConverter).Matches(sourceType, targetType))
                     {
@@ -466,7 +466,7 @@ namespace Steeltoe.Common.Converter
             private List<string> GetConverterStrings()
             {
                 var converterStrings = new List<string>();
-                foreach (var convertersForPair in converters.Values)
+                foreach (var convertersForPair in _converters.Values)
                 {
                     converterStrings.Add(convertersForPair.ToString());
                 }

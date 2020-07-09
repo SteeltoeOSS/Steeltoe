@@ -173,10 +173,7 @@ namespace Steeltoe.Connector.MySql.Test
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVCAP);
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["mysql:client:urlEncodedCredentials"] = "true"
-            };
+            var appsettings = new Dictionary<string, string>();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             builder.AddInMemoryCollection(appsettings);

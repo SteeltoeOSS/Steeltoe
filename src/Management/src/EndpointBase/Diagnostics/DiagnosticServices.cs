@@ -12,24 +12,24 @@ namespace Steeltoe.Management.Endpoint.Diagnostics
 {
     public class DiagnosticServices : IHostedService
     {
-        private readonly IDiagnosticsManager observerManager;
-        private readonly ILogger<DiagnosticServices> logger;
+        private readonly IDiagnosticsManager _observerManager;
+        private readonly ILogger<DiagnosticServices> _logger;
 
         public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
         {
-            this.observerManager = observerManager;
-            this.logger = logger;
+            this._observerManager = observerManager;
+            this._logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            observerManager.Start();
+            _observerManager.Start();
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            observerManager.Stop();
+            _observerManager.Stop();
             return Task.CompletedTask;
         }
     }

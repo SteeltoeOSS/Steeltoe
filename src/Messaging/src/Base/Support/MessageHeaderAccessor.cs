@@ -25,8 +25,8 @@ namespace Steeltoe.Messaging.Support
             new MimeType("application", "*+xml")
         };
 
-        private bool leaveMutable = false;
-        private bool modified = false;
+        private bool _leaveMutable = false;
+        private bool _modified = false;
 
         public MessageHeaderAccessor()
         : this((IMessage)null)
@@ -123,7 +123,7 @@ namespace Steeltoe.Messaging.Support
         {
             get
             {
-                return leaveMutable;
+                return _leaveMutable;
             }
 
             set
@@ -133,7 +133,7 @@ namespace Steeltoe.Messaging.Support
                     throw new InvalidOperationException("Already immutable");
                 }
 
-                leaveMutable = value;
+                _leaveMutable = value;
             }
         }
 
@@ -144,15 +144,15 @@ namespace Steeltoe.Messaging.Support
 
         public virtual bool IsModified
         {
-            get { return modified; }
-            set { modified = value; }
+            get { return _modified; }
+            set { _modified = value; }
         }
 
         public virtual IMessageHeaders MessageHeaders
         {
             get
             {
-                if (!leaveMutable)
+                if (!_leaveMutable)
                 {
                     SetImmutable();
                 }
@@ -272,7 +272,7 @@ namespace Steeltoe.Messaging.Support
                 // Modify header if necessary
                 if (!ObjectUtils.NullSafeEquals(value, GetHeader(name)))
                 {
-                    modified = true;
+                    _modified = true;
                     headers.RawHeaders[name] = value;
                 }
             }
@@ -281,7 +281,7 @@ namespace Steeltoe.Messaging.Support
                 // Remove header if available
                 if (headers.ContainsKey(name))
                 {
-                    modified = true;
+                    _modified = true;
                     headers.RawHeaders.Remove(name);
                 }
             }
@@ -502,7 +502,7 @@ namespace Steeltoe.Messaging.Support
         protected class AccessorMessageHeaders : MessageHeaders
         {
             protected MessageHeaderAccessor accessor;
-            private bool mutable = true;
+            private bool _mutable = true;
 
             public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
                 : base(headers, ID_VALUE_NONE, -1L)
@@ -520,7 +520,7 @@ namespace Steeltoe.Messaging.Support
             {
                 get
                 {
-                    if (!mutable)
+                    if (!_mutable)
                     {
                         throw new InvalidOperationException();
                     }
@@ -531,12 +531,12 @@ namespace Steeltoe.Messaging.Support
 
             public virtual bool IsMutable
             {
-                get { return mutable; }
+                get { return _mutable; }
             }
 
             public virtual void SetImmutable()
             {
-                if (!mutable)
+                if (!_mutable)
                 {
                     return;
                 }
@@ -556,7 +556,7 @@ namespace Steeltoe.Messaging.Support
                     RawHeaders[TIMESTAMP] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                 }
 
-                mutable = false;
+                _mutable = false;
             }
 
             public virtual MessageHeaderAccessor Accessor

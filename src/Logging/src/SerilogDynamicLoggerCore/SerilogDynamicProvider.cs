@@ -27,7 +27,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         private ConcurrentDictionary<string, LoggingLevelSwitch> _loggerSwitches = new ConcurrentDictionary<string, LoggingLevelSwitch>();
         private ConcurrentDictionary<string, LogEventLevel> _runningLevels = new ConcurrentDictionary<string, LogEventLevel>();
         private LogEventLevel? _defaultLevel = null;
-        private bool disposed = false;
+        private bool _disposed = false;
         private IConfiguration _subLoggerConfiguration;
 
         [Obsolete("Will be removed in a future release; Use SerilogDynamicProvider(IConfiguration, ISerilogOptions, Logger, LoggingLevelSwitch) instead")]
@@ -187,7 +187,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
@@ -197,7 +197,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
                     _loggers = null;
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

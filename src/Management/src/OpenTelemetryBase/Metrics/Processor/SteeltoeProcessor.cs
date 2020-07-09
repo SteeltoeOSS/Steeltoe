@@ -20,10 +20,10 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         internal List<ProcessedMetric<long>> LongMetrics;
         internal List<ProcessedMetric<double>> DoubleMetrics;
 
-        private readonly MetricExporter exporter;
-        private readonly Task worker;
-        private readonly TimeSpan exportInterval;
-        private CancellationTokenSource cts;
+        private readonly MetricExporter _exporter;
+        private readonly Task _worker;
+        private readonly TimeSpan _exportInterval;
+        private CancellationTokenSource _cts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SteeltoeProcessor"/> class.
@@ -32,17 +32,17 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         /// <param name="exportInterval">Interval at which metrics are pushed to Exporter.</param>
         public SteeltoeProcessor(MetricExporter exporter, TimeSpan exportInterval)
         {
-            this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            this._exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             LongMetrics = new List<ProcessedMetric<long>>();
             DoubleMetrics = new List<ProcessedMetric<double>>();
-            this.exportInterval = exportInterval;
-            cts = new CancellationTokenSource();
+            this._exportInterval = exportInterval;
+            _cts = new CancellationTokenSource();
 
             if (exporter == null || exportInterval < TimeSpan.MaxValue)
             {
-                worker = Task.Factory.StartNew(
-                    s => Worker((CancellationToken)s), cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+                _worker = Task.Factory.StartNew(
+                    s => Worker((CancellationToken)s), _cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
             }
         }
 
@@ -196,13 +196,13 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             if (LongMetrics.Count > 0)
             {
                 var metricToExport = LongMetrics.Select(v => (Metric<long>)v).ToList();
-                await exporter.ExportAsync<long>(metricToExport, cancellationToken);
+                await _exporter.ExportAsync<long>(metricToExport, cancellationToken);
             }
 
             if (DoubleMetrics.Count > 0)
             {
                 var metricToExport = DoubleMetrics.Select(v => (Metric<double>)v).ToList();
-                await exporter.ExportAsync<double>(metricToExport, cancellationToken);
+                await _exporter.ExportAsync<double>(metricToExport, cancellationToken);
             }
 
             Clear();
@@ -212,7 +212,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         {
             try
             {
-                await Task.Delay(exportInterval, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(_exportInterval, cancellationToken).ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var sw = Stopwatch.StartNew();
@@ -224,7 +224,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
                         return;
                     }
 
-                    var remainingWait = exportInterval - sw.Elapsed;
+                    var remainingWait = _exportInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);

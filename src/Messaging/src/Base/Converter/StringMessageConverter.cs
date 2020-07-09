@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.Converter
     {
         public const string DEFAULT_SERVICE_NAME = nameof(StringMessageConverter);
 
-        private readonly Encoding defaultCharset;
+        private readonly Encoding _defaultCharset;
 
         public StringMessageConverter()
             : this(Encoding.UTF8)
@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.Converter
                 throw new ArgumentNullException(nameof(defaultCharset));
             }
 
-            this.defaultCharset = defaultCharset;
+            this._defaultCharset = defaultCharset;
         }
 
         public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
@@ -65,7 +65,7 @@ namespace Steeltoe.Messaging.Converter
             }
             else
             {
-                return defaultCharset;
+                return _defaultCharset;
             }
         }
     }

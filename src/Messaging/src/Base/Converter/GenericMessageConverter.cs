@@ -9,11 +9,11 @@ namespace Steeltoe.Messaging.Converter
 {
     public class GenericMessageConverter : SimpleMessageConverter
     {
-        private readonly IConversionService conversionService;
+        private readonly IConversionService _conversionService;
 
         public GenericMessageConverter()
         {
-            conversionService = DefaultConversionService.Singleton;
+            _conversionService = DefaultConversionService.Singleton;
         }
 
         public GenericMessageConverter(IConversionService conversionService)
@@ -23,17 +23,17 @@ namespace Steeltoe.Messaging.Converter
                 throw new ArgumentNullException(nameof(conversionService));
             }
 
-            this.conversionService = conversionService;
+            this._conversionService = conversionService;
         }
 
         public override object FromMessage(IMessage message, Type targetClass)
         {
             var payload = message.Payload;
-            if (conversionService.CanConvert(payload.GetType(), targetClass))
+            if (_conversionService.CanConvert(payload.GetType(), targetClass))
             {
                 try
                 {
-                    return conversionService.Convert(payload, payload.GetType(), targetClass);
+                    return _conversionService.Convert(payload, payload.GetType(), targetClass);
                 }
                 catch (ConversionException ex)
                 {

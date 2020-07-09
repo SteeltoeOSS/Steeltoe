@@ -6,15 +6,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 {
     public class HystrixCollapserEvent : IHystrixEvent
     {
-        private readonly IHystrixCollapserKey collapserKey;
-        private readonly CollapserEventType eventType;
-        private readonly int count;
-
         protected HystrixCollapserEvent(IHystrixCollapserKey collapserKey, CollapserEventType eventType, int count)
         {
-            this.collapserKey = collapserKey;
-            this.eventType = eventType;
-            this.count = count;
+            this.CollapserKey = collapserKey;
+            this.EventType = eventType;
+            this.Count = count;
         }
 
         public static HystrixCollapserEvent From(IHystrixCollapserKey collapserKey, CollapserEventType eventType, int count)
@@ -22,24 +18,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             return new HystrixCollapserEvent(collapserKey, eventType, count);
         }
 
-        public IHystrixCollapserKey CollapserKey
-        {
-            get { return collapserKey; }
-        }
+        public IHystrixCollapserKey CollapserKey { get; }
 
-        public CollapserEventType EventType
-        {
-            get { return eventType; }
-        }
+        public CollapserEventType EventType { get; }
 
-        public int Count
-        {
-            get { return count; }
-        }
+        public int Count { get; }
 
         public override string ToString()
         {
-            return "HystrixCollapserEvent[" + collapserKey.Name + "] : " + eventType + " : " + count;
+            return "HystrixCollapserEvent[" + CollapserKey.Name + "] : " + EventType + " : " + Count;
         }
     }
 }

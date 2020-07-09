@@ -6,17 +6,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 {
     public class HystrixThreadPoolUtilization
     {
-        private readonly int currentActiveCount;
-        private readonly int currentCorePoolSize;
-        private readonly int currentPoolSize;
-        private readonly int currentQueueSize;
-
         public HystrixThreadPoolUtilization(int currentActiveCount, int currentCorePoolSize, int currentPoolSize, int currentQueueSize)
         {
-            this.currentActiveCount = currentActiveCount;
-            this.currentCorePoolSize = currentCorePoolSize;
-            this.currentPoolSize = currentPoolSize;
-            this.currentQueueSize = currentQueueSize;
+            this.CurrentActiveCount = currentActiveCount;
+            this.CurrentCorePoolSize = currentCorePoolSize;
+            this.CurrentPoolSize = currentPoolSize;
+            this.CurrentQueueSize = currentQueueSize;
         }
 
         public static HystrixThreadPoolUtilization Sample(HystrixThreadPoolMetrics threadPoolMetrics)
@@ -28,24 +23,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
                     threadPoolMetrics.CurrentQueueSize);
         }
 
-        public int CurrentActiveCount
-        {
-            get { return currentActiveCount; }
-        }
+        public int CurrentActiveCount { get; }
 
-        public int CurrentCorePoolSize
-        {
-            get { return currentCorePoolSize; }
-        }
+        public int CurrentCorePoolSize { get; }
 
-        public int CurrentPoolSize
-        {
-            get { return currentPoolSize; }
-        }
+        public int CurrentPoolSize { get; }
 
-        public int CurrentQueueSize
-        {
-            get { return currentQueueSize; }
-        }
+        public int CurrentQueueSize { get; }
     }
 }

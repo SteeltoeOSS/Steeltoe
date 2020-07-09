@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>
     {
         private readonly PrometheusExporter _exporter;
-        private string cachedMetrics;
+        private string _cachedMetrics;
 
         public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter)
             : base(options)
@@ -33,10 +33,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             if (!string.IsNullOrEmpty(metrics))
             {
-                cachedMetrics = metrics;
+                _cachedMetrics = metrics;
             }
 
-            return cachedMetrics;
+            return _cachedMetrics;
         }
     }
 }

@@ -1,11 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.DataProtection.Redis</RootNamespace>
     <Description>Support for storing data protection keys in Redis.</Description>
     <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>

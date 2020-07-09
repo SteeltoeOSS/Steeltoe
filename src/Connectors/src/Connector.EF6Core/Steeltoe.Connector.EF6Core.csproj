@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Connector Extensions for Entity Framework</Description>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Connector.EF6Core</AssemblyName>
-    <PackageId>Steeltoe.Connector.EF6Core</PackageId>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <PackageTags>connectors;EntityFramework;aspnetcore;services</PackageTags>
   </PropertyGroup>
 
@@ -14,13 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Extensions.Configuration.CloudFoundryCore" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.ConnectorBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

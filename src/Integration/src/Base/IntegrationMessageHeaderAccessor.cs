@@ -34,7 +34,7 @@ namespace Steeltoe.Integration
 
         public const string ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
 
-        private ISet<string> readOnlyHeaders = new HashSet<string>();
+        private ISet<string> _readOnlyHeaders = new HashSet<string>();
 
         public IntegrationMessageHeaderAccessor(IMessage message)
         : base(message)
@@ -53,7 +53,7 @@ namespace Steeltoe.Integration
 
             if (readOnlyHeaders.Count > 0)
             {
-                this.readOnlyHeaders = new HashSet<string>(readOnlyHeaders);
+                this._readOnlyHeaders = new HashSet<string>(readOnlyHeaders);
             }
         }
 
@@ -113,14 +113,14 @@ namespace Steeltoe.Integration
 
         public override IDictionary<string, object> ToDictionary()
         {
-            if (readOnlyHeaders.Count == 0)
+            if (_readOnlyHeaders.Count == 0)
             {
                 return base.ToDictionary();
             }
             else
             {
                 var headers = base.ToDictionary();
-                foreach (var header in readOnlyHeaders)
+                foreach (var header in _readOnlyHeaders)
                 {
                     headers.Remove(header);
                 }
@@ -131,7 +131,7 @@ namespace Steeltoe.Integration
 
         public new bool IsReadOnly(string headerName)
         {
-            return base.IsReadOnly(headerName) || readOnlyHeaders.Contains(headerName);
+            return base.IsReadOnly(headerName) || _readOnlyHeaders.Contains(headerName);
         }
 
         protected override void VerifyType(string headerName, object headerValue)

@@ -109,7 +109,7 @@ namespace Steeltoe.Common.Diagnostics
             }
         }
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         public void Dispose()
         {
@@ -120,7 +120,7 @@ namespace Steeltoe.Common.Diagnostics
         protected virtual void Dispose(bool disposing)
         {
             // Cleanup
-            if (!this.disposed)
+            if (!this._disposed)
             {
                 if (disposing)
                 {
@@ -139,7 +139,7 @@ namespace Steeltoe.Common.Diagnostics
                     _logger = null;
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

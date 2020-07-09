@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
     {
         private static readonly HystrixTimer Instance = new HystrixTimer();
 
-        private readonly List<TimerReference> timerList = new List<TimerReference>();
+        private readonly List<TimerReference> _timerList = new List<TimerReference>();
         private readonly object _lock = new object();
 
         private HystrixTimer()
@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             HystrixTimer timer = GetInstance();
             lock (timer._lock)
             {
-                foreach (TimerReference refr in timer.timerList)
+                foreach (TimerReference refr in timer._timerList)
                 {
                     refr.Dispose();
                 }
@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             lock (_lock)
             {
-                timerList.Add(refr);
+                _timerList.Add(refr);
             }
 
             return refr;

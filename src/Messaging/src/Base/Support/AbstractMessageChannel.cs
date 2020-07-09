@@ -178,41 +178,41 @@ namespace Steeltoe.Messaging.Support
 
         protected class ChannelInterceptorChain
         {
-            private AbstractMessageChannel channel;
-            private List<IChannelInterceptor> interceptors;
-            private int sendInterceptorIndex;
+            private AbstractMessageChannel _channel;
+            private List<IChannelInterceptor> _interceptors;
+            private int _sendInterceptorIndex;
 
-            private int receiveInterceptorIndex;
+            private int _receiveInterceptorIndex;
 
             public ChannelInterceptorChain(AbstractMessageChannel channel)
             {
-                this.channel = channel;
-                interceptors = channel._interceptors;
-                sendInterceptorIndex = -1;
-                receiveInterceptorIndex = -1;
+                this._channel = channel;
+                _interceptors = channel._interceptors;
+                _sendInterceptorIndex = -1;
+                _receiveInterceptorIndex = -1;
             }
 
             public IMessage ApplyPreSend(IMessage message, IMessageChannel channel)
             {
-                if (interceptors.Count == 0)
+                if (_interceptors.Count == 0)
                 {
                     return message;
                 }
 
                 var messageToUse = message;
-                foreach (var interceptor in interceptors)
+                foreach (var interceptor in _interceptors)
                 {
                     var resolvedMessage = interceptor.PreSend(messageToUse, channel);
                     if (resolvedMessage == null)
                     {
                         var name = interceptor.GetType().Name;
-                        this.channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
+                        this._channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
                         TriggerAfterSendCompletion(messageToUse, channel, false, null);
                         return null;
                     }
 
                     messageToUse = resolvedMessage;
-                    sendInterceptorIndex++;
+                    _sendInterceptorIndex++;
                 }
 
                 return messageToUse;
@@ -220,12 +220,12 @@ namespace Steeltoe.Messaging.Support
 
             public void ApplyPostSend(IMessage message, IMessageChannel channel, bool sent)
             {
-                if (interceptors.Count == 0)
+                if (_interceptors.Count == 0)
                 {
                     return;
                 }
 
-                foreach (var interceptor in interceptors)
+                foreach (var interceptor in _interceptors)
                 {
                     interceptor.PostSend(message, channel, sent);
                 }
@@ -233,33 +233,33 @@ namespace Steeltoe.Messaging.Support
 
             public void TriggerAfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
             {
-                if (sendInterceptorIndex == -1)
+                if (_sendInterceptorIndex == -1)
                 {
                     return;
                 }
 
-                for (var i = sendInterceptorIndex; i >= 0; i--)
+                for (var i = _sendInterceptorIndex; i >= 0; i--)
                 {
-                    var interceptor = interceptors[i];
+                    var interceptor = _interceptors[i];
                     try
                     {
                         interceptor.AfterSendCompletion(message, channel, sent, ex);
                     }
                     catch (Exception ex2)
                     {
-                        this.channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
+                        this._channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
                     }
                 }
             }
 
             public bool ApplyPreReceive(IMessageChannel channel)
             {
-                if (interceptors.Count == 0)
+                if (_interceptors.Count == 0)
                 {
                     return true;
                 }
 
-                foreach (var interceptor in interceptors)
+                foreach (var interceptor in _interceptors)
                 {
                     if (!interceptor.PreReceive(channel))
                     {
@@ -267,7 +267,7 @@ namespace Steeltoe.Messaging.Support
                         return false;
                     }
 
-                    receiveInterceptorIndex++;
+                    _receiveInterceptorIndex++;
                 }
 
                 return true;
@@ -275,13 +275,13 @@ namespace Steeltoe.Messaging.Support
 
             public IMessage ApplyPostReceive(IMessage message, IMessageChannel channel)
             {
-                if (interceptors.Count == 0)
+                if (_interceptors.Count == 0)
                 {
                     return message;
                 }
 
                 var messageToUse = message;
-                foreach (var interceptor in interceptors)
+                foreach (var interceptor in _interceptors)
                 {
                     messageToUse = interceptor.PostReceive(messageToUse, channel);
                     if (messageToUse == null)
@@ -295,21 +295,21 @@ namespace Steeltoe.Messaging.Support
 
             public void TriggerAfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
             {
-                if (receiveInterceptorIndex == -1)
+                if (_receiveInterceptorIndex == -1)
                 {
                     return;
                 }
 
-                for (var i = receiveInterceptorIndex; i >= 0; i--)
+                for (var i = _receiveInterceptorIndex; i >= 0; i--)
                 {
-                    var interceptor = interceptors[i];
+                    var interceptor = _interceptors[i];
                     try
                     {
                         interceptor.AfterReceiveCompletion(message, channel, ex);
                     }
                     catch (Exception ex2)
                     {
-                        this.channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
+                        this._channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
                     }
                 }
             }

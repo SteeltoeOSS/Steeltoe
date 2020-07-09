@@ -188,7 +188,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
             }
         }
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         /// <summary>
         /// Dispose of the client and also the Consul service registrar if provided
@@ -201,14 +201,14 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing && _registrar != null)
                 {
                     _registrar.Dispose();
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

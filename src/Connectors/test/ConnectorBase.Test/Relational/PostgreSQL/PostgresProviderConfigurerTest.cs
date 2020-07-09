@@ -66,7 +66,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
                 Password = "password",
                 Database = "database"
             };
-            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", true);
+            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             configurer.UpdateConfiguration(si, config);
 

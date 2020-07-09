@@ -24,20 +24,20 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 "ClrInstanceID"
         };
 
-        private readonly string generationKey = "generation";
+        private readonly string _generationKey = "generation";
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly MeasureMetric<long> collectionCount;
-        private readonly MeasureMetric<long> memoryUsed;
-        private readonly Dictionary<string, string> memoryLabels = new Dictionary<string, string>() { { "area", "heap" } };
+        private readonly MeasureMetric<long> _collectionCount;
+        private readonly MeasureMetric<long> _memoryUsed;
+        private readonly Dictionary<string, string> _memoryLabels = new Dictionary<string, string>() { { "area", "heap" } };
 
-        private List<long> previousCollectionCounts = null;
+        private List<long> _previousCollectionCounts = null;
 
         public GCEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats)
         {
             _logger = logger;
-            memoryUsed = Meter.CreateInt64Measure("clr.memory.used");
-            collectionCount = Meter.CreateInt64Measure("clr.gc.collections");
+            _memoryUsed = Meter.CreateInt64Measure("clr.memory.used");
+            _collectionCount = Meter.CreateInt64Measure("clr.gc.collections");
         }
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture))
                 {
-                    ExtractAndRecordMetric(EventSourceName, eventData, memoryLabels, _ignorePayloadNames);
+                    ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, _ignorePayloadNames);
                     RecordAdditionalMetrics(eventData);
                 }
             }
@@ -72,24 +72,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
         {
             long totalMemory = GC.GetTotalMemory(false);
-            memoryUsed.Record(default(SpanContext), totalMemory, memoryLabels);
+            _memoryUsed.Record(default(SpanContext), totalMemory, _memoryLabels);
             List<long> counts = new List<long>(GC.MaxGeneration);
             for (int i = 0; i < GC.MaxGeneration; i++)
             {
                 var count = (long)GC.CollectionCount(i);
                 counts.Add(count);
-                if (previousCollectionCounts != null && i < previousCollectionCounts.Count &&
-                    previousCollectionCounts[i] <= count)
+                if (_previousCollectionCounts != null && i < _previousCollectionCounts.Count &&
+                    _previousCollectionCounts[i] <= count)
                 {
-                    count -= previousCollectionCounts[i];
+                    count -= _previousCollectionCounts[i];
                 }
 
                 var genKeylabelSet = new List<KeyValuePair<string, string>>()
-                    { new KeyValuePair<string, string>(generationKey, GENERATION_TAGVALUE_NAME + i) };
-                collectionCount.Record(default(SpanContext), count, genKeylabelSet);
+                    { new KeyValuePair<string, string>(_generationKey, GENERATION_TAGVALUE_NAME + i) };
+                _collectionCount.Record(default(SpanContext), count, genKeylabelSet);
             }
 
-            previousCollectionCounts = counts;
+            _previousCollectionCounts = counts;
         }
     }
 }

@@ -6,7 +6,6 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
-using System.Net;
 
 namespace Steeltoe.Connector.PostgreSql
 {
@@ -32,17 +31,8 @@ namespace Steeltoe.Connector.PostgreSql
                     configuration.Port = si.Port;
                 }
 
-                if (configuration.UrlEncodedCredentials)
-                {
-                    configuration.Username = WebUtility.UrlDecode(si.UserName);
-                    configuration.Password = WebUtility.UrlDecode(si.Password);
-                }
-                else
-                {
-                    configuration.Username = si.UserName;
-                    configuration.Password = si.Password;
-                }
-
+                configuration.Username = si.UserName;
+                configuration.Password = si.Password;
                 configuration.Host = si.Host;
                 configuration.Database = si.Path;
                 if (si.Query != null)

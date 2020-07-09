@@ -138,17 +138,17 @@ namespace Steeltoe.Messaging.Support
 
         internal struct SendTask : IMessageHandlingRunnable
         {
-            private readonly TaskSchedulerSubscribableChannel channel;
-            private readonly List<ITaskSchedulerChannelInterceptor> interceptors;
-            private int interceptorIndex;
+            private readonly TaskSchedulerSubscribableChannel _channel;
+            private readonly List<ITaskSchedulerChannelInterceptor> _interceptors;
+            private int _interceptorIndex;
 
             public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message, IMessageHandler messageHandler)
             {
-                this.channel = channel;
+                this._channel = channel;
                 Message = message;
                 MessageHandler = messageHandler;
-                this.interceptors = interceptors;
-                interceptorIndex = -1;
+                this._interceptors = interceptors;
+                _interceptorIndex = -1;
             }
 
             public IMessage Message { get; }
@@ -185,24 +185,24 @@ namespace Steeltoe.Messaging.Support
 
             private IMessage ApplyBeforeHandled(IMessage message)
             {
-                if (interceptors.Count == 0)
+                if (_interceptors.Count == 0)
                 {
                     return message;
                 }
 
                 var messageToUse = message;
-                foreach (var interceptor in interceptors)
+                foreach (var interceptor in _interceptors)
                 {
-                    messageToUse = interceptor.BeforeHandled(messageToUse, channel, MessageHandler);
+                    messageToUse = interceptor.BeforeHandled(messageToUse, _channel, MessageHandler);
                     if (messageToUse == null)
                     {
                         var name = interceptor.GetType().Name;
-                        channel.Logger?.LogDebug("{name} returned null from beforeHandle, i.e. precluding the send.", name);
+                        _channel.Logger?.LogDebug("{name} returned null from beforeHandle, i.e. precluding the send.", name);
                         TriggerAfterMessageHandled(message, null);
                         return null;
                     }
 
-                    interceptorIndex++;
+                    _interceptorIndex++;
                 }
 
                 return messageToUse;
@@ -210,21 +210,21 @@ namespace Steeltoe.Messaging.Support
 
             private void TriggerAfterMessageHandled(IMessage message, Exception ex)
             {
-                if (interceptorIndex == -1)
+                if (_interceptorIndex == -1)
                 {
                     return;
                 }
 
-                for (var i = interceptorIndex; i >= 0; i--)
+                for (var i = _interceptorIndex; i >= 0; i--)
                 {
-                    var interceptor = channel._schedulerInterceptors[i];
+                    var interceptor = _channel._schedulerInterceptors[i];
                     try
                     {
-                        interceptor.AfterMessageHandled(message, channel, MessageHandler, ex);
+                        interceptor.AfterMessageHandled(message, _channel, MessageHandler, ex);
                     }
                     catch (Exception ex2)
                     {
-                        channel.Logger?.LogError(ex2, "Exception from afterMessageHandled in {interceptor}", interceptor);
+                        _channel.Logger?.LogError(ex2, "Exception from afterMessageHandled in {interceptor}", interceptor);
                     }
                 }
             }

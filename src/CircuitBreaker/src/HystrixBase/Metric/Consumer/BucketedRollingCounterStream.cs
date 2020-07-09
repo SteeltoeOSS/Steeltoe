@@ -16,8 +16,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         where Event : IHystrixEvent
     {
         protected BehaviorSubject<Output> counterSubject;
-        private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
-        private IObservable<Output> sourceStream;
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private IObservable<Output> _sourceStream;
 
         protected BucketedRollingCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, appendRawEventToBucket)
@@ -28,7 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                 return result;
             };
             counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
-            sourceStream = bucketedStream // stream broken up into buckets
+            _sourceStream = bucketedStream // stream broken up into buckets
 
                 .Window(numBuckets, 1) // emit overlapping windows of buckets
 
@@ -37,25 +37,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
                 .OnSubscribe(() =>
                 {
-                    isSourceCurrentlySubscribed.Value = true;
+                    _isSourceCurrentlySubscribed.Value = true;
                 })
                 .OnDispose(() =>
                  {
-                     isSourceCurrentlySubscribed.Value = false;
+                     _isSourceCurrentlySubscribed.Value = false;
                  })
                 .Publish().RefCount();                // multiple subscribers should get same data
         }
 
         public override IObservable<Output> Observe()
         {
-            return sourceStream;
+            return _sourceStream;
         }
 
         internal bool IsSourceCurrentlySubscribed
         {
             get
             {
-                return isSourceCurrentlySubscribed.Value;
+                return _isSourceCurrentlySubscribed.Value;
             }
         }
 

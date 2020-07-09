@@ -14,17 +14,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     public class HystrixDashboardStream
     {
         private const int Default_Dashboard_IntervalInMilliseconds = 500;
-        private readonly int delayInMs;
-        private readonly IObservable<DashboardData> singleSource;
-        private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private readonly int _delayInMs;
+        private readonly IObservable<DashboardData> _singleSource;
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
         private HystrixDashboardStream(int delayInMs)
         {
-            this.delayInMs = delayInMs;
-            this.singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
+            this._delayInMs = delayInMs;
+            this._singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
                                 .Map((timestamp) => { return new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()); })
-                                .OnSubscribe(() => { isSourceCurrentlySubscribed.Value = true; })
-                                .OnDispose(() => { isSourceCurrentlySubscribed.Value = false; })
+                                .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
+                                .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
                                 .Publish().RefCount();
         }
 
@@ -40,14 +40,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<DashboardData> Observe()
         {
-            return singleSource;
+            return _singleSource;
         }
 
         public bool IsSourceCurrentlySubscribed
         {
             get
             {
-                return isSourceCurrentlySubscribed.Value;
+                return _isSourceCurrentlySubscribed.Value;
             }
         }
 
@@ -58,40 +58,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public class DashboardData
         {
-            private readonly ICollection<HystrixCommandMetrics> commandMetrics;
-            private readonly ICollection<HystrixThreadPoolMetrics> threadPoolMetrics;
-            private readonly ICollection<HystrixCollapserMetrics> collapserMetrics;
-
             public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)
             {
-                this.commandMetrics = commandMetrics;
-                this.threadPoolMetrics = threadPoolMetrics;
-                this.collapserMetrics = collapserMetrics;
+                this.CommandMetrics = commandMetrics;
+                this.ThreadPoolMetrics = threadPoolMetrics;
+                this.CollapserMetrics = collapserMetrics;
             }
 
-            public ICollection<HystrixCommandMetrics> CommandMetrics
-            {
-                get
-                {
-                    return commandMetrics;
-                }
-            }
+            public ICollection<HystrixCommandMetrics> CommandMetrics { get; }
 
-            public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics
-            {
-                get
-                {
-                    return threadPoolMetrics;
-                }
-            }
+            public ICollection<HystrixThreadPoolMetrics> ThreadPoolMetrics { get; }
 
-            public ICollection<HystrixCollapserMetrics> CollapserMetrics
-            {
-                get
-                {
-                    return collapserMetrics;
-                }
-            }
+            public ICollection<HystrixCollapserMetrics> CollapserMetrics { get; }
         }
     }
 }

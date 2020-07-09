@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
     <Description>Steeltoe Dynamic Console Logger</Description>
     <PackageTags>logging;dynamic logging;console;management;monitoring;Spring Cloud;</PackageTags>
   </PropertyGroup>
@@ -15,14 +15,8 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(LoggingVersion)" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Common" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Extensions.Logging.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-  </ItemGroup>
-
 </Project>
