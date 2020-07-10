@@ -100,7 +100,7 @@ namespace Steeltoe.Discovery.Eureka
             var serviceProvider = services.BuildServiceProvider();
             var certOptions = serviceProvider.GetService<IOptions<CertificateOptions>>();
             var existingHandler = serviceProvider.GetService<IHttpClientHandlerProvider>();
-            if (certOptions != null && existingHandler is null)
+            if (certOptions is object && existingHandler is null)
             {
                 services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
             }

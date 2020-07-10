@@ -15,10 +15,11 @@ namespace Steeltoe.Discovery.Client
     {
         internal NoOpDiscoveryClient(ILogger<NoOpDiscoveryClient> logger = null)
         {
-            logger?.LogWarning("A NoOp Discovery Client has been created! Running in container: {IsContainerized}", Platform.IsContainerized);
+            logger?.LogWarning("No discovery client has been configured, using default no-op discovery client.");
+            logger?.LogInformation("Running in container: {IsContainerized}", Platform.IsContainerized);
         }
 
-        public string Description => "The IDiscoveryClient that didn't";
+        public string Description => "An IDiscoveryClient that passes through to underlying infrastructure";
 
         public IList<string> Services => new List<string>();
 
