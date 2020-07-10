@@ -69,16 +69,7 @@
     <PollyContribVersion>1.0.0</PollyContribVersion>
     <CastleCoreVersion>4.4.0</CastleCoreVersion>
     <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp3.0'">
-    <AspNetCoreVersion>3.0.0</AspNetCoreVersion>
-    <ExtensionsVersion>3.0.0</ExtensionsVersion>
-    <HealthChecksVersion>3.0.0</HealthChecksVersion>
-    <LoggingVersion>3.0.0</LoggingVersion>
-  </PropertyGroup>
-  
-  <!-- Should be used for tests only -->
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>

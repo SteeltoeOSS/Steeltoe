@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public class HttpTraceResult
     {
-        private readonly List<TraceResult> list;
+        private readonly List<TraceResult> _list;
 
         [JsonPropertyName("traces")]
         public List<HttpTrace> Traces { get; }
@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public HttpTraceResult(List<TraceResult> list)
         {
-            this.list = list;
+            this._list = list;
         }
     }
 

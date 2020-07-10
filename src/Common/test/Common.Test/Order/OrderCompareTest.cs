@@ -49,17 +49,12 @@ namespace Steeltoe.Common.Test.Order
 
         private sealed class StubOrdered : IOrdered
         {
-            private readonly int order;
-
             public StubOrdered(int order)
             {
-                this.order = order;
+                this.Order = order;
             }
 
-            public int Order
-            {
-                get { return order; }
-            }
+            public int Order { get; }
         }
     }
 }

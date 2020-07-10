@@ -10,17 +10,17 @@ namespace Steeltoe.Connector.Services
 {
     public class UriInfo
     {
-        private readonly char[] questionMark = new char[] { '?' };
+        private readonly char[] _questionMark = new char[] { '?' };
 
-        private readonly char[] colon = new char[] { ':' };
+        private readonly char[] _colon = new char[] { ':' };
 
         public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
         {
             Scheme = scheme;
             Host = host;
             Port = port;
-            UserName = username;
-            Password = password;
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             Path = path;
             Query = query;
 
@@ -123,8 +123,8 @@ namespace Steeltoe.Connector.Services
                     Scheme = scheme,
                     Host = host,
                     Port = port,
-                    UserName = username,
-                    Password = password,
+                    UserName = WebUtility.UrlEncode(username),
+                    Password = WebUtility.UrlEncode(password),
                     Path = cleanedPath
                 };
                 return builder.Uri;
@@ -204,7 +204,7 @@ namespace Steeltoe.Connector.Services
 
                 if (firstAmp > 0)
                 {
-                    uriString = uriString.Substring(0, firstAmp) + questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
+                    uriString = uriString.Substring(0, firstAmp) + _questionMark[0] + uriString.Substring(firstAmp + 1, uriString.Length - firstAmp - 1);
                 }
             }
         }
@@ -216,7 +216,7 @@ namespace Steeltoe.Connector.Services
                 return null;
             }
 
-            var split = pathAndQuery.Split(questionMark);
+            var split = pathAndQuery.Split(_questionMark);
             if (split.Length == 0)
             {
                 return null;
@@ -232,7 +232,7 @@ namespace Steeltoe.Connector.Services
                 return null;
             }
 
-            var split = pathAndQuery.Split(questionMark);
+            var split = pathAndQuery.Split(_questionMark);
             if (split.Length <= 1)
             {
                 return null;
@@ -248,7 +248,7 @@ namespace Steeltoe.Connector.Services
                 return new string[2] { null, null };
             }
 
-            var split = userPass.Split(colon);
+            var split = userPass.Split(_colon);
             if (split.Length != 2)
             {
                 throw new ArgumentException(

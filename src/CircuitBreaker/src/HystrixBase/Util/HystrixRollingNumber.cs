@@ -20,7 +20,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal readonly CumulativeSum _cumulativeSum = new CumulativeSum();
 
         private static ITime actual_time = new ActualTime();
-        private readonly ITime time;
+        private readonly ITime _time;
 
         public HystrixRollingNumber(int timeInMilliseconds, int numberOfBuckets)
             : this(actual_time, timeInMilliseconds, numberOfBuckets)
@@ -30,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         /* package for testing */
         internal HystrixRollingNumber(ITime time, int timeInMilliseconds, int numberOfBuckets)
         {
-            this.time = time;
+            this._time = time;
             this._timeInMilliseconds = timeInMilliseconds;
             this._numberOfBuckets = numberOfBuckets;
 
@@ -152,12 +152,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        private object newBucketLock = new object();
+        private object _newBucketLock = new object();
 
         /* package for testing */
         internal Bucket GetCurrentBucket()
         {
-            long currentTime = time.CurrentTimeInMillis;
+            long currentTime = _time.CurrentTimeInMillis;
 
             /* a shortcut to try and get the most common result of immediately finding the current bucket */
 
@@ -195,10 +195,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * versus a synchronized block needs to be accommodated.
              */
             bool lockTaken = false;
-            Monitor.TryEnter(newBucketLock, ref lockTaken);
+            Monitor.TryEnter(_newBucketLock, ref lockTaken);
             if (lockTaken)
             {
-                currentTime = time.CurrentTimeInMillis;
+                currentTime = _time.CurrentTimeInMillis;
                 try
                 {
                     if (_buckets.PeekLast == null)
@@ -249,7 +249,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 }
                 finally
                 {
-                    Monitor.Exit(newBucketLock);
+                    Monitor.Exit(_newBucketLock);
                 }
             }
             else
@@ -443,9 +443,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         internal class BucketCircularArray : IEnumerable<Bucket>
         {
-            private readonly AtomicReference<ListState> state;
-            private readonly int dataLength; // we don't resize, we always stay the same, so remember this
-            private readonly int numBuckets;
+            private readonly AtomicReference<ListState> _state;
+            private readonly int _dataLength; // we don't resize, we always stay the same, so remember this
+            private readonly int _numBuckets;
 
             internal class ListState
             {
@@ -471,7 +471,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     }
                     else
                     {
-                        this._size = (tail + ca.dataLength - head) % ca.dataLength;
+                        this._size = (tail + ca._dataLength - head) % ca._dataLength;
                     }
 
                     this._data = data;
@@ -514,7 +514,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
                 public ListState Clear()
                 {
-                    return new ListState(_ca, new AtomicReferenceArray<Bucket>(_ca.dataLength), 0, 0);
+                    return new ListState(_ca, new AtomicReferenceArray<Bucket>(_ca._dataLength), 0, 0);
                 }
 
                 public ListState AddBucket(Bucket b)
@@ -534,21 +534,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 // always 0) and calculates the index within elementData
                 private int Convert(int index)
                 {
-                    return (index + _head) % _ca.dataLength;
+                    return (index + _head) % _ca._dataLength;
                 }
 
                 private ListState IncrementTail()
                 {
                     /* if incrementing results in growing larger than 'length' which is the max we should be at, then also increment head (equivalent of removeFirst but done atomically) */
-                    if (_size == _ca.numBuckets)
+                    if (_size == _ca._numBuckets)
                     {
                         // increment tail and head
-                        return new ListState(_ca, _data, (_head + 1) % _ca.dataLength, (_listtail + 1) % _ca.dataLength);
+                        return new ListState(_ca, _data, (_head + 1) % _ca._dataLength, (_listtail + 1) % _ca._dataLength);
                     }
                     else
                     {
                         // increment only tail
-                        return new ListState(_ca, _data, _head, (_listtail + 1) % _ca.dataLength);
+                        return new ListState(_ca, _data, _head, (_listtail + 1) % _ca._dataLength);
                     }
                 }
             }
@@ -556,9 +556,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             public BucketCircularArray(int size)
             {
                 AtomicReferenceArray<Bucket> buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
-                state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
-                dataLength = buckets.Length;
-                numBuckets = size;
+                _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
+                _dataLength = buckets.Length;
+                _numBuckets = size;
             }
 
             public void Clear()
@@ -576,9 +576,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                      * The rare scenario in which that would occur, we'll accept the possible data loss while clearing it
                      * since the code has stated its desire to clear() anyways.
                      */
-                    ListState current = state.Value;
+                    ListState current = _state.Value;
                     ListState newState = current.Clear();
-                    if (state.CompareAndSet(current, newState))
+                    if (_state.CompareAndSet(current, newState))
                     {
                         return;
                     }
@@ -587,7 +587,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public void AddLast(Bucket o)
             {
-                ListState currentState = state.Value;
+                ListState currentState = _state.Value;
 
                 // create new version of state (what we want it to become)
                 ListState newState = currentState.AddBucket(o);
@@ -597,7 +597,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                  * provided in <code>getCurrentBucket</code>)
                  */
 #pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
-                if (state.CompareAndSet(currentState, newState))
+                if (_state.CompareAndSet(currentState, newState))
                 {
                     // we succeeded
                 }
@@ -619,7 +619,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             {
                 // the size can also be worked out each time as:
                 // return (tail + data.length() - head) % data.length();
-                get { return state.Value._size; }
+                get { return _state.Value._size; }
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -635,12 +635,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public Bucket PeekLast
             {
-                get { return state.Value.Tail; }
+                get { return _state.Value.Tail; }
             }
 
             public Bucket[] Array
             {
-                get { return state.Value.Array; }
+                get { return _state.Value.Array; }
             }
         }
     }

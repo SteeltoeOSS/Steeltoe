@@ -6,7 +6,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixThreadPoolConfiguration
     {
-        private readonly int maximumSize;
+        private readonly int _maximumSize;
 
         public HystrixThreadPoolConfiguration(
             IHystrixThreadPoolKey threadPoolKey,
@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         {
             ThreadPoolKey = threadPoolKey;
             CoreSize = coreSize;
-            this.maximumSize = maximumSize;
+            this._maximumSize = maximumSize;
             MaxQueueSize = maxQueueSize;
             QueueRejectionThreshold = queueRejectionThreshold;
             KeepAliveTimeInMinutes = keepAliveTimeInMinutes;
@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             {
                 if (AllowMaximumSizeToDivergeFromCoreSize)
                 {
-                    return maximumSize;
+                    return _maximumSize;
                 }
                 else
                 {

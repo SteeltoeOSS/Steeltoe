@@ -13,47 +13,47 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 {
     public class HystrixThreadPoolDefault : IHystrixThreadPool
     {
-        private readonly IHystrixThreadPoolOptions properties;
-        private readonly IHystrixTaskScheduler taskScheduler;
-        private readonly HystrixThreadPoolMetrics metrics;
-        private readonly int queueSize;
+        private readonly IHystrixThreadPoolOptions _properties;
+        private readonly IHystrixTaskScheduler _taskScheduler;
+        private readonly HystrixThreadPoolMetrics _metrics;
+        private readonly int _queueSize;
 
         public HystrixThreadPoolDefault(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions propertiesDefaults)
         {
-            this.properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
-            this.properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
+            this._properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
+            this._properties = propertiesDefaults ?? new HystrixThreadPoolOptions(threadPoolKey);
             HystrixConcurrencyStrategy concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-            this.queueSize = properties.MaxQueueSize;
-            this.metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
-            this.taskScheduler = this.metrics.TaskScheduler;
+            this._queueSize = _properties.MaxQueueSize;
+            this._metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(_properties), _properties);
+            this._taskScheduler = this._metrics.TaskScheduler;
 
             /* strategy: HystrixMetricsPublisherThreadPool */
-            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, this.metrics, this.properties);
+            HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForThreadPool(threadPoolKey, this._metrics, this._properties);
         }
 
         public IHystrixTaskScheduler GetScheduler()
         {
-            return this.taskScheduler;
+            return this._taskScheduler;
         }
 
         public TaskScheduler GetTaskScheduler()
         {
-            return this.taskScheduler as TaskScheduler;
+            return this._taskScheduler as TaskScheduler;
         }
 
         public void MarkThreadExecution()
         {
-            metrics.MarkThreadExecution();
+            _metrics.MarkThreadExecution();
         }
 
         public void MarkThreadCompletion()
         {
-            metrics.MarkThreadCompletion();
+            _metrics.MarkThreadCompletion();
         }
 
         public void MarkThreadRejection()
         {
-            metrics.MarkThreadRejection();
+            _metrics.MarkThreadRejection();
         }
 
         public void Dispose()
@@ -64,14 +64,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
 
         protected virtual void Dispose(bool disposing)
         {
-            this.taskScheduler.Dispose();
+            this._taskScheduler.Dispose();
         }
 
         public bool IsQueueSpaceAvailable
         {
             get
             {
-                if (queueSize <= 0)
+                if (_queueSize <= 0)
                 {
                     // we don't have a queue so we won't look for space but instead
                     // let the thread-pool reject or not
@@ -79,14 +79,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool
                 }
                 else
                 {
-                    return taskScheduler.IsQueueSpaceAvailable;
+                    return _taskScheduler.IsQueueSpaceAvailable;
                 }
             }
         }
 
         public bool IsShutdown
         {
-            get { return this.taskScheduler.IsShutdown; }
+            get { return this._taskScheduler.IsShutdown; }
         }
     }
 }

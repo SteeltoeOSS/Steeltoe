@@ -136,41 +136,41 @@ namespace Steeltoe.Common.Lifecycle
 
         private class LifecycleGroup
         {
-            private readonly int phase;
+            private readonly int _phase;
 
-            private readonly int timeout;
+            private readonly int _timeout;
 
-            private readonly bool autoStartupOnly;
+            private readonly bool _autoStartupOnly;
 
-            private readonly List<LifecycleGroupMember> members = new List<LifecycleGroupMember>();
+            private readonly List<LifecycleGroupMember> _members = new List<LifecycleGroupMember>();
 
-            private int smartMemberCount;
+            private int _smartMemberCount;
 
             public LifecycleGroup(int phase, int timeout, bool autoStartupOnly)
             {
-                this.phase = phase;
-                this.timeout = timeout;
-                this.autoStartupOnly = autoStartupOnly;
+                _phase = phase;
+                _timeout = timeout;
+                _autoStartupOnly = autoStartupOnly;
             }
 
             public void Add(ILifecycle bean)
             {
-                members.Add(new LifecycleGroupMember(bean));
+                _members.Add(new LifecycleGroupMember(bean));
                 if (bean is ISmartLifecycle)
                 {
-                    smartMemberCount++;
+                    _smartMemberCount++;
                 }
             }
 
             public async Task Start()
             {
-                if (members.Count <= 0)
+                if (_members.Count <= 0)
                 {
                     return;
                 }
 
-                members.Sort();
-                foreach (var member in members)
+                _members.Sort();
+                foreach (var member in _members)
                 {
                     await DoStart(member.Bean);
                 }
@@ -178,23 +178,23 @@ namespace Steeltoe.Common.Lifecycle
 
             public Task Stop()
             {
-                if (members.Count <= 0)
+                if (_members.Count <= 0)
                 {
                     return Task.CompletedTask;
                 }
 
-                members.Sort();
-                members.Reverse();
+                _members.Sort();
+                _members.Reverse();
 
                 var tasks = new List<Task>();
-                foreach (var member in members)
+                foreach (var member in _members)
                 {
                     tasks.Add(DoStop(member.Bean));
                 }
 
                 try
                 {
-                    Task.WaitAll(tasks.ToArray(), timeout);
+                    Task.WaitAll(tasks.ToArray(), _timeout);
                 }
                 catch (Exception)
                 {
@@ -215,7 +215,7 @@ namespace Steeltoe.Common.Lifecycle
 
             private async Task DoStart(ILifecycle bean)
             {
-                if (bean != null && bean != this && !bean.IsRunning && (!autoStartupOnly || !(bean is ISmartLifecycle) || ((ISmartLifecycle)bean).IsAutoStartup))
+                if (bean != null && bean != this && !bean.IsRunning && (!_autoStartupOnly || !(bean is ISmartLifecycle) || ((ISmartLifecycle)bean).IsAutoStartup))
                 {
                     try
                     {

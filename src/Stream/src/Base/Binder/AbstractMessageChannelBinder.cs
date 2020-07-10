@@ -587,28 +587,28 @@ namespace Steeltoe.Stream.Binder
 
         protected class SendingHandler : AbstractMessageHandler, ILifecycle
         {
-            private readonly bool embedHeaders;
+            private readonly bool _embedHeaders;
 
-            private readonly string[] embeddedHeaders;
+            private readonly string[] _embeddedHeaders;
 
-            private readonly IMessageHandler handler;
+            private readonly IMessageHandler _handler;
 
-            private readonly bool useNativeEncoding;
+            private readonly bool _useNativeEncoding;
 
             public SendingHandler(IApplicationContext context, IMessageHandler handler, bool embedHeaders, string[] headersToEmbed, bool useNativeEncoding)
                 : base(context)
             {
-                this.handler = handler;
-                this.embedHeaders = embedHeaders;
-                embeddedHeaders = headersToEmbed;
-                this.useNativeEncoding = useNativeEncoding;
+                this._handler = handler;
+                this._embedHeaders = embedHeaders;
+                _embeddedHeaders = headersToEmbed;
+                this._useNativeEncoding = useNativeEncoding;
             }
 
             public Task Start()
             {
-                if (handler is ILifecycle)
+                if (_handler is ILifecycle)
                 {
-                    return ((ILifecycle)handler).Start();
+                    return ((ILifecycle)_handler).Start();
                 }
 
                 return Task.CompletedTask;
@@ -616,9 +616,9 @@ namespace Steeltoe.Stream.Binder
 
             public Task Stop()
             {
-                if (handler is ILifecycle)
+                if (_handler is ILifecycle)
                 {
-                    return ((ILifecycle)handler).Stop();
+                    return ((ILifecycle)_handler).Stop();
                 }
 
                 return Task.CompletedTask;
@@ -628,14 +628,14 @@ namespace Steeltoe.Stream.Binder
             {
                 get
                 {
-                    return handler is ILifecycle && ((ILifecycle)handler).IsRunning;
+                    return _handler is ILifecycle && ((ILifecycle)_handler).IsRunning;
                 }
             }
 
             protected override void HandleMessageInternal(IMessage message)
             {
-                var messageToSend = useNativeEncoding ? message : SerializeAndEmbedHeadersIfApplicable(message);
-                handler.HandleMessage(messageToSend);
+                var messageToSend = _useNativeEncoding ? message : SerializeAndEmbedHeadersIfApplicable(message);
+                _handler.HandleMessage(messageToSend);
             }
 
             private IMessage SerializeAndEmbedHeadersIfApplicable(IMessage message)
@@ -643,7 +643,7 @@ namespace Steeltoe.Stream.Binder
                 var transformed = new MessageValues(message);
 
                 object payload;
-                if (embedHeaders)
+                if (_embedHeaders)
                 {
                     transformed.TryGetValue(MessageHeaders.CONTENT_TYPE, out var contentType);
 
@@ -654,7 +654,7 @@ namespace Steeltoe.Stream.Binder
                         transformed[MessageHeaders.CONTENT_TYPE] = contentType.ToString();
                     }
 
-                    payload = EmbeddedHeaderUtils.EmbedHeaders(transformed, embeddedHeaders);
+                    payload = EmbeddedHeaderUtils.EmbedHeaders(transformed, _embeddedHeaders);
                 }
                 else
                 {
@@ -667,9 +667,9 @@ namespace Steeltoe.Stream.Binder
 
         protected class DefaultProducingMessageChannelBinding : DefaultBinding<IMessageChannel>
         {
-            private readonly AbstractMessageChannelBinder binder;
-            private readonly IProducerOptions options;
-            private readonly IProducerDestination producerDestination;
+            private readonly AbstractMessageChannelBinder _binder;
+            private readonly IProducerOptions _options;
+            private readonly IProducerDestination _producerDestination;
 
             public DefaultProducingMessageChannelBinding(
                 AbstractMessageChannelBinder binder,
@@ -680,15 +680,15 @@ namespace Steeltoe.Stream.Binder
                 IProducerDestination producerDestination)
                 : base(destination, target, lifecycle)
             {
-                this.binder = binder;
-                this.options = options;
-                this.producerDestination = producerDestination;
+                this._binder = binder;
+                this._options = options;
+                this._producerDestination = producerDestination;
             }
 
             // @Override
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return binder.DoGetExtendedInfo(Name, options); }
+                get { return _binder.DoGetExtendedInfo(Name, _options); }
             }
 
             public override bool IsInput
@@ -700,22 +700,22 @@ namespace Steeltoe.Stream.Binder
             {
                 try
                 {
-                    binder.DestroyErrorInfrastructure(producerDestination);
+                    _binder.DestroyErrorInfrastructure(_producerDestination);
                 }
                 catch (Exception)
                 {
                     // Log
                 }
 
-                binder.AfterUnbindProducer(producerDestination, options);
+                _binder.AfterUnbindProducer(_producerDestination, _options);
             }
         }
 
         protected class DefaultConsumerMessageChannelBinding : DefaultBinding<IMessageChannel>
         {
-            private readonly AbstractMessageChannelBinder binder;
-            private readonly IConsumerOptions options;
-            private readonly IConsumerDestination destination;
+            private readonly AbstractMessageChannelBinder _binder;
+            private readonly IConsumerOptions _options;
+            private readonly IConsumerDestination _destination;
 
             public DefaultConsumerMessageChannelBinding(
                 AbstractMessageChannelBinder binder,
@@ -727,14 +727,14 @@ namespace Steeltoe.Stream.Binder
                 IConsumerDestination consumerDestination)
                 : base(name, group, inputChannel, lifecycle)
             {
-                this.binder = binder;
-                this.options = options;
-                destination = consumerDestination;
+                this._binder = binder;
+                this._options = options;
+                _destination = consumerDestination;
             }
 
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return binder.DoGetExtendedInfo(destination, options); }
+                get { return _binder.DoGetExtendedInfo(_destination, _options); }
             }
 
             public override bool IsInput
@@ -756,16 +756,16 @@ namespace Steeltoe.Stream.Binder
                 // {
                 //    // Log
                 // }
-                binder.AfterUnbindConsumer(destination, Group, options);
-                binder.DestroyErrorInfrastructure(destination, Group, options);
+                _binder.AfterUnbindConsumer(_destination, Group, _options);
+                _binder.DestroyErrorInfrastructure(_destination, Group, _options);
             }
         }
 
         protected class DefaultPollableChannelBinding : DefaultBinding<IPollableSource<IMessageHandler>>
         {
-            private readonly AbstractMessageChannelBinder binder;
-            private readonly IConsumerOptions options;
-            private readonly IConsumerDestination destination;
+            private readonly AbstractMessageChannelBinder _binder;
+            private readonly IConsumerOptions _options;
+            private readonly IConsumerDestination _destination;
 
             public DefaultPollableChannelBinding(
                         AbstractMessageChannelBinder binder,
@@ -777,14 +777,14 @@ namespace Steeltoe.Stream.Binder
                         IConsumerDestination consumerDestination)
                   : base(name, group, inboundBindTarget, lifecycle)
             {
-                this.binder = binder;
-                this.options = options;
-                destination = consumerDestination;
+                this._binder = binder;
+                this._options = options;
+                _destination = consumerDestination;
             }
 
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return binder.DoGetExtendedInfo(destination, options); }
+                get { return _binder.DoGetExtendedInfo(_destination, _options); }
             }
 
             public override bool IsInput
@@ -794,8 +794,8 @@ namespace Steeltoe.Stream.Binder
 
             protected override void AfterUnbind()
             {
-                binder.AfterUnbindConsumer(destination, Group, options);
-                binder.DestroyErrorInfrastructure(destination, Group, options);
+                _binder.AfterUnbindConsumer(_destination, Group, _options);
+                _binder.DestroyErrorInfrastructure(_destination, Group, _options);
             }
         }
 

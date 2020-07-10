@@ -14,14 +14,14 @@ namespace Steeltoe.Stream.TestBinder
 {
     public class TestChannelBinderProvisioner : IProvisioningProvider
     {
-        private readonly Dictionary<string, ISubscribableChannel> provisionedDestinations = new Dictionary<string, ISubscribableChannel>();
-        private readonly IApplicationContext context;
+        private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new Dictionary<string, ISubscribableChannel>();
+        private readonly IApplicationContext _context;
 
         public TestChannelBinderProvisioner(IApplicationContext context, InputDestination inputDestination, OutputDestination outputDestination)
         {
             InputDestination = inputDestination;
             OutputDestination = outputDestination;
-            this.context = context;
+            this._context = context;
         }
 
         public InputDestination InputDestination { get; }
@@ -49,20 +49,20 @@ namespace Steeltoe.Stream.TestBinder
         private ISubscribableChannel ProvisionDestination(string name, bool pubSub)
         {
             var destinationName = name + ".destination";
-            provisionedDestinations.TryGetValue(destinationName, out var destination);
+            _provisionedDestinations.TryGetValue(destinationName, out var destination);
             if (destination == null)
             {
                 if (pubSub)
                 {
-                    destination = new PublishSubscribeChannel(context);
+                    destination = new PublishSubscribeChannel(_context);
                 }
                 else
                 {
-                    destination = new DirectChannel(context);
+                    destination = new DirectChannel(_context);
                 }
 
                 ((AbstractMessageChannel)destination).ServiceName = destinationName;
-                provisionedDestinations.Add(destinationName, destination);
+                _provisionedDestinations.Add(destinationName, destination);
             }
 
             return destination;

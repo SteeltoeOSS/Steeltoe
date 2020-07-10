@@ -25,21 +25,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         internal const string STOP_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Stop";
         internal const string STOPEX_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
-        private readonly string statusTagKey = "status";
-        private readonly string uriTagKey = "uri";
-        private readonly string methodTagKey = "method";
-        private readonly string clientTagKey = "clientName";
+        private readonly string _statusTagKey = "status";
+        private readonly string _uriTagKey = "uri";
+        private readonly string _methodTagKey = "method";
+        private readonly string _clientTagKey = "clientName";
 
-        private readonly MeasureMetric<double> clientTimeMeasure;
-        private readonly MeasureMetric<long> clientCountMeasure;
+        private readonly MeasureMetric<double> _clientTimeMeasure;
+        private readonly MeasureMetric<long> _clientCountMeasure;
 
         public HttpClientDesktopObserver(IMetricsObserverOptions options, IStats stats, ILogger<HttpClientDesktopObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.EgressIgnorePattern);
 
-            clientTimeMeasure = Meter.CreateDoubleMeasure("http.desktop.client.request.time");
-            clientCountMeasure = Meter.CreateInt64Measure("http.desktop.client.request.count");
+            _clientTimeMeasure = Meter.CreateDoubleMeasure("http.desktop.client.request.time");
+            _clientCountMeasure = Meter.CreateInt64Measure("http.desktop.client.request.count");
 
             // Bring back views when available
             /*var view = View.Create(
@@ -114,8 +114,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             if (current.Duration.TotalMilliseconds > 0)
             {
                 var labels = GetLabels(request, statusCode);
-                clientTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labels);
-                clientCountMeasure.Record(default(SpanContext), 1, labels);
+                _clientTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labels);
+                _clientCountMeasure.Record(default(SpanContext), 1, labels);
             }
         }
 
@@ -123,10 +123,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             return new Dictionary<string, string>()
                     {
-                        { uriTagKey, request.RequestUri.ToString() },
-                        { statusTagKey, statusCode.ToString() },
-                        { clientTagKey, request.RequestUri.Host },
-                        { methodTagKey, request.Method }
+                        { _uriTagKey, request.RequestUri.ToString() },
+                        { _statusTagKey, statusCode.ToString() },
+                        { _clientTagKey, request.RequestUri.Host },
+                        { _methodTagKey, request.Method }
                     }.ToList();
         }
     }

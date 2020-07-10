@@ -4,26 +4,17 @@
     <Description>Steeltoe Stream Base </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
-    <AssemblyName>Steeltoe.Stream.Base</AssemblyName>
-    <PackageId>Steeltoe.Stream.Base</PackageId>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\Base\Steeltoe.Messaging.Base.csproj" />
     <ProjectReference Include="..\..\..\Integration\src\Base\Steeltoe.Integration.Base.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Stream.Abstractions" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Messaging.Base" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Integration.Base" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
-    <PackageReference Include="Steeltoe.Common.RetryPolly" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 
   <ItemGroup>

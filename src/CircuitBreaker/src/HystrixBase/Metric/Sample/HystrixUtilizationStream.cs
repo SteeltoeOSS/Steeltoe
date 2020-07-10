@@ -14,9 +14,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
     public class HystrixUtilizationStream
     {
         private const int DataEmissionIntervalInMs = 500;
-        private readonly int intervalInMilliseconds;
-        private readonly IObservable<HystrixUtilization> allUtilizationStream;
-        private readonly AtomicBoolean isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private readonly IObservable<HystrixUtilization> _allUtilizationStream;
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
         private static Func<long, HystrixUtilization> AllUtilization { get; } =
           (long timestamp) =>
@@ -28,16 +27,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         public HystrixUtilizationStream(int intervalInMilliseconds)
         {
-            this.intervalInMilliseconds = intervalInMilliseconds;
-            this.allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            this.IntervalInMilliseconds = intervalInMilliseconds;
+            this._allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map((t) => AllUtilization(t))
                     .OnSubscribe(() =>
                     {
-                        isSourceCurrentlySubscribed.Value = true;
+                        _isSourceCurrentlySubscribed.Value = true;
                     })
                     .OnDispose(() =>
                     {
-                        isSourceCurrentlySubscribed.Value = false;
+                        _isSourceCurrentlySubscribed.Value = false;
                     })
                     .Publish().RefCount();
         }
@@ -54,27 +53,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<HystrixUtilization> Observe()
         {
-            return allUtilizationStream;
+            return _allUtilizationStream;
         }
 
         public IObservable<Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> ObserveCommandUtilization()
         {
-            return allUtilizationStream.Map((a) => OnlyCommandUtilization(a));
+            return _allUtilizationStream.Map((a) => OnlyCommandUtilization(a));
         }
 
         public IObservable<Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> ObserveThreadPoolUtilization()
         {
-            return allUtilizationStream.Map((a) => OnlyThreadPoolUtilization(a));
+            return _allUtilizationStream.Map((a) => OnlyThreadPoolUtilization(a));
         }
 
-        public int IntervalInMilliseconds
-        {
-            get { return this.intervalInMilliseconds; }
-        }
+        public int IntervalInMilliseconds { get; }
 
         public bool IsSourceCurrentlySubscribed
         {
-            get { return isSourceCurrentlySubscribed.Value; }
+            get { return _isSourceCurrentlySubscribed.Value; }
         }
 
         internal static HystrixUtilizationStream GetNonSingletonInstanceOnlyUsedInUnitTests(int delayInMs)

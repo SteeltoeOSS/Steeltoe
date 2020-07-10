@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
     {
         private readonly List<IHandlerMethodArgumentResolver> _argumentResolvers = new List<IHandlerMethodArgumentResolver>();
 
-        private readonly ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver> argumentResolverCache =
+        private readonly ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver> _argumentResolverCache =
                 new ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver>();
 
         public HandlerMethodArgumentResolverComposite AddResolver(IHandlerMethodArgumentResolver argumentResolver)
@@ -80,14 +80,14 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         private IHandlerMethodArgumentResolver GetArgumentResolver(ParameterInfo parameter)
         {
-            if (!argumentResolverCache.TryGetValue(parameter, out var result))
+            if (!_argumentResolverCache.TryGetValue(parameter, out var result))
             {
                 foreach (var resolver in _argumentResolvers)
                 {
                     if (resolver.SupportsParameter(parameter))
                     {
                         result = resolver;
-                        argumentResolverCache.TryAdd(parameter, result);
+                        _argumentResolverCache.TryAdd(parameter, result);
                         break;
                     }
                 }

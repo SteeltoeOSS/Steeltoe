@@ -8,7 +8,9 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 
 namespace Steeltoe.Connector.RabbitMQ
 {
@@ -32,7 +34,8 @@ namespace Steeltoe.Connector.RabbitMQ
 
         private readonly RabbitMQProviderConnectorFactory _factory;
         private readonly ILogger<RabbitMQHealthContributor> _logger;
-        private object _connFactory;
+        private readonly object _connFactory;
+        private object _connection;
 
         public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
         {
@@ -49,19 +52,31 @@ namespace Steeltoe.Connector.RabbitMQ
             var result = new HealthCheckResult();
             try
             {
-                var connection = ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
+                _connection ??= ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
 
-                if (connection == null)
+                if (_connection == null)
                 {
                     throw new ConnectorException("Failed to open RabbitMQ connection!");
                 }
 
-                // Spring Boot health checks also include RMQ version the server is running
+                if (RabbitMQTypeLocator.IConnection.GetProperty("IsOpen").GetValue(_connection).Equals(false))
+                {
+                    throw new ConnectorException("RabbitMQ connection is closed!");
+                }
+
+                try
+                {
+                    var serverproperties = RabbitMQTypeLocator.IConnection.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
+                    result.Details.Add("version", Encoding.UTF8.GetString(serverproperties["version"] as byte[]));
+                }
+                catch (Exception e)
+                {
+                    _logger?.LogTrace(e, "Failed to find server version while checking RabbitMQ connection health");
+                }
+
                 result.Details.Add("status", HealthStatus.UP.ToString());
                 result.Status = HealthStatus.UP;
                 _logger?.LogTrace("RabbitMQ connection up!");
-
-                ReflectionHelpers.Invoke(RabbitMQTypeLocator.CloseConnectionMethod, connection, null);
             }
             catch (Exception e)
             {

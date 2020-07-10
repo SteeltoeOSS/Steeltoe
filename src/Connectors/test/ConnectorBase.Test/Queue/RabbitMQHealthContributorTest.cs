@@ -4,10 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Moq;
+using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
 using System.Collections.Generic;
+using System.Text;
 using Xunit;
 
 namespace Steeltoe.Connector.Queue.Test
@@ -56,7 +59,6 @@ namespace Steeltoe.Connector.Queue.Test
         public void Is_Connected_Returns_Up_Status()
         {
             // arrange
-            _ = RabbitMQTypeLocator.IConnectionFactory;
             var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
             var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
             var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
@@ -69,6 +71,32 @@ namespace Steeltoe.Connector.Queue.Test
 
             // assert
             Assert.Equal(HealthStatus.UP, status.Status);
+            Assert.Contains("version", status.Details.Keys);
+        }
+
+        [Fact]
+        public void ScenarioTesting()
+        {
+            // arrange
+            var mockConnection = new Mock<IConnection>();
+            mockConnection.Setup(a => a.IsOpen).Returns(false);
+            mockConnection.Setup(s => s.ServerProperties).Returns(new Dictionary<string, object> { { "version", Encoding.UTF8.GetBytes("test") } });
+            var mockConnFactory = new Mock<ConnectionFactory>();
+            mockConnFactory.Setup(s => s.CreateConnection()).Returns(mockConnection.Object);
+            var mockProviderFactory = new Mock<RabbitMQProviderConnectorFactory>(null, new RabbitMQProviderConnectorOptions(), RabbitMQTypeLocator.ConnectionFactory);
+            mockProviderFactory.Setup(a => a.Create(null)).Returns(mockConnFactory.Object);
+            var h = new RabbitMQHealthContributor(mockProviderFactory.Object, null);
+
+            // check health, get object that is closed
+            var status = h.Health();
+            Assert.Equal(HealthStatus.DOWN, status.Status);
+            Assert.Equal("ConnectorException: RabbitMQ connection is closed!", status.Details["error"]);
+
+            // check health, get object that is open
+            mockConnection.Setup(a => a.IsOpen).Returns(true);
+            status = h.Health();
+            Assert.Equal(HealthStatus.UP, status.Status);
+            Assert.Equal("test", status.Details["version"]);
         }
     }
 }

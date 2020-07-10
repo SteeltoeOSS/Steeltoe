@@ -11,17 +11,17 @@ namespace Steeltoe.Stream.Binder
     {
         private readonly ILastSubscriberAwareChannel _errorChannel;
 
-        private readonly bool defaultErrorChannelPresent;
+        private readonly bool _defaultErrorChannelPresent;
 
         public FinalRethrowingErrorMessageHandler(ILastSubscriberAwareChannel errorChannel, bool defaultErrorChannelPresent)
         {
             _errorChannel = errorChannel;
-            this.defaultErrorChannelPresent = defaultErrorChannelPresent;
+            this._defaultErrorChannelPresent = defaultErrorChannelPresent;
         }
 
         public void HandleMessage(IMessage message)
         {
-            if (_errorChannel.Subscribers > (defaultErrorChannelPresent ? 2 : 1))
+            if (_errorChannel.Subscribers > (_defaultErrorChannelPresent ? 2 : 1))
             {
                 // user has subscribed; default is 2, this and the bridge to the
                 // errorChannel

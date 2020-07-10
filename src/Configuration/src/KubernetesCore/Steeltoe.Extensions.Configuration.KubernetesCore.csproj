@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.Kubernetes</RootNamespace>
     <Description>Package for adding Kubernetes environment variables, ConfigMaps and Secrets to .NET applications</Description>
     <PackageTags>Kubernetes;Spring;Spring Cloud;configuration;configmap</PackageTags>
@@ -17,10 +17,7 @@
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
+  <ItemGroup>
     <ProjectReference Include="..\KubernetesBase\Steeltoe.Extensions.Configuration.KubernetesBase.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-    <PackageReference Include="Steeltoe.Extensions.Configuration.KubernetesBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
   </ItemGroup>
 </Project>

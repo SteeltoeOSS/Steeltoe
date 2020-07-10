@@ -1,25 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
-    <Description>Netflix Hystrix metrics event stream for ASP.NET Core over HTTP</Description>
+    <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
+    <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(CI_BUILD)' == ''">
-      <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(CI_BUILD)' == 'True'">
-      <PackageReference Include="Steeltoe.CircuitBreaker.HystrixBase" Version="$(SteeltoeVersion)$(SteeltoeVersionSuffix)" />
+  <ItemGroup>
+    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
+    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
   </ItemGroup>
 </Project>

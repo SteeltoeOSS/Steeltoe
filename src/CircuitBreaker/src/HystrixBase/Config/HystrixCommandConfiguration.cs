@@ -6,7 +6,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixCommandConfiguration
     {
-        private readonly IHystrixCommandKey commandKey;
+        private readonly IHystrixCommandKey _commandKey;
 
         public HystrixCommandConfiguration(
             IHystrixCommandKey commandKey,
@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             HystrixCommandCircuitBreakerConfig circuitBreakerConfig,
             HystrixCommandMetricsConfig metricsConfig)
         {
-            this.commandKey = commandKey;
+            this._commandKey = commandKey;
             ThreadPoolKey = threadPoolKey;
             GroupKey = groupKey;
             ExecutionConfig = executionConfig;

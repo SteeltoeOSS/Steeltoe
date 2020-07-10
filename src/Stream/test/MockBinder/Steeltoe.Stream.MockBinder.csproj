@@ -4,8 +4,6 @@
     <Description>Steeltoe Stream MockBinder</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream.MockBinder</RootNamespace>
-    <AssemblyName>Steeltoe.Stream.MockBinder</AssemblyName>
-    <PackageId>Steeltoe.Stream.MockBinder</PackageId>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>

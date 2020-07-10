@@ -6,7 +6,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class SshGenerationRequest : CredHubGenerateRequest
     {
-        private SshGenerationParameters defaultParams = new SshGenerationParameters { KeyLength = CertificateKeyLength.Length_2048, SshComment = null };
+        private SshGenerationParameters _defaultParams = new SshGenerationParameters { KeyLength = CertificateKeyLength.Length_2048, SshComment = null };
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SshGenerationRequest"/> class.
@@ -19,7 +19,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         {
             Name = credentialName;
             Type = CredentialType.SSH;
-            Parameters = parameters ?? defaultParams;
+            Parameters = parameters ?? _defaultParams;
             Mode = overwriteMode;
         }
     }

@@ -11,20 +11,20 @@ namespace Steeltoe.Common.Http
 {
     public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
     {
-        private readonly IOptionsMonitor<CertificateOptions> certificateOptions;
+        private readonly IOptionsMonitor<CertificateOptions> _certificateOptions;
         private CertificateOptions _lastValue;
 
         public ClientCertificateHttpHandlerProvider(IOptionsMonitor<CertificateOptions> certOptions)
         {
-            certificateOptions = certOptions;
-            certificateOptions.OnChange(RotateCert);
-            RotateCert(certificateOptions.CurrentValue);
+            _certificateOptions = certOptions;
+            _certificateOptions.OnChange(RotateCert);
+            RotateCert(_certificateOptions.CurrentValue);
         }
 
         public HttpClientHandler GetHttpClientHandler()
         {
             var handler = new HttpClientHandler();
-            if (certificateOptions?.CurrentValue?.Certificate != null)
+            if (_certificateOptions?.CurrentValue?.Certificate != null)
             {
                 handler.ClientCertificates.Add(_lastValue.Certificate);
             }
@@ -52,7 +52,7 @@ namespace Steeltoe.Common.Http
 
             personalCertStore.Close();
             authorityCertStore.Close();
-            _lastValue = certificateOptions.CurrentValue;
+            _lastValue = _certificateOptions.CurrentValue;
         }
     }
 }

@@ -23,21 +23,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const string OBSERVER_NAME = "AspNetCoreHostingObserver";
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
 
-        private readonly string statusTagKey = "status";
-        private readonly string exceptionTagKey = "exception";
-        private readonly string methodTagKey = "method";
-        private readonly string uriTagKey = "uri";
+        private readonly string _statusTagKey = "status";
+        private readonly string _exceptionTagKey = "exception";
+        private readonly string _methodTagKey = "method";
+        private readonly string _uriTagKey = "uri";
 
-        private readonly MeasureMetric<double> responseTimeMeasure;
-        private readonly CounterMetric<long> serverCountMeasure;
+        private readonly MeasureMetric<double> _responseTimeMeasure;
+        private readonly CounterMetric<long> _serverCountMeasure;
 
         public AspNetCoreHostingObserver(IMetricsObserverOptions options, IStats stats, ILogger<AspNetCoreHostingObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
 
-            this.responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
-            this.serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
+            this._responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
+            this._serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
             /*
             //var view = View.Create(
             //        ViewName.Create("http.server.request.time"),
@@ -99,9 +99,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var labelSets = GetLabelSets(arg); // Todo: Used bound labelsets
 
-                serverCountMeasure.Add(default(SpanContext), 1, labelSets);
+                _serverCountMeasure.Add(default(SpanContext), 1, labelSets);
                 labelSets.Add(new KeyValuePair<string, string>("TimeUnit", "ms"));
-                responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
+                _responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
             }
         }
 
@@ -112,10 +112,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             var exception = GetException(arg);
 
             var tagValues = new List<KeyValuePair<string, string>>();
-            tagValues.Add(new KeyValuePair<string, string>(uriTagKey, uri));
-            tagValues.Add(new KeyValuePair<string, string>(statusTagKey, statusCode));
-            tagValues.Add(new KeyValuePair<string, string>(exceptionTagKey, exception));
-            tagValues.Add(new KeyValuePair<string, string>(methodTagKey, arg.Request.Method));
+            tagValues.Add(new KeyValuePair<string, string>(_uriTagKey, uri));
+            tagValues.Add(new KeyValuePair<string, string>(_statusTagKey, statusCode));
+            tagValues.Add(new KeyValuePair<string, string>(_exceptionTagKey, exception));
+            tagValues.Add(new KeyValuePair<string, string>(_methodTagKey, arg.Request.Method));
 
             return tagValues;
         }

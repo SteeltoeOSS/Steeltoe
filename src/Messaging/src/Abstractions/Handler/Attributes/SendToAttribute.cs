@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
     public class SendToAttribute : Attribute
     {
-        private readonly string[] destinations;
+        private readonly string[] _destinations;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SendToAttribute"/> class.
@@ -21,7 +21,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
         /// <param name="destinations">the destinations for the message created</param>
         public SendToAttribute(params string[] destinations)
         {
-            this.destinations = destinations;
+            this._destinations = destinations;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
         /// </summary>
         public virtual string[] Destinations
         {
-            get { return destinations; }
+            get { return _destinations; }
         }
     }
 }

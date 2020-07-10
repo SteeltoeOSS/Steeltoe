@@ -8,15 +8,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 {
     public class HystrixUtilization
     {
-        private readonly Dictionary<IHystrixCommandKey, HystrixCommandUtilization> commandUtilizationMap;
-        private readonly Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> threadPoolUtilizationMap;
-
         public HystrixUtilization(
             Dictionary<IHystrixCommandKey, HystrixCommandUtilization> commandUtilizationMap,
             Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> threadPoolUtilizationMap)
         {
-            this.commandUtilizationMap = commandUtilizationMap;
-            this.threadPoolUtilizationMap = threadPoolUtilizationMap;
+            this.CommandUtilizationMap = commandUtilizationMap;
+            this.ThreadPoolUtilizationMap = threadPoolUtilizationMap;
         }
 
         public static HystrixUtilization From(
@@ -26,14 +23,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             return new HystrixUtilization(commandUtilizationMap, threadPoolUtilizationMap);
         }
 
-        public Dictionary<IHystrixCommandKey, HystrixCommandUtilization> CommandUtilizationMap
-        {
-            get { return commandUtilizationMap; }
-        }
+        public Dictionary<IHystrixCommandKey, HystrixCommandUtilization> CommandUtilizationMap { get; }
 
-        public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> ThreadPoolUtilizationMap
-        {
-            get { return threadPoolUtilizationMap; }
-        }
+        public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> ThreadPoolUtilizationMap { get; }
     }
 }

@@ -8,29 +8,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
     internal class HystrixCircuitBreakerImpl : ICircuitBreaker
     {
-        private readonly IHystrixCommandOptions options;
-        private readonly HystrixCommandMetrics metrics;
+        private readonly IHystrixCommandOptions _options;
+        private readonly HystrixCommandMetrics _metrics;
 
         /* track whether this circuit is open/closed at any given point in time (default to false==closed) */
-        private AtomicBoolean circuitOpen = new AtomicBoolean(false);
+        private AtomicBoolean _circuitOpen = new AtomicBoolean(false);
 
         /* when the circuit was marked open or was last allowed to try a 'singleTest' */
-        private AtomicLong circuitOpenedOrLastTestedTime = new AtomicLong();
+        private AtomicLong _circuitOpenedOrLastTestedTime = new AtomicLong();
 
         protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
-            this.options = options;
-            this.metrics = metrics;
+            this._options = options;
+            this._metrics = metrics;
         }
 
         public virtual void MarkSuccess()
         {
-            if (circuitOpen.Value && circuitOpen.CompareAndSet(true, false))
+            if (_circuitOpen.Value && _circuitOpen.CompareAndSet(true, false))
             {
                 // win the thread race to reset metrics
                 // Unsubscribe from the current stream to reset the health counts stream.  This only affects the health counts view,
                 // and all other metric consumers are unaffected by the reset
-                metrics.ResetStream();
+                _metrics.ResetStream();
             }
         }
 
@@ -38,13 +38,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
         {
             get
             {
-                if (options.CircuitBreakerForceOpen)
+                if (_options.CircuitBreakerForceOpen)
                 {
                     // properties have asked us to force the circuit open so we will allow NO requests
                     return false;
                 }
 
-                if (options.CircuitBreakerForceClosed)
+                if (_options.CircuitBreakerForceClosed)
                 {
                     // we still want to allow isOpen() to perform it's calculations so we simulate normal behavior
                     var isOpen = IsOpen;
@@ -59,16 +59,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public virtual bool AllowSingleTest()
         {
-            long timeCircuitOpenedOrWasLastTested = circuitOpenedOrLastTestedTime.Value;
+            long timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
 
             // 1) if the circuit is open
             // 2) and it's been longer than 'sleepWindow' since we opened the circuit
-            if (circuitOpen.Value && Time.CurrentTimeMillis > timeCircuitOpenedOrWasLastTested + options.CircuitBreakerSleepWindowInMilliseconds)
+            if (_circuitOpen.Value && Time.CurrentTimeMillis > timeCircuitOpenedOrWasLastTested + _options.CircuitBreakerSleepWindowInMilliseconds)
             {
                 // We push the 'circuitOpenedTime' ahead by 'sleepWindow' since we have allowed one request to try.
                 // If it succeeds the circuit will be closed, otherwise another singleTest will be allowed at the end of the 'sleepWindow'.
 #pragma warning disable S1066 // Collapsible "if" statements should be merged
-                if (circuitOpenedOrLastTestedTime.CompareAndSet(timeCircuitOpenedOrWasLastTested, Time.CurrentTimeMillis))
+                if (_circuitOpenedOrLastTestedTime.CompareAndSet(timeCircuitOpenedOrWasLastTested, Time.CurrentTimeMillis))
 #pragma warning restore S1066 // Collapsible "if" statements should be merged
                 {
                     // if this returns true that means we set the time so we'll return true to allow the singleTest
@@ -84,33 +84,33 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
         {
             get
             {
-                if (circuitOpen.Value)
+                if (_circuitOpen.Value)
                 {
                     // if we're open we immediately return true and don't bother attempting to 'close' ourself as that is left to allowSingleTest and a subsequent successful test to close
                     return true;
                 }
 
                 // we're closed, so let's see if errors have made us so we should trip the circuit open
-                HealthCounts health = metrics.Healthcounts;
+                HealthCounts health = _metrics.Healthcounts;
 
                 // check if we are past the statisticalWindowVolumeThreshold
-                if (health.TotalRequests < options.CircuitBreakerRequestVolumeThreshold)
+                if (health.TotalRequests < _options.CircuitBreakerRequestVolumeThreshold)
                 {
                     // we are not past the minimum volume threshold for the statisticalWindow so we'll return false immediately and not calculate anything
                     return false;
                 }
 
-                if (health.ErrorPercentage < options.CircuitBreakerErrorThresholdPercentage)
+                if (health.ErrorPercentage < _options.CircuitBreakerErrorThresholdPercentage)
                 {
                     return false;
                 }
                 else
                 {
                     // our failure rate is too high, trip the circuit
-                    if (circuitOpen.CompareAndSet(false, true))
+                    if (_circuitOpen.CompareAndSet(false, true))
                     {
                         // if the previousValue was false then we want to set the currentTime
-                        circuitOpenedOrLastTestedTime.Value = Time.CurrentTimeMillis;
+                        _circuitOpenedOrLastTestedTime.Value = Time.CurrentTimeMillis;
                         return true;
                     }
                     else

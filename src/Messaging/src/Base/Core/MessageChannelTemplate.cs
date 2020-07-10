@@ -393,15 +393,15 @@ namespace Steeltoe.Messaging.Core
 
         private class TemporaryReplyChannel : IPollableChannel
         {
-            private readonly CountdownEvent replyLatch = new CountdownEvent(1);
+            private readonly CountdownEvent _replyLatch = new CountdownEvent(1);
 
-            private readonly bool throwExceptionOnLateReply;
+            private readonly bool _throwExceptionOnLateReply;
 
-            private volatile IMessage replyMessage;
+            private volatile IMessage _replyMessage;
 
             public TemporaryReplyChannel(bool throwExceptionOnLateReply)
             {
-                this.throwExceptionOnLateReply = throwExceptionOnLateReply;
+                this._throwExceptionOnLateReply = throwExceptionOnLateReply;
             }
 
             public bool SendFailed { get; set; }
@@ -423,12 +423,12 @@ namespace Steeltoe.Messaging.Core
                 {
                     if (timeout < 0)
                     {
-                        replyLatch.Wait();
+                        _replyLatch.Wait();
                         HasReceived = true;
                     }
                     else
                     {
-                        if (replyLatch.Wait(timeout))
+                        if (_replyLatch.Wait(timeout))
                         {
                             HasReceived = true;
                         }
@@ -443,14 +443,14 @@ namespace Steeltoe.Messaging.Core
                     // Log
                 }
 
-                return !TimedOut ? replyMessage : null;
+                return !TimedOut ? _replyMessage : null;
             }
 
             public ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
             {
                 try
                 {
-                    replyLatch.Wait(cancellationToken);
+                    _replyLatch.Wait(cancellationToken);
                     if (cancellationToken.IsCancellationRequested)
                     {
                         TimedOut = true;
@@ -465,7 +465,7 @@ namespace Steeltoe.Messaging.Core
                     TimedOut = true;
                 }
 
-                return TimedOut ? new ValueTask<IMessage>((IMessage)null) : new ValueTask<IMessage>(replyMessage);
+                return TimedOut ? new ValueTask<IMessage>((IMessage)null) : new ValueTask<IMessage>(_replyMessage);
             }
 
             public bool Send(IMessage message)
@@ -493,12 +493,12 @@ namespace Steeltoe.Messaging.Core
                 }
                 else
                 {
-                    replyMessage = message;
+                    _replyMessage = message;
                 }
 
-                replyLatch.Signal();
+                _replyLatch.Signal();
 
-                if (errorDescription != null && throwExceptionOnLateReply)
+                if (errorDescription != null && _throwExceptionOnLateReply)
                 {
                     throw new MessageDeliveryException(message, errorDescription);
                 }

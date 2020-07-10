@@ -19,13 +19,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         protected readonly IObservable<Bucket> bucketedStream;
         protected readonly AtomicReference<IDisposable> subscription = new AtomicReference<IDisposable>(null);
 
-        private readonly Func<IObservable<Event>, IObservable<Bucket>> reduceBucketToSummary;
+        private readonly Func<IObservable<Event>, IObservable<Bucket>> _reduceBucketToSummary;
 
         protected BucketedCounterStream(IHystrixEventStream<Event> inputEventStream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket)
         {
             this.numBuckets = numBuckets;
             this.bucketSizeInMs = bucketSizeInMs;
-            this.reduceBucketToSummary = (eventsObservable) =>
+            this._reduceBucketToSummary = (eventsObservable) =>
             {
                 var result = eventsObservable.Aggregate(EmptyBucketSummary, (arg1, arg2) => appendRawEventToBucket(arg1, arg2)).Select(n => n);
                 return result;
@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
                     .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default) // bucket it by the counter window so we can emit to the next operator in time chunks, not on every OnNext
                     .SelectMany((b) =>
                     {
-                        return reduceBucketToSummary(b);
+                        return _reduceBucketToSummary(b);
                     })
                     .StartWith(emptyEventCountsToStart);           // start it with empty arrays to make consumer logic as generic as possible (windows are always full)
             });

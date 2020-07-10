@@ -63,13 +63,7 @@ namespace Steeltoe.Common.Util
         }
 #pragma warning restore S3963 // "static" fields should be initialized inline
 
-        private readonly string type;
-
-        private readonly string subtype;
-
-        private readonly IDictionary<string, string> parameters;
-
-        private volatile string tostringValue;
+        private volatile string _tostringValue;
 
         public MimeType(string type)
          : this(type, WILDCARD_TYPE)
@@ -110,8 +104,8 @@ namespace Steeltoe.Common.Util
 
             CheckToken(type);
             CheckToken(subtype);
-            this.type = type.ToLowerInvariant();
-            this.subtype = subtype.ToLowerInvariant();
+            this.Type = type.ToLowerInvariant();
+            this.Subtype = subtype.ToLowerInvariant();
             if (parameters.Count > 0)
             {
                 Dictionary<string, string> map = new Dictionary<string, string>();
@@ -121,11 +115,11 @@ namespace Steeltoe.Common.Util
                     map.Add(p.Key, p.Value);
                 }
 
-                this.parameters = map;  // Read only
+                this.Parameters = map;  // Read only
             }
             else
             {
-                this.parameters = new Dictionary<string, string>();
+                this.Parameters = new Dictionary<string, string>();
             }
         }
 
@@ -158,35 +152,17 @@ namespace Steeltoe.Common.Util
             }
         }
 
-        protected string Unquote(string s)
-        {
-            return IsQuotedstring(s) ? s.Substring(1, s.Length - 1 - 1) : s;
-        }
+        protected string Unquote(string s) => IsQuotedstring(s) ? s.Substring(1, s.Length - 1 - 1) : s;
 
-        public bool IsWildcardType
-        {
-            get { return WILDCARD_TYPE.Equals(Type); }
-        }
+        public bool IsWildcardType => WILDCARD_TYPE.Equals(Type);
 
-        public bool IsWildcardSubtype
-        {
-            get { return WILDCARD_TYPE.Equals(Subtype) || Subtype.StartsWith("*+"); }
-        }
+        public bool IsWildcardSubtype => WILDCARD_TYPE.Equals(Subtype) || Subtype.StartsWith("*+");
 
-        public bool IsConcrete
-        {
-            get { return !IsWildcardType && !IsWildcardSubtype; }
-        }
+        public bool IsConcrete => !IsWildcardType && !IsWildcardSubtype;
 
-        public string Type
-        {
-            get { return type; }
-        }
+        public string Type { get; }
 
-        public string Subtype
-        {
-            get { return subtype; }
-        }
+        public string Subtype { get; }
 
         public Encoding Encoding
         {
@@ -199,7 +175,7 @@ namespace Steeltoe.Common.Util
 
         public string GetParameter(string name)
         {
-            if (parameters.TryGetValue(name, out string value))
+            if (Parameters.TryGetValue(name, out string value))
             {
                 return value;
             }
@@ -207,10 +183,7 @@ namespace Steeltoe.Common.Util
             return null;
         }
 
-        public IDictionary<string, string> Parameters
-        {
-            get { return parameters; }
-        }
+        public IDictionary<string, string> Parameters { get; }
 
         public bool Includes(MimeType other)
         {
@@ -312,7 +285,7 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            return type.Equals(other.type, StringComparison.InvariantCultureIgnoreCase) && subtype.Equals(other.subtype, StringComparison.InvariantCultureIgnoreCase);
+            return Type.Equals(other.Type, StringComparison.InvariantCultureIgnoreCase) && Subtype.Equals(other.Subtype, StringComparison.InvariantCultureIgnoreCase);
         }
 
         public bool IsPresentIn<T>(ICollection<T> mimeTypes)
@@ -342,28 +315,28 @@ namespace Steeltoe.Common.Util
             }
 
             MimeType otherType = (MimeType)other;
-            return type.Equals(otherType.type, StringComparison.InvariantCultureIgnoreCase) &&
-                    subtype.Equals(otherType.subtype, StringComparison.InvariantCultureIgnoreCase) &&
+            return Type.Equals(otherType.Type, StringComparison.InvariantCultureIgnoreCase) &&
+                    Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) &&
                     ParametersAreEqual(otherType);
         }
 
         public override int GetHashCode()
         {
-            int result = type.GetHashCode();
-            result = (31 * result) + subtype.GetHashCode();
-            result = (31 * result) + parameters.GetHashCode();
+            int result = Type.GetHashCode();
+            result = (31 * result) + Subtype.GetHashCode();
+            result = (31 * result) + Parameters.GetHashCode();
             return result;
         }
 
         public override string ToString()
         {
-            string value = tostringValue;
+            string value = _tostringValue;
             if (value == null)
             {
                 StringBuilder builder = new StringBuilder();
                 AppendTo(builder);
                 value = builder.ToString();
-                tostringValue = value;
+                _tostringValue = value;
             }
 
             return value;
@@ -454,10 +427,10 @@ namespace Steeltoe.Common.Util
 
         internal void AppendTo(StringBuilder builder)
         {
-            builder.Append(type);
+            builder.Append(Type);
             builder.Append('/');
-            builder.Append(subtype);
-            AppendTo(parameters, builder);
+            builder.Append(Subtype);
+            AppendTo(Parameters, builder);
         }
 
         private static IDictionary<string, string> AddCharsetParameter(Encoding charset, IDictionary<string, string> parameters)
@@ -483,15 +456,15 @@ namespace Steeltoe.Common.Util
 
         private bool ParametersAreEqual(MimeType other)
         {
-            if (parameters.Count != other.parameters.Count)
+            if (Parameters.Count != other.Parameters.Count)
             {
                 return false;
             }
 
-            foreach (var entry in parameters)
+            foreach (var entry in Parameters)
             {
                 string key = entry.Key;
-                if (!other.parameters.ContainsKey(key))
+                if (!other.Parameters.ContainsKey(key))
                 {
                     return false;
                 }
@@ -503,7 +476,7 @@ namespace Steeltoe.Common.Util
                         return false;
                     }
                 }
-                else if (!ObjectUtils.NullSafeEquals(entry.Value, other.parameters[key]))
+                else if (!ObjectUtils.NullSafeEquals(entry.Value, other.Parameters[key]))
                 {
                     return false;
                 }

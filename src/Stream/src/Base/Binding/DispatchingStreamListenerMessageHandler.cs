@@ -102,9 +102,9 @@ namespace Steeltoe.Stream.Binding
 
         internal class ConditionalStreamListenerMessageHandlerWrapper
         {
-            private readonly IExpression condition;
+            private readonly IExpression _condition;
 
-            private readonly StreamListenerMessageHandler streamListenerMessageHandler;
+            private readonly StreamListenerMessageHandler _streamListenerMessageHandler;
 
             internal ConditionalStreamListenerMessageHandlerWrapper(IExpression condition, StreamListenerMessageHandler streamListenerMessageHandler)
             {
@@ -118,23 +118,23 @@ namespace Steeltoe.Stream.Binding
                     throw new ArgumentException("cannot specify a condition and a return value at the same time");
                 }
 
-                this.condition = condition;
-                this.streamListenerMessageHandler = streamListenerMessageHandler;
+                this._condition = condition;
+                this._streamListenerMessageHandler = streamListenerMessageHandler;
             }
 
             public IExpression Condition
             {
-                get { return condition; }
+                get { return _condition; }
             }
 
             public bool IsVoid
             {
-                get { return streamListenerMessageHandler.IsVoid; }
+                get { return _streamListenerMessageHandler.IsVoid; }
             }
 
             public StreamListenerMessageHandler StreamListenerMessageHandler
             {
-                get { return streamListenerMessageHandler; }
+                get { return _streamListenerMessageHandler; }
             }
         }
     }

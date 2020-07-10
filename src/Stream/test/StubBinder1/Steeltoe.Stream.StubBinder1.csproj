@@ -4,8 +4,6 @@
     <Description>Steeltoe Stream StubBinder1</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream.StubBinder1</RootNamespace>
-    <AssemblyName>Steeltoe.Stream.StubBinder1</AssemblyName>
-    <PackageId>Steeltoe.Stream.StubBinder1</PackageId>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>

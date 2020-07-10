@@ -5,7 +5,6 @@
 using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
 using System;
-using System.Net;
 
 namespace Steeltoe.Connector.SqlServer
 {
@@ -56,16 +55,8 @@ namespace Steeltoe.Connector.SqlServer
                     }
                 }
 
-                if (configuration.UrlEncodedCredentials)
-                {
-                    configuration.Username = WebUtility.UrlDecode(si.UserName);
-                    configuration.Password = WebUtility.UrlDecode(si.Password);
-                }
-                else
-                {
-                    configuration.Username = si.UserName;
-                    configuration.Password = si.Password;
-                }
+                configuration.Username = si.UserName;
+                configuration.Password = si.Password;
             }
         }
     }

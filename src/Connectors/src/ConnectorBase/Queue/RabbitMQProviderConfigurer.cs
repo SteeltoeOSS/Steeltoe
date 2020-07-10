@@ -34,17 +34,8 @@ namespace Steeltoe.Connector.RabbitMQ
                     configuration.Port = si.Port;
                 }
 
-                if (configuration.UrlEncodedCredentials)
-                {
-                    configuration.Username = WebUtility.UrlDecode(si.UserName);
-                    configuration.Password = WebUtility.UrlDecode(si.Password);
-                }
-                else
-                {
-                    configuration.Username = si.UserName;
-                    configuration.Password = si.Password;
-                }
-
+                configuration.Username = si.UserName;
+                configuration.Password = si.Password;
                 configuration.Server = si.Host;
                 configuration.VirtualHost = si.Path;
             }

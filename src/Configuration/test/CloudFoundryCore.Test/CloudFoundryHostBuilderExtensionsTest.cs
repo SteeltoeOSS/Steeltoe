@@ -14,14 +14,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test
     public class CloudFoundryHostBuilderExtensionsTest
     {
         [Fact]
-        public void WebHostAddCloudFoundry_Adds()
+        public void WebHostAddCloudConfigurationFoundry_Adds()
         {
             // arrange
             var hostbuilder = new WebHostBuilder();
             hostbuilder.Configure(builder => { });
 
             // act
-            hostbuilder.AddCloudFoundry();
+            hostbuilder.AddCloudFoundryConfiguration();
             var host = hostbuilder.Build();
 
             // assert
@@ -32,18 +32,34 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test
         }
 
         [Fact]
-        public void HostAddCloudFoundry_Adds()
+        public void HostAddCloudFoundryConfiguration_Adds()
         {
             // arrange
             var hostbuilder = new HostBuilder();
 
             // act
-            hostbuilder.AddCloudFoundry();
+            hostbuilder.AddCloudFoundryConfiguration();
             var host = hostbuilder.Build();
 
             // assert
             var instanceInfo = host.Services.GetApplicationInstanceInfo();
             Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
+            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        }
+
+        [Fact]
+        public void WebHostAddCloudFoundryConfiguration_Adds()
+        {
+            // arrange
+            var hostbuilder = new WebHostBuilder();
+            hostbuilder.Configure(builder => { });
+
+            // act
+            hostbuilder.AddCloudFoundryConfiguration();
+            var host = hostbuilder.Build();
+
+            // assert
             var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
             Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
         }

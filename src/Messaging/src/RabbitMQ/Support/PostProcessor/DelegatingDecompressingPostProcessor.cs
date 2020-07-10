@@ -14,31 +14,31 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
 {
     public class DelegatingDecompressingPostProcessor : IMessagePostProcessor, IOrdered
     {
-        private readonly Dictionary<string, IMessagePostProcessor> decompressors = new Dictionary<string, IMessagePostProcessor>();
+        private readonly Dictionary<string, IMessagePostProcessor> _decompressors = new Dictionary<string, IMessagePostProcessor>();
 
         public DelegatingDecompressingPostProcessor()
         {
-            this.decompressors.Add("gzip", new GUnzipPostProcessor());
-            this.decompressors.Add("zip", new UnzipPostProcessor());
-            this.decompressors.Add("deflate", new InflaterPostProcessor());
+            this._decompressors.Add("gzip", new GUnzipPostProcessor());
+            this._decompressors.Add("zip", new UnzipPostProcessor());
+            this._decompressors.Add("deflate", new InflaterPostProcessor());
         }
 
         public int Order { get; set; }
 
         public void AddDecompressor(string contentEncoding, IMessagePostProcessor decompressor)
         {
-            this.decompressors[contentEncoding] = decompressor;
+            this._decompressors[contentEncoding] = decompressor;
         }
 
         public IMessagePostProcessor RemoveDecompressor(string contentEncoding)
         {
-            decompressors.Remove(contentEncoding, out var result);
+            _decompressors.Remove(contentEncoding, out var result);
             return result;
         }
 
         public void SetDecompressors(Dictionary<string, IMessagePostProcessor> decompressors)
         {
-            this.decompressors.Clear();
+            this._decompressors.Clear();
             foreach (var d in decompressors)
             {
                 decompressors.Add(d.Key, d.Value);
@@ -65,7 +65,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
                     encoding = encoding.Substring(0, colonAt);
                 }
 
-                decompressors.TryGetValue(encoding, out var decompressor);
+                _decompressors.TryGetValue(encoding, out var decompressor);
                 if (decompressor != null)
                 {
                     return decompressor.PostProcessMessage(message);

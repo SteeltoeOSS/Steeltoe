@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         [ThreadStatic]
         private static ThreadTaskQueue workQueue;
 
-        private ThreadTaskQueue[] workQueues;
+        private ThreadTaskQueue[] _workQueues;
 
         public HystrixSyncTaskScheduler(IHystrixThreadPoolOptions options)
             : base(options)
@@ -51,14 +51,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             for (int i = 0; i < corePoolSize; i++)
             {
-                if (!workQueues[i].ThreadAssigned)
+                if (!_workQueues[i].ThreadAssigned)
                 {
-                    lock (workQueues[i])
+                    lock (_workQueues[i])
                     {
-                        if (!workQueues[i].ThreadAssigned)
+                        if (!_workQueues[i].ThreadAssigned)
                         {
-                            workQueues[i].ThreadAssigned = true;
-                            StartThreadPoolWorker(workQueues[i]);
+                            _workQueues[i].ThreadAssigned = true;
+                            StartThreadPoolWorker(_workQueues[i]);
                             Interlocked.Increment(ref runningThreads);
                             break;
                         }
@@ -158,7 +158,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected virtual bool TryAddToAny(Task task)
         {
-            foreach (ThreadTaskQueue queue in workQueues)
+            foreach (ThreadTaskQueue queue in _workQueues)
             {
                 if (queue.ThreadAssigned && queue.Task == null)
                 {
@@ -179,10 +179,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected void SetupWorkQueues(int size)
         {
-            workQueues = new ThreadTaskQueue[size];
+            _workQueues = new ThreadTaskQueue[size];
             for (int i = 0; i < size; i++)
             {
-                workQueues[i] = new ThreadTaskQueue();
+                _workQueues[i] = new ThreadTaskQueue();
             }
         }
 
@@ -192,9 +192,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             get
             {
                 int size = 0;
-                for (int i = 0; i < workQueues.Length; i++)
+                for (int i = 0; i < _workQueues.Length; i++)
                 {
-                    ThreadTaskQueue queue = workQueues[i];
+                    ThreadTaskQueue queue = _workQueues[i];
                     if (queue.ThreadAssigned && queue.Task != null)
                     {
                         size++;
@@ -207,7 +207,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         public override bool IsQueueSpaceAvailable
         {
-            get { return CurrentQueueSize < workQueues.Length; }
+            get { return CurrentQueueSize < _workQueues.Length;  }
         }
 
         #endregion IHystrixTaskScheduler

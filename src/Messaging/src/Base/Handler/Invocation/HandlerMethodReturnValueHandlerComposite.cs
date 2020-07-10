@@ -10,21 +10,21 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
     {
-        private readonly List<IHandlerMethodReturnValueHandler> returnValueHandlers = new List<IHandlerMethodReturnValueHandler>();
+        private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new List<IHandlerMethodReturnValueHandler>();
 
         public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
         {
-            get { return new List<IHandlerMethodReturnValueHandler>(returnValueHandlers); }
+            get { return new List<IHandlerMethodReturnValueHandler>(_returnValueHandlers); }
         }
 
         public void Clear()
         {
-            returnValueHandlers.Clear();
+            _returnValueHandlers.Clear();
         }
 
         public HandlerMethodReturnValueHandlerComposite AddHandler(IHandlerMethodReturnValueHandler returnValueHandler)
         {
-            returnValueHandlers.Add(returnValueHandler);
+            _returnValueHandlers.Add(returnValueHandler);
             return this;
         }
 
@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
         {
             if (handlers != null)
             {
-                returnValueHandlers.AddRange(handlers);
+                _returnValueHandlers.AddRange(handlers);
             }
 
             return this;
@@ -74,9 +74,9 @@ namespace Steeltoe.Messaging.Handler.Invocation
         // }
         private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
         {
-            for (var i = 0; i < returnValueHandlers.Count; i++)
+            for (var i = 0; i < _returnValueHandlers.Count; i++)
             {
-                var handler = returnValueHandlers[i];
+                var handler = _returnValueHandlers[i];
                 if (handler.SupportsReturnType(returnType))
                 {
                     return handler;

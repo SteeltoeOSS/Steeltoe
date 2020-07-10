@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
     {
         private Watcher<V1Secret> SecretWatcher { get; set; }
 
-        private bool disposed = false;
+        private bool _disposed = false;
 
         internal KubernetesSecretProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
             : base(kubernetes, settings, cancellationToken)
@@ -59,7 +59,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
@@ -69,7 +69,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     K8sClient = null;
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

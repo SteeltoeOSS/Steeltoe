@@ -218,10 +218,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerEncodedVCAP_Crunchy);
 
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["postgres:client:urlEncodedCredentials"] = "true"
-            };
+            var appsettings = new Dictionary<string, string>();
 
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);

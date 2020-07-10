@@ -12,24 +12,24 @@ namespace Steeltoe.Management.Tracing
 {
     internal class TracingService : IHostedService
     {
-        private readonly IDiagnosticsManager observerManager;
-        private readonly ILogger<TracingService> logger;
+        private readonly IDiagnosticsManager _observerManager;
+        private readonly ILogger<TracingService> _logger;
 
         public TracingService(IDiagnosticsManager observerManager, ILogger<TracingService> logger = null)
         {
-            this.observerManager = observerManager;
-            this.logger = logger;
+            this._observerManager = observerManager;
+            this._logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            observerManager.Start();
+            _observerManager.Start();
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            observerManager.Stop();
+            _observerManager.Stop();
             return Task.CompletedTask;
         }
     }

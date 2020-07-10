@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         private readonly object _batchlock = new object();
         private CancellationTokenSource _cancellationTokenSource;
         private Task _scheduledTask;
-        private int count;
+        private int _count;
 
         public BatchingRabbitTemplate(
             IOptionsMonitor<RabbitOptions> optionsMonitor,
@@ -58,7 +58,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         {
             lock (_batchlock)
             {
-                count++;
+                _count++;
                 if (correlationData != null)
                 {
                     _logger?.LogDebug("Cannot use batching with correlation data");
