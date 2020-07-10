@@ -1,24 +1,14 @@
-// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
+using k8s;
+using RichardSzalay.MockHttp;
+using Steeltoe.Discovery.KubernetesBase.Discovery;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using k8s;
-using RichardSzalay.MockHttp;
-using Steeltoe.Discovery.KubernetesBase.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
@@ -32,8 +22,8 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             using var client = new Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler.ToHttpClient());
             const string expectedDesc = "Steeltoe provided Kubernetes native service discovery client";
-            KubernetesDiscoveryOptions k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
-            
+            var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
+
             // act
             var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions),
@@ -49,53 +39,59 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/endpoints?fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK, 
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent("{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]},{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test2\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip2\",\"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
-            
+
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test2/services")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test2\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
-            
+
             using var client = new Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-                );
+                httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+            var options = new KubernetesDiscoveryOptions()
             {
                 AllNamespaces = true
             };
-            
+
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options), 
+                new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
-            var instances = genericInstances.Select(s => (KubernetesServiceInstance) s).ToList();
-            
+            var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
+
             // assert
             Assert.NotNull(instances);
             Assert.Equal(actual: instances.Count, expected: 2);
-            
-            Assert.Equal(actual: instances.Count(s => s.Host.Equals("ip1") && !s.IsSecure),
+
+            Assert.Equal(
+                actual: instances.Count(s => s.Host.Equals("ip1") && !s.IsSecure),
                 expected: 1);
-            Assert.Equal(actual: instances.Count(s => s.Host.Equals("ip2") && !s.IsSecure),
+            Assert.Equal(
+                actual: instances.Count(s => s.Host.Equals("ip2") && !s.IsSecure),
                 expected: 1);
-            Assert.Equal(actual: instances.Count(s => s.InstanceId.Equals("uid1")),
+            Assert.Equal(
+                actual: instances.Count(s => s.InstanceId.Equals("uid1")),
                 expected: 1);
-            Assert.Equal(actual: instances.Count(s => s.InstanceId.Equals("uid2")),
+            Assert.Equal(
+                actual: instances.Count(s => s.InstanceId.Equals("uid2")),
                 expected: 1);
         }
 
@@ -104,37 +100,38 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK, 
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent("{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
-            
+
             using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-            );
-            
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+                httpClient: mockHttpMessageHandler.ToHttpClient());
+
+            var options = new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
             };
-            
+
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
-            var instances = genericInstances.Select(s => (KubernetesServiceInstance) s).ToList();
-            
+            var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
+
             // assert
             Assert.NotNull(instances);
             Assert.Single(instances);
@@ -147,43 +144,44 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK, 
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent("{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}}],\"ports\":[{\"name\":\"http\",\"port\":80,\"protocol\":\"TCP\"},{\"name\":\"mgmt\",\"port\":9000,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
-            
+
             using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-            );
-            
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+                httpClient: mockHttpMessageHandler.ToHttpClient());
+
+            var options = new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
             };
-            
+
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var genericInstances = discoveryClient.GetInstances("endpoint");
-            var instances = genericInstances.Select(s => (KubernetesServiceInstance) s).ToList();
-            
+            var instances = genericInstances.Select(s => (KubernetesServiceInstance)s).ToList();
+
             // assert
             Assert.NotNull(instances);
             Assert.Single(instances);
             Assert.Single(instances.Where(i => i.Host.Equals("ip1") && !i.IsSecure));
             Assert.Single(instances.Where(i => i.InstanceId.Equals("uid1")));
-            Assert.Single(instances.Where(i => 80 == i.Port));
+            Assert.Single(instances.Where(i => i.Port == 80));
         }
 
         [Fact]
@@ -191,36 +189,37 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.Expect(HttpMethod.Get, "/api/v1/namespaces/test/endpoints")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK, 
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent("{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Endpoints\",\"metadata\":{\"name\":\"endpoint\",\"namespace\":\"test\"},\"subsets\":[{\"addresses\":[{\"ip\":\"ip1\", \"targetRef\": {\"uid\":\"uid1\"}},{\"ip\":\"ip2\", \"targetRef\": {\"uid\":\"uid2\"}}],\"ports\":[{\"name\":\"https\",\"port\":443,\"protocol\":\"TCP\"}]}]}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
                 .WithQueryString("fieldSelector=metadata.name%3Dendpoint")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test\",\"uid\":\"uids1\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
-            
+
             using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-            );
-            
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+                httpClient: mockHttpMessageHandler.ToHttpClient());
+
+            var options = new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
             };
-            
+
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var instances = discoveryClient.GetInstances("endpoint");
-            
+
             // assert
             Assert.NotNull(instances);
             Assert.Equal(expected: 2, actual: instances.Count);
@@ -233,9 +232,10 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":" +
                         "{\"labels\":{\"label1\":\"value1\"},\"name\":\"endpoint1\",\"namespace\":\"test\",\"uid\":" +
@@ -247,19 +247,18 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
 
             using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-                );
+                httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+            var options = new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
             };
-            
-            KubernetesDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
+
+            var discoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var services = discoveryClient.Services;
 
@@ -276,10 +275,11 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            
+
             mockHttpMessageHandler.When(HttpMethod.Get, "/api/v1/namespaces/test/services")
                 .WithQueryString("labelSelector=label%3Dvalue")
-                .Respond(HttpStatusCode.OK,
+                .Respond(
+                    HttpStatusCode.OK,
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":" +
                         "{\"labels\":{\"label1\":\"value1\"},\"name\":\"endpoint1\",\"namespace\":\"test\",\"uid\":" +
@@ -290,23 +290,22 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
 
             using var client = new Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
-                httpClient: mockHttpMessageHandler.ToHttpClient()
-                );
+                httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            KubernetesDiscoveryOptions options = new KubernetesDiscoveryOptions()
+            var options = new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
             };
-            
-            KubernetesDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
+
+            var discoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(options),
                 client,
                 options);
-            
+
             // act
             var services = discoveryClient.GetServices(new Dictionary<string, string>
             {
-                {"label", "value"}
+                { "label", "value" }
             });
 
             // assert

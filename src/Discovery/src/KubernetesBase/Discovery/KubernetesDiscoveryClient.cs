@@ -1,24 +1,14 @@
-// Copyright 2017 the original author or authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
 
+using k8s;
+using k8s.Models;
+using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using k8s;
-using k8s.Models;
-using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Discovery.KubernetesBase.Discovery
 {
@@ -28,43 +18,43 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
         private readonly KubernetesDiscoveryOptions _discoveryOptions;
         private readonly DefaultIsServicePortSecureResolver _isServicePortSecureResolver;
 
-
         public string Description => "Steeltoe provided Kubernetes native service discovery client";
 
-        public IList<string> Services => this.GetServices(null);
+        public IList<string> Services => GetServices(null);
 
-        public IKubernetes kubernetesClient { get; set; }
-        
+        public IKubernetes KubernetesClient { get; set; }
+
         public KubernetesDiscoveryClient(
             DefaultIsServicePortSecureResolver isServicePortSecureResolver,
-            IKubernetes kubernetesClient, 
+            IKubernetes kubernetesClient,
             KubernetesDiscoveryOptions discoveryOptions)
         {
             _isServicePortSecureResolver = isServicePortSecureResolver;
-            this.kubernetesClient = kubernetesClient;
+            KubernetesClient = kubernetesClient;
             _discoveryOptions = discoveryOptions;
         }
 
         public IList<string> GetServices(IDictionary<string, string> labels)
         {
-            var labelSelectorValue = 
+            var labelSelectorValue =
                 labels != null ?
                     string.Join(',', labels.Keys.Select(k => k + "=" + labels[k])) :
                     null;
             if (_discoveryOptions.AllNamespaces)
             {
-                return this.kubernetesClient.ListServiceForAllNamespaces(
+                return KubernetesClient.ListServiceForAllNamespaces(
                         labelSelector: labelSelectorValue).Items
                     .Select(service => service.Metadata.Name).ToList();
             }
             else
             {
-                return this.kubernetesClient.ListNamespacedService(namespaceParameter: _discoveryOptions.Namespace,
-                        labelSelector: labelSelectorValue).Items
+                return KubernetesClient.ListNamespacedService(
+                    namespaceParameter: _discoveryOptions.Namespace,
+                    labelSelector: labelSelectorValue).Items
                     .Select(service => service.Metadata.Name).ToList();
             }
         }
-        
+
         public IList<IServiceInstance> GetInstances(string serviceId)
         {
             if (serviceId == null)
@@ -72,10 +62,10 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
                 throw new ArgumentNullException(nameof(serviceId));
             }
 
-
-            var endpoints = this._discoveryOptions.AllNamespaces
-                ? this.kubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
-                : this.kubernetesClient.ListNamespacedEndpoints(_discoveryOptions.Namespace ?? DefaultNamespace, 
+            var endpoints = _discoveryOptions.AllNamespaces
+                ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
+                : KubernetesClient.ListNamespacedEndpoints(
+                    _discoveryOptions.Namespace ?? DefaultNamespace,
                     fieldSelector: $"metadata.name={serviceId}").Items;
 
             var subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
@@ -85,11 +75,23 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
             {
                 foreach (var es in subsetsNs)
                 {
-                    serviceInstances.AddRange(this.GetNamespacedServiceInstances(es, serviceId));
+                    serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
                 }
             }
 
             return serviceInstances;
+        }
+
+        public IServiceInstance GetLocalServiceInstance()
+        {
+            var instances = GetInstances(_discoveryOptions.ServiceName);
+
+            return null;
+        }
+
+        public Task ShutdownAsync()
+        {
+            return Task.CompletedTask;
         }
 
         private IList<IServiceInstance> GetNamespacedServiceInstances(EndpointSubsetNs es, string serviceId)
@@ -99,10 +101,11 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
             var instances = new List<IServiceInstance>();
             if (subsets.Any())
             {
-                var service = this.kubernetesClient.ListNamespacedService(namespaceParameter: k8SNamespace,
+                var service = KubernetesClient.ListNamespacedService(
+                    namespaceParameter: k8SNamespace,
                     fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
-                var serviceMetadata = this.GetServiceMetadata(service);
-                var metadataProps = this._discoveryOptions.Metadata;
+                var serviceMetadata = GetServiceMetadata(service);
+                var metadataProps = _discoveryOptions.Metadata;
 
                 foreach (var subset in subsets)
                 {
@@ -115,7 +118,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
                             .ToDictionary(p => p.Name, p => p.Port.ToString());
 
                         var portMetadata = GetDictionaryWithPrefixedKeys(ports, metadataProps.PortsPrefix);
-                        
+
                         foreach (var portMetadataRecord in portMetadata)
                         {
                             endpointMetadata.Add(portMetadataRecord.Key, portMetadataRecord.Value);
@@ -132,24 +135,25 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
                         }
 
                         var endpointPort = FindEndpointPort(subset);
-                        instances.Add(new KubernetesServiceInstance(instanceId, serviceId,
-                            endpointAddress, endpointPort, endpointMetadata,
-                            this._isServicePortSecureResolver.Resolve(
-                                new Input(
-                                    service?.Metadata.Name,
-                                    endpointPort.Port,
-                                    service?.Metadata.Labels,
-                                    service?.Metadata.Annotations))));
+                        instances.Add(
+                            new KubernetesServiceInstance(
+                                instanceId,
+                                serviceId,
+                                endpointAddress,
+                                endpointPort,
+                                endpointMetadata,
+                                _isServicePortSecureResolver.Resolve(new Input(service?.Metadata.Name, endpointPort.Port, service?.Metadata.Labels, service?.Metadata.Annotations))));
                     }
                 }
             }
+
             return instances;
         }
 
         private IDictionary<string, string> GetServiceMetadata(V1Service service)
         {
             var serviceMetadata = new Dictionary<string, string>();
-            var metadataProps = this._discoveryOptions.Metadata;
+            var metadataProps = _discoveryOptions.Metadata;
             if (metadataProps.AddLabels)
             {
                 var labelMetadata = GetDictionaryWithPrefixedKeys(
@@ -192,14 +196,17 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
 
             return endpointPort;
         }
-        
+
         private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
         {
             // Start with config or default
-            var es = new EndpointSubsetNs {Namespace = this._discoveryOptions.Namespace ?? DefaultNamespace};
-            
-            if (endpoints?.Subsets == null) return es;
-            
+            var es = new EndpointSubsetNs { Namespace = _discoveryOptions.Namespace ?? DefaultNamespace };
+
+            if (endpoints?.Subsets == null)
+            {
+                return es;
+            }
+
             es.Namespace = endpoints.Metadata.NamespaceProperty;
             es.EndpointSubsets = endpoints.Subsets;
 
@@ -209,13 +216,20 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
         // returns a new dictionary that contain all the entries of the original dictionary
         // but with the keys prefixed
         // if the prefix is null or empty, the dictionary itself is returned unchanged
-        private IDictionary<string, string> GetDictionaryWithPrefixedKeys(IDictionary<string, string> dict,
+        private IDictionary<string, string> GetDictionaryWithPrefixedKeys(
+            IDictionary<string, string> dict,
             string prefix)
         {
-            if (dict == null) return new Dictionary<string, string>();
-            
+            if (dict == null)
+            {
+                return new Dictionary<string, string>();
+            }
+
             // when the prefix is empty, just return the same dictionary
-            if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix)) return dict;
+            if (string.IsNullOrEmpty(prefix) || string.IsNullOrWhiteSpace(prefix))
+            {
+                return dict;
+            }
 
             var prefixedDict = new Dictionary<string, string>();
             foreach (var entry in dict)
@@ -224,18 +238,6 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
             }
 
             return prefixedDict;
-        }
-
-        public IServiceInstance GetLocalServiceInstance()
-        {
-            var instances = GetInstances(_discoveryOptions.ServiceName);
-            
-            return null;
-        }
-
-        public Task ShutdownAsync()
-        {
-            return Task.CompletedTask;
         }
     }
 }

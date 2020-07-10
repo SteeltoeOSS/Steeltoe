@@ -1,26 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
-        <Authors>Steeltoe,VMware</Authors>
-        <Description>Client for service discovery with Kubernetes native service discovery</Description>
-        <PackageProjectUrl>https://steeltoe.io</PackageProjectUrl>
-        <PackageIconUrl>https://steeltoe.io/images/transparent.png</PackageIconUrl>
-        <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
-        <Company>Steeltoe,VMware</Company>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Client for service discovery with Kubernetes native service discovery</Description>
+    <Namespace>Steeltoe.Discovery.Kubernetes</Namespace>
+    <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="KubernetesClient" Version="1.6.30" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.0.0" />
-    </ItemGroup>
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
 
-    <ItemGroup>
-      <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="KubernetesClient" Version="$(KubernetesClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Properties" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+  </ItemGroup>
 
 </Project>
