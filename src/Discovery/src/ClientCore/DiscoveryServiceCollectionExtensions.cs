@@ -13,6 +13,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Kubernetes;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector;
@@ -186,6 +187,12 @@ namespace Steeltoe.Discovery.Client
             IConfiguration config,
             IDiscoveryLifecycle lifecycle)
         {
+            services.AddKubernetesClient();
+            services.PostConfigure<KubernetesDiscoveryOptions>(options =>
+            {
+                var appOptions = services.GetKubernetesApplicationOptions() as KubernetesApplicationOptions;
+                options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");
+            });
             services.AddSingleton((p) =>
             {
                 var kubernetesOptions = p.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();

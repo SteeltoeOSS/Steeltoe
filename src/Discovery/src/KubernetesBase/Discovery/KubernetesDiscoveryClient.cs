@@ -4,6 +4,7 @@
 
 using k8s;
 using k8s.Models;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
     public class KubernetesDiscoveryClient : IDiscoveryClient
     {
         private const string DefaultNamespace = "default";
+        private readonly ILogger<KubernetesDiscoveryClient> _logger;
         private readonly KubernetesDiscoveryOptions _discoveryOptions;
         private readonly DefaultIsServicePortSecureResolver _isServicePortSecureResolver;
 
@@ -27,11 +29,13 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
         public KubernetesDiscoveryClient(
             DefaultIsServicePortSecureResolver isServicePortSecureResolver,
             IKubernetes kubernetesClient,
-            KubernetesDiscoveryOptions discoveryOptions)
+            KubernetesDiscoveryOptions discoveryOptions,
+            ILogger<KubernetesDiscoveryClient> logger = null)
         {
             _isServicePortSecureResolver = isServicePortSecureResolver;
             KubernetesClient = kubernetesClient;
             _discoveryOptions = discoveryOptions;
+            _logger = logger;
         }
 
         public IList<string> GetServices(IDictionary<string, string> labels)
@@ -85,8 +89,16 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
         public IServiceInstance GetLocalServiceInstance()
         {
             var instances = GetInstances(_discoveryOptions.ServiceName);
-
-            return null;
+            if (instances.Count == 1)
+            {
+                return instances.First();
+            }
+            else
+            {
+                // todo: identify which instance is actually correct!
+                _logger?.LogWarning("The local service instance was requested, but what we returned might not be correct!");
+                return instances[0];
+            }
         }
 
         public Task ShutdownAsync()

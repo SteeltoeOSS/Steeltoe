@@ -34,7 +34,7 @@ namespace Steeltoe.Common
 
         public string EurekaInstanceNameKey => EurekaRoot + ":instance:appName";
 
-        public string KubernetesNameKey => KubernetesRoot + ":config:name";
+        public string KubernetesNameKey => KubernetesRoot + ":name";
 
         public string ManagementNameKey => ManagementRoot + ":name";
 
