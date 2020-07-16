@@ -243,7 +243,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return ServiceName;
         }
 
-        protected AbstractConnectionFactory AbstractPublisherConnectionFactory
+        protected internal virtual void ConnectionShutdownCompleted(object sender, ShutdownEventArgs args)
+        {
+            ConnectionListener.OnShutDown(args);
+        }
+
+        protected virtual AbstractConnectionFactory AbstractPublisherConnectionFactory
         {
             get
             {
@@ -348,11 +353,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 array[r] = array[i];
                 array[i] = t;
             }
-        }
-
-        private void ConnectionShutdownCompleted(object sender, ShutdownEventArgs args)
-        {
-            ConnectionListener.OnShutDown(args);
         }
 
         private class DefaultBlockedListener : IBlockedListener

@@ -108,6 +108,24 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         #region Properties
 
+        public string RoutingKey
+        {
+            get => DefaultSendDestination.RoutingKey;
+            set => DefaultSendDestination = new RabbitDestination(DefaultSendDestination.ExchangeName, value);
+        }
+
+        public string Exchange
+        {
+            get => DefaultSendDestination.ExchangeName;
+            set => DefaultSendDestination = new RabbitDestination(value, DefaultSendDestination.RoutingKey);
+        }
+
+        public string DefaultReceiveQueue
+        {
+            get => DefaultReceiveDestination?.QueueName;
+            set => DefaultReceiveDestination = new RabbitDestination(value);
+        }
+
         public AcknowledgeMode ContainerAckMode { get; set; }
 
         public Encoding Encoding { get; set; } = EncodingUtils.Utf8;
@@ -747,43 +765,31 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         #region RabbitReceiveAndReply
         public bool ReceiveAndReply<R, S>(Func<R, S> callback)
-            where R : class
-            where S : class
         {
             return ReceiveAndReply(GetRequiredQueue(), callback);
         }
 
         public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
-            where R : class
-            where S : class
         {
             return ReceiveAndReply(queueName, callback, (request, replyto) => GetReplyToAddress(request));
         }
 
         public bool ReceiveAndReply<R, S>(Func<R, S> callback, string exchange, string routingKey)
-            where R : class
-            where S : class
         {
             return ReceiveAndReply(GetRequiredQueue(), callback, exchange, routingKey);
         }
 
         public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class
         {
             return ReceiveAndReply(queueName, callback, (request, reply) => new Address(replyExchange, replyRoutingKey));
         }
 
         public bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class
         {
             return ReceiveAndReply(GetRequiredQueue(), callback, replyToAddressCallback);
         }
 
         public bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class
         {
             return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
         }
@@ -2120,8 +2126,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
         }
 
         private bool DoReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class
         {
             var result = Execute(
                 channel =>
@@ -2252,18 +2256,16 @@ namespace Steeltoe.Messaging.Rabbit.Core
         }
 
         private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage)
-            where R : class
-            where S : class
         {
-            var receive = receiveMessage;
+            object receive = receiveMessage;
+            if (!typeof(R).IsAssignableFrom(receive.GetType()))
+            {
+                receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(R));
+            }
 
-            // TODO: What is this doing?
-            // if (!(ReceiveAndReplyMessageCallback.class.isAssignableFrom(callback.getClass()))) {
-            // receive = getRequiredMessageConverter().fromMessage(receiveMessage);
-            //  }
             if (!(receive is R messageAsR))
             {
-                throw new ArgumentException("'callback' can't handle received object '" + receive + "'");
+                throw new ArgumentException("'receiveAndReplyCallback' can't handle received object '" + receive.GetType() + "'");
             }
 
             var reply = receiveAndReplyCallback(messageAsR);
@@ -2281,7 +2283,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
         }
 
         private void DoSendReply<S>(Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage, S reply)
-            where S : class
         {
             var replyTo = replyToAddressCallback(receiveMessage, reply);
 
@@ -2312,7 +2313,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     }
                 }
 
-                receiveMessageAccessor.CorrelationId = (string)correlation;
+                replyMessageAccessor.CorrelationId = (string)correlation;
             }
             else
             {

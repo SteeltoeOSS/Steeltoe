@@ -65,29 +65,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         T ReceiveAndConvert<T>(string queueName, int timeoutMillis);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback, string replyExchange, string replyRoutingKey);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
 
         IMessage SendAndReceive(string exchange, string routingKey, IMessage message);
 
