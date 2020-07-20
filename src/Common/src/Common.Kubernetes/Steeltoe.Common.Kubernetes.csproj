@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
+    <Description>Steeltoe common library for Kubernetes</Description>
     <PackageTags>Kubernetes</PackageTags>
   </PropertyGroup>
 
