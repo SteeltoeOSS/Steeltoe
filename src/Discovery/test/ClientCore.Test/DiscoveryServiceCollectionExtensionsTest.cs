@@ -6,6 +6,7 @@ using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
@@ -15,6 +16,7 @@ using Steeltoe.Connector;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.KubernetesBase.Discovery;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
@@ -541,6 +543,29 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.Equal("fromtest", reg.Host);
             Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
             Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithKubernetesConfig_AddsDiscoveryClient()
+        {
+            // arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "spring:cloud:kubernetes:discovery:enabled", "true" },
+                { "spring:cloud:kubernetes:namespace", "notdefault" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+
+            // act
+            var provider = services.AddDiscoveryClient(config).BuildServiceProvider();
+
+            // assert
+            var service = provider.GetService<IDiscoveryClient>();
+            var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+            Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
+            Assert.Equal("notdefault", options.Value.Namespace);
         }
 
         public class TestClientHandlerProvider : IHttpClientHandlerProvider

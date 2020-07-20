@@ -151,10 +151,10 @@ namespace Steeltoe.Discovery.Client
                 ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
-            else if (IsKubernetesConfigured(config, info))
+            else if (IsKubernetesConfigured(config))
             {
-                ConfigureKubernetesServices(services, config, info);
-                AddKubernetesServices(services, config, lifecycle);
+                ConfigureKubernetesServices(services, config);
+                AddKubernetesServices(services);
             }
             else
             {
@@ -166,7 +166,7 @@ namespace Steeltoe.Discovery.Client
         }
 
         #region Kubernetes
-        private static bool IsKubernetesConfigured(IConfiguration config, IServiceInfo info)
+        private static bool IsKubernetesConfigured(IConfiguration config)
         {
             var clientConfigSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
             var childCount = clientConfigSection.GetChildren().Count();
@@ -175,23 +175,24 @@ namespace Steeltoe.Discovery.Client
 
         private static void ConfigureKubernetesServices(
             IServiceCollection services,
-            IConfiguration config,
-            IServiceInfo info)
+            IConfiguration config)
         {
             var kubernetesSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
             services.Configure<KubernetesDiscoveryOptions>(kubernetesSection);
         }
 
         private static void AddKubernetesServices(
-            IServiceCollection services,
-            IConfiguration config,
-            IDiscoveryLifecycle lifecycle)
+            IServiceCollection services)
         {
             services.AddKubernetesClient();
             services.PostConfigure<KubernetesDiscoveryOptions>(options =>
             {
                 var appOptions = services.GetKubernetesApplicationOptions() as KubernetesApplicationOptions;
                 options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");
+                if (options.Namespace == "default" && appOptions.NameSpace != "default")
+                {
+                    options.Namespace = appOptions.NameSpace;
+                }
             });
             services.AddSingleton((p) =>
             {
