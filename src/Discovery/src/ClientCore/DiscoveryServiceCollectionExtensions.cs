@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -12,6 +13,7 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Kubernetes;
 using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector;
@@ -20,6 +22,8 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.KubernetesBase;
+using Steeltoe.Discovery.KubernetesBase.Discovery;
 using System;
 using System.Linq;
 using System.Threading;
@@ -147,6 +151,11 @@ namespace Steeltoe.Discovery.Client
                 ConfigureConsulServices(services, config, info, netOptions);
                 AddConsulServices(services, config, lifecycle);
             }
+            else if (IsKubernetesConfigured(config))
+            {
+                ConfigureKubernetesServices(services, config);
+                AddKubernetesServices(services);
+            }
             else
             {
                 throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
@@ -155,6 +164,44 @@ namespace Steeltoe.Discovery.Client
             services.TryAddTransient<DiscoveryHttpMessageHandler>();
             services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
         }
+
+        #region Kubernetes
+        private static bool IsKubernetesConfigured(IConfiguration config)
+        {
+            var clientConfigSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
+            var childCount = clientConfigSection.GetChildren().Count();
+            return childCount > 0;
+        }
+
+        private static void ConfigureKubernetesServices(
+            IServiceCollection services,
+            IConfiguration config)
+        {
+            var kubernetesSection = config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX);
+            services.Configure<KubernetesDiscoveryOptions>(kubernetesSection);
+        }
+
+        private static void AddKubernetesServices(
+            IServiceCollection services)
+        {
+            services.AddKubernetesClient();
+            services.PostConfigure<KubernetesDiscoveryOptions>(options =>
+            {
+                var appOptions = services.GetKubernetesApplicationOptions() as KubernetesApplicationOptions;
+                options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");
+                if (options.Namespace == "default" && appOptions.NameSpace != "default")
+                {
+                    options.Namespace = appOptions.NameSpace;
+                }
+            });
+            services.AddSingleton((p) =>
+            {
+                var kubernetesOptions = p.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+                var kubernetes = p.GetRequiredService<IKubernetes>();
+                return KubernetesDiscoveryClientFactory.CreateClient(kubernetesOptions.Value, kubernetes);
+            });
+        }
+        #endregion
 
         #region Consul
         private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)

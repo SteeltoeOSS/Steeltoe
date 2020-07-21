@@ -5,6 +5,7 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
@@ -79,7 +80,7 @@ namespace Steeltoe.Common.Kubernetes
 
             var sp = serviceCollection.BuildServiceProvider();
             var logger = sp.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
-            serviceCollection.AddSingleton((serviceProvider) => KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger));
+            serviceCollection.TryAddSingleton((serviceProvider) => KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger));
 
             return serviceCollection;
         }

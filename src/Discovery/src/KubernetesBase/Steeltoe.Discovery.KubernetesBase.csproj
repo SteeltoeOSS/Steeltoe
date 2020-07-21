@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>Client for service discovery with Kubernetes native service discovery</Description>
+    <Namespace>Steeltoe.Discovery.Kubernetes</Namespace>
+    <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="KubernetesClient" Version="$(KubernetesClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
