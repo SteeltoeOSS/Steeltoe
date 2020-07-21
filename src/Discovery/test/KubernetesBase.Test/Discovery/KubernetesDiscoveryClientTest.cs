@@ -4,7 +4,7 @@
 
 using k8s;
 using RichardSzalay.MockHttp;
-using Steeltoe.Discovery.KubernetesBase.Discovery;
+using Steeltoe.Discovery.Kubernetes.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ using System.Net;
 using System.Net.Http;
 using Xunit;
 
-namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
 {
     public class KubernetesDiscoveryClientTest
     {
@@ -21,7 +21,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
-            using var client = new Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler.ToHttpClient());
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler.ToHttpClient());
             const string expectedDesc = "Steeltoe provided Kubernetes native service discovery client";
             var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
 
@@ -39,7 +39,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
         public void GetInstances_ThrowsOnNull()
         {
             var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
-            using var client = new Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
             var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
                 new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions),
                 client,
@@ -73,7 +73,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
                     new StringContent(
                         "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"l\":\"v\"},\"name\":\"endpoint\",\"namespace\":\"test2\",\"uid\":\"uids2\"}}],\"kind\":\"List\",\"metadata\":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
-            using var client = new Kubernetes(
+            using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
@@ -302,7 +302,7 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
                         "\"kind\":\"List\",\"metadata\"" +
                         ":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
 
-            using var client = new Kubernetes(
+            using var client = new k8s.Kubernetes(
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 

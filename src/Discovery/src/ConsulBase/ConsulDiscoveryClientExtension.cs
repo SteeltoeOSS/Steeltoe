@@ -8,14 +8,18 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
+using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
+using System.Linq;
 
 namespace Steeltoe.Discovery.Consul
 {
     public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
     {
+        public const string CONSUL_PREFIX = "consul";
+
         /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
         {
@@ -24,6 +28,11 @@ namespace Steeltoe.Discovery.Consul
             var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
             ConfigureConsulServices(services, config, netOptions);
             AddConsulServices(services);
+        }
+
+        public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
+        {
+            return configuration.GetSection(CONSUL_PREFIX).GetChildren().Any();
         }
 
         private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, InetOptions netOptions)

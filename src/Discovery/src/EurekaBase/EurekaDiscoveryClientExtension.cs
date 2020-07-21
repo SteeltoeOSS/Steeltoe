@@ -12,13 +12,21 @@ using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
+using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
 
 namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
     {
+        public const string EUREKA_PREFIX = "eureka";
+
         public string ServiceInfoName { get; private set; }
+
+        public EurekaDiscoveryClientExtension()
+            : this(null)
+        {
+        }
 
         public EurekaDiscoveryClientExtension(string serviceInfoName)
         {
@@ -31,14 +39,19 @@ namespace Steeltoe.Discovery.Eureka
             var serviceProvider = services.BuildServiceProvider();
             var config = serviceProvider.GetRequiredService<IConfiguration>();
             var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
-            var lifecyle = serviceProvider.GetService<IDiscoveryLifecycle>();
 
+            ServiceInfoName ??= config.GetValue<string>("eureka:serviceInfoName");
             var info = string.IsNullOrEmpty(ServiceInfoName)
                 ? GetSingletonDiscoveryServiceInfo(config)
                 : GetNamedDiscoveryServiceInfo(config, ServiceInfoName);
 
             ConfigureEurekaServices(services, config, info, netOptions);
-            AddEurekaServices(services, lifecyle);
+            AddEurekaServices(services);
+        }
+
+        public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
+        {
+            return configuration.GetSection(EUREKA_PREFIX).GetChildren().Any() || serviceInfo is EurekaServiceInfo;
         }
 
         private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
@@ -67,21 +80,11 @@ namespace Steeltoe.Discovery.Eureka
             });
         }
 
-        private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
+        private static void AddEurekaServices(IServiceCollection services)
         {
             services.AddSingleton<EurekaApplicationInfoManager>();
             services.AddSingleton<EurekaDiscoveryManager>();
-
             services.AddSingleton<EurekaDiscoveryClient>();
-            if (lifecycle == null)
-            {
-                services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
-            }
-            else
-            {
-                services.AddSingleton(lifecycle);
-            }
-
             services.AddSingleton<IDiscoveryClient>((p) =>
             {
                 var eurekaService = p.GetService<EurekaDiscoveryClient>();

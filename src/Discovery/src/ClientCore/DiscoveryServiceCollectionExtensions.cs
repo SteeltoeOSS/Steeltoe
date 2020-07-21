@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -13,6 +12,7 @@ using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client.SimpleClients;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -21,16 +21,62 @@ namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryServiceCollectionExtensions
     {
-        [Obsolete("This extension has been removed. Please use AddServiceDiscovery instead", true)]
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null)
         {
-            return services;
+            return services.AddDiscoveryClient(config, null);
         }
 
-        [Obsolete("This extension has been removed. Please use AddServiceDiscovery instead", true)]
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName, IDiscoveryLifecycle lifecycle = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
         {
-            return services;
+            return services.AddDiscoveryClient(config, null, lifecycle);
+        }
+
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null, IDiscoveryLifecycle lifecycle = null)
+        {
+            Action<DiscoveryClientBuilder> builderAction = null;
+            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var info = string.IsNullOrEmpty(serviceName)
+                ? GetSingletonDiscoveryServiceInfo(config)
+                : GetNamedDiscoveryServiceInfo(config, serviceName);
+
+            // todo: provide a hook for specifying additional assemblies to search
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(n => n.FullName.StartsWith("Steeltoe.Discovery"));
+
+            // iterate assemblies for implementations of IDiscoveryClientExtension
+            var implementations = new List<IDiscoveryClientExtension>();
+            foreach (var assembly in assemblies)
+            {
+                var clientExtensions = assembly.GetTypes().Where(t => t.GetInterface("IDiscoveryClientExtension") != null);
+                foreach (var clientExtension in clientExtensions)
+                {
+                    implementations.Add(Activator.CreateInstance(clientExtension) as IDiscoveryClientExtension);
+                }
+            }
+
+            if (implementations.Count == 1)
+            {
+                builderAction = builder => builder.Extensions.Add(implementations.First());
+            }
+            else if (implementations.Count > 1)
+            {
+                // if none configured, that's ok because AddServiceDiscovery has a plan
+                var configured = implementations.Where(client => client.IsConfigured(config, info));
+                if (configured.Count() == 1)
+                {
+                    builderAction = builder => builder.Extensions.Add(configured.Single());
+                }
+                else if (configured.Count() > 1)
+                {
+                    throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been added and configured! This is not supported, please only configure a single client type.");
+                }
+            }
+
+            if (lifecycle != null)
+            {
+                services.AddSingleton(lifecycle);
+            }
+
+            return services.AddServiceDiscovery(builderAction);
         }
 
         /// <summary>
@@ -59,6 +105,7 @@ namespace Steeltoe.Discovery.Client
             serviceCollection.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
             serviceCollection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
             serviceCollection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
+            serviceCollection.TryAddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
             return serviceCollection;
         }
 
