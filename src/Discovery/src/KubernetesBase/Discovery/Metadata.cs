@@ -6,28 +6,34 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
 {
     public class Metadata
     {
-        // When set, the Kubernetes labels of the services will be included
-        // as metdata of the returned service
+        /// <summary>
+        /// Gets or sets a value indicating whether Kubernetes labels of the services will be included
+        /// </summary>
         public bool AddLabels { get; set; } = true;
 
-        // When AddLabels is set, then this will be used as a prefix to
-        // the key names in Metadata hashtable
+        /// <summary>
+        /// Gets or sets a value to use as a prefix for the keys in Metadata hashtable
+        /// </summary>
         public string LabelsPrefix { get; set; }
 
-        // When set, the Kuberentes annotations of the services will be
-        // included as metadata
+        /// <summary>
+        /// Gets or sets a value indicating whether the Kubernetes annotations of the services will be included
+        /// </summary>
         public bool AddAnnotations { get; set; } = true;
 
-        // When AddAnnotations is set, then this will be used as a prefix
-        // to the key names in the metadata hashtable
+        /// <summary>
+        /// Gets or sets a value to use as a prefix to the key names in the metadata hashtable
+        /// </summary>
         public string AnnotationsPrefix { get; set; }
 
-        // When set, any named Kubernetes service ports will be included
-        // as metadata
+        /// <summary>
+        /// Gets or sets a value indicating whether named Kubernetes service ports will be included
+        /// </summary>
         public bool AddPorts { get; set; } = true;
 
-        // When AddPorts is set, then this will be used as a prefix to the
-        // key names in the metadata hashtable
+        /// <summary>
+        /// Gets or sets a value to use as a prefix to the keys on metadata entries for ports
+        /// </summary>
         public string PortsPrefix { get; set; } = "port.";
     }
 }

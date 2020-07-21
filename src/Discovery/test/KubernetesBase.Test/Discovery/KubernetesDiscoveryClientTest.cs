@@ -5,6 +5,7 @@
 using k8s;
 using RichardSzalay.MockHttp;
 using Steeltoe.Discovery.KubernetesBase.Discovery;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -32,6 +33,19 @@ namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
 
             // assert
             Assert.Equal(expectedDesc, testK8SDiscoveryClient.Description);
+        }
+
+        [Fact]
+        public void GetInstances_ThrowsOnNull()
+        {
+            var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
+            using var client = new Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
+            var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
+                new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions),
+                client,
+                k8SDiscoveryOptions);
+
+            Assert.Throws<ArgumentNullException>(() => testK8SDiscoveryClient.GetInstances(null));
         }
 
         [Fact]

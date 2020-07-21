@@ -225,9 +225,13 @@ namespace Steeltoe.Discovery.KubernetesBase.Discovery
             return es;
         }
 
-        // returns a new dictionary that contain all the entries of the original dictionary
-        // but with the keys prefixed
-        // if the prefix is null or empty, the dictionary itself is returned unchanged
+        /// <summary>
+        /// Returns a new dictionary with supplied prefix applied to all keys.
+        /// </summary>
+        /// <param name="dict">Dictionary with keys for prefixing</param>
+        /// <param name="prefix">Prefix to add to keys</param>
+        /// <returns>A new dictionary that contains all the entries of the original dictionary with the keys prefixed</returns>
+        /// <remarks>If the prefix is null or empty, the dictionary itself is returned unchanged</remarks>
         private IDictionary<string, string> GetDictionaryWithPrefixedKeys(
             IDictionary<string, string> dict,
             string prefix)
