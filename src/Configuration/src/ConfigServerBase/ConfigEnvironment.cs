@@ -12,9 +12,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public string Label { get; set; }
 
-        public IList<string> Profiles { get; set; } = null;
+        public IList<string> Profiles { get; set; }
 
-        public IList<PropertySource> PropertySources { get; set; } = null;
+        public IList<PropertySource> PropertySources { get; set; }
 
         public string Version { get; set; }
 

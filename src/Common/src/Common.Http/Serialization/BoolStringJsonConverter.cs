@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Http.Serialization
 {
     public class BoolStringJsonConverter : JsonConverter<bool>
     {
-        public override bool Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True
                 ? reader.GetBoolean()

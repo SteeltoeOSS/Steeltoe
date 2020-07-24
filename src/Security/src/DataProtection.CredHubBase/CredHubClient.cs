@@ -395,7 +395,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/permissions");
                 var newPermissions = new CredentialPermissions { CredentialName = name, Permissions = permissions };
-                var addResponse = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, SerializerOptions).ConfigureAwait(false);
+                _ = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, SerializerOptions).ConfigureAwait(false);
 
                 return await GetPermissionsAsync(name).ConfigureAwait(false);
             }

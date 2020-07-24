@@ -10,12 +10,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class JsonCredentialJsonConverter : JsonConverter<JsonCredential>
     {
-        public override void Write(Utf8JsonWriter writer, JsonCredential value, JsonSerializerOptions serializer)
+        public override void Write(Utf8JsonWriter writer, JsonCredential value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString());
         }
 
-        public override JsonCredential Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
+        public override JsonCredential Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
             return new JsonCredential(json);

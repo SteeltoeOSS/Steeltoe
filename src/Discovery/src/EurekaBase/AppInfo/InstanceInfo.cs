@@ -302,15 +302,15 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal JsonInstanceInfo ToJsonInstance()
         {
-            var jinfo = new JsonInstanceInfo
+            JsonInstanceInfo jinfo = new JsonInstanceInfo
             {
                 InstanceId = InstanceId,
                 Sid = Sid ?? "na",
                 AppName = AppName,
                 AppGroupName = AppGroupName,
                 IpAddr = IpAddr,
-                Port = new JsonInstanceInfo.JsonPortWrapper { Enabled = IsUnsecurePortEnabled, Port = Port },
-                SecurePort = new JsonInstanceInfo.JsonPortWrapper { Enabled = IsSecurePortEnabled, Port = SecurePort },
+                Port = new JsonInstanceInfo.JsonPortWrapper(IsUnsecurePortEnabled, Port),
+                SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
                 HomePageUrl = HomePageUrl,
                 StatusPageUrl = StatusPageUrl,
                 HealthCheckUrl = HealthCheckUrl,

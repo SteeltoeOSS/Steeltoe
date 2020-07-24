@@ -219,7 +219,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     JsonInstanceInfo jinfo = null;
                     try
                     {
-                        await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
+                        jinfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
                     }
                     catch (Exception e)
                     {

@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Http.Serialization
 {
     public class LongStringJsonConverter : JsonConverter<long>
     {
-        public override long Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+        public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             return reader.TokenType == JsonTokenType.Number ? reader.GetInt64() : long.Parse(reader.GetString());
         }

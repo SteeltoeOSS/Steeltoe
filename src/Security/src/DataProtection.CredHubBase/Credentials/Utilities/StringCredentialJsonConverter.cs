@@ -10,7 +10,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class StringCredentialJsonConverter<T> : JsonConverter<T>
     {
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions serializer)
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
             writer.WriteStringValue(value.ToString());
         }
