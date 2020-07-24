@@ -2,26 +2,32 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class StringCredentialJsonConverter : JsonConverter
+    public class StringCredentialJsonConverter<T> : JsonConverter<T>
     {
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions serializer)
         {
-            writer.WriteValue(value.ToString());
+            writer.WriteStringValue(value.ToString());
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return Activator.CreateInstance(objectType, reader.Value);
+            return (T)Activator.CreateInstance(typeToConvert, JsonSerializer.Deserialize<string>(ref reader, options));
         }
 
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type typeToConvert)
         {
-            return objectType == typeof(string);
+            if (typeToConvert.IsAssignableFrom(typeof(T)) && !typeToConvert.IsInterface)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

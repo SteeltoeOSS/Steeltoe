@@ -8,22 +8,21 @@ using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
-    public class JsonCredentialJsonConverter : JsonConverter<JsonCredential>
+    public class UserCredentialJsonConverter : JsonConverter<UserCredential>
     {
-        public override void Write(Utf8JsonWriter writer, JsonCredential value, JsonSerializerOptions serializer)
+        public override void Write(Utf8JsonWriter writer, UserCredential value, JsonSerializerOptions serializer)
         {
             writer.WriteStringValue(value.ToString());
         }
 
-        public override JsonCredential Read(ref Utf8JsonReader reader, Type objectType, JsonSerializerOptions options)
+        public override UserCredential Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
-            return new JsonCredential(json);
+            return JsonSerializer.Deserialize<UserCredential>(ref reader, options);
         }
 
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert == typeof(JsonCredential);
+            return typeToConvert == typeof(UserCredential);
         }
     }
 }

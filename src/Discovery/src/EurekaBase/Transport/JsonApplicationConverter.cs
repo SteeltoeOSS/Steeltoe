@@ -2,31 +2,32 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
-    public class JsonApplicationConverter : JsonConverter
+    internal class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
     {
-        public override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type typeToConvert)
         {
-            return objectType == typeof(IList<JsonApplication>);
+            return typeToConvert == typeof(IList<JsonApplication>);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override List<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             List<JsonApplication> result = null;
             try
             {
-                if (reader.TokenType == JsonToken.StartArray)
+                if (reader.TokenType == JsonTokenType.StartArray)
                 {
-                    result = (List<JsonApplication>)serializer.Deserialize(reader, typeof(List<JsonApplication>));
+                    result = JsonSerializer.Deserialize<List<JsonApplication>>(ref reader, options);
                 }
                 else
                 {
-                    JsonApplication singleInst = (JsonApplication)serializer.Deserialize(reader, typeof(JsonApplication));
+                    var singleInst = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
                     if (singleInst != null)
                     {
                         result = new List<JsonApplication>
@@ -49,9 +50,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
             return result;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, List<JsonApplication> value, JsonSerializerOptions options)
         {
-            serializer.Serialize(writer, value);
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

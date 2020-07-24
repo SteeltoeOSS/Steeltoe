@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -14,6 +14,7 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http
@@ -156,9 +157,29 @@ namespace Steeltoe.Common.Http
             string clientSecret,
             int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
             bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+            HttpClient httpClient = null,
             ILogger logger = null)
         {
             if (string.IsNullOrEmpty(accessTokenUri))
+            {
+                throw new ArgumentException(nameof(accessTokenUri));
+            }
+
+            var parsedUri = new Uri(accessTokenUri);
+            return GetAccessToken(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
+        }
+
+        public static Task<string> GetAccessToken(
+            Uri accessTokenUri,
+            string clientId,
+            string clientSecret,
+            int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
+            bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+            Dictionary<string, string> additionalParams = null,
+            HttpClient httpClient = null,
+            ILogger logger = null)
+        {
+            if (accessTokenUri is null)
             {
                 throw new ArgumentException(nameof(accessTokenUri));
             }
@@ -173,14 +194,12 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException(nameof(clientSecret));
             }
 
-            var parsedUri = new Uri(accessTokenUri);
-
-            if (!parsedUri.IsWellFormedOriginalString())
+            if (!accessTokenUri.IsWellFormedOriginalString())
             {
                 throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
             }
 
-            return GetAccessTokenInternal(parsedUri, clientId, clientSecret, timeout, validateCertificates, logger);
+            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, logger, additionalParams, httpClient);
         }
 
         private static async Task<string> GetAccessTokenInternal(
@@ -189,42 +208,47 @@ namespace Steeltoe.Common.Http
             string clientSecret,
             int timeout,
             bool validateCertificates,
-            ILogger logger)
+            ILogger logger,
+            Dictionary<string, string> additionalParams,
+            HttpClient httpClient = null)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
-            HttpClient client = GetHttpClient(validateCertificates, timeout);
+            logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
+            var client = httpClient ?? GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
+            ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
 
-            AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
+            var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;
 
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                { "grant_type", "client_credentials" }
-            });
+            var reqparams = additionalParams is null
+                ? new Dictionary<string, string> { { "grant_type", "client_credentials" } }
+                : new Dictionary<string, string>(additionalParams) { { "grant_type", "client_credentials" } };
+
+            request.Content = new FormUrlEncodedContent(reqparams);
 
             try
             {
-                using (client)
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
-                    {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            logger?.LogInformation(
-                                "GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                                response.StatusCode,
-                                WebUtility.UrlEncode(accessTokenUri.OriginalString));
-                            return null;
-                        }
-
-                        var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                        var token = payload.Value<string>("access_token");
-                        return token;
-                    }
+                    logger?.LogInformation(
+                        "GetAccessToken returned status: {0} while obtaining access token from: {1}",
+                        response.StatusCode,
+                        WebUtility.UrlEncode(accessTokenUri.OriginalString));
+                    return null;
                 }
+
+                var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                var token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
+
+                if (httpClient is null)
+                {
+                    client.Dispose();
+                }
+
+                return token.ToString();
             }
             catch (Exception e)
             {
@@ -232,7 +256,7 @@ namespace Steeltoe.Common.Http
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
+                RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
             }
 
             return null;

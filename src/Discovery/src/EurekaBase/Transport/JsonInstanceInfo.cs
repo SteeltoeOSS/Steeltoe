@@ -2,134 +2,133 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
-using System.IO;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonInstanceInfo
     {
-        [JsonProperty("instanceId")]
+        [JsonPropertyName("instanceId")]
         public string InstanceId { get; set; }
 
-        [JsonProperty("app")]
+        [JsonPropertyName("app")]
         public string AppName { get; set; }
 
-        [JsonProperty("appGroupName")]
+        [JsonPropertyName("appGroupName")]
         public string AppGroupName { get; set; }
 
-        [JsonProperty("ipAddr")]
+        [JsonPropertyName("ipAddr")]
         public string IpAddr { get; set; }
 
-        [JsonProperty("sid")]
+        [JsonPropertyName("sid")]
         public string Sid { get; set; }
 
-        [JsonProperty("port")]
+        [JsonPropertyName("port")]
         public JsonPortWrapper Port { get; set; }
 
-        [JsonProperty("securePort")]
+        [JsonPropertyName("securePort")]
         public JsonPortWrapper SecurePort { get; set; }
 
-        [JsonProperty("homePageUrl")]
+        [JsonPropertyName("homePageUrl")]
         public string HomePageUrl { get; set; }
 
-        [JsonProperty("statusPageUrl")]
+        [JsonPropertyName("statusPageUrl")]
         public string StatusPageUrl { get; set; }
 
-        [JsonProperty("healthCheckUrl")]
+        [JsonPropertyName("healthCheckUrl")]
         public string HealthCheckUrl { get; set; }
 
-        [JsonProperty("secureHealthCheckUrl")]
+        [JsonPropertyName("secureHealthCheckUrl")]
         public string SecureHealthCheckUrl { get; set; }
 
-        [JsonProperty("vipAddress")]
+        [JsonPropertyName("vipAddress")]
         public string VipAddress { get; set; }
 
-        [JsonProperty("secureVipAddress")]
+        [JsonPropertyName("secureVipAddress")]
         public string SecureVipAddress { get; set; }
 
-        [JsonProperty("countryId")]
+        [JsonPropertyName("countryId")]
         public int CountryId { get; set; }
 
-        [JsonProperty("dataCenterInfo")]
+        [JsonPropertyName("dataCenterInfo")]
         public JsonDataCenterInfo DataCenterInfo { get; set; }
 
-        [JsonProperty("hostName")]
+        [JsonPropertyName("hostName")]
         public string HostName { get; set; }
 
-        [JsonProperty("status")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("status")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public InstanceStatus Status { get; set; }
 
-        [JsonProperty("overriddenstatus")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("overriddenstatus")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public InstanceStatus OverriddenStatus { get; set; }
 
-        [JsonProperty("leaseInfo")]
+        [JsonPropertyName("leaseInfo")]
         public JsonLeaseInfo LeaseInfo { get; set; }
 
-        [JsonProperty("isCoordinatingDiscoveryServer")]
+        [JsonPropertyName("isCoordinatingDiscoveryServer")]
+        [JsonConverter(typeof(BoolStringJsonConverter))]
         public bool IsCoordinatingDiscoveryServer { get; set; }
 
-        [JsonProperty("metadata")]
+        [JsonPropertyName("metadata")]
         public Dictionary<string, string> Metadata { get; set; }
 
-        [JsonProperty("lastUpdatedTimestamp")]
+        [JsonPropertyName("lastUpdatedTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long LastUpdatedTimestamp { get; set; }
 
-        [JsonProperty("lastDirtyTimestamp")]
+        [JsonPropertyName("lastDirtyTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long LastDirtyTimestamp { get; set; }
 
-        [JsonProperty("actionType")]
-        [JsonConverter(typeof(StringEnumConverter))]
+        [JsonPropertyName("actionType")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ActionType Actiontype { get; set; }
 
-        [JsonProperty("asgName", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonPropertyName("asgName")]
         public string AsgName { get; set; }
 
-        public class JsonPortWrapper
+        internal class JsonPortWrapper
         {
-            [JsonConstructor]
-            public JsonPortWrapper(
-                    [JsonProperty("@enabled")] bool enabled,
-                    [JsonProperty("$")] int port)
+            public JsonPortWrapper()
+            {
+            }
+
+            public JsonPortWrapper(bool enabled, int port)
             {
                 Enabled = enabled;
                 Port = port;
             }
 
-            [JsonProperty("@enabled")]
-            public bool Enabled { get; private set; }
+            [JsonPropertyName("@enabled")]
+            [JsonConverter(typeof(BoolStringJsonConverter))]
+            public bool Enabled { get; set; }
 
-            [JsonProperty("$")]
-            public int Port { get; private set; }
+            [JsonPropertyName("$")]
+            public int Port { get; set; }
         }
 
-        public class JsonDataCenterInfo
+        internal class JsonDataCenterInfo
         {
-            [JsonConstructor]
-            public JsonDataCenterInfo(
-                [JsonProperty("@class")] string className,
-                [JsonProperty("name")] string name)
+            public JsonDataCenterInfo()
             {
-                ClassName = className;
+            }
+
+            public JsonDataCenterInfo(string classname, string name)
+            {
+                ClassName = classname;
                 Name = name;
             }
 
-            [JsonProperty("@class")]
-            public string ClassName { get; private set; }
+            [JsonPropertyName("@class")]
+            public string ClassName { get; set; }
 
-            [JsonProperty("name")]
-            public string Name { get; private set; }
-        }
-
-        internal static JsonInstanceInfo Deserialize(Stream stream)
-        {
-            var result = JsonSerialization.Deserialize<JsonInstanceInfo>(stream);
-            return result;
+            [JsonPropertyName("name")]
+            public string Name { get; set; }
         }
     }
 }

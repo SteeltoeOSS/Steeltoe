@@ -10,8 +10,10 @@ using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
@@ -122,7 +124,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
             // Check JSON payload
-            JsonInstanceInfoRoot recvJson = JsonInstanceInfoRoot.Deserialize(TestConfigServerStartup.LastRequest.Body);
+            var recvJson = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(new StreamReader(TestConfigServerStartup.LastRequest.Body).ReadToEnd());
             Assert.NotNull(recvJson);
             Assert.NotNull(recvJson.Instance);
 

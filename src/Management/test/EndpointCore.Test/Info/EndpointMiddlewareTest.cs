@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
@@ -16,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
@@ -67,11 +68,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/management/infomanagement");
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var json = await result.Content.ReadAsStringAsync();
-            Assert.NotNull(json);
-            var dict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(json);
+            var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, object>>>("http://localhost/management/infomanagement", GetSerializerOptions());
             Assert.NotNull(dict);
 
             Assert.Equal(5, dict.Count);
@@ -79,15 +76,15 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.True(dict.ContainsKey("NET"));
             Assert.True(dict.ContainsKey("git"));
 
-            var appNode = dict["application"] as Dictionary<string, object>;
+            var appNode = dict["application"];
             Assert.NotNull(appNode);
-            Assert.Equal("foobar", appNode["name"]);
+            Assert.Equal("foobar", appNode["name"].ToString());
 
-            var netNode = dict["NET"] as Dictionary<string, object>;
+            var netNode = dict["NET"];
             Assert.NotNull(netNode);
-            Assert.Equal("Core", netNode["type"]);
+            Assert.Equal("Core", netNode["type"].ToString());
 
-            var gitNode = dict["git"] as Dictionary<string, object>;
+            var gitNode = dict["git"];
             Assert.NotNull(gitNode);
             Assert.True(gitNode.ContainsKey("build"));
             Assert.True(gitNode.ContainsKey("branch"));

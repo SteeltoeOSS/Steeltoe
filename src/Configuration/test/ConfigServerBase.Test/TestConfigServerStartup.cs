@@ -45,6 +45,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 RequestCount++;
                 if (context.Response.StatusCode == 200)
                 {
+                    context.Response.Headers.Add("content-type", "application/json");
                     await context.Response.WriteAsync(Response);
                 }
             });

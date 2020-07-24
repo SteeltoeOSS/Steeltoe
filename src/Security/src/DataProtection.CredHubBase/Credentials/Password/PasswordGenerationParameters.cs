@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
@@ -19,25 +19,25 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <summary>
         /// Gets or sets exclude upper case alpha characters from generated credential value
         /// </summary>
-        [JsonProperty("exclude_upper")]
+        [JsonPropertyName("exclude_upper")]
         public bool? ExcludeUpper { get; set; }
 
         /// <summary>
         /// Gets or sets exclude lower case alpha characters from generated credential value
         /// </summary>
-        [JsonProperty("exclude_lower")]
+        [JsonPropertyName("exclude_lower")]
         public bool? ExcludeLower { get; set; }
 
         /// <summary>
         /// Gets or sets exclude numeric characters from generated credential value
         /// </summary>
-        [JsonProperty("exclude_number")]
+        [JsonPropertyName("exclude_number")]
         public bool? ExcludeNumber { get; set; }
 
         /// <summary>
         /// Gets or sets include non-alphanumeric characters in generated credential value
         /// </summary>
-        [JsonProperty("include_special")]
+        [JsonPropertyName("include_special")]
         public bool? IncludeSpecial { get; set; }
     }
 }

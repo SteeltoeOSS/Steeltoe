@@ -4,10 +4,10 @@
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
-using Steeltoe.Discovery.Eureka.Transport;
+using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
+namespace Steeltoe.Discovery.Eureka.Transport.Test
 {
     public class JsonInstanceInfoRootTest : AbstractBaseTest
     {
@@ -45,8 +45,7 @@ namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
         ""asgName"":null
     }
 }";
-            var stream = TestHelpers.StringToStream(json);
-            var result = JsonInstanceInfoRoot.Deserialize(stream);
+            var result = JsonSerializer.Deserialize<JsonInstanceInfoRoot>(json);
             Assert.NotNull(result);
             Assert.NotNull(result.Instance);
 

@@ -4,6 +4,7 @@
 
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
@@ -43,8 +44,8 @@ namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
                         }]
                     }
                 }";
-            var stream = TestHelpers.StringToStream(json);
-            var result = JsonApplicationRoot.Deserialize(stream);
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json, options);
             Assert.NotNull(result);
             Assert.NotNull(result.Application);
             Assert.Equal("FOO", result.Application.Name);

@@ -75,7 +75,7 @@ steps:
   inputs:
     command: test
     projects: src/Steeltoe.All.sln
-    arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*""'
+    arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*""'
 - pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator "-reports:**\*.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Create Code coverage report

@@ -110,12 +110,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual HttpClient GetHttpClient()
         {
-            if (_httpHandler != null)
-            {
-                return new HttpClient(_httpHandler);
-            }
+            var client = _httpHandler is null
+                ? new HttpClient()
+                : new HttpClient(_httpHandler);
 
-            return new HttpClient();
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(HttpClientHelper.SteeltoeUserAgent);
+            return client;
         }
 
         private void TrimKey(JsonWebKey key, byte[] existing)
