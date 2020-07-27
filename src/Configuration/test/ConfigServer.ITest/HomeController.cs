@@ -12,8 +12,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     public class HomeController : Controller
     {
-        private ConfigServerDataAsOptions _options;
-        private IHealthContributor _health;
+        private readonly ConfigServerDataAsOptions _options;
+        private readonly IHealthContributor _health;
 
         public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor health)
         {

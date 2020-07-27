@@ -18,7 +18,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         public CloudFoundryOptions Options { get; internal protected set; }
 
         private static ILogger<CloudFoundryTokenValidator> _logger;
-        private JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public CloudFoundryWcfTokenValidator(CloudFoundryOptions options, ILogger<CloudFoundryTokenValidator> logger = null)
             : base(options)

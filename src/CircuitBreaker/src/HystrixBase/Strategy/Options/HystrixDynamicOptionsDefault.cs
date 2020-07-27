@@ -9,7 +9,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {
     public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
     {
-        private IConfiguration _configSource;
+        private readonly IConfiguration _configSource;
 
         public HystrixDynamicOptionsDefault(IConfiguration configSource)
         {
@@ -40,8 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
                 return fallback;
             }
 
-            var result = -1;
-            if (int.TryParse(val, out result))
+            if (int.TryParse(val, out var result))
             {
                 return result;
             }
@@ -57,8 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
                 return fallback;
             }
 
-            long result = -1;
-            if (long.TryParse(val, out result))
+            if (long.TryParse(val, out var result))
             {
                 return result;
             }

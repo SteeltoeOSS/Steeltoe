@@ -15,7 +15,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class SerilogDynamicLoggingBuilderTest
     {
-        private static Dictionary<string, string> appsettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> Appsettings = new Dictionary<string, string>()
         {
             { "Serilog:MinimumLevel:Default", "Verbose" }, // Sets level of root logger so has to be higher than any sub logger
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
@@ -58,7 +58,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void DynamicLevelSetting_WorksWith_ConsoleFilters()
         {
             // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
@@ -92,7 +92,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void AddDynamicConsole_AddsAllLoggerProviders()
         {
             // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
@@ -115,7 +115,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
         {
             // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
@@ -136,7 +136,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void AddDynamicConsole_WithConfigurationParam_AddsServices()
         {
             // arrange
-            var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder => builder.AddSerilogDynamicConsole())

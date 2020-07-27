@@ -56,7 +56,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
                 return Uri;
             }
 
-            UriInfo uri = null;
+            UriInfo uri;
             if (SslEnabled)
             {
                 uri = new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost);

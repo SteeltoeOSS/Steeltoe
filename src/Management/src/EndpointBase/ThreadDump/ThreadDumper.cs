@@ -133,7 +133,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                         var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
                         if (lockClass != null)
                         {
-                            LockInfo lockInfo = null;
+                            LockInfo lockInfo;
                             if (lck.Reason == BlockingReason.Monitor ||
                                 lck.Reason == BlockingReason.MonitorWait)
                             {
@@ -393,8 +393,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             if (reader != null)
             {
                 var method = frame.Method;
-
-                var result = reader.GetMethod((int)method.MetadataToken, out var methodSym);
+                _ = reader.GetMethod((int)method.MetadataToken, out var methodSym);
                 if (methodSym != null)
                 {
                     var seqPoints = methodSym.GetSequencePoints();

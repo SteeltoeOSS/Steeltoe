@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
@@ -15,8 +14,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     {
         private readonly HttpClient _httpClient;
         private readonly CloudFoundryOptions _options;
+        private readonly string _userToken;
         private string _token;
-        private string _userToken;
 
         public JwtHeaderMessageInspector(CloudFoundryOptions options, string userToken, HttpClient httpClient = null)
         {

@@ -52,10 +52,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public T Get<T>(string cacheKey)
         {
             var key = GetRequestCacheKey(cacheKey);
-            object result = null;
             if (key != null)
             {
                 var cacheInstance = RequestVariableForCache.Value;
+                object result;
                 /* look for the stored value */
                 if (cacheInstance.TryGetValue(key, out result))
                 {
@@ -73,18 +73,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 /* remove this cache key */
                 var cacheInstance = RequestVariableForCache.Value;
-                cacheInstance.TryRemove(key, out var removed);
+                cacheInstance.TryRemove(key, out _);
             }
         }
 
         internal T PutIfAbsent<T>(string cacheKey, T f)
         {
             var key = GetRequestCacheKey(cacheKey);
-            object result = null;
             if (key != null)
             {
                 var cacheInstance = RequestVariableForCache.Value;
-                result = cacheInstance.GetOrAdd(key, f);
+                var result = cacheInstance.GetOrAdd(key, f);
                 if (f.Equals(result))
                 {
                     return default;

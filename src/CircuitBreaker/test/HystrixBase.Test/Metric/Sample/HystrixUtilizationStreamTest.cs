@@ -21,9 +21,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Util");
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("Command");
-        private HystrixUtilizationStream stream;
+        private readonly HystrixUtilizationStream stream;
 
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixUtilizationStreamTest(ITestOutputHelper output)
             : base()

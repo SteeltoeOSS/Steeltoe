@@ -41,10 +41,7 @@ public override bool Equals(object other)
 
             var t1Enumerator = GetEnumerator();
             var t2Enumerator = otherTags.GetEnumerator();
-
-            List<ITag> tags1 = null;
-            List<ITag> tags2 = null;
-
+            List<ITag> tags1;
             if (t1Enumerator == null)
             {
                 tags1 = new List<ITag>();
@@ -54,6 +51,7 @@ public override bool Equals(object other)
                 tags1 = this.ToList();
             }
 
+            List<ITag> tags2;
             if (t2Enumerator == null)
             {
                 tags2 = new List<ITag>();

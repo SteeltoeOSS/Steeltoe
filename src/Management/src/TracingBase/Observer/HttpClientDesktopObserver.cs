@@ -106,7 +106,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (Pending.TryGetValue(request, out var spanContext))
+            if (Pending.TryGetValue(request, out _))
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;

@@ -54,7 +54,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected ILogger _logger;
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
-        private IOptionsMonitor<EurekaClientOptions> _configOptions;
+        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
         public EurekaHttpClient(IOptionsMonitor<EurekaClientOptions> config, IEurekaDiscoveryClientHandlerProvider handlerProvider = null, ILoggerFactory logFactory = null)
         {
@@ -958,8 +958,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             if (!string.IsNullOrEmpty(config.ProxyHost))
             {
-                var proxyHandler = new HttpClientHandler();
-                proxyHandler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
+                var proxyHandler = new HttpClientHandler
+                {
+                    Proxy = new WebProxy(config.ProxyHost, config.ProxyPort)
+                };
                 if (!string.IsNullOrEmpty(config.ProxyPassword))
                 {
                     proxyHandler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
@@ -975,8 +977,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             if (config.ShouldGZipContent)
             {
-                var gzipHandler = new HttpClientHandler();
-                gzipHandler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                var gzipHandler = new HttpClientHandler
+                {
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                };
                 return HttpClientHelper.GetHttpClient(config.ValidateCertificates, gzipHandler, config.EurekaServerConnectTimeoutSeconds * 1000);
             }
 

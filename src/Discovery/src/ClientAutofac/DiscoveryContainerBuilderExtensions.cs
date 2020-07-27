@@ -290,7 +290,7 @@ namespace Steeltoe.Discovery.Client
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
-            private CancellationTokenSource _source = new CancellationTokenSource();
+            private readonly CancellationTokenSource _source = new CancellationTokenSource();
 
             public ApplicationLifecycle()
             {

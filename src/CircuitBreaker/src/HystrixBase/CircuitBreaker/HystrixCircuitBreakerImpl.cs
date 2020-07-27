@@ -12,10 +12,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
         private readonly HystrixCommandMetrics _metrics;
 
         /* track whether this circuit is open/closed at any given point in time (default to false==closed) */
-        private AtomicBoolean _circuitOpen = new AtomicBoolean(false);
+        private readonly AtomicBoolean _circuitOpen = new AtomicBoolean(false);
 
         /* when the circuit was marked open or was last allowed to try a 'singleTest' */
-        private AtomicLong _circuitOpenedOrLastTestedTime = new AtomicLong();
+        private readonly AtomicLong _circuitOpenedOrLastTestedTime = new AtomicLong();
 
         protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
                 if (_options.CircuitBreakerForceClosed)
                 {
                     // we still want to allow isOpen() to perform it's calculations so we simulate normal behavior
-                    var isOpen = IsOpen;
+                    _ = IsOpen;
 
                     // properties have asked us to ignore errors so we will ignore the results of isOpen and just allow all traffic through
                     return true;

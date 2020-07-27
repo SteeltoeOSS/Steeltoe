@@ -67,12 +67,16 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                         statistic = "total";
                     }
 
-                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "count";
+                    IDictionary<string, string> copy = new Dictionary<string, string>(tags)
+                    {
+                        ["statistic"] = "count"
+                    };
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
 
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "mean";
+                    copy = new Dictionary<string, string>(tags)
+                    {
+                        ["statistic"] = "mean"
+                    };
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
 
                     tags["statistic"] = statistic;
@@ -87,16 +91,22 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                         statistic = "total";
                     }
 
-                    IDictionary<string, string> copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "count";
+                    IDictionary<string, string> copy = new Dictionary<string, string>(tags)
+                    {
+                        ["statistic"] = "count"
+                    };
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, "count", copy, arg.Count));
 
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "mean";
+                    copy = new Dictionary<string, string>(tags)
+                    {
+                        ["statistic"] = "mean"
+                    };
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Mean));
 
-                    copy = new Dictionary<string, string>(tags);
-                    copy["statistic"] = "max";
+                    copy = new Dictionary<string, string>(tags)
+                    {
+                        ["statistic"] = "max"
+                    };
                     results.Add(new Metric(name, MetricType.GAUGE, timeStamp, unit, copy, arg.Max));
 
                     tags["statistic"] = statistic;

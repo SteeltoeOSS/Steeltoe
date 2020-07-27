@@ -9,8 +9,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 {
     public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
     {
-        private Action<T> _disposeAction;
-        private Func<T> _valueFactory;
+        private readonly Action<T> _disposeAction;
+        private readonly Func<T> _valueFactory;
 
         public HystrixRequestVariableDefault(T value)
         {
@@ -30,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         internal static void Remove(HystrixRequestContext context, IHystrixRequestVariable<T> v)
         {
-            if (context.State.TryRemove(v, out var oldValue))
+            if (context.State.TryRemove(v, out _))
             {
                 v.Dispose();
             }

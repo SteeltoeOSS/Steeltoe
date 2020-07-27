@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
     {
         private class LatchedObserver<T> : ObserverBase<T>
         {
-            private CountdownEvent latch;
+            private readonly CountdownEvent latch;
 
             public LatchedObserver(CountdownEvent latch)
             {
@@ -40,13 +40,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             }
         }
 
-        private IHystrixCommandKey commandKey;
-        private IHystrixThreadPoolKey threadPoolKey;
+        private readonly IHystrixCommandKey commandKey;
+        private readonly IHystrixThreadPoolKey threadPoolKey;
 
-        private HystrixThreadEventStream writeToStream;
-        private HystrixCommandCompletionStream readCommandStream;
-        private HystrixThreadPoolCompletionStream readThreadPoolStream;
-        private ITestOutputHelper output;
+        private readonly HystrixThreadEventStream writeToStream;
+        private readonly HystrixCommandCompletionStream readCommandStream;
+        private readonly HystrixThreadPoolCompletionStream readThreadPoolStream;
+        private readonly ITestOutputHelper output;
 
         public HystrixThreadEventStreamTest(ITestOutputHelper output)
             : base()

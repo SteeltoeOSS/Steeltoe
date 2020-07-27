@@ -8,7 +8,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -20,9 +19,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingCollapserEventCounterStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingCollapserEventCounterStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<long[]>
         {

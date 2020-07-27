@@ -50,11 +50,11 @@ namespace OpenCensus.Trace.Export.Test
         private readonly List<ITimedEvent<IMessageEvent>> messageEventsList = new List<ITimedEvent<IMessageEvent>>();
         private readonly List<ILink> linksList = new List<ILink>();
 
-        private IAttributes attributes;
-        private ITimedEvents<IAnnotation> annotations;
+        private readonly IAttributes attributes;
+        private readonly ITimedEvents<IAnnotation> annotations;
         // private TimedEvents<NetworkEvent> networkEvents;
-        private ITimedEvents<IMessageEvent> messageEvents;
-        private LinkList links;
+        private readonly ITimedEvents<IMessageEvent> messageEvents;
+        private readonly LinkList links;
 
         public SpanDataTest()
         {

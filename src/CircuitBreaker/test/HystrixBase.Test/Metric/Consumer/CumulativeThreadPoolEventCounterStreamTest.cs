@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
@@ -10,7 +9,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,9 +19,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class CumulativeThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private CumulativeThreadPoolEventCounterStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<long[]>
         {

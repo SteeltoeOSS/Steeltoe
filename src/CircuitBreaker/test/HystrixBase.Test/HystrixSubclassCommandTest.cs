@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP");
 
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixSubclassCommandTest(ITestOutputHelper output)
             : base()

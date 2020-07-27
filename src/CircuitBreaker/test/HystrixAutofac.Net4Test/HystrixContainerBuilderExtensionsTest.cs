@@ -11,8 +11,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
 {
     public class HystrixContainerBuilderExtensionsTest
     {
-        private IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("DummyCommand");
-        private IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("DummyCommand");
+        private readonly IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("DummyCommand");
+        private readonly IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("DummyCommand");
 
         [Fact]
         public void RegisterHystrixCommand_ThrowsIfContainerBuilderNull()

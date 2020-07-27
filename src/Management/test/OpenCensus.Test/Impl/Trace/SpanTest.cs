@@ -42,7 +42,7 @@ namespace OpenCensus.Trace.Test
         private readonly SpanOptions recordSpanOptions = SpanOptions.RecordEvents;
         private readonly IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
         private readonly IDictionary<String, IAttributeValue> expectedAttributes;
-        private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
+        private readonly IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
         // @Rule public readonly ExpectedException exception = ExpectedException.none();
 
 
@@ -56,10 +56,13 @@ namespace OpenCensus.Trace.Test
                 "MyStringAttributeKey", AttributeValue.StringAttributeValue("MyStringAttributeValue"));
             attributes.Add("MyLongAttributeKey", AttributeValue.LongAttributeValue(123L));
             attributes.Add("MyBooleanAttributeKey", AttributeValue.BooleanAttributeValue(false));
-            expectedAttributes = new Dictionary<String, IAttributeValue>(attributes);
-            expectedAttributes.Add(
-                "MySingleStringAttributeKey",
-                AttributeValue.StringAttributeValue("MySingleStringAttributeValue"));
+            expectedAttributes = new Dictionary<String, IAttributeValue>(attributes)
+            {
+                {
+                    "MySingleStringAttributeKey",
+                    AttributeValue.StringAttributeValue("MySingleStringAttributeValue")
+                }
+            };
         }
 
         [Fact]
@@ -336,8 +339,10 @@ namespace OpenCensus.Trace.Test
                     testClock);
             for (var i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
             var spanData = ((Span)span).ToSpanData();
@@ -384,8 +389,10 @@ namespace OpenCensus.Trace.Test
                     testClock);
             for (var i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
             var spanData = ((Span)span).ToSpanData();
@@ -401,8 +408,10 @@ namespace OpenCensus.Trace.Test
             }
             for (var i = 0; i < maxNumberOfAttributes / 2; i++)
             {
-                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
-                attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
+                IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>
+                {
+                    { "MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i) }
+                };
                 span.PutAttributes(attributes);
             }
             spanData = ((Span)span).ToSpanData();
@@ -442,7 +451,7 @@ namespace OpenCensus.Trace.Test
                     timestampConverter,
                     testClock);
             var annotation = Annotation.FromDescription(ANNOTATION_DESCRIPTION);
-            var i = 0;
+            int i;
             for (i = 0; i < 2 * maxNumberOfAnnotations; i++)
             {
                 span.AddAnnotation(annotation);

@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             var opts = new DbMigrationsEndpointOptions();
 
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         {
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);

@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Eureka
     public class EurekaHealthCheckHandler : IHealthCheckHandler
     {
         protected internal IList<IHealthContributor> _contributors;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public EurekaHealthCheckHandler(ILogger logger = null)
         {

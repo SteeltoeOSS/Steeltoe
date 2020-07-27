@@ -32,15 +32,17 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DoNotCrash()
         {
-            IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
-            attributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
-            IDictionary<string, IAttributeValue> multipleAttributes = new Dictionary<string, IAttributeValue>();
-            multipleAttributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
-            multipleAttributes.Add("MyBooleanAttributeKey", AttributeValue<bool>.Create(true));
-            multipleAttributes.Add("MyLongAttributeKey", AttributeValue<long>.Create(123));
-            multipleAttributes.Add("MyDoubleAttributeKey", AttributeValue<double>.Create(0.005));
+            IDictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") }
+            };
+            IDictionary<string, IAttributeValue> multipleAttributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") },
+                { "MyBooleanAttributeKey", AttributeValue<bool>.Create(true) },
+                { "MyLongAttributeKey", AttributeValue<long>.Create(123) },
+                { "MyDoubleAttributeKey", AttributeValue<double>.Create(0.005) }
+            };
             // Tests only that all the methods are not crashing/throwing errors.
             BlankSpan.Instance.PutAttribute(
                 "MyStringAttributeKey2", AttributeValue<string>.Create("MyStringAttributeValue2"));

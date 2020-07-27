@@ -6,11 +6,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
 {
     public class HystrixMetricsPublisherDefault : HystrixMetricsPublisher
     {
-        private static HystrixMetricsPublisherDefault instance = new HystrixMetricsPublisherDefault();
+        private static readonly HystrixMetricsPublisherDefault Instance = new HystrixMetricsPublisherDefault();
 
         public static HystrixMetricsPublisher GetInstance()
         {
-            return instance;
+            return Instance;
         }
 
         private HystrixMetricsPublisherDefault()

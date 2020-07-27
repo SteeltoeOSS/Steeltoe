@@ -147,8 +147,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var config = builder.Build();
 
-            var contributor = new ConfigServerHealthContributor(config);
-            contributor.Cached = new ConfigEnvironment();
+            var contributor = new ConfigServerHealthContributor(config)
+            {
+                Cached = new ConfigEnvironment()
+            };
             var lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
             var sources = contributor.GetPropertySources();
 

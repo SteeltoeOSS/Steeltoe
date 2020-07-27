@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 {
     public class HystrixQueuedTaskSchedulerTest
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixQueuedTaskSchedulerTest(ITestOutputHelper output)
             : base()

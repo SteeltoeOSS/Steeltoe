@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     {
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
         private readonly BehaviorSubject<Output> _counterSubject;
-        private IObservable<Output> _sourceStream;
+        private readonly IObservable<Output> _sourceStream;
 
         protected BucketedCumulativeCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> reduceCommandCompletion, Func<Output, Bucket, Output> reduceBucket)
             : base(stream, numBuckets, bucketSizeInMs, reduceCommandCompletion)

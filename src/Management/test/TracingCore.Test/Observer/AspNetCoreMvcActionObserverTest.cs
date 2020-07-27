@@ -285,8 +285,10 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private HttpContext GetHttpRequestMessage(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
 
             context.Request.Body = new MemoryStream();
             context.Response.Body = new MemoryStream();

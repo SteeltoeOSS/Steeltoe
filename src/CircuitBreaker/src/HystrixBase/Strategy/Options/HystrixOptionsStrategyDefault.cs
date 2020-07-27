@@ -6,7 +6,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {
     internal class HystrixOptionsStrategyDefault : HystrixOptionsStrategy
     {
-        private static HystrixOptionsStrategyDefault instance = new HystrixOptionsStrategyDefault();
+        private static readonly HystrixOptionsStrategyDefault Instance = new HystrixOptionsStrategyDefault();
 
         private HystrixOptionsStrategyDefault()
         {
@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 
         public static HystrixOptionsStrategy GetInstance()
         {
-            return instance;
+            return Instance;
         }
     }
 }

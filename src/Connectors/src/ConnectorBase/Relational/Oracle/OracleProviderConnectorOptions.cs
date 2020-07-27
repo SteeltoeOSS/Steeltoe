@@ -13,7 +13,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
         public const string Default_Server = "localhost";
         public const int Default_Port = 1521;
         private const string ORACLE_CLIENT_SECTION_PREFIX = "oracle:client";
-        private bool _cloudFoundryConfigFound = false;
+        private readonly bool _cloudFoundryConfigFound = false;
 
         public OracleProviderConnectorOptions()
         {

@@ -43,14 +43,14 @@ namespace Steeltoe.Common.LoadBalancer
             }
 
             // get next instance, or wrap back to first instance if we reach the end of the list
-            IServiceInstance serviceInstance = null;
             var nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
             if (nextInstanceIndex >= availableServiceInstances.Count)
             {
                 nextInstanceIndex = 0;
             }
 
-            serviceInstance = availableServiceInstances[nextInstanceIndex];
+            // get next instance, or wrap back to first instance if we reach the end of the list
+            var serviceInstance = availableServiceInstances[nextInstanceIndex];
             _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
             await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
             return new Uri(serviceInstance.Uri, request.PathAndQuery);

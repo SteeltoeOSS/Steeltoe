@@ -28,8 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                     {
                         // eligible for caching - might be the initial, or might be from cache
                         var key = new CommandAndCacheKey(execution.CommandKey.Name, execution.PublicCacheKey);
-                        var count = -1;
-                        if (cachingDetector.TryGetValue(key, out count))
+                        if (cachingDetector.TryGetValue(key, out var count))
                         {
                             // key already seen
                             cachingDetector[key] = count + 1;

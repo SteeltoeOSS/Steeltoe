@@ -232,7 +232,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
             public bool CommandCreated = false;
 
             private readonly int arg;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public static Collapser From(ITestOutputHelper output, int arg)
             {
@@ -295,8 +295,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
         internal class BatchCommand : HystrixCommand<List<int>>
         {
-            private List<int> args;
-            private ITestOutputHelper output;
+            private readonly List<int> args;
+            private readonly ITestOutputHelper output;
 
             public BatchCommand(ITestOutputHelper output, List<int> args)
              : base(HystrixCommandGroupKeyDefault.AsKey("BATCH"))

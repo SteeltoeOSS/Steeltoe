@@ -8,7 +8,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,9 +19,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest, IDisposable
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("CommandLatency");
+        private readonly ITestOutputHelper output;
         private RollingCommandLatencyDistributionStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<CachedValuesHistogram>
         {

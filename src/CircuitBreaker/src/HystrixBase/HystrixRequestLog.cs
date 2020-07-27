@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         protected internal const int MAX_STORAGE = 1000;
-        private BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
+        private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
 
         internal HystrixRequestLog()
         {

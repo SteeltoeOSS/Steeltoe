@@ -20,8 +20,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Dashboard");
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("DashboardCommand");
-        private ITestOutputHelper output;
-        private HystrixDashboardStream stream;
+        private readonly ITestOutputHelper output;
+        private readonly HystrixDashboardStream stream;
 
         public HystrixDashboardStreamTest(ITestOutputHelper output)
             : base()

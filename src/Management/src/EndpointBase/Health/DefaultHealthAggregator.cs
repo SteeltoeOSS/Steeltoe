@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var result = new HealthCheckResult();
             foreach (var contributor in contributors)
             {
-                HealthCheckResult h = null;
+                HealthCheckResult h;
                 try
                 {
                     h = contributor.Health();

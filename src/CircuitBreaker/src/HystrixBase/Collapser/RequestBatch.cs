@@ -21,8 +21,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>>();
         private readonly IHystrixCollapserOptions _properties;
 
-        private ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private readonly ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
 
         public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, int maxBatchSize)
         {
@@ -332,7 +332,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                         _nullArg.Value = null;
                     }
 
-                    if (_argumentMap.TryRemove(arg, out var existing))
+                    if (_argumentMap.TryRemove(arg, out _))
                     {
                         // Log
                     }

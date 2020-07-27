@@ -52,14 +52,18 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(HealthStatus.DOWN, result.Status);
             Assert.Equal("No instances found", result.Details["foobar"]);
 
-            result = new HealthCheckResult();
-            result.Status = HealthStatus.UP;
+            result = new HealthCheckResult
+            {
+                Status = HealthStatus.UP
+            };
             contrib.AddApplicationHealthStatus("app1", app1, result);
             Assert.Equal(HealthStatus.UP, result.Status);
             Assert.Equal("2 instances with UP status", result.Details["app1"]);
 
-            result = new HealthCheckResult();
-            result.Status = HealthStatus.UP;
+            result = new HealthCheckResult
+            {
+                Status = HealthStatus.UP
+            };
             contrib.AddApplicationHealthStatus("app2", app2, result);
             Assert.Equal(HealthStatus.DOWN, result.Status);
             Assert.Equal("0 instances with UP status", result.Details["app2"]);

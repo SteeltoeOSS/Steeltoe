@@ -23,9 +23,9 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
         private const string DIAGNOSTIC_NAME = "Steeltoe.Owin";
-        private static DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        private ILogger<TraceDiagnosticObserver> _logger;
-        private ITraceOptions _options;
+        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private readonly ILogger<TraceDiagnosticObserver> _logger;
+        private readonly ITraceOptions _options;
 
         public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
@@ -238,7 +238,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal long GetJavaTime(long ticks)
         {
-            var javaTicks = ticks - baseTime.Ticks;
+            var javaTicks = ticks - BaseTime.Ticks;
             return javaTicks / 10000;
         }
 

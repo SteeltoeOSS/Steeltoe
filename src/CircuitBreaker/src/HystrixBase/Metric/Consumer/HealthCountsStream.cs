@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static void RemoveByKey(IHystrixCommandKey key)
         {
-            Streams.TryRemove(key.Name, out var old);
+            Streams.TryRemove(key.Name, out _);
         }
 
         internal static HealthCountsStream GetInstance(string commandKey)

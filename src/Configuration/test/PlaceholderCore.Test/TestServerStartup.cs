@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
     {
         public static IServiceProvider ServiceProvider { get; set; }
 
-        private IConfiguration _configuration;
+        private readonly IConfiguration _configuration;
 
         public TestServerStartup(IConfiguration config)
         {

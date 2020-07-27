@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 {
     public class HystrixConfigurationStream
     {
-        private static int dataEmissionIntervalInMs = 5000;
+        private static readonly int DataEmissionIntervalInMs = 5000;
         private readonly IObservable<HystrixConfiguration> _allConfigurationStream;
         private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
 
@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 
         // The data emission interval is looked up on startup only
         private static readonly HystrixConfigurationStream INSTANCE =
-                    new HystrixConfigurationStream(dataEmissionIntervalInMs);
+                    new HystrixConfigurationStream(DataEmissionIntervalInMs);
 
         public static HystrixConfigurationStream GetInstance()
         {

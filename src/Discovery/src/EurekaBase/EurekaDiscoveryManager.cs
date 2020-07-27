@@ -9,8 +9,8 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaDiscoveryManager : DiscoveryManager
     {
-        private IOptionsMonitor<EurekaClientOptions> _clientConfig;
-        private IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+        private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
+        private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
         // Constructor used via Dependency Injection
         public EurekaDiscoveryManager(

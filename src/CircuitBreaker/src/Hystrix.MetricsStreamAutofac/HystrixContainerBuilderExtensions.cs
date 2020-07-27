@@ -19,8 +19,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     public static class HystrixContainerBuilderExtensions
     {
         private const string HYSTRIX_STREAM_PREFIX = "hystrix:stream";
-        private static string[] rabbitAssemblies = new string[] { "RabbitMQ.Client" };
-        private static string[] rabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
+        private static readonly string[] RabbitAssemblies = new string[] { "RabbitMQ.Client" };
+        private static readonly string[] RabbitTypeNames = new string[] { "RabbitMQ.Client.ConnectionFactory" };
 
         public static void RegisterHystrixMetricsStream(this ContainerBuilder container, IConfiguration config)
         {
@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(container));
             }
 
-            var rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
+            var rabbitFactory = ConnectorHelpers.FindType(RabbitAssemblies, RabbitTypeNames);
             if (rabbitFactory == null)
             {
                 throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");

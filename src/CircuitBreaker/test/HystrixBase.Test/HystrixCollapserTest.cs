@@ -1931,9 +1931,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     }
                 }
 
-                var shards = new List<ICollection<ICollapsedRequest<string, string>>>();
-                shards.Add(typeA);
-                shards.Add(typeB);
+                var shards = new List<ICollection<ICollapsedRequest<string, string>>>
+                {
+                    typeA,
+                    typeB
+                };
                 return shards;
             }
         }
@@ -1990,7 +1992,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestCollapserCommand : TestHystrixCommand<List<string>>
         {
             private readonly ICollection<ICollapsedRequest<string, string>> requests;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public TestCollapserCommand(ITestOutputHelper output, ICollection<ICollapsedRequest<string, string>> requests)
                 : base(TestPropsBuilder().SetCommandOptionDefaults(GetCommandOptions()))
@@ -2079,7 +2081,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class ShortCircuitedCommand : HystrixCommand<List<string>>
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public ShortCircuitedCommand(ITestOutputHelper output)
                 : base(GetCommandOptions())
@@ -2092,8 +2094,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 output.WriteLine("*** execution (this shouldn't happen)");
 
                 // this won't ever get called as we're forcing short-circuiting
-                var values = new List<string>();
-                values.Add("hello");
+                var values = new List<string>
+                {
+                    "hello"
+                };
                 return values;
             }
 
@@ -2110,7 +2114,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class FireAndForgetCommand : HystrixCommand<object>
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public FireAndForgetCommand(ITestOutputHelper output, List<int> values)
                 : base(GetCommandOptions())
@@ -2136,8 +2140,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestCollapserTimer : ICollapserTimer
         {
             public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ConcurrentDictionary<ATask, ATask>();
-            private object _lock = new object();
-            private ITestOutputHelper output;
+            private readonly object _lock = new object();
+            private readonly ITestOutputHelper output;
 
             public TestCollapserTimer(ITestOutputHelper output)
             {
@@ -2168,7 +2172,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestTimerReference : TimerReference
         {
-            private TestCollapserTimer ctimer;
+            private readonly TestCollapserTimer ctimer;
 
             public TestTimerReference(TestCollapserTimer ctimer, ITimerListener listener, TimeSpan period)
                 : base(listener, period)
@@ -2199,8 +2203,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public volatile int Time = 0;
             public volatile int ExecutionCount = 0;
             private readonly int delay = 10;
-            private object _lock = new object();
-            private ITestOutputHelper output;
+            private readonly object _lock = new object();
+            private readonly ITestOutputHelper output;
 
             public ATask(ITestOutputHelper output, TestTimerListener task)
             {
@@ -2277,7 +2281,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestCollapserWithVoidResponseType : HystrixCollapser<object, object, int>
         {
             private readonly int value;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public TestCollapserWithVoidResponseType(ITestOutputHelper output, ICollapserTimer timer, int value)
                 : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
@@ -2321,7 +2325,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests : HystrixCollapser<object, object, int>
         {
             private readonly int value;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public TestCollapserWithVoidResponseTypeAndMissingMapResponseToRequests(ITestOutputHelper output, ICollapserTimer timer, int value)
                 : base(CollapserKeyFromString(timer), RequestCollapserScope.REQUEST, timer, GetCollapserOptions(CollapserKeyFromString(timer)))
@@ -2373,7 +2377,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class MyCommand : HystrixCommand<List<Pair<string, int>>>
         {
             private readonly List<string> args;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public MyCommand(ITestOutputHelper output, List<string> args)
                 : base(GetCommandOptions())
@@ -2407,7 +2411,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class MyCollapser : HystrixCollapser<List<Pair<string, int>>, int, string>
         {
             private readonly string arg;
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public MyCollapser(ITestOutputHelper output, string arg, bool reqCacheEnabled)
                 : base(
@@ -2484,8 +2488,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestSubscriber<T> : ObserverBase<T>, IDisposable
         {
-            private CountdownEvent latch = new CountdownEvent(1);
-            private ITestOutputHelper output;
+            private readonly CountdownEvent latch = new CountdownEvent(1);
+            private readonly ITestOutputHelper output;
             private int completions = 0;
 
             public TestSubscriber(ITestOutputHelper output)

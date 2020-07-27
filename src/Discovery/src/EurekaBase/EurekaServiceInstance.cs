@@ -11,7 +11,7 @@ namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaServiceInstance : IServiceInstance
     {
-        private InstanceInfo _info;
+        private readonly InstanceInfo _info;
 
         public EurekaServiceInstance(InstanceInfo info)
         {

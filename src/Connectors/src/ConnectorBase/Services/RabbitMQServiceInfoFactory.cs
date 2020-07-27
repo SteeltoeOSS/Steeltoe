@@ -11,7 +11,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public static readonly Tags RABBIT_SERVICE_TAGS = new Tags("rabbit");
 
-        private static string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
+        private static readonly string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 
         public RabbitMQServiceInfoFactory()
             : base(RABBIT_SERVICE_TAGS, _scheme)

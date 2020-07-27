@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                         (agg) => { return builder.WithType("histogram"); }, // Func<IMean, M> p2,
                         (agg) => { return builder.WithType("histogram"); }, // Func< IDistribution, M > p3,
                         (agg) => { return builder.WithType("gauge"); }, // Func<ILastValue, M> p4,
-                        (agg) => { return builder.WithType("gauge"); }); // Func< IAggregation, M > p6);
+                        (agg) => { return builder.WithType("gauge"); }); // Func< IAggregation, M > p6)
 
                     foreach (var value in data.AggregationMap)
                     {

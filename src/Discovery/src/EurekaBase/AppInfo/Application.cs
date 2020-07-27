@@ -78,9 +78,9 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void Remove(InstanceInfo info)
         {
-            if (!InstanceMap.TryRemove(info.InstanceId, out var removed))
+            if (!InstanceMap.TryRemove(info.InstanceId, out _))
             {
-                InstanceMap.TryRemove(info.HostName, out removed);
+                _ = InstanceMap.TryRemove(info.HostName, out _);
             }
         }
 

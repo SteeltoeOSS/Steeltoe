@@ -18,11 +18,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal readonly BucketCircularArray _buckets;
         internal readonly CumulativeSum _cumulativeSum = new CumulativeSum();
 
-        private static ITime actual_time = new ActualTime();
+        private static readonly ITime Actual_time = new ActualTime();
         private readonly ITime _time;
 
         public HystrixRollingNumber(int timeInMilliseconds, int numberOfBuckets)
-            : this(actual_time, timeInMilliseconds, numberOfBuckets)
+            : this(Actual_time, timeInMilliseconds, numberOfBuckets)
         {
         }
 
@@ -151,7 +151,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        private object _newBucketLock = new object();
+        private readonly object _newBucketLock = new object();
 
         /* package for testing */
         internal Bucket GetCurrentBucket()

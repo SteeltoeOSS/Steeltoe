@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<string, DbMigrationsDescriptor>>
     {
-        private RequestDelegate _next;
+        private readonly RequestDelegate _next;
 
         public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
             : base(endpoint, mgmtOptions, logger: logger)

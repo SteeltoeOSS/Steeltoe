@@ -14,8 +14,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     public class JwtHeaderEndpointBehavior : BehaviorExtensionElement, IEndpointBehavior
     {
         private const string SSOPropertyName = "ssoName";
-        private CloudFoundryOptions _options;
-        private string _userToken;
+        private readonly CloudFoundryOptions _options;
+        private readonly string _userToken;
 
         public JwtHeaderEndpointBehavior(CloudFoundryOptions options, string userToken = null)
         {

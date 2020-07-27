@@ -34,9 +34,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         };
 
 #if NETCOREAPP3_1
-        private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
+        private readonly IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
 #else
-        private Microsoft.Extensions.Hosting.IHostingEnvironment host = (Microsoft.Extensions.Hosting.IHostingEnvironment)HostingHelpers.GetHostingEnvironment();
+        private readonly Microsoft.Extensions.Hosting.IHostingEnvironment host = (Microsoft.Extensions.Hosting.IHostingEnvironment)HostingHelpers.GetHostingEnvironment();
 #endif
 
         [Fact]

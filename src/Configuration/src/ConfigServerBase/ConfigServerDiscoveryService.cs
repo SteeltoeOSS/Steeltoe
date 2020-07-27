@@ -60,8 +60,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             var attempts = 0;
             var backOff = _settings.RetryInitialInterval;
-            IList<IServiceInstance> instances = null;
-
+            IList<IServiceInstance> instances;
             do
             {
                 instances = null;

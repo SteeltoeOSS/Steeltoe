@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Services;
 using System;
-using System.Reflection;
 
 namespace Steeltoe.CloudFoundry.Connector.Redis
 {
@@ -19,7 +18,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
 
             var redisConfig = new RedisCacheConnectorOptions(config);
-            return config.CreateRedisServiceConnectorFactory(config, serviceName);
+            return config.CreateRedisServiceConnectorFactory(redisConfig, serviceName);
         }
 
         public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration, string serviceName = null)

@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 {
     public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixMetricsPublisherFactoryTest(ITestOutputHelper output)
             : base()
@@ -88,7 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class MyHystrixMetricsPublisherCommand : IHystrixMetricsPublisherCommand
         {
-            private AtomicInteger commandCounter;
+            private readonly AtomicInteger commandCounter;
 
             public MyHystrixMetricsPublisherCommand(AtomicInteger commandCounter)
             {
@@ -103,7 +103,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class MyHystrixMetricsPublisherThreadPool : IHystrixMetricsPublisherThreadPool
         {
-            private AtomicInteger threadCounter;
+            private readonly AtomicInteger threadCounter;
 
             public MyHystrixMetricsPublisherThreadPool(AtomicInteger threadCounter)
             {
@@ -156,7 +156,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class CustomPublisher : HystrixMetricsPublisher
         {
-            private IHystrixMetricsPublisherCommand commandToReturn;
+            private readonly IHystrixMetricsPublisherCommand commandToReturn;
 
             public CustomPublisher(IHystrixMetricsPublisherCommand commandToReturn)
             {

@@ -34,10 +34,12 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestBoundariesDoesNotChangeWithOriginalList()
         {
-            var original = new List<double>();
-            original.Add(0.0);
-            original.Add(1.0);
-            original.Add(2.0);
+            var original = new List<double>
+            {
+                0.0,
+                1.0,
+                2.0
+            };
             var bucketBoundaries = BucketBoundaries.Create(original);
             original[2] = 3.0;
             original.Add(4.0);

@@ -82,12 +82,13 @@ namespace OpenCensus.Stats.Test
                     MutableCount.Create(),
                     MutableMean.Create(),
                     MutableDistribution.Create(bucketBoundaries),};
-            var aggregates = new List<IAggregationData>();
-
-            aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_DOUBLE));
-            aggregates.Add(MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_LONG));
-            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_DOUBLE));
-            aggregates.Add(MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_LONG));
+            var aggregates = new List<IAggregationData>
+            {
+                MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_DOUBLE),
+                MutableViewData.CreateAggregationData(MutableSum.Create(), MEASURE_LONG),
+                MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_DOUBLE),
+                MutableViewData.CreateAggregationData(MutableLastValue.Create(), MEASURE_LONG)
+            };
 
             foreach (var mutableAggregation in mutableAggregations)
             {

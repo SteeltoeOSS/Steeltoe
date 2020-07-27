@@ -28,9 +28,9 @@ namespace OpenCensus.Trace
     /// </summary>
     public sealed class Tracing
     {
-        private static Tracing tracing = new Tracing(true);
+        private static readonly Tracing tracing = new Tracing(true);
 
-        private ITraceComponent traceComponent = null;
+        private readonly ITraceComponent traceComponent = null;
 
         internal Tracing(bool enabled)
         {

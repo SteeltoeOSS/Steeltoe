@@ -12,8 +12,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
     public class HystrixServiceCollectionExtensionsTest
     {
-        private IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("DummyCommand");
-        private IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("DummyCommand");
+        private readonly IHystrixCommandGroupKey groupKey = HystrixCommandGroupKeyDefault.AsKey("DummyCommand");
+        private readonly IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("DummyCommand");
 
         [Fact]
         public void AddHystrixCommand_ThrowsIfServiceContainerNull()

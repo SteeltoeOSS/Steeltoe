@@ -70,8 +70,6 @@ namespace OpenCensus.Resources
             }
             catch (SecurityException ex)
             {
-                openCensusEnvironmentTags = string.Empty;
-
                 Log.FailedReadingEnvironmentVariableWarning(Constants.ResourceLabelsEnvironmentVariable, ex);
             }
 

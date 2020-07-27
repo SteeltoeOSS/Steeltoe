@@ -19,8 +19,8 @@ namespace Steeltoe.Common.Security
 {
     public class PemConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
     {
-        private IConfiguration _config;
-        private ILogger _logger;
+        private readonly IConfiguration _config;
+        private readonly ILogger _logger;
 
         public PemConfigureCertificateOptions(IConfiguration config, ILogger logger = null)
         {

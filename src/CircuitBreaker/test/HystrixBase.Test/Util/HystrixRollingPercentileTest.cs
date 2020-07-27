@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         private static readonly int TimeInMilliseconds = 60000;
         private static readonly int NumberOfBuckets = 12; // 12 buckets at 5000ms each
         private static readonly int BucketDataLength = 1000;
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixRollingPercentileTest(ITestOutputHelper output)
         {

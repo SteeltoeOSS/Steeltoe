@@ -185,7 +185,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 foreach (var instance in app.Instances)
                 {
-                    string instanceVipAddress = null;
+                    string instanceVipAddress;
                     if (secure)
                     {
                         instanceVipAddress = instance.SecureVipAddress;
@@ -326,7 +326,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<bool> FetchRegistryAsync(bool fullUpdate)
         {
-            Applications fetched = null;
+            Applications fetched;
             try
             {
                 if (fullUpdate ||
@@ -464,9 +464,9 @@ namespace Steeltoe.Discovery.Eureka
         protected internal async T.Task<Applications> FetchFullRegistryAsync()
         {
             var startingCounter = _registryFetchCounter;
-            EurekaHttpResponse<Applications> resp = null;
             Applications fetched = null;
 
+            EurekaHttpResponse<Applications> resp;
             if (string.IsNullOrEmpty(ClientConfig.RegistryRefreshSingleVipAddress))
             {
                 resp = await HttpClient.GetApplicationsAsync().ConfigureAwait(false);

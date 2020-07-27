@@ -23,8 +23,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         public volatile bool StreamRunning = false;
 
-        private CountdownEvent latch;
-        private ITestOutputHelper output;
+        private readonly CountdownEvent latch;
+        private readonly ITestOutputHelper output;
 
         public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
         {

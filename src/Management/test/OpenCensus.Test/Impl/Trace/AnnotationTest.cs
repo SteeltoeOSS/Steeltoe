@@ -52,9 +52,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromDescriptionAndAttributes()
         {
-            var attributes = new Dictionary<string, IAttributeValue>();
-            attributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
+            var attributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") }
+            };
             var annotation = Annotation.FromDescriptionAndAttributes("MyAnnotationText", attributes);
             Assert.Equal("MyAnnotationText", annotation.Description);
             Assert.Equal(attributes, annotation.Attributes);
@@ -94,9 +95,10 @@ namespace OpenCensus.Trace.Test
         {
             var annotation = Annotation.FromDescription("MyAnnotationText");
             Assert.Contains("MyAnnotationText", annotation.ToString());
-            var attributes = new Dictionary<string, IAttributeValue>();
-            attributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
+            var attributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") }
+            };
             annotation = Annotation.FromDescriptionAndAttributes("MyAnnotationText2", attributes);
             Assert.Contains("MyAnnotationText2", annotation.ToString());
             Assert.Contains(Collections.ToString(attributes), annotation.ToString());
