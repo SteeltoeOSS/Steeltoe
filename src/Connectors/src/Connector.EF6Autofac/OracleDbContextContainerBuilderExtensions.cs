@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<OracleServiceInfo>()
                 : config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 

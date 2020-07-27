@@ -84,7 +84,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void SpanData_AllValues()
         {
-            ISpanData spanData =
+            var spanData =
                 SpanData.Create(
                     spanContext,
                     parentSpanId,
@@ -148,7 +148,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void SpanData_RootActiveSpan()
         {
-            ISpanData spanData =
+            var spanData =
                 SpanData.Create(
                     spanContext,
                     null,
@@ -180,7 +180,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void SpanData_AllDataEmpty()
         {
-            ISpanData spanData =
+            var spanData =
                 SpanData.Create(
                     spanContext,
                     parentSpanId,
@@ -213,7 +213,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void SpanDataEquals()
         {
-            ISpanData allSpanData1 =
+            var allSpanData1 =
                 SpanData.Create(
                     spanContext,
                     parentSpanId,
@@ -228,7 +228,7 @@ namespace OpenCensus.Trace.Export.Test
                     status,
                     kind,
                     endTimestamp);
-            ISpanData allSpanData2 =
+            var allSpanData2 =
                 SpanData.Create(
                     spanContext,
                     parentSpanId,
@@ -243,7 +243,7 @@ namespace OpenCensus.Trace.Export.Test
                     status,
                     kind,
                     endTimestamp);
-            ISpanData emptySpanData =
+            var emptySpanData =
                 SpanData.Create(
                     spanContext,
                     parentSpanId,
@@ -268,7 +268,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void SpanData_ToString()
         {
-            string spanDataString =
+            var spanDataString =
                 SpanData.Create(
                         spanContext,
                         parentSpanId,

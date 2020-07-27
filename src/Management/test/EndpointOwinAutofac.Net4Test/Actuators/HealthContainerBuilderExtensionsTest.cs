@@ -20,9 +20,9 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         {
             // Arrange
             ContainerBuilder containerNull = null;
-            ContainerBuilder containerBuilder = new ContainerBuilder();
+            var containerBuilder = new ContainerBuilder();
             IConfigurationRoot configNull = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             var ex = Assert.Throws<ArgumentNullException>(() => HealthContainerBuilderExtensions.RegisterHealthActuator(containerNull, config));
@@ -37,8 +37,8 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         public void RegisterHealthMiddleware_RegistersComponents()
         {
             // Arrange
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var containerBuilder = new ContainerBuilder();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             HealthContainerBuilderExtensions.RegisterHealthActuator(containerBuilder, config);

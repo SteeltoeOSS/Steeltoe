@@ -17,9 +17,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
         [Fact]
         public void RegisterHystrixCommand_ThrowsIfContainerBuilderNull()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
-            string stringKey = "DummyCommand";
+            var stringKey = "DummyCommand";
 
             var ex = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(null, groupKey, null));
             Assert.Contains(nameof(container), ex.Message);
@@ -42,9 +42,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
         [Fact]
         public void RegisterHystrixCommand_ThrowsIfGroupKeyNull()
         {
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
-            string stringKey = "DummyCommand";
+            var stringKey = "DummyCommand";
 
             var ex = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services, (IHystrixCommandGroupKey)null, null));
             Assert.Contains(nameof(groupKey), ex.Message);
@@ -67,9 +67,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
         [Fact]
         public void RegisterHystrixComman_ThrowsIfConfigNull()
         {
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
-            string stringKey = "DummyCommand";
+            var stringKey = "DummyCommand";
 
             var ex = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services, groupKey, null));
             Assert.Contains(nameof(config), ex.Message);
@@ -92,9 +92,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
         [Fact]
         public void RegisterHystrixCommand_ThrowsIfCommandKeyNull()
         {
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
-            string stringKey = "DummyCommand";
+            var stringKey = "DummyCommand";
 
             var ex5 = Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services, groupKey, null, null));
             Assert.Contains(nameof(commandKey), ex5.Message);
@@ -109,7 +109,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Autofac.Test
         [Fact]
         public void RegisterHystrixCommand_AddsToContainer()
         {
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
             HystrixContainerBuilderExtensions.RegisterHystrixCommand<DummyCommand>(services, groupKey, config);
             var provider = services.Build();

@@ -46,23 +46,23 @@ namespace OpenCensus.Trace
             {
                 this.span = span;
                 this.endSpan = endSpan;
-                this.origContext = asyncLocalContext.Value;
+                origContext = asyncLocalContext.Value;
                 asyncLocalContext.Value = span;
             }
 
             public void Dispose()
             {
                 var current = asyncLocalContext.Value;
-                asyncLocalContext.Value = this.origContext;
+                asyncLocalContext.Value = origContext;
 
-                if (current != this.origContext)
+                if (current != origContext)
                 {
                     // Log
                 }
 
-                if (this.endSpan)
+                if (endSpan)
                 {
-                    this.span.End();
+                    span.End();
                 }
             }
         }

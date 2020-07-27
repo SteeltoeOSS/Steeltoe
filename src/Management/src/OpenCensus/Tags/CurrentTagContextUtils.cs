@@ -37,16 +37,16 @@ namespace OpenCensus.Tags
 
             public WithTagContextScope(ITagContext tags)
             {
-                this.origContext = AsyncLocalContext.CurrentTagContext;
+                origContext = AsyncLocalContext.CurrentTagContext;
                 AsyncLocalContext.CurrentTagContext = tags;
             }
 
             public void Dispose()
             {
                 var current = AsyncLocalContext.CurrentTagContext;
-                AsyncLocalContext.CurrentTagContext = this.origContext;
+                AsyncLocalContext.CurrentTagContext = origContext;
 
-                if (current != this.origContext)
+                if (current != origContext)
                 {
                     // Log
                 }

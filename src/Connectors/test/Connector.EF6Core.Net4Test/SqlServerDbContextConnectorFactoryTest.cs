@@ -14,7 +14,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
         public void Constructor_ThrowsIfTypeNull()
         {
             // Arrange
-            SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions();
+            var config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
             Type dbContextType = null;
 
@@ -27,9 +27,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
         public void Create_ThrowsIfNoValidConstructorFound()
         {
             // Arrange
-            SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions();
+            var config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
-            Type dbContextType = typeof(BadSqlServerDbContext);
+            var dbContextType = typeof(BadSqlServerDbContext);
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));
@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            SqlServerProviderConnectorOptions config = new SqlServerProviderConnectorOptions()
+            var config = new SqlServerProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1433,
@@ -47,11 +47,11 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
                 Username = "username",
                 Database = "database"
             };
-            SqlServerServiceInfo si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
+            var si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodSqlServerDbContext));
             var context = factory.Create(null);
             Assert.NotNull(context);
-            GoodSqlServerDbContext gcontext = context as GoodSqlServerDbContext;
+            var gcontext = context as GoodSqlServerDbContext;
             Assert.NotNull(gcontext);
         }
     }

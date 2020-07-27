@@ -65,7 +65,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void ToSpanData_NoRecordEvents()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     noRecordSpanOptions,
@@ -91,7 +91,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void NoEventsRecordedAfterEnd()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -114,7 +114,7 @@ namespace OpenCensus.Trace.Test
             span.AddMessageEvent(
                 MessageEvent.Builder(MessageEventType.Received, 1).SetUncompressedMessageSize(3).Build());
             span.AddLink(Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan));
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(timestamp, spanData.StartTimestamp);
             Assert.Empty(spanData.Attributes.AttributeMap);
             Assert.Empty(spanData.Annotations.Events);
@@ -147,7 +147,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void ToSpanData_ActiveSpan()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -168,13 +168,13 @@ namespace OpenCensus.Trace.Test
             testClock.AdvanceTime(Duration.Create(0, 100));
             span.AddAnnotation(ANNOTATION_DESCRIPTION, attributes);
             testClock.AdvanceTime(Duration.Create(0, 100));
-            IMessageEvent networkEvent =
+            var networkEvent =
                 MessageEvent.Builder(MessageEventType.Received, 1).SetUncompressedMessageSize(3).Build();
             span.AddMessageEvent(networkEvent);
             testClock.AdvanceTime(Duration.Create(0, 100));
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
             span.AddLink(link);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(spanContext, spanData.Context);
             Assert.Equal(SPAN_NAME, spanData.Name);
             Assert.Equal(parentSpanId, spanData.ParentSpanId);
@@ -206,7 +206,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void GoSpanData_EndedSpan()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -227,15 +227,15 @@ namespace OpenCensus.Trace.Test
             testClock.AdvanceTime(Duration.Create(0, 100));
             span.AddAnnotation(ANNOTATION_DESCRIPTION, attributes);
             testClock.AdvanceTime(Duration.Create(0, 100));
-            IMessageEvent networkEvent =
+            var networkEvent =
                 MessageEvent.Builder(MessageEventType.Received, 1).SetUncompressedMessageSize(3).Build();
             span.AddMessageEvent(networkEvent);
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
             span.AddLink(link);
             testClock.AdvanceTime(Duration.Create(0, 100));
             span.End(EndSpanOptions.Builder().SetStatus(Status.Cancelled).Build());
           
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(spanContext, spanData.Context);
             Assert.Equal(SPAN_NAME, spanData.Name);
             Assert.Equal(parentSpanId, spanData.ParentSpanId);
@@ -268,7 +268,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void Status_ViaSetStatus()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -294,7 +294,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void status_ViaEndSpanOptions()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -320,10 +320,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DroppingAttributes()
         {
-            int maxNumberOfAttributes = 8;
-            TraceParams traceParams =
+            var maxNumberOfAttributes = 8;
+            var traceParams =
                 TraceParams.Default.ToBuilder().SetMaxNumberOfAttributes(maxNumberOfAttributes).Build();
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -334,16 +334,16 @@ namespace OpenCensus.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            for (int i = 0; i < 2 * maxNumberOfAttributes; i++)
+            for (var i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
                 IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
                 attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
                 span.PutAttributes(attributes);
             }
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
-            for (int i = 0; i < maxNumberOfAttributes; i++)
+            for (var i = 0; i < maxNumberOfAttributes; i++)
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
@@ -355,7 +355,7 @@ namespace OpenCensus.Trace.Test
             spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
-            for (int i = 0; i < maxNumberOfAttributes; i++)
+            for (var i = 0; i < maxNumberOfAttributes; i++)
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
@@ -368,10 +368,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DroppingAndAddingAttributes()
         {
-            int maxNumberOfAttributes = 8;
-            TraceParams traceParams =
+            var maxNumberOfAttributes = 8;
+            var traceParams =
                 TraceParams.Default.ToBuilder().SetMaxNumberOfAttributes(maxNumberOfAttributes).Build();
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -382,16 +382,16 @@ namespace OpenCensus.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            for (int i = 0; i < 2 * maxNumberOfAttributes; i++)
+            for (var i = 0; i < 2 * maxNumberOfAttributes; i++)
             {
                 IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
                 attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
                 span.PutAttributes(attributes);
             }
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
-            for (int i = 0; i < maxNumberOfAttributes; i++)
+            for (var i = 0; i < maxNumberOfAttributes; i++)
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes),
@@ -399,7 +399,7 @@ namespace OpenCensus.Trace.Test
                             .Attributes
                             .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes)]);
             }
-            for (int i = 0; i < maxNumberOfAttributes / 2; i++)
+            for (var i = 0; i < maxNumberOfAttributes / 2; i++)
             {
                 IDictionary<String, IAttributeValue> attributes = new Dictionary<String, IAttributeValue>();
                 attributes.Add("MyStringAttributeKey" + i, AttributeValue.LongAttributeValue(i));
@@ -409,7 +409,7 @@ namespace OpenCensus.Trace.Test
             Assert.Equal(maxNumberOfAttributes * 3 / 2, spanData.Attributes.DroppedAttributesCount);
             Assert.Equal(maxNumberOfAttributes, spanData.Attributes.AttributeMap.Count);
             // Test that we still have in the attributes map the latest maxNumberOfAttributes / 2 entries.
-            for (int i = 0; i < maxNumberOfAttributes / 2; i++)
+            for (var i = 0; i < maxNumberOfAttributes / 2; i++)
             {
                 Assert.Equal(
                     AttributeValue.LongAttributeValue(i + maxNumberOfAttributes * 3 / 2),
@@ -418,7 +418,7 @@ namespace OpenCensus.Trace.Test
                             .AttributeMap["MyStringAttributeKey" + (i + maxNumberOfAttributes * 3 / 2)]);
             }
             // Test that we have the newest re-added initial entries.
-            for (int i = 0; i < maxNumberOfAttributes / 2; i++)
+            for (var i = 0; i < maxNumberOfAttributes / 2; i++)
             {
                 Assert.Equal(AttributeValue.LongAttributeValue(i), spanData.Attributes.AttributeMap["MyStringAttributeKey" + i]);
             }
@@ -427,10 +427,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DroppingAnnotations()
         {
-            int maxNumberOfAnnotations = 8;
-            TraceParams traceParams =
+            var maxNumberOfAnnotations = 8;
+            var traceParams =
                 TraceParams.Default.ToBuilder().SetMaxNumberOfAnnotations(maxNumberOfAnnotations).Build();
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -441,14 +441,14 @@ namespace OpenCensus.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            IAnnotation annotation = Annotation.FromDescription(ANNOTATION_DESCRIPTION);
-            int i = 0;
+            var annotation = Annotation.FromDescription(ANNOTATION_DESCRIPTION);
+            var i = 0;
             for (i = 0; i < 2 * maxNumberOfAnnotations; i++)
             {
                 span.AddAnnotation(annotation);
                 testClock.AdvanceTime(Duration.Create(0, 100));
             }
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.DroppedEventsCount);
             Assert.Equal(maxNumberOfAnnotations, spanData.Annotations.Events.Count());
             i = 0;
@@ -474,13 +474,13 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DroppingNetworkEvents()
         {
-            int maxNumberOfNetworkEvents = 8;
-            TraceParams traceParams =
+            var maxNumberOfNetworkEvents = 8;
+            var traceParams =
                 TraceParams.Default
                     .ToBuilder()
                     .SetMaxNumberOfMessageEvents(maxNumberOfNetworkEvents)
                     .Build();
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -491,18 +491,18 @@ namespace OpenCensus.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            IMessageEvent networkEvent =
+            var networkEvent =
                 MessageEvent.Builder(MessageEventType.Received, 1).SetUncompressedMessageSize(3).Build();
-            for (int i = 0; i < 2 * maxNumberOfNetworkEvents; i++)
+            for (var i = 0; i < 2 * maxNumberOfNetworkEvents; i++)
             {
                 span.AddMessageEvent(networkEvent);
                 testClock.AdvanceTime(Duration.Create(0, 100));
             }
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.DroppedEventsCount);
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.Events.Count());
             var list = spanData.MessageEvents.Events.ToList();
-            for (int i = 0; i < maxNumberOfNetworkEvents; i++)
+            for (var i = 0; i < maxNumberOfNetworkEvents; i++)
             {
                 Assert.Equal(timestamp.AddNanos(100 * (maxNumberOfNetworkEvents + i)), list[i].Timestamp);
                 Assert.Equal(networkEvent, list[i].Event);
@@ -512,7 +512,7 @@ namespace OpenCensus.Trace.Test
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.DroppedEventsCount);
             Assert.Equal(maxNumberOfNetworkEvents, spanData.MessageEvents.Events.Count());
             list = spanData.MessageEvents.Events.ToList();
-            for (int i = 0; i < maxNumberOfNetworkEvents; i++)
+            for (var i = 0; i < maxNumberOfNetworkEvents; i++)
             {
                 Assert.Equal(timestamp.AddNanos(100 * (maxNumberOfNetworkEvents + i)), list[i].Timestamp);
                 Assert.Equal(networkEvent, list[i].Event);
@@ -522,10 +522,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void DroppingLinks()
         {
-            int maxNumberOfLinks = 8;
-            TraceParams traceParams =
+            var maxNumberOfLinks = 8;
+            var traceParams =
                 TraceParams.Default.ToBuilder().SetMaxNumberOfLinks(maxNumberOfLinks).Build();
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -536,12 +536,12 @@ namespace OpenCensus.Trace.Test
                     startEndHandler,
                     timestampConverter,
                     testClock);
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
-            for (int i = 0; i < 2 * maxNumberOfLinks; i++)
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
+            for (var i = 0; i < 2 * maxNumberOfLinks; i++)
             {
                 span.AddLink(link);
             }
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(maxNumberOfLinks, spanData.Links.DroppedLinksCount);
             Assert.Equal(maxNumberOfLinks, spanData.Links.Links.Count());
             foreach (var actualLink in spanData.Links.Links)
@@ -561,7 +561,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void SampleToLocalSpanStore()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -575,7 +575,7 @@ namespace OpenCensus.Trace.Test
             span.End(EndSpanOptions.Builder().SetSampleToLocalSpanStore(true).Build());
 
             Assert.True(((Span)span).IsSampleToLocalSpanStore);
-            ISpan span2 =
+            var span2 =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,
@@ -600,7 +600,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void SampleToLocalSpanStore_RunningSpan()
         {
-            ISpan span =
+            var span =
                 Span.StartSpan(
                     spanContext,
                     recordSpanOptions,

@@ -21,11 +21,11 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         {
             // Arrange
             ContainerBuilder containerNull = null;
-            ContainerBuilder containerBuilder = new ContainerBuilder();
+            var containerBuilder = new ContainerBuilder();
             IConfigurationRoot configNull = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
             ApiExplorer apiExplorerNull = null;
-            ApiExplorer apiExplorer = new ApiExplorer(new HttpConfiguration());
+            var apiExplorer = new ApiExplorer(new HttpConfiguration());
 
             // Act
             var ex = Assert.Throws<ArgumentNullException>(() => MappingsContainerBuilderExtensions.RegisterMappingsActuator(containerNull, config, apiExplorer));
@@ -42,9 +42,9 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         public void RegisterMappingsMiddleware_RegistersComponents()
         {
             // Arrange
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
-            ApiExplorer apiExplorer = new ApiExplorer(new HttpConfiguration());
+            var containerBuilder = new ContainerBuilder();
+            var config = new ConfigurationBuilder().Build();
+            var apiExplorer = new ApiExplorer(new HttpConfiguration());
 
             // Act
             MappingsContainerBuilderExtensions.RegisterMappingsActuator(containerBuilder, config, apiExplorer);

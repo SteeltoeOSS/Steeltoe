@@ -33,7 +33,7 @@ namespace OpenCensus.Stats
 
         internal override void Add(double value)
         {
-            this.Count++;
+            Count++;
         }
 
         internal override void Combine(MutableAggregation other, double fraction)
@@ -44,8 +44,8 @@ namespace OpenCensus.Stats
             }
 
             var result = fraction * mutable.Count;
-            long rounded = (long)Math.Round(result);
-            this.Count += rounded;
+            var rounded = (long)Math.Round(result);
+            Count += rounded;
         }
 
         internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)

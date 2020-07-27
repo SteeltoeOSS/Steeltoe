@@ -65,9 +65,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         protected internal string GetRequestUri(HttpRequest request)
         {
-            string scheme = request.Scheme;
+            var scheme = request.Scheme;
 
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
             {
                 scheme = headerScheme.ToString();
             }

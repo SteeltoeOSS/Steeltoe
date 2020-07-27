@@ -91,10 +91,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 return ConnectionString;
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             if (!string.IsNullOrEmpty(EndPoints))
             {
-                string endpoints = EndPoints.Trim();
+                var endpoints = EndPoints.Trim();
                 sb.Append(endpoints);
                 sb.Append(',');
             }
@@ -172,7 +172,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             // to remove this comma workaround, follow up on https://github.com/StackExchange/StackExchange.Redis/issues/680
             var tempPassword = Password;
-            bool resetPassword = false;
+            var resetPassword = false;
             if (Password?.Contains(",") == true)
             {
                 Password = string.Empty;
@@ -225,7 +225,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             string host;
             int port;
-            int i = endpoint.IndexOf(':');
+            var i = endpoint.IndexOf(':');
             if (i < 0)
             {
                 host = endpoint;
@@ -256,7 +256,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         internal static EndPoint ParseEndPoint(string host, int port)
         {
-            if (IPAddress.TryParse(host, out IPAddress ip))
+            if (IPAddress.TryParse(host, out var ip))
             {
                 return new IPEndPoint(ip, port);
             }

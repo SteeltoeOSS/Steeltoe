@@ -24,8 +24,8 @@ namespace OpenCensus.Stats
 
         internal MutableDistribution(IBucketBoundaries bucketBoundaries)
         {
-            this.BucketBoundaries = bucketBoundaries;
-            this.BucketCounts = new long[bucketBoundaries.Boundaries.Count + 1];
+            BucketBoundaries = bucketBoundaries;
+            BucketCounts = new long[bucketBoundaries.Boundaries.Count + 1];
         }
 
         internal double Sum { get; set; } = 0.0;
@@ -57,8 +57,8 @@ namespace OpenCensus.Stats
 
         internal override void Add(double value)
         {
-            this.Sum += value;
-            this.Count++;
+            Sum += value;
+            Count++;
 
             /*
              * Update the sum of squared deviations from the mean with the given value. For values
@@ -68,31 +68,31 @@ namespace OpenCensus.Stats
              * https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance, or Knuth, "The Art of
              * Computer Programming", Vol. 2, page 323, 3rd edition)
              */
-            double deltaFromMean = value - this.Mean;
-            this.Mean += deltaFromMean / this.Count;
-            double deltaFromMean2 = value - this.Mean;
-            this.SumOfSquaredDeviations += deltaFromMean * deltaFromMean2;
+            var deltaFromMean = value - Mean;
+            Mean += deltaFromMean / Count;
+            var deltaFromMean2 = value - Mean;
+            SumOfSquaredDeviations += deltaFromMean * deltaFromMean2;
 
-            if (value < this.Min)
+            if (value < Min)
             {
-                this.Min = value;
+                Min = value;
             }
 
-            if (value > this.Max)
+            if (value > Max)
             {
-                this.Max = value;
+                Max = value;
             }
 
-            for (int i = 0; i < this.BucketBoundaries.Boundaries.Count; i++)
+            for (var i = 0; i < BucketBoundaries.Boundaries.Count; i++)
             {
-                if (value < this.BucketBoundaries.Boundaries[i])
+                if (value < BucketBoundaries.Boundaries[i])
                 {
-                    this.BucketCounts[i]++;
+                    BucketCounts[i]++;
                     return;
                 }
             }
 
-            this.BucketCounts[this.BucketCounts.Length - 1]++;
+            BucketCounts[BucketCounts.Length - 1]++;
         }
 
         // We don't compute fractional MutableDistribution, it's either whole or none.
@@ -108,43 +108,43 @@ namespace OpenCensus.Stats
                 return;
             }
 
-            if (!this.BucketBoundaries.Equals(mutableDistribution.BucketBoundaries))
+            if (!BucketBoundaries.Equals(mutableDistribution.BucketBoundaries))
             {
                 throw new ArgumentException("Bucket boundaries should match.");
             }
 
             // Algorithm for calculating the combination of sum of squared deviations:
             // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm.
-            if (this.Count + mutableDistribution.Count > 0)
+            if (Count + mutableDistribution.Count > 0)
             {
-                double delta = mutableDistribution.Mean - this.Mean;
-                this.SumOfSquaredDeviations =
-                    this.SumOfSquaredDeviations
+                var delta = mutableDistribution.Mean - Mean;
+                SumOfSquaredDeviations =
+                    SumOfSquaredDeviations
                         + mutableDistribution.SumOfSquaredDeviations
                         + (Math.Pow(delta, 2)
-                            * this.Count
+                            * Count
                             * mutableDistribution.Count
-                            / (this.Count + mutableDistribution.Count));
+                            / (Count + mutableDistribution.Count));
             }
 
-            this.Count += mutableDistribution.Count;
-            this.Sum += mutableDistribution.Sum;
-            this.Mean = this.Sum / this.Count;
+            Count += mutableDistribution.Count;
+            Sum += mutableDistribution.Sum;
+            Mean = Sum / Count;
 
-            if (mutableDistribution.Min < this.Min)
+            if (mutableDistribution.Min < Min)
             {
-                this.Min = mutableDistribution.Min;
+                Min = mutableDistribution.Min;
             }
 
-            if (mutableDistribution.Max > this.Max)
+            if (mutableDistribution.Max > Max)
             {
-                this.Max = mutableDistribution.Max;
+                Max = mutableDistribution.Max;
             }
 
-            long[] bucketCounts = mutableDistribution.BucketCounts;
-            for (int i = 0; i < bucketCounts.Length; i++)
+            var bucketCounts = mutableDistribution.BucketCounts;
+            for (var i = 0; i < bucketCounts.Length; i++)
             {
-                this.BucketCounts[i] += bucketCounts[i];
+                BucketCounts[i] += bucketCounts[i];
             }
         }
 

@@ -23,13 +23,13 @@ namespace Steeltoe.Management.EndpointOwin.Security.Test
         {
             if (context.Request.Headers.Keys.Contains(TestingHeader))
             {
-                ClaimsIdentity claimsIdentity = new ClaimsIdentity(
+                var claimsIdentity = new ClaimsIdentity(
                     new List<Claim>
                     {
                             new Claim("scope", "actuator.read")
                     },
                     TestingCookieAuthentication);
-                ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
                 context.Authentication.User = claimsPrincipal;
             }
 

@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Test
                 ["management:endpoints:info:enabled"] = "true",
                 ["management:endpoints:info:id"] = "/infomanagement"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

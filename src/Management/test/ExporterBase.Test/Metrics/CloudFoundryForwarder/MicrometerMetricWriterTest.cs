@@ -103,10 +103,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -114,9 +114,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -155,10 +155,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -166,9 +166,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -207,10 +207,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, LastValue.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -218,9 +218,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -259,10 +259,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Mean.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -270,9 +270,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -336,10 +336,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Seconds);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Seconds);
             SetupTestView(stats, Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -347,9 +347,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -425,10 +425,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MicrometerMetricWriter(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Count.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -436,9 +436,9 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 

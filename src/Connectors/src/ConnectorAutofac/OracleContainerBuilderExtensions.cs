@@ -36,11 +36,11 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<OracleServiceInfo>()
                 : config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 
-            Type oracleConnection = OracleTypeLocator.OracleConnection;
+            var oracleConnection = OracleTypeLocator.OracleConnection;
             var oracleConfig = new OracleProviderConnectorOptions(config);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
             container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();

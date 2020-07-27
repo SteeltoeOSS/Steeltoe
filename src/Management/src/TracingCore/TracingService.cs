@@ -17,8 +17,8 @@ namespace Steeltoe.Management.Tracing
 
         public TracingService(IDiagnosticsManager observerManager, ILogger<TracingService> logger = null)
         {
-            this._observerManager = observerManager;
-            this._logger = logger;
+            _observerManager = observerManager;
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

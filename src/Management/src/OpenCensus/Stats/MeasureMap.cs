@@ -31,25 +31,25 @@ namespace OpenCensus.Stats
 
         public override IMeasureMap Put(IMeasureDouble measure, double value)
         {
-            this.builder.Put(measure, value);
+            builder.Put(measure, value);
             return this;
         }
 
         public override IMeasureMap Put(IMeasureLong measure, long value)
         {
-            this.builder.Put(measure, value);
+            builder.Put(measure, value);
             return this;
         }
 
         public override void Record()
         {
             // Use the context key directly, to avoid depending on the tags implementation.
-            this.Record(CurrentTagContextUtils.CurrentTagContext);
+            Record(CurrentTagContextUtils.CurrentTagContext);
         }
 
         public override void Record(ITagContext tags)
         {
-            this.statsManager.Record(tags, this.builder.Build());
+            statsManager.Record(tags, builder.Build());
         }
 
         internal static IMeasureMap Create(StatsManager statsManager)

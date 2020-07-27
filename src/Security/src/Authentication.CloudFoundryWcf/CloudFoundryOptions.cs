@@ -121,7 +121,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
             securitySection.Bind(this);
 
-            SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
 
             AuthorizationUrl = info.AuthDomain;
             ClientId = info.ClientId;

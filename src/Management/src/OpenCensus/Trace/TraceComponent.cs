@@ -44,27 +44,27 @@ namespace OpenCensus.Trace
         /// <param name="eventQueue">Event queue to use before the exporter.</param>
         public TraceComponent(IClock clock, IRandomGenerator randomHandler, IEventQueue eventQueue)
         {
-            this.Clock = clock;
-            this.TraceConfig = new Config.TraceConfig();
+            Clock = clock;
+            TraceConfig = new Config.TraceConfig();
 
             // TODO(bdrutu): Add a config/argument for supportInProcessStores.
             if (eventQueue is SimpleEventQueue)
             {
-                this.ExportComponent = Export.ExportComponent.CreateWithoutInProcessStores(eventQueue);
+                ExportComponent = Export.ExportComponent.CreateWithoutInProcessStores(eventQueue);
             }
             else
             {
-                this.ExportComponent = Export.ExportComponent.CreateWithInProcessStores(eventQueue);
+                ExportComponent = Export.ExportComponent.CreateWithInProcessStores(eventQueue);
             }
 
-            this.PropagationComponent = new DefaultPropagationComponent();
+            PropagationComponent = new DefaultPropagationComponent();
             IStartEndHandler startEndHandler =
                 new StartEndHandler(
-                    this.ExportComponent.SpanExporter,
-                    this.ExportComponent.RunningSpanStore,
-                    this.ExportComponent.SampledSpanStore,
+                    ExportComponent.SpanExporter,
+                    ExportComponent.RunningSpanStore,
+                    ExportComponent.SampledSpanStore,
                     eventQueue);
-            this.Tracer = new Tracer(randomHandler, startEndHandler, clock, this.TraceConfig);
+            Tracer = new Tracer(randomHandler, startEndHandler, clock, TraceConfig);
         }
 
         /// <inheritdoc/>

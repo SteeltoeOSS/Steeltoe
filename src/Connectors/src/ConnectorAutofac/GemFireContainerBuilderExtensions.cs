@@ -34,13 +34,13 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            GemFireServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<GemFireServiceInfo>()
                 : config.GetRequiredServiceInfo<GemFireServiceInfo>(serviceName);
 
-            Type cacheFactory = GemFireTypeLocator.CacheFactory;
-            Type cache = GemFireTypeLocator.Cache;
-            Type poolFactory = GemFireTypeLocator.PoolFactory;
+            var cacheFactory = GemFireTypeLocator.CacheFactory;
+            var cache = GemFireTypeLocator.Cache;
+            var poolFactory = GemFireTypeLocator.PoolFactory;
 
             //// Type regionFactory = GemFireTypeLocator.RegionFactory;
 

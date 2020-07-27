@@ -20,14 +20,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
         {
             ContainerBuilder container = null;
             Assert.Throws<ArgumentNullException>(() => container.RegisterConfigServerClientOptions(null));
-            ContainerBuilder container2 = new ContainerBuilder();
+            var container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterConfigServerClientOptions(null));
         }
 
         [Fact]
         public void RegisterConfigServerClientOptions_Registers_AndBindsConfiguration()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
                 { "spring:cloud:config:uri", "https://foo.bar/foo" },

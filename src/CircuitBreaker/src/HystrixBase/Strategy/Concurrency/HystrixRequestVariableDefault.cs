@@ -30,7 +30,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         internal static void Remove(HystrixRequestContext context, IHystrixRequestVariable<T> v)
         {
-            if (context.State.TryRemove(v, out object oldValue))
+            if (context.State.TryRemove(v, out var oldValue))
             {
                 v.Dispose();
             }

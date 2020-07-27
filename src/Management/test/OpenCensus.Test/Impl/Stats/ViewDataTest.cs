@@ -65,10 +65,10 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestCumulativeViewData()
         {
-            IView view = View.Create(NAME, DESCRIPTION, MEASURE_DOUBLE, DISTRIBUTION, TAG_KEYS);
-            ITimestamp start = Timestamp.FromMillis(1000);
-            ITimestamp end = Timestamp.FromMillis(2000);
-            IViewData viewData = ViewData.Create(view, ENTRIES, start, end);
+            var view = View.Create(NAME, DESCRIPTION, MEASURE_DOUBLE, DISTRIBUTION, TAG_KEYS);
+            var start = Timestamp.FromMillis(1000);
+            var end = Timestamp.FromMillis(2000);
+            var viewData = ViewData.Create(view, ENTRIES, start, end);
             Assert.Equal(view, viewData.View);
             Assert.Equal(ENTRIES, viewData.AggregationMap);
         }
@@ -89,25 +89,25 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestViewDataEquals()
         {
-            IView cumulativeView =
+            var cumulativeView =
                 View.Create(NAME, DESCRIPTION, MEASURE_DOUBLE, DISTRIBUTION, TAG_KEYS);
             // View intervalView =
             //    View.Create(NAME, DESCRIPTION, MEASURE_DOUBLE, DISTRIBUTION, TAG_KEYS, INTERVAL_HOUR);
 
             // new EqualsTester()
             //    .addEqualityGroup(
-            IViewData data1 = ViewData.Create(
+            var data1 = ViewData.Create(
                         cumulativeView,
                         ENTRIES,
                         Timestamp.FromMillis(1000), Timestamp.FromMillis(2000));
-            IViewData data2 = ViewData.Create(
+            var data2 = ViewData.Create(
                         cumulativeView,
                         ENTRIES,
                         Timestamp.FromMillis(1000), Timestamp.FromMillis(2000));
             Assert.Equal(data1, data2);
 
             // .addEqualityGroup(
-            IViewData data3 = ViewData.Create(
+            var data3 = ViewData.Create(
                         cumulativeView,
                         ENTRIES,
                         Timestamp.FromMillis(1000), Timestamp.FromMillis(3000));

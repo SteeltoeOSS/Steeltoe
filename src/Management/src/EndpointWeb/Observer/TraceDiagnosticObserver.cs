@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         public List<TraceResult> GetTraces()
         {
-            TraceResult[] traces = _queue.ToArray();
+            var traces = _queue.ToArray();
             return new List<TraceResult>(traces);
         }
 
@@ -62,17 +62,17 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
                 return;
             }
 
-            HttpContext context = HttpContext.Current;
+            var context = HttpContext.Current;
 
             if (context != null)
             {
-                TimeSpan duration = current.Duration;
+                var duration = current.Duration;
                 if (duration.Ticks == 0)
                 {
                     duration = DateTime.UtcNow - current.StartTimeUtc;
                 }
 
-                TraceResult trace = MakeTrace(context, duration);
+                var trace = MakeTrace(context, duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
@@ -87,13 +87,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
             var request = context.Request;
             var response = context.Response;
 
-            Dictionary<string, object> details = new Dictionary<string, object>
+            var details = new Dictionary<string, object>
             {
                 { "method", request.HttpMethod },
                 { "path", GetPathInfo(request) }
             };
 
-            Dictionary<string, object> headers = new Dictionary<string, object>();
+            var headers = new Dictionary<string, object>();
             details.Add("headers", headers);
 
             if (_options.AddRequestHeaders)
@@ -156,7 +156,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         protected internal Dictionary<string, object> GetRequestHeaders(NameValueCollection headers)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            var result = new Dictionary<string, object>();
             foreach (var h in headers.AllKeys)
             {
                 result.Add(h.ToLowerInvariant(), headers.GetValues(h));
@@ -174,7 +174,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         protected internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
         {
-            Dictionary<string, string[]> parameters = new Dictionary<string, string[]>();
+            var parameters = new Dictionary<string, string[]>();
             foreach (var p in request.QueryString.AllKeys)
             {
                 parameters.Add(p, request.QueryString.GetValues(p));
@@ -198,13 +198,13 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         protected internal string GetTimeTaken(TimeSpan duration)
         {
-            long timeInMilli = (long)duration.TotalMilliseconds;
+            var timeInMilli = (long)duration.TotalMilliseconds;
             return timeInMilli.ToString();
         }
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - baseTime.Ticks;
+            var javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 

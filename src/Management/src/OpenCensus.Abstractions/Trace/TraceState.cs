@@ -36,7 +36,7 @@ namespace OpenCensus.Trace
 
         private Tracestate(IEnumerable<Entry> entries)
         {
-            this.Entries = entries;
+            Entries = entries;
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace OpenCensus.Trace
         /// </returns>
         public string Get(string key)
         {
-            foreach (Entry entry in this.Entries)
+            foreach (var entry in Entries)
             {
                 if (entry.Key.Equals(key))
                 {
@@ -92,7 +92,7 @@ namespace OpenCensus.Trace
             // can only contain lowercase letters a-z, digits 0-9, underscores _, dashes -, asterisks *,
             // forward slashes / and @
 
-            int i = 0;
+            var i = 0;
 
             if (string.IsNullOrEmpty(key)
                 || key.Length > KeyMaxSize
@@ -105,7 +105,7 @@ namespace OpenCensus.Trace
             // before
             for (i = 1; i < key.Length; i++)
             {
-                char c = key[i];
+                var c = key[i];
 
                 if (c == '@')
                 {
@@ -144,7 +144,7 @@ namespace OpenCensus.Trace
 
             for (; i < key.Length; i++)
             {
-                char c = key[i];
+                var c = key[i];
 
                 if (!(c >= 'a' && c <= 'z')
                     && !(c >= '0' && c <= '9')
@@ -170,9 +170,9 @@ namespace OpenCensus.Trace
                 return false;
             }
 
-            for (int i = 0; i < value.Length; i++)
+            for (var i = 0; i < value.Length; i++)
             {
-                char c = value[i];
+                var c = value[i];
 
                 if (c == ',' || c == '=' || c < ' ' /* '\u0020' */ || c > '~' /* '\u007E' */)
                 {
@@ -202,8 +202,8 @@ namespace OpenCensus.Trace
         {
             private Entry(string key, string value)
             {
-                this.Key = key;
-                this.Value = value;
+                Key = key;
+                Value = value;
             }
 
             /// <summary>
@@ -255,7 +255,7 @@ namespace OpenCensus.Trace
                 parent = parent ?? throw new ArgumentNullException(nameof(parent));
 
                 this.parent = parent;
-                this.entries = null;
+                entries = null;
             }
 
             /// <summary>
@@ -269,19 +269,19 @@ namespace OpenCensus.Trace
             {
                 // Initially create the Entry to validate input.
 
-                Entry entry = Entry.Create(key, value);
+                var entry = Entry.Create(key, value);
 
-                if (this.entries == null)
+                if (entries == null)
                 {
                     // Copy entries from the parent.
-                    this.entries = new List<Entry>(this.parent.Entries);
+                    entries = new List<Entry>(parent.Entries);
                 }
 
-                for (int i = 0; i < this.entries.Count; i++)
+                for (var i = 0; i < entries.Count; i++)
                 {
-                    if (this.entries[i].Key.Equals(entry.Key))
+                    if (entries[i].Key.Equals(entry.Key))
                     {
-                        this.entries.RemoveAt(i);
+                        entries.RemoveAt(i);
 
                         // Exit now because the entries list cannot contain duplicates.
                         break;
@@ -289,7 +289,7 @@ namespace OpenCensus.Trace
                 }
 
                 // Inserts the element at the front of this list.
-                this.entries.Insert(0, entry);
+                entries.Insert(0, entry);
                 return this;
             }
 
@@ -302,17 +302,17 @@ namespace OpenCensus.Trace
             {
                 key = key ?? throw new ArgumentNullException(nameof(key));
 
-                if (this.entries == null)
+                if (entries == null)
                 {
                     // Copy entries from the parent.
-                    this.entries = new List<Entry>(this.parent.Entries);
+                    entries = new List<Entry>(parent.Entries);
                 }
 
-                for (int i = 0; i < this.entries.Count; i++)
+                for (var i = 0; i < entries.Count; i++)
                 {
-                    if (this.entries[i].Key.Equals(key))
+                    if (entries[i].Key.Equals(key))
                     {
-                        this.entries.RemoveAt(i);
+                        entries.RemoveAt(i);
 
                         // Exit now because the entries list cannot contain duplicates.
                         break;
@@ -328,12 +328,12 @@ namespace OpenCensus.Trace
             /// <returns>Resulting tracestate.</returns>
             public Tracestate Build()
             {
-                if (this.entries == null)
+                if (entries == null)
                 {
-                    return this.parent;
+                    return parent;
                 }
 
-                return Tracestate.Create(this.entries);
+                return Tracestate.Create(entries);
             }
         }
     }

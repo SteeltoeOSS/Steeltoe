@@ -28,10 +28,10 @@ namespace OpenCensus.Trace
 
         private Link(ITraceId traceId, ISpanId spanId, LinkType type, IDictionary<string, IAttributeValue> attributes)
         {
-            this.TraceId = traceId ?? throw new ArgumentNullException(nameof(traceId));
-            this.SpanId = spanId ?? throw new ArgumentNullException(nameof(spanId));
-            this.Type = type;
-            this.Attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
+            TraceId = traceId ?? throw new ArgumentNullException(nameof(traceId));
+            SpanId = spanId ?? throw new ArgumentNullException(nameof(spanId));
+            Type = type;
+            Attributes = attributes ?? throw new ArgumentNullException(nameof(attributes));
         }
 
         public ITraceId TraceId { get; }
@@ -61,10 +61,10 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "Link{"
-                + "traceId=" + this.TraceId + ", "
-                + "spanId=" + this.SpanId + ", "
-                + "type=" + this.Type + ", "
-                + "attributes=" + Collections.ToString(this.Attributes)
+                + "traceId=" + TraceId + ", "
+                + "spanId=" + SpanId + ", "
+                + "type=" + Type + ", "
+                + "attributes=" + Collections.ToString(Attributes)
                 + "}";
         }
 
@@ -78,10 +78,10 @@ namespace OpenCensus.Trace
 
             if (o is Link that)
             {
-                return this.TraceId.Equals(that.TraceId)
-                     && this.SpanId.Equals(that.SpanId)
-                     && this.Type.Equals(that.Type)
-                     && this.Attributes.SequenceEqual(that.Attributes);
+                return TraceId.Equals(that.TraceId)
+                     && SpanId.Equals(that.SpanId)
+                     && Type.Equals(that.Type)
+                     && Attributes.SequenceEqual(that.Attributes);
             }
 
             return false;
@@ -90,15 +90,15 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.TraceId.GetHashCode();
+            h ^= TraceId.GetHashCode();
             h *= 1000003;
-            h ^= this.SpanId.GetHashCode();
+            h ^= SpanId.GetHashCode();
             h *= 1000003;
-            h ^= this.Type.GetHashCode();
+            h ^= Type.GetHashCode();
             h *= 1000003;
-            h ^= this.Attributes.GetHashCode();
+            h ^= Attributes.GetHashCode();
             return h;
         }
     }

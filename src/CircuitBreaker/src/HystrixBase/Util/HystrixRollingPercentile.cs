@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         /* package for testing */
         internal HystrixRollingPercentile(ITime time, int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
         {
-            this._time = time;
+            _time = time;
             _timeInMilliseconds = timeInMilliseconds;
             _numberOfBuckets = numberOfBuckets;
             _bucketDataLength = bucketDataLength;
@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 return;
             }
 
-            foreach (int v in value)
+            foreach (var v in value)
             {
                 try
                 {
@@ -133,7 +133,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         private Bucket GetCurrentBucket()
         {
-            long currentTime = _time.CurrentTimeInMillis;
+            var currentTime = _time.CurrentTimeInMillis;
 
             /* a shortcut to try and get the most common result of immediately finding the current bucket */
 
@@ -141,7 +141,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * Retrieve the latest bucket if the given time is BEFORE the end of the bucket window, otherwise it returns NULL.
              * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
              */
-            Bucket currentBucket = _buckets.PeekLast;
+            var currentBucket = _buckets.PeekLast;
             if (currentBucket != null && currentTime < currentBucket._windowStart + _bucketSizeInMilliseconds)
             {
                 // if we're within the bucket 'window of time' return the current one
@@ -170,7 +170,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
              * bucket to calculate the sum themselves. This is an example of favoring write-performance instead of read-performance and how the tryLock
              * versus a synchronized block needs to be accommodated.
              */
-            bool lockTaken = false;
+            var lockTaken = false;
             Monitor.TryEnter(_newBucketLock, ref lockTaken);
             if (lockTaken)
             {
@@ -180,7 +180,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     if (_buckets.PeekLast == null)
                     {
                         // the list is empty so create the first bucket
-                        Bucket newBucket = new Bucket(currentTime, _bucketDataLength);
+                        var newBucket = new Bucket(currentTime, _bucketDataLength);
                         _buckets.AddLast(newBucket);
                         return newBucket;
                     }
@@ -188,10 +188,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                     {
                         // We go into a loop so that it will create as many buckets as needed to catch up to the current time
                         // as we want the buckets complete even if we don't have transactions during a period of time.
-                        for (int i = 0; i < _numberOfBuckets; i++)
+                        for (var i = 0; i < _numberOfBuckets; i++)
                         {
                             // we have at least 1 bucket so retrieve it
-                            Bucket lastBucket = _buckets.PeekLast;
+                            var lastBucket = _buckets.PeekLast;
                             if (currentTime < lastBucket._windowStart + _bucketSizeInMilliseconds)
                             {
                                 // if we're within the bucket 'window of time' return the current one
@@ -206,14 +206,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
                                 // recursively call getCurrentBucket which will create a new bucket and return it
                                 // return GetCurrentBucket();
-                                Bucket newBucket = new Bucket(currentTime, _bucketDataLength);
+                                var newBucket = new Bucket(currentTime, _bucketDataLength);
                                 _buckets.AddLast(newBucket);
                                 return newBucket;
                             }
                             else
                             {
                                 // we're past the window so we need to create a new bucket
-                                Bucket[] allBuckets = _buckets.Array;
+                                var allBuckets = _buckets.Array;
 
                                 // create a new bucket and add it as the new 'last' (once this is done other threads will start using it on subsequent retrievals)
                                 _buckets.AddLast(new Bucket(lastBucket._windowStart + _bucketSizeInMilliseconds, _bucketDataLength));
@@ -270,7 +270,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public void AddValue(params int[] latency)
             {
-                foreach (int l in latency)
+                foreach (var l in latency)
                 {
                     /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
                     _list[_index.GetAndIncrement() % _datalength] = l;
@@ -305,25 +305,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             /* package for testing */
             public PercentileSnapshot(Bucket[] buckets)
             {
-                int lengthFromBuckets = 0;
+                var lengthFromBuckets = 0;
 
                 // we need to calculate it dynamically as it could have been changed by properties (rare, but possible)
                 // also this way we capture the actual index size rather than the max so size the int[] to only what we need
-                foreach (Bucket bd in buckets)
+                foreach (var bd in buckets)
                 {
                     lengthFromBuckets += bd._data._datalength;
                 }
 
                 _data = new int[lengthFromBuckets];
-                int index = 0;
-                int sum = 0;
-                foreach (Bucket bd in buckets)
+                var index = 0;
+                var sum = 0;
+                foreach (var bd in buckets)
                 {
-                    PercentileBucketData pbd = bd._data;
-                    int pbdLength = pbd.Length;
-                    for (int i = 0; i < pbdLength; i++)
+                    var pbd = bd._data;
+                    var pbdLength = pbd.Length;
+                    for (var i = 0; i < pbdLength; i++)
                     {
-                        int v = pbd._list[i];
+                        var v = pbd._list[i];
                         _data[index++] = v;
                         sum += v;
                     }
@@ -345,18 +345,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             /* package for testing */
             public PercentileSnapshot(params int[] data)
             {
-                this._data = data;
+                _data = data;
                 _length = data.Length;
 
-                int sum = 0;
-                foreach (int v in data)
+                var sum = 0;
+                foreach (var v in data)
                 {
                     sum += v;
                 }
 
                 Mean = sum / _length;
 
-                Array.Sort(this._data, 0, _length);
+                Array.Sort(_data, 0, _length);
             }
 
             /* package for testing */
@@ -389,11 +389,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 }
 
                 // ranking (https://en.wikipedia.org/wiki/Percentile#Alternative_methods)
-                double rank = (percent / 100.0) * _length;
+                var rank = (percent / 100.0) * _length;
 
                 // linear interpolation between closest ranks
-                int iLow = (int)Math.Floor(rank);
-                int iHigh = (int)Math.Ceiling(rank);
+                var iLow = (int)Math.Floor(rank);
+                var iHigh = (int)Math.Ceiling(rank);
 
                 // assert 0 <= iLow && iLow <= rank && rank <= iHigh && iHigh <= length;
                 // assert(iHigh - iLow) <= 1;
@@ -475,8 +475,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                             * but since we never clear the data directly, only increment/decrement head/tail we would never get a NULL
                             * just potentially return stale data which we are okay with doing
                             */
-                        List<Bucket> array = new List<Bucket>();
-                        for (int i = 0; i < _size; i++)
+                        var array = new List<Bucket>();
+                        for (var i = 0; i < _size; i++)
                         {
                             array.Add(_data[Convert(i)]);
                         }
@@ -528,7 +528,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public BucketCircularArray(int size)
             {
-                AtomicReferenceArray<Bucket> buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
+                var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
                 _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
                 _dataLength = buckets.Length;
                 _numBuckets = size;
@@ -549,8 +549,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                      * The rare scenario in which that would occur, we'll accept the possible data loss while clearing it
                      * since the code has stated its desire to clear() anyways.
                      */
-                    ListState current = _state.Value;
-                    ListState newState = current.Clear();
+                    var current = _state.Value;
+                    var newState = current.Clear();
                     if (_state.CompareAndSet(current, newState))
                     {
                         return;
@@ -560,10 +560,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public void AddLast(Bucket o)
             {
-                ListState currentState = _state.Value;
+                var currentState = _state.Value;
 
                 // create new version of state (what we want it to become)
-                ListState newState = currentState.AddBucket(o);
+                var newState = currentState.AddBucket(o);
 
                 /*
                  * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
@@ -602,7 +602,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             public IEnumerator<Bucket> GetEnumerator()
             {
-                List<Bucket> list = new List<Bucket>(Array);
+                var list = new List<Bucket>(Array);
                 return list.AsReadOnly().GetEnumerator();
             }
 

@@ -80,12 +80,10 @@ namespace Steeltoe.Common.Security
         public override void Load(Stream stream)
         {
             var source = Source as FileSource;
-            string key = source.Key;
-            using (var reader = new StreamReader(stream))
-            {
-                string value = reader.ReadToEnd();
-                Data[key] = value;
-            }
+            var key = source.Key;
+            using var reader = new StreamReader(stream);
+            var value = reader.ReadToEnd();
+            Data[key] = value;
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

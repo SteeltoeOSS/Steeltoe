@@ -31,13 +31,9 @@ namespace Steeltoe.Common.Configuration
         public static int GetInt(string key, IConfiguration config, IConfiguration resolve, int def)
         {
             var val = GetString(key, config, resolve, null);
-            if (!string.IsNullOrEmpty(val))
+            if (!string.IsNullOrEmpty(val) && int.TryParse(val, out var result))
             {
-                int result;
-                if (int.TryParse(val, out result))
-                {
-                    return result;
-                }
+                return result;
             }
 
             return def;
@@ -46,13 +42,9 @@ namespace Steeltoe.Common.Configuration
         public static double GetDouble(string key, IConfiguration config, IConfiguration resolve, double def)
         {
             var val = GetString(key, config, resolve, null);
-            if (!string.IsNullOrEmpty(val))
+            if (!string.IsNullOrEmpty(val) && double.TryParse(val, out var result))
             {
-                double result;
-                if (double.TryParse(val, out result))
-                {
-                    return result;
-                }
+                return result;
             }
 
             return def;
@@ -61,13 +53,9 @@ namespace Steeltoe.Common.Configuration
         public static bool GetBoolean(string key, IConfiguration config, IConfiguration resolve, bool def)
         {
             var val = GetString(key, config, resolve, null);
-            if (!string.IsNullOrEmpty(val))
+            if (!string.IsNullOrEmpty(val) && bool.TryParse(val, out var result))
             {
-                bool result;
-                if (bool.TryParse(val, out result))
-                {
-                    return result;
-                }
+                return result;
             }
 
             return def;

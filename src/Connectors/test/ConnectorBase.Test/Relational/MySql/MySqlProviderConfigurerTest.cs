@@ -13,8 +13,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void UpdateConfiguration_WithNullMySqlServiceInfo_ReturnsExpected()
         {
-            MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var configurer = new MySqlProviderConfigurer();
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -35,8 +35,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void UpdateConfiguration_WithMySqlServiceInfo_ReturnsExpected()
         {
-            MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var configurer = new MySqlProviderConfigurer();
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
                 Password = "password",
                 Database = "database"
             };
-            MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
                 Database = "database"
             };
 
-            MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
+            var configurer = new MySqlProviderConfigurer();
             var opts = configurer.Configure(null, config);
             Assert.Contains("Server=localhost;", opts);
             Assert.Contains("Port=1234;", opts);
@@ -79,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
         {
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -88,8 +88,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
                 Database = "database"
             };
 
-            MySqlProviderConfigurer configurer = new MySqlProviderConfigurer();
-            MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var configurer = new MySqlProviderConfigurer();
+            var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
             var opts = configurer.Configure(si, config);
 

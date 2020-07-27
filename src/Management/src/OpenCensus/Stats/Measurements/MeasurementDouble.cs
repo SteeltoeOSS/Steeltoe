@@ -24,8 +24,8 @@ namespace OpenCensus.Stats.Measurements
     {
         internal MeasurementDouble(IMeasureDouble measure, double value)
         {
-            this.Measure = measure ?? throw new ArgumentNullException(nameof(measure));
-            this.Value = value;
+            Measure = measure ?? throw new ArgumentNullException(nameof(measure));
+            Value = value;
         }
 
         public override IMeasure Measure { get; }
@@ -46,8 +46,8 @@ namespace OpenCensus.Stats.Measurements
         public override string ToString()
         {
             return "MeasurementDouble{"
-                + "measure=" + this.Measure + ", "
-                + "value=" + this.Value
+                + "measure=" + Measure + ", "
+                + "value=" + Value
                 + "}";
         }
 
@@ -61,8 +61,8 @@ namespace OpenCensus.Stats.Measurements
 
             if (o is MeasurementDouble that)
             {
-                return this.Measure.Equals(that.Measure)
-                     && (DoubleUtil.ToInt64(this.Value) == DoubleUtil.ToInt64(that.Value));
+                return Measure.Equals(that.Measure)
+                     && (DoubleUtil.ToInt64(Value) == DoubleUtil.ToInt64(that.Value));
             }
 
             return false;
@@ -73,9 +73,9 @@ namespace OpenCensus.Stats.Measurements
         {
             long h = 1;
             h *= 1000003;
-            h ^= this.Measure.GetHashCode();
+            h ^= Measure.GetHashCode();
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Value) >> 32) ^ DoubleUtil.ToInt64(this.Value);
+            h ^= (DoubleUtil.ToInt64(Value) >> 32) ^ DoubleUtil.ToInt64(Value);
             return (int)h;
         }
     }

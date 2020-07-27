@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Util.Test
         [Fact]
         public void ToJavaMillis_Throws_IfNotUTC()
         {
-            DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
+            var dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Local).AddMilliseconds(708);
             var ex = Assert.Throws<ArgumentException>(() => DateTimeConversions.ToJavaMillis(dt));
             Assert.Contains("Kind != UTC", ex.Message);
         }
@@ -20,16 +20,16 @@ namespace Steeltoe.Discovery.Eureka.Util.Test
         [Fact]
         public void ToJavaMillis()
         {
-            DateTime dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
-            long millis = DateTimeConversions.ToJavaMillis(dt);
+            var dt = new DateTime(2016, 3, 14, 16, 42, 21, DateTimeKind.Utc).AddMilliseconds(708);
+            var millis = DateTimeConversions.ToJavaMillis(dt);
             Assert.Equal(1457973741708, millis);
         }
 
         [Fact]
         public void FromJavaMillis()
         {
-            long millis = 1457973741708;
-            DateTime dt = DateTimeConversions.FromJavaMillis(millis);
+            var millis = 1457973741708;
+            var dt = DateTimeConversions.FromJavaMillis(millis);
             Assert.Equal(3, dt.Month);
             Assert.Equal(14, dt.Day);
             Assert.Equal(2016, dt.Year);

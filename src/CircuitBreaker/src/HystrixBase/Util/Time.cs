@@ -31,13 +31,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public static bool WaitUntil(Func<bool> check, int maxWaitMilli)
         {
-            long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
-            long start = DateTime.Now.Ticks;
+            var ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+            var start = DateTime.Now.Ticks;
 
             while (true)
             {
-                long elapsed = DateTime.Now.Ticks - start;
-                long ticksLeft = ticksToWait - elapsed;
+                var elapsed = DateTime.Now.Ticks - start;
+                var ticksLeft = ticksToWait - elapsed;
 
                 if (check())
                 {

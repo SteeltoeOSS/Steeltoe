@@ -12,8 +12,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void UpdateConfiguration_WithNullRabbitMQServiceInfo_ReturnsInitialConfiguration()
         {
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var configurer = new RabbitMQProviderConfigurer();
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -34,8 +34,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void UpdateConfiguration_WithRabbitMQServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var configurer = new RabbitMQProviderConfigurer();
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -43,7 +43,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 Password = "password",
                 VirtualHost = "vhost"
             };
-            RabbitMQServiceInfo si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
+            var si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -58,8 +58,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void UpdateConfiguration_WithRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
         {
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var configurer = new RabbitMQProviderConfigurer();
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 Password = "password",
                 VirtualHost = "vhost"
             };
-            RabbitMQServiceInfo si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost");
+            var si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost");
 
             configurer.UpdateConfiguration(si, config);
 
@@ -82,7 +82,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsProvidedConnectorOptions()
         {
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -91,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 VirtualHost = "vhost"
             };
 
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
+            var configurer = new RabbitMQProviderConfigurer();
             var opts = configurer.Configure(null, config);
             var uri = new UriInfo(opts);
 
@@ -106,7 +106,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
             {
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -115,8 +115,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 VirtualHost = "vhost"
             };
 
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
-            RabbitMQServiceInfo si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
+            var configurer = new RabbitMQProviderConfigurer();
+            var si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
 
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);
@@ -131,7 +131,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
         [Fact]
         public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
         {
-            RabbitMQProviderConnectorOptions config = new RabbitMQProviderConnectorOptions()
+            var config = new RabbitMQProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 1234,
@@ -140,8 +140,8 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 VirtualHost = "vhost"
             };
 
-            RabbitMQProviderConfigurer configurer = new RabbitMQProviderConfigurer();
-            RabbitMQServiceInfo si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost");
+            var configurer = new RabbitMQProviderConfigurer();
+            var si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost");
 
             var opts = configurer.Configure(si, config);
             var uri = new UriInfo(opts);

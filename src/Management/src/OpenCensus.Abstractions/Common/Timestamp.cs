@@ -28,8 +28,8 @@ namespace OpenCensus.Common
 
         internal Timestamp(long seconds, int nanos)
         {
-            this.Seconds = seconds;
-            this.Nanos = nanos;
+            Seconds = seconds;
+            Nanos = nanos;
         }
 
         public long Seconds { get; }
@@ -54,25 +54,25 @@ namespace OpenCensus.Common
 
         public static ITimestamp FromMillis(long millis)
         {
-            Timestamp zero = new Timestamp(0, 0);
-            long nanos = millis * NanosPerMilli;
+            var zero = new Timestamp(0, 0);
+            var nanos = millis * NanosPerMilli;
             return zero.Plus(0, nanos);
         }
 
         public ITimestamp AddDuration(IDuration duration)
         {
-            return this.Plus(duration.Seconds, duration.Nanos);
+            return Plus(duration.Seconds, duration.Nanos);
         }
 
         public ITimestamp AddNanos(long nanosToAdd)
         {
-            return this.Plus(0, nanosToAdd);
+            return Plus(0, nanosToAdd);
         }
 
         public IDuration SubtractTimestamp(ITimestamp timestamp)
         {
-            long durationSeconds = this.Seconds - timestamp.Seconds;
-            int durationNanos = this.Nanos - timestamp.Nanos;
+            var durationSeconds = Seconds - timestamp.Seconds;
+            var durationNanos = Nanos - timestamp.Nanos;
             if (durationSeconds < 0 && durationNanos > 0)
             {
                 durationSeconds += 1;
@@ -89,21 +89,21 @@ namespace OpenCensus.Common
 
         public int CompareTo(ITimestamp other)
         {
-            int cmp = (this.Seconds < other.Seconds) ? -1 : ((this.Seconds > other.Seconds) ? 1 : 0);
+            var cmp = (Seconds < other.Seconds) ? -1 : ((Seconds > other.Seconds) ? 1 : 0);
             if (cmp != 0)
             {
                 return cmp;
             }
 
-            return (this.Nanos < other.Nanos) ? -1 : ((this.Nanos > other.Nanos) ? 1 : 0);
+            return (Nanos < other.Nanos) ? -1 : ((Nanos > other.Nanos) ? 1 : 0);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "Timestamp{"
-                + "seconds=" + this.Seconds + ", "
-                + "nanos=" + this.Nanos
+                + "seconds=" + Seconds + ", "
+                + "nanos=" + Nanos
                 + "}";
         }
 
@@ -117,8 +117,8 @@ namespace OpenCensus.Common
 
             if (o is Timestamp that)
             {
-                return (this.Seconds == that.Seconds)
-                     && (this.Nanos == that.Nanos);
+                return (Seconds == that.Seconds)
+                     && (Nanos == that.Nanos);
             }
 
             return false;
@@ -129,17 +129,17 @@ namespace OpenCensus.Common
         {
             long h = 1;
             h *= 1000003;
-            h ^= (this.Seconds >> 32) ^ this.Seconds;
+            h ^= (Seconds >> 32) ^ Seconds;
             h *= 1000003;
-            h ^= this.Nanos;
+            h ^= Nanos;
             return (int)h;
         }
 
         private static ITimestamp OfSecond(long seconds, long nanoAdjustment)
         {
-            long floor = (long)Math.Floor((double)nanoAdjustment / NanosPerSecond);
-            long secs = seconds + floor;
-            long nos = nanoAdjustment - (floor * NanosPerSecond);
+            var floor = (long)Math.Floor((double)nanoAdjustment / NanosPerSecond);
+            var secs = seconds + floor;
+            var nos = nanoAdjustment - (floor * NanosPerSecond);
             return Create(secs, (int)nos);
         }
 
@@ -150,10 +150,10 @@ namespace OpenCensus.Common
                 return this;
             }
 
-            long sec = this.Seconds + secondsToAdd;
-            long nanoSeconds = Math.DivRem(nanosToAdd, NanosPerSecond, out long nanosSpill);
-            sec = sec + nanoSeconds;
-            long nanoAdjustment = this.Nanos + nanosSpill;
+            var sec = Seconds + secondsToAdd;
+            var nanoSeconds = Math.DivRem(nanosToAdd, NanosPerSecond, out var nanosSpill);
+            sec += nanoSeconds;
+            var nanoAdjustment = Nanos + nanosSpill;
             return OfSecond(sec, nanoAdjustment);
         }
     }

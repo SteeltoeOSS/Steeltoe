@@ -22,7 +22,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
         {
             // arrange
             var opts = new CloudFoundryOptions();
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
 
             // act
             CloudFoundryOptionsConfigurer.Configure(null, opts);
@@ -42,9 +42,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
             // arrange
-            string authURL = "http://domain";
+            var authURL = "http://domain";
             var opts = new CloudFoundryOptions();
-            SsoServiceInfo info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
+            var info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
 
             // act
             CloudFoundryOptionsConfigurer.Configure(info, opts);

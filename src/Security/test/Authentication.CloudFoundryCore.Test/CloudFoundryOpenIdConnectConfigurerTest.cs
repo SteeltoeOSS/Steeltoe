@@ -43,7 +43,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
             // arrange
-            string authURL = "https://domain";
+            var authURL = "https://domain";
             var oidcOptions = new OpenIdConnectOptions();
             var info = new SsoServiceInfo("foobar", "clientId", "secret", authURL);
 

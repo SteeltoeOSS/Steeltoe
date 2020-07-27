@@ -19,8 +19,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         private HystrixDashboardStream(int delayInMs)
         {
-            this._delayInMs = delayInMs;
-            this._singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
+            _delayInMs = delayInMs;
+            _singleSource = Observable.Interval(TimeSpan.FromMilliseconds(delayInMs))
                                 .Map((timestamp) => { return new DashboardData(HystrixCommandMetrics.GetInstances(), HystrixThreadPoolMetrics.GetInstances(), HystrixCollapserMetrics.GetInstances()); })
                                 .OnSubscribe(() => { _isSourceCurrentlySubscribed.Value = true; })
                                 .OnDispose(() => { _isSourceCurrentlySubscribed.Value = false; })
@@ -59,9 +59,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             public DashboardData(ICollection<HystrixCommandMetrics> commandMetrics, ICollection<HystrixThreadPoolMetrics> threadPoolMetrics, ICollection<HystrixCollapserMetrics> collapserMetrics)
             {
-                this.CommandMetrics = commandMetrics;
-                this.ThreadPoolMetrics = threadPoolMetrics;
-                this.CollapserMetrics = collapserMetrics;
+                CommandMetrics = commandMetrics;
+                ThreadPoolMetrics = threadPoolMetrics;
+                CollapserMetrics = collapserMetrics;
             }
 
             public ICollection<HystrixCommandMetrics> CommandMetrics { get; }

@@ -35,7 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetSingletonServiceInfo<OracleServiceInfo>();
+            var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -68,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -76,9 +76,9 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            OracleProviderConnectorOptions oracleConfig = new OracleProviderConnectorOptions(config);
+            var oracleConfig = new OracleProviderConnectorOptions(config);
 
-            OracleDbContextConnectorFactory factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
+            var factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

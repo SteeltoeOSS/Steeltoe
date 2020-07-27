@@ -25,16 +25,16 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
-            string username = GetUsernameFromCredentials(binding.Credentials);
-            string password = GetPasswordFromCredentials(binding.Credentials);
+            var uri = GetUriFromCredentials(binding.Credentials);
+            var username = GetUsernameFromCredentials(binding.Credentials);
+            var password = GetPasswordFromCredentials(binding.Credentials);
 
             if (uri == null)
             {
-                string host = GetHostFromCredentials(binding.Credentials);
-                int port = GetPortFromCredentials(binding.Credentials);
+                var host = GetHostFromCredentials(binding.Credentials);
+                var port = GetPortFromCredentials(binding.Credentials);
 
-                string database = GetStringFromCredentials(binding.Credentials, "name");
+                var database = GetStringFromCredentials(binding.Credentials, "name");
 
                 if (host != null)
                 {

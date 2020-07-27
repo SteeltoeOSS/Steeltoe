@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             observer.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
             observer.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new HttpClientCoreObserver(options, stats, tags, null);
 
             var message = GetHttpResponseMessage(HttpStatusCode.OK);
-            string status = observer.GetStatusCode(message, default(TaskStatus));
+            var status = observer.GetStatusCode(message, default);
             Assert.Equal("200", status);
 
             status = observer.GetStatusCode(null, TaskStatus.Canceled);
@@ -118,7 +118,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var req = GetHttpRequestMessage();
             var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             Thread.Sleep(1000);
             act.SetEndTime(DateTime.UtcNow);
@@ -150,7 +150,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var req = GetHttpRequestMessage();
             var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             Thread.Sleep(1000);
             act.SetEndTime(DateTime.UtcNow);

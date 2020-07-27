@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ManagementOptions opts = ManagementOptions.GetInstance();
+            var opts = ManagementOptions.GetInstance();
             Assert.False(opts.Enabled.HasValue);
             Assert.Equal("/", opts.Path);
         }
@@ -37,11 +37,11 @@ namespace Steeltoe.Management.Endpoint.Test
                 ["management:endpoints:info:enabled"] = "true",
                 ["management:endpoints:info:id"] = "/infomanagement"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            ManagementOptions opts = ManagementOptions.GetInstance(config);
+            var opts = ManagementOptions.GetInstance(config);
             Assert.False(opts.Enabled);
             Assert.Equal("/management", opts.Path);
         }

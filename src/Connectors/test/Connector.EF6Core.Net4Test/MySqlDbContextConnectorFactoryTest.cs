@@ -15,7 +15,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         public void Constructor_ThrowsIfTypeNull()
         {
             // Arrange
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
+            var config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
             Type dbContextType = null;
 
@@ -28,9 +28,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         public void Create_ThrowsIfNoValidConstructorFound()
         {
             // Arrange
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions();
+            var config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
-            Type dbContextType = typeof(BadMySqlDbContext);
+            var dbContextType = typeof(BadMySqlDbContext);
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType).Create(null));
@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
         [Fact]
         public void Create_ReturnsDbContext()
         {
-            MySqlProviderConnectorOptions config = new MySqlProviderConnectorOptions()
+            var config = new MySqlProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 3306,
@@ -48,11 +48,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6.Test
                 Username = "username",
                 Database = "database"
             };
-            MySqlServiceInfo si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var factory = new MySqlDbContextConnectorFactory(si, config, typeof(GoodMySqlDbContext));
             var context = factory.Create(null);
             Assert.NotNull(context);
-            GoodMySqlDbContext gcontext = context as GoodMySqlDbContext;
+            var gcontext = context as GoodMySqlDbContext;
             Assert.NotNull(gcontext);
         }
     }

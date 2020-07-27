@@ -28,7 +28,7 @@ namespace OpenCensus.Trace.Sampler
         {
             get
             {
-                return this.ToString();
+                return ToString();
             }
         }
 

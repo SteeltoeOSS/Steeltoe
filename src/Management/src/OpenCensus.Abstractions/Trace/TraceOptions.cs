@@ -56,8 +56,8 @@ namespace OpenCensus.Trace
         {
             get
             {
-                byte[] bytes = new byte[Size];
-                bytes[0] = this.options;
+                var bytes = new byte[Size];
+                bytes[0] = options;
                 return bytes;
             }
         }
@@ -69,13 +69,13 @@ namespace OpenCensus.Trace
         {
             get
             {
-                return this.HasOption(IsSampledBit);
+                return HasOption(IsSampledBit);
             }
         }
 
         internal sbyte Options
         {
-            get { return (sbyte)this.options; }
+            get { return (sbyte)options; }
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace OpenCensus.Trace
                 throw new ArgumentOutOfRangeException(string.Format("Invalid size: expected {0}, got {1}", Size, buffer.Length));
             }
 
-            byte[] bytesCopied = new byte[Size];
+            var bytesCopied = new byte[Size];
             Buffer.BlockCopy(buffer, 0, bytesCopied, 0, Size);
             return new TraceOptions(bytesCopied[0]);
         }
@@ -147,7 +147,7 @@ namespace OpenCensus.Trace
                 throw new IndexOutOfRangeException("destOffset");
             }
 
-            dest[destOffset] = this.options;
+            dest[destOffset] = options;
         }
 
         /// <inheritdoc/>
@@ -163,14 +163,14 @@ namespace OpenCensus.Trace
                 return false;
             }
 
-            TraceOptions that = (TraceOptions)obj;
-            return this.options == that.options;
+            var that = (TraceOptions)obj;
+            return options == that.options;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int result = (31 * 1) + this.options;
+            var result = (31 * 1) + options;
             return result;
         }
 
@@ -178,23 +178,23 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "TraceOptions{"
-                + "sampled=" + this.IsSampled
+                + "sampled=" + IsSampled
                 + "}";
         }
 
         private bool HasOption(int mask)
         {
-            return (this.options & mask) != 0;
+            return (options & mask) != 0;
         }
 
         private void ClearOption(int mask)
         {
-            this.options = (byte)(this.options & ~mask);
+            options = (byte)(options & ~mask);
         }
 
         private void SetOption(int mask)
         {
-            this.options = (byte)(this.options | mask);
+            options = (byte)(options | mask);
         }
     }
 }

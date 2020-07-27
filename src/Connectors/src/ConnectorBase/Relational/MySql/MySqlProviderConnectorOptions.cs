@@ -91,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
                 return ConnectionString;
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             AddKeyValue(sb, nameof(Server), Server);
             AddKeyValue(sb, nameof(Port), Port);
             AddKeyValue(sb, nameof(Username), Username);

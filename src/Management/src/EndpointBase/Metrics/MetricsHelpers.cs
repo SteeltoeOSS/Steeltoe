@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
         {
-            Dictionary<TagValues, IAggregationData> results = new Dictionary<TagValues, IAggregationData>();
+            var results = new Dictionary<TagValues, IAggregationData>();
 
             foreach (var kvp in aggMap)
             {

@@ -24,8 +24,8 @@ namespace OpenCensus.Trace.Export
     {
         internal LinkList(IList<ILink> links, int droppedLinksCount)
         {
-            this.Links = links ?? throw new ArgumentNullException("Null links");
-            this.DroppedLinksCount = droppedLinksCount;
+            Links = links ?? throw new ArgumentNullException("Null links");
+            DroppedLinksCount = droppedLinksCount;
         }
 
         public int DroppedLinksCount { get; }
@@ -39,7 +39,7 @@ namespace OpenCensus.Trace.Export
                 throw new ArgumentNullException(nameof(links));
             }
 
-            List<ILink> copy = new List<ILink>(links);
+            var copy = new List<ILink>(links);
 
             return new LinkList(copy.AsReadOnly(), droppedLinksCount);
         }
@@ -48,8 +48,8 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "Links{"
-                + "links=" + this.Links + ", "
-                + "droppedLinksCount=" + this.DroppedLinksCount
+                + "links=" + Links + ", "
+                + "droppedLinksCount=" + DroppedLinksCount
                 + "}";
         }
 
@@ -63,8 +63,8 @@ namespace OpenCensus.Trace.Export
 
             if (o is LinkList that)
             {
-                return this.Links.SequenceEqual(that.Links)
-                     && (this.DroppedLinksCount == that.DroppedLinksCount);
+                return Links.SequenceEqual(that.Links)
+                     && (DroppedLinksCount == that.DroppedLinksCount);
             }
 
             return false;
@@ -73,11 +73,11 @@ namespace OpenCensus.Trace.Export
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Links.GetHashCode();
+            h ^= Links.GetHashCode();
             h *= 1000003;
-            h ^= this.DroppedLinksCount;
+            h ^= DroppedLinksCount;
             return h;
         }
     }

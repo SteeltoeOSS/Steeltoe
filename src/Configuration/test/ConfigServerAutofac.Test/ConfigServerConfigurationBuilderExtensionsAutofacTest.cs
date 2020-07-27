@@ -21,11 +21,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerAutofac.Test
         [Fact]
         public void AddConfigServer_WithEnvAndName()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddConfigServer("foo", "bar");
 
             ConfigServerConfigurationSource provider = null;
-            foreach (IConfigurationSource source in builder.Sources)
+            foreach (var source in builder.Sources)
             {
                 provider = source as ConfigServerConfigurationSource;
                 if (provider != null)

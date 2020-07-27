@@ -23,17 +23,17 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
 
         public void SetupTestView(OpenCensusStats stats, IAggregation agg, IMeasure measure = null, string viewName = "test.test")
         {
-            ITagKey aKey = TagKey.Create("a");
-            ITagKey bKey = TagKey.Create("b");
-            ITagKey cKey = TagKey.Create("c");
+            var aKey = TagKey.Create("a");
+            var bKey = TagKey.Create("b");
+            var cKey = TagKey.Create("c");
 
             if (measure == null)
             {
                 measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
             }
 
-            IViewName testViewName = ViewName.Create(viewName);
-            IView testView = View.Create(
+            var testViewName = ViewName.Create(viewName);
+            var testView = View.Create(
                                         testViewName,
                                         "test",
                                         measure,

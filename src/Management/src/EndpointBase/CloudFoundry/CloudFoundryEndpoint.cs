@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             if (_mgmtOption != null)
             {
-                HypermediaService hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
+                var hypermediaService = new HypermediaService(_mgmtOption, options, _logger);
                 return hypermediaService.Invoke(baseUrl);
             }
 

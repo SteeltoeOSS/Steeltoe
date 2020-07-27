@@ -20,10 +20,10 @@ namespace OpenCensus.Trace
     {
         internal MessageEvent(MessageEventType type, long messageId, long uncompressedMessageSize, long compressedMessageSize)
         {
-            this.Type = type;
-            this.MessageId = messageId;
-            this.UncompressedMessageSize = uncompressedMessageSize;
-            this.CompressedMessageSize = compressedMessageSize;
+            Type = type;
+            MessageId = messageId;
+            UncompressedMessageSize = uncompressedMessageSize;
+            CompressedMessageSize = compressedMessageSize;
         }
 
         public MessageEventType Type { get; }
@@ -50,10 +50,10 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "MessageEvent{"
-                + "type=" + this.Type + ", "
-                + "messageId=" + this.MessageId + ", "
-                + "uncompressedMessageSize=" + this.UncompressedMessageSize + ", "
-                + "compressedMessageSize=" + this.CompressedMessageSize
+                + "type=" + Type + ", "
+                + "messageId=" + MessageId + ", "
+                + "uncompressedMessageSize=" + UncompressedMessageSize + ", "
+                + "compressedMessageSize=" + CompressedMessageSize
                 + "}";
         }
 
@@ -67,10 +67,10 @@ namespace OpenCensus.Trace
 
             if (o is MessageEvent that)
             {
-                return this.Type.Equals(that.Type)
-                     && (this.MessageId == that.MessageId)
-                     && (this.UncompressedMessageSize == that.UncompressedMessageSize)
-                     && (this.CompressedMessageSize == that.CompressedMessageSize);
+                return Type.Equals(that.Type)
+                     && (MessageId == that.MessageId)
+                     && (UncompressedMessageSize == that.UncompressedMessageSize)
+                     && (CompressedMessageSize == that.CompressedMessageSize);
             }
 
             return false;
@@ -81,13 +81,13 @@ namespace OpenCensus.Trace
         {
             long h = 1;
             h *= 1000003;
-            h ^= this.Type.GetHashCode();
+            h ^= Type.GetHashCode();
             h *= 1000003;
-            h ^= (this.MessageId >> 32) ^ this.MessageId;
+            h ^= (MessageId >> 32) ^ MessageId;
             h *= 1000003;
-            h ^= (this.UncompressedMessageSize >> 32) ^ this.UncompressedMessageSize;
+            h ^= (UncompressedMessageSize >> 32) ^ UncompressedMessageSize;
             h *= 1000003;
-            h ^= (this.CompressedMessageSize >> 32) ^ this.CompressedMessageSize;
+            h ^= (CompressedMessageSize >> 32) ^ CompressedMessageSize;
             return (int)h;
         }
     }

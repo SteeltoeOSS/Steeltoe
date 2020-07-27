@@ -31,11 +31,11 @@ namespace OpenCensus.Stats
         {
             if (enabled)
             {
-                this.statsComponent = new StatsComponent();
+                statsComponent = new StatsComponent();
             }
             else
             {
-                this.statsComponent = NoopStats.NewNoopStatsComponent();
+                statsComponent = NoopStats.NewNoopStatsComponent();
             }
         }
 

@@ -36,11 +36,11 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
                 : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
-            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConnection = SqlServerTypeLocator.SqlConnection;
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
 

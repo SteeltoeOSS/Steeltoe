@@ -112,7 +112,7 @@ namespace Steeltoe.Discovery.Eureka
                 throw new ArgumentException(nameof(id));
             }
 
-            List<InstanceInfo> results = new List<InstanceInfo>();
+            var results = new List<InstanceInfo>();
 
             var apps = Applications;
             if (apps == null)
@@ -140,7 +140,7 @@ namespace Steeltoe.Discovery.Eureka
                 throw new ArgumentException(nameof(vipAddress));
             }
 
-            List<InstanceInfo> results = new List<InstanceInfo>();
+            var results = new List<InstanceInfo>();
 
             var apps = Applications;
             if (apps == null)
@@ -172,7 +172,7 @@ namespace Steeltoe.Discovery.Eureka
             else if (vipAddress == null)
             {
                 // note: if appName were null, we would not get into this block
-                Application application = GetApplication(appName);
+                var application = GetApplication(appName);
                 if (application != null)
                 {
                     result = application.Instances;
@@ -225,7 +225,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual async T.Task ShutdownAsync()
         {
-            int shutdown = Interlocked.Exchange(ref _shutdown, 1);
+            var shutdown = Interlocked.Exchange(ref _shutdown, 1);
             if (shutdown > 0)
             {
                 return;
@@ -250,7 +250,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (ClientConfig.ShouldRegisterWithEureka)
             {
-                InstanceInfo info = _appInfoManager.InstanceInfo;
+                var info = _appInfoManager.InstanceInfo;
                 if (info != null)
                 {
                     info.Status = InstanceStatus.DOWN;
@@ -286,7 +286,7 @@ namespace Steeltoe.Discovery.Eureka
 
         internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
         {
-            InstanceInfo info = _appInfoManager.InstanceInfo;
+            var info = _appInfoManager.InstanceInfo;
             if (info != null)
             {
                 _logger?.LogDebug(
@@ -370,7 +370,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<bool> UnregisterAsync()
         {
-            InstanceInfo inst = _appInfoManager.InstanceInfo;
+            var inst = _appInfoManager.InstanceInfo;
             if (inst == null)
             {
                 return false;
@@ -378,7 +378,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                EurekaHttpResponse resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId).ConfigureAwait(false);
+                var resp = await HttpClient.CancelAsync(inst.AppName, inst.InstanceId).ConfigureAwait(false);
                 _logger?.LogDebug("Unregister {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 return resp.StatusCode == HttpStatusCode.OK;
             }
@@ -393,7 +393,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<bool> RegisterAsync()
         {
-            InstanceInfo inst = _appInfoManager.InstanceInfo;
+            var inst = _appInfoManager.InstanceInfo;
             if (inst == null)
             {
                 return false;
@@ -401,7 +401,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                EurekaHttpResponse resp = await HttpClient.RegisterAsync(inst).ConfigureAwait(false);
+                var resp = await HttpClient.RegisterAsync(inst).ConfigureAwait(false);
                 var result = resp.StatusCode == HttpStatusCode.NoContent;
                 _logger?.LogDebug("Register {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (result)
@@ -422,7 +422,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<bool> RenewAsync()
         {
-            InstanceInfo inst = _appInfoManager.InstanceInfo;
+            var inst = _appInfoManager.InstanceInfo;
             if (inst == null)
             {
                 return false;
@@ -437,7 +437,7 @@ namespace Steeltoe.Discovery.Eureka
 
             try
             {
-                EurekaHttpResponse<InstanceInfo> resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN).ConfigureAwait(false);
+                var resp = await HttpClient.SendHeartBeatAsync(inst.AppName, inst.InstanceId, inst, InstanceStatus.UNKNOWN).ConfigureAwait(false);
                 _logger?.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (resp.StatusCode == HttpStatusCode.NotFound)
                 {
@@ -463,7 +463,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<Applications> FetchFullRegistryAsync()
         {
-            long startingCounter = _registryFetchCounter;
+            var startingCounter = _registryFetchCounter;
             EurekaHttpResponse<Applications> resp = null;
             Applications fetched = null;
 
@@ -502,10 +502,10 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal async T.Task<Applications> FetchRegistryDeltaAsync()
         {
-            long startingCounter = _registryFetchCounter;
+            var startingCounter = _registryFetchCounter;
             Applications delta = null;
 
-            EurekaHttpResponse<Applications> resp = await HttpClient.GetDeltaAsync().ConfigureAwait(false);
+            var resp = await HttpClient.GetDeltaAsync().ConfigureAwait(false);
             _logger?.LogDebug("FetchRegistryDelta returned: {StatusCode}", resp.StatusCode);
             if (resp.StatusCode == HttpStatusCode.OK)
             {
@@ -521,7 +521,7 @@ namespace Steeltoe.Discovery.Eureka
             if (Interlocked.CompareExchange(ref _registryFetchCounter, (startingCounter + 1) % long.MaxValue, startingCounter) == startingCounter)
             {
                 _localRegionApps.UpdateFromDelta(delta);
-                string hashCode = _localRegionApps.ComputeHashCode();
+                var hashCode = _localRegionApps.ComputeHashCode();
                 if (!hashCode.Equals(delta.AppsHashCode))
                 {
                     _logger?.LogWarning($"FetchRegistryDelta discarding delta, hashcodes mismatch: {hashCode}!={delta.AppsHashCode}");
@@ -541,7 +541,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal void RefreshInstanceInfo()
         {
-            InstanceInfo info = _appInfoManager.InstanceInfo;
+            var info = _appInfoManager.InstanceInfo;
             if (info == null)
             {
                 return;
@@ -608,7 +608,7 @@ namespace Steeltoe.Discovery.Eureka
 
                 _logger?.LogInformation("Starting HeartBeat");
                 var intervalInMilli = _appInfoManager.InstanceInfo.LeaseInfo.RenewalIntervalInSecs * 1000;
-                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, this.HeartBeatTaskAsync);
+                _heartBeatTimer = StartTimer("HeartBeat", intervalInMilli, HeartBeatTaskAsync);
                 if (ClientConfig.ShouldOnDemandUpdateStatusChange)
                 {
                     _appInfoManager.StatusChangedEvent += Instance_StatusChangedEvent;
@@ -637,14 +637,14 @@ namespace Steeltoe.Discovery.Eureka
         private void UpdateInstanceRemoteStatus()
         {
             // Determine this instance's status for this app and set to UNKNOWN if not found
-            InstanceInfo info = _appInfoManager?.InstanceInfo;
+            var info = _appInfoManager?.InstanceInfo;
 
             if (info != null && !string.IsNullOrEmpty(info.AppName))
             {
-                Application app = GetApplication(info.AppName);
+                var app = GetApplication(info.AppName);
                 if (app != null)
                 {
-                    InstanceInfo remoteInstanceInfo = app.GetInstance(info.InstanceId);
+                    var remoteInstanceInfo = app.GetInstance(info.InstanceId);
                     if (remoteInstanceInfo != null)
                     {
                         LastRemoteInstanceStatus = remoteInstanceInfo.Status;
@@ -679,7 +679,7 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
-            bool result = await FetchRegistryAsync(false).ConfigureAwait(false);
+            var result = await FetchRegistryAsync(false).ConfigureAwait(false);
             if (!result)
             {
                 _logger?.LogError("CacheRefresh failed");

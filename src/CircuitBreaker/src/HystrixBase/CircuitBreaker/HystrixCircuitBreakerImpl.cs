@@ -19,8 +19,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
-            this._options = options;
-            this._metrics = metrics;
+            _options = options;
+            _metrics = metrics;
         }
 
         public virtual void MarkSuccess()
@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public virtual bool AllowSingleTest()
         {
-            long timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
+            var timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
 
             // 1) if the circuit is open
             // 2) and it's been longer than 'sleepWindow' since we opened the circuit
@@ -91,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
                 }
 
                 // we're closed, so let's see if errors have made us so we should trip the circuit open
-                HealthCounts health = _metrics.Healthcounts;
+                var health = _metrics.Healthcounts;
 
                 // check if we are past the statisticalWindowVolumeThreshold
                 if (health.TotalRequests < _options.CircuitBreakerRequestVolumeThreshold)

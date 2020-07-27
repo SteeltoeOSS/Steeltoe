@@ -132,12 +132,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
-                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
+            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
 
         [Fact]
@@ -167,12 +165,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<StartupWithSecurity>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/info");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
         [Fact]
@@ -204,12 +200,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                     config.AddEnvironmentVariables();
                 });
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/info");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/info");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         }
 
         [Fact]

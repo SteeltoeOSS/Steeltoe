@@ -35,24 +35,24 @@ namespace OpenCensus.Trace.Internal
             this.spanExporter = spanExporter;
             this.runningSpanStore = runningSpanStore;
             this.sampledSpanStore = sampledSpanStore;
-            this.enqueueEventForNonSampledSpans = runningSpanStore != null || sampledSpanStore != null;
+            enqueueEventForNonSampledSpans = runningSpanStore != null || sampledSpanStore != null;
             this.eventQueue = eventQueue;
         }
 
         public void OnEnd(ISpan span)
         {
-            if ((span.Options.HasFlag(SpanOptions.RecordEvents) && this.enqueueEventForNonSampledSpans)
+            if ((span.Options.HasFlag(SpanOptions.RecordEvents) && enqueueEventForNonSampledSpans)
                 || span.Context.TraceOptions.IsSampled)
             {
-                this.eventQueue.Enqueue(new SpanEndEvent(span, this.spanExporter, this.runningSpanStore, this.sampledSpanStore));
+                eventQueue.Enqueue(new SpanEndEvent(span, spanExporter, runningSpanStore, sampledSpanStore));
             }
         }
 
         public void OnStart(ISpan span)
         {
-            if (span.Options.HasFlag(SpanOptions.RecordEvents) && this.enqueueEventForNonSampledSpans)
+            if (span.Options.HasFlag(SpanOptions.RecordEvents) && enqueueEventForNonSampledSpans)
             {
-                this.eventQueue.Enqueue(new SpanStartEvent(span, this.runningSpanStore));
+                eventQueue.Enqueue(new SpanStartEvent(span, runningSpanStore));
             }
         }
 
@@ -69,9 +69,9 @@ namespace OpenCensus.Trace.Internal
 
             public void Process()
             {
-                if (this.activeSpansExporter != null)
+                if (activeSpansExporter != null)
                 {
-                    this.activeSpansExporter.OnStart(this.span);
+                    activeSpansExporter.OnStart(span);
                 }
             }
         }
@@ -97,19 +97,19 @@ namespace OpenCensus.Trace.Internal
 
             public void Process()
             {
-                if (this.span.Context.TraceOptions.IsSampled)
+                if (span.Context.TraceOptions.IsSampled)
                 {
-                    this.spanExporter.AddSpan(this.span);
+                    spanExporter.AddSpan(span);
                 }
 
-                if (this.runningSpanStore != null)
+                if (runningSpanStore != null)
                 {
-                    this.runningSpanStore.OnEnd(this.span);
+                    runningSpanStore.OnEnd(span);
                 }
 
-                if (this.sampledSpanStore != null)
+                if (sampledSpanStore != null)
                 {
-                    this.sampledSpanStore.ConsiderForSampling(this.span);
+                    sampledSpanStore.ConsiderForSampling(span);
                 }
             }
         }

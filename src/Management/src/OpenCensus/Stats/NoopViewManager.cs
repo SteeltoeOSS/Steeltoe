@@ -36,13 +36,13 @@ namespace OpenCensus.Stats
         {
             get
             {
-                ISet<IView> views = this.exportedViews;
+                var views = exportedViews;
                 if (views == null)
                 {
-                    lock (this.registeredViews)
+                    lock (registeredViews)
                     {
-                        this.exportedViews = views = FilterExportedViews(this.registeredViews.Values);
-                        return ImmutableHashSet.CreateRange(this.exportedViews);
+                        exportedViews = views = FilterExportedViews(registeredViews.Values);
+                        return ImmutableHashSet.CreateRange(exportedViews);
                     }
                 }
 
@@ -57,10 +57,10 @@ namespace OpenCensus.Stats
                 throw new ArgumentNullException(nameof(newView));
             }
 
-            lock (this.registeredViews)
+            lock (registeredViews)
             {
-                this.exportedViews = null;
-                this.registeredViews.TryGetValue(newView.Name, out IView existing);
+                exportedViews = null;
+                registeredViews.TryGetValue(newView.Name, out var existing);
                 if (!(existing == null || newView.Equals(existing)))
                 {
                     throw new ArgumentException("A different view with the same name already exists.");
@@ -68,7 +68,7 @@ namespace OpenCensus.Stats
 
                 if (existing == null)
                 {
-                    this.registeredViews.Add(newView.Name, newView);
+                    registeredViews.Add(newView.Name, newView);
                 }
             }
         }
@@ -80,9 +80,9 @@ namespace OpenCensus.Stats
                 throw new ArgumentNullException(nameof(name));
             }
 
-            lock (this.registeredViews)
+            lock (registeredViews)
             {
-                this.registeredViews.TryGetValue(name, out IView view);
+                registeredViews.TryGetValue(name, out var view);
                 if (view == null)
                 {
                     return null;
@@ -102,7 +102,7 @@ namespace OpenCensus.Stats
         private static ISet<IView> FilterExportedViews(ICollection<IView> allViews)
         {
             ISet<IView> views = new HashSet<IView>();
-            foreach (IView view in allViews)
+            foreach (var view in allViews)
             {
                 // if (view.getWindow() instanceof View.AggregationWindow.Interval) {
                 //    continue;

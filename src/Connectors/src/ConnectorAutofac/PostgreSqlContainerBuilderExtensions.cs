@@ -36,11 +36,11 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
                 : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
-            Type postgreSqlConnection = PostgreSqlTypeLocator.NpgsqlConnection;
+            var postgreSqlConnection = PostgreSqlTypeLocator.NpgsqlConnection;
             var postgreSqlConfig = new PostgresProviderConnectorOptions(config);
             var factory = new PostgresProviderConnectorFactory(info, postgreSqlConfig, postgreSqlConnection);
             container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();

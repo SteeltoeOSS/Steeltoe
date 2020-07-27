@@ -22,9 +22,9 @@ namespace OpenCensus.Trace.Export
     {
         internal SampledSpanStoreErrorFilter(string spanName, CanonicalCode? canonicalCode, int maxSpansToReturn)
         {
-            this.SpanName = spanName ?? throw new ArgumentNullException(nameof(spanName));
-            this.CanonicalCode = canonicalCode;
-            this.MaxSpansToReturn = maxSpansToReturn;
+            SpanName = spanName ?? throw new ArgumentNullException(nameof(spanName));
+            CanonicalCode = canonicalCode;
+            MaxSpansToReturn = maxSpansToReturn;
         }
 
         public string SpanName { get; }
@@ -52,9 +52,9 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "ErrorFilter{"
-                + "spanName=" + this.SpanName + ", "
-                + "canonicalCode=" + this.CanonicalCode + ", "
-                + "maxSpansToReturn=" + this.MaxSpansToReturn
+                + "spanName=" + SpanName + ", "
+                + "canonicalCode=" + CanonicalCode + ", "
+                + "maxSpansToReturn=" + MaxSpansToReturn
                 + "}";
         }
 
@@ -68,9 +68,9 @@ namespace OpenCensus.Trace.Export
 
             if (o is SampledSpanStoreErrorFilter that)
             {
-                return this.SpanName.Equals(that.SpanName)
-                     && (this.CanonicalCode == that.CanonicalCode)
-                     && (this.MaxSpansToReturn == that.MaxSpansToReturn);
+                return SpanName.Equals(that.SpanName)
+                     && (CanonicalCode == that.CanonicalCode)
+                     && (MaxSpansToReturn == that.MaxSpansToReturn);
             }
 
             return false;
@@ -79,13 +79,13 @@ namespace OpenCensus.Trace.Export
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.SpanName.GetHashCode();
+            h ^= SpanName.GetHashCode();
             h *= 1000003;
-            h ^= this.CanonicalCode.GetHashCode();
+            h ^= CanonicalCode.GetHashCode();
             h *= 1000003;
-            h ^= this.MaxSpansToReturn;
+            h ^= MaxSpansToReturn;
             return h;
         }
     }

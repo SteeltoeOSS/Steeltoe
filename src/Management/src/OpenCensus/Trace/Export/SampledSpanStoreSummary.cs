@@ -25,7 +25,7 @@ namespace OpenCensus.Trace.Export
     {
         internal SampledSpanStoreSummary(IDictionary<string, ISampledPerSpanNameSummary> perSpanNameSummary)
         {
-            this.PerSpanNameSummary = perSpanNameSummary ?? throw new ArgumentNullException(nameof(perSpanNameSummary));
+            PerSpanNameSummary = perSpanNameSummary ?? throw new ArgumentNullException(nameof(perSpanNameSummary));
         }
 
         public IDictionary<string, ISampledPerSpanNameSummary> PerSpanNameSummary { get; }
@@ -45,7 +45,7 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "SampledSummary{"
-                + "perSpanNameSummary=" + this.PerSpanNameSummary
+                + "perSpanNameSummary=" + PerSpanNameSummary
                 + "}";
         }
 
@@ -59,7 +59,7 @@ namespace OpenCensus.Trace.Export
 
             if (o is SampledSpanStoreSummary that)
             {
-                return this.PerSpanNameSummary.SequenceEqual(that.PerSpanNameSummary);
+                return PerSpanNameSummary.SequenceEqual(that.PerSpanNameSummary);
             }
 
             return false;
@@ -68,9 +68,9 @@ namespace OpenCensus.Trace.Export
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.PerSpanNameSummary.GetHashCode();
+            h ^= PerSpanNameSummary.GetHashCode();
             return h;
         }
     }

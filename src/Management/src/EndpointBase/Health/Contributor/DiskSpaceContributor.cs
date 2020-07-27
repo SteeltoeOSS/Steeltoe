@@ -21,14 +21,14 @@ namespace Steeltoe.Management.Endpoint.Health.Contributor
 
         public HealthCheckResult Health()
         {
-            HealthCheckResult result = new HealthCheckResult();
+            var result = new HealthCheckResult();
 
             var fullPath = Path.GetFullPath(_options.Path);
-            DirectoryInfo dirInfo = new DirectoryInfo(fullPath);
+            var dirInfo = new DirectoryInfo(fullPath);
             if (dirInfo.Exists)
             {
-                string rootName = dirInfo.Root.Name;
-                DriveInfo d = new DriveInfo(rootName);
+                var rootName = dirInfo.Root.Name;
+                var d = new DriveInfo(rootName);
                 var freeSpace = d.TotalFreeSpace;
                 if (freeSpace >= _options.Threshold)
                 {

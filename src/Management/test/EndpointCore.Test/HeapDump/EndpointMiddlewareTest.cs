@@ -73,28 +73,26 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     loggingBuilder.AddConfiguration(webhostContext.Configuration);
                     loggingBuilder.AddDynamicConsole();
                 });
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
-                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-                    Assert.True(result.Content.Headers.Contains("Content-Type"));
-                    var contentType = result.Content.Headers.GetValues("Content-Type");
-                    Assert.Equal("application/octet-stream", contentType.Single());
-                    Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+                Assert.True(result.Content.Headers.Contains("Content-Type"));
+                var contentType = result.Content.Headers.GetValues("Content-Type");
+                Assert.Equal("application/octet-stream", contentType.Single());
+                Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                    var tempFile = Path.GetTempFileName();
-                    var fs = new FileStream(tempFile, FileMode.Create);
-                    var input = await result.Content.ReadAsStreamAsync();
-                    await input.CopyToAsync(fs);
-                    fs.Close();
+                var tempFile = Path.GetTempFileName();
+                var fs = new FileStream(tempFile, FileMode.Create);
+                var input = await result.Content.ReadAsStreamAsync();
+                await input.CopyToAsync(fs);
+                fs.Close();
 
-                    var fs2 = File.Open(tempFile, FileMode.Open);
-                    Assert.NotEqual(0, fs2.Length);
-                    fs2.Close();
-                    File.Delete(tempFile);
-                }
+                var fs2 = File.Open(tempFile, FileMode.Open);
+                Assert.NotEqual(0, fs2.Length);
+                fs2.Close();
+                File.Delete(tempFile);
             }
         }
 

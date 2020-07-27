@@ -45,7 +45,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns><see langword="true"/> if the audience matches the client id or any value in AdditionalAudiences</returns>
         public virtual bool ValidateAudience(IEnumerable<string> audiences, SecurityToken securityToken, TokenValidationParameters validationParameters)
         {
-            foreach (string audience in audiences)
+            foreach (var audience in audiences)
             {
                 if (audience.Equals(_options.ClientId))
                 {
@@ -54,7 +54,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
                 if (_options.AdditionalAudiences != null)
                 {
-                    bool found = _options.AdditionalAudiences.Any(x => x.Equals(audience));
+                    var found = _options.AdditionalAudiences.Any(x => x.Equals(audience));
                     if (found)
                     {
                         return true;
@@ -83,8 +83,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 return false; // no scopes at all
             }
 
-            bool found = false;
-            foreach (Claim claim in validJwt.Claims)
+            var found = false;
+            foreach (var claim in validJwt.Claims)
             {
                 if (claim.Type.Equals("scope") || (claim.Type.Equals("authorities") && _options.RequiredScopes.Any(x => x.Equals(claim.Value))))
                 {

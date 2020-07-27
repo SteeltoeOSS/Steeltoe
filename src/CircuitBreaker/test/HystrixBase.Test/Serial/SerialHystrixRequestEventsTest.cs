@@ -21,154 +21,154 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
         [Fact]
         public void TestEmpty()
         {
-            HystrixRequestEvents request = new HystrixRequestEvents(new List<IHystrixInvokableInfo>());
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(new List<IHystrixInvokableInfo>());
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[]", actual);
         }
 
         [Fact]
         public void TestSingleSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 100, HystrixEventType.SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[100]}]", actual);
         }
 
         [Fact]
         public void TestSingleFailureFallbackMissing()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 101, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_MISSING)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_MISSING\"],\"latencies\":[101]}]", actual);
         }
 
         [Fact]
         public void TestSingleFailureFallbackSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 102, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_SUCCESS\"],\"latencies\":[102]}]", actual);
         }
 
         [Fact]
         public void TestSingleFailureFallbackRejected()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 103, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_REJECTION)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_REJECTION\"],\"latencies\":[103]}]", actual);
         }
 
         [Fact]
         public void TestSingleFailureFallbackFailure()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 104, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_FAILURE)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_FAILURE\"],\"latencies\":[104]}]", actual);
         }
 
         [Fact]
         public void TestSingleTimeoutFallbackSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 105, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"TIMEOUT\",\"FALLBACK_SUCCESS\"],\"latencies\":[105]}]", actual);
         }
 
         [Fact]
         public void TestSingleSemaphoreRejectedFallbackSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 1, HystrixEventType.SEMAPHORE_REJECTED, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SEMAPHORE_REJECTED\",\"FALLBACK_SUCCESS\"],\"latencies\":[1]}]", actual);
         }
 
         [Fact]
         public void TestSingleThreadPoolRejectedFallbackSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 1, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"THREAD_POOL_REJECTED\",\"FALLBACK_SUCCESS\"],\"latencies\":[1]}]", actual);
         }
 
         [Fact]
         public void TestSingleShortCircuitedFallbackSuccess()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 1, HystrixEventType.SHORT_CIRCUITED, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SHORT_CIRCUITED\",\"FALLBACK_SUCCESS\"],\"latencies\":[1]}]", actual);
         }
 
         [Fact]
         public void TestSingleBadRequest()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 50, HystrixEventType.BAD_REQUEST)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"BAD_REQUEST\"],\"latencies\":[50]}]", actual);
         }
 
         [Fact]
         public void TestTwoSuccessesSameKey()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 23, HystrixEventType.SUCCESS);
-            SimpleExecution foo2 = new SimpleExecution(FooKey, 34, HystrixEventType.SUCCESS);
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 23, HystrixEventType.SUCCESS);
+            var foo2 = new SimpleExecution(FooKey, 34, HystrixEventType.SUCCESS);
             executions.Add(foo1);
             executions.Add(foo2);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23,34]}]", actual);
         }
 
         [Fact]
         public void TestTwoSuccessesDifferentKey()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 23, HystrixEventType.SUCCESS);
-            SimpleExecution bar1 = new SimpleExecution(BarKey, 34, HystrixEventType.SUCCESS);
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 23, HystrixEventType.SUCCESS);
+            var bar1 = new SimpleExecution(BarKey, 34, HystrixEventType.SUCCESS);
             executions.Add(foo1);
             executions.Add(bar1);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.True(actual.Equals("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23]},{\"name\":\"Bar\",\"events\":[\"SUCCESS\"],\"latencies\":[34]}]") ||
                     actual.Equals("[{\"name\":\"Bar\",\"events\":[\"SUCCESS\"],\"latencies\":[34]},{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23]}]"));
         }
@@ -176,28 +176,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
         [Fact]
         public void TestTwoFailuresSameKey()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 56, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
-            SimpleExecution foo2 = new SimpleExecution(FooKey, 67, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 56, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
+            var foo2 = new SimpleExecution(FooKey, 67, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
             executions.Add(foo1);
             executions.Add(foo2);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_SUCCESS\"],\"latencies\":[56,67]}]", actual);
         }
 
         [Fact]
         public void TestTwoSuccessesOneFailureSameKey()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 10, HystrixEventType.SUCCESS);
-            SimpleExecution foo2 = new SimpleExecution(FooKey, 67, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
-            SimpleExecution foo3 = new SimpleExecution(FooKey, 11, HystrixEventType.SUCCESS);
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 10, HystrixEventType.SUCCESS);
+            var foo2 = new SimpleExecution(FooKey, 67, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_SUCCESS);
+            var foo3 = new SimpleExecution(FooKey, 11, HystrixEventType.SUCCESS);
             executions.Add(foo1);
             executions.Add(foo2);
             executions.Add(foo3);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.True(actual.Equals("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[10,11]},{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_SUCCESS\"],\"latencies\":[67]}]") ||
                     actual.Equals("[{\"name\":\"Foo\",\"events\":[\"FAILURE\",\"FALLBACK_SUCCESS\"],\"latencies\":[67]},{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[10,11]}]"));
         }
@@ -205,45 +205,45 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
         [Fact]
         public void TestSingleResponseFromCache()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
-            SimpleExecution cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
+            var cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
             executions.Add(foo1);
             executions.Add(cachedFoo1);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23],\"cached\":1}]", actual);
         }
 
         [Fact]
         public void TestMultipleResponsesFromCache()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
-            SimpleExecution cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
-            SimpleExecution anotherCachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
+            var cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
+            var anotherCachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
             executions.Add(foo1);
             executions.Add(cachedFoo1);
             executions.Add(anotherCachedFoo1);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23],\"cached\":2}]", actual);
         }
 
         [Fact]
         public void TestMultipleCacheKeys()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>();
-            SimpleExecution foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
-            SimpleExecution cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
-            SimpleExecution foo2 = new SimpleExecution(FooKey, 67, "cacheKeyB", HystrixEventType.SUCCESS);
-            SimpleExecution cachedFoo2 = new SimpleExecution(FooKey, "cacheKeyB");
+            var executions = new List<IHystrixInvokableInfo>();
+            var foo1 = new SimpleExecution(FooKey, 23, "cacheKeyA", HystrixEventType.SUCCESS);
+            var cachedFoo1 = new SimpleExecution(FooKey, "cacheKeyA");
+            var foo2 = new SimpleExecution(FooKey, 67, "cacheKeyB", HystrixEventType.SUCCESS);
+            var cachedFoo2 = new SimpleExecution(FooKey, "cacheKeyB");
             executions.Add(foo1);
             executions.Add(cachedFoo1);
             executions.Add(foo2);
             executions.Add(cachedFoo2);
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.True(actual.Equals("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[67],\"cached\":1},{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23],\"cached\":1}]") ||
                     actual.Equals("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[23],\"cached\":1},{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[67],\"cached\":1}]"));
         }
@@ -251,48 +251,48 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
         [Fact]
         public void TestSingleSuccessMultipleEmits()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 100, HystrixEventType.EMIT, HystrixEventType.EMIT, HystrixEventType.EMIT, HystrixEventType.SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[{\"name\":\"EMIT\",\"count\":3},\"SUCCESS\"],\"latencies\":[100]}]", actual);
         }
 
         [Fact]
         public void TestSingleSuccessMultipleEmitsAndFallbackEmits()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 100, HystrixEventType.EMIT, HystrixEventType.EMIT, HystrixEventType.EMIT, HystrixEventType.FAILURE, HystrixEventType.FALLBACK_EMIT, HystrixEventType.FALLBACK_EMIT, HystrixEventType.FALLBACK_SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[{\"name\":\"EMIT\",\"count\":3},\"FAILURE\",{\"name\":\"FALLBACK_EMIT\",\"count\":2},\"FALLBACK_SUCCESS\"],\"latencies\":[100]}]", actual);
         }
 
         [Fact]
         public void TestCollapsedBatchOfOne()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 53, CollapserKey, 1, HystrixEventType.SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[53],\"collapsed\":{\"name\":\"FooCollapser\",\"count\":1}}]", actual);
         }
 
         [Fact]
         public void TestCollapsedBatchOfSix()
         {
-            List<IHystrixInvokableInfo> executions = new List<IHystrixInvokableInfo>
+            var executions = new List<IHystrixInvokableInfo>
             {
                 new SimpleExecution(FooKey, 53, CollapserKey, 6, HystrixEventType.SUCCESS)
             };
-            HystrixRequestEvents request = new HystrixRequestEvents(executions);
-            string actual = SerialHystrixRequestEvents.ToJsonString(request);
+            var request = new HystrixRequestEvents(executions);
+            var actual = SerialHystrixRequestEvents.ToJsonString(request);
             Assert.Equal("[{\"name\":\"Foo\",\"events\":[\"SUCCESS\"],\"latencies\":[53],\"collapsed\":{\"name\":\"FooCollapser\",\"count\":6}}]", actual);
         }
 
@@ -302,40 +302,40 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, params HystrixEventType[] events)
             {
-                this.CommandKey = commandKey;
-                this.executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
-                this.PublicCacheKey = null;
-                this.OriginatingCollapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+                PublicCacheKey = null;
+                OriginatingCollapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, string cacheKey, params HystrixEventType[] events)
             {
-                this.CommandKey = commandKey;
-                this.executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
-                this.PublicCacheKey = cacheKey;
-                this.OriginatingCollapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+                PublicCacheKey = cacheKey;
+                OriginatingCollapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, string cacheKey)
             {
-                this.CommandKey = commandKey;
-                this.executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
-                this.PublicCacheKey = cacheKey;
-                this.OriginatingCollapserKey = null;
+                CommandKey = commandKey;
+                executionResult = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE);
+                PublicCacheKey = cacheKey;
+                OriginatingCollapserKey = null;
             }
 
             public SimpleExecution(IHystrixCommandKey commandKey, int latency, IHystrixCollapserKey collapserKey, int batchSize, params HystrixEventType[] events)
             {
-                this.CommandKey = commandKey;
-                ExecutionResult interimResult = ExecutionResult.From(events).SetExecutionLatency(latency);
-                for (int i = 0; i < batchSize; i++)
+                CommandKey = commandKey;
+                var interimResult = ExecutionResult.From(events).SetExecutionLatency(latency);
+                for (var i = 0; i < batchSize; i++)
                 {
                     interimResult = interimResult.AddEvent(HystrixEventType.COLLAPSED);
                 }
 
-                this.executionResult = interimResult;
-                this.PublicCacheKey = null;
-                this.OriginatingCollapserKey = collapserKey;
+                executionResult = interimResult;
+                PublicCacheKey = null;
+                OriginatingCollapserKey = collapserKey;
             }
 
             public IHystrixCommandGroupKey CommandGroup

@@ -74,7 +74,7 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            DiscoveryOptions discoveryOptions = new DiscoveryOptions();
+            var discoveryOptions = new DiscoveryOptions();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, discoveryOptions));
@@ -114,9 +114,9 @@ namespace Steeltoe.Discovery.Client.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -179,9 +179,9 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -195,7 +195,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_WithDiscoveryOptions_AddsDiscoveryClient()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
@@ -221,7 +221,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_AddsEurekaServerHealthContributor()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
@@ -250,7 +250,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_WiresUp_HealthCheckerHandler()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
@@ -274,7 +274,7 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.NotNull(service);
             var eurekaService = service as EurekaDiscoveryClient;
             Assert.IsType<ScopedEurekaHealthCheckHandler>(eurekaService.HealthCheckHandler);
-            ScopedEurekaHealthCheckHandler handler = eurekaService.HealthCheckHandler as ScopedEurekaHealthCheckHandler;
+            var handler = eurekaService.HealthCheckHandler as ScopedEurekaHealthCheckHandler;
             Assert.NotNull(handler._scopeFactory);
         }
 
@@ -282,7 +282,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = null,
@@ -327,7 +327,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddDiscoveryClient_WithDiscoveryOptionsAndHttpClient_AddsDiscoveryClient()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
@@ -375,7 +375,7 @@ namespace Steeltoe.Discovery.Client.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => DiscoveryServiceCollectionExtensions.AddDiscoveryClient(services, config, "foobar"));
@@ -457,7 +457,7 @@ namespace Steeltoe.Discovery.Client.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", env1);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -489,9 +489,9 @@ namespace Steeltoe.Discovery.Client.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);

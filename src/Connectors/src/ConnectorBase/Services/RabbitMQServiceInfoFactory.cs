@@ -20,7 +20,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override bool Accept(Service binding)
         {
-            bool result = base.Accept(binding);
+            var result = base.Accept(binding);
             if (result)
             {
                 result = !HystrixRabbitMQServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
@@ -31,13 +31,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
-            string managementUri = GetStringFromCredentials(binding.Credentials, "http_api_uri");
+            var uri = GetUriFromCredentials(binding.Credentials);
+            var managementUri = GetStringFromCredentials(binding.Credentials, "http_api_uri");
 
             if (binding.Credentials.ContainsKey("uris"))
             {
-                List<string> uris = GetListFromCredentials(binding.Credentials, "uris");
-                List<string> managementUris = GetListFromCredentials(binding.Credentials, "http_api_uris");
+                var uris = GetListFromCredentials(binding.Credentials, "uris");
+                var managementUris = GetListFromCredentials(binding.Credentials, "http_api_uris");
                 return new RabbitMQServiceInfo(binding.Name, uri, managementUri, uris, managementUris);
             }
 

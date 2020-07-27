@@ -12,7 +12,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-db2",
                 Tags = new string[] { "db2", "relational" },
@@ -29,14 +29,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            DB2ServiceInfoFactory factory = new DB2ServiceInfoFactory();
+            var factory = new DB2ServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-msql",
                 Tags = new string[] { "foobar", "relational" },
@@ -53,14 +53,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            DB2ServiceInfoFactory factory = new DB2ServiceInfoFactory();
+            var factory = new DB2ServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-db2",
                 Tags = new string[] { "db2", "relational" },
@@ -77,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            DB2ServiceInfoFactory factory = new DB2ServiceInfoFactory();
+            var factory = new DB2ServiceInfoFactory();
             var info = factory.Create(s) as DB2ServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("db2Service", info.Id);

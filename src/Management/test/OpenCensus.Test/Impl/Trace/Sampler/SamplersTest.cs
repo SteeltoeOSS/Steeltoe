@@ -125,19 +125,19 @@ namespace OpenCensus.Trace.Sampler.Test
         [Fact]
         public void ProbabilitySampler_DifferentProbabilities_NotSampledParent()
         {
-            ISampler neverSample = Samplers.GetProbabilitySampler(0.0);
+            var neverSample = Samplers.GetProbabilitySampler(0.0);
             AssertSamplerSamplesWithProbability(
                 neverSample, notSampledSpanContext, new List<ISpan>(), 0.0);
-            ISampler alwaysSample = Samplers.GetProbabilitySampler(1.0);
+            var alwaysSample = Samplers.GetProbabilitySampler(1.0);
             AssertSamplerSamplesWithProbability(
                 alwaysSample, notSampledSpanContext, new List<ISpan>(), 1.0);
-            ISampler fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
+            var fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
             AssertSamplerSamplesWithProbability(
                 fiftyPercentSample, notSampledSpanContext, new List<ISpan>(), 0.5);
-            ISampler twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
+            var twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
             AssertSamplerSamplesWithProbability(
                 twentyPercentSample, notSampledSpanContext, new List<ISpan>(), 0.2);
-            ISampler twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
+            var twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
             AssertSamplerSamplesWithProbability(
                 twoThirdsSample, notSampledSpanContext, new List<ISpan>(), 2.0 / 3.0);
         }
@@ -145,19 +145,19 @@ namespace OpenCensus.Trace.Sampler.Test
         [Fact]
         public void ProbabilitySampler_DifferentProbabilities_SampledParent()
         {
-            ISampler neverSample = Samplers.GetProbabilitySampler(0.0);
+            var neverSample = Samplers.GetProbabilitySampler(0.0);
             AssertSamplerSamplesWithProbability(
                 neverSample, sampledSpanContext, new List<ISpan>(), 1.0);
-            ISampler alwaysSample = Samplers.GetProbabilitySampler(1.0);
+            var alwaysSample = Samplers.GetProbabilitySampler(1.0);
             AssertSamplerSamplesWithProbability(
                 alwaysSample, sampledSpanContext, new List<ISpan>(), 1.0);
-            ISampler fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
+            var fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
             AssertSamplerSamplesWithProbability(
                 fiftyPercentSample, sampledSpanContext, new List<ISpan>(), 1.0);
-            ISampler twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
+            var twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
             AssertSamplerSamplesWithProbability(
                 twentyPercentSample, sampledSpanContext, new List<ISpan>(), 1.0);
-            ISampler twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
+            var twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
             AssertSamplerSamplesWithProbability(
                 twoThirdsSample, sampledSpanContext, new List<ISpan>(), 1.0);
         }
@@ -165,19 +165,19 @@ namespace OpenCensus.Trace.Sampler.Test
         [Fact]
         public void ProbabilitySampler_DifferentProbabilities_SampledParentLink()
         {
-            ISampler neverSample = Samplers.GetProbabilitySampler(0.0);
+            var neverSample = Samplers.GetProbabilitySampler(0.0);
             AssertSamplerSamplesWithProbability(
                 neverSample, notSampledSpanContext, new List<ISpan>() { sampledSpan }, 1.0);
-            ISampler alwaysSample = Samplers.GetProbabilitySampler(1.0);
+            var alwaysSample = Samplers.GetProbabilitySampler(1.0);
             AssertSamplerSamplesWithProbability(
                 alwaysSample, notSampledSpanContext, new List<ISpan>() { sampledSpan }, 1.0);
-            ISampler fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
+            var fiftyPercentSample = Samplers.GetProbabilitySampler(0.5);
             AssertSamplerSamplesWithProbability(
                 fiftyPercentSample, notSampledSpanContext, new List<ISpan>() { sampledSpan }, 1.0);
-            ISampler twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
+            var twentyPercentSample = Samplers.GetProbabilitySampler(0.2);
             AssertSamplerSamplesWithProbability(
                 twentyPercentSample, notSampledSpanContext, new List<ISpan>() { sampledSpan }, 1.0);
-            ISampler twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
+            var twoThirdsSample = Samplers.GetProbabilitySampler(2.0 / 3.0);
             AssertSamplerSamplesWithProbability(
                 twoThirdsSample, notSampledSpanContext, new List<ISpan>() { sampledSpan }, 1.0);
         }
@@ -185,10 +185,10 @@ namespace OpenCensus.Trace.Sampler.Test
         [Fact]
         public void ProbabilitySampler_SampleBasedOnTraceId()
         {
-            ISampler defaultProbability = Samplers.GetProbabilitySampler(0.0001);
+            var defaultProbability = Samplers.GetProbabilitySampler(0.0001);
             // This traceId will not be sampled by the ProbabilitySampler because the first 8 bytes as long
             // is not less than probability * Long.MAX_VALUE;
-            ITraceId notSampledtraceId =
+            var notSampledtraceId =
                 TraceId.FromBytes(
                     new byte[] {
               0x8F,
@@ -218,7 +218,7 @@ namespace OpenCensus.Trace.Sampler.Test
                         new List<ISpan>()));
             // This traceId will be sampled by the ProbabilitySampler because the first 8 bytes as long
             // is less than probability * Long.MAX_VALUE;
-            ITraceId sampledtraceId =
+            var sampledtraceId =
                 TraceId.FromBytes(
                     new byte[] {
               0x00,
@@ -265,9 +265,9 @@ namespace OpenCensus.Trace.Sampler.Test
         private static void AssertSamplerSamplesWithProbability(
             ISampler sampler, ISpanContext parent, IEnumerable<ISpan> parentLinks, double probability)
         {
-            RandomGenerator random = new RandomGenerator(1234);
-            int count = 0; // Count of spans with sampling enabled
-            for (int i = 0; i < NUM_SAMPLE_TRIES; i++)
+            var random = new RandomGenerator(1234);
+            var count = 0; // Count of spans with sampling enabled
+            for (var i = 0; i < NUM_SAMPLE_TRIES; i++)
             {
                 if (sampler.ShouldSample(
                     parent,
@@ -280,7 +280,7 @@ namespace OpenCensus.Trace.Sampler.Test
                     count++;
                 }
             }
-            double proportionSampled = (double)count / NUM_SAMPLE_TRIES;
+            var proportionSampled = (double)count / NUM_SAMPLE_TRIES;
             // Allow for a large amount of slop (+/- 10%) in number of sampled traces, to avoid flakiness.
             Assert.True(proportionSampled < probability + 0.1 && proportionSampled > probability - 0.1);
         }

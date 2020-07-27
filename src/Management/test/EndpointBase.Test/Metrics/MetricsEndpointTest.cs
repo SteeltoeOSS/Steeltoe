@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var result = ep.Invoke(null);
             Assert.NotNull(result);
             Assert.IsType<MetricsListNamesResponse>(result);
-            MetricsListNamesResponse resp = result as MetricsListNamesResponse;
+            var resp = result as MetricsListNamesResponse;
             Assert.NotEmpty(resp.Names);
             Assert.Contains("http.server.requests", resp.Names);
             Assert.Contains("jvm.memory.used", resp.Names);
@@ -61,10 +61,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MetricsEndpoint(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -72,9 +72,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -85,8 +85,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 new KeyValuePair<string, string>("c", "v1")
             };
 
-            MetricsRequest req = new MetricsRequest("test.test1", alltags);
-            MetricsResponse resp = ep.Invoke(req) as MetricsResponse;
+            var req = new MetricsRequest("test.test1", alltags);
+            var resp = ep.Invoke(req) as MetricsResponse;
             Assert.NotNull(resp);
 
             Assert.Equal("test.test1", resp.Name);
@@ -108,13 +108,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void GetTagValuesInColumnOrder_ReturnsExpected()
         {
-            List<KeyValuePair<string, string>> tags = new List<KeyValuePair<string, string>>()
+            var tags = new List<KeyValuePair<string, string>>()
             {
                 new KeyValuePair<string, string>("foo", "bar"),
                 new KeyValuePair<string, string>("aaa", "bbb")
             };
 
-            List<ITagKey> columns = new List<ITagKey>()
+            var columns = new List<ITagKey>()
             {
                 TagKey.Create("foo"),
                 TagKey.Create("aaa")
@@ -346,56 +346,56 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MetricsEndpoint(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
                 .Put(TagKey.Create("c"), TagValue.Create("v1"))
                 .Build();
 
-            ITagContext context2 = tagger
+            var context2 = tagger
                  .EmptyBuilder
                  .Put(TagKey.Create("a"), TagValue.Create("v1"))
                  .Build();
 
-            ITagContext context3 = tagger
+            var context3 = tagger
                  .EmptyBuilder
                  .Put(TagKey.Create("b"), TagValue.Create("v1"))
                  .Build();
 
-            ITagContext context4 = tagger
+            var context4 = tagger
                  .EmptyBuilder
                  .Put(TagKey.Create("c"), TagValue.Create("v1"))
                  .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
             long asum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                asum = asum + i;
+                asum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context2);
             }
 
             long bsum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                bsum = bsum + i;
+                bsum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context3);
             }
 
             long csum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                csum = csum + i;
+                csum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context4);
             }
 
@@ -499,10 +499,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             var tagger = tagsComponent.Tagger;
             var ep = new MetricsEndpoint(opts, stats);
 
-            IMeasureDouble testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
+            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
             SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
@@ -510,9 +510,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 .Build();
 
             long allKeyssum = 0;
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
-                allKeyssum = allKeyssum + i;
+                allKeyssum += i;
                 stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
             }
 
@@ -523,8 +523,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 new KeyValuePair<string, string>("c", "v1")
             };
 
-            MetricsRequest req = new MetricsRequest("test.test1", alltags);
-            MetricsResponse resp = ep.GetMetric(req);
+            var req = new MetricsRequest("test.test1", alltags);
+            var resp = ep.GetMetric(req);
             Assert.NotNull(resp);
 
             Assert.Equal("test.test1", resp.Name);
@@ -541,15 +541,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private void SetupStats(OpenCensusStats stats)
         {
-            ITagKey exceptionKey = TagKey.Create("exception");
-            ITagKey methodKey = TagKey.Create("method");
-            ITagKey uriKey = TagKey.Create("uri");
-            ITagKey statusKey = TagKey.Create("status");
+            var exceptionKey = TagKey.Create("exception");
+            var methodKey = TagKey.Create("method");
+            var uriKey = TagKey.Create("uri");
+            var statusKey = TagKey.Create("status");
 
-            IMeasureDouble httpServerRquestMeasure = MeasureDouble.Create("server.totalTime", "server request times", MeasureUnit.MilliSeconds);
+            var httpServerRquestMeasure = MeasureDouble.Create("server.totalTime", "server request times", MeasureUnit.MilliSeconds);
 
-            IViewName httpServerRequestsViewName = ViewName.Create("http.server.requests");
-            IView httpServerRequestsView = View.Create(
+            var httpServerRequestsViewName = ViewName.Create("http.server.requests");
+            var httpServerRequestsView = View.Create(
                                         httpServerRequestsViewName,
                                         "server request times",
                                         httpServerRquestMeasure,
@@ -558,13 +558,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             stats.ViewManager.RegisterView(httpServerRequestsView);
 
-            ITagKey area = TagKey.Create("area");
-            ITagKey id = TagKey.Create("id");
+            var area = TagKey.Create("area");
+            var id = TagKey.Create("id");
 
-            IMeasureDouble memoryUsageMeasure = MeasureDouble.Create("memory.value", "memory usage", MeasureUnit.Bytes);
+            var memoryUsageMeasure = MeasureDouble.Create("memory.value", "memory usage", MeasureUnit.Bytes);
 
-            IViewName memoryUsageName = ViewName.Create("jvm.memory.used");
-            IView memoryUsageView = View.Create(
+            var memoryUsageName = ViewName.Create("jvm.memory.used");
+            var memoryUsageView = View.Create(
                                         memoryUsageName,
                                         "memory usage",
                                         memoryUsageMeasure,
@@ -576,17 +576,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
         private void SetupTestView(OpenCensusStats stats, IAggregation agg,  IMeasure measure = null, string viewName = "test.test")
         {
-            ITagKey aKey = TagKey.Create("a");
-            ITagKey bKey = TagKey.Create("b");
-            ITagKey cKey = TagKey.Create("c");
+            var aKey = TagKey.Create("a");
+            var bKey = TagKey.Create("b");
+            var cKey = TagKey.Create("c");
 
             if (measure == null)
             {
                 measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.MilliSeconds);
             }
 
-            IViewName testViewName = ViewName.Create(viewName);
-            IView testView = View.Create(
+            var testViewName = ViewName.Create(viewName);
+            var testView = View.Create(
                                         testViewName,
                                         "test",
                                         measure,

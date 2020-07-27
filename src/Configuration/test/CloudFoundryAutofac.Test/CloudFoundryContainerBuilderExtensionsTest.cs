@@ -20,14 +20,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryAutofac.Test
         {
             ContainerBuilder container = null;
             Assert.Throws<ArgumentNullException>(() => container.RegisterCloudFoundryOptions(null));
-            ContainerBuilder container2 = new ContainerBuilder();
+            var container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterCloudFoundryOptions(null));
         }
 
         [Fact]
         public void RegisterCloudFoundryOptions_Registers_AndBindsConfiguration()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
                 { "vcap:application:cf_api", "https://foo.bar/foo" },

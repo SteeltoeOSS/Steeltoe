@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [System.Obsolete]
         public void DefaultConstructor_InitializedWithDefaults()
         {
-            EurekaClientConfig config = new EurekaClientConfig();
+            var config = new EurekaClientConfig();
             Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
             Assert.Equal(EurekaClientConfig.Default_InstanceInfoReplicationIntervalSeconds, config.InstanceInfoReplicationIntervalSeconds);
             Assert.True(config.ShouldGZipContent);

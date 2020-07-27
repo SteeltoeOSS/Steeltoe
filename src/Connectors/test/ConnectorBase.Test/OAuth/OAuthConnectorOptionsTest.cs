@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
                 ["security:oauth2:resource:jwtKeyUri"] = "jwtkeyuri"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -66,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             {
                 ["security:oauth2:client:validateCertificates"] = "false",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -85,7 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
             {
                 ["security:oauth2:client:validate_certificates"] = "false",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

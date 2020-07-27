@@ -32,14 +32,14 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void AddTraceActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:trace:enabled"] = "false",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             var listener = new DiagnosticListener("Test");

@@ -36,7 +36,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         public List<TraceResult> GetTraces()
         {
-            TraceResult[] traces = _queue.ToArray();
+            var traces = _queue.ToArray();
             return new List<TraceResult>(traces);
         }
 
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
                 return;
             }
 
-            Activity current = Activity.Current;
+            var current = Activity.Current;
             if (current == null)
             {
                 return;
@@ -58,11 +58,11 @@ namespace Steeltoe.Management.EndpointOwin.Trace
                 return;
             }
 
-            GetProperty(value, out IOwinContext context);
+            GetProperty(value, out var context);
 
             if (context != null)
             {
-                TraceResult trace = MakeTrace(context, current.Duration);
+                var trace = MakeTrace(context, current.Duration);
                 _queue.Enqueue(trace);
                 if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
                 {
@@ -76,13 +76,13 @@ namespace Steeltoe.Management.EndpointOwin.Trace
             var request = context.Request;
             var response = context.Response;
 
-            Dictionary<string, object> details = new Dictionary<string, object>
+            var details = new Dictionary<string, object>
             {
                 { "method", request.Method },
                 { "path", GetPathInfo(request) }
             };
 
-            Dictionary<string, object> headers = new Dictionary<string, object>();
+            var headers = new Dictionary<string, object>();
             details.Add("headers", headers);
 
             if (_options.AddRequestHeaders)
@@ -145,7 +145,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal Dictionary<string, object> GetRequestHeaders(IHeaderDictionary headers)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            var result = new Dictionary<string, object>();
             foreach (var h in headers)
             {
                 // Add filtering
@@ -164,7 +164,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal object GetHeaderValue(string[] values)
         {
-            List<string> result = new List<string>();
+            var result = new List<string>();
             foreach (var v in values)
             {
                 result.Add(v);
@@ -192,7 +192,7 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal async Task<Dictionary<string, string[]>> GetRequestParametersAsync(IOwinRequest request)
         {
-            Dictionary<string, string[]> parameters = new Dictionary<string, string[]>();
+            var parameters = new Dictionary<string, string[]>();
             var query = request.Query;
             foreach (var p in query)
             {
@@ -232,13 +232,13 @@ namespace Steeltoe.Management.EndpointOwin.Trace
 
         protected internal string GetTimeTaken(TimeSpan duration)
         {
-            long timeInMilli = (long)duration.TotalMilliseconds;
+            var timeInMilli = (long)duration.TotalMilliseconds;
             return timeInMilli.ToString();
         }
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - baseTime.Ticks;
+            var javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
 

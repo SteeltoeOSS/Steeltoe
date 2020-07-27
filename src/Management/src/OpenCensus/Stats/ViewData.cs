@@ -29,10 +29,10 @@ namespace OpenCensus.Stats
     {
         internal ViewData(IView view, IDictionary<TagValues, IAggregationData> aggregationMap, ITimestamp start, ITimestamp end)
         {
-            this.View = view ?? throw new ArgumentNullException(nameof(view));
-            this.AggregationMap = aggregationMap ?? throw new ArgumentNullException(nameof(aggregationMap));
-            this.Start = start ?? throw new ArgumentNullException(nameof(start));
-            this.End = end ?? throw new ArgumentNullException(nameof(end));
+            View = view ?? throw new ArgumentNullException(nameof(view));
+            AggregationMap = aggregationMap ?? throw new ArgumentNullException(nameof(aggregationMap));
+            Start = start ?? throw new ArgumentNullException(nameof(start));
+            End = end ?? throw new ArgumentNullException(nameof(end));
         }
 
         public IView View { get; }
@@ -63,10 +63,10 @@ namespace OpenCensus.Stats
         public override string ToString()
         {
             return "ViewData{"
-                + "view=" + this.View + ", "
-                + "aggregationMap=" + Collections.ToString(this.AggregationMap) + ", "
-                + "start=" + this.Start + ", "
-                + "end=" + this.End
+                + "view=" + View + ", "
+                + "aggregationMap=" + Collections.ToString(AggregationMap) + ", "
+                + "start=" + Start + ", "
+                + "end=" + End
                 + "}";
         }
 
@@ -80,10 +80,10 @@ namespace OpenCensus.Stats
 
             if (o is ViewData that)
             {
-                return this.View.Equals(that.View)
-                     && this.AggregationMap.SequenceEqual(that.AggregationMap)
-                     && this.Start.Equals(that.Start)
-                     && this.End.Equals(that.End);
+                return View.Equals(that.View)
+                     && AggregationMap.SequenceEqual(that.AggregationMap)
+                     && Start.Equals(that.Start)
+                     && End.Equals(that.End);
             }
 
             return false;
@@ -92,15 +92,15 @@ namespace OpenCensus.Stats
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.View.GetHashCode();
+            h ^= View.GetHashCode();
             h *= 1000003;
-            h ^= this.AggregationMap.GetHashCode();
+            h ^= AggregationMap.GetHashCode();
             h *= 1000003;
-            h ^= this.Start.GetHashCode();
+            h ^= Start.GetHashCode();
             h *= 1000003;
-            h ^= this.End.GetHashCode();
+            h ^= End.GetHashCode();
             return h;
         }
 

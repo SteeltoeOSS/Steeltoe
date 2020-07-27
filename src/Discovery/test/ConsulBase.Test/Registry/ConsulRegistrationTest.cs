@@ -18,8 +18,8 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void Construtor_ThrowsOnNulls()
         {
-            AgentServiceRegistration areg = new AgentServiceRegistration();
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
+            var areg = new AgentServiceRegistration();
+            var options = new ConsulDiscoveryOptions();
 
             Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(null, options));
             Assert.Throws<ArgumentNullException>(() => new ConsulRegistration(areg, (ConsulDiscoveryOptions)null));
@@ -28,7 +28,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void Constructor_SetsProperties()
         {
-            AgentServiceRegistration areg = new AgentServiceRegistration()
+            var areg = new AgentServiceRegistration()
             {
                 ID = "id",
                 Name = "name",
@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
                 Tags = new string[] { "foo=bar" }
             };
 
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
+            var options = new ConsulDiscoveryOptions();
             var reg = new ConsulRegistration(areg, options);
             Assert.Equal("id", reg.InstanceId);
             Assert.Equal("name", reg.ServiceId);
@@ -53,7 +53,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void CreateTags_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 Tags = new List<string>() { "foo=bar" },
                 InstanceZone = "instancezone",
@@ -71,7 +71,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void GetAppName_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 ServiceName = "serviceName"
             };
@@ -125,7 +125,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void GetDefaultInstanceId_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 ServiceName = "serviceName"
             };
@@ -155,7 +155,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void GetInstanceId_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 InstanceId = "instanceId"
             };
@@ -191,7 +191,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void CreateCheck_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions();
+            var options = new ConsulDiscoveryOptions();
             var result = ConsulRegistration.CreateCheck(1234, options);
             Assert.NotNull(result);
             var expectedTtl = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);
@@ -200,7 +200,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             options.Heartbeat = null;
             Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(0, options));
 
-            int port = 1234;
+            var port = 1234;
             result = ConsulRegistration.CreateCheck(port, options);
             var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
             Assert.Equal(uri.ToString(), result.HTTP);
@@ -213,7 +213,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         [Fact]
         public void CreateRegistration_ReturnsExpected()
         {
-            ConsulDiscoveryOptions options = new ConsulDiscoveryOptions()
+            var options = new ConsulDiscoveryOptions()
             {
                 Port = 1100
             };

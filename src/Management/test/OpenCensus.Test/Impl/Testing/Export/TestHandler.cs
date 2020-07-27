@@ -30,7 +30,7 @@ namespace OpenCensus.Testing.Export
         {
             lock (monitor)
             {
-                this.spanDataList.AddRange(data);
+                spanDataList.AddRange(data);
                 Monitor.PulseAll(monitor);
             }
             

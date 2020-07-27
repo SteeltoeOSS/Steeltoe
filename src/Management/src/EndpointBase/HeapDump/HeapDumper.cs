@@ -28,16 +28,16 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public string DumpHeap()
         {
-            string fileName = CreateFileName();
-            int curProcessId = Process.GetCurrentProcess().Id;
-            Process process = Process.GetProcessById(curProcessId);
+            var fileName = CreateFileName();
+            var curProcessId = Process.GetCurrentProcess().Id;
+            var process = Process.GetProcessById(curProcessId);
 
-            IntPtr snapshotHandle = default(IntPtr);
-            MiniDumper.Result result = default(MiniDumper.Result);
+            var snapshotHandle = default(IntPtr);
+            var result = default(MiniDumper.Result);
 
             try
             {
-                int hr = LiveDataReader.PssCaptureSnapshot(
+                var hr = LiveDataReader.PssCaptureSnapshot(
                         process.Handle,
                         GetCaptureFlags(),
                         IntPtr.Size == 8 ? 0x0010001F : 0x0001003F,
@@ -55,10 +55,8 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 }
 
                 fileName = Path.GetFullPath(fileName);
-                using (var dumpFile = new FileStream(fileName, FileMode.Create))
-                {
-                    result = MiniDumper.DumpProcess(dumpFile, snapshotHandle, process.Id);
-                }
+                using var dumpFile = new FileStream(fileName, FileMode.Create);
+                result = MiniDumper.DumpProcess(dumpFile, snapshotHandle, process.Id);
             }
             catch (Exception e)
             {
@@ -70,16 +68,16 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             {
                 if (snapshotHandle != IntPtr.Zero)
                 {
-                    int hr = LiveDataReader.PssQuerySnapshot(
+                    var hr = LiveDataReader.PssQuerySnapshot(
                             snapshotHandle,
                             LiveDataReader.PSS_QUERY_INFORMATION_CLASS.PSS_QUERY_VA_CLONE_INFORMATION,
-                            out IntPtr cloneQueryHandle,
+                            out var cloneQueryHandle,
                             IntPtr.Size);
 
                     if (hr == 0)
                     {
-                        int clonePid = LiveDataReader.GetProcessId(cloneQueryHandle);
-                        Process cloneProcess = Process.GetProcessById(clonePid);
+                        var clonePid = LiveDataReader.GetProcessId(cloneQueryHandle);
+                        var cloneProcess = Process.GetProcessById(clonePid);
 
                         hr = LiveDataReader.PssFreeSnapshot(process.Handle, snapshotHandle);
                         if (hr == 0)

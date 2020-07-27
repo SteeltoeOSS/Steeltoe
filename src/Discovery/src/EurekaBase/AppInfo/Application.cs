@@ -31,13 +31,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public InstanceInfo GetInstance(string instanceId)
         {
-            InstanceMap.TryGetValue(instanceId, out InstanceInfo result);
+            InstanceMap.TryGetValue(instanceId, out var result);
             return result;
         }
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("Application[");
+            var sb = new StringBuilder("Application[");
             sb.Append("Name=" + Name);
             sb.Append(",Instances=");
             foreach (var inst in Instances)
@@ -58,7 +58,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         internal Application(string name, IList<InstanceInfo> instances)
         {
             Name = name;
-            foreach (InstanceInfo info in instances)
+            foreach (var info in instances)
             {
                 Add(info);
             }
@@ -78,7 +78,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void Remove(InstanceInfo info)
         {
-            if (!InstanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
+            if (!InstanceMap.TryRemove(info.InstanceId, out var removed))
             {
                 InstanceMap.TryRemove(info.HostName, out removed);
             }
@@ -93,7 +93,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return null;
             }
 
-            Application app = new Application(japp.Name);
+            var app = new Application(japp.Name);
             if (japp.Instances != null)
             {
                 foreach (var instance in japp.Instances)

@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 return result;
             }
 
-            for (int i = 0; i < keys.Count; i++)
+            for (var i = 0; i < keys.Count; i++)
             {
                 var key = keys[i];
                 var val = values[i];

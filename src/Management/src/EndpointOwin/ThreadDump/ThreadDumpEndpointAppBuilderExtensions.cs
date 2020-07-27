@@ -113,13 +113,11 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump
                 throw new ArgumentNullException(nameof(threadDumper));
             }
 
-            switch (version)
+            return version switch
             {
-                case MediaTypeVersion.V1:
-                    return UseThreadDumpComponents(builder, options, threadDumper, loggerFactory);
-                default:
-                    return UseThreadDumpV2Components(builder, options, threadDumper, loggerFactory);
-            }
+                MediaTypeVersion.V1 => UseThreadDumpComponents(builder, options, threadDumper, loggerFactory),
+                _ => UseThreadDumpV2Components(builder, options, threadDumper, loggerFactory),
+            };
         }
 
         private static IAppBuilder UseThreadDumpComponents(IAppBuilder builder, IThreadDumpOptions options, IThreadDumper threadDumper, ILoggerFactory loggerFactory)

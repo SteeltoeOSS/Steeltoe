@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RabbitMQServiceInfo info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
+            var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -72,7 +72,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            RabbitMQServiceInfo info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -80,11 +80,11 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
         private static void DoAdd(IServiceCollection services, RabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
-            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
+            var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             services.Add(new ServiceDescriptor(rabbitMQInterfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(rabbitMQImplementationType, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)

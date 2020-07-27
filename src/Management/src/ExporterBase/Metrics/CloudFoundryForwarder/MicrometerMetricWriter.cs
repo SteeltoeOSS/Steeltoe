@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public override IList<Metric> CreateMetrics(IViewData viewData, IAggregationData aggregation, TagValues tagValues, long timeStamp)
         {
-            List<Metric> results = new List<Metric>();
+            var results = new List<Metric>();
 
             var unit = viewData.View.Measure.Unit;
             var name = viewData.View.Name.AsString;

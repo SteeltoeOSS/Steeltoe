@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SsoServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<SsoServiceInfo>()
                 : config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
 

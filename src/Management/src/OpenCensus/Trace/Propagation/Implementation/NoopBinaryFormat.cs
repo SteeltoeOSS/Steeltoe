@@ -37,7 +37,7 @@ namespace OpenCensus.Trace.Propagation.Implementation
                 throw new ArgumentNullException(nameof(spanContext));
             }
 
-            return new byte[0];
+            return Array.Empty<byte>();
         }
     }
 }

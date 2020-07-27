@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public override IList<Metric> CreateMetrics(IViewData viewData, IAggregationData aggregation, TagValues tagValues, long timeStamp)
         {
-            List<Metric> results = new List<Metric>();
+            var results = new List<Metric>();
 
             var unit = viewData.View.Measure.Unit;
             var tags = GetTagKeysAndValues(viewData.View.Columns, tagValues.Values);
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal string GetMetricName(string viewName, string suffix, IDictionary<string, string> tags)
         {
-            string metricName = string.IsNullOrEmpty(suffix) ? viewName : viewName + "." + suffix;
+            var metricName = string.IsNullOrEmpty(suffix) ? viewName : viewName + "." + suffix;
             foreach (var key in tags.Keys)
             {
                 if (!ShouldSkipTag(key))
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                     }
                     else
                     {
-                        metricName = metricName + tagValue;
+                        metricName += tagValue;
                     }
                 }
             }

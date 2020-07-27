@@ -25,14 +25,14 @@ namespace Steeltoe.Common.Options.Autofac.Test
         {
             ContainerBuilder container = null;
             Assert.Throws<ArgumentNullException>(() => container.RegisterOption<MyOption>(null));
-            ContainerBuilder container2 = new ContainerBuilder();
+            var container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterOption<MyOption>(null));
         }
 
         [Fact]
         public void RegisterOption_Registers_AndBindsConfiguration()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
                 { "f1", "foobar" }
@@ -53,7 +53,7 @@ namespace Steeltoe.Common.Options.Autofac.Test
         [Fact]
         public void RegisterPostConfigure_Registers_RunsPostAction()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             var dict = new Dictionary<string, string>()
             {
                 { "f1", "foobar" }

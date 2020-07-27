@@ -26,9 +26,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestShutdown()
         {
             // other unit tests will probably have run before this so get the count
-            int count = HystrixThreadPoolFactory.ThreadPools.Count;
+            var count = HystrixThreadPoolFactory.ThreadPools.Count;
 
-            IHystrixThreadPool pool = HystrixThreadPoolFactory.GetInstance(
+            var pool = HystrixThreadPoolFactory.GetInstance(
                 HystrixThreadPoolKeyDefault.AsKey("threadPoolFactoryTest"),
                 HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
 
@@ -46,7 +46,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             public HystrixMetricsPublisherThreadPoolContainer(HystrixThreadPoolMetrics hystrixThreadPoolMetrics)
             {
-                this.HystrixThreadPoolMetrics = hystrixThreadPoolMetrics;
+                HystrixThreadPoolMetrics = hystrixThreadPoolMetrics;
             }
 
             public void Initialize()
@@ -69,17 +69,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixPlugins.RegisterMetricsPublisher(new MyHystrixMetricsPublisher());
 
-            IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("threadPoolFactoryConcurrencyTest");
+            var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("threadPoolFactoryConcurrencyTest");
             IHystrixThreadPool poolOne = new HystrixThreadPoolDefault(
                     threadPoolKey, HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
             IHystrixThreadPool poolTwo = new HystrixThreadPoolDefault(
                     threadPoolKey, HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder());
 
             Assert.Equal(poolOne.GetScheduler(), poolTwo.GetScheduler()); // Now that we get the threadPool from the metrics object, this will always be equal
-            HystrixMetricsPublisherThreadPoolContainer hystrixMetricsPublisherThreadPool =
+            var hystrixMetricsPublisherThreadPool =
                     (HystrixMetricsPublisherThreadPoolContainer)HystrixMetricsPublisherFactory
                             .CreateOrRetrievePublisherForThreadPool(threadPoolKey, null, null);
-            IHystrixTaskScheduler threadPoolExecutor = hystrixMetricsPublisherThreadPool.HystrixThreadPoolMetrics.TaskScheduler;
+            var threadPoolExecutor = hystrixMetricsPublisherThreadPool.HystrixThreadPoolMetrics.TaskScheduler;
 
             // assert that both HystrixThreadPools share the same ThreadPoolExecutor as the one in HystrixMetricsPublisherThreadPool
             Assert.True(threadPoolExecutor.Equals(poolOne.GetScheduler()) && threadPoolExecutor.Equals(poolTwo.GetScheduler()));

@@ -36,7 +36,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             var response = string.Empty;
             var responseHeaders = new NameValueCollection();
             var requestHeader = new NameValueCollection();
-            HttpStatusCode statusCode = HttpStatusCode.OK;
+            var statusCode = HttpStatusCode.OK;
 
             Context.Setup(ctx => ctx.Request.HttpMethod).Returns(httpMethod);
             Context.Setup(ctx => ctx.Request.Path).Returns(uri.AbsolutePath);

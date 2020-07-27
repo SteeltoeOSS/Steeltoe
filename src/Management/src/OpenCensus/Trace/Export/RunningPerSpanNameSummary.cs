@@ -22,7 +22,7 @@ namespace OpenCensus.Trace.Export
     {
         internal RunningPerSpanNameSummary(int numRunningSpans)
         {
-            this.NumRunningSpans = numRunningSpans;
+            NumRunningSpans = numRunningSpans;
         }
 
         public int NumRunningSpans { get; }
@@ -41,7 +41,7 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "RunningPerSpanNameSummary{"
-                + "numRunningSpans=" + this.NumRunningSpans
+                + "numRunningSpans=" + NumRunningSpans
                 + "}";
         }
 
@@ -55,7 +55,7 @@ namespace OpenCensus.Trace.Export
 
             if (o is RunningPerSpanNameSummary that)
             {
-                return this.NumRunningSpans == that.NumRunningSpans;
+                return NumRunningSpans == that.NumRunningSpans;
             }
 
             return false;
@@ -64,9 +64,9 @@ namespace OpenCensus.Trace.Export
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.NumRunningSpans;
+            h ^= NumRunningSpans;
             return h;
         }
     }

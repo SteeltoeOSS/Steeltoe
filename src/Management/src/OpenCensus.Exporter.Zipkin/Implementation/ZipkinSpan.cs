@@ -74,75 +74,75 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
 
             internal Builder TraceId(string val)
             {
-                this.result.TraceId = val;
+                result.TraceId = val;
                 return this;
             }
 
             internal Builder Id(string val)
             {
-                this.result.Id = val;
+                result.Id = val;
                 return this;
             }
 
             internal Builder ParentId(string val)
             {
-                this.result.ParentId = val;
+                result.ParentId = val;
                 return this;
             }
 
             internal Builder Kind(ZipkinSpanKind val)
             {
-                this.result.Kind = val;
+                result.Kind = val;
                 return this;
             }
 
             internal Builder Name(string val)
             {
-                this.result.Name = val;
+                result.Name = val;
                 return this;
             }
 
             internal Builder Timestamp(long val)
             {
-                this.result.Timestamp = val;
+                result.Timestamp = val;
                 return this;
             }
 
             internal Builder Duration(long val)
             {
-                this.result.Duration = val;
+                result.Duration = val;
                 return this;
             }
 
             internal Builder LocalEndpoint(ZipkinEndpoint val)
             {
-                this.result.LocalEndpoint = val;
+                result.LocalEndpoint = val;
                 return this;
             }
 
             internal Builder RemoteEndpoint(ZipkinEndpoint val)
             {
-                this.result.RemoteEndpoint = val;
+                result.RemoteEndpoint = val;
                 return this;
             }
 
             internal Builder Debug(bool val)
             {
-                this.result.Debug = val;
+                result.Debug = val;
                 return this;
             }
 
             internal Builder Shared(bool val)
             {
-                this.result.Shared = val;
+                result.Shared = val;
                 return this;
             }
 
             internal Builder PutTag(string key, string value)
             {
-                if (this.result.Tags == null)
+                if (result.Tags == null)
                 {
-                    this.result.Tags = new Dictionary<string, string>();
+                    result.Tags = new Dictionary<string, string>();
                 }
 
                 if (key == null)
@@ -150,36 +150,36 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
                     throw new ArgumentNullException(nameof(key));
                 }
 
-                this.result.Tags[key] = value ?? throw new ArgumentNullException(nameof(value));
+                result.Tags[key] = value ?? throw new ArgumentNullException(nameof(value));
 
                 return this;
             }
 
             internal Builder AddAnnotation(long timestamp, string value)
             {
-                if (this.result.Annotations == null)
+                if (result.Annotations == null)
                 {
-                    this.result.Annotations = new List<ZipkinAnnotation>(2);
+                    result.Annotations = new List<ZipkinAnnotation>(2);
                 }
 
-                this.result.Annotations.Add(new ZipkinAnnotation() { Timestamp = timestamp, Value = value });
+                result.Annotations.Add(new ZipkinAnnotation() { Timestamp = timestamp, Value = value });
 
                 return this;
             }
 
             internal ZipkinSpan Build()
             {
-                if (this.result.TraceId == null)
+                if (result.TraceId == null)
                 {
                     throw new ArgumentException("Trace ID should not be null");
                 }
 
-                if (this.result.Id == null)
+                if (result.Id == null)
                 {
                     throw new ArgumentException("ID should not be null");
                 }
 
-                return this.result;
+                return result;
             }
         }
     }

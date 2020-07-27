@@ -33,14 +33,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitAsync()
         {
-            string key = "cmd-A";
+            var key = "cmd-A";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
             HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
             _ = await cmd1.ExecuteAsync();
@@ -80,10 +80,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnFailuresAboveThreshold()
         {
-            string key = "cmd-B";
+            var key = "cmd-B";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -122,10 +122,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitDoesNotTripOnFailuresBelowThreshold()
         {
-            string key = "cmd-C";
+            var key = "cmd-C";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -164,10 +164,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeouts()
         {
-            string key = "cmd-D";
+            var key = "cmd-D";
 
             HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -196,10 +196,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeoutsAboveThreshold()
         {
-            string key = "cmd-E";
+            var key = "cmd-E";
 
             HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -243,10 +243,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
-            string key = "cmd-F";
+            var key = "cmd-F";
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -286,11 +286,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitClosedAfterSuccess()
         {
-            string key = "cmd-G";
+            var key = "cmd-G";
 
-            int sleepWindow = 400;
+            var sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
-            HystrixCircuitBreakerImpl cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
+            var cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -343,11 +343,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestMultipleTimeWindowRetriesBeforeClosingCircuit()
         {
-            string key = "cmd-H";
+            var key = "cmd-H";
 
-            int sleepWindow = 400;
+            var sleepWindow = 400;
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -383,7 +383,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
             HystrixCommand<bool> cmd5 = new FailureCommand(key, 50);
-            IObservable<bool> asyncResult5 = cmd5.Observe();
+            var asyncResult5 = cmd5.Observe();
             output.WriteLine(Time.CurrentTimeMillis + " !!!! Kicked off the single-test");
 
             // and further requests are still blocked while the singleTest command is in flight
@@ -405,7 +405,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // we should now allow 1 request, and upon failure, should not affect the circuit breaker, which should remain open
             HystrixCommand<bool> cmd6 = new FailureCommand(key, 50);
-            IObservable<bool> asyncResult6 = cmd6.Observe();
+            var asyncResult6 = cmd6.Observe();
             output.WriteLine(Time.CurrentTimeMillis + " 2nd singleTest just kicked off");
 
             // and further requests are still blocked while the singleTest command is in flight
@@ -426,7 +426,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // we should now allow 1 request, and upon success, should cause the circuit to be closed
             HystrixCommand<bool> cmd7 = new SuccessCommand(key, 50);
-            IObservable<bool> asyncResult7 = cmd7.Observe();
+            var asyncResult7 = cmd7.Observe();
 
             // and further requests are still blocked while the singleTest command is in flight
             Assert.False(cb.AllowRequest, Time.CurrentTimeMillis + " Request allowed when NOT expected!");
@@ -448,13 +448,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task TestLowVolumeDoesNotTripCircuit()
         {
-            string key = "cmd-I";
+            var key = "cmd-I";
 
-            int sleepWindow = 400;
-            int lowVolume = 5;
+            var sleepWindow = 400;
+            var lowVolume = 5;
 
             HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-            IHystrixCircuitBreaker cb = cmd1._circuitBreaker;
+            var cb = cmd1._circuitBreaker;
             var stream = HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
             Assert.True(WaitForHealthCountToUpdate(key, 1000, output), "Health count stream failed to start");
 
@@ -490,7 +490,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private void Init()
         {
-            foreach (HystrixCommandMetrics metricsInstance in HystrixCommandMetrics.GetInstances())
+            foreach (var metricsInstance in HystrixCommandMetrics.GetInstances())
             {
                 metricsInstance.ResetStream();
             }

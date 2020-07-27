@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected internal HystrixMetrics(HystrixRollingNumber counter)
         {
-            this._counter = counter;
+            _counter = counter;
         }
 
         public virtual long GetCumulativeCount(HystrixRollingNumberEvent @event)

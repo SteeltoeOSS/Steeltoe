@@ -24,8 +24,8 @@ namespace OpenCensus.Trace.Export
     {
         internal TimedEvents(IEnumerable<ITimedEvent<T>> events, int droppedEventsCount)
         {
-            this.Events = events ?? throw new ArgumentNullException("Null events");
-            this.DroppedEventsCount = droppedEventsCount;
+            Events = events ?? throw new ArgumentNullException("Null events");
+            DroppedEventsCount = droppedEventsCount;
         }
 
         public IEnumerable<ITimedEvent<T>> Events { get; }
@@ -39,7 +39,7 @@ namespace OpenCensus.Trace.Export
                 throw new ArgumentNullException(nameof(events));
             }
 
-            List<ITimedEvent<T>> ev = new List<ITimedEvent<T>>();
+            var ev = new List<ITimedEvent<T>>();
             ev.AddRange(events);
             return new TimedEvents<T>(ev.AsReadOnly(), droppedEventsCount);
         }
@@ -48,8 +48,8 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "TimedEvents{"
-                + "events=" + this.Events + ", "
-                + "droppedEventsCount=" + this.DroppedEventsCount
+                + "events=" + Events + ", "
+                + "droppedEventsCount=" + DroppedEventsCount
                 + "}";
         }
 
@@ -63,8 +63,8 @@ namespace OpenCensus.Trace.Export
 
             if (o is TimedEvents<T> that)
             {
-                return this.Events.SequenceEqual(that.Events)
-                     && (this.DroppedEventsCount == that.DroppedEventsCount);
+                return Events.SequenceEqual(that.Events)
+                     && (DroppedEventsCount == that.DroppedEventsCount);
             }
 
             return false;
@@ -73,11 +73,11 @@ namespace OpenCensus.Trace.Export
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Events.GetHashCode();
+            h ^= Events.GetHashCode();
             h *= 1000003;
-            h ^= this.DroppedEventsCount;
+            h ^= DroppedEventsCount;
             return h;
         }
     }

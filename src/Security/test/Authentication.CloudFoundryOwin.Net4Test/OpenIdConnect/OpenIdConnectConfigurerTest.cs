@@ -23,7 +23,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin.Test
         {
             // arrange
             var opts = new OpenIdConnectOptions();
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
 
             // act
             OpenIdConnectConfigurer.Configure(null, opts);
@@ -41,9 +41,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin.Test
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
             // arrange
-            string authURL = "http://domain";
+            var authURL = "http://domain";
             var opts = new OpenIdConnectOptions();
-            SsoServiceInfo info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
+            var info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
 
             // act
             OpenIdConnectConfigurer.Configure(info, opts);

@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
         [Fact]
         public void Create_ReturnsRabbitMQConnection()
         {
-            HystrixProviderConnectorOptions config = new HystrixProviderConnectorOptions()
+            var config = new HystrixProviderConnectorOptions()
             {
                 Server = "localhost",
                 Port = 5672,
@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
                 Username = "username",
                 VirtualHost = "vhost"
             };
-            HystrixRabbitMQServiceInfo si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
+            var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
             var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));
             var connection = factory.Create(null);
             Assert.NotNull(connection);

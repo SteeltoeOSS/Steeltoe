@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
     {
         public Metric(string name, MetricType type, long timestamp, string unit, IDictionary<string, string> tags, double value)
         {
-            this.Name = name;
-            this.Type = type.ToString().ToLowerInvariant();
-            this.Timestamp = timestamp;
-            this.Tags = tags;
-            this.Unit = unit;
-            this.Value = value;
+            Name = name;
+            Type = type.ToString().ToLowerInvariant();
+            Timestamp = timestamp;
+            Tags = tags;
+            Unit = unit;
+            Value = value;
         }
 
         [JsonProperty("name")]

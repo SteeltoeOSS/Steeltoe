@@ -46,7 +46,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
             else
             {
                 _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(MappingsEndpointOwinMiddleware));
-                ApplicationMappings result = GetApplicationMappings();
+                var result = GetApplicationMappings();
                 var serialInfo = Serialize(result);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 var adesc = desc.ActionDescriptor as ReflectedHttpActionDescriptor;
                 var details = GetRouteDetails(desc);
 
-                mappingDescriptions.TryGetValue(adesc.ControllerDescriptor.ControllerType.FullName, out IList<MappingDescription> mapList);
+                mappingDescriptions.TryGetValue(adesc.ControllerDescriptor.ControllerType.FullName, out var mapList);
                 if (mapList == null)
                 {
                     mapList = new List<MappingDescription>();
@@ -123,7 +123,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 routeDetails.RouteTemplate = $"/{desc.ActionDescriptor.ControllerDescriptor.ControllerName}/{desc.ActionDescriptor.ActionName}";
             }
 
-            List<string> produces = new List<string>();
+            var produces = new List<string>();
             foreach (var respTypes in desc.SupportedResponseFormatters)
             {
                 foreach (var format in respTypes.SupportedMediaTypes)
@@ -134,7 +134,7 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
 
             routeDetails.Produces = produces;
 
-            List<string> consumes = new List<string>();
+            var consumes = new List<string>();
             foreach (var reqTypes in desc.SupportedRequestBodyFormatters)
             {
                 foreach (var format in reqTypes.SupportedMediaTypes)

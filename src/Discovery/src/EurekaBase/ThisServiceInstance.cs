@@ -75,8 +75,8 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                string scheme = IsSecure ? "https" : "http";
-                int uriPort = IsSecure ? SecurePort : Port;
+                var scheme = IsSecure ? "https" : "http";
+                var uriPort = IsSecure ? SecurePort : Port;
                 var uri = new Uri(scheme + "://" + GetHost() + ":" + uriPort.ToString());
                 return uri;
             }

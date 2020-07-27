@@ -71,12 +71,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 throw new ArgumentNullException(nameof(webHostBuilder));
             }
 
-            List<string> urls = new List<string>();
+            var urls = new List<string>();
 
-            string portStr = Environment.GetEnvironmentVariable("PORT");
+            var portStr = Environment.GetEnvironmentVariable("PORT");
             if (!string.IsNullOrWhiteSpace(portStr))
             {
-                if (int.TryParse(portStr, out int port))
+                if (int.TryParse(portStr, out var port))
                 {
                     urls.Add($"http://*:{port}");
                 }

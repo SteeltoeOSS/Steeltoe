@@ -40,7 +40,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (!uri.EndsWith(EUREKA_URI_SUFFIX))
             {
-                uri = uri + EUREKA_URI_SUFFIX;
+                uri += EUREKA_URI_SUFFIX;
             }
 
             clientOptions.EurekaServerServiceUrls = uri;
@@ -55,7 +55,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
-                string springAppName = config.GetValue<string>(SPRING_APPLICATION_NAME_KEY);
+                var springAppName = config.GetValue<string>(SPRING_APPLICATION_NAME_KEY);
                 if (!string.IsNullOrEmpty(springAppName))
                 {
                     options.AppName = springAppName;
@@ -74,7 +74,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (defaultId.Equals(options.InstanceId))
             {
-                string springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
+                var springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
                 if (!string.IsNullOrEmpty(springInstanceId))
                 {
                     options.InstanceId = springInstanceId;
@@ -87,7 +87,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (string.IsNullOrEmpty(options.RegistrationMethod))
             {
-                string springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
+                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
                 if (!string.IsNullOrEmpty(springRegMethod))
                 {
                     options.RegistrationMethod = springRegMethod;

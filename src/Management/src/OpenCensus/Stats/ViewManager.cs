@@ -31,28 +31,28 @@ namespace OpenCensus.Stats
         {
             get
             {
-                return this.statsManager.ExportedViews;
+                return statsManager.ExportedViews;
             }
         }
 
         public override void RegisterView(IView view)
         {
-            this.statsManager.RegisterView(view);
+            statsManager.RegisterView(view);
         }
 
         public override IViewData GetView(IViewName viewName)
         {
-            return this.statsManager.GetView(viewName);
+            return statsManager.GetView(viewName);
         }
 
         internal void ClearStats()
         {
-            this.statsManager.ClearStats();
+            statsManager.ClearStats();
         }
 
         internal void ResumeStatsCollection()
         {
-            this.statsManager.ResumeStatsCollection();
+            statsManager.ResumeStatsCollection();
         }
     }
 }

@@ -102,14 +102,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            GemFireServiceInfoFactory factory = new GemFireServiceInfoFactory();
+            var factory = new GemFireServiceInfoFactory();
             Assert.True(factory.Accept(boundGemFireService));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mysql",
                 Tags = new string[] { "mysql", "relational" },
@@ -124,14 +124,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "password", new Credential("7E1LxXnlH2hhlPVt") }
                 }
             };
-            GemFireServiceInfoFactory factory = new GemFireServiceInfoFactory();
+            var factory = new GemFireServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            GemFireServiceInfoFactory factory = new GemFireServiceInfoFactory();
+            var factory = new GemFireServiceInfoFactory();
             var info = factory.Create(boundGemFireService) as GemFireServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("myPCCService", info.Id);

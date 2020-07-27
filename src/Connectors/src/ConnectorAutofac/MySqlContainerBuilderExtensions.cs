@@ -36,11 +36,11 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
                 : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
-            Type mySqlConnection = MySqlTypeLocator.MySqlConnection;
+            var mySqlConnection = MySqlTypeLocator.MySqlConnection;
             var mySqlConfig = new MySqlProviderConnectorOptions(config);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             container.RegisterType<RelationalHealthContributor>().As<IHealthContributor>();

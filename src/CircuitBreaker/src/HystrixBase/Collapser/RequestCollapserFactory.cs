@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         {
             /* strategy: ConcurrencyStrategy */
             _concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-            this._timer = timer;
+            _timer = timer;
             Scope = scope;
             CollapserKey = collapserKey;
             Properties = properties;
@@ -39,7 +39,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal static RequestCollapserRequestVariable<BatchReturnType, ResponseType, RequestArgumentType> GetRequestVariable<BatchReturnType, ResponseType, RequestArgumentType>(string key)
         {
-            if (!requestScopedCollapsers.TryGetValue(key, out object result))
+            if (!requestScopedCollapsers.TryGetValue(key, out var result))
             {
                 return null;
             }

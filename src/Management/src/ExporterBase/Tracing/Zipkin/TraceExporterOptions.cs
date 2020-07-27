@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
             var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
             if (section != null)
             {
-                CloudFoundryApplicationOptions appOptions = new CloudFoundryApplicationOptions(section);
+                var appOptions = new CloudFoundryApplicationOptions(section);
                 if (!string.IsNullOrEmpty(appOptions.Name))
                 {
                     return appOptions.Name;

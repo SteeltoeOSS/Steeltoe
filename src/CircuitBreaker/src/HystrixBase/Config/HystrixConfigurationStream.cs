@@ -27,8 +27,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 
         public HystrixConfigurationStream(int intervalInMilliseconds)
         {
-            this.IntervalInMilliseconds = intervalInMilliseconds;
-            this._allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            IntervalInMilliseconds = intervalInMilliseconds;
+            _allConfigurationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map(AllConfig)
                     .OnSubscribe(() =>
                 {
@@ -105,12 +105,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>> AllCommandConfig { get; } =
             (long timestamp) =>
             {
-                Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfigPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>();
-                foreach (HystrixCommandMetrics commandMetrics in HystrixCommandMetrics.GetInstances())
+                var commandConfigPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandConfiguration>();
+                foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
                 {
-                    IHystrixCommandKey commandKey = commandMetrics.CommandKey;
-                    IHystrixThreadPoolKey threadPoolKey = commandMetrics.ThreadPoolKey;
-                    IHystrixCommandGroupKey groupKey = commandMetrics.CommandGroup;
+                    var commandKey = commandMetrics.CommandKey;
+                    var threadPoolKey = commandMetrics.ThreadPoolKey;
+                    var groupKey = commandMetrics.CommandGroup;
                     commandConfigPerKey.Add(commandKey, SampleCommandConfiguration(commandKey, threadPoolKey, groupKey, commandMetrics.Properties));
                 }
 
@@ -120,10 +120,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>> AllThreadPoolConfig { get; } =
             (long timestamp) =>
             {
-                Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> threadPoolConfigPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>();
-                foreach (HystrixThreadPoolMetrics threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
+                var threadPoolConfigPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration>();
+                foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
                 {
-                    IHystrixThreadPoolKey threadPoolKey = threadPoolMetrics.ThreadPoolKey;
+                    var threadPoolKey = threadPoolMetrics.ThreadPoolKey;
                     threadPoolConfigPerKey.Add(threadPoolKey, SampleThreadPoolConfiguration(threadPoolKey, threadPoolMetrics.Properties));
                 }
 
@@ -133,10 +133,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         private static Func<long, Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>> AllCollapserConfig { get; } =
             (long timestamp) =>
             {
-                Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> collapserConfigPerKey = new Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>();
-                foreach (HystrixCollapserMetrics collapserMetrics in HystrixCollapserMetrics.GetInstances())
+                var collapserConfigPerKey = new Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration>();
+                foreach (var collapserMetrics in HystrixCollapserMetrics.GetInstances())
                 {
-                    IHystrixCollapserKey collapserKey = collapserMetrics.CollapserKey;
+                    var collapserKey = collapserMetrics.CollapserKey;
                     collapserConfigPerKey.Add(collapserKey, SampleCollapserConfiguration(collapserKey, collapserMetrics.Properties));
                 }
 

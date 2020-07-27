@@ -12,7 +12,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mongodb",
                 Tags = new string[] { "mongodb" },
@@ -28,17 +28,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                 }
             };
-            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
+            var factory = new MongoDbServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsNoLabelNoTagsServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = string.Empty,
-                Tags = new string[0],
+                Tags = System.Array.Empty<string>(),
                 Name = "mongoService",
                 Plan = "free",
                 Credentials = new Credential()
@@ -51,14 +51,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
                 }
             };
-            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
+            var factory = new MongoDbServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mysql",
                 Tags = new string[] { "foobar", "relational" },
@@ -75,14 +75,14 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
+            var factory = new MongoDbServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mongodb",
                 Tags = new string[] { "mongodb" },
@@ -98,7 +98,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                     { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 }
             };
-            MongoDbServiceInfoFactory factory = new MongoDbServiceInfoFactory();
+            var factory = new MongoDbServiceInfoFactory();
             var info = factory.Create(s) as MongoDbServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("mongodbService", info.Id);

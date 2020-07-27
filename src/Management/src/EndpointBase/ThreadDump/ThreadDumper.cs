@@ -29,9 +29,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         public List<ThreadInfo> DumpThreads()
         {
-            List<ThreadInfo> results = new List<ThreadInfo>();
+            var results = new List<ThreadInfo>();
 
-            DataTarget dataTarget = CreateDataTarget();
+            var dataTarget = CreateDataTarget();
             if (dataTarget != null)
             {
                 try
@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 {
                     DisposeSymbolReaders();
                     dataTarget.Dispose();
-                    long totalMemory = GC.GetTotalMemory(true);
+                    var totalMemory = GC.GetTotalMemory(true);
                     _logger?.LogDebug("Total Memory {0}", totalMemory);
                 }
             }
@@ -92,7 +92,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             var runtime = dataTarget.ClrVersions[0].CreateRuntime();
             if (runtime != null)
             {
-                IList<BlockingObject> allLocks = GetAllLocks(runtime);
+                var allLocks = GetAllLocks(runtime);
 
                 _logger?.LogTrace("Starting thread walk");
 
@@ -100,7 +100,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 {
                     if (thread.IsAlive)
                     {
-                        ThreadInfo threadInfo = new ThreadInfo()
+                        var threadInfo = new ThreadInfo()
                         {
                             ThreadId = thread.ManagedThreadId,
                             ThreadName = GetThreadName(thread)
@@ -161,7 +161,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private List<LockInfo> GetThisThreadsLockedSyncronizers(ClrThread thread, IList<BlockingObject> allLocks)
         {
-            List<LockInfo> result = new List<LockInfo>();
+            var result = new List<LockInfo>();
             foreach (var lck in allLocks)
             {
                 if (lck.Reason != BlockingReason.Monitor && lck.Reason != BlockingReason.MonitorWait && thread.Address == lck.Owner?.Address)
@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
                     if (lockClass != null)
                     {
-                        LockInfo info = new LockInfo()
+                        var info = new LockInfo()
                         {
                             ClassName = lockClass.Name,
                             IdentityHashCode = (int)lck.Object
@@ -185,7 +185,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private List<MonitorInfo> GetThisThreadsLockedMonitors(ClrThread thread, IList<BlockingObject> allLocks)
         {
-            List<MonitorInfo> result = new List<MonitorInfo>();
+            var result = new List<MonitorInfo>();
 
             foreach (var lck in allLocks)
             {
@@ -194,7 +194,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     var lockClass = thread.Runtime.Heap.GetObjectType(lck.Object);
                     if (lockClass != null)
                     {
-                        MonitorInfo info = new MonitorInfo()
+                        var info = new MonitorInfo()
                         {
                             ClassName = lockClass.Name,
                             IdentityHashCode = (int)lck.Object
@@ -216,7 +216,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private bool IsInNative(List<StackTraceElement> elements)
         {
-            bool result = false;
+            var result = false;
             if (elements.Count > 0)
             {
                 result = elements[0].IsNativeMethod;
@@ -228,7 +228,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private List<StackTraceElement> GetStackTrace(ClrThread thread)
         {
-            List<StackTraceElement> result = new List<StackTraceElement>();
+            var result = new List<StackTraceElement>();
 
             _logger?.LogTrace("Starting stack dump for thread");
 
@@ -237,9 +237,9 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 var stackTrace = thread.StackTrace;
                 if (stackTrace != null)
                 {
-                    foreach (ClrStackFrame frame in stackTrace)
+                    foreach (var frame in stackTrace)
                     {
-                        StackTraceElement element = GetStackTraceElement(frame);
+                        var element = GetStackTraceElement(frame);
                         if (element != null)
                         {
                             result.Add(element);
@@ -258,8 +258,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 return null;
             }
 
-            FileAndLineNumber info = GetSourceLocation(frame);
-            StackTraceElement result = new StackTraceElement()
+            var info = GetSourceLocation(frame);
+            var result = new StackTraceElement()
             {
                 MethodName = frame.Method.Name,
                 IsNativeMethod = frame.Method.IsInternal || frame.Method.IsPInvoke,
@@ -273,7 +273,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private TState GetThreadState(ClrThread thread)
         {
-            TState result = TState.NEW;
+            var result = TState.NEW;
             if (thread.IsUnstarted)
             {
                 return result;
@@ -304,7 +304,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private bool IsWaitingOnMonitor(ClrThread thread)
         {
-            bool result = false;
+            var result = false;
             if (thread.BlockingObjects != null)
             {
                 foreach (var lck in thread.BlockingObjects)
@@ -321,7 +321,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private bool IsWaitingOnNonMonitor(ClrThread thread)
         {
-            bool result = false;
+            var result = false;
             if (thread.BlockingObjects != null)
             {
                 foreach (var lck in thread.BlockingObjects)
@@ -338,8 +338,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private string GetThreadName(ClrThread thread)
         {
-            uint id = thread.OSThreadId;
-            string name = "Thread-" + id;
+            var id = thread.OSThreadId;
+            var name = "Thread-" + id;
 
             if (thread.IsFinalizer)
             {
@@ -360,7 +360,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private IList<BlockingObject> GetAllLocks(ClrRuntime runtime)
         {
-            List<BlockingObject> locks = new List<BlockingObject>();
+            var locks = new List<BlockingObject>();
 
             _logger?.LogTrace("Starting lock walk");
             foreach (var thread in runtime.Threads)
@@ -394,7 +394,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             {
                 var method = frame.Method;
 
-                var result = reader.GetMethod((int)method.MetadataToken, out ISymUnmanagedMethod methodSym);
+                var result = reader.GetMethod((int)method.MetadataToken, out var methodSym);
                 if (methodSym != null)
                 {
                     var seqPoints = methodSym.GetSequencePoints();
@@ -413,17 +413,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 }
             }
 
-            return default(FileAndLineNumber);
+            return default;
         }
 
         private FileAndLineNumber FindNearestLine(IEnumerable<SymUnmanagedSequencePoint> sequences, int ilOffset)
         {
-            int distance = int.MaxValue;
-            FileAndLineNumber nearest = default(FileAndLineNumber);
+            var distance = int.MaxValue;
+            var nearest = default(FileAndLineNumber);
 
             foreach (var point in sequences)
             {
-                int dist = Math.Abs(point.Offset - ilOffset);
+                var dist = Math.Abs(point.Offset - ilOffset);
                 if (dist < distance)
                 {
                     nearest.File = Path.GetFileName(point.Document.GetName());
@@ -444,10 +444,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 return -1;
             }
 
-            ulong ip = frame.InstructionPointer;
-            int last = -1;
+            var ip = frame.InstructionPointer;
+            var last = -1;
 
-            foreach (ILToNativeMap item in frame.Method.ILOffsetMap)
+            foreach (var item in frame.Method.ILOffsetMap)
             {
                 if (item.StartAddress > ip)
                 {
@@ -467,7 +467,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private bool IsPortablePdb(Stream stream)
         {
-            byte[] buffer = new byte[4];
+            var buffer = new byte[4];
             stream.Read(buffer, 0, 4);
             stream.Seek(0, SeekOrigin.Begin);
             return buffer[0] == 'B' &&
@@ -478,10 +478,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
 
         private ISymUnmanagedReader GetReaderForFrame(ClrStackFrame frame)
         {
-            ClrModule module = frame.Method?.Type?.Module;
-            PdbInfo info = module?.Pdb;
+            var module = frame.Method?.Type?.Module;
+            var info = module?.Pdb;
             ISymUnmanagedReader reader = null;
-            string name = string.Empty;
+            var name = string.Empty;
 
             if (info != null)
             {
@@ -503,7 +503,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     if (IsPortablePdb(stream))
                     {
                         var bindar = new SymBinder();
-                        int result = bindar.GetReaderFromPdbFile(new MetaDataImportProvider(module.MetadataImport), name, out reader);
+                        var result = bindar.GetReaderFromPdbFile(new MetaDataImportProvider(module.MetadataImport), name, out reader);
                     }
                     else
                     {

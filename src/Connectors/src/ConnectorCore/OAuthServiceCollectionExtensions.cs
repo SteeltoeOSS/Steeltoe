@@ -30,9 +30,9 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
-            SsoServiceInfo info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig);
+            var oauthConfig = new OAuthConnectorOptions(config);
+            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+            var factory = new OAuthConnectorFactory(info, oauthConfig);
             services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
             return services;
         }
@@ -61,9 +61,9 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OAuthConnectorOptions oauthConfig = new OAuthConnectorOptions(config);
-            SsoServiceInfo info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
-            OAuthConnectorFactory factory = new OAuthConnectorFactory(info, oauthConfig);
+            var oauthConfig = new OAuthConnectorOptions(config);
+            var info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
+            var factory = new OAuthConnectorFactory(info, oauthConfig);
             services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
             return services;
         }

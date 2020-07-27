@@ -32,7 +32,7 @@ namespace OpenCensus.Trace.Propagation.Test
         [Fact]
         public void ToByteArray_NotNullSpanContext()
         {
-            Assert.Equal(new byte[0], binaryFormat.ToByteArray(SpanContext.Invalid));
+            Assert.Equal(Array.Empty<byte>(), binaryFormat.ToByteArray(SpanContext.Invalid));
         }
 
         [Fact]
@@ -44,7 +44,7 @@ namespace OpenCensus.Trace.Propagation.Test
         [Fact]
         public void FromByteArray_NotNullInput()
         {
-            Assert.Equal(SpanContext.Invalid, binaryFormat.FromByteArray(new byte[0]));
+            Assert.Equal(SpanContext.Invalid, binaryFormat.FromByteArray(Array.Empty<byte>()));
         }
     }
 }

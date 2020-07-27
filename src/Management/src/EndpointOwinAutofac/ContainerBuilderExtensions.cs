@@ -84,7 +84,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac
                 throw new ArgumentNullException(nameof(container));
             }
 
-            if (container.TryResolve<IDiagnosticsManager>(out IDiagnosticsManager diagManager))
+            if (container.TryResolve<IDiagnosticsManager>(out var diagManager))
             {
                 diagManager.Start();
             }

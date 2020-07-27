@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 return;
             }
 
-            string gzFilename = filename + ".gz";
+            var gzFilename = filename + ".gz";
             var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
             if (result != null)

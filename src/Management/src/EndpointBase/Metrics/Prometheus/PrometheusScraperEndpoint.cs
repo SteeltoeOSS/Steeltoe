@@ -37,9 +37,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
             using var output = new MemoryStream();
             using (var writer = new StreamWriter(output))
             {
-                foreach (var view in this._stats.ViewManager.AllExportedViews)
+                foreach (var view in _stats.ViewManager.AllExportedViews)
                 {
-                    var data = this._stats.ViewManager.GetView(view.Name);
+                    var data = _stats.ViewManager.GetView(view.Name);
 
                     var builder = new PrometheusMetricBuilder()
                         .WithName(data.View.Name.AsString)

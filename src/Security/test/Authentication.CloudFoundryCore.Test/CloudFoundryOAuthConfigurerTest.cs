@@ -15,10 +15,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            CloudFoundryOAuthOptions opts = new CloudFoundryOAuthOptions();
+            var opts = new CloudFoundryOAuthOptions();
             CloudFoundryOAuthConfigurer.Configure(null, opts);
 
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
             Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
@@ -37,11 +37,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
-            CloudFoundryOAuthOptions opts = new CloudFoundryOAuthOptions();
-            SsoServiceInfo info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
+            var opts = new CloudFoundryOAuthOptions();
+            var info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
             CloudFoundryOAuthConfigurer.Configure(info, opts);
 
-            string authURL = "http://domain";
+            var authURL = "http://domain";
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
             Assert.Equal("clientId", opts.ClientId);
             Assert.Equal("secret", opts.ClientSecret);

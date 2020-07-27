@@ -47,8 +47,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         private static string GetClaim(IIdentity identity, string claim)
         {
-            var claims = identity as ClaimsIdentity;
-            if (claims == null)
+            if (!(identity is ClaimsIdentity claims))
             {
                 return null;
             }

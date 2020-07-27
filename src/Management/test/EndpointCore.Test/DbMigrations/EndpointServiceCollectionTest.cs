@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
             services.AddSingleton<IConfiguration>(config);

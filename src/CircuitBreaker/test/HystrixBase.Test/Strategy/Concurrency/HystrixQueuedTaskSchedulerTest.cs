@@ -34,14 +34,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
             // Scheduler to test
             var scheduler = new HystrixQueuedTaskScheduler(options);
 
-            TaskActionClass tc1 = new TaskActionClass(output, 1);
-            TaskActionClass tc2 = new TaskActionClass(output, 2);
-            TaskActionClass tc3 = new TaskActionClass(output, 3);
-            TaskActionClass tc4 = new TaskActionClass(output, 4);
-            Task<int> t1 = new Task<int>((o) => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            Task<int> t2 = new Task<int>((o) => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            Task<int> t3 = new Task<int>((o) => tc3.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
-            Task<int> t4 = new Task<int>((o) => tc4.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var tc1 = new TaskActionClass(output, 1);
+            var tc2 = new TaskActionClass(output, 2);
+            var tc3 = new TaskActionClass(output, 3);
+            var tc4 = new TaskActionClass(output, 4);
+            var t1 = new Task<int>((o) => tc1.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t2 = new Task<int>((o) => tc2.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t3 = new Task<int>((o) => tc3.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
+            var t4 = new Task<int>((o) => tc4.Run(o), dummyCommand, CancellationToken.None, TaskCreationOptions.LongRunning);
 
             // Fill up to CoreSize
             t1.Start(scheduler);

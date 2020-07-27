@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         public void ConstributeWithConfigNull()
         {
             var contributor = new AppSettingsInfoContributor(null);
-            InfoBuilder builder = new InfoBuilder();
+            var builder = new InfoBuilder();
             contributor.Contribute(builder);
             var result = builder.Build();
             Assert.NotNull(result);
@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
                 ["info:NET:type"] = "Core",
                 ["info:NET:version"] = "1.1.0"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var settings = new AppSettingsInfoContributor(config);
@@ -57,15 +57,15 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
                 ["info:NET:ASPNET:type"] = "Core",
                 ["info:NET:ASPNET:version"] = "1.1.0"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var settings = new AppSettingsInfoContributor(config);
 
-            InfoBuilder builder = new InfoBuilder();
+            var builder = new InfoBuilder();
             settings.Contribute(builder);
 
-            Dictionary<string, object> info = builder.Build();
+            var info = builder.Build();
             Assert.NotNull(info);
             Assert.Equal(2, info.Count);
             Assert.True(info.ContainsKey("application"));

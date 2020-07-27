@@ -33,7 +33,7 @@ namespace OpenCensus.Stats
 
         internal override void Add(double value)
         {
-            this.Sum += value;
+            Sum += value;
         }
 
         internal override void Combine(MutableAggregation other, double fraction)
@@ -43,7 +43,7 @@ namespace OpenCensus.Stats
                 throw new ArgumentException("MutableSum expected.");
             }
 
-            this.Sum += fraction * mutable.Sum;
+            Sum += fraction * mutable.Sum;
         }
 
         internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)

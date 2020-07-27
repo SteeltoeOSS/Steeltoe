@@ -21,15 +21,13 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void CloudFoundrySecurity_ReturnsSecurityException()
         {
-            using (var server = new TestServer(_defaultSettings))
-            {
-                var client = server.HttpClient;
+            using var server = new TestServer(_defaultSettings);
+            var client = server.HttpClient;
 
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "GET");
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication", "GET");
 
-                Assert.NotNull(result);
-                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-            }
+            Assert.NotNull(result);
+            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
 
         [Fact]

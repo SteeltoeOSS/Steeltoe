@@ -12,8 +12,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
             Dictionary<IHystrixCommandKey, HystrixCommandUtilization> commandUtilizationMap,
             Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> threadPoolUtilizationMap)
         {
-            this.CommandUtilizationMap = commandUtilizationMap;
-            this.ThreadPoolUtilizationMap = threadPoolUtilizationMap;
+            CommandUtilizationMap = commandUtilizationMap;
+            ThreadPoolUtilizationMap = threadPoolUtilizationMap;
         }
 
         public static HystrixUtilization From(

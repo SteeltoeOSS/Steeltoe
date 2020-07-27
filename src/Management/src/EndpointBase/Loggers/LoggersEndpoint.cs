@@ -58,7 +58,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public virtual Dictionary<string, object> DoInvoke(IDynamicLoggerProvider provider, LoggersChangeRequest request)
         {
-            Dictionary<string, object> result = new Dictionary<string, object>();
+            var result = new Dictionary<string, object>();
 
             if (request != null)
             {
@@ -68,11 +68,11 @@ namespace Steeltoe.Management.Endpoint.Loggers
             {
                 AddLevels(result);
                 var configuration = GetLoggerConfigurations(provider);
-                Dictionary<string, LoggerLevels> loggers = new Dictionary<string, LoggerLevels>();
+                var loggers = new Dictionary<string, LoggerLevels>();
                 foreach (var c in configuration.OrderBy(entry => entry.Name))
                 {
                     _logger.LogTrace("Adding " + c.ToString());
-                    LoggerLevels lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
+                    var lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);
                     loggers.Add(c.Name, lv);
                 }
 
@@ -122,13 +122,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 return (Dictionary<string, string>)JsonSerializer.DeserializeAsync(stream, typeof(Dictionary<string, string>)).GetAwaiter().GetResult();
 #else
                 var serializer = new JsonSerializer();
-                using (var sr = new StreamReader(stream))
-                {
-                    using (var jsonTextReader = new JsonTextReader(sr))
-                    {
-                        return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
-                    }
-                }
+                using var sr = new StreamReader(stream);
+                using var jsonTextReader = new JsonTextReader(sr);
+                return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
 #endif
             }
             catch (Exception e)

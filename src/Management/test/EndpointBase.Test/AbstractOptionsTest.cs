@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            TestOptions2 opts = new TestOptions2();
+            var opts = new TestOptions2();
             Assert.True(opts.Enabled);
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled.HasValue);
@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void CanSetEnable()
         {
-            TestOptions2 opt2 = new TestOptions2()
+            var opt2 = new TestOptions2()
             {
                 Enabled = false,
             };
@@ -57,11 +57,11 @@ namespace Steeltoe.Management.Endpoint.Test
                 ["management:endpoints:info:id"] = "infomanagement",
                 ["management:endpoints:info:requiredPermissions"] = "NONE"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+            var opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.True(opts.Enabled);
             Assert.Equal("infomanagement", opts.Id);
@@ -78,11 +78,11 @@ namespace Steeltoe.Management.Endpoint.Test
                 ["management:endpoints:path"] = "/management",
                 ["management:endpoints:info:id"] = "infomanagement"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            TestOptions2 opts = new TestOptions2("management:endpoints:info", config);
+            var opts = new TestOptions2("management:endpoints:info", config);
 
             Assert.NotNull(opts.Global);
             Assert.False(opts.Global.Enabled);
@@ -96,12 +96,12 @@ namespace Steeltoe.Management.Endpoint.Test
         [Fact]
         public void IsAccessAllowed_ReturnsExpected()
         {
-            TestOptions2 opt1 = new TestOptions2();
+            var opt1 = new TestOptions2();
             Assert.True(opt1.IsAccessAllowed(Permissions.FULL));
             Assert.True(opt1.IsAccessAllowed(Permissions.RESTRICTED));
             Assert.True(opt1.IsAccessAllowed(Permissions.NONE));
 
-            TestOptions2 opt2 = new TestOptions2()
+            var opt2 = new TestOptions2()
             {
                 RequiredPermissions = Permissions.NONE
             };
@@ -110,7 +110,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.True(opt2.IsAccessAllowed(Permissions.NONE));
             Assert.False(opt2.IsAccessAllowed(Permissions.UNDEFINED));
 
-            TestOptions2 opt3 = new TestOptions2()
+            var opt3 = new TestOptions2()
             {
                 RequiredPermissions = Permissions.RESTRICTED
             };
@@ -119,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opt3.IsAccessAllowed(Permissions.NONE));
             Assert.False(opt3.IsAccessAllowed(Permissions.UNDEFINED));
 
-            TestOptions2 opt4 = new TestOptions2()
+            var opt4 = new TestOptions2()
             {
                 RequiredPermissions = Permissions.FULL
             };

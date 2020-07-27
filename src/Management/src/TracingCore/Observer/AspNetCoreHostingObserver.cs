@@ -128,8 +128,8 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            ISpanContext traceContext = ExtractTraceContext(context);
-            string spanName = ExtractSpanName(context);
+            var traceContext = ExtractTraceContext(context);
+            var spanName = ExtractSpanName(context);
 
             ISpan span;
             IScope scope;
@@ -168,8 +168,8 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            ISpan span = spanContext.Active;
-            IScope scope = spanContext.ActiveScope;
+            var span = spanContext.Active;
+            var scope = spanContext.ActiveScope;
 
             span.PutHttpStatusCodeAttribute(context.Response.StatusCode);
 
@@ -178,13 +178,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 span.PutHttpResponseHeadersAttribute(AsList(context.Response.Headers));
             }
 
-            long? reqSize = ExtractRequestSize(context);
+            var reqSize = ExtractRequestSize(context);
             if (reqSize != null)
             {
                 span.PutHttpRequestSizeAttribute(reqSize.Value);
             }
 
-            long? respSize = ExtractResponseSize(context);
+            var respSize = ExtractResponseSize(context);
             if (respSize != null)
             {
                 span.PutHttpResponseSizeAttribute(respSize.Value);
@@ -206,7 +206,7 @@ namespace Steeltoe.Management.Tracing.Observer
             {
                 return Propagation.Extract(request.Headers, (d, k) =>
                 {
-                    d.TryGetValue(k, out StringValues result);
+                    d.TryGetValue(k, out var result);
                     return result;
                 });
             }
@@ -254,7 +254,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal List<KeyValuePair<string, IEnumerable<string>>> AsList(IHeaderDictionary headers)
         {
-            List<KeyValuePair<string, IEnumerable<string>>> results = new List<KeyValuePair<string, IEnumerable<string>>>();
+            var results = new List<KeyValuePair<string, IEnumerable<string>>>();
             foreach (var header in headers)
             {
                 var enumerable = header.Value.AsEnumerable();

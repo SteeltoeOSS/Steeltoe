@@ -45,23 +45,21 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         [Fact]
         public async void ThreadDumpHttpCall_ReturnsExpected()
         {
-            using (var server = TestServer.Create<Startup>())
-            {
-                var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                Assert.NotEqual("[]", json);
-                Assert.StartsWith("[", json);
-                Assert.Contains("blockedCount", json);
-                Assert.Contains("blockedTime", json);
-                Assert.Contains("lockedMonitors", json);
-                Assert.Contains("lockedSynchronizers", json);
-                Assert.Contains("lockInfo", json);
-                Assert.Contains("stackTrace", json);
-                Assert.EndsWith("]", json);
-            }
+            using var server = TestServer.Create<Startup>();
+            var client = server.HttpClient;
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
+            Assert.NotEqual("[]", json);
+            Assert.StartsWith("[", json);
+            Assert.Contains("blockedCount", json);
+            Assert.Contains("blockedTime", json);
+            Assert.Contains("lockedMonitors", json);
+            Assert.Contains("lockedSynchronizers", json);
+            Assert.Contains("lockInfo", json);
+            Assert.Contains("stackTrace", json);
+            Assert.EndsWith("]", json);
         }
 
         [Fact]
@@ -69,7 +67,7 @@ namespace Steeltoe.Management.EndpointOwin.ThreadDump.Test
         {
             var opts = new ThreadDumpEndpointOptions();
             var mgmtOptions = TestHelper.GetManagementOptions(opts);
-            ThreadDumper obs = new ThreadDumper(opts);
+            var obs = new ThreadDumper(opts);
             var ep = new ThreadDumpEndpoint(opts, obs);
             var middle = new EndpointOwinMiddleware<List<ThreadInfo>>(null, ep, mgmtOptions);
 

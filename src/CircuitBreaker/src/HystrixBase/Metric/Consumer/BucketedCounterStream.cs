@@ -25,19 +25,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         {
             this.numBuckets = numBuckets;
             this.bucketSizeInMs = bucketSizeInMs;
-            this._reduceBucketToSummary = (eventsObservable) =>
+            _reduceBucketToSummary = (eventsObservable) =>
             {
                 var result = eventsObservable.Aggregate(EmptyBucketSummary, (arg1, arg2) => appendRawEventToBucket(arg1, arg2)).Select(n => n);
                 return result;
             };
 
             IList<Bucket> emptyEventCountsToStart = new List<Bucket>();
-            for (int i = 0; i < numBuckets; i++)
+            for (var i = 0; i < numBuckets; i++)
             {
                 emptyEventCountsToStart.Add(EmptyBucketSummary);
             }
 
-            this.bucketedStream = Observable.Defer(() =>
+            bucketedStream = Observable.Defer(() =>
             {
                 return inputEventStream
                     .Observe()
@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public void Unsubscribe()
         {
-            IDisposable s = subscription.Value;
+            var s = subscription.Value;
             if (s != null)
             {
                 s.Dispose();

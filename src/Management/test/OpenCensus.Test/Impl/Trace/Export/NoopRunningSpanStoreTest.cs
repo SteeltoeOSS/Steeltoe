@@ -27,7 +27,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void NoopRunningSpanStore_GetSummary()
         {
-            IRunningSpanStoreSummary summary = runningSpanStore.Summary;
+            var summary = runningSpanStore.Summary;
             Assert.Empty(summary.PerSpanNameSummary);
         }
 

@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             foreach (var contrib in contributors)
             {
-                TestContrib tc = (TestContrib)contrib;
+                var tc = (TestContrib)contrib;
                 Assert.True(tc.Called);
             }
         }
@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             foreach (var contrib in contributors)
             {
-                TestContrib tc = (TestContrib)contrib;
+                var tc = (TestContrib)contrib;
                 if (tc.Throws)
                 {
                     Assert.False(tc.Called);

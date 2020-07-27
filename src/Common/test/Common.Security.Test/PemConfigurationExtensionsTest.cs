@@ -59,7 +59,7 @@ namespace Steeltoe.Common.Security.Test
                 .AddPemFiles(tempFile1, tempFile2)
                 .Build();
 
-            bool changeCalled = false;
+            var changeCalled = false;
             var token = config.GetReloadToken();
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
             Assert.Equal("cert1", config["certificate"]);

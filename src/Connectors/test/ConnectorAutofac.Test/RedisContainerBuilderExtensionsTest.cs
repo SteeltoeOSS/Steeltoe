@@ -31,7 +31,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisCacheConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => RedisContainerBuilderExtensions.RegisterDistributedRedisCache(cb, null));
@@ -41,7 +41,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisCacheConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -61,7 +61,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisCacheConnection_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -88,7 +88,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisConnectionMultiplexerConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => RedisContainerBuilderExtensions.RegisterRedisConnectionMultiplexer(cb, null));
@@ -98,14 +98,14 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisConnectionMultiplexerConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             var appsettings = new Dictionary<string, string>()
             {
                 ["redis:client:abortOnConnectFail"] = "false",
                 ["redis:client:connectTimeout"] = "1"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -126,7 +126,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRedisConnectionMultiplexer_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

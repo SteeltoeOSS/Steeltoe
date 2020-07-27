@@ -63,7 +63,7 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
             }
         }
 
-        /// <param name="version">For now there is no way to configure version - defined for future use</param>
+        // param name="version" For now there is no way to configure version - defined for future use
         [Theory]
         [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
         public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
@@ -78,21 +78,19 @@ namespace Steeltoe.Management.EndpointCore.Test.ContentNegotiation
                     loggingBuilder.AddDynamicConsole();
                 });
 
-            using (var server = new TestServer(builder))
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            foreach (var accept in accepts)
             {
-                var client = server.CreateClient();
-                foreach (var accept in accepts)
-                {
-                    client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
-                }
-
-                // send the request
-                var result = await client.GetAsync(epPath);
-                var json = await result.Content.ReadAsStringAsync();
-
-                var contentHeaders = result.Content.Headers.GetValues("Content-Type");
-                Assert.Contains(contentHeaders, (header) => header.StartsWith(contentType));
+                client.DefaultRequestHeaders.TryAddWithoutValidation("Accept", accept);
             }
+
+            // send the request
+            var result = await client.GetAsync(epPath);
+            var json = await result.Content.ReadAsStringAsync();
+
+            var contentHeaders = result.Content.Headers.GetValues("Content-Type");
+            Assert.Contains(contentHeaders, (header) => header.StartsWith(contentType));
         }
     }
 }

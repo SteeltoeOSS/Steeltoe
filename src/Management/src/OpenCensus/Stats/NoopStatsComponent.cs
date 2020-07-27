@@ -25,7 +25,7 @@ namespace OpenCensus.Stats
         {
             get
             {
-                return this.viewManager;
+                return viewManager;
             }
         }
 

@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
     {
         public static List<string> ToJsonList(HystrixDashboardStream.DashboardData data, IDiscoveryClient discoveryClient)
         {
-            List<string> jsonList = new List<string>();
+            var jsonList = new List<string>();
             WriteCommandData(data, discoveryClient, jsonList);
             WriteThreadPoolData(data, discoveryClient, jsonList);
             return jsonList;
@@ -50,22 +50,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             {
                 var localService = discoveryClient?.GetLocalServiceInstance();
 
-                foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
+                foreach (var threadPoolMetrics in data.ThreadPoolMetrics)
                 {
-                    using (StringWriter sw = new StringWriter())
+                    using var sw = new StringWriter();
+                    using (var writer = new JsonTextWriter(sw))
                     {
-                        using (JsonTextWriter writer = new JsonTextWriter(sw))
-                        {
-                            writer.WriteStartObject();
-                            WriteLocalService(writer, localService);
-                            writer.WriteObjectFieldStart("data");
-                            WriteThreadPoolMetrics(writer, threadPoolMetrics);
-                            writer.WriteEndObject();
-                            writer.WriteEndObject();
-                        }
-
-                        jsonList.Add(sw.ToString());
+                        writer.WriteStartObject();
+                        WriteLocalService(writer, localService);
+                        writer.WriteObjectFieldStart("data");
+                        WriteThreadPoolMetrics(writer, threadPoolMetrics);
+                        writer.WriteEndObject();
+                        writer.WriteEndObject();
                     }
+
+                    jsonList.Add(sw.ToString());
                 }
             }
             catch (Exception)
@@ -80,22 +78,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             {
                 var localService = discoveryClient?.GetLocalServiceInstance();
 
-                foreach (HystrixCommandMetrics commandMetrics in data.CommandMetrics)
+                foreach (var commandMetrics in data.CommandMetrics)
                 {
-                    using (StringWriter sw = new StringWriter())
+                    using var sw = new StringWriter();
+                    using (var writer = new JsonTextWriter(sw))
                     {
-                        using (JsonTextWriter writer = new JsonTextWriter(sw))
-                        {
-                            writer.WriteStartObject();
-                            WriteLocalService(writer, localService);
-                            writer.WriteObjectFieldStart("data");
-                            WriteCommandMetrics(writer, commandMetrics, localService);
-                            writer.WriteEndObject();
-                            writer.WriteEndObject();
-                        }
-
-                        jsonList.Add(sw.ToString());
+                        writer.WriteStartObject();
+                        WriteLocalService(writer, localService);
+                        writer.WriteObjectFieldStart("data");
+                        WriteCommandMetrics(writer, commandMetrics, localService);
+                        writer.WriteEndObject();
+                        writer.WriteEndObject();
                     }
+
+                    jsonList.Add(sw.ToString());
                 }
             }
             catch (Exception)
@@ -106,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         private static void WriteThreadPoolMetrics(JsonTextWriter writer, HystrixThreadPoolMetrics threadPoolMetrics)
         {
-            IHystrixThreadPoolKey key = threadPoolMetrics.ThreadPoolKey;
+            var key = threadPoolMetrics.ThreadPoolKey;
 
             writer.WriteStringField("type", "HystrixThreadPool");
             writer.WriteStringField("name", key.Name);
@@ -132,8 +128,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
         private static void WriteCommandMetrics(JsonTextWriter writer, HystrixCommandMetrics commandMetrics, IServiceInstance localService)
         {
-            IHystrixCommandKey key = commandMetrics.CommandKey;
-            IHystrixCircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
+            var key = commandMetrics.CommandKey;
+            var circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
 
             writer.WriteStringField("type", "HystrixCommand");
 
@@ -160,7 +156,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
                 writer.WriteBooleanField("isCircuitBreakerOpen", circuitBreaker.IsOpen);
             }
 
-            HealthCounts healthCounts = commandMetrics.Healthcounts;
+            var healthCounts = commandMetrics.Healthcounts;
             writer.WriteIntegerField("errorPercentage", healthCounts.ErrorPercentage);
             writer.WriteLongField("errorCount", healthCounts.ErrorCount);
             writer.WriteLongField("requestCount", healthCounts.TotalRequests);
@@ -209,7 +205,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             writer.WriteEndObject();
 
             // property values for reporting what is actually seen by the command rather than what was set somewhere
-            IHystrixCommandOptions commandProperties = commandMetrics.Properties;
+            var commandProperties = commandMetrics.Properties;
 
             writer.WriteIntegerField("propertyValue_circuitBreakerRequestVolumeThreshold", commandProperties.CircuitBreakerRequestVolumeThreshold);
             writer.WriteIntegerField("propertyValue_circuitBreakerSleepWindowInMilliseconds", commandProperties.CircuitBreakerSleepWindowInMilliseconds);

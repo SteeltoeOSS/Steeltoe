@@ -31,7 +31,7 @@ namespace OpenCensus.Testing.Common
 
         public static TestClock Create(ITimestamp time)
         {
-            TestClock clock = new TestClock();
+            var clock = new TestClock();
             clock.Time = time;
             return clock;
         }

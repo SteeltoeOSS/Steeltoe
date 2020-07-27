@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             // try to see if its just one key not the set
             if (Keys == null || Keys.Count == 0)
             {
-                JsonWebKey key = new JsonWebKey(json);
+                var key = new JsonWebKey(json);
 #pragma warning disable S2589 // Boolean expressions should not be gratuitous
                 if (key != null)
 #pragma warning restore S2589 // Boolean expressions should not be gratuitous

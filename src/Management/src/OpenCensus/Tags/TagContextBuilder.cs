@@ -24,12 +24,12 @@ namespace OpenCensus.Tags
     {
         internal TagContextBuilder(IDictionary<ITagKey, ITagValue> tags)
         {
-            this.Tags = new Dictionary<ITagKey, ITagValue>(tags);
+            Tags = new Dictionary<ITagKey, ITagValue>(tags);
         }
 
         internal TagContextBuilder()
         {
-            this.Tags = new Dictionary<ITagKey, ITagValue>();
+            Tags = new Dictionary<ITagKey, ITagValue>();
         }
 
         internal IDictionary<ITagKey, ITagValue> Tags { get; }
@@ -41,7 +41,7 @@ namespace OpenCensus.Tags
                 throw new ArgumentNullException(nameof(key));
             }
 
-            this.Tags[key] = value ?? throw new ArgumentNullException(nameof(value));
+            Tags[key] = value ?? throw new ArgumentNullException(nameof(value));
             return this;
         }
 
@@ -52,9 +52,9 @@ namespace OpenCensus.Tags
                 throw new ArgumentNullException(nameof(key));
             }
 
-            if (this.Tags.ContainsKey(key))
+            if (Tags.ContainsKey(key))
             {
-                this.Tags.Remove(key);
+                Tags.Remove(key);
             }
 
             return this;
@@ -62,12 +62,12 @@ namespace OpenCensus.Tags
 
         public override ITagContext Build()
         {
-            return new TagContext(this.Tags);
+            return new TagContext(Tags);
         }
 
         public override IScope BuildScoped()
         {
-            return CurrentTagContextUtils.WithTagContext(this.Build());
+            return CurrentTagContextUtils.WithTagContext(Build());
         }
     }
 }

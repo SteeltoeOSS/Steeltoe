@@ -116,7 +116,7 @@ namespace Steeltoe.Management.Endpoint
         {
             get
             {
-                string path = Global.Path;
+                var path = Global.Path;
                 if (string.IsNullOrEmpty(Id))
                 {
                     return path;
@@ -124,7 +124,7 @@ namespace Steeltoe.Management.Endpoint
 
                 if (!path.EndsWith("/"))
                 {
-                    path = path + "/";
+                    path += "/";
                 }
 
                 return path + Id;

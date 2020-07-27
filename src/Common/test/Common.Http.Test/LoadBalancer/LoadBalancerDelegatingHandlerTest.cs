@@ -31,7 +31,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             var invoker = new HttpMessageInvoker(handler);
 
             // act
-            var result = await invoker.SendAsync(httpRequestMessage, default(CancellationToken));
+            var result = await invoker.SendAsync(httpRequestMessage, default);
 
             // assert
             Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
@@ -48,7 +48,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             var invoker = new HttpMessageInvoker(handler);
 
             // act
-            var result = await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default(CancellationToken)));
+            var result = await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default));
 
             // assert
             Assert.Empty(loadBalancer.Stats);
@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             var invoker = new HttpMessageInvoker(handler);
 
             // act
-            var result = await invoker.SendAsync(httpRequestMessage, default(CancellationToken));
+            var result = await invoker.SendAsync(httpRequestMessage, default);
 
             // assert
             Assert.Single(loadBalancer.Stats);

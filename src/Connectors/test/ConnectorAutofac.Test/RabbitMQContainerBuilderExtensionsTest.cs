@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRabbitMQConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => RabbitMQContainerBuilderExtensions.RegisterRabbitMQConnection(cb, null));
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRabbitMQConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -58,7 +58,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterRabbitMQConnection_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

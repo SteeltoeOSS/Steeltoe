@@ -26,9 +26,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixCollapserEventStream(IHystrixCollapserKey collapserKey)
         {
-            this._collapserKey = collapserKey;
-            this._writeOnlyStream = Subject.Synchronize<HystrixCollapserEvent, HystrixCollapserEvent>(new Subject<HystrixCollapserEvent>());
-            this._readOnlyStream = _writeOnlyStream.AsObservable();
+            _collapserKey = collapserKey;
+            _writeOnlyStream = Subject.Synchronize<HystrixCollapserEvent, HystrixCollapserEvent>(new Subject<HystrixCollapserEvent>());
+            _readOnlyStream = _writeOnlyStream.AsObservable();
         }
 
         public static void Reset()

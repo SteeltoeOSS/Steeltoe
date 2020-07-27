@@ -10,37 +10,37 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public void Increment()
         {
-            this.Add(1);
+            Add(1);
         }
 
         public void Decrement()
         {
-            this.Add(-1);
+            Add(-1);
         }
 
         public void Add(long value)
         {
-            this._value.AddAndGet(value);
+            _value.AddAndGet(value);
         }
 
         public long Sum()
         {
-            return this._value.Value;
+            return _value.Value;
         }
 
         public void Reset()
         {
-            this._value.GetAndSet(0);
+            _value.GetAndSet(0);
         }
 
         public long SumThenReset()
         {
-            return this._value.GetAndSet(0);
+            return _value.GetAndSet(0);
         }
 
         public override string ToString()
         {
-            return this._value.Value.ToString();
+            return _value.Value.ToString();
         }
     }
 }

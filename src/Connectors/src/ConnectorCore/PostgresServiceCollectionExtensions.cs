@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+            var info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -68,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

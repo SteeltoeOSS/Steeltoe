@@ -41,7 +41,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_ThrowsIfConfigurtionNull()
         {
             // Arrange
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfigurationRoot config = null;
 
             // Act and Assert
@@ -53,7 +53,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_ThrowsIfDiscoveryOptionsNull()
         {
             // Arrange
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             DiscoveryOptions discoveryOptions = null;
 
             // Act and Assert
@@ -65,8 +65,8 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_ThrowsIfDiscoveryOptionsClientType_Unknown()
         {
             // Arrange
-            ContainerBuilder services = new ContainerBuilder();
-            DiscoveryOptions discoveryOptions = new DiscoveryOptions();
+            var services = new ContainerBuilder();
+            var discoveryOptions = new DiscoveryOptions();
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentException>(() => DiscoveryContainerBuilderExtensions.RegisterDiscoveryClient(services, discoveryOptions));
@@ -77,7 +77,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_ThrowsIfSetupOptionsNull()
         {
             // Arrange
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             Action<DiscoveryOptions> setupOptions = null;
 
             // Act and Assert
@@ -106,9 +106,9 @@ namespace Steeltoe.Discovery.Client.Test
 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -135,9 +135,9 @@ namespace Steeltoe.Discovery.Client.Test
     }
 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -151,7 +151,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_WithDiscoveryOptions_AddsDiscoveryClient()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = new EurekaClientOptions()
@@ -173,7 +173,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void RegisterDiscoveryClient_WithDiscoveryOptions_MissingOptions_Throws()
         {
             // Arrange
-            DiscoveryOptions options = new DiscoveryOptions()
+            var options = new DiscoveryOptions()
             {
                 ClientType = DiscoveryClientType.EUREKA,
                 ClientOptions = null,

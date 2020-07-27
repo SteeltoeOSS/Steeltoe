@@ -21,13 +21,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static HealthCountsStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
         {
-            int healthCountBucketSizeInMs = properties.MetricsHealthSnapshotIntervalInMilliseconds;
+            var healthCountBucketSizeInMs = properties.MetricsHealthSnapshotIntervalInMilliseconds;
             if (healthCountBucketSizeInMs == 0)
             {
                 throw new ArgumentOutOfRangeException("You have set the bucket size to 0ms.  Please set a positive number, so that the metric stream can be properly consumed");
             }
 
-            int numHealthCountBuckets = properties.MetricsRollingStatisticalWindowInMilliseconds / healthCountBucketSizeInMs;
+            var numHealthCountBuckets = properties.MetricsRollingStatisticalWindowInMilliseconds / healthCountBucketSizeInMs;
 
             return GetInstance(commandKey, numHealthCountBuckets, healthCountBucketSizeInMs);
         }
@@ -58,12 +58,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static void RemoveByKey(IHystrixCommandKey key)
         {
-            Streams.TryRemove(key.Name, out HealthCountsStream old);
+            Streams.TryRemove(key.Name, out var old);
         }
 
         internal static HealthCountsStream GetInstance(string commandKey)
         {
-            Streams.TryGetValue(commandKey, out HealthCountsStream result);
+            Streams.TryGetValue(commandKey, out var result);
             return result;
         }
 

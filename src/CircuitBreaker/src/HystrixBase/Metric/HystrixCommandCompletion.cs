@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public HystrixRequestContext RequestContext
         {
-            get { return this.requestContext; }
+            get { return requestContext; }
         }
 
         public ExecutionResult.EventCounts Eventcounts
@@ -83,11 +83,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            List<HystrixEventType> foundEventTypes = new List<HystrixEventType>();
+            var sb = new StringBuilder();
+            var foundEventTypes = new List<HystrixEventType>();
 
             sb.Append(CommandKey.Name).Append("[");
-            foreach (HystrixEventType eventType in ALL_EVENT_TYPES)
+            foreach (var eventType in ALL_EVENT_TYPES)
             {
                 if (executionResult.Eventcounts.Contains(eventType))
                 {
@@ -95,11 +95,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                 }
             }
 
-            int i = 0;
-            foreach (HystrixEventType eventType in foundEventTypes)
+            var i = 0;
+            foreach (var eventType in foundEventTypes)
             {
                 sb.Append(eventType.ToString());
-                int eventCount = executionResult.Eventcounts.GetCount(eventType);
+                var eventCount = executionResult.Eventcounts.GetCount(eventType);
                 if (eventCount > 1)
                 {
                     sb.Append("x").Append(eventCount);

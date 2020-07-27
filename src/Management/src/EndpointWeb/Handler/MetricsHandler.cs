@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
             _logger?.LogDebug("Incoming path: {0}", request.Path);
 
-            string metricName = GetMetricName(request);
+            var metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
             {
                 // GET /metrics/{metricName}?tag=key:value&tag=key:value
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             else
             {
                 // GET /metrics
-                var serialInfo = this.HandleRequest(null);
+                var serialInfo = HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
                 response.StatusCode = (int)HttpStatusCode.OK;

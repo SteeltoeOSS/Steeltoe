@@ -53,7 +53,7 @@ namespace OpenCensus.Trace.Test
         public void WithSpan_CloseDetaches()
         {
             Assert.Null(CurrentSpanUtils.CurrentSpan);
-            IScope ws = CurrentSpanUtils.WithSpan(span, false);
+            var ws = CurrentSpanUtils.WithSpan(span, false);
             try
             {
                 Assert.Same(span, CurrentSpanUtils.CurrentSpan);
@@ -69,7 +69,7 @@ namespace OpenCensus.Trace.Test
         public void WithSpan_CloseDetachesAndEndsSpan()
         {
             Assert.Null(CurrentSpanUtils.CurrentSpan);
-            IScope ss = CurrentSpanUtils.WithSpan(span, true);
+            var ss = CurrentSpanUtils.WithSpan(span, true);
             try
             {
                 Assert.Same(span, CurrentSpanUtils.CurrentSpan);

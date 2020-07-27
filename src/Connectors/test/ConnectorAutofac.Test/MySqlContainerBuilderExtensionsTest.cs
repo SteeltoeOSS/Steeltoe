@@ -29,7 +29,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMySqlConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => MySqlContainerBuilderExtensions.RegisterMySqlConnection(cb, null));
@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMySqlConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -56,7 +56,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMySqlConnection_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

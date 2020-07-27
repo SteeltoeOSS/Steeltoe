@@ -32,8 +32,8 @@ namespace OpenCensus.Trace
 
         internal EndSpanOptions(bool sampleToLocalSpanStore, Status status = null)
         {
-            this.SampleToLocalSpanStore = sampleToLocalSpanStore;
-            this.Status = status;
+            SampleToLocalSpanStore = sampleToLocalSpanStore;
+            Status = status;
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace OpenCensus.Trace
 
             if (obj is EndSpanOptions that)
             {
-                return (this.SampleToLocalSpanStore == that.SampleToLocalSpanStore)
-                     && ((this.Status == null) ? (that.Status == null) : this.Status.Equals(that.Status));
+                return (SampleToLocalSpanStore == that.SampleToLocalSpanStore)
+                     && ((Status == null) ? (that.Status == null) : Status.Equals(that.Status));
             }
 
             return false;
@@ -75,11 +75,11 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.SampleToLocalSpanStore ? 1231 : 1237;
+            h ^= SampleToLocalSpanStore ? 1231 : 1237;
             h *= 1000003;
-            h ^= (this.Status == null) ? 0 : this.Status.GetHashCode();
+            h ^= (Status == null) ? 0 : Status.GetHashCode();
             return h;
         }
 
@@ -87,8 +87,8 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "EndSpanOptions{"
-                + "sampleToLocalSpanStore=" + this.SampleToLocalSpanStore + ", "
-                + "status=" + this.Status
+                + "sampleToLocalSpanStore=" + SampleToLocalSpanStore + ", "
+                + "status=" + Status
                 + "}";
         }
     }

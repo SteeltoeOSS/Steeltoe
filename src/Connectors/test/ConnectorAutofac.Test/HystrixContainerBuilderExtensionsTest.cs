@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterHystrixConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => HystrixContainerBuilderExtensions.RegisterHystrixConnection(cb, null));
@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterHystrixConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

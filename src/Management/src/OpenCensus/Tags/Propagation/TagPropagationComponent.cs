@@ -22,12 +22,12 @@ namespace OpenCensus.Tags.Propagation
 
         public TagPropagationComponent(CurrentTaggingState state)
         {
-            this.tagContextBinarySerializer = new TagContextBinarySerializer(state);
+            tagContextBinarySerializer = new TagContextBinarySerializer(state);
         }
 
         public override ITagContextBinarySerializer BinarySerializer
         {
-            get { return this.tagContextBinarySerializer; }
+            get { return tagContextBinarySerializer; }
         }
     }
 }

@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 ["management:endpoints:path"] = "/management",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 ["management:endpoints:path"] = "/management",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

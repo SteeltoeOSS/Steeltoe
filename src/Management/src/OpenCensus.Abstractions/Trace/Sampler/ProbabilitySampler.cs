@@ -24,15 +24,15 @@ namespace OpenCensus.Trace.Sampler
     {
         internal ProbabilitySampler(double probability, long idUpperBound)
         {
-            this.Probability = probability;
-            this.IdUpperBound = idUpperBound;
+            Probability = probability;
+            IdUpperBound = idUpperBound;
         }
 
         public string Description
         {
             get
             {
-                return string.Format("ProbabilitySampler({0:F6})", this.Probability);
+                return string.Format("ProbabilitySampler({0:F6})", Probability);
             }
         }
 
@@ -51,7 +51,7 @@ namespace OpenCensus.Trace.Sampler
             if (parentLinks != null)
             {
                 // If any parent link is sampled keep the sampling decision.
-                foreach (ISpan parentLink in parentLinks)
+                foreach (var parentLink in parentLinks)
                 {
                     if (parentLink.Context.TraceOptions.IsSampled)
                     {
@@ -67,15 +67,15 @@ namespace OpenCensus.Trace.Sampler
             // while allowing for a (very) small chance of *not* sampling if the id == Long.MAX_VALUE.
             // This is considered a reasonable tradeoff for the simplicity/performance requirements (this
             // code is executed in-line for every Span creation).
-            return Math.Abs(traceId.LowerLong) < this.IdUpperBound;
+            return Math.Abs(traceId.LowerLong) < IdUpperBound;
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "ProbabilitySampler{"
-                + "probability=" + this.Probability + ", "
-                + "idUpperBound=" + this.IdUpperBound
+                + "probability=" + Probability + ", "
+                + "idUpperBound=" + IdUpperBound
                 + "}";
         }
 
@@ -89,8 +89,8 @@ namespace OpenCensus.Trace.Sampler
 
             if (o is ProbabilitySampler that)
             {
-                return DoubleUtil.ToInt64(this.Probability) == DoubleUtil.ToInt64(that.Probability)
-                     && (this.IdUpperBound == that.IdUpperBound);
+                return DoubleUtil.ToInt64(Probability) == DoubleUtil.ToInt64(that.Probability)
+                     && (IdUpperBound == that.IdUpperBound);
             }
 
             return false;
@@ -101,9 +101,9 @@ namespace OpenCensus.Trace.Sampler
         {
             long h = 1;
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Probability) >> 32) ^ DoubleUtil.ToInt64(this.Probability);
+            h ^= (DoubleUtil.ToInt64(Probability) >> 32) ^ DoubleUtil.ToInt64(Probability);
             h *= 1000003;
-            h ^= (this.IdUpperBound >> 32) ^ this.IdUpperBound;
+            h ^= (IdUpperBound >> 32) ^ IdUpperBound;
             return (int)h;
         }
 

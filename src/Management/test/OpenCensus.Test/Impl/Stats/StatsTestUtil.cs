@@ -30,8 +30,8 @@ namespace OpenCensus.Stats.Test
 
         internal static IAggregationData CreateAggregationData(IAggregation aggregation, IMeasure measure, params double[] values)
         {
-            MutableAggregation mutableAggregation = MutableViewData.CreateMutableAggregation(aggregation);
-            foreach (double value in values)
+            var mutableAggregation = MutableViewData.CreateMutableAggregation(aggregation);
+            foreach (var value in values)
             {
                 mutableAggregation.Add(value);
             }

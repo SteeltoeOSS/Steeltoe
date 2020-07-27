@@ -40,7 +40,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromSpanContext_ChildLink()
         {
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan);
             Assert.Equal(spanContext.TraceId, link.TraceId);
             Assert.Equal(spanContext.SpanId, link.SpanId);
             Assert.Equal(LinkType.ChildLinkedSpan, link.Type);
@@ -49,7 +49,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromSpanContext_ChildLink_WithAttributes()
         {
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan, attributesMap);
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan, attributesMap);
             Assert.Equal(spanContext.TraceId, link.TraceId);
             Assert.Equal(spanContext.SpanId, link.SpanId);
             Assert.Equal(LinkType.ChildLinkedSpan, link.Type);
@@ -59,7 +59,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromSpanContext_ParentLink()
         {
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ParentLinkedSpan);
+            var link = Link.FromSpanContext(spanContext, LinkType.ParentLinkedSpan);
             Assert.Equal(spanContext.TraceId, link.TraceId);
             Assert.Equal(spanContext.SpanId, link.SpanId);
             Assert.Equal(LinkType.ParentLinkedSpan, link.Type);
@@ -68,7 +68,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromSpanContext_ParentLink_WithAttributes()
         {
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ParentLinkedSpan, attributesMap);
+            var link = Link.FromSpanContext(spanContext, LinkType.ParentLinkedSpan, attributesMap);
             Assert.Equal(spanContext.TraceId, link.TraceId);
             Assert.Equal(spanContext.SpanId, link.SpanId);
             Assert.Equal(LinkType.ParentLinkedSpan, link.Type);
@@ -99,7 +99,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void Link_ToString()
         {
-            ILink link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan, attributesMap);
+            var link = Link.FromSpanContext(spanContext, LinkType.ChildLinkedSpan, attributesMap);
             Assert.Contains(spanContext.TraceId.ToString(), link.ToString());
             Assert.Contains(spanContext.SpanId.ToString(), link.ToString());
             Assert.Contains("ChildLinkedSpan", link.ToString());

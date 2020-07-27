@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 ["management:endpoints:health:claim:value"] = "claimvalue",
                 ["management:endpoints:health:role"] = "roleclaimvalue"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 ["management:endpoints:health:role"] = "roleclaimvalue"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

@@ -32,7 +32,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
         public override Links Invoke(string baseUrl)
 #pragma warning restore CS0618 // Type or member is obsolete
         {
-            HypermediaService service = new HypermediaService(_mgmtOption, options, _logger);
+            var service = new HypermediaService(_mgmtOption, options, _logger);
             return service.Invoke(baseUrl);
         }
     }

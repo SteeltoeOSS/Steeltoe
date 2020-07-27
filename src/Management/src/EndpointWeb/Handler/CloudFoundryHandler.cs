@@ -40,8 +40,8 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         protected internal string GetRequestUri(HttpRequestBase request)
         {
-            string scheme = request.IsSecureConnection ? "https" : "http";
-            string headerScheme = request.Headers.Get("X-Forwarded-Proto");
+            var scheme = request.IsSecureConnection ? "https" : "http";
+            var headerScheme = request.Headers.Get("X-Forwarded-Proto");
 
             if (headerScheme != null)
             {

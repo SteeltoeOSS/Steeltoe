@@ -58,8 +58,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return null;
             }
 
-            List<MetricSample> measurements = GetMetricMeasurements(viewData, request.Tags);
-            List<MetricTag> availTags = GetAvailableTags(viewData);
+            var measurements = GetMetricMeasurements(viewData, request.Tags);
+            var availTags = GetAvailableTags(viewData);
 
             return new MetricsResponse(request.MetricName, measurements, availTags);
         }
@@ -71,12 +71,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal List<MetricTag> GetAvailableTags(IList<ITagKey> columns, IDictionary<TagValues, IAggregationData> aggMap)
         {
-            List<MetricTag> results = new List<MetricTag>();
+            var results = new List<MetricTag>();
 
-            for (int i = 0; i < columns.Count; i++)
+            for (var i = 0; i < columns.Count; i++)
             {
-                string tag = columns[i].Name;
-                HashSet<string> set = new HashSet<string>();
+                var tag = columns[i].Name;
+                var set = new HashSet<string>();
 
                 foreach (var agg in aggMap)
                 {
@@ -102,14 +102,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return new List<MetricSample>();
             }
 
-            IAggregationData agg = MetricsHelpers.SumWithTags(viewData, tagValues);
+            var agg = MetricsHelpers.SumWithTags(viewData, tagValues);
             return GetMetricSamples(agg, viewData);
         }
 
         protected internal List<MetricSample> GetMetricSamples(IAggregationData agg, IViewData viewData)
         {
-            List<MetricSample> results = new List<MetricSample>();
-            MetricStatistic statistic = GetStatistic(viewData.View.Aggregation, viewData.View.Measure);
+            var results = new List<MetricSample>();
+            var statistic = GetStatistic(viewData.View.Aggregation, viewData.View.Measure);
 
             agg.Match<object>(
                 (arg) =>
@@ -231,12 +231,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal List<ITagValue> GetTagValuesInColumnOrder(IList<ITagKey> columns, List<KeyValuePair<string, string>> tags)
         {
-            ITagValue[] tagValues = new ITagValue[columns.Count];
+            var tagValues = new ITagValue[columns.Count];
             foreach (var kvp in tags)
             {
                 var key = TagKey.Create(kvp.Key);
                 var value = TagValue.Create(kvp.Value);
-                int indx = columns.IndexOf(key);
+                var indx = columns.IndexOf(key);
                 if (indx < 0)
                 {
                     return null;
@@ -251,7 +251,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
         protected internal ISet<string> GetMetricNames()
         {
             var allViews = _stats.ViewManager.AllExportedViews;
-            HashSet<string> names = new HashSet<string>();
+            var names = new HashSet<string>();
             foreach (var view in allViews)
             {
                 names.Add(view.Name.AsString);

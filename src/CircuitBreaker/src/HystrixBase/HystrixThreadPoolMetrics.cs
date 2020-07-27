@@ -28,14 +28,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key)
         {
-            Metrics.TryGetValue(key.Name, out HystrixThreadPoolMetrics result);
+            Metrics.TryGetValue(key.Name, out var result);
             return result;
         }
 
         public static ICollection<HystrixThreadPoolMetrics> GetInstances()
         {
-            List<HystrixThreadPoolMetrics> threadPoolMetrics = new List<HystrixThreadPoolMetrics>();
-            foreach (HystrixThreadPoolMetrics tpm in Metrics.Values)
+            var threadPoolMetrics = new List<HystrixThreadPoolMetrics>();
+            foreach (var tpm in Metrics.Values)
             {
                 if (HasExecutedCommandsOnThread(tpm))
                 {
@@ -53,14 +53,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
         {
-            ExecutionResult.EventCounts eventCounts = execution.Eventcounts;
-            foreach (HystrixEventType eventType in ALL_COMMAND_EVENT_TYPES)
+            var eventCounts = execution.Eventcounts;
+            foreach (var eventType in ALL_COMMAND_EVENT_TYPES)
             {
                 long eventCount = eventCounts.GetCount(eventType);
-                ThreadPoolEventType threadPoolEventType = ThreadPoolEventTypeHelper.From(eventType);
+                var threadPoolEventType = ThreadPoolEventTypeHelper.From(eventType);
                 if (threadPoolEventType != ThreadPoolEventType.UNKNOWN)
                 {
-                    long ordinal = (long)threadPoolEventType;
+                    var ordinal = (long)threadPoolEventType;
                     initialCountArray[ordinal] += eventCount;
                 }
             }
@@ -70,7 +70,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static Func<long[], long[], long[]> CounterAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
         {
-            for (int i = 0; i < NUMBER_THREADPOOL_EVENT_TYPES; i++)
+            for (var i = 0; i < NUMBER_THREADPOOL_EVENT_TYPES; i++)
             {
                 cumulativeEvents[i] += bucketEventCounts[i];
             }

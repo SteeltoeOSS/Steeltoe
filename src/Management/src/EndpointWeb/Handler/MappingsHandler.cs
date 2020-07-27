@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Handler
         {
             _logger?.LogTrace("Processing {SteeltoeEndpoint} request", typeof(MappingsHandler));
 
-            ApplicationMappings result = GetApplicationMappings();
+            var result = GetApplicationMappings();
             var serialInfo = Serialize(result);
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 var adesc = desc.ActionDescriptor as ReflectedHttpActionDescriptor;
                 var details = GetRouteDetails(desc);
 
-                mappingDescriptions.TryGetValue(adesc.ControllerDescriptor.ControllerType.FullName, out IList<MappingDescription> mapList);
+                mappingDescriptions.TryGetValue(adesc.ControllerDescriptor.ControllerType.FullName, out var mapList);
 
                 if (mapList == null)
                 {
@@ -133,7 +133,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 routeDetails.RouteTemplate = $"/{desc.ActionDescriptor.ControllerDescriptor.ControllerName}/{desc.ActionDescriptor.ActionName}";
             }
 
-            List<string> produces = new List<string>();
+            var produces = new List<string>();
             foreach (var respTypes in desc.SupportedResponseFormatters)
             {
                 foreach (var format in respTypes.SupportedMediaTypes)
@@ -144,7 +144,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
             routeDetails.Produces = produces;
 
-            List<string> consumes = new List<string>();
+            var consumes = new List<string>();
             foreach (var reqTypes in desc.SupportedRequestBodyFormatters)
             {
                 foreach (var format in reqTypes.SupportedMediaTypes)
@@ -201,7 +201,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                             var attrs = refActionDesc.GetCustomAttributes(false);
                             details.HttpMethods = GetHttpMethods(attrs);
 
-                            desc.TryGetValue(refActionDesc.ControllerDescriptor.ControllerType.FullName, out IList<MappingDescription> mapList);
+                            desc.TryGetValue(refActionDesc.ControllerDescriptor.ControllerType.FullName, out var mapList);
 
                             if (mapList == null)
                             {
@@ -221,7 +221,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                         if (handler != null && !(handler is HttpControllerRouteHandler))
                         {
                             var handlerType = handler.GetType().ToString();
-                            desc.TryGetValue(handlerType, out IList<MappingDescription> mapList);
+                            desc.TryGetValue(handlerType, out var mapList);
 
                             if (mapList == null)
                             {
@@ -260,11 +260,11 @@ namespace Steeltoe.Management.Endpoint.Handler
 
         private IList<string> GetHttpMethods(object[] attributesOnActionMethod)
         {
-            List<string> results = new List<string>();
+            var results = new List<string>();
             foreach (var attr in attributesOnActionMethod)
             {
-                Type attrType = attr.GetType();
-                string method = GetHttpMethodForType(attrType);
+                var attrType = attr.GetType();
+                var method = GetHttpMethodForType(attrType);
                 if (method != null)
                 {
                     results.Add(method);
@@ -286,7 +286,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 return null;
             }
 
-            if (route.DataTokens.TryGetValue("MS_DirectRouteActions", out object actionDescriptor))
+            if (route.DataTokens.TryGetValue("MS_DirectRouteActions", out var actionDescriptor))
             {
                 return actionDescriptor as ActionDescriptor[];
             }

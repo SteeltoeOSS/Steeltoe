@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaServiceInstance(InstanceInfo info)
         {
-            this._info = info;
+            _info = info;
         }
 
         public string GetHost()
@@ -64,7 +64,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                string scheme = IsSecure ? "https" : "http";
+                var scheme = IsSecure ? "https" : "http";
                 return new Uri(scheme + "://" + GetHost() + ":" + Port.ToString());
             }
         }

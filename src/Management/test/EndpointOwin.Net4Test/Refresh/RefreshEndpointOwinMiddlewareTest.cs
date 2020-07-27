@@ -25,7 +25,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
         public async void RefreshInvoke_ReturnsExpected()
         {
             // arrange
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var opts = new RefreshEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
@@ -67,7 +67,7 @@ namespace Steeltoe.Management.EndpointOwin.Refresh.Test
         {
             var opts = new RefreshEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();
             var ep = new RefreshEndpoint(opts, config);

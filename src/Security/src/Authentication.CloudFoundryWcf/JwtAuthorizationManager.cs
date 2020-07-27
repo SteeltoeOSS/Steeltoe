@@ -69,7 +69,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         {
             HttpRequestMessageProperty httpRequestMessage;
 
-            if (operationContext.RequestContext.RequestMessage.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject))
+            if (operationContext.RequestContext.RequestMessage.Properties.TryGetValue(HttpRequestMessageProperty.Name, out var httpRequestMessageObject))
             {
                 httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
                 var claimsPrincipal = GetPrincipalFromRequestHeaders(httpRequestMessage.Headers);
@@ -105,7 +105,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             if (HostingEnvironment.IsHosted)
             {
-                HttpContext cur = HttpContext.Current;
+                var cur = HttpContext.Current;
                 if (cur != null)
                 {
                     cur.User = principal;

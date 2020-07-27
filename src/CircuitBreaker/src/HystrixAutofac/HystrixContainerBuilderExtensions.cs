@@ -257,7 +257,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
             container.RegisterType<TImplementation>().As<TService>().WithParameter(new TypedParameter(typeof(IHystrixCollapserOptions), opts)).InstancePerDependency();
         }
@@ -284,7 +284,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
             container.RegisterType<TImplementation>().As<TService>().WithParameter(new TypedParameter(typeof(IHystrixCollapserOptions), opts)).InstancePerDependency();
         }
 
@@ -309,7 +309,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
             container.RegisterType<TService>().WithParameter(new TypedParameter(typeof(IHystrixCollapserOptions), opts)).InstancePerDependency();
         }
 
@@ -334,7 +334,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             var strategy = HystrixPlugins.OptionsStrategy;
             var dynOpts = strategy.GetDynamicOptions(config);
 
-            HystrixCollapserOptions opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
+            var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
             container.RegisterType<TService>().WithParameter(new TypedParameter(typeof(IHystrixCollapserOptions), opts)).InstancePerDependency();
         }
 

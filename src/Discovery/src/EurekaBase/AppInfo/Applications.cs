@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 throw new ArgumentException(nameof(appName));
             }
 
-            ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
+            ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out var result);
             return result;
         }
 
@@ -59,8 +59,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder("Applications[");
-            foreach (var kvp in this.ApplicationMap)
+            var sb = new StringBuilder("Applications[");
+            foreach (var kvp in ApplicationMap)
             {
                 sb.Append(kvp.Value.ToString());
             }
@@ -128,8 +128,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
             lock (_addRemoveInstanceLock)
             {
-                string addressUpper = address.ToUpperInvariant();
-                dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
+                var addressUpper = address.ToUpperInvariant();
+                dict.TryGetValue(addressUpper, out var instances);
                 if (instances == null)
                 {
                     instances = dict[addressUpper] = new ConcurrentDictionary<string, InstanceInfo>();
@@ -156,8 +156,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             lock (_addRemoveInstanceLock)
             {
-                string addressUppper = address.ToUpperInvariant();
-                dict.TryGetValue(addressUppper, out ConcurrentDictionary<string, InstanceInfo> instances);
+                var addressUppper = address.ToUpperInvariant();
+                dict.TryGetValue(addressUppper, out var instances);
                 InstanceInfo removed = null;
                 if (instances != null)
                 {
@@ -172,11 +172,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal void UpdateFromDelta(Applications delta)
         {
-            foreach (Application app in delta.GetRegisteredApplications())
+            foreach (var app in delta.GetRegisteredApplications())
             {
-                foreach (InstanceInfo instance in app.Instances)
+                foreach (var instance in app.Instances)
                 {
-                    Application existingApp = GetRegisteredApplication(instance.AppName);
+                    var existingApp = GetRegisteredApplication(instance.AppName);
                     if (existingApp == null)
                     {
                         Add(app);
@@ -209,12 +209,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal string ComputeHashCode()
         {
-            Dictionary<string, int> statusMap = new Dictionary<string, int>();
+            var statusMap = new Dictionary<string, int>();
             foreach (var app in GetRegisteredApplications())
             {
                 foreach (var inst in app.Instances)
                 {
-                    if (!statusMap.TryGetValue(inst.Status.ToString(), out int count))
+                    if (!statusMap.TryGetValue(inst.Status.ToString(), out var count))
                     {
                         statusMap.Add(inst.Status.ToString(), 1);
                     }
@@ -225,7 +225,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 }
             }
 
-            IOrderedEnumerable<KeyValuePair<string, int>> query = statusMap.OrderBy(kvp => kvp.Key);
+            var query = statusMap.OrderBy(kvp => kvp.Key);
             var hashcodeBuilder = new StringBuilder();
             foreach (var entry in query)
             {
@@ -243,7 +243,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static Applications FromJsonApplications(JsonApplications japps)
         {
-            Applications apps = new Applications();
+            var apps = new Applications();
             if (japps != null)
             {
                 apps.Version = japps.VersionDelta;
@@ -264,8 +264,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         private IList<InstanceInfo> DoGetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
         {
-            List<InstanceInfo> result = new List<InstanceInfo>();
-            if (dict.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> instances))
+            var result = new List<InstanceInfo>();
+            if (dict.TryGetValue(name.ToUpperInvariant(), out var instances))
             {
                 foreach (var kvp in instances)
                 {

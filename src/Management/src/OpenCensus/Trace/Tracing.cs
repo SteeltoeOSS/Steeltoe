@@ -36,11 +36,11 @@ namespace OpenCensus.Trace
         {
             if (enabled)
             {
-                this.traceComponent = new TraceComponent(DateTimeOffsetClock.Instance, new RandomGenerator(), new SimpleEventQueue());
+                traceComponent = new TraceComponent(DateTimeOffsetClock.Instance, new RandomGenerator(), new SimpleEventQueue());
             }
             else
             {
-                this.traceComponent = new NoopTraceComponent();
+                traceComponent = new NoopTraceComponent();
             }
         }
 

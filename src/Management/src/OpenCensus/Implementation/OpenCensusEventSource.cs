@@ -31,20 +31,20 @@ namespace OpenCensus.Implementation
         {
             if (Log.IsEnabled(EventLevel.Warning, EventKeywords.All))
             {
-                this.ExporterThrownExceptionWarning(ToInvariantString(ex));
+                ExporterThrownExceptionWarning(ToInvariantString(ex));
             }
         }
 
         [Event(1, Message = "Exporter failed to export items. Exception: {0}", Level = EventLevel.Warning)]
         public void ExporterThrownExceptionWarning(string ex)
         {
-            this.WriteEvent(1, ex);
+            WriteEvent(1, ex);
         }
 
         [Event(2, Message = "Failed to parse a resource tag. {0} should be an ASCII string with a length greater than 0 and not exceeding {1} characters.", Level = EventLevel.Warning)]
         public void InvalidCharactersInResourceElement(string element)
         {
-            this.WriteEvent(2, element, Constants.MaxResourceTypeNameLength);
+            WriteEvent(2, element, Constants.MaxResourceTypeNameLength);
         }
 
         [NonEvent]
@@ -52,14 +52,14 @@ namespace OpenCensus.Implementation
         {
             if (Log.IsEnabled(EventLevel.Warning, EventKeywords.All))
             {
-                this.FailedReadingEnvironmentVariableWarning(environmentVariableName, ToInvariantString(ex));
+                FailedReadingEnvironmentVariableWarning(environmentVariableName, ToInvariantString(ex));
             }
         }
 
         [Event(3, Message = "Failed to read environment variable {0}. Main library failed with security exception: {1}", Level = EventLevel.Warning)]
         public void FailedReadingEnvironmentVariableWarning(string environmentVariableName, string ex)
         {
-            this.WriteEvent(3, environmentVariableName, ex);
+            WriteEvent(3, environmentVariableName, ex);
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OpenCensus.Implementation
         /// </summary>
         private static string ToInvariantString(Exception exception)
         {
-            CultureInfo originalUICulture = Thread.CurrentThread.CurrentUICulture;
+            var originalUICulture = Thread.CurrentThread.CurrentUICulture;
 
             try
             {

@@ -62,7 +62,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

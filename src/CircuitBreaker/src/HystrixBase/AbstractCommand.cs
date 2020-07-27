@@ -229,7 +229,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             HystrixCommandExecutionHook executionHook,
             ILogger logger = null)
         {
-            this._logger = logger;
+            _logger = logger;
             commandGroup = InitGroupKey(group);
             commandKey = InitCommandKey(key, GetType());
             options = InitCommandOptions(commandKey, optionsStrategy, commandOptionsDefaults);
@@ -309,9 +309,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type clazz)
         {
-            if (fromConstructor == null || fromConstructor.Name.Trim().Equals(string.Empty))
+            if (fromConstructor == null || string.IsNullOrWhiteSpace(fromConstructor.Name))
             {
-                string keyName = clazz.Name;
+                var keyName = clazz.Name;
                 return HystrixCommandKeyDefault.AsKey(keyName);
             }
             else
@@ -453,7 +453,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             /* this is a stateful object so can only be used once */
             if (!commandState.CompareAndSet(CommandState.NOT_STARTED, CommandState.OBSERVABLE_CHAIN_CREATED))
             {
-                InvalidOperationException ex = new InvalidOperationException(
+                var ex = new InvalidOperationException(
                     "This instance can only be executed once. Please instantiate a new instance.");
                 throw new HystrixRuntimeException(
                     FailureType.BAD_REQUEST_EXCEPTION,
@@ -507,7 +507,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 /* determine if we're allowed to execute */
                 if (_circuitBreaker.AllowRequest)
                 {
-                    SemaphoreSlim executionSemaphore = GetExecutionSemaphore();
+                    var executionSemaphore = GetExecutionSemaphore();
 
                     if (executionSemaphore.TryAcquire())
                     {
@@ -574,29 +574,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected Exception DecomposeException(Exception e)
         {
-            if (e is HystrixBadRequestException)
+            if (e is HystrixBadRequestException exception)
             {
-                return (HystrixBadRequestException)e;
+                return exception;
             }
 
-            if (e.InnerException is HystrixBadRequestException)
+            if (e.InnerException is HystrixBadRequestException exception1)
             {
-                return (HystrixBadRequestException)e.InnerException;
+                return exception1;
             }
 
-            if (e is HystrixRuntimeException)
+            if (e is HystrixRuntimeException exception2)
             {
-                return (HystrixRuntimeException)e;
+                return exception2;
             }
 
             // if we have an exception we know about we'll throw it directly without the wrapper exception
-            if (e.InnerException is HystrixRuntimeException)
+            if (e.InnerException is HystrixRuntimeException exception3)
             {
-                return (HystrixRuntimeException)e.InnerException;
+                return exception3;
             }
 
             // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
-            string message = LogMessagePrefix + " failed while executing. {0}";
+            var message = LogMessagePrefix + " failed while executing. {0}";
             _logger?.LogDebug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
             return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
         }
@@ -608,11 +608,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         #region Handlers
         protected virtual void HandleCleanUpAfterResponseFromCache(bool commandExecutionStarted)
         {
-            long latency = Time.CurrentTimeMillis - _commandStartTimestamp;
+            var latency = Time.CurrentTimeMillis - _commandStartTimestamp;
             _executionResult = _executionResult.AddEvent(-1, HystrixEventType.RESPONSE_FROM_CACHE)
                     .MarkUserThreadCompletion(latency)
                     .SetNotExecutedInThread();
-            ExecutionResult cacheOnlyForMetrics = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE)
+            var cacheOnlyForMetrics = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE)
                     .MarkUserThreadCompletion(latency);
             _metrics.MarkCommandDone(cacheOnlyForMetrics, commandKey, threadPoolKey, commandExecutionStarted);
             _eventNotifier.MarkEvent(HystrixEventType.RESPONSE_FROM_CACHE, commandKey);
@@ -620,7 +620,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected virtual void HandleCommandEnd(bool commandExecutionStarted)
         {
-            long userThreadLatency = Time.CurrentTimeMillis - _commandStartTimestamp;
+            var userThreadLatency = Time.CurrentTimeMillis - _commandStartTimestamp;
             _executionResult = _executionResult.MarkUserThreadCompletion((int)userThreadLatency);
             if (_executionResultAtTimeOfCancellation == null)
             {
@@ -648,7 +648,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void HandleFallbackOrThrowException(HystrixEventType eventType, FailureType failureType, string message, Exception originalException)
         {
-            long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+            var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
 
             // record the executionResult
             // do this before executing fallback so it can be queried from within getFallback (see See https://github.com/Netflix/Hystrix/pull/144)
@@ -656,7 +656,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             if (IsUnrecoverableError(originalException))
             {
-                Exception e = originalException;
+                var e = originalException;
                 _logger?.LogError("Unrecoverable Error for HystrixCommand so will throw HystrixRuntimeException and not apply fallback: {0} ", e);
 
                 /* executionHook for all errors */
@@ -676,7 +676,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 {
                     /* fallback behavior is permitted so attempt */
 
-                    SemaphoreSlim fallbackSemaphore = GetFallbackSemaphore();
+                    var fallbackSemaphore = GetFallbackSemaphore();
 
                     TResult fallbackExecutionResult;
 
@@ -729,11 +729,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void HandleFallbackError(Exception fe, FailureType failureType, string message, Exception originalException)
         {
-            Exception e = originalException;
+            var e = originalException;
 
             if (fe is InvalidOperationException)
             {
-                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
                 _logger?.LogDebug("No fallback for HystrixCommand: {0} ", fe); // debug only since we're throwing the exception and someone higher will do something with it
                 _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_MISSING, commandKey);
                 _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.FALLBACK_MISSING);
@@ -750,7 +750,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
             else
             {
-                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
                 _logger?.LogDebug("HystrixCommand execution {0} and fallback failed: {1}", failureType.ToString(), fe);
                 _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_FAILURE, commandKey);
                 _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.FALLBACK_FAILURE);
@@ -773,7 +773,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             _logger?.LogDebug("Fallback disabled for HystrixCommand so will throw HystrixRuntimeException: {0} ", underlying); // debug only since we're throwing the exception and someone higher will do something with it
 
             /* executionHook for all errors */
-            Exception wrapped = WrapWithOnErrorHook(failureType, underlying);
+            var wrapped = WrapWithOnErrorHook(failureType, underlying);
             tcs.TrySetException(new HystrixRuntimeException(
                 failureType,
                 GetType(),
@@ -784,7 +784,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void HandleFallbackRejectionByEmittingError()
         {
-            long latencyWithFallback = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+            var latencyWithFallback = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
             _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_REJECTION, commandKey);
             _executionResult = _executionResult.AddEvent((int)latencyWithFallback, HystrixEventType.FALLBACK_REJECTION);
             _logger?.LogDebug("HystrixCommand Fallback Rejection."); // debug only since we're throwing the exception and someone higher will do something with it
@@ -800,7 +800,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void HandleSemaphoreRejectionViaFallback()
         {
-            Exception semaphoreRejectionException = new Exception("could not acquire a semaphore for execution");
+            var semaphoreRejectionException = new Exception("could not acquire a semaphore for execution");
             _executionResult = _executionResult.SetExecutionException(semaphoreRejectionException);
             _eventNotifier.MarkEvent(HystrixEventType.SEMAPHORE_REJECTED, commandKey);
             _logger?.LogDebug("HystrixCommand Execution Rejection by Semaphore."); // debug only since we're throwing the exception and someone higher will do something with it
@@ -819,7 +819,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             _eventNotifier.MarkEvent(HystrixEventType.SHORT_CIRCUITED, commandKey);
 
             // short-circuit and go directly to fallback (or throw an exception if no fallback implemented)
-            Exception shortCircuitException = new Exception("Hystrix circuit short-circuited and is OPEN");
+            var shortCircuitException = new Exception("Hystrix circuit short-circuited and is OPEN");
             _executionResult = _executionResult.SetExecutionException(shortCircuitException);
             try
             {
@@ -883,14 +883,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void HandleBadRequestByEmittingError(Exception underlying)
         {
-            Exception toEmit = underlying;
+            var toEmit = underlying;
 
             try
             {
-                long executionLatency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                var executionLatency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
                 _eventNotifier.MarkEvent(HystrixEventType.BAD_REQUEST, commandKey);
                 _executionResult = _executionResult.AddEvent((int)executionLatency, HystrixEventType.BAD_REQUEST);
-                Exception decorated = _executionHook.OnError(this, FailureType.BAD_REQUEST_EXCEPTION, underlying);
+                var decorated = _executionHook.OnError(this, FailureType.BAD_REQUEST_EXCEPTION, underlying);
 
                 if (decorated is HystrixBadRequestException)
                 {
@@ -1060,13 +1060,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     {
                         if (options.ExecutionTimeoutEnabled)
                         {
-                            Task timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
+                            var timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
                             timerTask.Start(TaskScheduler.Default);
                         }
 
                         _executionHook.OnThreadStart(this);
                         _executionHook.OnExecutionStart(this);
-                        TResult result = ExecuteRun();
+                        var result = ExecuteRun();
                         if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
                         {
                             MarkEmits();
@@ -1143,14 +1143,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 if (options.ExecutionTimeoutEnabled)
                 {
-                    Task timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
+                    var timerTask = new Task(() => { TimeoutThreadAction(); }, TaskCreationOptions.LongRunning);
                     timerTask.Start(TaskScheduler.Default);
                 }
 
                 try
                 {
                     _executionHook.OnExecutionStart(this);
-                    TResult result = ExecuteRun();
+                    var result = ExecuteRun();
                     if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
                     {
                         MarkEmits();
@@ -1174,7 +1174,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                TResult result = DoRun();
+                var result = DoRun();
                 isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
 
                 if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
@@ -1183,7 +1183,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
                 else
                 {
-                    result = default(TResult);
+                    result = default;
                 }
 
                 return result;
@@ -1192,14 +1192,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
 
-                Exception flatten = GetException(e);
+                var flatten = GetException(e);
                 if (flatten.InnerException is TaskCanceledException && isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
-                Exception ex = WrapWithOnExecutionErrorHook(flatten.InnerException);
+                var ex = WrapWithOnExecutionErrorHook(flatten.InnerException);
                 if (ex == flatten.InnerException)
                 {
                     throw;
@@ -1214,10 +1214,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
-                Exception ex = WrapWithOnExecutionErrorHook(e);
+                var ex = WrapWithOnExecutionErrorHook(e);
                 if (e == ex)
                 {
                     throw;
@@ -1229,7 +1229,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             {
                 isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
 
-                Exception returned = WrapWithOnExecutionErrorHook(ex);
+                var returned = WrapWithOnExecutionErrorHook(ex);
                 if (ex == returned)
                 {
                     throw;
@@ -1247,14 +1247,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
             catch (AggregateException ex)
             {
-                Exception flatten = GetException(ex);
+                var flatten = GetException(ex);
                 throw flatten.InnerException;
             }
         }
 
         private bool IsUnrecoverableError(Exception t)
         {
-            Exception cause = t;
+            var cause = t;
 
             if (cause is OutOfMemoryException)
             {
@@ -1366,7 +1366,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private void MarkFallbackCompleted()
         {
-            long latency2 = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+            var latency2 = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
             _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_SUCCESS, commandKey);
             _executionResult = _executionResult.AddEvent((int)latency2, HystrixEventType.FALLBACK_SUCCESS);
         }
@@ -1381,7 +1381,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             if (CommandIsScalar)
             {
-                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
                 _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
                 _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
                 _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
@@ -1393,7 +1393,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             if (tcs.IsCompleted && !CommandIsScalar)
             {
-                long latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+                var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
                 _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
                 _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
                 _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);

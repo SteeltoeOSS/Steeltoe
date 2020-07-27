@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [System.Obsolete]
         public void Constructor_Intializes_Defaults()
         {
-            EurekaClientOptions opts = new EurekaClientOptions();
+            var opts = new EurekaClientOptions();
             Assert.True(opts.Enabled);
             Assert.Equal(EurekaClientOptions.Default_RegistryFetchIntervalSeconds, opts.RegistryFetchIntervalSeconds);
             Assert.Equal(EurekaClientOptions.Default_InstanceInfoReplicationIntervalSeconds, opts.InstanceInfoReplicationIntervalSeconds);
@@ -98,9 +98,9 @@ namespace Steeltoe.Discovery.Eureka.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);

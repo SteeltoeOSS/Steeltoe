@@ -27,9 +27,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         public void Demand()
         {
-            ClaimsPrincipal principal = HttpContext.Current.User as ClaimsPrincipal;
-
-            if (principal == null || !principal.HasClaim("scope", Scope))
+            if (!(HttpContext.Current.User is ClaimsPrincipal principal) || !principal.HasClaim("scope", Scope))
             {
                 Console.Out.WriteLine("Access denied token is not in Scope: " + Scope);
                 CloudFoundryWcfTokenValidator.ThrowJwtException("Access denied token does not have Scope: " + Scope, "insufficient_scope");

@@ -34,8 +34,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
             var result = obs.GetSessionId(context);
             Assert.Null(result);
         }
@@ -45,8 +45,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
 
             var session = new TestSession();
             ISessionFeature sessFeature = new SessionFeature
@@ -64,8 +64,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
             var result = obs.GetUserPrincipal(context);
             Assert.Null(result);
         }
@@ -75,8 +75,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
 
             context.User = new ClaimsPrincipal(new MyIdentity());
             var result = obs.GetUserPrincipal(context);
@@ -88,8 +88,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
             var result = obs.GetRemoteAddress(context);
             Assert.Null(result);
         }
@@ -99,8 +99,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
 
             var result = obs.GetPathInfo(context.Request);
             Assert.Equal("/myPath", result);
@@ -111,8 +111,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
             var result = obs.GetRequestUri(context.Request);
             Assert.Equal("http://localhost:1111/myPath", result);
         }
@@ -122,8 +122,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
             var result = obs.GetRequestParameters(context.Request);
             Assert.NotNull(result);
             Assert.True(result.ContainsKey("foo"));
@@ -141,9 +141,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
-            TimeSpan time = TimeSpan.FromTicks(10000000);
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
+            var time = TimeSpan.FromTicks(10000000);
             var result = obs.GetTimeTaken(time);
             var expected = time.TotalMilliseconds.ToString();
             Assert.Equal(expected, result);
@@ -154,8 +154,8 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
 
             var result = obs.GetHeaders(100, context.Request.Headers);
             Assert.NotNull(result);
@@ -175,9 +175,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            var obs = new TraceDiagnosticObserver(option);
 
-            obs.GetProperty(new { foo = "bar" }, out HttpContext context);
+            obs.GetProperty(new { foo = "bar" }, out var context);
             Assert.Null(context);
         }
 
@@ -186,10 +186,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            var obs = new TraceDiagnosticObserver(option);
             var expectedContext = CreateRequest();
 
-            obs.GetProperty(new { HttpContext = expectedContext }, out HttpContext context);
+            obs.GetProperty(new { HttpContext = expectedContext }, out var context);
             Assert.True(object.ReferenceEquals(expectedContext, context));
         }
 
@@ -198,10 +198,10 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            HttpContext context = CreateRequest();
-            TimeSpan duration = TimeSpan.FromTicks(20000000 - 10000000);
-            TraceResult result = obs.MakeTrace(context, duration);
+            var obs = new TraceDiagnosticObserver(option);
+            var context = CreateRequest();
+            var duration = TimeSpan.FromTicks(20000000 - 10000000);
+            var result = obs.MakeTrace(context, duration);
             Assert.NotNull(result);
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
@@ -226,12 +226,12 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            var obs = new TraceDiagnosticObserver(option);
 
             // No current activity, event ignored
             obs.ProcessEvent("foobar", null);
 
-            Activity current = new Activity("barfoo");
+            var current = new Activity("barfoo");
             current.Start();
 
             // Activity current, but no value provided, event ignored
@@ -291,9 +291,9 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
+            var obs = new TraceDiagnosticObserver(option);
 
-            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
             current.Start();
 
             var context = CreateRequest();
@@ -302,7 +302,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             Assert.Single(obs._queue);
 
-            Assert.True(obs._queue.TryPeek(out TraceResult result));
+            Assert.True(obs._queue.TryPeek(out var result));
             Assert.NotNull(result.Info);
             Assert.NotEqual(0, result.TimeStamp);
             Assert.True(result.Info.ContainsKey("method"));
@@ -327,11 +327,11 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         {
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            var obs = new TraceDiagnosticObserver(option);
+            var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
             current.Start();
 
-            for (int i = 0; i < 200; i++)
+            for (var i = 0; i < 200; i++)
             {
                 var context = CreateRequest();
                 obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
@@ -343,21 +343,21 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         [Fact]
         public void GetTraces_ReturnsTraces()
         {
-            DiagnosticListener listener = new DiagnosticListener("test");
+            var listener = new DiagnosticListener("test");
             var option = new TraceEndpointOptions();
 
-            TraceDiagnosticObserver obs = new TraceDiagnosticObserver(option);
-            Activity current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
+            var obs = new TraceDiagnosticObserver(option);
+            var current = new Activity("Microsoft.AspNetCore.Hosting.HttpRequestIn");
             current.Start();
 
-            for (int i = 0; i < 200; i++)
+            for (var i = 0; i < 200; i++)
             {
                 var context = CreateRequest();
                 obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
             }
 
             Assert.Equal(option.Capacity, obs._queue.Count);
-            List<TraceResult> traces = obs.GetTraces();
+            var traces = obs.GetTraces();
             Assert.Equal(option.Capacity, traces.Count);
             Assert.Equal(option.Capacity, obs._queue.Count);
 

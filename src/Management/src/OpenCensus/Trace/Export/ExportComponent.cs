@@ -28,12 +28,12 @@ namespace OpenCensus.Trace.Export
 
         private ExportComponent(bool supportInProcessStores, IEventQueue eventQueue)
         {
-            this.SpanExporter = Export.SpanExporter.Create(ExporterBufferSize, ExporterScheduleDelay);
-            this.RunningSpanStore =
+            SpanExporter = Export.SpanExporter.Create(ExporterBufferSize, ExporterScheduleDelay);
+            RunningSpanStore =
                 supportInProcessStores
                     ? new InProcessRunningSpanStore()
                     : Export.RunningSpanStoreBase.NoopRunningSpanStore;
-            this.SampledSpanStore =
+            SampledSpanStore =
                 supportInProcessStores
                     ? new InProcessSampledSpanStore(eventQueue)
                     : Export.SampledSpanStoreBase.NoopSampledSpanStore;

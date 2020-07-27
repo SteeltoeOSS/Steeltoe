@@ -35,12 +35,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.EurekaServerServiceUrls;
+                return EurekaServerServiceUrls;
             }
 
             set
             {
-                this.EurekaServerServiceUrls = value;
+                EurekaServerServiceUrls = value;
             }
         }
 
@@ -49,12 +49,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.ValidateCertificates;
+                return ValidateCertificates;
             }
 
             set
             {
-                this.ValidateCertificates = value;
+                ValidateCertificates = value;
             }
         }
 

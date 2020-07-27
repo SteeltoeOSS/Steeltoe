@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation
         {
             get
             {
-                return this._binaryFormat;
+                return _binaryFormat;
             }
         }
 
@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Census.Trace.Propagation
         {
             get
             {
-                return this._textFormat;
+                return _textFormat;
             }
         }
     }

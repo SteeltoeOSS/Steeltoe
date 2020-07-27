@@ -25,39 +25,39 @@ namespace OpenCensus.Trace.Export
 
         public InProcessRunningSpanStore()
         {
-            this.runningSpans = new ConcurrentIntrusiveList<SpanBase>();
+            runningSpans = new ConcurrentIntrusiveList<SpanBase>();
         }
 
         public override IRunningSpanStoreSummary Summary
         {
             get
             {
-                ICollection<SpanBase> allRunningSpans = this.runningSpans.Copy();
-                Dictionary<string, int> numSpansPerName = new Dictionary<string, int>();
+                ICollection<SpanBase> allRunningSpans = runningSpans.Copy();
+                var numSpansPerName = new Dictionary<string, int>();
                 foreach (var span in allRunningSpans)
                 {
-                    numSpansPerName.TryGetValue(span.Name, out int prevValue);
+                    numSpansPerName.TryGetValue(span.Name, out var prevValue);
                     numSpansPerName[span.Name] = prevValue + 1;
                 }
 
-                Dictionary<string, IRunningPerSpanNameSummary> perSpanNameSummary = new Dictionary<string, IRunningPerSpanNameSummary>();
+                var perSpanNameSummary = new Dictionary<string, IRunningPerSpanNameSummary>();
                 foreach (var it in numSpansPerName)
                 {
-                    int numRunningSpans = it.Value;
+                    var numRunningSpans = it.Value;
                     var runningPerSpanNameSummary = RunningPerSpanNameSummary.Create(numRunningSpans);
                     perSpanNameSummary[it.Key] = runningPerSpanNameSummary;
                 }
 
-                IRunningSpanStoreSummary summary = RunningSpanStoreSummary.Create(perSpanNameSummary);
+                var summary = RunningSpanStoreSummary.Create(perSpanNameSummary);
                 return summary;
             }
         }
 
         public override IEnumerable<ISpanData> GetRunningSpans(IRunningSpanStoreFilter filter)
         {
-            ICollection<SpanBase> allRunningSpans = this.runningSpans.Copy();
-            int maxSpansToReturn = filter.MaxSpansToReturn == 0 ? allRunningSpans.Count : filter.MaxSpansToReturn;
-            List<ISpanData> ret = new List<ISpanData>(maxSpansToReturn);
+            ICollection<SpanBase> allRunningSpans = runningSpans.Copy();
+            var maxSpansToReturn = filter.MaxSpansToReturn == 0 ? allRunningSpans.Count : filter.MaxSpansToReturn;
+            var ret = new List<ISpanData>(maxSpansToReturn);
             foreach (var span in allRunningSpans)
             {
                 if (ret.Count == maxSpansToReturn)
@@ -78,7 +78,7 @@ namespace OpenCensus.Trace.Export
         {
             if (span is SpanBase spanBase)
             {
-                this.runningSpans.RemoveElement(spanBase);
+                runningSpans.RemoveElement(spanBase);
             }
         }
 
@@ -86,7 +86,7 @@ namespace OpenCensus.Trace.Export
         {
             if (span is SpanBase spanBase)
             {
-                this.runningSpans.AddElement(spanBase);
+                runningSpans.AddElement(spanBase);
             }
         }
     }

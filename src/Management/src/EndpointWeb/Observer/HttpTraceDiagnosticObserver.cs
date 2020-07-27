@@ -62,17 +62,17 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
                 return;
             }
 
-            HttpContext context = HttpContext.Current;
+            var context = HttpContext.Current;
 
             if (context != null)
             {
-                TimeSpan duration = current.Duration;
+                var duration = current.Duration;
                 if (duration.Ticks == 0)
                 {
                     duration = DateTime.UtcNow - current.StartTimeUtc;
                 }
 
-                HttpTrace trace = MakeTrace(context, duration);
+                var trace = MakeTrace(context, duration);
                 _queue.Enqueue(trace);
 
                 if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
@@ -112,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Observer
 
         protected internal long GetJavaTime(long ticks)
         {
-            long javaTicks = ticks - baseTime.Ticks;
+            var javaTicks = ticks - baseTime.Ticks;
             return javaTicks / 10000;
         }
     }

@@ -34,36 +34,36 @@ namespace OpenCensus.Stats
 
         public StatsComponent(IEventQueue queue, IClock clock)
         {
-            StatsManager statsManager = new StatsManager(queue, clock, this.state);
-            this.viewManager = new ViewManager(statsManager);
-            this.statsRecorder = new StatsRecorder(statsManager);
+            var statsManager = new StatsManager(queue, clock, state);
+            viewManager = new ViewManager(statsManager);
+            statsRecorder = new StatsRecorder(statsManager);
         }
 
         public override IViewManager ViewManager
         {
-            get { return this.viewManager; }
+            get { return viewManager; }
         }
 
         public override IStatsRecorder StatsRecorder
         {
-            get { return this.statsRecorder; }
+            get { return statsRecorder; }
         }
 
         public override StatsCollectionState State
         {
             get
             {
-                return this.state.Value;
+                return state.Value;
             }
 
             set
             {
-                if (!(this.viewManager is ViewManager manager))
+                if (!(viewManager is ViewManager manager))
                 {
                     return;
                 }
 
-                var result = this.state.Set(value);
+                var result = state.Set(value);
                 if (result)
                 {
                     if (value == StatsCollectionState.DISABLED)

@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 if (ci.Name.Equals("SetUri"))
                 {
@@ -73,13 +73,13 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         public virtual object CreateConnection(string connectionString)
         {
-            object inst = ConnectorHelpers.CreateInstance(_type, null);
+            var inst = ConnectorHelpers.CreateInstance(_type, null);
             if (inst == null)
             {
                 return null;
             }
 
-            Uri uri = new Uri(connectionString, UriKind.Absolute);
+            var uri = new Uri(connectionString, UriKind.Absolute);
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return new HystrixConnectionFactory(inst);

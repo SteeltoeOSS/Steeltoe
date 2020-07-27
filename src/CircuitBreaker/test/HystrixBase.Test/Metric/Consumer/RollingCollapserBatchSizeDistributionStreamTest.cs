@@ -50,8 +50,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesEmptyDistributions()
         {
-            IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-A");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-A");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
@@ -65,8 +65,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestBatches()
         {
-            IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
@@ -74,7 +74,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // First collapser created with key will be used for all command creations
-            List<Task> tasks = new List<Task>();
+            var tasks = new List<Task>();
 
             var c1 = Collapser.From(output, key, 1);
             tasks.Add(c1.ExecuteAsync());
@@ -126,8 +126,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestBatchesAgeOut()
         {
-            IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
-            CountdownEvent latch = new CountdownEvent(1);
+            var key = HystrixCollapserKeyDefault.AsKey("Collapser-Batch-Size-B");
+            var latch = new CountdownEvent(1);
             var observer = new LatchedObserver(output, latch);
 
             stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
@@ -135,7 +135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
             // First collapser created with key will be used for all command creations
-            List<Task> tasks = new List<Task>();
+            var tasks = new List<Task>();
 
             var c1 = Collapser.From(output, key, 1);
             tasks.Add(c1.ExecuteAsync());

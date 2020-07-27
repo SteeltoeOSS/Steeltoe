@@ -94,7 +94,7 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestRegisterAndGetCumulativeView()
         {
-            IView view = CreateCumulativeView();
+            var view = CreateCumulativeView();
             viewManager.RegisterView(view);
             Assert.Equal(view, viewManager.GetView(VIEW_NAME).View);
             Assert.Empty(viewManager.GetView(VIEW_NAME).AggregationMap);
@@ -105,10 +105,10 @@ namespace OpenCensus.Stats.Test
         public void TestGetAllExportedViews()
         {
             Assert.Empty(viewManager.AllExportedViews);
-            IView cumulativeView1 =
+            var cumulativeView1 =
                 CreateCumulativeView(
                     ViewName.Create("View 1"), MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
-            IView cumulativeView2 =
+            var cumulativeView2 =
                 CreateCumulativeView(
                     ViewName.Create("View 2"), MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
             // View intervalView =
@@ -131,7 +131,7 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void GetAllExportedViewsResultIsUnmodifiable()
         {
-            IView view1 =
+            var view1 =
                 View.Create(
                     ViewName.Create("View 1"),
                     VIEW_DESCRIPTION,
@@ -139,9 +139,9 @@ namespace OpenCensus.Stats.Test
                     DISTRIBUTION,
                     new List<ITagKey>() { KEY });
             viewManager.RegisterView(view1);
-            ISet<IView> exported = viewManager.AllExportedViews;
+            var exported = viewManager.AllExportedViews;
 
-            IView view2 =
+            var view2 =
                 View.Create(
                     ViewName.Create("View 2"),
                     VIEW_DESCRIPTION,
@@ -172,7 +172,7 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void AllowRegisteringSameViewTwice()
         {
-            IView view = CreateCumulativeView();
+            var view = CreateCumulativeView();
             viewManager.RegisterView(view);
             viewManager.RegisterView(view);
             Assert.Equal(view, viewManager.GetView(VIEW_NAME).View);
@@ -181,14 +181,14 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void PreventRegisteringDifferentViewWithSameName()
         {
-            IView view1 =
+            var view1 =
                 View.Create(
                     VIEW_NAME,
                     "View description.",
                     MEASURE_DOUBLE,
                     DISTRIBUTION,
                     new List<ITagKey>() { KEY });
-            IView view2 =
+            var view2 =
                 View.Create(
                     VIEW_NAME,
                     "This is a different description.",
@@ -201,12 +201,12 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void PreventRegisteringDifferentMeasureWithSameName()
         {
-            IMeasureDouble measure1 = MeasureDouble.Create("measure", "description", "1");
-            IMeasureLong measure2 = MeasureLong.Create("measure", "description", "1");
-            IView view1 =
+            var measure1 = MeasureDouble.Create("measure", "description", "1");
+            var measure2 = MeasureLong.Create("measure", "description", "1");
+            var view1 =
                 View.Create(
                     VIEW_NAME, VIEW_DESCRIPTION, measure1, DISTRIBUTION, new List<ITagKey>() { KEY });
-            IView view2 =
+            var view2 =
         View.Create(
             VIEW_NAME_2, VIEW_DESCRIPTION, measure2, DISTRIBUTION, new List<ITagKey>() { KEY });
             TestFailedToRegisterView(view1, view2, "A different measure with the same name is already registered");
@@ -267,16 +267,16 @@ namespace OpenCensus.Stats.Test
 
         private void TestRecordCumulative(IMeasure measure, IAggregation aggregation, params double[] values)
         {
-            IView view = CreateCumulativeView(VIEW_NAME, measure, aggregation, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, measure, aggregation, new List<ITagKey>() { KEY });
             clock.Time = Timestamp.Create(1, 2);
             viewManager.RegisterView(view);
-            ITagContext tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
-            foreach (double val in values)
+            var tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
+            foreach (var val in values)
             {
                 PutToMeasureMap(statsRecorder.NewMeasureMap(), measure, val).Record(tags);
             }
             clock.Time = Timestamp.Create(3, 4);
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             Assert.Equal(view, viewData.View);
 
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
@@ -293,13 +293,13 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void GetViewDoesNotClearStats()
         {
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
             clock.Time = Timestamp.Create(10, 0);
             viewManager.RegisterView(view);
-            ITagContext tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
+            var tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
             statsRecorder.NewMeasureMap().Put(MEASURE_DOUBLE, 0.1).Record(tags);
             clock.Time = Timestamp.Create(11, 0);
-            IViewData viewData1 = viewManager.GetView(VIEW_NAME);
+            var viewData1 = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData1.AggregationMap,
@@ -311,7 +311,7 @@ namespace OpenCensus.Stats.Test
 
             statsRecorder.NewMeasureMap().Put(MEASURE_DOUBLE, 0.2).Record(tags);
             clock.Time = Timestamp.Create(12, 0);
-            IViewData viewData2 = viewManager.GetView(VIEW_NAME);
+            var viewData2 = viewManager.GetView(VIEW_NAME);
 
             // The second view should have the same start time as the first view, and it should include both
             // Recorded values:
@@ -342,7 +342,7 @@ namespace OpenCensus.Stats.Test
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 50.0)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE_2).Build());
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             var tv2 = TagValues.Create(new List<ITagValue>() { VALUE_2 });
             StatsTestUtil.AssertAggregationMapEquals(
@@ -374,7 +374,7 @@ namespace OpenCensus.Stats.Test
                 CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY }));
             // DEFAULT doesn't have tags, but the view has tag key "KEY".
             statsRecorder.NewMeasureMap().Put(MEASURE_DOUBLE, 10.0).Record(tagger.Empty);
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { MutableViewData.UnknownTagValue });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
@@ -412,9 +412,9 @@ namespace OpenCensus.Stats.Test
         private void TestRecord_MeasureNotMatch(IMeasure measure1, IMeasure measure2, double value)
         {
             viewManager.RegisterView(CreateCumulativeView(VIEW_NAME, measure1, MEAN, new List<ITagKey>() { KEY }));
-            ITagContext tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
+            var tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
             PutToMeasureMap(statsRecorder.NewMeasureMap(), measure2, value).Record(tags);
-            IViewData view = viewManager.GetView(VIEW_NAME);
+            var view = viewManager.GetView(VIEW_NAME);
             Assert.Empty(view.AggregationMap);
         }
 
@@ -431,7 +431,7 @@ namespace OpenCensus.Stats.Test
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 50.0)
                 .Record(tagger.EmptyBuilder.Put(TagKey.Create("another wrong key"), VALUE).Build());
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { MutableViewData.UnknownTagValue });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
@@ -449,8 +449,8 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestViewDataWithMultipleTagKeys()
         {
-            ITagKey key1 = TagKey.Create("Key-1");
-            ITagKey key2 = TagKey.Create("Key-2");
+            var key1 = TagKey.Create("Key-1");
+            var key2 = TagKey.Create("Key-2");
             viewManager.RegisterView(
                 CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { key1, key2 }));
             statsRecorder
@@ -489,7 +489,7 @@ namespace OpenCensus.Stats.Test
                         .Put(key1, TagValue.Create("v1"))
                         .Put(key2, TagValue.Create("v10"))
                         .Build());
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv1 = TagValues.Create(new List<ITagValue>() { TagValue.Create("v1"), TagValue.Create("v10") });
             var tv2 = TagValues.Create(new List<ITagValue>() { TagValue.Create("v1"), TagValue.Create("v20") });
             var tv3 = TagValues.Create(new List<ITagValue>() { TagValue.Create("v2"), TagValue.Create("v10") });
@@ -507,9 +507,9 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestMultipleViewSameMeasure()
         {
-            IView view1 =
+            var view1 =
                 CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
-            IView view2 =
+            var view2 =
                 CreateCumulativeView(VIEW_NAME_2, MEASURE_DOUBLE, DISTRIBUTION, new List<ITagKey>() { KEY });
             clock.Time = Timestamp.Create(1, 1);
             viewManager.RegisterView(view1);
@@ -520,9 +520,9 @@ namespace OpenCensus.Stats.Test
                 .Put(MEASURE_DOUBLE, 5.0)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
             clock.Time = Timestamp.Create(3, 3);
-            IViewData viewData1 = viewManager.GetView(VIEW_NAME);
+            var viewData1 = viewManager.GetView(VIEW_NAME);
             clock.Time = Timestamp.Create(4, 4);
-            IViewData viewData2 = viewManager.GetView(VIEW_NAME_2);
+            var viewData2 = viewManager.GetView(VIEW_NAME_2);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData1.AggregationMap,
@@ -563,22 +563,22 @@ namespace OpenCensus.Stats.Test
 
         private void TestMultipleViews_DifferentMeasures(IMeasure measure1, IMeasure measure2, double value1, double value2)
         {
-            IView view1 = CreateCumulativeView(VIEW_NAME, measure1, DISTRIBUTION, new List<ITagKey>() { KEY });
-            IView view2 =
+            var view1 = CreateCumulativeView(VIEW_NAME, measure1, DISTRIBUTION, new List<ITagKey>() { KEY });
+            var view2 =
                 CreateCumulativeView(VIEW_NAME_2, measure2, DISTRIBUTION, new List<ITagKey>() { KEY });
             clock.Time = Timestamp.Create(1, 0);
             viewManager.RegisterView(view1);
             clock.Time = Timestamp.Create(2, 0);
             viewManager.RegisterView(view2);
-            ITagContext tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
-            IMeasureMap measureMap = statsRecorder.NewMeasureMap();
+            var tags = tagger.EmptyBuilder.Put(KEY, VALUE).Build();
+            var measureMap = statsRecorder.NewMeasureMap();
             PutToMeasureMap(measureMap, measure1, value1);
             PutToMeasureMap(measureMap, measure2, value2);
             measureMap.Record(tags);
             clock.Time = Timestamp.Create(3, 0);
-            IViewData viewData1 = viewManager.GetView(VIEW_NAME);
+            var viewData1 = viewManager.GetView(VIEW_NAME);
             clock.Time = Timestamp.Create(4, 0);
-            IViewData viewData2 = viewManager.GetView(VIEW_NAME_2);
+            var viewData2 = viewManager.GetView(VIEW_NAME_2);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData1.AggregationMap,
@@ -602,7 +602,7 @@ namespace OpenCensus.Stats.Test
         {
             IAggregation noHistogram =
                 Distribution.Create(BucketBoundaries.Create(new List<double>()));
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, noHistogram, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, noHistogram, new List<ITagKey>() { KEY });
             clock.Time = Timestamp.Create(1, 0);
             viewManager.RegisterView(view);
             statsRecorder
@@ -610,7 +610,7 @@ namespace OpenCensus.Stats.Test
                 .Put(MEASURE_DOUBLE, 1.1)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
             clock.Time = Timestamp.Create(3, 0);
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
@@ -624,7 +624,7 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void TestGetCumulativeViewDataWithoutBucketBoundaries()
         {
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             clock.Time = (Timestamp.Create(1, 0));
             viewManager.RegisterView(view);
             statsRecorder
@@ -632,7 +632,7 @@ namespace OpenCensus.Stats.Test
                 .Put(MEASURE_DOUBLE, 1.1)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
             clock.Time = Timestamp.Create(3, 0);
-            IViewData viewData = viewManager.GetView(VIEW_NAME);
+            var viewData = viewManager.GetView(VIEW_NAME);
             var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewData.AggregationMap,
@@ -647,7 +647,7 @@ namespace OpenCensus.Stats.Test
         public void RegisterRecordAndGetView_StatsDisabled()
         {
             statsComponent.State = StatsCollectionState.DISABLED;
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             viewManager.RegisterView(view);
             statsRecorder
                 .NewMeasureMap()
@@ -661,13 +661,13 @@ namespace OpenCensus.Stats.Test
         {
             statsComponent.State = StatsCollectionState.DISABLED;
             statsComponent.State = StatsCollectionState.ENABLED;
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             viewManager.RegisterView(view);
             statsRecorder
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 1.1)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewManager.GetView(VIEW_NAME).AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
@@ -681,7 +681,7 @@ namespace OpenCensus.Stats.Test
         public void RegisterViewWithStatsDisabled_RecordAndGetViewWithStatsEnabled()
         {
             statsComponent.State = StatsCollectionState.DISABLED;
-            IView view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            var view = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             viewManager.RegisterView(view); // view will still be registered.
 
             statsComponent.State = StatsCollectionState.ENABLED;
@@ -689,7 +689,7 @@ namespace OpenCensus.Stats.Test
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 1.1)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewManager.GetView(VIEW_NAME).AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
@@ -703,14 +703,14 @@ namespace OpenCensus.Stats.Test
         public void RegisterDifferentViewWithSameNameWithStatsDisabled()
         {
             statsComponent.State = StatsCollectionState.DISABLED;
-            IView view1 =
+            var view1 =
                 View.Create(
                     VIEW_NAME,
                     "View description.",
                     MEASURE_DOUBLE,
                     DISTRIBUTION,
                     new List<ITagKey>() { KEY });
-            IView view2 =
+            var view2 =
                 View.Create(
                     VIEW_NAME,
                     "This is a different description.",
@@ -725,7 +725,7 @@ namespace OpenCensus.Stats.Test
         [Fact]
         public void SettingStateToDisabledWillClearStats_Cumulative()
         {
-            IView cumulativeView = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
+            var cumulativeView = CreateCumulativeView(VIEW_NAME, MEASURE_DOUBLE, MEAN, new List<ITagKey>() { KEY });
             SettingStateToDisabledWillClearStats(cumulativeView);
         }
 
@@ -745,14 +745,14 @@ namespace OpenCensus.Stats.Test
 
         private void SettingStateToDisabledWillClearStats(IView view)
         {
-            ITimestamp timestamp1 = Timestamp.Create(1, 0);
+            var timestamp1 = Timestamp.Create(1, 0);
             clock.Time = timestamp1;
             viewManager.RegisterView(view);
             statsRecorder
                 .NewMeasureMap()
                 .Put(MEASURE_DOUBLE, 1.1)
                 .Record(tagger.EmptyBuilder.Put(KEY, VALUE).Build());
-            TagValues tv = TagValues.Create(new List<ITagValue>() { VALUE });
+            var tv = TagValues.Create(new List<ITagValue>() { VALUE });
             StatsTestUtil.AssertAggregationMapEquals(
                 viewManager.GetView(view.Name).AggregationMap,
                 new Dictionary<TagValues, IAggregationData>()
@@ -761,20 +761,20 @@ namespace OpenCensus.Stats.Test
                 },
                 EPSILON);
 
-            ITimestamp timestamp2 = Timestamp.Create(2, 0);
+            var timestamp2 = Timestamp.Create(2, 0);
             clock.Time = timestamp2;
             statsComponent.State = StatsCollectionState.DISABLED; // This will clear stats.
             Assert.Equal(StatsTestUtil.CreateEmptyViewData(view), viewManager.GetView(view.Name));
 
-            ITimestamp timestamp3 = Timestamp.Create(3, 0);
+            var timestamp3 = Timestamp.Create(3, 0);
             clock.Time = timestamp3;
             statsComponent.State = StatsCollectionState.ENABLED;
 
-            ITimestamp timestamp4 = Timestamp.Create(4, 0);
+            var timestamp4 = Timestamp.Create(4, 0);
             clock.Time = timestamp4;
             // This ViewData does not have any stats, but it should not be an empty ViewData, since it has
             // non-zero TimeStamps.
-            IViewData viewData = viewManager.GetView(view.Name);
+            var viewData = viewManager.GetView(view.Name);
             Assert.Empty(viewData.AggregationMap);
             Assert.Equal(timestamp3, viewData.Start);
             Assert.Equal(timestamp4, viewData.End);

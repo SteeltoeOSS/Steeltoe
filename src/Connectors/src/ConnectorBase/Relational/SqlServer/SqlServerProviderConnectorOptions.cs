@@ -89,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 return ConnectionString;
             }
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             AddDataSource(sb);
             AddKeyValue(sb, "Initial Catalog", Database);
             AddKeyValue(sb, "User Id", Username);

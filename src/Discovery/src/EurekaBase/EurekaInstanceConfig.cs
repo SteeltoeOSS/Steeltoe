@@ -163,7 +163,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             if (refresh || string.IsNullOrEmpty(_thisHostAddress))
             {
-                string hostName = GetHostName(refresh);
+                var hostName = GetHostName(refresh);
                 if (!string.IsNullOrEmpty(hostName))
                 {
                     _thisHostAddress = ResolveHostAddress(hostName);

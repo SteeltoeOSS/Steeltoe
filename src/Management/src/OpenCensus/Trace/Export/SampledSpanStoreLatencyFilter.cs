@@ -22,10 +22,10 @@ namespace OpenCensus.Trace.Export
     {
         internal SampledSpanStoreLatencyFilter(string spanName, long latencyLowerNs, long latencyUpperNs, int maxSpansToReturn)
         {
-            this.SpanName = spanName ?? throw new ArgumentNullException(nameof(spanName));
-            this.LatencyLowerNs = latencyLowerNs;
-            this.LatencyUpperNs = latencyUpperNs;
-            this.MaxSpansToReturn = maxSpansToReturn;
+            SpanName = spanName ?? throw new ArgumentNullException(nameof(spanName));
+            LatencyLowerNs = latencyLowerNs;
+            LatencyUpperNs = latencyUpperNs;
+            MaxSpansToReturn = maxSpansToReturn;
         }
 
         public string SpanName { get; }
@@ -60,10 +60,10 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "LatencyFilter{"
-                + "spanName=" + this.SpanName + ", "
-                + "latencyLowerNs=" + this.LatencyLowerNs + ", "
-                + "latencyUpperNs=" + this.LatencyUpperNs + ", "
-                + "maxSpansToReturn=" + this.MaxSpansToReturn
+                + "spanName=" + SpanName + ", "
+                + "latencyLowerNs=" + LatencyLowerNs + ", "
+                + "latencyUpperNs=" + LatencyUpperNs + ", "
+                + "maxSpansToReturn=" + MaxSpansToReturn
                 + "}";
         }
 
@@ -77,10 +77,10 @@ namespace OpenCensus.Trace.Export
 
             if (o is SampledSpanStoreLatencyFilter that)
             {
-                return this.SpanName.Equals(that.SpanName)
-                     && (this.LatencyLowerNs == that.LatencyLowerNs)
-                     && (this.LatencyUpperNs == that.LatencyUpperNs)
-                     && (this.MaxSpansToReturn == that.MaxSpansToReturn);
+                return SpanName.Equals(that.SpanName)
+                     && (LatencyLowerNs == that.LatencyLowerNs)
+                     && (LatencyUpperNs == that.LatencyUpperNs)
+                     && (MaxSpansToReturn == that.MaxSpansToReturn);
             }
 
             return false;
@@ -91,13 +91,13 @@ namespace OpenCensus.Trace.Export
         {
             long h = 1;
             h *= 1000003;
-            h ^= this.SpanName.GetHashCode();
+            h ^= SpanName.GetHashCode();
             h *= 1000003;
-            h ^= (this.LatencyLowerNs >> 32) ^ this.LatencyLowerNs;
+            h ^= (LatencyLowerNs >> 32) ^ LatencyLowerNs;
             h *= 1000003;
-            h ^= (this.LatencyUpperNs >> 32) ^ this.LatencyUpperNs;
+            h ^= (LatencyUpperNs >> 32) ^ LatencyUpperNs;
             h *= 1000003;
-            h ^= this.MaxSpansToReturn;
+            h ^= MaxSpansToReturn;
             return (int)h;
         }
     }

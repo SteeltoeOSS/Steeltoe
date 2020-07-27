@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(container));
             }
 
-            Type rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
+            var rabbitFactory = ConnectorHelpers.FindType(rabbitAssemblies, rabbitTypeNames);
             if (rabbitFactory == null)
             {
                 throw new ConnectorException("Unable to find ConnectionFactory, are you missing RabbitMQ assembly");

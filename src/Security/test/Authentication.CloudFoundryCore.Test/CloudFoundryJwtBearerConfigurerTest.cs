@@ -14,8 +14,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_NoServiceInfo_ReturnsExpected()
         {
-            CloudFoundryJwtBearerOptions opts = new CloudFoundryJwtBearerOptions();
-            JwtBearerOptions jwtOpts = new JwtBearerOptions();
+            var opts = new CloudFoundryJwtBearerOptions();
+            var jwtOpts = new JwtBearerOptions();
 
             CloudFoundryJwtBearerConfigurer.Configure(null, jwtOpts, opts);
             Assert.True(opts.ValidateCertificates);
@@ -28,9 +28,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Configure_WithServiceInfo_ReturnsExpected()
         {
-            CloudFoundryJwtBearerOptions opts = new CloudFoundryJwtBearerOptions();
-            SsoServiceInfo info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
-            JwtBearerOptions jwtOpts = new JwtBearerOptions();
+            var opts = new CloudFoundryJwtBearerOptions();
+            var info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
+            var jwtOpts = new JwtBearerOptions();
 
             CloudFoundryJwtBearerConfigurer.Configure(info, jwtOpts, opts);
             Assert.Equal("http://domain" + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);

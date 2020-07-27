@@ -23,9 +23,9 @@ namespace OpenCensus.Stats.Measures
     {
         internal MeasureDouble(string name, string description, string unit)
         {
-            this.Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.Description = description ?? throw new ArgumentNullException(nameof(description));
-            this.Unit = unit ?? throw new ArgumentNullException(nameof(unit));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            Unit = unit ?? throw new ArgumentNullException(nameof(unit));
         }
 
         public override string Name { get; }
@@ -56,9 +56,9 @@ namespace OpenCensus.Stats.Measures
         public override string ToString()
         {
             return "MeasureDouble{"
-                + "name=" + this.Name + ", "
-                + "description=" + this.Description + ", "
-                + "unit=" + this.Unit
+                + "name=" + Name + ", "
+                + "description=" + Description + ", "
+                + "unit=" + Unit
                 + "}";
         }
 
@@ -72,9 +72,9 @@ namespace OpenCensus.Stats.Measures
 
             if (o is MeasureDouble that)
             {
-                return this.Name.Equals(that.Name)
-                     && this.Description.Equals(that.Description)
-                     && this.Unit.Equals(that.Unit);
+                return Name.Equals(that.Name)
+                     && Description.Equals(that.Description)
+                     && Unit.Equals(that.Unit);
             }
 
             return false;
@@ -83,13 +83,13 @@ namespace OpenCensus.Stats.Measures
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Name.GetHashCode();
+            h ^= Name.GetHashCode();
             h *= 1000003;
-            h ^= this.Description.GetHashCode();
+            h ^= Description.GetHashCode();
             h *= 1000003;
-            h ^= this.Unit.GetHashCode();
+            h ^= Unit.GetHashCode();
             return h;
         }
     }

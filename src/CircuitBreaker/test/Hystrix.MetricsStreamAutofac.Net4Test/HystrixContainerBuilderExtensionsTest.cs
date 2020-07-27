@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         [Fact]
         public void RegisterHystrixMetricsStream_AddsExpectedServices()
         {
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
             services.RegisterOptions();
             services.RegisterHystrixMetricsStream(config);

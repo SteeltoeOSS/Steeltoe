@@ -56,11 +56,11 @@ namespace OpenCensus.Trace.Config
                 throw new ArgumentOutOfRangeException(nameof(maxNumberOfLinks));
             }
 
-            this.Sampler = sampler ?? throw new ArgumentNullException(nameof(sampler));
-            this.MaxNumberOfAttributes = maxNumberOfAttributes;
-            this.MaxNumberOfAnnotations = maxNumberOfAnnotations;
-            this.MaxNumberOfMessageEvents = maxNumberOfMessageEvents;
-            this.MaxNumberOfLinks = maxNumberOfLinks;
+            Sampler = sampler ?? throw new ArgumentNullException(nameof(sampler));
+            MaxNumberOfAttributes = maxNumberOfAttributes;
+            MaxNumberOfAnnotations = maxNumberOfAnnotations;
+            MaxNumberOfMessageEvents = maxNumberOfMessageEvents;
+            MaxNumberOfLinks = maxNumberOfLinks;
         }
 
         /// <inheritdoc/>
@@ -88,11 +88,11 @@ namespace OpenCensus.Trace.Config
         public override string ToString()
         {
             return "TraceParams{"
-                + "sampler=" + this.Sampler + ", "
-                + "maxNumberOfAttributes=" + this.MaxNumberOfAttributes + ", "
-                + "maxNumberOfAnnotations=" + this.MaxNumberOfAnnotations + ", "
-                + "maxNumberOfMessageEvents=" + this.MaxNumberOfMessageEvents + ", "
-                + "maxNumberOfLinks=" + this.MaxNumberOfLinks
+                + "sampler=" + Sampler + ", "
+                + "maxNumberOfAttributes=" + MaxNumberOfAttributes + ", "
+                + "maxNumberOfAnnotations=" + MaxNumberOfAnnotations + ", "
+                + "maxNumberOfMessageEvents=" + MaxNumberOfMessageEvents + ", "
+                + "maxNumberOfLinks=" + MaxNumberOfLinks
                 + "}";
         }
 
@@ -106,11 +106,11 @@ namespace OpenCensus.Trace.Config
 
             if (o is TraceParams that)
             {
-                return this.Sampler.Equals(that.Sampler)
-                     && (this.MaxNumberOfAttributes == that.MaxNumberOfAttributes)
-                     && (this.MaxNumberOfAnnotations == that.MaxNumberOfAnnotations)
-                     && (this.MaxNumberOfMessageEvents == that.MaxNumberOfMessageEvents)
-                     && (this.MaxNumberOfLinks == that.MaxNumberOfLinks);
+                return Sampler.Equals(that.Sampler)
+                     && (MaxNumberOfAttributes == that.MaxNumberOfAttributes)
+                     && (MaxNumberOfAnnotations == that.MaxNumberOfAnnotations)
+                     && (MaxNumberOfMessageEvents == that.MaxNumberOfMessageEvents)
+                     && (MaxNumberOfLinks == that.MaxNumberOfLinks);
             }
 
             return false;
@@ -119,17 +119,17 @@ namespace OpenCensus.Trace.Config
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Sampler.GetHashCode();
+            h ^= Sampler.GetHashCode();
             h *= 1000003;
-            h ^= this.MaxNumberOfAttributes;
+            h ^= MaxNumberOfAttributes;
             h *= 1000003;
-            h ^= this.MaxNumberOfAnnotations;
+            h ^= MaxNumberOfAnnotations;
             h *= 1000003;
-            h ^= this.MaxNumberOfMessageEvents;
+            h ^= MaxNumberOfMessageEvents;
             h *= 1000003;
-            h ^= this.MaxNumberOfLinks;
+            h ^= MaxNumberOfLinks;
             return h;
         }
     }

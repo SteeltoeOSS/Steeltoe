@@ -102,7 +102,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
             var config = builder.Build();
             var value = config["random:int[4,10]"];
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 4, 10);
         }
 
@@ -118,7 +118,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
             var config = builder.Build();
             var value = config["random:int(10)"];
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 0, 10);
         }
 
@@ -148,7 +148,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
             var config = builder.Build();
             var value = config["random:long[4,10]"];
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 4, 10);
         }
 
@@ -164,7 +164,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
             var config = builder.Build();
             var value = config["random:long(10)"];
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 0, 10);
         }
     }

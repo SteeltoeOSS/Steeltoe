@@ -95,15 +95,15 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
 
         private static DbContextOptionsBuilder DoUseOracle(DbContextOptionsBuilder optionsBuilder, object connection, object oracleOptionsAction)
         {
-            Type extensionType = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+            var extensionType = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
-            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseOracle extension, are you missing Oracle EntityFramework Core assembly");
             }
 
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
+            var result = ConnectorHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseOracle extension, connection: {0}", connection));
@@ -123,7 +123,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 var parameters = ci.GetParameters();
                 if (parameters.Length == 3 &&
@@ -141,13 +141,13 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            OracleServiceInfo info = string.IsNullOrEmpty(serviceName)
+            var info = string.IsNullOrEmpty(serviceName)
                 ? config.GetSingletonServiceInfo<OracleServiceInfo>()
                 : config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 
-            OracleProviderConnectorOptions oracleConfig = new OracleProviderConnectorOptions(config);
+            var oracleConfig = new OracleProviderConnectorOptions(config);
 
-            OracleProviderConnectorFactory factory = new OracleProviderConnectorFactory(info, oracleConfig, null);
+            var factory = new OracleProviderConnectorFactory(info, oracleConfig, null);
 
             return factory.CreateConnectionString();
         }

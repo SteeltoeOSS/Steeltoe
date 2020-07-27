@@ -48,14 +48,14 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void NewSpan_WithNullContext()
         {
-            Assert.Throws<ArgumentNullException>(() => new NoopSpan(null, default(SpanOptions)));
+            Assert.Throws<ArgumentNullException>(() => new NoopSpan(null, default));
         }
 
 
         [Fact]
         public void GetOptions_WhenNullOptions()
         {
-            ISpan span = new NoopSpan(notSampledSpanContext, default(SpanOptions));
+            ISpan span = new NoopSpan(notSampledSpanContext, default);
             Assert.Equal(SpanOptions.None, span.Options);
         }
 
@@ -71,7 +71,7 @@ namespace OpenCensus.Trace.Test
         public void PutAttributeCallsAddAttributesByDefault()
         {
             var mockSpan = new Mock<NoopSpan>(spanContext, spanOptions) { CallBase = true };
-            NoopSpan span = mockSpan.Object;
+            var span = mockSpan.Object;
             IAttributeValue val = AttributeValue<bool>.Create(true);
             span.PutAttribute("MyKey", val);
             span.End();
@@ -91,10 +91,10 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void AddMessageEventDefaultImplementation()
         {
-            Mock<SpanBase> mockSpan = new Mock<SpanBase>();
+            var mockSpan = new Mock<SpanBase>();
             var span = mockSpan.Object;
 
-            IMessageEvent messageEvent =
+            var messageEvent =
                 MessageEvent.Builder(MessageEventType.Sent, 123)
                     .SetUncompressedMessageSize(456)
                     .SetCompressedMessageSize(789)

@@ -27,24 +27,24 @@ namespace OpenCensus.Tags
 
         public TagsComponent()
         {
-            this.state = new CurrentTaggingState();
-            this.tagger = new Tagger(this.state);
-            this.tagPropagationComponent = new TagPropagationComponent(this.state);
+            state = new CurrentTaggingState();
+            tagger = new Tagger(state);
+            tagPropagationComponent = new TagPropagationComponent(state);
         }
 
         public override ITagger Tagger
         {
-            get { return this.tagger; }
+            get { return tagger; }
         }
 
         public override ITagPropagationComponent TagPropagationComponent
         {
-            get { return this.tagPropagationComponent; }
+            get { return tagPropagationComponent; }
         }
 
         public override TaggingState State
         {
-            get { return this.state.Value; }
+            get { return state.Value; }
         }
     }
 }

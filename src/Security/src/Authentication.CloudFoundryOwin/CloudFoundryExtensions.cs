@@ -42,7 +42,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Owin
             securitySection.Bind(cloudFoundryOptions);
 
             // get and apply service binding info
-            SsoServiceInfo info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
+            var info = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             OpenIdConnectConfigurer.Configure(info, cloudFoundryOptions);
 
             appBuilder.Use<ForwardedProtocolMiddleware>();
@@ -86,7 +86,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             securitySection.Bind(cloudFoundryOptions);
 
             // get and apply service binding info
-            SsoServiceInfo si = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
+            var si = configuration.GetSingletonServiceInfo<SsoServiceInfo>();
             CloudFoundryJwtOwinConfigurer.Configure(si, cloudFoundryOptions);
 
             // REVIEW: return without adding auth middleware if no service binding was found... !?

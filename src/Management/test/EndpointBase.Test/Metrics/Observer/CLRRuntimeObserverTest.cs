@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);
 
-            CLRRuntimeSource.HeapMetrics metrics = new CLRRuntimeSource.HeapMetrics(1000, new List<long>() { 10, 20, 30 });
+            var metrics = new CLRRuntimeSource.HeapMetrics(1000, new List<long>() { 10, 20, 30 });
             observer.HandleHeapEvent(metrics);
 
             var memUsedViewData = stats.ViewManager.GetView(ViewName.Create("clr.memory.used"));
@@ -103,7 +103,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var tags = new OpenCensusTags();
             var observer = new CLRRuntimeObserver(options, stats, tags, null);
 
-            CLRRuntimeSource.ThreadMetrics metrics = new CLRRuntimeSource.ThreadMetrics(100, 100, 200, 200);
+            var metrics = new CLRRuntimeSource.ThreadMetrics(100, 100, 200, 200);
             observer.HandleThreadsEvent(metrics);
 
             var live = stats.ViewManager.GetView(ViewName.Create("clr.threadpool.active"));

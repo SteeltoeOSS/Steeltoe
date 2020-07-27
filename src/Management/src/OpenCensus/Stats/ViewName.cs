@@ -25,7 +25,7 @@ namespace OpenCensus.Stats
 
         internal ViewName(string asString)
         {
-            this.AsString = asString ?? throw new ArgumentNullException(nameof(asString));
+            AsString = asString ?? throw new ArgumentNullException(nameof(asString));
         }
 
         public string AsString { get; }
@@ -52,7 +52,7 @@ namespace OpenCensus.Stats
         public override string ToString()
         {
             return "Name{"
-                + "asString=" + this.AsString
+                + "asString=" + AsString
                 + "}";
         }
 
@@ -66,7 +66,7 @@ namespace OpenCensus.Stats
 
             if (o is ViewName that)
             {
-                return this.AsString.Equals(that.AsString);
+                return AsString.Equals(that.AsString);
             }
 
             return false;
@@ -75,9 +75,9 @@ namespace OpenCensus.Stats
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.AsString.GetHashCode();
+            h ^= AsString.GetHashCode();
             return h;
         }
     }

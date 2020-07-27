@@ -12,36 +12,38 @@ namespace Steeltoe.Consul.Util.Test
         [Fact]
         public void FindHost_ReturnsExpected()
         {
-            ServiceEntry hs = new ServiceEntry();
-            hs.Service = new AgentService();
-            hs.Node = new Node();
+            var hs = new ServiceEntry
+            {
+                Service = new AgentService(),
+                Node = new Node()
+            };
             hs.Service.Address = "fc00:ec:cd::242:ac11:c";
 
-            string s1 = ConsulServerUtils.FindHost(hs);
+            var s1 = ConsulServerUtils.FindHost(hs);
             Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s1);
 
             hs.Service.Address = null;
             hs.Node.Address = "fc00:ec:cd::242:ac11:c";
-            string s2 = ConsulServerUtils.FindHost(hs);
+            var s2 = ConsulServerUtils.FindHost(hs);
             Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s2);
         }
 
         [Fact]
         public void FixIpv6Address_Fixes()
         {
-            string s1 = ConsulServerUtils.FixIPv6Address("fc00:ec:cd::242:ac11:c");
+            var s1 = ConsulServerUtils.FixIPv6Address("fc00:ec:cd::242:ac11:c");
             Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s1);
 
-            string s2 = ConsulServerUtils.FixIPv6Address("[fc00:ec:cd::242:ac11:c]");
+            var s2 = ConsulServerUtils.FixIPv6Address("[fc00:ec:cd::242:ac11:c]");
             Assert.Equal("[fc00:ec:cd:0:0:242:ac11:c]", s2);
 
-            string s3 = ConsulServerUtils.FixIPv6Address("192.168.0.1");
+            var s3 = ConsulServerUtils.FixIPv6Address("192.168.0.1");
             Assert.Equal("192.168.0.1", s3);
 
-            string s4 = ConsulServerUtils.FixIPv6Address("projects.spring.io");
+            var s4 = ConsulServerUtils.FixIPv6Address("projects.spring.io");
             Assert.Equal("projects.spring.io", s4);
 
-            string s5 = ConsulServerUtils.FixIPv6Address("veryLongHostName");
+            var s5 = ConsulServerUtils.FixIPv6Address("veryLongHostName");
             Assert.Equal("veryLongHostName", s5);
         }
     }

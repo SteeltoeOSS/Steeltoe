@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -68,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

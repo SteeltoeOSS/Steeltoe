@@ -50,13 +50,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(connectorOptions));
             }
 
-            string[] redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
-            string[] redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-            string[] redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+            var redisAssemblies = new string[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
+            var redisTypeNames = new string[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
+            var redisOptionNames = new string[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
 
-            Type redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
-            Type redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
-            MethodInfo initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect");
+            var redisConnection = ConnectorHelpers.FindType(redisAssemblies, redisTypeNames);
+            var redisOptions = ConnectorHelpers.FindType(redisAssemblies, redisOptionNames);
+            var initializer = ConnectorHelpers.FindMethod(redisConnection, "Connect");
 
             var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer ?? null);

@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Tracing.Test
     {
         public virtual TracingOptions GetOptions()
         {
-            TracingOptions opts = new TracingOptions(null, GetConfiguration());
+            var opts = new TracingOptions(null, GetConfiguration());
             return opts;
         }
 
@@ -25,7 +25,7 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
             return builder.Build();
         }

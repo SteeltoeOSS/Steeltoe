@@ -27,11 +27,10 @@ namespace OpenCensus.Impl.Resources
         public void TryParseResourceType_NullOrEmptyType_GlobalResourceSet()
         {
             // Arrange
-            string rawResourceType = string.Empty;
-            string resourceType;
+            var rawResourceType = string.Empty;
 
             // Act (empty)
-            var parsed = Resource.TryParseResourceType(rawResourceType, out resourceType);
+            var parsed = Resource.TryParseResourceType(rawResourceType, out var resourceType);
 
             // Assert (empty)
             Assert.False(parsed);
@@ -49,11 +48,10 @@ namespace OpenCensus.Impl.Resources
         public void TryParseResourceType_LongResourceTypeName_GlobalResourceSet()
         {
             // Arrange
-            string longResouceTypeName = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
-            string resourceType;
+            var longResouceTypeName = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
 
             // Act
-            var parsed = Resource.TryParseResourceType(longResouceTypeName, out resourceType);
+            var parsed = Resource.TryParseResourceType(longResouceTypeName, out var resourceType);
 
             // Assert
             Assert.False(parsed);
@@ -64,11 +62,10 @@ namespace OpenCensus.Impl.Resources
         public void TryParseResourceType_NameWithSpaces_SpacesTrimmed()
         {
             // Arrange
-            string rawResouceType = "  a    ";
-            string resourceType;
+            var rawResouceType = "  a    ";
 
             // Act
-            var parsed = Resource.TryParseResourceType(rawResouceType, out resourceType);
+            var parsed = Resource.TryParseResourceType(rawResouceType, out var resourceType);
 
             // Assert
             Assert.True(parsed);
@@ -79,7 +76,7 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_WrongKeyValueDelimiter_PairIgnored()
         {
             // Arrange
-            string resourceLabels = "k1:v1,k2=v2";
+            var resourceLabels = "k1:v1,k2=v2";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);
@@ -96,8 +93,8 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_LongValueName_AllLaterLabelsIgnored()
         {
             // Arrange
-            string longValue = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
-            string resourceLabels = $"k1={longValue};k2=v2";
+            var longValue = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
+            var resourceLabels = $"k1={longValue};k2=v2";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);
@@ -111,8 +108,8 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_LongKeyName_AllLaterLabelsIgnored()
         {
             // Arrange
-            string longKey = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
-            string resourceLabels = $"{longKey}=v1;k2=v2";
+            var longKey = "a".PadLeft(Constants.MaxResourceTypeNameLength + 1, 'a');
+            var resourceLabels = $"{longKey}=v1;k2=v2";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);
@@ -126,7 +123,7 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_ValueWithParenthesis_StrippedValue()
         {
             // Arrange
-            string resourceLabels = "k1=\"v1\"";
+            var resourceLabels = "k1=\"v1\"";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);
@@ -142,7 +139,7 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_EmptyString_EmptyMapReturned()
         {
             // Arrange
-            string resourceLabels = "";
+            var resourceLabels = "";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);
@@ -156,7 +153,7 @@ namespace OpenCensus.Impl.Resources
         public void ParseResourceLabels_CommaSeparated_MapReturned()
         {
             // Arrange
-            string resourceLabels = "key1=val1,key2=val2";
+            var resourceLabels = "key1=val1,key2=val2";
 
             // Act
             var tags = Resource.ParseResourceLabels(resourceLabels);

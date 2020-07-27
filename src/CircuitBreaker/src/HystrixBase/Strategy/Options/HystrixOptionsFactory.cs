@@ -20,8 +20,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 
         public static IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey key, IHystrixCommandOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetCommandOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetCommandOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
                 return commandProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCommandOptions(key, builder));
@@ -37,8 +37,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 
         public static IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey key, IHystrixThreadPoolOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetThreadPoolOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetThreadPoolOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
                 return threadPoolProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetThreadPoolOptions(key, builder));
@@ -54,8 +54,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 
         public static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key, IHystrixCollapserOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetCollapserOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetCollapserOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
                 return collapserProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCollapserOptions(key, builder));

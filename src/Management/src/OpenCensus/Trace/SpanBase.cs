@@ -49,8 +49,8 @@ namespace OpenCensus.Trace
                 throw new ArgumentOutOfRangeException("Span is sampled, but does not have RECORD_EVENTS set.");
             }
 
-            this.Context = context;
-            this.Options = options;
+            Context = context;
+            Options = options;
         }
 
         public abstract string Name { get; set; }
@@ -101,7 +101,7 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public virtual void PutAttribute(string key, IAttributeValue value)
         {
-            this.PutAttributes(new Dictionary<string, IAttributeValue>() { { key, value } });
+            PutAttributes(new Dictionary<string, IAttributeValue>() { { key, value } });
         }
 
         /// <inheritdoc/>
@@ -110,7 +110,7 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public void AddAnnotation(string description)
         {
-            this.AddAnnotation(description, EmptyAttributes);
+            AddAnnotation(description, EmptyAttributes);
         }
 
         /// <inheritdoc/>
@@ -131,14 +131,14 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public void End()
         {
-            this.End(EndSpanOptions.Default);
+            End(EndSpanOptions.Default);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "Span[" +
-                this.Name +
+                Name +
                 "]";
         }
 

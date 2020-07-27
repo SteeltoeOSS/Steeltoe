@@ -20,13 +20,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
-            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
-            MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+            var redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            var redisOptions = RedisTypeLocator.StackExchangeOptions;
+            var initializer = RedisTypeLocator.StackExchangeInitializer;
 
             var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(configuration);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+            var redisConfig = new RedisCacheConnectorOptions(configuration);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
             return new RedisHealthContributor(factory, redisImplementation, logger);
         }
 
@@ -53,7 +53,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         public HealthCheckResult Health()
         {
             _logger?.LogTrace("Checking Redis connection health");
-            HealthCheckResult result = new HealthCheckResult();
+            var result = new HealthCheckResult();
 
             try
             {

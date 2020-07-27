@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 else
                 {
-                    JsonInstanceInfo singleInst = (JsonInstanceInfo)serializer.Deserialize(reader, typeof(JsonInstanceInfo));
+                    var singleInst = (JsonInstanceInfo)serializer.Deserialize(reader, typeof(JsonInstanceInfo));
                     if (singleInst != null)
                     {
                         result = new List<JsonInstanceInfo>

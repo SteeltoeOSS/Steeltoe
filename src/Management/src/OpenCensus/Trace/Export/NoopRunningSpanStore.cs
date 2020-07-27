@@ -38,7 +38,7 @@ namespace OpenCensus.Trace.Export
                 throw new ArgumentNullException(nameof(filter));
             }
 
-            return new ISpanData[0];
+            return Array.Empty<ISpanData>();
         }
 
         public override void OnEnd(ISpan span)

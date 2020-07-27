@@ -25,7 +25,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
                 ["mongodb:client:port"] = "27018",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         public void Not_Connected_Returns_Down_Status()
         {
             // arrange
-            MongoDbConnectorOptions mongoDbConfig = new MongoDbConnectorOptions();
+            var mongoDbConfig = new MongoDbConnectorOptions();
             var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
             var logrFactory = new LoggerFactory();
             var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
@@ -56,7 +56,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
         public void Is_Connected_Returns_Up_Status()
         {
             // arrange
-            MongoDbConnectorOptions mongoDbConfig = new MongoDbConnectorOptions();
+            var mongoDbConfig = new MongoDbConnectorOptions();
             var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
             var logrFactory = new LoggerFactory();
             var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);

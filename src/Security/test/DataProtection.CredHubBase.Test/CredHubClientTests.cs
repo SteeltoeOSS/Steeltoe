@@ -305,7 +305,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         public async void GetByNameWithHistoryAsync_Gets()
         {
             // arrange
-            int revisionCount = 3;
+            var revisionCount = 3;
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, $"{credHubBase}/v1/data?name=/example&versions={revisionCount}")

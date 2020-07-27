@@ -29,9 +29,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public HystrixCollapserOptions(IHystrixCollapserKey key, RequestCollapserScope scope, IHystrixCollapserOptions defaults = null, IHystrixDynamicOptions dynamic = null)
             : base(dynamic)
         {
-            this.CollapserKey = key;
-            this.Scope = scope;
-            this._defaults = defaults;
+            CollapserKey = key;
+            Scope = scope;
+            _defaults = defaults;
 
             MaxRequestsInBatch = GetInteger(HYSTRIX_COLLAPSER_PREFIX, key.Name, "maxRequestsInBatch", DEFAULT_MAX_REQUESTS_IN_BATCH, defaults?.MaxRequestsInBatch);
             TimerDelayInMilliseconds = GetInteger(HYSTRIX_COLLAPSER_PREFIX, key.Name, "timerDelayInMilliseconds", DEFAULT_TIMER_DELAY_IN_MILLISECONDS, defaults?.TimerDelayInMilliseconds);

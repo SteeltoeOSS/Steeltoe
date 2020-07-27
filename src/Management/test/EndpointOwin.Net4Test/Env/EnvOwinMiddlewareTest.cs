@@ -26,7 +26,7 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
         public async void EnvInvoke_ReturnsExpected()
         {
             // arrange
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(OwinTestHelpers.Appsettings);
             var config = configurationBuilder.Build();
             var ep = new EnvEndpoint(new EnvEndpointOptions(), config, new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" });
@@ -48,25 +48,23 @@ namespace Steeltoe.Management.EndpointOwin.Env.Test
         [Fact]
         public async void EnvHttpCall_ReturnsExpected()
         {
-            using (var server = TestServer.Create<Startup>())
-            {
-                var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
+            using var server = TestServer.Create<Startup>();
+            var client = server.HttpClient;
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
 
-                // REVIEW: ChainedConfigurationProvider with Application Name isn't coming back
-                // "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointOwin.Test\"}},\"name\":\"ChainedConfigurationProvider\"},{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
-                var expected = "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
-                Assert.Equal(expected, json);
-            }
+            // REVIEW: ChainedConfigurationProvider with Application Name isn't coming back
+            // "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointOwin.Test\"}},\"name\":\"ChainedConfigurationProvider\"},{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
+            var expected = "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"},\"management:endpoints:path\":{\"value\":\"/cloudfoundryapplication\"}},\"name\":\"MemoryConfigurationProvider\"}]}";
+            Assert.Equal(expected, json);
         }
 
         [Fact]
         public void EnvEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new EnvEndpointOptions();
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             var config = configurationBuilder.Build();
             var host = new GenericHostingEnvironment() { EnvironmentName = "EnvironmentName" };
             var ep = new EnvEndpoint(opts, config, host);

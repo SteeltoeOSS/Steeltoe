@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 return false;
             }
 
-            ZipkinSpan that = (ZipkinSpan)o;
+            var that = (ZipkinSpan)o;
             return TraceId.Equals(that.TraceId)
               && ((ParentId == null) ? (that.ParentId == null) : ParentId.Equals(that.ParentId))
               && Id.Equals(that.Id)
@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
             h ^= TraceId.GetHashCode();
             h *= 1000003;
@@ -219,7 +219,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                     throw new ArgumentNullException(nameof(value));
                 }
 
-                this._tags[key] = value;
+                _tags[key] = value;
                 return this;
             }
 
@@ -236,7 +236,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
             internal ZipkinSpan Build()
             {
-                string missing = string.Empty;
+                var missing = string.Empty;
                 if (_traceId == null)
                 {
                     missing += " traceId";
