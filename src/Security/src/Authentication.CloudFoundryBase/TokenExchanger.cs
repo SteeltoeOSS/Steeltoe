@@ -74,7 +74,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             if (response.IsSuccessStatusCode)
             {
                 _logger?.LogTrace("Successfully exchanged auth code for a token");
+#pragma warning disable CS0618 // Type or member is obsolete
                 var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>().ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);

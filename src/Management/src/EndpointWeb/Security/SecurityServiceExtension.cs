@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Security
         {
             var allTasks = securityChecks.Select(service => service.IsAccessAllowed(context, options));
             var returnValues = await Task.WhenAll(allTasks).ConfigureAwait(false);
-            return returnValues.All(isAccessAllowed => isAccessAllowed == true);
+            return returnValues.All(isAccessAllowed => isAccessAllowed);
         }
     }
 }
