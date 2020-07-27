@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Http
 {
     public static class HttpClientHelper
     {
-        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location)}";
+        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
 
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;

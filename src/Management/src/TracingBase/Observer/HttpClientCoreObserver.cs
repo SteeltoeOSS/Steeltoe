@@ -148,7 +148,6 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-
             if (context is SpanContext spanContext)
             {
                 var span = spanContext.Active;

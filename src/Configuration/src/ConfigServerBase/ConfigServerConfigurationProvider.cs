@@ -479,6 +479,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 try
                 {
                     using var response = await _client.SendAsync(request).ConfigureAwait(false);
+
                     // Log status
                     var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
                     _logger?.LogInformation(WebUtility.UrlEncode(message));
