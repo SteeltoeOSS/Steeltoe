@@ -34,11 +34,11 @@ namespace Steeltoe.Stream.Binder
             var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
             Assert.NotNull(binder);
 
-            var consumerProperties = new ConsumerOptions()
+            var consumerProperties = new ConsumerOptions("testbinding")
             {
                 MaxAttempts = 1
             };
-            consumerProperties.PostProcess();
+            consumerProperties.PostProcess("testbinding");
 
             // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
             var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), consumerProperties);
@@ -65,35 +65,35 @@ namespace Steeltoe.Stream.Binder
             Assert.True(handlers[0] is BridgeHandler);
             Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
-            var registry = serviceProvider.GetRequiredService<IDestinationRegistry>();
-            Assert.True(registry.Contains("foo.fooGroup.errors"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.recoverer"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.handler"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.bridge"));
+            var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+            Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+            Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
             consumerBinding.Unbind();
 
-            Assert.False(registry.Contains("foo.fooGroup.errors"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.recoverer"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.handler"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.bridge"));
+            Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+            Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
             Assert.False(defaultBinding.Endpoint.IsRunning);
 
-            var producerProps = new ProducerOptions()
+            var producerProps = new ProducerOptions("testbinding")
             {
                 ErrorChannelEnabled = true
             };
-            producerProps.PostProcess();
+            producerProps.PostProcess("testbinding");
 
             // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
             var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
-            Assert.True(registry.Contains("bar.errors"));
-            Assert.True(registry.Contains("bar.errors.bridge"));
+            Assert.True(registry.ContainsService<IMessageChannel> ("bar.errors"));
+            Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
             producerBinding.Unbind();
-            Assert.False(registry.Contains("bar.errors"));
-            Assert.False(registry.Contains("bar.errors.bridge"));
+            Assert.False(registry.ContainsService<IMessageChannel>("bar.errors"));
+            Assert.False(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
         }
 
         [Fact]
@@ -101,7 +101,7 @@ namespace Steeltoe.Stream.Binder
         {
             var binder = serviceProvider.GetService<IBinder>() as TestChannelBinder;
             Assert.NotNull(binder);
-            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions());
+            var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
             var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
             Assert.NotNull(defaultBinding);
 
@@ -127,18 +127,18 @@ namespace Steeltoe.Stream.Binder
             Assert.True(handlers[0] is BridgeHandler);
             Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
-            var registry = serviceProvider.GetRequiredService<IDestinationRegistry>();
-            Assert.True(registry.Contains("foo.fooGroup.errors"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.recoverer"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.handler"));
-            Assert.True(registry.Contains("foo.fooGroup.errors.bridge"));
+            var registry = serviceProvider.GetRequiredService<IApplicationContext>();
+            Assert.True(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+            Assert.True(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+            Assert.True(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
 
             consumerBinding.Unbind();
 
-            Assert.False(registry.Contains("foo.fooGroup.errors"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.recoverer"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.handler"));
-            Assert.False(registry.Contains("foo.fooGroup.errors.bridge"));
+            Assert.False(registry.ContainsService<IMessageChannel>("foo.fooGroup.errors"));
+            Assert.False(registry.ContainsService<ErrorMessageSendingRecoverer>("foo.fooGroup.errors.recoverer"));
+            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.handler"));
+            Assert.False(registry.ContainsService<IMessageHandler>("foo.fooGroup.errors.bridge"));
         }
     }
 }

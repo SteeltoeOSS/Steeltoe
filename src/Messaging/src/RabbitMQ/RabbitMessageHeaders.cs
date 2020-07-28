@@ -8,7 +8,6 @@ namespace Steeltoe.Messaging.Rabbit
     {
         public const string PREFIX = "amqp_";
         public const string RABBIT_PROPERTY = "rabbit_";
-        public const string INTERNAL = "internal_amqp_";
 
         // Encoded in Rabbit Message properties
         public const string APP_ID = RABBIT_PROPERTY + "appId";
@@ -30,14 +29,14 @@ namespace Steeltoe.Messaging.Rabbit
         public const string RECEIVED_USER_ID = RABBIT_PROPERTY + "receivedUserId";
         public const string RECEIVED_DELAY = RABBIT_PROPERTY + "receivedDelay";
         public const string PRIORITY = RABBIT_PROPERTY + "priority";
+
         public const string CONTENT_TYPE = MessageHeaders.CONTENT_TYPE;
+        public const string CONTENT_LENGTH = MessageHeaders.INTERNAL + "contentLength";
+        public const string MESSAGE_COUNT = MessageHeaders.INTERNAL + "messageCount";
+        public const string PUBLISH_SEQUENCE_NUMBER = MessageHeaders.INTERNAL + "PublishSequenceNumber";
+        public const string FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID = MessageHeaders.INTERNAL + "FinalRetryForMessageWithNoID";
 
-        public const string CONTENT_LENGTH = INTERNAL + "contentLength";
-        public const string MESSAGE_COUNT = INTERNAL + "messageCount";
-        public const string PUBLISH_SEQUENCE_NUMBER = INTERNAL + "PublishSequenceNumber";
-        public const string FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID = INTERNAL + "FinalRetryForMessageWithNoID";
-
-        // Not Used ... but found in AMQPHeaders
+        // Used in RabbitMQ Integration code
         public const string PUBLISH_CONFIRM = PREFIX + "publishConfirm";
         public const string PUBLISH_CONFIRM_NACK_CAUSE = PREFIX + "publishConfirmNackCause";
         public const string RETURN_REPLY_CODE = PREFIX + "returnReplyCode";
@@ -47,17 +46,15 @@ namespace Steeltoe.Messaging.Rabbit
         public const string RAW_MESSAGE = PREFIX + "raw_message";
 
         // Used and found in AMQPHeaders
-        public const string CHANNEL = INTERNAL + "channel";
-        public const string CONSUMER_TAG = INTERNAL + "consumerTag";
-        public const string CONSUMER_QUEUE = INTERNAL + "consumerQueue";
+        public const string CHANNEL = MessageHeaders.INTERNAL + "channel";
+        public const string CONSUMER_TAG = MessageHeaders.INTERNAL + "consumerTag";
+        public const string CONSUMER_QUEUE = MessageHeaders.INTERNAL + "consumerQueue";
 
         public const string LAST_IN_BATCH = PREFIX + "lastInBatch";
         public const string BATCH_SIZE = PREFIX + "batchSize";
 
-        public const string INFERRED_ARGUMENT_TYPE = INTERNAL + MessageHeaders.INFERRED_ARGUMENT_TYPE;
-
-        public const string TARGET = INTERNAL + "Target";
-        public const string TARGET_METHOD = INTERNAL + "TargetMethod";
+        public const string TARGET = MessageHeaders.INTERNAL + "Target";
+        public const string TARGET_METHOD = MessageHeaders.INTERNAL + "TargetMethod";
 
         public const string SPRING_BATCH_FORMAT = "springBatchFormat";
         public const string SPRING_REPLY_CORRELATION = "spring_reply_correlation";

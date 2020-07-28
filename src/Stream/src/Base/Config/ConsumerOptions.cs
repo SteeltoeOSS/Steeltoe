@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Config
@@ -25,6 +26,18 @@ namespace Steeltoe.Stream.Config
         {
         }
 
+        public ConsumerOptions(string bindingName)
+        {
+            if (bindingName == null)
+            {
+                throw new ArgumentNullException(nameof(bindingName));
+            }
+
+            BindingName = bindingName;
+        }
+
+        public string BindingName { get; set; }
+
         public bool? AutoStartup { get; set; }
 
         public int Concurrency { get; set; } = int.MinValue;
@@ -34,6 +47,8 @@ namespace Steeltoe.Stream.Config
         public int InstanceCount { get; set; } = int.MinValue;
 
         public int InstanceIndex { get; set; } = int.MinValue;
+
+        public List<int> InstanceIndexList { get; set; }
 
         public int MaxAttempts { get; set; } = int.MinValue;
 
@@ -65,8 +80,18 @@ namespace Steeltoe.Stream.Config
 
         bool IConsumerOptions.Multiplex => Multiplex.Value;
 
-        internal void PostProcess(ConsumerOptions @default = null)
+        public IConsumerOptions Clone()
         {
+            var clone = (ConsumerOptions)MemberwiseClone();
+            clone.RetryableExceptions = new List<string>(RetryableExceptions);
+            clone.InstanceIndexList = new List<int>(InstanceIndexList);
+            return clone;
+        }
+
+        internal void PostProcess(string name, ConsumerOptions @default = null)
+        {
+            BindingName = name;
+
             if (!Multiplex.HasValue)
             {
                 Multiplex = (@default != null) ? @default.Multiplex : Multiplex_Default;
@@ -122,6 +147,11 @@ namespace Steeltoe.Stream.Config
                 InstanceCount = (@default != null) ? @default.InstanceCount : InstanceCount_Default;
             }
 
+            if (InstanceIndexList == null)
+            {
+                InstanceIndexList = (@default != null) ? @default.InstanceIndexList : new List<int>();
+            }
+
             if (!Partitioned.HasValue)
             {
                 Partitioned = (@default != null) ? @default.Partitioned : IsPartitioned_Default;
@@ -136,13 +166,6 @@ namespace Steeltoe.Stream.Config
             {
                 AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
             }
-        }
-
-        internal ConsumerOptions Clone()
-        {
-            var clone = (ConsumerOptions)MemberwiseClone();
-            clone.RetryableExceptions = new List<string>(RetryableExceptions);
-            return clone;
         }
     }
 }

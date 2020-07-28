@@ -26,7 +26,6 @@ namespace Steeltoe.Integration.Handler.Test
             var config = new ConfigurationBuilder().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
@@ -85,6 +84,10 @@ namespace Steeltoe.Integration.Handler.Test
 
             public TestAbstractReplyProducingMessageHandler(IApplicationContext context)
                 : base(context)
+            {
+            }
+
+            public override void Initialize()
             {
             }
 

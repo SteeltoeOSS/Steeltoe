@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Common.Expression
 {
     public class ValueExpression<V> : IExpression
     {
@@ -43,6 +42,11 @@ namespace Steeltoe.Messaging.Rabbit.Support
         public virtual object GetValue(object rootObject)
         {
             return _value;
+        }
+
+        public virtual object GetValue(IEvaluationContext context, Type desiredResultType)
+        {
+            return GetValue(desiredResultType);
         }
 
         public virtual object GetValue(object rootObject, Type desiredResultType)

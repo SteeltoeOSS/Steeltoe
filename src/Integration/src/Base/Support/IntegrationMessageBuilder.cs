@@ -297,7 +297,7 @@ namespace Steeltoe.Integration.Support
                 return (IMessage)new ErrorMessage((Exception)(object)_payload, _headerAccessor.ToDictionary());
             }
 
-            return Message.Create(_payload, _headerAccessor.ToDictionary());
+            return Message.Create(_payload, _headerAccessor.ToDictionary(), _payload.GetType());
         }
     }
 #pragma warning restore SA1402 // File may only contain a single type

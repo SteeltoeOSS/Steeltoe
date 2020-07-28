@@ -219,6 +219,8 @@ namespace Steeltoe.Messaging.Support.Test
                 _test2 = test;
             }
 
+            public string ServiceName { get; set; } = nameof(UnsubscribeHandler);
+
             public void HandleMessage(IMessage message)
             {
                 _test?._channel.Unsubscribe(_test._handler);

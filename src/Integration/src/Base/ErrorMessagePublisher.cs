@@ -19,6 +19,7 @@ namespace Steeltoe.Integration
         protected readonly ILogger _logger;
 
         private readonly IApplicationContext _context;
+        private IIntegrationServices _integrationServices;
         private IDestinationResolver<IMessageChannel> _channelResolver;
         private IMessageChannel _channel;
         private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
@@ -28,6 +29,19 @@ namespace Steeltoe.Integration
             _context = context;
             _logger = logger;
             _messagingTemplate = new MessagingTemplate(context);
+        }
+
+        public IIntegrationServices IntegrationServices
+        {
+            get
+            {
+                if (_integrationServices == null)
+                {
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(_context);
+                }
+
+                return _integrationServices;
+            }
         }
 
         public virtual IErrorMessageStrategy ErrorMessageStrategy
@@ -79,7 +93,7 @@ namespace Steeltoe.Integration
             {
                 if (_channelResolver == null)
                 {
-                    _channelResolver = (IDestinationResolver<IMessageChannel>)_context.GetService(typeof(IDestinationResolver<IMessageChannel>));
+                    _channelResolver = IntegrationServices.ChannelResolver;
                 }
 
                 return _channelResolver;

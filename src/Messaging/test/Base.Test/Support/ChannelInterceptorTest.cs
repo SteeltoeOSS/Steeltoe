@@ -272,6 +272,8 @@ namespace Steeltoe.Messaging.Support.Test
                 get { return messages; }
             }
 
+            public string ServiceName { get; set; } = nameof(TestMessageHandler);
+
             public void HandleMessage(IMessage message)
             {
                 messages.Add(message);

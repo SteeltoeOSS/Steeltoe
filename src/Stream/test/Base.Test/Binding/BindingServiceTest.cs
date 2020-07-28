@@ -377,7 +377,7 @@ namespace Steeltoe.Stream.Binding
 
         private class FooBinder : IBinder<SomeBindableType>
         {
-            public string Name => "foobinder";
+            public string ServiceName { get; set; } = "foobinder";
 
             public Type TargetType => typeof(SomeBindableType);
 

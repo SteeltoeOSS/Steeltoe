@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
+using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using System;
 
@@ -13,12 +14,12 @@ namespace Steeltoe.Integration.Handler
 {
     public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
     {
-        protected IApplicationContext _context;
         private IIntegrationServices _integrationServices;
 
         protected AbstractMessageHandler(IApplicationContext context)
         {
-            _context = context;
+            ApplicationContext = context;
+            ServiceName = GetType().FullName;
         }
 
         public IIntegrationServices IntegrationServices
@@ -27,19 +28,21 @@ namespace Steeltoe.Integration.Handler
             {
                 if (_integrationServices == null)
                 {
-                    _integrationServices = _context.GetService<IIntegrationServices>();
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 }
 
                 return _integrationServices;
             }
         }
 
+        public IApplicationContext ApplicationContext { get; }
+
         public virtual string ComponentType
         {
             get { return "message-handler"; }
         }
 
-        public virtual string Name { get; set; }
+        public virtual string ServiceName { get; set; }
 
         public virtual string ComponentName { get; set; }
 
@@ -73,6 +76,8 @@ namespace Steeltoe.Integration.Handler
             }
         }
 
+        public abstract void Initialize();
+        
         protected abstract void HandleMessageInternal(IMessage message);
     }
 }

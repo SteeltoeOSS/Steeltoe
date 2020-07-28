@@ -9,7 +9,12 @@ namespace Steeltoe.Stream.Partitioning
 {
     public class CustomPartitionKeyExtractorClass : IPartitionKeyExtractorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionKeyExtractorClass()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public object ExtractKey(IMessage message)
         {
@@ -20,7 +25,12 @@ namespace Steeltoe.Stream.Partitioning
 #pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionKeyExtractorClassOne : IPartitionKeyExtractorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionKeyExtractorClassOne()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public object ExtractKey(IMessage message)
         {
@@ -30,7 +40,12 @@ namespace Steeltoe.Stream.Partitioning
 
     public class CustomPartitionKeyExtractorClassTwo : IPartitionKeyExtractorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionKeyExtractorClassTwo()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public object ExtractKey(IMessage message)
         {

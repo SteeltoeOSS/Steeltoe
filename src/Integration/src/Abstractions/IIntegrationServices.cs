@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Converter;
+using Steeltoe.Common.Expression;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -34,5 +35,10 @@ namespace Steeltoe.Integration
         /// Gets or sets the current id generator
         /// </summary>
         IIDGenerator IdGenerator { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current id expression parser
+        /// </summary>
+        IExpressionParser ExpressionParser { get; set; }
     }
 }

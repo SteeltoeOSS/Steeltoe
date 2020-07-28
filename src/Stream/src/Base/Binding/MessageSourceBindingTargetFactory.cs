@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Binding
 
         public override IPollableMessageSource CreateInput(string name)
         {
-            var chan = new DefaultPollableMessageSource(_context, _messageConverter);
+            var chan = new DefaultPollableMessageSource(ApplicationContext, _messageConverter);
             _messageConfigurer.ConfigurePolledMessageSource(chan, name);
             return chan;
         }

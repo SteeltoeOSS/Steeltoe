@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.StubBinder1
 
         public Func<string, object, IProducerOptions, IBinding> BindProducerFunc { get; set; }
 
-        public string Name { get; set; } = BINDER_NAME;
+        public string ServiceName { get; set; } = BINDER_NAME;
 
         public Type TargetType => typeof(object);
 

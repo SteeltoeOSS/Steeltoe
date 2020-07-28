@@ -20,6 +20,11 @@ namespace Steeltoe.Integration.Handler
             get { return "bridge"; }
         }
 
+        public override void Initialize()
+        {
+            // Nothing to do
+        }
+
         protected override object HandleRequestMessage(IMessage requestMessage)
         {
             return requestMessage;

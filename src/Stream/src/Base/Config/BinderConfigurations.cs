@@ -45,7 +45,7 @@ namespace Steeltoe.Stream.Config
         public List<string> FindMatchingConfigurationsIfAny(IBinder binder)
         {
             var results = new List<string>();
-            var registryEntry = Registry.Get(binder.Name);
+            var registryEntry = Registry.Get(binder.ServiceName);
             if (registryEntry != null)
             {
                 foreach (var config in Configurations)

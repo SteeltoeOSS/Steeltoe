@@ -74,7 +74,7 @@ namespace Steeltoe.Stream.Converter
             }
         }
 
-        public IMessageConverter MessageConverterForAllRegistered
+        public ISmartMessageConverter MessageConverterForAllRegistered
         {
             get { return new CompositeMessageConverter(new List<IMessageConverter>(_converters)); }
         }

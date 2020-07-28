@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
     {
         public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistrar);
 
-        private readonly List<AmqpListenerEndpointDescriptor> _endpointDescriptors = new List<AmqpListenerEndpointDescriptor>();
+        private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new List<RabbitListenerEndpointDescriptor>();
 
         public RabbitListenerEndpointRegistrar(IMessageHandlerMethodFactory messageHandlerMethodFactory = null)
         {
@@ -57,7 +57,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
 
             // Factory may be null, we defer the resolution right before actually creating the container
-            var descriptor = new AmqpListenerEndpointDescriptor(endpoint, factory);
+            var descriptor = new RabbitListenerEndpointDescriptor(endpoint, factory);
             lock (_endpointDescriptors)
             {
                 if (StartImmediately)
@@ -94,7 +94,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        private IRabbitListenerContainerFactory ResolveContainerFactory(AmqpListenerEndpointDescriptor descriptor)
+        private IRabbitListenerContainerFactory ResolveContainerFactory(RabbitListenerEndpointDescriptor descriptor)
         {
             if (descriptor.ContainerFactory != null)
             {
@@ -120,9 +120,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        private class AmqpListenerEndpointDescriptor
+        private class RabbitListenerEndpointDescriptor
         {
-            public AmqpListenerEndpointDescriptor(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory containerFactory)
+            public RabbitListenerEndpointDescriptor(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory containerFactory)
             {
                 Endpoint = endpoint;
                 ContainerFactory = containerFactory;

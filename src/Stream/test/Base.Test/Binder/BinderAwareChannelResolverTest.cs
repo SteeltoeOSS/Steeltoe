@@ -75,7 +75,7 @@ namespace Steeltoe.Stream.Binder
                 Received = received
             });
 
-            binder.BindConsumer("foo", null, testChannel, GetConsumerOptions());
+            binder.BindConsumer("foo", null, testChannel, GetConsumerOptions("testbinding"));
             Assert.Empty(received);
             registered.Send(MessageBuilder.WithPayload("hello").Build());
             latch.Wait(1000);
@@ -89,8 +89,8 @@ namespace Steeltoe.Stream.Binder
         public void ResolveNonRegisteredChannel()
         {
             var other = resolver.ResolveDestination("other");
-            var registry = serviceProvider.GetService<IDestinationRegistry>();
-            var bean = registry.Lookup("other");
+            var registry = serviceProvider.GetService<IApplicationContext>();
+            var bean = registry.GetService<IMessageChannel>("other");
             Assert.Same(bean, other);
 
             // this.context.close();
@@ -104,7 +104,10 @@ namespace Steeltoe.Stream.Binder
 
             public LatchedMessageHandler()
             {
+                ServiceName = GetType().Name + "@" + GetHashCode();
             }
+
+            public virtual string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {

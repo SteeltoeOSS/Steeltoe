@@ -164,6 +164,11 @@ namespace Steeltoe.Integration.Endpoint
 
             try
             {
+                if (OutputChannel == null)
+                {
+                    throw new InvalidOperationException("The 'outputChannel' or `outputChannelName` must be configured");
+                }
+
                 _messagingTemplate.Send(OutputChannel, message);
             }
             catch (Exception e)

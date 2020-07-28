@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Loader;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.Converter
 {
     public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
     {

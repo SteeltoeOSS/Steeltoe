@@ -221,6 +221,8 @@ namespace Steeltoe.Integration.Dispatcher.Test
             public int Counter;
             public bool ShouldAccept;
 
+            public string ServiceName { get; set; } = nameof(CountingTestEndpoint);
+
             public CountingTestEndpoint(bool shouldAccept)
             {
                 ShouldAccept = shouldAccept;

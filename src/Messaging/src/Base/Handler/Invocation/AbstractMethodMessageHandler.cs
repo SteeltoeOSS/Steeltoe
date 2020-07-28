@@ -24,7 +24,10 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         protected AbstractMethodMessageHandler()
         {
+            ServiceName = GetType().Name + "@" + GetHashCode();
         }
+
+        public virtual string ServiceName { get; set; }
 
         public virtual IList<string> DestinationPrefixes
         {

@@ -16,6 +16,11 @@ namespace Steeltoe.Integration.Channel
     /// </summary>
     public class DirectChannel : AbstractSubscribableChannel
     {
+        public DirectChannel(ILogger logger = null)
+            : this(null, logger)
+        {
+        }
+
         public DirectChannel(IApplicationContext context, ILogger logger = null)
             : this(context, new RoundRobinLoadBalancingStrategy(), null, logger)
         {

@@ -289,6 +289,20 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 && args.ReplyCode == Precondition_Failed;
         }
 
+        public static int GetMaxFrame(IConnectionFactory connectionFactory)
+        {
+            try
+            {
+                return (int)connectionFactory.CreateConnection().Connection.FrameMax;
+            }
+            catch (Exception)
+            {
+                // Ignore
+            }
+
+            return -1;
+        }
+
         internal static bool IsExchangeDeclarationFailure(RabbitIOException e)
         {
             Exception cause = e;

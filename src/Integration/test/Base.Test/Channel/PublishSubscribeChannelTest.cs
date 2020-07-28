@@ -118,6 +118,8 @@ namespace Steeltoe.Integration.Channel.Test
         {
             public int Count;
 
+            public string ServiceName { get; set; } = nameof(CounterHandler);
+
             public void HandleMessage(IMessage message)
             {
                 Count++;

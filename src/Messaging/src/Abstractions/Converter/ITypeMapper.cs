@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.Converter
 {
     public enum TypePrecedence
     {

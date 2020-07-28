@@ -27,7 +27,6 @@ namespace Steeltoe.Integration.Endpoint.Test
             var config = new ConfigurationBuilder().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();

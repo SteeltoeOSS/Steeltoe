@@ -5,20 +5,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Common.Services;
+using Steeltoe.Integration.Util;
 using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Endpoint
 {
-    public abstract class AbstractEndpoint : ISmartLifecycle
+    public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
     {
-        protected IApplicationContext _context;
         private readonly object _lifecyclelock = new object();
         private IIntegrationServices _integrationServices;
 
         protected AbstractEndpoint(IApplicationContext context)
         {
-            _context = context;
+            ApplicationContext = context;
         }
 
         public IIntegrationServices IntegrationServices
@@ -27,16 +28,18 @@ namespace Steeltoe.Integration.Endpoint
             {
                 if (_integrationServices == null)
                 {
-                    _integrationServices = _context.GetService<IIntegrationServices>();
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
                 }
 
                 return _integrationServices;
             }
         }
 
+        public IApplicationContext ApplicationContext { get; }
+
         public virtual string ComponentType { get; set; }
 
-        public virtual string Name { get; set; }
+        public virtual string ServiceName { get; set; }
 
         public virtual string ComponentName { get; set; }
 

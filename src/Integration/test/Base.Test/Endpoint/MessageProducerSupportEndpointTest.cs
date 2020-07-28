@@ -24,7 +24,6 @@ namespace Steeltoe.Integration.Endpoint.Test
         public MessageProducerSupportEndpointTest()
         {
             services = new ServiceCollection();
-            services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
@@ -133,6 +132,8 @@ namespace Steeltoe.Integration.Endpoint.Test
 
         private class ExceptionHandler : IMessageHandler
         {
+            public string ServiceName { get; set; } = nameof(ExceptionHandler);
+
             public void HandleMessage(IMessage message)
             {
                 throw new Exception("problems");

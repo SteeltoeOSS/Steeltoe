@@ -19,6 +19,11 @@ namespace Steeltoe.Integration.Channel
         private readonly int _capacity = -1;
         private int _size;
 
+        public QueueChannel(ILogger logger = null)
+            : this(null, logger)
+        {
+        }
+
         public QueueChannel(IApplicationContext context, ILogger logger = null)
             : this(context, Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
         {

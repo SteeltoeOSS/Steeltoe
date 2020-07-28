@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.Converter
 {
     public class DefaultTypeMapperTest
     {
@@ -24,7 +25,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldLookInTheClassIdFieldNameToFindTheClassName()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("type", "System.String");
             typeMapper.ClassIdFieldName = "type";
 
@@ -35,7 +36,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldUseTheClassProvidedByTheLookupMapIfPresent()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("__TypeId__", "trade");
             typeMapper.SetIdClassMapping(new Dictionary<string, Type>() { { "trade", typeof(SimpleTrade) } });
 
@@ -63,7 +64,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldThrowAnExceptionWhenContentClassIdIsNotPresentWhenClassIdIsContainerType()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
             var excep = Assert.Throws<MessageConversionException>(() => typeMapper.ToType(accessor.MessageHeaders));
             Assert.Contains("Could not resolve ", excep.Message);
@@ -72,7 +73,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldLookInTheContentClassIdFieldNameToFindTheContainerClassIDWhenClassIdIsContainerType()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("contentType", typeof(string).ToString());
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
             typeMapper.ContentClassIdFieldName = "contentType";
@@ -83,7 +84,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldUseTheContentClassProvidedByTheLookupMapIfPresent()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(List<>).FullName);
             accessor.SetHeader("__ContentTypeId__", "trade");
             var mapping = new Dictionary<string, Type>() { { "trade", typeof(SimpleTrade) } };
@@ -108,7 +109,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldThrowAnExceptionWhenKeyClassIdIsNotPresentWhenClassIdIsAMap()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
             accessor.SetHeader(typeMapper.KeyClassIdFieldName, typeof(string).ToString());
 
@@ -119,7 +120,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldLookInTheValueClassIdFieldNameToFindTheValueClassIDWhenClassIdIsAMap()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("keyType", typeof(int).ToString());
             accessor.SetHeader(typeMapper.ContentClassIdFieldName, typeof(string).ToString());
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);
@@ -132,7 +133,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
         [Fact]
         public void ShouldUseTheKeyClassProvidedByTheLookupMapIfPresent()
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             accessor.SetHeader("__KeyTypeId__", "trade");
             accessor.SetHeader(typeMapper.ContentClassIdFieldName, typeof(string).ToString());
             accessor.SetHeader(typeMapper.ClassIdFieldName, typeof(Dictionary<,>).FullName);

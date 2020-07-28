@@ -90,11 +90,11 @@ namespace Steeltoe.Stream.Binder
 
             var defaultBinder = factory.GetBinder(null, typeof(IMessageChannel));
             Assert.NotNull(defaultBinder);
-            Assert.Equal("binder1", defaultBinder.Name);
+            Assert.Equal("binder1", defaultBinder.ServiceName);
 
             var binder1 = factory.GetBinder("binder1", typeof(IMessageChannel));
             Assert.NotNull(binder1);
-            Assert.Equal("binder1", binder1.Name);
+            Assert.Equal("binder1", binder1.ServiceName);
 
             Assert.Same(binder1, defaultBinder);
         }
@@ -115,9 +115,9 @@ namespace Steeltoe.Stream.Binder
             Assert.NotNull(factory);
 
             var binder1 = factory.GetBinder("binder1", typeof(IMessageChannel));
-            Assert.Equal("binder1", binder1.Name);
+            Assert.Equal("binder1", binder1.ServiceName);
             var binder2 = factory.GetBinder("binder2", typeof(IMessageChannel));
-            Assert.Equal("binder2", binder2.Name);
+            Assert.Equal("binder2", binder2.ServiceName);
             var defaultBinder = factory.GetBinder(null, typeof(IMessageChannel));
             Assert.Same(defaultBinder, binder2);
         }

@@ -11,12 +11,14 @@ namespace Steeltoe.Messaging
 {
     public class MessageHeaders : IMessageHeaders
     {
+        public const string INTERNAL = "internal_";
+
         public const string ID = "id";
         public const string TIMESTAMP = "timestamp";
         public const string CONTENT_TYPE = "contentType";
         public const string REPLY_CHANNEL = "replyChannel";
         public const string ERROR_CHANNEL = "errorChannel";
-        public const string INFERRED_ARGUMENT_TYPE = "InferredArgumentType";
+        public const string INFERRED_ARGUMENT_TYPE = INTERNAL + "InferredArgumentType";
 
         public const string CONTENT_TYPE_JSON = "application/json";
         public const string CONTENT_TYPE_TEXT_PLAIN = "text/plain";
@@ -25,6 +27,10 @@ namespace Steeltoe.Messaging
         public const string CONTENT_TYPE_XML = "application/xml";
         public const string CONTENT_TYPE_JAVA_SERIALIZED_OBJECT = "application/x-java-serialized-object";
         public const string CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT = "application/x-dotnet-serialized-object";
+
+        public const string TYPE_ID = "__TypeId__";
+        public const string CONTENT_TYPE_ID = "__ContentTypeId__";
+        public const string KEY_TYPE_ID = "__KeyTypeId__";
 
         public static readonly string ID_VALUE_NONE = string.Empty;
         protected readonly IDictionary<string, object> headers;

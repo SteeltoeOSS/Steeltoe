@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.CSharp;
 using Steeltoe.Common.Retry;
 using Steeltoe.Stream.Config;
 using System;
@@ -16,13 +17,13 @@ namespace Steeltoe.Stream.Binder
     {
         private const string GROUP_INDEX_DELIMITER = ".";
 
-        private readonly IEvaluationContext _evaluationContext;
         private readonly IApplicationContext _context;
+        private IEvaluationContext _evaluationContext;
+        private IExpressionParser _expressionParser;
 
         protected AbstractBinder(IApplicationContext context)
         {
             _context = context;
-            _evaluationContext = context.GetService<IEvaluationContext>();
         }
 
         public static string ApplyPrefix(string prefix, string name)
@@ -35,7 +36,7 @@ namespace Steeltoe.Stream.Binder
             return name + ".dlq";
         }
 
-        public abstract string Name { get; }
+        public abstract string ServiceName { get; set; }
 
         public abstract Type TargetType { get; }
 
@@ -70,7 +71,38 @@ namespace Steeltoe.Stream.Binder
 
         protected virtual IEvaluationContext EvaluationContext
         {
-            get { return _evaluationContext; }
+            get
+            {
+                if (_evaluationContext == null)
+                {
+                    _evaluationContext = new SimpleEvaluationContext(_context);
+                }
+
+                return _evaluationContext;
+            }
+
+            set
+            {
+                _evaluationContext = value;
+            }
+        }
+
+        protected virtual IExpressionParser ExpressionParser
+        {
+            get
+            {
+                if (_expressionParser == null)
+                {
+                    _expressionParser = new ExpressionParser();
+                }
+
+                return _expressionParser;
+            }
+
+            set
+            {
+                _expressionParser = value;
+            }
         }
 
         protected virtual IApplicationContext ApplicationContext

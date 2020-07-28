@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -23,8 +24,9 @@ namespace Steeltoe.Stream.Binding
         private readonly IMessageConverterFactory _messageConverterFactory;
         private readonly IEnumerable<IPartitionKeyExtractorStrategy> _extractors;
         private readonly IEnumerable<IPartitionSelectorStrategy> _seledctors;
-        private readonly IExpressionParser _expressionParser;
-        private readonly IEvaluationContext _evaluationContext;
+        private readonly IApplicationContext _applicationContext;
+        //private readonly IExpressionParser _expressionParser;
+        //private readonly IEvaluationContext _evaluationContext;
 
         private BindingServiceOptions Options
         {
@@ -35,15 +37,17 @@ namespace Steeltoe.Stream.Binding
         }
 
         public MessageConverterConfigurer(
-            IExpressionParser expressionParser,
-            IEvaluationContext evaluationContext,
+            IApplicationContext applicationContext,
+            //IExpressionParser expressionParser,
+            //IEvaluationContext evaluationContext,
             IOptionsMonitor<BindingServiceOptions> optionsMonitor,
             IMessageConverterFactory messageConverterFactory,
             IEnumerable<IPartitionKeyExtractorStrategy> extractors,
             IEnumerable<IPartitionSelectorStrategy> seledctors)
         {
-            _expressionParser = expressionParser;
-            _evaluationContext = evaluationContext;
+            _applicationContext = applicationContext;
+            // _expressionParser = expressionParser;
+            //_evaluationContext = evaluationContext;
             _optionsMonitor = optionsMonitor;
             _messageConverterFactory = messageConverterFactory;
             _extractors = extractors;
@@ -87,8 +91,9 @@ namespace Steeltoe.Stream.Binding
             {
                 messageChannel.AddInterceptor(
                     new PartitioningInterceptor(
-                        _expressionParser,
-                        _evaluationContext,
+                        _applicationContext,
+                        // _expressionParser,
+                        //_evaluationContext,
                         bindingOptions,
                         GetPartitionKeyExtractorStrategy(producerOptions),
                         GetPartitionSelectorStrategy(producerOptions)));
@@ -117,7 +122,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionKeyExtractorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionKeyExtractorName))
             {
-                strategy = _extractors.FirstOrDefault((s) => s.Name == options.PartitionKeyExtractorName);
+                strategy = _extractors.FirstOrDefault((s) => s.ServiceName == options.PartitionKeyExtractorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException("PartitionKeyExtractorStrategy bean with the name '" + options.PartitionKeyExtractorName + "' can not be found.");
@@ -144,7 +149,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionSelectorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionSelectorName))
             {
-                strategy = _seledctors.FirstOrDefault((s) => s.Name == options.PartitionSelectorName);
+                strategy = _seledctors.FirstOrDefault((s) => s.ServiceName == options.PartitionSelectorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException("IPartitionSelectorStrategy bean with the name '" + options.PartitionSelectorName + "' can not be found.");
@@ -188,7 +193,7 @@ namespace Steeltoe.Stream.Binding
 #pragma warning disable SA1402 // File may only contain a single class
     internal class DefaultPartitionSelector : IPartitionSelectorStrategy
     {
-        public string Name => "DefaultPartitionSelector";
+        public string ServiceName { get; set; } = "DefaultPartitionSelector";
 
         public int SelectPartition(object key, int partitionCount)
         {
@@ -353,12 +358,11 @@ namespace Steeltoe.Stream.Binding
         internal readonly PartitionHandler _partitionHandler;
         internal readonly IMessageBuilderFactory _messageBuilderFactory = new MutableIntegrationMessageBuilderFactory();
 
-        public PartitioningInterceptor(IExpressionParser expressionParser, IEvaluationContext evaluationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
+        public PartitioningInterceptor(IApplicationContext applicationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
         {
             _bindingOptions = bindingOptions;
             _partitionHandler = new PartitionHandler(
-                    expressionParser,
-                    evaluationContext,
+                    applicationContext,
                     _bindingOptions.Producer,
                     partitionKeyExtractorStrategy,
                     partitionSelectorStrategy);

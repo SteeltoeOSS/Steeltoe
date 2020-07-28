@@ -8,6 +8,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
+using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
@@ -23,9 +24,8 @@ namespace Steeltoe.Integration.Channel
     public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IChannelInterceptorAware
     {
         protected const int INDEFINITE_TIMEOUT = -1;
-        private readonly Lazy<IIntegrationServices> _integrationServices;
-        private readonly IApplicationContext _context;
-        private Lazy<IMessageConverter> _messageConverter;
+        private IIntegrationServices _integrationServices;
+        private IMessageConverter _messageConverter;
 
         protected AbstractMessageChannel(IApplicationContext context, ILogger logger = null)
             : this(context, null, logger)
@@ -34,15 +34,25 @@ namespace Steeltoe.Integration.Channel
 
         protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
         {
-            _context = context;
-            _integrationServices = new Lazy<IIntegrationServices>(() =>
-                _context.GetService<IIntegrationServices>());
-            _messageConverter = new Lazy<IMessageConverter>(() => (IMessageConverter)_context.GetService(typeof(DefaultDatatypeChannelMessageConverter)));
+            ApplicationContext = context;
             Logger = logger;
             ServiceName = name ?? GetType().Name + "@" + GetHashCode();
         }
 
-        public IIntegrationServices IntegrationServices => _integrationServices.Value;
+        public IApplicationContext ApplicationContext { get; }
+
+        public IIntegrationServices IntegrationServices
+        {
+            get
+            {
+                if (_integrationServices == null)
+                {
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
+                }
+
+                return _integrationServices;
+            }
+        }
 
         public virtual string ComponentType { get; } = "channel";
 
@@ -54,8 +64,20 @@ namespace Steeltoe.Integration.Channel
 
         public virtual IMessageConverter MessageConverter
         {
-            get { return _messageConverter.Value; }
-            set { _messageConverter = new Lazy<IMessageConverter>(value); }
+            get
+            {
+                if (_messageConverter == null)
+                {
+                    _messageConverter = ApplicationContext.GetService<DefaultDatatypeChannelMessageConverter>();
+                }
+
+                return _messageConverter;
+            }
+
+            set
+            {
+                _messageConverter = value;
+            }
         }
 
         public virtual List<IChannelInterceptor> ChannelInterceptors

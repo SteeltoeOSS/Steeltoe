@@ -129,17 +129,17 @@ namespace Steeltoe.Stream
             return result;
         }
 
-        protected ConsumerOptions GetConsumerOptions()
+        protected ConsumerOptions GetConsumerOptions(string bindingName)
         {
             var options = new ConsumerOptions();
-            options.PostProcess();
+            options.PostProcess(bindingName);
             return options;
         }
 
-        protected ProducerOptions GetProducerOptions()
+        protected ProducerOptions GetProducerOptions(string bindingName)
         {
             var options = new ProducerOptions();
-            options.PostProcess();
+            options.PostProcess(bindingName);
             return options;
         }
     }

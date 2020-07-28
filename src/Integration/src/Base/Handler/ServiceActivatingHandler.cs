@@ -40,6 +40,11 @@ namespace Steeltoe.Integration.Handler
 
         public virtual bool IsRunning => !(_processor is ILifecycle) || ((ILifecycle)_processor).IsRunning;
 
+        public override void Initialize()
+        {
+            // Nothing to do
+        }
+
         public virtual Task Start()
         {
             if (_processor is ILifecycle)

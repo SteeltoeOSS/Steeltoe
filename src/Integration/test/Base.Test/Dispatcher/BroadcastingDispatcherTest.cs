@@ -350,6 +350,8 @@ namespace Steeltoe.Integration.Dispatcher.Test
 
         private class MessageStoringTestEndpoint : IMessageHandler
         {
+            public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
+
             public ConcurrentQueue<IMessage> MessageList;
 
             public MessageStoringTestEndpoint(ConcurrentQueue<IMessage> messageList)

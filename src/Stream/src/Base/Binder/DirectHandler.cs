@@ -13,7 +13,10 @@ namespace Steeltoe.Stream.Binder
         public DirectHandler(IMessageChannel outputChannel)
         {
             _outputChannel = outputChannel;
+            ServiceName = GetType().Name + "@" + GetHashCode();
         }
+
+        public virtual string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {

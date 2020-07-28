@@ -61,12 +61,12 @@ namespace Steeltoe.Stream.Config
 
             if (Default != null)
             {
-                Default.PostProcess(null);
+                Default.PostProcess("default", null);
             }
 
             foreach (var binding in Bindings)
             {
-                binding.Value.PostProcess(Default);
+                binding.Value.PostProcess(binding.Key, Default);
             }
 
             foreach (var binder in Binders)
@@ -160,7 +160,7 @@ namespace Steeltoe.Stream.Config
             if (consumerOptions == null)
             {
                 consumerOptions = new ConsumerOptions();
-                consumerOptions.PostProcess(Default.Consumer);
+                consumerOptions.PostProcess(inputBindingName, Default.Consumer);
                 bindingOptions.Consumer = consumerOptions;
             }
 
@@ -190,7 +190,7 @@ namespace Steeltoe.Stream.Config
             if (producerOptions == null)
             {
                 producerOptions = new ProducerOptions();
-                producerOptions.PostProcess(Default.Producer);
+                producerOptions.PostProcess(outputBindingName, Default.Producer);
                 bindingOptions.Producer = producerOptions;
             }
 

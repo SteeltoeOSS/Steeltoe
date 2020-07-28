@@ -28,7 +28,6 @@ namespace Steeltoe.Stream.Binder
         protected readonly IProvisioningProvider _provisioningProvider;
         protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new EmbeddedHeadersChannelInterceptor();
         protected readonly string[] _headersToEmbed;
-        protected readonly IDestinationRegistry _destinationRegistry;
         protected bool _producerBindingExist;
 
         protected AbstractMessageChannelBinder(
@@ -51,7 +50,6 @@ namespace Steeltoe.Stream.Binder
             _provisioningProvider = provisioningProvider;
             ListenerContainerCustomizer = containerCustomizer;
             MessageSourceCustomizer = sourceCustomizer;
-            _destinationRegistry = ApplicationContext.GetService<IDestinationRegistry>();
         }
 
         public override Type TargetType { get; } = typeof(IMessageChannel);
@@ -91,8 +89,9 @@ namespace Steeltoe.Stream.Binder
             }
 
             PostProcessOutputChannel(outboundTarget, producerOptions);
-
-            ((ISubscribableChannel)outboundTarget).Subscribe(new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions)));
+            var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), _headersToEmbed, UseNativeEncoding(producerOptions));
+            sendingHandler.Initialize();
+            ((ISubscribableChannel)outboundTarget).Subscribe(sendingHandler);
 
             IBinding binding = new DefaultProducingMessageChannelBinding(
                 this,
@@ -202,7 +201,7 @@ namespace Steeltoe.Stream.Binder
 
             var errorChannelName = GetErrorsBaseName(destination, group, consumerOptions);
             ISubscribableChannel errorChannel;
-            var errorChannelObject = _destinationRegistry.Lookup(errorChannelName);
+            var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
                 if (!(errorChannelObject is ISubscribableChannel))
@@ -215,7 +214,7 @@ namespace Steeltoe.Stream.Binder
             else
             {
                 errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName);
-                _destinationRegistry.Register(errorChannelName, errorChannel);
+                ApplicationContext.Register(errorChannelName, errorChannel);
             }
 
             ErrorMessageSendingRecoverer recoverer;
@@ -229,7 +228,7 @@ namespace Steeltoe.Stream.Binder
             }
 
             var recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
-            _destinationRegistry.Register(recovererBeanName, recoverer);
+            ApplicationContext.Register(recovererBeanName, recoverer);
 
             IMessageHandler handler;
             if (polled)
@@ -241,7 +240,7 @@ namespace Steeltoe.Stream.Binder
                 handler = GetErrorMessageHandler(destination, group, consumerOptions);
             }
 
-            var defaultErrorChannel = (IMessageChannel)_destinationRegistry.Lookup(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
 
             if (handler == null && errorChannel is ILastSubscriberAwareChannel)
             {
@@ -252,10 +251,11 @@ namespace Steeltoe.Stream.Binder
 
             if (handler != null)
             {
+                handler.ServiceName = errorMessageHandlerName;
                 if (IsSubscribable(errorChannel))
                 {
                     var errorHandler = handler;
-                    _destinationRegistry.Register(errorMessageHandlerName, errorHandler);
+                    ApplicationContext.Register(errorMessageHandlerName, errorHandler);
                     errorChannel.Subscribe(handler);
                 }
                 else
@@ -279,7 +279,8 @@ namespace Steeltoe.Stream.Binder
                     errorChannel.Subscribe(errorBridge);
 
                     var errorBridgeHandlerName = GetErrorBridgeName(destination, group, consumerOptions);
-                    _destinationRegistry.Register(errorBridgeHandlerName, errorBridge);
+                    errorBridge.ServiceName = errorBridgeHandlerName;
+                    ApplicationContext.Register(errorBridgeHandlerName, errorBridge);
                 }
                 else
                 {
@@ -348,7 +349,7 @@ namespace Steeltoe.Stream.Binder
         {
             var errorChannelName = GetErrorsBaseName(destination);
             ISubscribableChannel errorChannel;
-            var errorChannelObject = _destinationRegistry.Lookup(errorChannelName);
+            var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
                 if (!(errorChannelObject is ISubscribableChannel))
@@ -361,10 +362,10 @@ namespace Steeltoe.Stream.Binder
             else
             {
                 errorChannel = new PublishSubscribeChannel(ApplicationContext);
-                _destinationRegistry.Register(errorChannelName, errorChannel);
+                ApplicationContext.Register(errorChannelName, errorChannel);
             }
 
-            var defaultErrorChannel = (IMessageChannel)_destinationRegistry.Lookup(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            var defaultErrorChannel = (IMessageChannel)ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
 
             if (defaultErrorChannel != null)
             {
@@ -374,7 +375,7 @@ namespace Steeltoe.Stream.Binder
                 };
                 errorChannel.Subscribe(errorBridge);
                 var errorBridgeHandlerName = GetErrorBridgeName(destination);
-                _destinationRegistry.Register(errorBridgeHandlerName, errorBridge);
+                ApplicationContext.Register(errorBridgeHandlerName, errorBridge);
             }
 
             return errorChannel;
@@ -394,15 +395,15 @@ namespace Steeltoe.Stream.Binder
         {
             var errorChannelName = GetErrorsBaseName(destination);
             var errorBridgeHandlerName = GetErrorBridgeName(destination);
-            if (_destinationRegistry.Lookup(errorChannelName) is ISubscribableChannel channel)
+            if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
             {
-                if (_destinationRegistry.Lookup(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
+                if (ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
                 {
                     channel.Unsubscribe(bridgeHandler);
-                    _destinationRegistry.Deregister(errorBridgeHandlerName);
+                    ApplicationContext.Deregister(errorBridgeHandlerName);
                 }
 
-                _destinationRegistry.Deregister(errorChannelName);
+                ApplicationContext.Deregister(errorChannelName);
             }
         }
 
@@ -418,15 +419,15 @@ namespace Steeltoe.Stream.Binder
                 var errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, options);
                 var errorBridgeHandlerName = GetErrorBridgeName(destination, group, options);
 
-                if (_destinationRegistry.Lookup(errorChannelName) is ISubscribableChannel channel)
+                if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
                 {
-                    if (_destinationRegistry.Lookup(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
+                    if (ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName) is IMessageHandler bridgeHandler)
                     {
                         channel.Unsubscribe(bridgeHandler);
                         DestroyBean(errorBridgeHandlerName);
                     }
 
-                    if (_destinationRegistry.Lookup(errorMessageHandlerName) is IMessageHandler handler)
+                    if (ApplicationContext.GetService<IMessageHandler>(errorMessageHandlerName) is IMessageHandler handler)
                     {
                         channel.Unsubscribe(handler);
                         DestroyBean(errorMessageHandlerName);
@@ -443,10 +444,7 @@ namespace Steeltoe.Stream.Binder
 
         private void DestroyBean(string beanName)
         {
-            if (_destinationRegistry.Contains(beanName))
-            {
-                _destinationRegistry.Deregister(beanName);
-            }
+            ApplicationContext.Deregister(beanName);
         }
 
         private Dictionary<string, object> DoGetExtendedInfo(object destination, object properties)
@@ -604,6 +602,10 @@ namespace Steeltoe.Stream.Binder
                 this._useNativeEncoding = useNativeEncoding;
             }
 
+            public override void Initialize()
+            {
+            }
+
             public Task Start()
             {
                 if (_handler is ILifecycle)
@@ -663,6 +665,7 @@ namespace Steeltoe.Stream.Binder
 
                 return IntegrationServices.MessageBuilderFactory.WithPayload(payload).CopyHeaders(transformed.Headers).Build();
             }
+
         }
 
         protected class DefaultProducingMessageChannelBinding : DefaultBinding<IMessageChannel>

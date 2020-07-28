@@ -34,11 +34,32 @@ namespace Steeltoe.Messaging.Rabbit.Core
         }
 
         public BatchingRabbitTemplate(
+            RabbitOptions options,
+            Connection.IConnectionFactory connectionFactory,
+            ISmartMessageConverter messageConverter,
+            IBatchingStrategy batchingStrategy,
+            ILogger logger = null)
+            : base(options, connectionFactory, messageConverter, logger)
+        {
+            _batchingStrategy = batchingStrategy;
+        }
+
+        public BatchingRabbitTemplate(
             IOptionsMonitor<RabbitOptions> optionsMonitor,
             Connection.IConnectionFactory connectionFactory,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
             : base(optionsMonitor, connectionFactory, logger)
+        {
+            _batchingStrategy = batchingStrategy;
+        }
+
+        public BatchingRabbitTemplate(
+            RabbitOptions options,
+            Connection.IConnectionFactory connectionFactory,
+            IBatchingStrategy batchingStrategy,
+            ILogger logger = null)
+            : base(options, connectionFactory, logger)
         {
             _batchingStrategy = batchingStrategy;
         }

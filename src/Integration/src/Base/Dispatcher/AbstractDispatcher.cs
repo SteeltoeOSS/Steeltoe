@@ -8,6 +8,7 @@ using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
+using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace Steeltoe.Integration.Dispatcher
         private readonly MessageHandlerComparer _comparer = new MessageHandlerComparer();
         private IErrorHandler _errorHandler;
         private volatile IMessageHandler _theOneHandler;
+        private IIntegrationServices _integrationServices;
 
         protected AbstractDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
         {
@@ -49,6 +51,19 @@ namespace Steeltoe.Integration.Dispatcher
         public virtual bool Failover { get; set; } = true;
 
         public virtual IMessageHandlingDecorator MessageHandlingDecorator { get; set; }
+
+        public virtual IIntegrationServices IntegrationServices
+        {
+            get
+            {
+                if (_integrationServices == null)
+                {
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(_context);
+                }
+
+                return _integrationServices;
+            }
+        }
 
         public virtual IErrorHandler ErrorHandler
         {

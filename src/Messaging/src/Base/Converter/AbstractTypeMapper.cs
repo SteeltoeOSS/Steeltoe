@@ -2,18 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.Converter
 {
     public abstract class AbstractTypeMapper
     {
-        public const string DEFAULT_CLASSID_FIELD_NAME = "__TypeId__";
-        public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = "__ContentTypeId__";
-        public const string DEFAULT_KEY_CLASSID_FIELD_NAME = "__KeyTypeId__";
+        public const string DEFAULT_CLASSID_FIELD_NAME = MessageHeaders.TYPE_ID;
+        public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = MessageHeaders.CONTENT_TYPE_ID;
+        public const string DEFAULT_KEY_CLASSID_FIELD_NAME = MessageHeaders.KEY_TYPE_ID;
 
         private readonly Dictionary<string, Type> _idClassMapping = new Dictionary<string, Type>();
 
@@ -39,7 +38,7 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 
         protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type clazz)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+            var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
             if (_classIdMapping.ContainsKey(clazz))
             {
                 accessor.SetHeader(headerName, _classIdMapping[clazz]);
@@ -76,12 +75,12 @@ namespace Steeltoe.Messaging.Rabbit.Support.Converter
 
         protected virtual bool HasInferredTypeHeader(IMessageHeaders headers)
         {
-            return headers.InferredArgumentType() != null;
+            return FromInferredTypeHeader(headers) != null;
         }
 
         protected Type FromInferredTypeHeader(IMessageHeaders headers)
         {
-            return headers.InferredArgumentType();
+            return headers.Get<Type>(MessageHeaders.INFERRED_ARGUMENT_TYPE);
         }
 
         protected virtual Type GetContentType(Type type)

@@ -9,15 +9,15 @@ namespace Steeltoe.Stream.Binding
 {
     public abstract class AbstractBindingTargetFactory<T> : IBindingTargetFactory
     {
-        protected IApplicationContext _context;
-
         public Type BindingTargetType { get; }
 
         protected AbstractBindingTargetFactory(IApplicationContext context)
         {
             BindingTargetType = typeof(T);
-            _context = context;
+            ApplicationContext = context;
         }
+
+        public IApplicationContext ApplicationContext { get; }
 
         public virtual bool CanCreate(Type type)
         {

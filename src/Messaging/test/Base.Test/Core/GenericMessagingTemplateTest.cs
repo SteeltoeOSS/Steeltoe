@@ -326,6 +326,8 @@ namespace Steeltoe.Messaging.Core.Test
                 Latch = latch;
             }
 
+            public string ServiceName { get; set; } = nameof(LateReplierMessageHandler);
+
             public void HandleMessage(IMessage message)
             {
                 try
@@ -359,6 +361,8 @@ namespace Steeltoe.Messaging.Core.Test
 
         internal class SendAndReceiveTestHandler : IMessageHandler
         {
+            public string ServiceName { get; set; } = nameof(SendAndReceiveTestHandler);
+
             public void HandleMessage(IMessage message)
             {
                 var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;

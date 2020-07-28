@@ -351,11 +351,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             if (MissingQueuesFatal)
             {
-                var checkAdmin = AmqpAdmin;
+                var checkAdmin = RabbitAdmin;
                 if (checkAdmin == null)
                 {
                     checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, _loggerFactory?.CreateLogger<RabbitAdmin>());
-                    AmqpAdmin = checkAdmin;
+                    RabbitAdmin = checkAdmin;
                 }
 
                 foreach (var queue in queueNames)
@@ -1147,7 +1147,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
                 catch (Exception e)
                 {
-                    if (_container.CauseChainHasImmediateAcknowledgeAmqpException(e))
+                    if (_container.CauseChainHasImmediateAcknowledgeRabbitException(e))
                     {
                         _logger?.LogDebug("User requested ack for failed delivery: {tag}", deliveryTag);
                         HandleAck(deliveryTag, channelLocallyTransacted);

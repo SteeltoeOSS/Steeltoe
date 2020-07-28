@@ -53,6 +53,11 @@ namespace Steeltoe.Stream.Binding
             get { return false; }
         }
 
+        public override void Initialize()
+        {
+            // Nothing to do
+        }
+
         protected override object HandleRequestMessage(IMessage requestMessage)
         {
             var matchingHandlers = _evaluateExpressions

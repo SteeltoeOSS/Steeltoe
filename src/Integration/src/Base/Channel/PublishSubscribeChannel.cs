@@ -14,6 +14,11 @@ namespace Steeltoe.Integration.Channel
 {
     public class PublishSubscribeChannel : AbstractTaskSchedulerChannel
     {
+        public PublishSubscribeChannel(ILogger logger = null)
+        : this(null, null, null, logger)
+        {
+        }
+
         public PublishSubscribeChannel(IApplicationContext context, ILogger logger = null)
         : this(context, null, null, logger)
         {

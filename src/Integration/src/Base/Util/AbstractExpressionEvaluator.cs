@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.CSharp;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;
@@ -11,18 +14,103 @@ namespace Steeltoe.Integration.Util
 {
     public abstract class AbstractExpressionEvaluator
     {
-        public IExpressionParser ExpressionParser { get; set; }
+        private IEvaluationContext _evaluationContext;
 
-        public IEvaluationContext EvaluationContext { get; set; }
+        private IMessageBuilderFactory _messageBuilderFactory;
 
-        public IMessageBuilderFactory MessageBuilderFactory { get; set; } = new DefaultMessageBuilderFactory();
+        private IIntegrationServices _integrationServices;
 
-        public ITypeConverter TypeConverter { get; set; }
+        public IExpressionParser ExpressionParser { get; } = new ExpressionParser();
 
-        protected AbstractExpressionEvaluator(IExpressionParser expressionParser, IEvaluationContext evaluationContext)
+        public IEvaluationContext EvaluationContext
         {
-            ExpressionParser = expressionParser ?? throw new ArgumentNullException(nameof(expressionParser));
-            EvaluationContext = evaluationContext ?? throw new ArgumentNullException(nameof(evaluationContext));
+            get
+            {
+                if (_evaluationContext == null)
+                {
+                    _evaluationContext = GetEvaluationContext();
+                }
+
+                return _evaluationContext;
+            }
+
+            set
+            {
+                _evaluationContext = value;
+            }
+        }
+
+        public IIntegrationServices IntegrationServices
+        {
+            get
+            {
+                if (_integrationServices == null)
+                {
+                    _integrationServices = IntegrationServicesUtils.GetIntegrationServices(ApplicationContext);
+                }
+
+                return _integrationServices;
+            }
+        }
+
+        public IMessageBuilderFactory MessageBuilderFactory
+        {
+            get
+            {
+                if (_messageBuilderFactory == null)
+                {
+                    _messageBuilderFactory = GetMessageBuilderFactory();
+                }
+
+                return _messageBuilderFactory;
+            }
+
+            set
+            {
+                _messageBuilderFactory = value;
+            }
+        }
+
+        public ITypeConverter TypeConverter { get; set; } = new BeanFactoryTypeConverter();
+
+        public IApplicationContext ApplicationContext { get; }
+
+        protected AbstractExpressionEvaluator(IApplicationContext context)
+        {
+            ApplicationContext = context;
+        }
+
+        protected virtual IMessageBuilderFactory GetMessageBuilderFactory()
+        {
+            return IntegrationServices.MessageBuilderFactory;
+        }
+
+        protected virtual IEvaluationContext GetEvaluationContext(bool contextRequired = true)
+        {
+            if (_evaluationContext == null)
+            {
+                if (ApplicationContext == null && !contextRequired)
+                {
+                    _evaluationContext = new StandardEvaluationContext();
+                }
+                else
+                {
+                    _evaluationContext = new StandardEvaluationContext(ApplicationContext);
+                }
+
+                _evaluationContext.TypeConverter = TypeConverter;
+
+                if (ApplicationContext != null)
+                {
+                    var conversionService = ApplicationContext.GetService<IConversionService>(IntegrationUtils.INTEGRATION_CONVERSION_SERVICE_BEAN_NAME);
+                    if (conversionService != null)
+                    {
+                        TypeConverter.ConversionService = conversionService;
+                    }
+                }
+            }
+
+            return _evaluationContext;
         }
 
         protected T EvaluateExpression<T>(IExpression expression, IMessage message)
@@ -44,7 +132,7 @@ namespace Steeltoe.Integration.Util
                     cause = ex.InnerException;
                 }
 
-                var wrapped = IntegrationUtils.WrapInHandlingExceptionIfNecessary(message, "Expression evaluation failed: " + expression.ExpressionString, cause ?? ex);
+                var wrapped = IntegrationServicesUtils.WrapInHandlingExceptionIfNecessary(message, "Expression evaluation failed: " + expression.ExpressionString, cause ?? ex);
                 if (wrapped != ex)
                 {
                     throw wrapped;

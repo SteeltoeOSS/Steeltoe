@@ -163,6 +163,8 @@ namespace Steeltoe.Integration.Channel.Test
         {
             public int Count;
 
+            public string ServiceName { get; set; } = nameof(CounterHandler);
+
             public void HandleMessage(IMessage message)
             {
                 Count++;
@@ -175,6 +177,8 @@ namespace Steeltoe.Integration.Channel.Test
             public int? TaskId;
             public int ThreadId;
             public string ThreadName;
+
+            public string ServiceName { get; set; } = nameof(ThreadNameExtractingTestTarget);
 
             public ThreadNameExtractingTestTarget()
             : this(null)

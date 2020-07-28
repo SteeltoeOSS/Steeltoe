@@ -24,6 +24,11 @@ namespace Steeltoe.Integration.Handler
             MessageLogger = logger;
         }
 
+        public override void Initialize()
+        {
+            // Nothing to do
+        }
+
         protected override void HandleMessageInternal(IMessage message)
         {
             switch (Level)

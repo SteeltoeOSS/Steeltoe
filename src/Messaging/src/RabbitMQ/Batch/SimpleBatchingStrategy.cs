@@ -127,6 +127,7 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             var index = 0;
             while (index < bodyLength)
             {
+                accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 var slice = byteBuffer.Slice(index);
                 var length = BinaryPrimitives.ReadInt32BigEndian(slice);
                 index += 4;

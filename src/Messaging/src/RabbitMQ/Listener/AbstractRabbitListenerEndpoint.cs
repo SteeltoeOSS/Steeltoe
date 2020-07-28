@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             if (Admin != null)
             {
-                container.AmqpAdmin = Admin;
+                container.RabbitAdmin = Admin;
             }
 
             SetupMessageListener(listenerContainer);

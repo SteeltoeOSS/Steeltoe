@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Config
@@ -15,7 +16,20 @@ namespace Steeltoe.Stream.Config
 
         public ProducerOptions()
         {
+
         }
+
+        public ProducerOptions(string bindingName)
+        {
+            if (bindingName == null)
+            {
+                throw new ArgumentNullException(nameof(bindingName));
+            }
+
+            BindingName = bindingName;
+        }
+
+        public string BindingName { get; set; }
 
         public bool? AutoStartup { get; set; }
 
@@ -55,8 +69,17 @@ namespace Steeltoe.Stream.Config
 
         bool IProducerOptions.ErrorChannelEnabled => ErrorChannelEnabled.Value;
 
-        internal void PostProcess(ProducerOptions @default = null)
+        public IProducerOptions Clone()
         {
+            var clone = (ProducerOptions)MemberwiseClone();
+            clone.RequiredGroups = new List<string>(RequiredGroups);
+            return clone;
+        }
+
+        internal void PostProcess(string name, ProducerOptions @default = null)
+        {
+            BindingName = name;
+
             if (!ErrorChannelEnabled.HasValue)
             {
                 ErrorChannelEnabled = (@default != null) ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
@@ -106,13 +129,6 @@ namespace Steeltoe.Stream.Config
             {
                 AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
             }
-        }
-
-        internal ProducerOptions Clone()
-        {
-            var clone = (ProducerOptions)MemberwiseClone();
-            clone.RequiredGroups = new List<string>(RequiredGroups);
-            return clone;
         }
     }
 }

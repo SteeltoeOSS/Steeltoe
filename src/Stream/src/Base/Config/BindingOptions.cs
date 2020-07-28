@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Config
 
         IProducerOptions IBindingOptions.Producer { get => Producer; }
 
-        internal void PostProcess(BindingOptions @default)
+        internal void PostProcess(string name, BindingOptions @default)
         {
             if (Destination == null)
             {
@@ -52,8 +52,8 @@ namespace Steeltoe.Stream.Config
                 Binder = @default?.Binder;
             }
 
-            Consumer?.PostProcess(@default?.Consumer);
-            Producer?.PostProcess(@default?.Producer);
+            Consumer?.PostProcess(name, @default?.Consumer);
+            Producer?.PostProcess(name, @default?.Producer);
         }
 
         internal BindingOptions Clone(bool deep = false)
@@ -64,12 +64,12 @@ namespace Steeltoe.Stream.Config
             {
                 if (Producer != null)
                 {
-                    Producer = Producer.Clone();
+                    Producer = (ProducerOptions)Producer.Clone();
                 }
 
                 if (Consumer != null)
                 {
-                    Consumer = Consumer.Clone();
+                    Consumer = (ConsumerOptions)Consumer.Clone();
                 }
             }
 

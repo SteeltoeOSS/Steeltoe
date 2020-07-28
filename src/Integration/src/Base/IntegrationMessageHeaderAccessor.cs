@@ -34,6 +34,8 @@ namespace Steeltoe.Integration
 
         public const string ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
 
+        public const string SOURCE_DATA = "sourceData";
+
         private ISet<string> _readOnlyHeaders = new HashSet<string>();
 
         public IntegrationMessageHeaderAccessor(IMessage message)

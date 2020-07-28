@@ -96,7 +96,7 @@ namespace Steeltoe.Messaging.Rabbit.Extensions
 
         public static Type InferredArgumentType(this IMessageHeaders headers)
         {
-            return headers.Get<Type>(RabbitMessageHeaders.INFERRED_ARGUMENT_TYPE);
+            return headers.Get<Type>(MessageHeaders.INFERRED_ARGUMENT_TYPE);
         }
 
         public static uint? MessageCount(this IMessageHeaders headers)

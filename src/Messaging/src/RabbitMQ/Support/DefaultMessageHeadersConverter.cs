@@ -37,7 +37,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
             _convertLongLongStrings = convertLongLongStrings;
         }
 
-        public void FromMessageHeaders(IMessageHeaders headers, IBasicProperties target, Encoding charset)
+        public virtual void FromMessageHeaders(IMessageHeaders headers, IBasicProperties target, Encoding charset)
         {
             var source = headers;
             target.Headers = ConvertHeadersIfNecessary(headers);
@@ -86,7 +86,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
             }
         }
 
-        public IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset)
+        public virtual IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset)
         {
             var target = new RabbitHeaderAccessor();
             var headers = source.Headers;
@@ -163,7 +163,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
             var writableHeaders = new Dictionary<string, object>();
             foreach (var entry in source)
             {
-                if (!entry.Key.StartsWith(RabbitMessageHeaders.INTERNAL) &&
+                if (!entry.Key.StartsWith(MessageHeaders.INTERNAL) &&
                     !entry.Key.StartsWith(RabbitMessageHeaders.RABBIT_PROPERTY) &&
                     entry.Key != MessageHeaders.ID &&
                     entry.Key != MessageHeaders.TIMESTAMP)

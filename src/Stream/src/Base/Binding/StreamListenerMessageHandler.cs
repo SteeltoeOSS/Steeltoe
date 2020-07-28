@@ -35,6 +35,11 @@ namespace Steeltoe.Stream.Binding
             get { return _copyHeaders; }
         }
 
+        public override void Initialize()
+        {
+            // Nothing to do
+        }
+
         protected override object HandleRequestMessage(IMessage requestMessage)
         {
             try

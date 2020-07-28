@@ -44,7 +44,6 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void HandlerThrowsExceptionPublishSubscribeWithExecutor()
         {
-            services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
@@ -70,7 +69,6 @@ namespace Steeltoe.Integration.Channel.Test
         [Fact]
         public void HandlerThrowsExceptionExecutorChannel()
         {
-            services.AddSingleton<IDestinationRegistry, DefaultDestinationRegistry>();
             services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
             services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
             services.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
@@ -95,6 +93,8 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class ThrowMessageExceptionHandler : IMessageHandler
         {
+            public string ServiceName { get; set; } = nameof(ThrowMessageExceptionHandler);
+
             public Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
 
             public void HandleMessage(IMessage message)
@@ -105,6 +105,8 @@ namespace Steeltoe.Integration.Channel.Test
 
         private class ThrowingHandler : IMessageHandler
         {
+            public string ServiceName { get; set; } = nameof(ThrowingHandler);
+
             public Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
 
             public void HandleMessage(IMessage message)
@@ -121,6 +123,8 @@ namespace Steeltoe.Integration.Channel.Test
             {
                 this.latch = latch;
             }
+
+            public string ServiceName { get; set; } = nameof(ResultHandler);
 
             public volatile IMessage LastMessage;
 

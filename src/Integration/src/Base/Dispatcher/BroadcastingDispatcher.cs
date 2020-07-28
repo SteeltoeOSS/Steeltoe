@@ -53,12 +53,7 @@ namespace Steeltoe.Integration.Dispatcher
             {
                 if (_messageBuilderFactory == null)
                 {
-                    _messageBuilderFactory = _context.GetService<IMessageBuilderFactory>();
-                }
-
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = new DefaultMessageBuilderFactory();
+                    _messageBuilderFactory = IntegrationServices.MessageBuilderFactory;
                 }
 
                 return _messageBuilderFactory;

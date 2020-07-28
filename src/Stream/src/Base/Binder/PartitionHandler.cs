@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
+using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using System;
@@ -14,19 +16,19 @@ namespace Steeltoe.Stream.Binder
         internal readonly IPartitionKeyExtractorStrategy _partitionKeyExtractorStrategy;
         internal readonly IPartitionSelectorStrategy _partitionSelectorStrategy;
 
-        private readonly IExpressionParser _expressionParser;
-        private readonly IEvaluationContext _evaluationContext;
         private readonly IProducerOptions _producerOptions;
+        private readonly IApplicationContext _applicationContext;
+
+        private IExpressionParser _expressionParser;
+        private IEvaluationContext _evaluationContext;
 
         public PartitionHandler(
-                IExpressionParser expressionParser,
-                IEvaluationContext evaluationContext,
+                IApplicationContext applicationContext,
                 IProducerOptions options,
                 IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy,
                 IPartitionSelectorStrategy partitionSelectorStrategy)
         {
-            _expressionParser = expressionParser;
-            _evaluationContext = evaluationContext;
+            _applicationContext = applicationContext;
             _producerOptions = options;
             _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
             _partitionSelectorStrategy = partitionSelectorStrategy;
@@ -35,15 +37,51 @@ namespace Steeltoe.Stream.Binder
 
         public int PartitionCount { get; set; }
 
+        public IExpressionParser ExpressionParser
+        {
+            get
+            {
+                if (_expressionParser != null)
+                {
+                    _expressionParser = IntegrationContextUtils.GetExpressionParser(_applicationContext);
+                }
+
+                return _expressionParser;
+            }
+
+            set
+            {
+                _expressionParser = value;
+            }
+        }
+
+        public IEvaluationContext EvaluationContext
+        {
+            get
+            {
+                if (_evaluationContext != null)
+                {
+                    _evaluationContext = IntegrationContextUtils.GetEvaluationContext(_applicationContext);
+                }
+
+                return _evaluationContext;
+            }
+
+            set
+            {
+                _evaluationContext = value;
+            }
+        }
+
         public int DeterminePartition(IMessage message)
         {
             var key = ExtractKey(message);
 
             int partition;
-            if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
+            if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && ExpressionParser != null)
             {
-                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
-                partition = expr.GetValue<int>(_evaluationContext, key);
+                var expr = ExpressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
+                partition = expr.GetValue<int>(EvaluationContext, key);
             }
             else
             {
@@ -57,10 +95,10 @@ namespace Steeltoe.Stream.Binder
         private object ExtractKey(IMessage message)
         {
             var key = InvokeKeyExtractor(message);
-            if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && _expressionParser != null)
+            if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && ExpressionParser != null)
             {
-                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
-                key = expr.GetValue(_evaluationContext, message);
+                var expr = ExpressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
+                key = expr.GetValue(EvaluationContext, message);
             }
 
             if (key == null)

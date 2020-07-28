@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
@@ -14,8 +15,8 @@ namespace Steeltoe.Integration.Handler.Support
 {
     public class DictionaryArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
     {
-        public DictionaryArgumentResolver(IExpressionParser expressionParser, IEvaluationContext evaluationContext)
-            : base(expressionParser, evaluationContext)
+        public DictionaryArgumentResolver(IApplicationContext context)
+            : base(context)
         {
         }
 

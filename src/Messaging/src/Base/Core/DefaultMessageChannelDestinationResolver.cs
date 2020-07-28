@@ -2,32 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using System;
 
 namespace Steeltoe.Messaging.Core
 {
     public class DefaultMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
     {
-        public IDestinationRegistry Registry { get; }
+        public IApplicationContext Context { get; }
 
-        public DefaultMessageChannelDestinationResolver(IDestinationRegistry registry)
+        public DefaultMessageChannelDestinationResolver(IApplicationContext context)
         {
-            if (registry == null)
+            if (context == null)
             {
-                throw new ArgumentNullException(nameof(registry));
+                throw new ArgumentNullException(nameof(context));
             }
 
-            Registry = registry;
+            Context = context;
         }
 
         public virtual IMessageChannel ResolveDestination(string name)
         {
-            if (Registry.Lookup(name) is IMessageChannel result)
-            {
-                return result;
-            }
-
-            return null;
+            return Context.GetService<IMessageChannel>(name);
         }
 
         object IDestinationResolver.ResolveDestination(string name)

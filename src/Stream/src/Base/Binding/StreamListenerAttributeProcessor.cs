@@ -131,7 +131,13 @@ namespace Steeltoe.Stream.Binding
                 //        handler.getClass().getSimpleName() + handler.hashCode(), handler);
                 // this.applicationContext
                 //    .getBean(mappedBindingEntry.getKey(), typeof(ISubscribableChannel))
-                var channel = BindingHelpers.GetBindable<ISubscribableChannel>(_context, mappedBindingEntry.Key);
+
+                var channel = BindingHelpers.GetBindable<IMessageChannel>(_context, mappedBindingEntry.Key) as ISubscribableChannel;
+                if (channel == null)
+                {
+                    throw new InvalidOperationException("Unable to locate ISubscribableChannel with ServiceName: " + mappedBindingEntry.Key);
+                }
+
                 channel.Subscribe(handler);
             }
 

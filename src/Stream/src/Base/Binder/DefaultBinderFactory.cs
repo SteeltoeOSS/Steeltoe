@@ -77,7 +77,7 @@ namespace Steeltoe.Stream.Binder
 
             if (!string.IsNullOrEmpty(binderName))
             {
-                result = binders.SingleOrDefault((b) => b.Name == binderName);
+                result = binders.SingleOrDefault((b) => b.ServiceName == binderName);
             }
             else if (binders.Count() == 1)
             {
@@ -186,7 +186,7 @@ namespace Steeltoe.Stream.Binder
                         var binders = _context.GetServices<IBinder>();
                         foreach (var binder in binders)
                         {
-                            var binderName = binder.Name;
+                            var binderName = binder.ServiceName;
                             _binderInstanceCache.TryAdd(binderName, binder);
 
                             var names = _binderConfigurations.FindMatchingConfigurationsIfAny(binder);

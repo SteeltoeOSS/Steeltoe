@@ -8,7 +8,12 @@ namespace Steeltoe.Stream.Partitioning
 {
     public class CustomPartitionSelectorClass : IPartitionSelectorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionSelectorClass()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public int SelectPartition(object key, int partitionCount)
         {
@@ -19,7 +24,12 @@ namespace Steeltoe.Stream.Partitioning
 #pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionSelectorClassOne()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public int SelectPartition(object key, int partitionCount)
         {
@@ -29,7 +39,12 @@ namespace Steeltoe.Stream.Partitioning
 
     public class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
     {
-        public string Name => this.GetType().Name;
+        public CustomPartitionSelectorClassTwo()
+        {
+            ServiceName = this.GetType().Name;
+        }
+
+        public string ServiceName { get; set; }
 
         public int SelectPartition(object key, int partitionCount)
         {

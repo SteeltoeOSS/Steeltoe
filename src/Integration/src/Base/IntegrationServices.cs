@@ -5,8 +5,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
+using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.CSharp;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
+using Steeltoe.Integration.Support.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using System;
@@ -20,6 +23,7 @@ namespace Steeltoe.Integration
         protected IIDGenerator _idGenerator;
         protected IDestinationResolver<IMessageChannel> _channelResolver;
         protected IApplicationContext _context;
+        protected IExpressionParser _expressionParser;
 
         public IntegrationServices(IApplicationContext context)
         {
@@ -32,7 +36,11 @@ namespace Steeltoe.Integration
             {
                 if (_messageBuilderFactory == null)
                 {
-                    _messageBuilderFactory = _context.GetService<IMessageBuilderFactory>();
+                    _messageBuilderFactory = _context?.GetService<IMessageBuilderFactory>();
+                    if (_messageBuilderFactory == null)
+                    {
+                        _messageBuilderFactory = new DefaultMessageBuilderFactory();
+                    }
                 }
 
                 return _messageBuilderFactory;
@@ -44,13 +52,39 @@ namespace Steeltoe.Integration
             }
         }
 
+        public virtual IExpressionParser ExpressionParser
+        {
+            get
+            {
+                if (_expressionParser == null)
+                {
+                    _expressionParser = _context?.GetService<IExpressionParser>();
+                    if (_expressionParser == null)
+                    {
+                        _expressionParser = new ExpressionParser();
+                    }
+                }
+
+                return _expressionParser;
+            }
+
+            set
+            {
+                _expressionParser = value;
+            }
+        }
+
         public virtual IDestinationResolver<IMessageChannel> ChannelResolver
         {
             get
             {
                 if (_channelResolver == null)
                 {
-                    _channelResolver = _context.GetService<IDestinationResolver<IMessageChannel>>();
+                    _channelResolver = _context?.GetService<IDestinationResolver<IMessageChannel>>();
+                    if (_channelResolver == null)
+                    {
+                        _channelResolver = new DefaultMessageChannelResolver(_context);
+                    }
                 }
 
                 return _channelResolver;
@@ -68,7 +102,11 @@ namespace Steeltoe.Integration
             {
                 if (_conversionService == null)
                 {
-                    _conversionService = _context.GetService<IConversionService>();
+                    _conversionService = _context?.GetService<IConversionService>();
+                    if (_conversionService == null)
+                    {
+                        _conversionService = DefaultConversionService.Singleton;
+                    }
                 }
 
                 return _conversionService;
@@ -86,7 +124,11 @@ namespace Steeltoe.Integration
             {
                 if (_idGenerator == null)
                 {
-                    _idGenerator = _context.GetService<IIDGenerator>();
+                    _idGenerator = _context?.GetService<IIDGenerator>();
+                    if (_idGenerator == null)
+                    {
+                        _idGenerator = new DefaultIdGenerator();
+                    }
                 }
 
                 return _idGenerator;

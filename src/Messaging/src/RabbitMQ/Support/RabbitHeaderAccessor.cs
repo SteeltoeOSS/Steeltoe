@@ -173,8 +173,8 @@ namespace Steeltoe.Messaging.Rabbit.Support
 
         public Type InferredArgumentType
         {
-            get { return GetHeader(RabbitMessageHeaders.INFERRED_ARGUMENT_TYPE) as Type; }
-            set { SetHeader(RabbitMessageHeaders.INFERRED_ARGUMENT_TYPE, value); }
+            get { return GetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE) as Type; }
+            set { SetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE, value); }
         }
 
         public uint? MessageCount

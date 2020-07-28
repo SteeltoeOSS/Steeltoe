@@ -147,7 +147,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public virtual IMessageHeadersConverter MessageHeadersConverter { get; set; }
 
-        public virtual IRabbitAdmin AmqpAdmin { get; set; }
+        public virtual IRabbitAdmin RabbitAdmin { get; set; }
 
         public virtual bool MissingQueuesFatal { get; set; } = true;
 
@@ -605,7 +605,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             lock (_lock)
             {
-                var admin = AmqpAdmin;
+                var admin = RabbitAdmin;
                 if (!IsLazyLoad && admin != null && AutoDeclare)
                 {
                     try
@@ -897,12 +897,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual void ConfigureAdminIfNeeded()
         {
-            if (AmqpAdmin == null && ApplicationContext != null)
+            if (RabbitAdmin == null && ApplicationContext != null)
             {
                 var admins = ApplicationContext.GetServices<IRabbitAdmin>();
                 if (admins.Count() == 1)
                 {
-                    AmqpAdmin = admins.Single();
+                    RabbitAdmin = admins.Single();
                 }
                 else
                 {
@@ -932,11 +932,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual void CheckMismatchedQueues()
         {
-            if (MismatchedQueuesFatal && AmqpAdmin != null)
+            if (MismatchedQueuesFatal && RabbitAdmin != null)
             {
                 try
                 {
-                    AmqpAdmin.Initialize();
+                    RabbitAdmin.Initialize();
                 }
                 catch (RabbitConnectException e)
                 {
@@ -1045,7 +1045,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return Queues.ToDictionary((q) => q.ActualName);
         }
 
-        protected virtual bool CauseChainHasImmediateAcknowledgeAmqpException(Exception exception)
+        protected virtual bool CauseChainHasImmediateAcknowledgeRabbitException(Exception exception)
         {
             // if (ex instanceof Error) {
             //    return false;

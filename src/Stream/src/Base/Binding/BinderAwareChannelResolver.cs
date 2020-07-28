@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Stream.Config;
@@ -27,23 +28,23 @@ namespace Steeltoe.Stream.Binding
         }
 
         public BinderAwareChannelResolver(
+            IApplicationContext context,
             IOptionsMonitor<BindingServiceOptions> optionsMonitor,
-            IDestinationRegistry destinationRegistry,
             IBindingService bindingService,
             SubscribableChannelBindingTargetFactory bindingTargetFactory,
             DynamicDestinationsBindable dynamicDestinationsBindable)
-            : this(optionsMonitor, destinationRegistry, bindingService, bindingTargetFactory, dynamicDestinationsBindable, null)
+            : this(context, optionsMonitor, bindingService, bindingTargetFactory, dynamicDestinationsBindable, null)
         {
         }
 
         public BinderAwareChannelResolver(
+            IApplicationContext context,
             IOptionsMonitor<BindingServiceOptions> optionsMonitor,
-            IDestinationRegistry destinationRegistry,
             IBindingService bindingService,
             SubscribableChannelBindingTargetFactory bindingTargetFactory,
             DynamicDestinationsBindable dynamicDestinationsBindable,
             INewDestinationBindingCallback callback)
-            : base(destinationRegistry)
+            : base(context)
         {
             if (bindingService == null)
             {

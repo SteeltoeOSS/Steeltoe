@@ -48,7 +48,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var handler = new TestSimpleHandler();
@@ -83,7 +83,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var handler = new TestConvertSimpleHandler();
@@ -129,7 +129,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var handler = new TestConvertSimpleHandler();
@@ -172,7 +172,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var handler = new TestConvertSimpleHandler();
@@ -210,7 +210,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 1,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var handler = new TestConvertSimpleHandler();
@@ -303,7 +303,7 @@ namespace Steeltoe.Stream.Binder
                 BackOffInitialInterval = 0,
                 RetryableExceptions = new List<string>() { "!System.InvalidOperationException" }
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             var latch = new CountdownEvent(2);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -362,7 +362,7 @@ namespace Steeltoe.Stream.Binder
             {
                 MaxAttempts = 1
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             var latch = new CountdownEvent(1);
             binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -404,7 +404,7 @@ namespace Steeltoe.Stream.Binder
                 MaxAttempts = 2,
                 BackOffInitialInterval = 0
             };
-            properties.PostProcess();
+            properties.PostProcess("testbinding");
 
             binder.BindConsumer("foo", "bar", pollableSource, properties);
             var h1 = new TestFuncMessageHandler((m) =>
@@ -424,7 +424,10 @@ namespace Steeltoe.Stream.Binder
             public TestErrorsErrorChannelHandler(CountdownEvent latch)
             {
                 this.latch = latch;
+                ServiceName = GetType().Name + "@" + GetHashCode();
             }
+
+            public virtual string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {
@@ -439,7 +442,10 @@ namespace Steeltoe.Stream.Binder
             public TestFuncMessageHandler(Action<IMessage> action)
             {
                 Act = action;
+                ServiceName = GetType().Name + "@" + GetHashCode();
             }
+
+            public virtual string ServiceName { get; set; }
 
             public Action<IMessage> Act { get; }
 
@@ -486,6 +492,13 @@ namespace Steeltoe.Stream.Binder
 
             public IMessage Message { get; set; }
 
+            public TestConvertSimpleHandler()
+            {
+                ServiceName = GetType().Name + "@" + GetHashCode();
+            }
+
+            public virtual string ServiceName { get; set; }
+
             public void HandleMessage(IMessage message)
             {
                 Message = message;
@@ -496,6 +509,13 @@ namespace Steeltoe.Stream.Binder
         private class TestSimpleHandler : IMessageHandler
         {
             public int Count { get; set; }
+
+            public TestSimpleHandler()
+            {
+                ServiceName = GetType().Name + "@" + GetHashCode();
+            }
+
+            public virtual string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {
