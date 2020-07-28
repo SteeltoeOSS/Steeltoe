@@ -618,9 +618,34 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 factory.RequestedHeartbeat = asShortSeconds;
             }
 
-            if (options.Ssl.Enabled)
+            if (options.DetermineSslEnabled())
             {
                 factory.Ssl.Enabled = true;
+
+                if (!options.Ssl.ValidateServerCertificate)
+                {
+                    factory.Ssl.AcceptablePolicyErrors = System.Net.Security.SslPolicyErrors.RemoteCertificateNotAvailable
+                        | System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors;
+                }
+
+                if (!options.Ssl.VerifyHostname)
+                {
+                    factory.Ssl.AcceptablePolicyErrors = System.Net.Security.SslPolicyErrors.RemoteCertificateNameMismatch;
+                }
+                else
+                {
+                    factory.Ssl.ServerName = options.Ssl.ServerName;
+                }
+
+                if (!string.IsNullOrEmpty(options.Ssl.CertPath))
+                {
+                    factory.Ssl.CertPath = options.Ssl.CertPath;
+                }
+
+                if (!string.IsNullOrEmpty(options.Ssl.CertPassphrase))
+                {
+                    factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
+                }
 
                 // TODO: More
                 // map.from(ssl::getAlgorithm).whenNonNull().to(factory::setSslAlgorithm);

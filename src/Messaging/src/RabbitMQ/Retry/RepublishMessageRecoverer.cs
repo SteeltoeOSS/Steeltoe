@@ -1,4 +1,9 @@
-﻿using Steeltoe.Messaging.Rabbit.Connection;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Logging;
+using Steeltoe.Messaging.Rabbit.Connection;
 using Steeltoe.Messaging.Rabbit.Core;
 using Steeltoe.Messaging.Rabbit.Extensions;
 using Steeltoe.Messaging.Rabbit.Support;
@@ -19,17 +24,19 @@ namespace Steeltoe.Messaging.Rabbit.Retry
         private const int ELLIPSIS_LENGTH = 3;
         private const int MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE = 100 - ELLIPSIS_LENGTH;
 
-        public RepublishMessageRecoverer(RabbitTemplate errorTemplate)
-            : this(errorTemplate, null, null)
+        private ILogger _logger;
+
+        public RepublishMessageRecoverer(RabbitTemplate errorTemplate, ILogger logger = null)
+            : this(errorTemplate, null, null, logger)
         {
         }
 
-        public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange)
-        : this(errorTemplate, errorExchange, null)
+        public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, ILogger logger = null)
+        : this(errorTemplate, errorExchange, null, logger)
         {
         }
 
-        public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey)
+        public RepublishMessageRecoverer(RabbitTemplate errorTemplate, string errorExchange, string errorRoutingKey, ILogger logger = null)
         {
             if (errorTemplate == null)
             {
@@ -40,6 +47,7 @@ namespace Steeltoe.Messaging.Rabbit.Retry
             ErrorExchangeName = errorExchange;
             ErrorRoutingKey = errorRoutingKey;
             MaxStackTraceLength = int.MaxValue;
+            _logger = logger;
         }
 
         public RabbitTemplate ErrorTemplate { get; }
@@ -93,14 +101,14 @@ namespace Steeltoe.Messaging.Rabbit.Retry
                 var routingKey = ErrorRoutingKey != null ? ErrorRoutingKey : PrefixedOriginalRoutingKey(message);
                 ErrorTemplate.Send(ErrorExchangeName, routingKey, message);
 
-                // this.logger.warn("Republishing failed message to exchange '" + this.errorExchangeName  + "' with routing key " + routingKey);
+                _logger?.LogWarning("Republishing failed message to exchange '(exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
             }
             else
             {
                 var routingKey = PrefixedOriginalRoutingKey(message);
                 ErrorTemplate.Send(routingKey, message);
 
-                // logger.warn("Republishing failed message to the template's default exchange with routing key " + routingKey);
+                _logger?.LogWarning("Republishing failed message to the template's default exchange with routing key {key}", routingKey);
             }
         }
 
@@ -138,10 +146,9 @@ namespace Steeltoe.Messaging.Rabbit.Retry
             var truncatedExceptionMessage = exceptionMessage.Length <= MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE ? exceptionMessage : (exceptionMessage.Substring(0, MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE) + "...");
             if (MaxStackTraceLength > 0 && stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
             {
-
                 if (!exceptionMessage.Equals(truncatedExceptionMessage))
                 {
-                    int start = stackTraceAsString.IndexOf(exceptionMessage);
+                    var start = stackTraceAsString.IndexOf(exceptionMessage);
                     stackTraceAsString = stackTraceAsString.Substring(0, start)
                             + truncatedExceptionMessage
                             + stackTraceAsString.Substring(start + exceptionMessage.Length);
@@ -153,16 +160,12 @@ namespace Steeltoe.Messaging.Rabbit.Retry
                     if (stackTraceAsString.Length > adjustedStackTraceLen)
                     {
                         stackTraceAsString = stackTraceAsString.Substring(0, adjustedStackTraceLen);
-                        //logger.warn("Stack trace in republished message header truncated due to frame_max "
-                        //        + "limitations; "
-                        //        + "consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+                        _logger?.LogWarning(cause, "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth");
                         truncated = true;
                     }
                     else if (stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
                     {
-                        //this.logger.warn("Exception message in republished message header truncated due to frame_max "
-                        //        + "limitations; consider increasing frame_max on the broker or reduce the exception "
-                        //        + "message size", cause);
+                        _logger?.LogWarning(cause, "Exception message in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the exception message size");
                         truncatedExceptionMessage = exceptionMessage.Substring(0, MaxStackTraceLength - stackTraceAsString.Length - ELLIPSIS_LENGTH) + "...";
                         truncated = true;
                     }
