@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -49,6 +50,8 @@ namespace Steeltoe.Connector.CloudFoundry
 
             return _me;
         }
+
+        public static new bool IsRelevant => Platform.IsCloudFoundry;
 
         private void BuildServiceInfos()
         {

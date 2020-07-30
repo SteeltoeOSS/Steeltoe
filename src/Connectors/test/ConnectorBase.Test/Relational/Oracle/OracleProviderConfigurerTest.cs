@@ -69,7 +69,7 @@ namespace Steeltoe.Connector.Oracle.Test
             var configurer = new OracleProviderConfigurer();
             var opts = configurer.Configure(null, config);
             var connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", config.Username, config.Password, config.Server, config.Port, config.ServiceName);
-            Assert.Equal(connectionString, opts);
+            Assert.StartsWith(connectionString, opts);
         }
 
         [Fact]

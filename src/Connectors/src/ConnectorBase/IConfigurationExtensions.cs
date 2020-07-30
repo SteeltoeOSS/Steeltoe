@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Common;
-using Steeltoe.Connector.CloudFoundry;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 using System.Collections.Generic;
@@ -119,16 +118,18 @@ namespace Steeltoe.Connector
             return config.GetSection("vcap:services").GetChildren().Any();
         }
 
-        private static ServiceInfoCreator GetServiceInfoCreator(IConfiguration config)
+        internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration config)
         {
-            if (Platform.IsCloudFoundry)
+            var alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();
+            foreach (var alternateInfoCreator in alternateInfoCreators)
             {
-                return CloudFoundryServiceInfoCreator.Instance(config);
+                if ((bool)alternateInfoCreator.GetProperty("IsRelevant").GetValue(null))
+                {
+                    return (ServiceInfoCreator)alternateInfoCreator.GetMethod("Instance").Invoke(null, new[] { config });
+                }
             }
-            else
-            {
-                return ServiceInfoCreator.Instance(config);
-            }
+
+            return ServiceInfoCreator.Instance(config);
         }
     }
 }

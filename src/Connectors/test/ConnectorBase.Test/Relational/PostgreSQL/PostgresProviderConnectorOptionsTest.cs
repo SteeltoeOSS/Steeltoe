@@ -64,7 +64,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
             var sconfig = new PostgresProviderConnectorOptions(config);
 
             // assert
-            Assert.Equal(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
+            Assert.StartsWith(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
                 ["postgres:client:Database"] = "fakeDB",
                 ["postgres:client:SearchPath"] = "fakeSchema",
             };
-            var expected = "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Search Path=fakeSchema;";
+            var expected = "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();

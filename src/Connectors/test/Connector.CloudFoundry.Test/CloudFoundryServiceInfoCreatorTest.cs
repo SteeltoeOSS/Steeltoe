@@ -3,13 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.CloudFoundry;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.Test
+namespace Steeltoe.Connector.CloudFoundry.Test
 {
     public class CloudFoundryServiceInfoCreatorTest
     {

@@ -27,7 +27,8 @@ namespace Steeltoe.Connector.Relational.Test
                 ["mysql:client:port"] = "1234",
                 ["mysql:client:PersistSecurityInfo"] = "true",
                 ["mysql:client:password"] = "password",
-                ["mysql:client:username"] = "username"
+                ["mysql:client:username"] = "username",
+                ["mysql:client:ConnectionTimeout"] = "1"
             };
 
             var configurationBuilder = new ConfigurationBuilder();
@@ -47,7 +48,8 @@ namespace Steeltoe.Connector.Relational.Test
                 ["postgres:client:host"] = "localhost",
                 ["postgres:client:port"] = "1234",
                 ["postgres:client:password"] = "password",
-                ["postgres:client:username"] = "username"
+                ["postgres:client:username"] = "username",
+                ["postgres:client:timeout"] = "1"
             };
 
             var configurationBuilder = new ConfigurationBuilder();
@@ -89,7 +91,8 @@ namespace Steeltoe.Connector.Relational.Test
                 ["oracle:client:port"] = "1234",
                 ["oracle:client:PersistSecurityInfo"] = "true",
                 ["oracle:client:password"] = "password",
-                ["oracle:client:username"] = "username"
+                ["oracle:client:username"] = "username",
+                ["oracle:client:connectiontimeout"] = "1"
             };
 
             var configurationBuilder = new ConfigurationBuilder();
@@ -180,7 +183,7 @@ namespace Steeltoe.Connector.Relational.Test
         {
             // arrange
             var implementationType = PostgreSqlTypeLocator.NpgsqlConnection;
-            var sqlConfig = new PostgresProviderConnectorOptions();
+            var sqlConfig = new PostgresProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new PostgresServiceInfo("MyId", "postgres://localhost:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
             var logrFactory = new LoggerFactory();
             var connFactory = new PostgresProviderConnectorFactory(sInfo, sqlConfig, implementationType);
@@ -217,7 +220,7 @@ namespace Steeltoe.Connector.Relational.Test
         {
             // arrange
             var implementationType = OracleTypeLocator.OracleConnection;
-            var sqlConfig = new OracleProviderConnectorOptions();
+            var sqlConfig = new OracleProviderConnectorOptions() { ConnectionTimeout = 1 };
             var sInfo = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/someService");
             var logrFactory = new LoggerFactory();
             var connFactory = new OracleProviderConnectorFactory(sInfo, sqlConfig, implementationType);

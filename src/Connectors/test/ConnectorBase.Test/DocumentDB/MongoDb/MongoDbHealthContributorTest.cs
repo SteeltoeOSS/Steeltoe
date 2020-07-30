@@ -23,6 +23,7 @@ namespace Steeltoe.Connector.MongoDb.Test
             {
                 ["mongodb:client:server"] = "localhost",
                 ["mongodb:client:port"] = "27018",
+                ["mongodb:client:options:connecttimeoutms"] = "1"
             };
 
             var configurationBuilder = new ConfigurationBuilder();
@@ -42,7 +43,7 @@ namespace Steeltoe.Connector.MongoDb.Test
             var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
             var logrFactory = new LoggerFactory();
             var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
-            var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
+            var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
             // act
             var status = h.Health();

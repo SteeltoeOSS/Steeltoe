@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,6 +58,10 @@ namespace Steeltoe.Connector.PostgreSql
 
         public string SslRootCertificate { get; set; }
 
+        public int Timeout { get; set; } = 15;
+
+        public int CommandTimeout { get; set; } = 30;
+
         public bool? TrustServerCertificate { get; set; } = null;
 
         internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
@@ -79,6 +84,8 @@ namespace Steeltoe.Connector.PostgreSql
                 AddKeyValue(sb, nameof(Database), Database);
             }
 
+            AddKeyValue(sb, nameof(Timeout), Timeout);
+            AddKeyValue(sb, "Command Timeout", CommandTimeout);
             AddKeyValue(sb, "Search Path", SearchPath);
             AddKeyValue(sb, "sslmode", SslMode);
             AddKeyValue(sb, "Trust Server Certificate", TrustServerCertificate);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
+using Steeltoe.Common.Util;
 using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
@@ -25,7 +26,15 @@ namespace Steeltoe.Connector.MongoDb
             var info = configuration.GetSingletonServiceInfo<MongoDbServiceInfo>();
             var mongoOptions = new MongoDbConnectorOptions(configuration);
             var factory = new MongoDbConnectorFactory(info, mongoOptions, MongoDbTypeLocator.MongoClient);
-            return new MongoDbHealthContributor(factory, logger);
+            var timeout = 5000;
+            if (mongoOptions.Options.TryGetValue("connectTimeoutMS", out var value))
+            {
+                int.TryParse(value, out timeout);
+            }
+
+            var contributor = new MongoDbHealthContributor(factory, logger, timeout);
+
+            return contributor;
         }
 
         private readonly ILogger<MongoDbHealthContributor> _logger;
@@ -33,10 +42,13 @@ namespace Steeltoe.Connector.MongoDb
 
         public string Id => "MongoDb";
 
-        public MongoDbHealthContributor(MongoDbConnectorFactory factory, ILogger<MongoDbHealthContributor> logger = null)
+        private int Timeout { get; set; }
+
+        public MongoDbHealthContributor(MongoDbConnectorFactory factory, ILogger<MongoDbHealthContributor> logger = null, int timeout = 5000)
         {
             _logger = logger;
             _mongoClient = factory.Create(null);
+            Timeout = timeout;
         }
 
         public HealthCheckResult Health()
@@ -45,7 +57,7 @@ namespace Steeltoe.Connector.MongoDb
             var result = new HealthCheckResult();
             try
             {
-                var databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(5000).Token });
+                var databases = ReflectionHelpers.Invoke(MongoDbTypeLocator.ListDatabasesMethod, _mongoClient, new object[] { new CancellationTokenSource(Timeout).Token });
 
                 if (databases == null)
                 {

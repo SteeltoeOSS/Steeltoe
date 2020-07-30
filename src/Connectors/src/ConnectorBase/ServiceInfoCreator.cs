@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 using System;
@@ -15,22 +16,28 @@ namespace Steeltoe.Connector
 {
     public class ServiceInfoCreator
     {
+        private static readonly object _lock = new object();
         private static IConfiguration _config;
         private static ServiceInfoCreator _me = null;
-        private static object _lock = new object();
 
-        internal ServiceInfoCreator(IConfiguration config)
-        {
 #pragma warning disable S3010 // Static fields should not be updated in constructors
-            _config = config;
+        protected ServiceInfoCreator(IConfiguration config) => _config = config;
 #pragma warning restore S3010 // Static fields should not be updated in constructors
-            BuildServiceInfoFactories();
-            BuildServiceInfos();
-        }
 
+        /// <summary>
+        /// Gets a value indicating whether this ServiceInfoCreator should be used
+        /// </summary>
+        public static bool IsRelevant { get; } = true;
+
+        /// <summary>
+        /// Gets a list of <see cref="IServiceInfo"/> that are configured in the applicaiton configuration
+        /// </summary>
         public IList<IServiceInfo> ServiceInfos { get; } = new List<IServiceInfo>();
 
-        internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
+        /// <summary>
+        /// Gets a list of <see cref="IServiceInfoFactory"/> available for finding <see cref="IServiceInfo"/>s
+        /// </summary>
+        protected internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
 
         public static ServiceInfoCreator Instance(IConfiguration config)
         {
@@ -52,6 +59,8 @@ namespace Steeltoe.Connector
                 }
 
                 _me = new ServiceInfoCreator(config);
+                _me.BuildServiceInfoFactories();
+                _me.BuildServiceInfos();
             }
 
             return _me;
@@ -119,25 +128,6 @@ namespace Steeltoe.Connector
             return ServiceInfos.FirstOrDefault((info) => info.Id.Equals(name));
         }
 
-        internal void BuildServiceInfoFactories()
-        {
-            Factories.Clear();
-
-            var assembly = GetType().GetTypeInfo().Assembly;
-            var types = assembly.DefinedTypes;
-            foreach (var type in types)
-            {
-                if (type.IsDefined(typeof(ServiceInfoFactoryAttribute)))
-                {
-                    var instance = CreateServiceInfoFactory(type.DeclaredConstructors);
-                    if (instance != null)
-                    {
-                        Factories.Add(instance);
-                    }
-                }
-            }
-        }
-
         internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
         {
             IServiceInfoFactory result = null;
@@ -153,7 +143,22 @@ namespace Steeltoe.Connector
             return result;
         }
 
-        internal IServiceInfoFactory FindFactory(Service s)
+        protected virtual void BuildServiceInfoFactories()
+        {
+            Factories.Clear();
+
+            var factories = ReflectionHelpers.FindTypesWithAttributeFromAssemblyAttribute<ServiceInfoFactoryAttribute, ServiceInfoFactoryAssemblyAttribute>();
+            foreach (var type in factories)
+            {
+                var instance = CreateServiceInfoFactory(type.GetTypeInfo().DeclaredConstructors);
+                if (instance != null)
+                {
+                    Factories.Add(instance);
+                }
+            }
+        }
+
+        protected IServiceInfoFactory FindFactory(Service s)
         {
             foreach (var f in Factories)
             {

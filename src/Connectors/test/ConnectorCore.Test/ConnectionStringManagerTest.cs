@@ -52,7 +52,7 @@ namespace Steeltoe.Connector.Test
             var connInfo = cm.Get<PostgresConnectionInfo>();
 
             Assert.NotNull(connInfo);
-            Assert.Equal("Host=localhost;Port=5432;", connInfo.ConnectionString);
+            Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30;", connInfo.ConnectionString);
             Assert.Equal("Postgres", connInfo.Name);
         }
 

@@ -5,6 +5,7 @@
 using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Connector.Services
 {
@@ -15,8 +16,8 @@ namespace Steeltoe.Connector.Services
         private static readonly List<string> _passwordList = new List<string>() { "password", "pw" };
         private static readonly List<string> _hostList = new List<string>() { "hostname", "host" };
 
-        public ServiceInfoFactory(Tags tags, string scheme)
-            : this(tags, new string[] { scheme })
+        protected ServiceInfoFactory(Tags tags, string scheme)
+            : this(tags, new List<string> { scheme })
         {
             if (string.IsNullOrEmpty(scheme))
             {
@@ -24,7 +25,7 @@ namespace Steeltoe.Connector.Services
             }
         }
 
-        public ServiceInfoFactory(Tags tags, string[] schemes)
+        protected ServiceInfoFactory(Tags tags, IEnumerable<string> schemes)
         {
             ServiceInfoTags = tags ?? throw new ArgumentNullException(nameof(tags));
             UriSchemes = schemes;
@@ -38,20 +39,7 @@ namespace Steeltoe.Connector.Services
             }
         }
 
-        public virtual string DefaultUriScheme
-        {
-            get
-            {
-                if (UriSchemes != null && UriSchemes.Length > 0)
-                {
-                    return UriSchemes[0];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        public virtual string DefaultUriScheme => UriSchemes?.Any() == true ? UriSchemes.First() : null;
 
         public virtual bool Accept(Service binding)
         {
@@ -65,7 +53,7 @@ namespace Steeltoe.Connector.Services
 
         protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
 
-        protected string[] UriSchemes { get; set; }
+        protected IEnumerable<string> UriSchemes { get; set; }
 
         protected internal virtual bool TagsMatch(Service binding)
         {
