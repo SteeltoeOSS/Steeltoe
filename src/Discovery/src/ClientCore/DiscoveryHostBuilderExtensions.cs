@@ -3,38 +3,48 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Connector;
+using System;
+using System.Reflection;
 
 namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryHostBuilderExtensions
     {
         /// <summary>
-        /// Adds service discovery to your application based on app configuration. This method can be used in place of configuration via your Startup class.
+        /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
+        /// If <paramref name="optionsAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder)
+        /// <param name="optionsAction">Select the discovery client implementation</param>
+        /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
+        /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
+        public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
         {
-            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, context.Configuration));
+            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, optionsAction));
         }
 
         /// <summary>
-        /// Adds service discovery to your application based on app configuration. This method can be used in place of configuration via your Startup class.
+        /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
+        /// If <paramref name="optionsAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder)
+        /// <param name="optionsAction">Select the discovery client implementation</param>
+        /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
+        /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
+        public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
         {
-            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, context.Configuration));
+            return hostBuilder.ConfigureServices((context, collection) => AddServices(collection, optionsAction));
         }
 
-        private static void AddServices(IServiceCollection collection, IConfiguration config)
+        private static void AddServices(IServiceCollection collection, Action<DiscoveryClientBuilder> optionsAction)
         {
-            collection.AddDiscoveryClient(config);
+            collection.AddServiceDiscovery(optionsAction);
             collection.AddTransient<IStartupFilter, DiscoveryClientStartupFilter>();
-            collection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
-            collection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
         }
     }
 }

@@ -5,7 +5,7 @@
 using k8s.Models;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.KubernetesBase.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Discovery
 {
     public class EndpointSubsetNs
     {

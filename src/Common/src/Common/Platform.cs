@@ -22,8 +22,19 @@ namespace Steeltoe.Common
 
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+        /// <summary>
+        /// Gets a value indicating whether or not the application appears to be running in a container
+        /// </summary>
+        public static bool IsContainerized => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+        /// <summary>
+        /// Gets a value indicating whether or not the platform is Cloud Foundry by checking if VCAP_APPLICATION has been set
+        /// </summary>
         public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
 
+        /// <summary>
+        /// Gets a value indicating whether or not the platform is Kubernetes by checking if KUBERNETES_HOST has been set
+        /// </summary>
         public static bool IsKubernetes => Environment.GetEnvironmentVariable(KUBERNETES_HOST) != null;
 
         /// <summary>

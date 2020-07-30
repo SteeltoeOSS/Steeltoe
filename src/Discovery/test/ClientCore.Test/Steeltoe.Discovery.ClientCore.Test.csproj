@@ -21,6 +21,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
     <ProjectReference Include="..\..\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
+    <ProjectReference Include="..\..\src\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj" />
+    <ProjectReference Include="..\..\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
+    <ProjectReference Include="..\..\src\KubernetesBase\Steeltoe.Discovery.KubernetesBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

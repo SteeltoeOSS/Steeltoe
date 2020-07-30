@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
-using Steeltoe.Discovery.KubernetesBase.Discovery;
+using Steeltoe.Discovery.Kubernetes.Discovery;
 using System;
 
-namespace Steeltoe.Discovery.KubernetesBase
+namespace Steeltoe.Discovery.Kubernetes
 {
     public static class KubernetesDiscoveryClientFactory
     {

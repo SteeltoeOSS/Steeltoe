@@ -7,7 +7,7 @@ using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.KubernetesBase.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Discovery
 {
     public class KubernetesServiceInstance : IServiceInstance
     {

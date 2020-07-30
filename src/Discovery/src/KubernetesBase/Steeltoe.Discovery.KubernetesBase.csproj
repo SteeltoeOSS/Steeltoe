@@ -5,6 +5,7 @@
     <Description>Client for service discovery with Kubernetes native service discovery</Description>
     <Namespace>Steeltoe.Discovery.Kubernetes</Namespace>
     <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
+    <RootNamespace>Steeltoe.Discovery.Kubernetes</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -17,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
-    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+    <ProjectReference Include="..\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
   </ItemGroup>
 
 </Project>
