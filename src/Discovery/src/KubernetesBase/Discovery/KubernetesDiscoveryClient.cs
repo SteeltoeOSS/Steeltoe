@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Discovery.KubernetesBase.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Discovery
 {
     public class KubernetesDiscoveryClient : IDiscoveryClient
     {

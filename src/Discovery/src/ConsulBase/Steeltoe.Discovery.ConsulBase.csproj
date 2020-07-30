@@ -17,8 +17,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Net\Steeltoe.Common.Net.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
+    <ProjectReference Include="..\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
   </ItemGroup>
 </Project>

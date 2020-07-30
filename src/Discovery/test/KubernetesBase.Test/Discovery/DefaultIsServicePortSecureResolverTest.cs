@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.KubernetesBase.Discovery;
+using Steeltoe.Discovery.Kubernetes.Discovery;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Discovery.KubernetesBase.Test.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
 {
     public class DefaultIsServicePortSecureResolverTest
     {
