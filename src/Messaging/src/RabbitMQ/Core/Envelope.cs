@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    // TODO: This is a RabbitMQ type
     public class Envelope
     {
         public Envelope(ulong deliveryTag, bool redeliver, string exchange, string routingKey)

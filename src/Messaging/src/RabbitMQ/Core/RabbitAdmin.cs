@@ -535,12 +535,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
                             arguments["x-delayed-type"] = exchange.Type;
 
-                            // TODO: exchange.IsInternal
+                            // TODO: exchange.IsInternal .. appears .NET client doesn't expose
                             channel.ExchangeDeclare(exchange.ExchangeName, DELAYED_MESSAGE_EXCHANGE, exchange.IsDurable, exchange.IsAutoDelete, arguments);
                         }
                         else
                         {
-                            // TODO: exchange.IsInternal
+                            // TODO: exchange.IsInternal .. appears .NET client doesn't expose
                             channel.ExchangeDeclare(exchange.ExchangeName, exchange.Type, exchange.IsDurable, exchange.IsAutoDelete, exchange.Arguments);
                         }
                     }

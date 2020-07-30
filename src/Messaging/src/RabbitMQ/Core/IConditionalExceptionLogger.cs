@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    // TODO: This is an AMQP class
     public interface IConditionalExceptionLogger
     {
         void Log(ILogger logger, string message, object cause);

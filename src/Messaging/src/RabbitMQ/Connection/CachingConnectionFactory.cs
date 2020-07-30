@@ -240,7 +240,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             set
             {
-                // TODO: Check mode
                 if (value < 1)
                 {
                     throw new ArgumentException(nameof(ConnectionLimit));
@@ -404,7 +403,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            return null; // NOSONAR - never reach here - exceptions
+            return null;
         }
 
         public override void Destroy()
@@ -569,7 +568,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private void PutConnectionName(IDictionary<string, object> props, IConnectionProxy connection, string keySuffix)
         {
-            var targetConnection = connection.TargetConnection; // NOSONAR (close())
+            var targetConnection = connection.TargetConnection;
             if (targetConnection != null)
             {
                 var del = targetConnection.Connection;
@@ -646,20 +645,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 {
                     factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
                 }
-
-                // TODO: More
-                // map.from(ssl::getAlgorithm).whenNonNull().to(factory::setSslAlgorithm);
-                // map.from(ssl::getKeyStoreType).to(factory::setKeyStoreType);
-                // map.from(ssl::getKeyStore).to(factory::setKeyStore);
-                // map.from(ssl::getKeyStorePassword).to(factory::setKeyStorePassphrase);
-                // map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
-                // map.from(ssl::getTrustStore).to(factory::setTrustStore);
-                // map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
-                // map.from(ssl::isValidateServerCertificate).to((validate)->factory
-                //        .setSkipServerCertificateValidation(!validate));
-                // map.from(ssl::getVerifyHostname)
-                //        .to(factory::setEnableHostnameVerification);
-                // setUpSSL(); from FactoryBean
             }
 
             if (options.ConnectionTimeout.HasValue)
@@ -876,7 +861,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 return DoCreateBareChannel(connection, transactional);
             }
 
-            return null; // NOSONAR doCreate will throw an exception
+            return null;
         }
 
         private IModel DoCreateBareChannel(ChannelCachingConnectionProxy conn, bool transactional)
@@ -901,11 +886,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             if (channel != null)
             {
-                // channel.AddShutdownListener(this);
                 channel.ModelShutdown += ChannelShutdownCompleted;
             }
 
-            return channel; // NOSONAR - Simple connection throws exception
+            return channel;
         }
 
         private long CurrentTimeMillis()

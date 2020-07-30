@@ -6,7 +6,6 @@ using RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.Rabbit.Connection
 {
-    // TODO: This is an RabbitMQ type
     public interface IShutdownListener
     {
         void ChannelShutdownCompleted(object sender, ShutdownEventArgs args);

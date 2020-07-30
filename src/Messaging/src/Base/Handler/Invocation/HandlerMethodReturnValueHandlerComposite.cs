@@ -65,13 +65,6 @@ namespace Steeltoe.Messaging.Handler.Invocation
                     ((IAsyncHandlerMethodReturnValueHandler)handler).IsAsyncReturnValue(returnValue, returnType);
         }
 
-        // public ListenableFuture<?> toListenableFuture(Object returnValue, MethodParameter returnType)
-        // {
-        //    HandlerMethodReturnValueHandler handler = getReturnValueHandler(returnType);
-        //    Assert.state(handler instanceof AsyncHandlerMethodReturnValueHandler,
-        //            "AsyncHandlerMethodReturnValueHandler required");
-        //    return ((AsyncHandlerMethodReturnValueHandler)handler).toListenableFuture(returnValue, returnType);
-        // }
         private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
         {
             for (var i = 0; i < _returnValueHandlers.Count; i++)

@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Messaging.Rabbit.Core
 {
-    // TODO: This is an AMQP type
     public enum AcknowledgeMode
     {
         /// <summary>

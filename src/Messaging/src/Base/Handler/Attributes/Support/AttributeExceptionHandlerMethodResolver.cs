@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         private static Dictionary<Type, MethodInfo> InitExceptionMappings(Type handlerType)
         {
             var methods = new Dictionary<MethodInfo, MessageExceptionHandlerAttribute>();
-            var targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);  // TODO: Static supported?
+            var targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
             foreach (var method in targets)
             {
                 var attribute = method.GetCustomAttribute<MessageExceptionHandlerAttribute>();

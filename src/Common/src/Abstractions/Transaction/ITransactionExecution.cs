@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to common
     public interface ITransactionExecution
     {
         void SetRollbackOnly();

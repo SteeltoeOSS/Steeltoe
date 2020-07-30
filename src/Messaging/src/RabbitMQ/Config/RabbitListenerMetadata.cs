@@ -12,7 +12,6 @@ using System.Reflection;
 
 namespace Steeltoe.Messaging.Rabbit.Config
 {
-    // TODO: Internal?
     public class RabbitListenerMetadata
     {
         internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new Dictionary<Type, RabbitListenerMetadata>();

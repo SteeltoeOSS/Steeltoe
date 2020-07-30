@@ -202,11 +202,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         public virtual IRecoveryCallback RecoveryCallback { get; set; }
 
-        // public virtual void setBeanFactory(BeanFactory beanFactory) throws BeansException
-        //   {
-        // this.evaluationContext.setBeanResolver(new BeanFactoryResolver(beanFactory));
-        // this.evaluationContext.addPropertyAccessor(new MapAccessor());
-        // }
         public virtual IList<IMessagePostProcessor> BeforePublishPostProcessors { get; internal set; }
 
         public virtual IList<IMessagePostProcessor> AfterReceivePostProcessors { get; internal set; }
@@ -1716,7 +1711,6 @@ namespace Steeltoe.Messaging.Rabbit.Core
             byte[] body = message.Payload as byte[];
             if (body == null)
             {
-                // TODO: If content type is byte but payload is string .. do conversion?
                 throw new InvalidOperationException("Unable to publish IMessage, payload must be a byte[]");
             }
 
@@ -2345,12 +2339,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private DefaultBasicConsumer CreateConsumer(string queueName, IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancelationToken)
         {
-            // TODO: Verify
             channel.BasicQos(0, 1, false);
             var latch = new CountdownEvent(1);
             var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
 
-            // TODO: Verify autoack false
             var consumeResult = channel.BasicConsume(queueName, false, consumer);
 
             // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit

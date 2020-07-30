@@ -468,7 +468,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             try
             {
                 channel = connection.CreateChannel(IsChannelTransacted);
-                channel.BasicQos(0, (ushort)PrefetchCount, false);  // TODO: Verify this
+                channel.BasicQos(0, (ushort)PrefetchCount, false);
                 consumer = new SimpleConsumer(this, connection, channel, queue, _loggerFactory?.CreateLogger<SimpleConsumer>());
                 channel.QueueDeclarePassive(queue);
                 consumer.ConsumerTag = channel.BasicConsume(
@@ -480,11 +480,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     ConsumerArguments,
                     consumer);
             }
-
-            // catch (AmqpApplicationContextClosedException e)
-            // {
-            //    throw new AmqpConnectException(e);
-            // }
             catch (Exception e)
             {
                 RabbitUtils.CloseChannel(channel, _logger);
@@ -500,21 +495,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             var consumer = consumerArg;
 
-            // if (e.getCause() is ShutdownSignalException  && e.getCause().getMessage().contains("in exclusive use")) {
-            //        getExclusiveConsumerExceptionLogger().log(logger,
-            //                "Exclusive consumer failure", e.getCause());
-            //        publishConsumerFailedEvent("Consumer raised exception, attempting restart", false, e);
-            //    }
-
-            // else if (e.getCause() is ShutdownSignalException  && RabbitUtils.isPassiveDeclarationChannelClose((ShutdownSignalException)e.getCause())) {
-            //        this.logger.error("Queue not present, scheduling consumer "
-            //                + (consumer == null ? "for queue " + queue : consumer) + " for restart", e);
-            //    }
-            // else if (this.logger.isWarnEnabled())
-            //    {
             _logger?.LogWarning("basicConsume failed, scheduling consumer " + consumer == null ? "for queue " + queue.ToString() : consumer.ToString() + " for restart", e);
 
-            // }
             if (consumer == null)
             {
                 AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, _loggerFactory?.CreateLogger<SimpleConsumer>()));

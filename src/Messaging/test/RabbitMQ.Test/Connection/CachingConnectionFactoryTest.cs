@@ -76,11 +76,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             Assert.Same(channel, channel2);
             mockConnection.Verify((c) => c.Close(), Times.Never);
             mockChanel.Verify((c) => c.Close(), Times.Never);
-
-            // TODO: Not implemented
-            // assertThat(TestUtils.getPropertyValue(ccf, "connection.target")).isNull();
-            // assertThat(TestUtils.getPropertyValue(ccf, "publisherConnectionFactory.connection.target")).isNotNull();
-            // assertThat(TestUtils.getPropertyValue(ccf, "publisherConnectionFactory.connection")).isSameAs(con);
         }
 
         [Fact]

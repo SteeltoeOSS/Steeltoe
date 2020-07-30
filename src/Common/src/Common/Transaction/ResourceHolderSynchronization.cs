@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to common
     public class ResourceHolderSynchronization<H, K> : ITransactionSynchronization
         where H : IResourceHolder
     {

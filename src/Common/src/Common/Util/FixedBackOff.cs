@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Messaging.Rabbit.Util
+namespace Steeltoe.Common.Util
 {
-    // TODO: Move to common
     public class FixedBackOff : IBackOff
     {
+        public const int STOP = -1;
         public const int DEFAULT_INTERVAL = 5000;
         public const int UNLIMITED_ATTEMPTS = int.MaxValue;
 
@@ -48,7 +48,7 @@ namespace Steeltoe.Messaging.Rabbit.Util
                 }
                 else
                 {
-                    return IBackOffExecution.STOP;
+                    return STOP;
                 }
             }
 

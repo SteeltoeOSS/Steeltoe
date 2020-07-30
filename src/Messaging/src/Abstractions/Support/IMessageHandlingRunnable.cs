@@ -8,7 +8,6 @@ namespace Steeltoe.Messaging.Support
 {
     /// <summary>
     /// A runnable to encapsulates a message and message handler
-    /// TODO: Make this internal
     /// </summary>
     public interface IMessageHandlingRunnable : IRunnable
     {

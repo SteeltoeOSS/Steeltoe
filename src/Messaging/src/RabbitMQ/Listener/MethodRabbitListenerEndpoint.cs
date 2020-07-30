@@ -128,18 +128,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private string ResolveSendTo(string value)
         {
-            // TODO:
-            // if (getBeanFactory() != null)
-            // {
-            //    String resolvedValue = getBeanExpressionContext().getBeanFactory().resolveEmbeddedValue(value);
-            //    Object newValue = getResolver().evaluate(resolvedValue, getBeanExpressionContext());
-            //    Assert.isInstanceOf(String, newValue, "Invalid @SendTo expression");
-            //    return (String)newValue;
-            // }
-            // else
-            // {
-            //    return value;
-            // }
+            // TODO: Expression support will change this code
             if (ApplicationContext != null)
             {
                 value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);
