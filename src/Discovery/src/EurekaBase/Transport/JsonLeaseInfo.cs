@@ -2,37 +2,37 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using System.IO;
+using Steeltoe.Common.Http.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonLeaseInfo
     {
-        [JsonProperty("renewalIntervalInSecs")]
+        [JsonPropertyName("renewalIntervalInSecs")]
         public int RenewalIntervalInSecs { get; set; }
 
-        [JsonProperty("durationInSecs")]
+        [JsonPropertyName("durationInSecs")]
         public int DurationInSecs { get; set; }
 
-        [JsonProperty("registrationTimestamp")]
+        [JsonPropertyName("registrationTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long RegistrationTimestamp { get; set; }
 
-        [JsonProperty("lastRenewalTimestamp")]
+        [JsonPropertyName("lastRenewalTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long LastRenewalTimestamp { get; set; }
 
-        [JsonProperty("renewalTimestamp")]
+        [JsonPropertyName("renewalTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long LastRenewalTimestampLegacy { get; set; }
 
-        [JsonProperty("evictionTimestamp")]
+        [JsonPropertyName("evictionTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long EvictionTimestamp { get; set; }
 
-        [JsonProperty("serviceUpTimestamp")]
+        [JsonPropertyName("serviceUpTimestamp")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long ServiceUpTimestamp { get; set; }
-
-        internal static JsonLeaseInfo Deserialize(Stream stream)
-        {
-            return JsonSerialization.Deserialize<JsonLeaseInfo>(stream);
-        }
     }
 }

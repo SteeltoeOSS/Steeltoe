@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health.Contributor;
@@ -18,6 +17,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
 
-            var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
         }
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
 
-            var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
         }
@@ -114,7 +114,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
 
-            var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
             Assert.True(health.ContainsKey("diskSpace"));
@@ -137,7 +137,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(json);
 
             // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
-            var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
             Assert.True(health.ContainsKey("diskSpace"));
@@ -160,7 +160,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(json);
 
             // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
-            var health = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
             Assert.True(health.ContainsKey("diskSpace"));

@@ -6,16 +6,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
+using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,6 +127,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         /// Gets the configuration settings the provider uses when accessing the server.
         /// </summary>
         public virtual ConfigServerClientSettings Settings => _settings;
+
+        internal JsonSerializerOptions SerializerOptions { get; private set; } =
+            new JsonSerializerOptions
+                {
+                    IgnoreNullValues = true,
+                    PropertyNameCaseInsensitive = true,
+                };
 
         internal IDictionary<string, string> Properties => Data;
 
@@ -504,8 +513,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             }
                         }
 
-                        Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                        return Deserialize(stream);
+                        return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
                     }
                 }
                 catch (Exception e)
@@ -582,8 +590,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                         }
                     }
 
-                    Stream stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                    return Deserialize(stream);
+                    return await response.Content.ReadFromJsonAsync<ConfigEnvironment>(SerializerOptions).ConfigureAwait(false);
                 }
             }
             catch (Exception e)
@@ -596,16 +603,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
             }
-        }
-
-        /// <summary>
-        /// Deserialize the response from the Configuration Server
-        /// </summary>
-        /// <param name="stream">the stream representing the response from the Configuration Server</param>
-        /// <returns>The ConfigEnvironment object representing the response from the server</returns>
-        protected internal virtual ConfigEnvironment Deserialize(Stream stream)
-        {
-            return SerializationHelper.Deserialize<ConfigEnvironment>(stream, _logger);
         }
 
         /// <summary>
@@ -675,12 +672,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 return;
             }
 
-            foreach (KeyValuePair<string, object> kvp in source.Source)
+            foreach (var kvp in source.Source)
             {
                 try
                 {
-                    string key = ConvertKey(kvp.Key);
-                    string value = ConvertValue(kvp.Value);
+                    var key = ConvertKey(kvp.Key);
+                    var value = ConvertValue(kvp.Value);
                     data[key] = value;
                 }
                 catch (Exception e)

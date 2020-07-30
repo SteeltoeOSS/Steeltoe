@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.Test;
-
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
@@ -39,8 +39,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         ""actionType"":""ADDED""
     }]
 }";
-            var stream = TestHelpers.StringToStream(json);
-            var result = JsonApplication.Deserialize(stream);
+            var result = JsonSerializer.Deserialize<JsonApplication>(json);
             Assert.NotNull(result);
             Assert.Equal("FOO", result.Name);
             Assert.NotNull(result.Instances);

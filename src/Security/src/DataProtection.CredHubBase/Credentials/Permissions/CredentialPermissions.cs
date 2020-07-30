@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
@@ -15,7 +15,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         /// <summary>
         /// Gets or sets name of the credential with permissions
         /// </summary>
-        [JsonProperty("credential_name")]
+        [JsonPropertyName("credential_name")]
         public string CredentialName { get; set; }
 
         /// <summary>

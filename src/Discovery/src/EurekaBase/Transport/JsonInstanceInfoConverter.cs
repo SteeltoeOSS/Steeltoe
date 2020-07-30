@@ -2,56 +2,42 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
-    public class JsonInstanceInfoConverter : JsonConverter
+    internal class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstanceInfo>>
     {
-        public override bool CanConvert(Type objectType)
+        public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return objectType == typeof(IList<JsonInstanceInfo>);
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            List<JsonInstanceInfo> result = null;
-            try
+            var result = new List<JsonInstanceInfo>();
+            if (reader.TokenType.Equals(JsonTokenType.StartArray))
             {
-                if (reader.TokenType == JsonToken.StartArray)
-                {
-                    result = (List<JsonInstanceInfo>)serializer.Deserialize(reader, typeof(List<JsonInstanceInfo>));
-                }
-                else
-                {
-                    JsonInstanceInfo singleInst = (JsonInstanceInfo)serializer.Deserialize(reader, typeof(JsonInstanceInfo));
-                    if (singleInst != null)
-                    {
-                        result = new List<JsonInstanceInfo>
-                        {
-                            singleInst
-                        };
-                    }
-                }
+                result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
             }
-            catch (Exception)
+            else
             {
-                result = new List<JsonInstanceInfo>();
-            }
-
-            if (result == null)
-            {
-                result = new List<JsonInstanceInfo>();
+                var singleInst = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
+                if (singleInst != null)
+                {
+                    result.Add(singleInst);
+                }
             }
 
             return result;
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo> value, JsonSerializerOptions options)
         {
-            serializer.Serialize(writer, value);
+            writer.WriteStringValue(value.ToString());
+        }
+
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert == typeof(IList<JsonInstanceInfo>);
         }
     }
 }

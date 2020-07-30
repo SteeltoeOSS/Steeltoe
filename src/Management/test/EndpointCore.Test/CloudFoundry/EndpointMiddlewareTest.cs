@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -68,20 +69,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
-                var links = JsonConvert.DeserializeObject<Links>(json);
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var options = GetSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
+            Assert.NotNull(links);
+            Assert.True(links._links.ContainsKey("self"));
+            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href.ToString());
+            Assert.True(links._links.ContainsKey("info"));
+            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href.ToString());
         }
 
         [Fact]

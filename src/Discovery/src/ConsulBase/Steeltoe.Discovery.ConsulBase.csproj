@@ -13,7 +13,6 @@
     <PackageReference Include="Consul" Version="$(ConsulVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="System.Net.Http.WinHttpHandler" Version="$(WinHttpHandlerVersion)" />
   </ItemGroup>
 
