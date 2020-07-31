@@ -31,7 +31,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire.Test
                 ["gemfire:client:username"] = "developer"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -54,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire.Test
                 ["gemfire:client:username"] = "developer"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -77,7 +77,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire.Test
                 ["gemfire:client:properties:someOtherKey"] = "someOtherValue",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

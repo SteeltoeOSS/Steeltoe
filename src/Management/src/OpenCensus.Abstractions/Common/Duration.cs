@@ -24,8 +24,8 @@ namespace OpenCensus.Common
 
         public Duration(long seconds, int nanos)
         {
-            this.Seconds = seconds;
-            this.Nanos = nanos;
+            Seconds = seconds;
+            Nanos = nanos;
         }
 
         public long Seconds { get; }
@@ -54,21 +54,21 @@ namespace OpenCensus.Common
 
         public int CompareTo(IDuration other)
         {
-            int cmp = (this.Seconds < other.Seconds) ? -1 : ((this.Seconds > other.Seconds) ? 1 : 0);
+            var cmp = (Seconds < other.Seconds) ? -1 : ((Seconds > other.Seconds) ? 1 : 0);
             if (cmp != 0)
             {
                 return cmp;
             }
 
-            return (this.Nanos < other.Nanos) ? -1 : ((this.Nanos > other.Nanos) ? 1 : 0);
+            return (Nanos < other.Nanos) ? -1 : ((Nanos > other.Nanos) ? 1 : 0);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "Duration{"
-                + "seconds=" + this.Seconds + ", "
-                + "nanos=" + this.Nanos
+                + "seconds=" + Seconds + ", "
+                + "nanos=" + Nanos
                 + "}";
         }
 
@@ -82,8 +82,8 @@ namespace OpenCensus.Common
 
             if (o is Duration that)
             {
-                return (this.Seconds == that.Seconds)
-                     && (this.Nanos == that.Nanos);
+                return (Seconds == that.Seconds)
+                     && (Nanos == that.Nanos);
             }
 
             return false;
@@ -94,9 +94,9 @@ namespace OpenCensus.Common
         {
             long h = 1;
             h *= 1000003;
-            h ^= (this.Seconds >> 32) ^ this.Seconds;
+            h ^= (Seconds >> 32) ^ Seconds;
             h *= 1000003;
-            h ^= this.Nanos;
+            h ^= Nanos;
             return (int)h;
         }
     }

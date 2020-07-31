@@ -33,14 +33,14 @@ namespace OpenCensus.Stats
 
         internal override void Record(ITagContext context, double value, ITimestamp timestamp)
         {
-            var values = GetTagValues(GetTagMap(context), this.View.Columns);
+            var values = GetTagValues(GetTagMap(context), View.Columns);
             var tagValues = TagValues.Create(values);
-            if (!this.tagValueAggregationMap.ContainsKey(tagValues))
+            if (!tagValueAggregationMap.ContainsKey(tagValues))
             {
-                this.tagValueAggregationMap.Add(tagValues, CreateMutableAggregation(this.View.Aggregation));
+                tagValueAggregationMap.Add(tagValues, CreateMutableAggregation(View.Aggregation));
             }
 
-            this.tagValueAggregationMap[tagValues].Add(value);
+            tagValueAggregationMap[tagValues].Add(value);
         }
 
         internal override IViewData ToViewData(ITimestamp now, StatsCollectionState state)
@@ -48,16 +48,16 @@ namespace OpenCensus.Stats
             if (state == StatsCollectionState.ENABLED)
             {
                 return ViewData.Create(
-                    this.View,
-                    CreateAggregationMap(this.tagValueAggregationMap, this.View.Measure),
-                    this.start,
+                    View,
+                    CreateAggregationMap(tagValueAggregationMap, View.Measure),
+                    start,
                     now);
             }
             else
             {
                 // If Stats state is DISABLED, return an empty ViewData.
                 return ViewData.Create(
-                    this.View,
+                    View,
                     new Dictionary<TagValues, IAggregationData>(),
                     ZeroTimestamp,
                     ZeroTimestamp);
@@ -66,12 +66,12 @@ namespace OpenCensus.Stats
 
         internal override void ClearStats()
         {
-            this.tagValueAggregationMap.Clear();
+            tagValueAggregationMap.Clear();
         }
 
         internal override void ResumeStatsCollection(ITimestamp now)
         {
-            this.start = now;
+            start = now;
         }
     }
 }

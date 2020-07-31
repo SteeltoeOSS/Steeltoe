@@ -22,7 +22,7 @@ namespace OpenCensus.Stats.Aggregations
     {
         internal SumDataLong(long sum)
         {
-            this.Sum = sum;
+            Sum = sum;
         }
 
         public long Sum { get; }
@@ -49,7 +49,7 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "SumDataLong{"
-                + "sum=" + this.Sum
+                + "sum=" + Sum
                 + "}";
         }
 
@@ -63,7 +63,7 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is SumDataLong that)
             {
-                return this.Sum == that.Sum;
+                return Sum == that.Sum;
             }
 
             return false;
@@ -74,7 +74,7 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (this.Sum >> 32) ^ this.Sum;
+            h ^= (Sum >> 32) ^ Sum;
             return (int)h;
         }
     }

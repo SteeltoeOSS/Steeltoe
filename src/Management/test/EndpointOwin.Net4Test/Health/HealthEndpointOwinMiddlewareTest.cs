@@ -45,26 +45,24 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         [Fact]
         public async void HealthHttpCall_ReturnsExpected()
         {
-            using (var server = TestServer.Create<Startup>())
-            {
-                var client = server.HttpClient;
+            using var server = TestServer.Create<Startup>();
+            var client = server.HttpClient;
 
-                // check the default version
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
-                var health = await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UP, result);
+            // check the default version
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+            var health = await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UP, result);
 
-                // check the down version
-                var result2 = await client.GetAsync("http://localhost/cloudfoundryapplication/down");
-                await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.DOWN, result2);
+            // check the down version
+            var result2 = await client.GetAsync("http://localhost/cloudfoundryapplication/down");
+            await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.DOWN, result2);
 
-                // check the out of service
-                var result3 = await client.GetAsync("http://localhost/cloudfoundryapplication/out");
-                await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.OUT_OF_SERVICE, result3);
+            // check the out of service
+            var result3 = await client.GetAsync("http://localhost/cloudfoundryapplication/out");
+            await AssertHealthResponseAsync(HttpStatusCode.ServiceUnavailable, HealthStatus.OUT_OF_SERVICE, result3);
 
-                // check the unknown version... expect OK
-                var result4 = await client.GetAsync("http://localhost/cloudfoundryapplication/unknown");
-                await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UNKNOWN, result4);
-            }
+            // check the unknown version... expect OK
+            var result4 = await client.GetAsync("http://localhost/cloudfoundryapplication/unknown");
+            await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UNKNOWN, result4);
         }
 
         [Fact]

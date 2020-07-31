@@ -31,10 +31,10 @@ namespace OpenCensus.Trace
 
         private SpanBuilder(string name, SpanBuilderOptions options, ISpanContext remoteParentSpanContext = null, ISpan parent = null)
         {
-            this.Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.Parent = parent;
-            this.RemoteParentSpanContext = remoteParentSpanContext;
-            this.Options = options;
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Parent = parent;
+            RemoteParentSpanContext = remoteParentSpanContext;
+            Options = options;
         }
 
         private SpanBuilderOptions Options { get; set; }
@@ -53,14 +53,14 @@ namespace OpenCensus.Trace
 
         public override ISpan StartSpan()
         {
-            ISpanContext parentContext = this.RemoteParentSpanContext;
-            bool hasRemoteParent = true;
+            var parentContext = RemoteParentSpanContext;
+            var hasRemoteParent = true;
             ITimestampConverter timestampConverter = null;
-            if (this.RemoteParentSpanContext == null)
+            if (RemoteParentSpanContext == null)
             {
                 // This is not a child of a remote Span. Get the parent SpanContext from the parent Span if
                 // any.
-                ISpan parent = this.Parent;
+                var parent = Parent;
                 hasRemoteParent = false;
                 if (parent != null)
                 {
@@ -68,9 +68,9 @@ namespace OpenCensus.Trace
 
                     // Pass the timestamp converter from the parent to ensure that the recorded events are in
                     // the right order. Implementation uses System.nanoTime() which is monotonically increasing.
-                    if (parent is Span)
+                    if (parent is Span span)
                     {
-                        timestampConverter = ((Span)parent).TimestampConverter;
+                        timestampConverter = span.TimestampConverter;
                     }
                 }
                 else
@@ -79,31 +79,31 @@ namespace OpenCensus.Trace
                 }
             }
 
-            return this.StartSpanInternal(
+            return StartSpanInternal(
                 parentContext,
                 hasRemoteParent,
-                this.Name,
-                this.Sampler,
-                this.ParentLinks,
-                this.RecordEvents,
+                Name,
+                Sampler,
+                ParentLinks,
+                RecordEvents,
                 timestampConverter);
         }
 
         public override ISpanBuilder SetSampler(ISampler sampler)
         {
-            this.Sampler = sampler ?? throw new ArgumentNullException(nameof(sampler));
+            Sampler = sampler ?? throw new ArgumentNullException(nameof(sampler));
             return this;
         }
 
         public override ISpanBuilder SetParentLinks(IEnumerable<ISpan> parentLinks)
         {
-            this.ParentLinks = parentLinks ?? throw new ArgumentNullException(nameof(parentLinks));
+            ParentLinks = parentLinks ?? throw new ArgumentNullException(nameof(parentLinks));
             return this;
         }
 
         public override ISpanBuilder SetRecordEvents(bool recordEvents)
         {
-            this.RecordEvents = recordEvents;
+            RecordEvents = recordEvents;
             return this;
         }
 
@@ -119,7 +119,7 @@ namespace OpenCensus.Trace
 
         private static bool IsAnyParentLinkSampled(IEnumerable<ISpan> parentLinks)
         {
-            foreach (ISpan parentLink in parentLinks)
+            foreach (var parentLink in parentLinks)
             {
                 if (parentLink.Context.TraceOptions.IsSampled)
                 {
@@ -134,8 +134,8 @@ namespace OpenCensus.Trace
         {
             if (parentLinks.Any())
             {
-                ILink childLink = Link.FromSpanContext(span.Context, LinkType.ChildLinkedSpan);
-                foreach (ISpan linkedSpan in parentLinks)
+                var childLink = Link.FromSpanContext(span.Context, LinkType.ChildLinkedSpan);
+                foreach (var linkedSpan in parentLinks)
                 {
                     linkedSpan.AddLink(childLink);
                     span.AddLink(Link.FromSpanContext(linkedSpan.Context, LinkType.ParentLinkedSpan));
@@ -181,10 +181,10 @@ namespace OpenCensus.Trace
                      bool recordEvents,
                      ITimestampConverter timestampConverter)
         {
-            ITraceParams activeTraceParams = this.Options.TraceConfig.ActiveTraceParams;
-            IRandomGenerator random = this.Options.RandomHandler;
+            var activeTraceParams = Options.TraceConfig.ActiveTraceParams;
+            var random = Options.RandomHandler;
             ITraceId traceId;
-            ISpanId spanId = SpanId.GenerateRandomId(random);
+            var spanId = SpanId.GenerateRandomId(random);
             ISpanId parentSpanId = null;
             TraceOptionsBuilder traceOptionsBuilder;
             if (parent == null || !parent.IsValid)
@@ -215,24 +215,24 @@ namespace OpenCensus.Trace
                     traceId,
                     spanId,
                     activeTraceParams));
-            TraceOptions traceOptions = traceOptionsBuilder.Build();
-            SpanOptions spanOptions = SpanOptions.None;
+            var traceOptions = traceOptionsBuilder.Build();
+            var spanOptions = SpanOptions.None;
 
             if (traceOptions.IsSampled || recordEvents)
             {
                 spanOptions = SpanOptions.RecordEvents;
             }
 
-            ISpan span = Span.StartSpan(
+            var span = Span.StartSpan(
                         SpanContext.Create(traceId, spanId, traceOptions, parent?.Tracestate ?? Tracestate.Empty),
                         spanOptions,
                         name,
                         parentSpanId,
                         hasRemoteParent,
                         activeTraceParams,
-                        this.Options.StartEndHandler,
+                        Options.StartEndHandler,
                         timestampConverter,
-                        this.Options.Clock);
+                        Options.Clock);
             LinkSpans(span, parentLinks);
             return span;
         }

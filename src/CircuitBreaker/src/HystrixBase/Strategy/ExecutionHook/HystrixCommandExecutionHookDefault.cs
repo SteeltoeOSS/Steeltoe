@@ -6,7 +6,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook
 {
     public class HystrixCommandExecutionHookDefault : HystrixCommandExecutionHook
     {
-        private static HystrixCommandExecutionHookDefault instance = new HystrixCommandExecutionHookDefault();
+        private static readonly HystrixCommandExecutionHookDefault Instance = new HystrixCommandExecutionHookDefault();
 
         private HystrixCommandExecutionHookDefault()
         {
@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook
 
         public static HystrixCommandExecutionHook GetInstance()
         {
-            return instance;
+            return Instance;
         }
     }
 }

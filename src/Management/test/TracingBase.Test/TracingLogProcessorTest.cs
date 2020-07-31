@@ -29,11 +29,11 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts);
+            var tracing = new OpenCensusTracing(opts);
             var processor = new TracingLogProcessor(opts, tracing);
             var result = processor.Process("InputLogMessage");
             Assert.Equal("InputLogMessage", result);
@@ -56,12 +56,12 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "false",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts);
-            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out ISpan span);
+            var tracing = new OpenCensusTracing(opts);
+            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out var span);
 
             var processor = new TracingLogProcessor(opts, tracing);
             var result = processor.Process("InputLogMessage");
@@ -73,7 +73,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains(span.Context.SpanId.ToLowerBase16(), result);
             Assert.Contains("foobar", result);
 
-            tracing.Tracer.SpanBuilderWithExplicitParent("spanName2", span).StartScopedSpan(out ISpan childSpan);
+            tracing.Tracer.SpanBuilderWithExplicitParent("spanName2", span).StartScopedSpan(out var childSpan);
 
             result = processor.Process("InputLogMessage2");
 
@@ -103,12 +103,12 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts);
-            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out ISpan span);
+            var tracing = new OpenCensusTracing(opts);
+            tracing.Tracer.SpanBuilder("spanName").StartScopedSpan(out var span);
 
             var processor = new TracingLogProcessor(opts, tracing);
             var result = processor.Process("InputLogMessage");

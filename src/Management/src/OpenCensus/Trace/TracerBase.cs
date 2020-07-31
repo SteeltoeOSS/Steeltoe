@@ -26,7 +26,7 @@ namespace OpenCensus.Trace
         {
             get
             {
-                ISpan currentSpan = CurrentSpanUtils.CurrentSpan;
+                var currentSpan = CurrentSpanUtils.CurrentSpan;
                 return currentSpan ?? BlankSpan.Instance;
             }
         }
@@ -47,7 +47,7 @@ namespace OpenCensus.Trace
         // public final <C> Callable<C> withSpan(Span span, final Callable<C> callable)
         public ISpanBuilder SpanBuilder(string spanName)
         {
-            return this.SpanBuilderWithExplicitParent(spanName, CurrentSpanUtils.CurrentSpan);
+            return SpanBuilderWithExplicitParent(spanName, CurrentSpanUtils.CurrentSpan);
         }
 
         public abstract ISpanBuilder SpanBuilderWithExplicitParent(string spanName, ISpan parent = null);

@@ -17,7 +17,7 @@ namespace Steeltoe.Management.Census.Trace
 
         public OpenCensusTracing(ITracingOptions options, ISampler sampler = null)
         {
-            this._options = options;
+            _options = options;
             var builder = TraceParams.Default.ToBuilder();
 
             if (sampler != null)

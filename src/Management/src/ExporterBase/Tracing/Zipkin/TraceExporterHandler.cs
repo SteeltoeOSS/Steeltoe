@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         public void Export(IEnumerable<ISpanData> spanDataList)
         {
-            List<ZipkinSpan> zipkinSpans = new List<ZipkinSpan>();
+            var zipkinSpans = new List<ZipkinSpan>();
             foreach (var data in spanDataList)
             {
                 var zipkinSpan = GenerateSpan(data, _localEndpoint);
@@ -53,11 +53,11 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         internal ZipkinSpan GenerateSpan(ISpanData spanData, ZipkinEndpoint localEndpoint)
         {
-            ISpanContext context = spanData.Context;
-            long startTimestamp = ToEpochMicroseconds(spanData.StartTimestamp);
-            long endTimestamp = ToEpochMicroseconds(spanData.EndTimestamp);
+            var context = spanData.Context;
+            var startTimestamp = ToEpochMicroseconds(spanData.StartTimestamp);
+            var endTimestamp = ToEpochMicroseconds(spanData.EndTimestamp);
 
-            ZipkinSpan.Builder spanBuilder =
+            var spanBuilder =
                 ZipkinSpan.NewBuilder()
                     .TraceId(EncodeTraceId(context.TraceId))
                     .Id(EncodeSpanId(context.SpanId))
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 spanBuilder.PutTag(label.Key, AttributeValueToString(label.Value));
             }
 
-            Status status = spanData.Status;
+            var status = spanData.Status;
             if (status != null)
             {
                 spanBuilder.PutTag(STATUS_CODE, status.CanonicalCode.ToString());
@@ -104,8 +104,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         private long ToEpochMicroseconds(ITimestamp timestamp)
         {
-            long nanos = (timestamp.Seconds * NanosPerSecond) + timestamp.Nanos;
-            long micros = nanos / 1000L;
+            var nanos = (timestamp.Seconds * NanosPerSecond) + timestamp.Nanos;
+            var micros = nanos / 1000L;
             return micros;
         }
 
@@ -152,7 +152,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         {
             try
             {
-                HttpClient client = GetHttpClient();
+                var client = GetHttpClient();
                 var requestUri = new Uri(_options.Endpoint);
                 var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
                 request.Content = GetRequestContent(spans);
@@ -169,22 +169,20 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         {
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var prevProtocols,
+                out var prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                _logger?.LogDebug("DoPost {uri}, status: {status}", request.RequestUri, response.StatusCode);
+                if (response.StatusCode != HttpStatusCode.OK &&
+                    response.StatusCode != HttpStatusCode.Accepted)
                 {
-                    _logger?.LogDebug("DoPost {uri}, status: {status}", request.RequestUri, response.StatusCode);
-                    if (response.StatusCode != HttpStatusCode.OK &&
-                        response.StatusCode != HttpStatusCode.Accepted)
-                    {
-                        var statusCode = (int)response.StatusCode;
-                        _logger?.LogError("Failed to send traces to Zipkin. Discarding traces.  StatusCode: {status}, Uri: {uri}", statusCode, request.RequestUri);
-                    }
-
-                    return;
+                    var statusCode = (int)response.StatusCode;
+                    _logger?.LogError("Failed to send traces to Zipkin. Discarding traces.  StatusCode: {status}, Uri: {uri}", statusCode, request.RequestUri);
                 }
+
+                return;
             }
             catch (Exception e)
             {
@@ -208,7 +206,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
         {
             try
             {
-                string json = JsonConvert.SerializeObject(toSerialize);
+                var json = JsonConvert.SerializeObject(toSerialize);
                 _logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
                 return new StringContent(json, Encoding.UTF8, "application/json");
             }
@@ -232,7 +230,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 ServiceName = _options.ServiceName
             };
 
-            string hostName = ResolveHostName();
+            var hostName = ResolveHostName();
             if (!string.IsNullOrEmpty(hostName))
             {
                 result.Ipv4 = ResolveHostAddress(hostName, AddressFamily.InterNetwork);

@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Module
                 _handlers = ActuatorConfigurator.ConfiguredHandlers;
             }
 
-            EventHandlerTaskAsyncHelper asyncHelper = new EventHandlerTaskAsyncHelper(FilterAndPreProcessRequest);
+            var asyncHelper = new EventHandlerTaskAsyncHelper(FilterAndPreProcessRequest);
             context.AddOnPostAuthorizeRequestAsync(asyncHelper.BeginEventHandler, asyncHelper.EndEventHandler);
         }
 
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Module
 
         protected virtual async Task FilterAndPreProcessRequest(object sender, EventArgs e)
         {
-            HttpApplication application = (HttpApplication)sender;
+            var application = (HttpApplication)sender;
             var contextWrapper = new HttpContextWrapper(application.Context);
             await FilterAndPreProcessRequest(contextWrapper, HttpContext.Current.ApplicationInstance.CompleteRequest).ConfigureAwait(false);
          }

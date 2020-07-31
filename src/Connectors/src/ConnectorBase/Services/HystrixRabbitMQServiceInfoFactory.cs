@@ -12,7 +12,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
     {
         public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new Tags("hystrix-amqp");
 
-        private static string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
+        private static readonly string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 
         public HystrixRabbitMQServiceInfoFactory()
             : base(HYSTRIX_RABBIT_SERVICE_TAGS, _scheme)
@@ -27,11 +27,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         public override IServiceInfo Create(Service binding)
         {
             var amqpCredentials = binding.Credentials["amqp"];
-            string uri = GetUriFromCredentials(amqpCredentials);
-            bool sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
+            var uri = GetUriFromCredentials(amqpCredentials);
+            var sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
             if (amqpCredentials.ContainsKey("uris"))
             {
-                List<string> uris = GetListFromCredentials(amqpCredentials, "uris");
+                var uris = GetListFromCredentials(amqpCredentials, "uris");
                 return new HystrixRabbitMQServiceInfo(binding.Name, uri, uris, sslEnabled);
             }
 
@@ -43,10 +43,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             if (credentials.ContainsKey("amqp"))
             {
                 var amqpDict = credentials["amqp"];
-                string uri = GetStringFromCredentials(amqpDict, UriKeys);
+                var uri = GetStringFromCredentials(amqpDict, UriKeys);
                 if (uri != null)
                 {
-                    foreach (string uriScheme in UriSchemes)
+                    foreach (var uriScheme in UriSchemes)
                     {
                         if (uri.StartsWith(uriScheme + "://"))
                         {

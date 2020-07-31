@@ -10,33 +10,33 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public AtomicReferenceArray(int length)
         {
-            this._array = new T[length];
+            _array = new T[length];
         }
 
         public T this[int index]
         {
             get
             {
-                lock (this._array)
+                lock (_array)
                 {
-                    return this._array[index];
+                    return _array[index];
                 }
             }
 
             set
             {
-                lock (this._array)
+                lock (_array)
                 {
-                    this._array[index] = value;
+                    _array[index] = value;
                 }
             }
         }
 
         public T[] ToArray()
         {
-            lock (this._array)
+            lock (_array)
             {
-                return (T[])this._array.Clone();
+                return (T[])_array.Clone();
             }
         }
 
@@ -44,7 +44,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             get
             {
-                lock (this._array)
+                lock (_array)
                 {
                     return _array.Length;
                 }

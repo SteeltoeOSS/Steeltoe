@@ -37,7 +37,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetSingletonServiceInfo<OracleServiceInfo>();
+            var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -69,7 +69,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
                 throw new ArgumentNullException(nameof(config));
             }
 
-            OracleServiceInfo info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

@@ -15,7 +15,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
+            var uri = GetUriFromCredentials(binding.Credentials);
             return new MongoDbServiceInfo(binding.Name, uri);
         }
     }

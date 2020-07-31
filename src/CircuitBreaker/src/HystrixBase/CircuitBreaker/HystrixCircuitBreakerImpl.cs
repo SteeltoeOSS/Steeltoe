@@ -12,15 +12,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
         private readonly HystrixCommandMetrics _metrics;
 
         /* track whether this circuit is open/closed at any given point in time (default to false==closed) */
-        private AtomicBoolean _circuitOpen = new AtomicBoolean(false);
+        private readonly AtomicBoolean _circuitOpen = new AtomicBoolean(false);
 
         /* when the circuit was marked open or was last allowed to try a 'singleTest' */
-        private AtomicLong _circuitOpenedOrLastTestedTime = new AtomicLong();
+        private readonly AtomicLong _circuitOpenedOrLastTestedTime = new AtomicLong();
 
         protected internal HystrixCircuitBreakerImpl(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
-            this._options = options;
-            this._metrics = metrics;
+            _options = options;
+            _metrics = metrics;
         }
 
         public virtual void MarkSuccess()
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
                 if (_options.CircuitBreakerForceClosed)
                 {
                     // we still want to allow isOpen() to perform it's calculations so we simulate normal behavior
-                    var isOpen = IsOpen;
+                    _ = IsOpen;
 
                     // properties have asked us to ignore errors so we will ignore the results of isOpen and just allow all traffic through
                     return true;
@@ -59,7 +59,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 
         public virtual bool AllowSingleTest()
         {
-            long timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
+            var timeCircuitOpenedOrWasLastTested = _circuitOpenedOrLastTestedTime.Value;
 
             // 1) if the circuit is open
             // 2) and it's been longer than 'sleepWindow' since we opened the circuit
@@ -91,7 +91,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
                 }
 
                 // we're closed, so let's see if errors have made us so we should trip the circuit open
-                HealthCounts health = _metrics.Healthcounts;
+                var health = _metrics.Healthcounts;
 
                 // check if we are past the statisticalWindowVolumeThreshold
                 if (health.TotalRequests < _options.CircuitBreakerRequestVolumeThreshold)

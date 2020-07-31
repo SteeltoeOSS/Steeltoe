@@ -41,9 +41,9 @@ namespace Steeltoe.Management.EndpointOwin.Hypermedia
 
         protected internal string GetRequestUri(IOwinRequest request)
         {
-            string scheme = request.Scheme;
+            var scheme = request.Scheme;
 
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out string[] headerScheme))
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
             {
                 scheme = headerScheme.First(); // .ToString()
             }

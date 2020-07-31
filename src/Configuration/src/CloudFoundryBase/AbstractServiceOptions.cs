@@ -46,7 +46,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             var children = section.GetChildren();
             foreach (var child in children)
             {
-                string name = child.GetValue<string>("name");
+                var name = child.GetValue<string>("name");
                 if (serviceName == name)
                 {
                     return child;

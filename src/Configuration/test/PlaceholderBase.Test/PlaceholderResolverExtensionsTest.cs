@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
 
-            PlaceholderResolverSource placeholderSource =
+            var placeholderSource =
                 configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
             Assert.NotNull(placeholderSource);
         }
@@ -60,7 +60,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             configurationBuilder.AddPlaceholderResolver(loggerFactory);
             var configuration = configurationBuilder.Build();
 
-            PlaceholderResolverProvider provider =
+            var provider =
                 configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
             Assert.NotNull(provider);
@@ -86,9 +86,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                 }";
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -118,16 +118,16 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
     </spring>
 </settings>";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddXmlFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -143,16 +143,16 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
     name=${spring:bar:name?noName}
 ";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddIniFile(fileName);
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -172,7 +172,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -212,14 +212,14 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                             "--spring:line:name=${spring:json:name?noName}"
     };
             var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
-            string jsonfileName = Path.GetFileName(jsonpath);
+            var jsonfileName = Path.GetFileName(jsonpath);
             var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
-            string xmlfileName = Path.GetFileName(xmlpath);
+            var xmlfileName = Path.GetFileName(xmlpath);
             var inipath = TestHelpers.CreateTempFile(appsettingsIni);
-            string inifileName = Path.GetFileName(inipath);
+            var inifileName = Path.GetFileName(inipath);
 
-            string directory = Path.GetDirectoryName(jsonpath);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(jsonpath);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(jsonfileName);
@@ -229,7 +229,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -237,7 +237,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ClearsSources()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -260,7 +260,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_WithConfiguration_ReturnsNewConfiguration()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },

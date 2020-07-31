@@ -25,8 +25,8 @@ namespace OpenCensus.Trace.Export
     {
         internal SampledPerSpanNameSummary(IDictionary<ISampledLatencyBucketBoundaries, int> numbersOfLatencySampledSpans, IDictionary<CanonicalCode, int> numbersOfErrorSampledSpans)
         {
-            this.NumbersOfLatencySampledSpans = numbersOfLatencySampledSpans ?? throw new ArgumentNullException(nameof(numbersOfLatencySampledSpans));
-            this.NumbersOfErrorSampledSpans = numbersOfErrorSampledSpans ?? throw new ArgumentNullException(nameof(numbersOfErrorSampledSpans));
+            NumbersOfLatencySampledSpans = numbersOfLatencySampledSpans ?? throw new ArgumentNullException(nameof(numbersOfLatencySampledSpans));
+            NumbersOfErrorSampledSpans = numbersOfErrorSampledSpans ?? throw new ArgumentNullException(nameof(numbersOfErrorSampledSpans));
         }
 
         public IDictionary<ISampledLatencyBucketBoundaries, int> NumbersOfLatencySampledSpans { get; }
@@ -54,8 +54,8 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "SampledPerSpanNameSummary{"
-                + "numbersOfLatencySampledSpans=" + this.NumbersOfLatencySampledSpans + ", "
-                + "numbersOfErrorSampledSpans=" + this.NumbersOfErrorSampledSpans
+                + "numbersOfLatencySampledSpans=" + NumbersOfLatencySampledSpans + ", "
+                + "numbersOfErrorSampledSpans=" + NumbersOfErrorSampledSpans
                 + "}";
         }
 
@@ -69,8 +69,8 @@ namespace OpenCensus.Trace.Export
 
             if (o is SampledPerSpanNameSummary that)
             {
-                return this.NumbersOfLatencySampledSpans.SequenceEqual(that.NumbersOfLatencySampledSpans)
-                     && this.NumbersOfErrorSampledSpans.SequenceEqual(that.NumbersOfErrorSampledSpans);
+                return NumbersOfLatencySampledSpans.SequenceEqual(that.NumbersOfLatencySampledSpans)
+                     && NumbersOfErrorSampledSpans.SequenceEqual(that.NumbersOfErrorSampledSpans);
             }
 
             return false;
@@ -79,11 +79,11 @@ namespace OpenCensus.Trace.Export
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.NumbersOfLatencySampledSpans.GetHashCode();
+            h ^= NumbersOfLatencySampledSpans.GetHashCode();
             h *= 1000003;
-            h ^= this.NumbersOfErrorSampledSpans.GetHashCode();
+            h ^= NumbersOfErrorSampledSpans.GetHashCode();
             return h;
         }
     }

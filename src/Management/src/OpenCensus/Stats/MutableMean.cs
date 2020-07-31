@@ -32,7 +32,7 @@ namespace OpenCensus.Stats
         {
             get
             {
-                return this.Count == 0 ? 0 : this.Sum / this.Count;
+                return Count == 0 ? 0 : Sum / Count;
             }
         }
 
@@ -47,16 +47,16 @@ namespace OpenCensus.Stats
 
         internal override void Add(double value)
         {
-            this.Count++;
-            this.Sum += value;
-            if (value < this.Min)
+            Count++;
+            Sum += value;
+            if (value < Min)
             {
-                this.Min = value;
+                Min = value;
             }
 
-            if (value > this.Max)
+            if (value > Max)
             {
-                this.Max = value;
+                Max = value;
             }
         }
 
@@ -68,19 +68,19 @@ namespace OpenCensus.Stats
             }
 
             var result = fraction * mutable.Count;
-            long rounded = (long)Math.Round(result);
-            this.Count += rounded;
+            var rounded = (long)Math.Round(result);
+            Count += rounded;
 
-            this.Sum += mutable.Sum * fraction;
+            Sum += mutable.Sum * fraction;
 
-            if (mutable.Min < this.Min)
+            if (mutable.Min < Min)
             {
-                this.Min = mutable.Min;
+                Min = mutable.Min;
             }
 
-            if (mutable.Max > this.Max)
+            if (mutable.Max > Max)
             {
-                this.Max = mutable.Max;
+                Max = mutable.Max;
             }
         }
 

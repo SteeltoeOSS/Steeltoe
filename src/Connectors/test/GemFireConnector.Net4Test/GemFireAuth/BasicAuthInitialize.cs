@@ -8,8 +8,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test
 {
     public class BasicAuthInitialize : IAuthInitialize
     {
-        private string _username;
-        private string _password;
+        private readonly string _username;
+        private readonly string _password;
 
         public BasicAuthInitialize(string username, string password)
         {

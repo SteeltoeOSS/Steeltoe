@@ -20,18 +20,16 @@ namespace Steeltoe.Common.Http
 
             try
             {
-                using (JsonReader reader = new JsonTextReader(new StreamReader(stream)))
-                {
-                    JsonSerializer serializer = new JsonSerializer();
-                    return (T)serializer.Deserialize(reader, typeof(T));
-                }
+                using JsonReader reader = new JsonTextReader(new StreamReader(stream));
+                var serializer = new JsonSerializer();
+                return (T)serializer.Deserialize(reader, typeof(T));
             }
             catch (Exception e)
             {
                 logger?.LogError("Serialization exception: {0}", e);
             }
 
-            return default(T);
+            return default;
         }
     }
 }

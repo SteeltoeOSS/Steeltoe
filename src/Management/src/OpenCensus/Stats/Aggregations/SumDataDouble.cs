@@ -23,7 +23,7 @@ namespace OpenCensus.Stats.Aggregations
     {
         internal SumDataDouble(double sum)
         {
-            this.Sum = sum;
+            Sum = sum;
         }
 
         public double Sum { get; }
@@ -50,7 +50,7 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "SumDataDouble{"
-                + "sum=" + this.Sum
+                + "sum=" + Sum
                 + "}";
         }
 
@@ -64,7 +64,7 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is SumDataDouble that)
             {
-                return DoubleUtil.ToInt64(this.Sum) == DoubleUtil.ToInt64(that.Sum);
+                return DoubleUtil.ToInt64(Sum) == DoubleUtil.ToInt64(that.Sum);
             }
 
             return false;
@@ -75,7 +75,7 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Sum) >> 32) ^ DoubleUtil.ToInt64(this.Sum);
+            h ^= (DoubleUtil.ToInt64(Sum) >> 32) ^ DoubleUtil.ToInt64(Sum);
             return (int)h;
         }
     }

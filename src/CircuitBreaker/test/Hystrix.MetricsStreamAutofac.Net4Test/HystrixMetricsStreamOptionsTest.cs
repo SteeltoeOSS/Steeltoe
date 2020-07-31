@@ -26,15 +26,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
     }
 }
 ";
-            string path = TestHelpers.CreateTempFile(json);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var path = TestHelpers.CreateTempFile(json);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var builder = new ConfigurationBuilder();
             builder.SetBasePath(directory);
             builder.AddJsonFile(fileName);
             IConfiguration config = builder.Build();
 
-            ContainerBuilder services = new ContainerBuilder();
+            var services = new ContainerBuilder();
             services.RegisterOptions();
             services.RegisterOption<HystrixMetricsStreamOptions>(config.GetSection("hystrix:stream"));
             var provider = services.Build();

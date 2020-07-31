@@ -51,12 +51,12 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
 
         protected internal async Task HandleMetricsRequestAsync(IOwinContext context)
         {
-            IOwinRequest request = context.Request;
-            IOwinResponse response = context.Response;
+            var request = context.Request;
+            var response = context.Response;
 
             _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
-            string metricName = GetMetricName(request);
+            var metricName = GetMetricName(request);
             if (!string.IsNullOrEmpty(metricName))
             {
                 // GET /metrics/{metricName}?tag=key:value&tag=key:value
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             else
             {
                 // GET /metrics
-                var serialInfo = this.HandleRequest(null);
+                var serialInfo = HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
                 response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json" });
                 response.StatusCode = (int)HttpStatusCode.OK;
@@ -90,8 +90,8 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
             var epPaths = GetEndpointPaths();
             foreach (var path in epPaths)
             {
-                PathString epPath = new PathString(path);
-                if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+                var epPath = new PathString(path);
+                if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
                 {
                     return remaining.Value.TrimStart('/');
                 }
@@ -107,7 +107,7 @@ namespace Steeltoe.Management.EndpointOwin.Metrics
         /// <returns>List of key-value pairs</returns>
         protected internal List<KeyValuePair<string, string>> ParseTags(IReadableStringCollection query)
         {
-            List<KeyValuePair<string, string>> results = new List<KeyValuePair<string, string>>();
+            var results = new List<KeyValuePair<string, string>>();
             if (query == null)
             {
                 return results;

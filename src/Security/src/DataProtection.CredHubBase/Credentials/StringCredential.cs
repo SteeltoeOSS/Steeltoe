@@ -9,7 +9,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     [JsonConverter(typeof(StringCredentialJsonConverter))]
     public class StringCredential : ICredentialValue
     {
-        private string _value;
+        private readonly string _value;
 
         public StringCredential(string value)
         {

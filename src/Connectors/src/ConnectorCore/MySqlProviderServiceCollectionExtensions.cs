@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -82,7 +82,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql
 
         private static void DoAdd(IServiceCollection services, MySqlServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
+            var mySqlConnection = ConnectorHelpers.FindType(MySqlTypeLocator.Assemblies, MySqlTypeLocator.ConnectionTypeNames);
             var mySqlConfig = new MySqlProviderConnectorOptions(config);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));

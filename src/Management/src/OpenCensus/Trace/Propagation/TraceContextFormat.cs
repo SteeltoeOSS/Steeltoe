@@ -53,7 +53,7 @@ namespace OpenCensus.Trace.Propagation
                 }
 
                 var traceparent = traceparentCollection?.FirstOrDefault();
-                var traceparentParsed = this.TryExtractTraceparent(traceparent, out ITraceId traceId, out ISpanId spanId, out TraceOptions traceoptions);
+                var traceparentParsed = TryExtractTraceparent(traceparent, out var traceId, out var spanId, out var traceoptions);
 
                 if (!traceparentParsed)
                 {
@@ -63,8 +63,8 @@ namespace OpenCensus.Trace.Propagation
                 var tracestateResult = Tracestate.Empty;
                 try
                 {
-                    List<KeyValuePair<string, string>> entries = new List<KeyValuePair<string, string>>();
-                    HashSet<string> names = new HashSet<string>();
+                    var entries = new List<KeyValuePair<string, string>>();
+                    var names = new HashSet<string>();
                     var discardTracestate = false;
                     if (tracestateCollection != null)
                     {
@@ -169,7 +169,7 @@ namespace OpenCensus.Trace.Propagation
 
             setter(carrier, "traceparent", traceparent);
 
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             var isFirst = true;
 
             foreach (var entry in spanContext.Tracestate.Entries)

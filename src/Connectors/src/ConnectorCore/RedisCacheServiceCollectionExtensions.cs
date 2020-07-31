@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
             var configToConfigure = connectorConfiguration ?? applicationConfiguration;
 
-            RedisServiceInfo info = serviceName != null
+            var info = serviceName != null
                 ? configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName)
                 : configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>();
 
@@ -185,7 +185,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             }
 
             var configToConfigure = connectorConfiguration ?? applicationConfiguration;
-            RedisServiceInfo info = serviceName == null ? configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>() : configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+            var info = serviceName == null ? configToConfigure.GetSingletonServiceInfo<RedisServiceInfo>() : configToConfigure.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             DoAddConnectionMultiplexer(services, info, configToConfigure, contextLifetime, addSteeltoeHealthChecks);
             return services;
         }
@@ -194,12 +194,12 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
         {
-            Type interfaceType = RedisTypeLocator.MicrosoftInterface;
-            Type connectionType = RedisTypeLocator.MicrosoftImplementation;
-            Type optionsType = RedisTypeLocator.MicrosoftOptions;
+            var interfaceType = RedisTypeLocator.MicrosoftInterface;
+            var connectionType = RedisTypeLocator.MicrosoftImplementation;
+            var optionsType = RedisTypeLocator.MicrosoftOptions;
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
+            var redisConfig = new RedisCacheConnectorOptions(config);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, connectionType, optionsType, null);
             services.Add(new ServiceDescriptor(interfaceType, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(connectionType, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
@@ -210,13 +210,13 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
 
         private static void DoAddConnectionMultiplexer(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type redisInterface = RedisTypeLocator.StackExchangeInterface;
-            Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
-            Type redisOptions = RedisTypeLocator.StackExchangeOptions;
-            MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+            var redisInterface = RedisTypeLocator.StackExchangeInterface;
+            var redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+            var redisOptions = RedisTypeLocator.StackExchangeOptions;
+            var initializer = RedisTypeLocator.StackExchangeInitializer;
 
-            RedisCacheConnectorOptions redisConfig = new RedisCacheConnectorOptions(config);
-            RedisServiceConnectorFactory factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
+            var redisConfig = new RedisCacheConnectorOptions(config);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
             services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(redisImplementation, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)

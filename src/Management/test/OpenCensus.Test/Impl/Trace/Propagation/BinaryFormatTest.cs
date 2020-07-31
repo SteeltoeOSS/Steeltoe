@@ -37,7 +37,7 @@ namespace OpenCensus.Trace.Propagation.Test
 
         private void TestSpanContextConversion(ISpanContext spanContext)
         {
-            ISpanContext propagatedBinarySpanContext = binaryFormat.FromByteArray(binaryFormat.ToByteArray(spanContext));
+            var propagatedBinarySpanContext = binaryFormat.FromByteArray(binaryFormat.ToByteArray(spanContext));
             Assert.Equal(spanContext, propagatedBinarySpanContext);
         }
 
@@ -85,7 +85,7 @@ namespace OpenCensus.Trace.Propagation.Test
         public void FromBinaryValue_EmptyInput()
         {
 
-            Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(new byte[0]));
+            Assert.Throws<SpanContextParseException>(() => binaryFormat.FromByteArray(Array.Empty<byte>()));
         }
 
         [Fact]

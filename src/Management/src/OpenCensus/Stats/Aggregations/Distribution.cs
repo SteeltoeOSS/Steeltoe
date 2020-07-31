@@ -26,7 +26,7 @@ namespace OpenCensus.Stats.Aggregations
 
         private Distribution(IBucketBoundaries bucketBoundaries)
         {
-            this.BucketBoundaries = bucketBoundaries ?? throw new ArgumentNullException("Null bucketBoundaries");
+            BucketBoundaries = bucketBoundaries ?? throw new ArgumentNullException("Null bucketBoundaries");
         }
 
         public IBucketBoundaries BucketBoundaries { get; }
@@ -50,7 +50,7 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "Distribution{"
-                + "bucketBoundaries=" + this.BucketBoundaries
+                + "bucketBoundaries=" + BucketBoundaries
                 + "}";
         }
 
@@ -64,7 +64,7 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is Distribution that)
             {
-                return this.BucketBoundaries.Equals(that.BucketBoundaries);
+                return BucketBoundaries.Equals(that.BucketBoundaries);
             }
 
             return false;
@@ -73,9 +73,9 @@ namespace OpenCensus.Stats.Aggregations
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.BucketBoundaries.GetHashCode();
+            h ^= BucketBoundaries.GetHashCode();
             return h;
         }
     }

@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder.Test
                 ["management:metrics:exporter:cloudfoundry:instanceId"] = "instanceId",
                 ["management:metrics:exporter:cloudfoundry:instanceIndex"] = "instanceIndex",
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

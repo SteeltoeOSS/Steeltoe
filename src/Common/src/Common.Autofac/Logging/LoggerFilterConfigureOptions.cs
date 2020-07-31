@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Logging.Autofac
 
         public LoggerFilterConfigureOptions(IConfiguration configuration)
         {
-            this._configuration = configuration;
+            _configuration = configuration;
         }
 
         public void Configure(LoggerFilterOptions options)
@@ -71,8 +71,7 @@ namespace Steeltoe.Common.Logging.Autofac
         {
             foreach (var section in configurationSection.AsEnumerable(true))
             {
-                LogLevel level;
-                if (TryGetSwitch(section.Value, out level))
+                if (TryGetSwitch(section.Value, out var level))
                 {
                     var category = section.Key;
                     if (category == "Default")

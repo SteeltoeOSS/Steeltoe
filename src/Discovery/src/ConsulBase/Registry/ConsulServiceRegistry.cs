@@ -176,7 +176,7 @@ namespace Steeltoe.Discovery.Consul.Registry
             var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
             var checks = response.Response;
 
-            foreach (HealthCheck check in checks)
+            foreach (var check in checks)
             {
                 if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
                 {

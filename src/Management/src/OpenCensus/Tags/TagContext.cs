@@ -26,14 +26,14 @@ namespace OpenCensus.Tags
 
         public TagContext(IDictionary<ITagKey, ITagValue> tags)
         {
-            this.Tags = new ReadOnlyDictionary<ITagKey, ITagValue>(new Dictionary<ITagKey, ITagValue>(tags));
+            Tags = new ReadOnlyDictionary<ITagKey, ITagValue>(new Dictionary<ITagKey, ITagValue>(tags));
         }
 
         public IDictionary<ITagKey, ITagValue> Tags { get; }
 
         public override IEnumerator<ITag> GetEnumerator()
         {
-            var result = this.Tags.Select((kvp) => Tag.Create(kvp.Key, kvp.Value));
+            var result = Tags.Select((kvp) => Tag.Create(kvp.Key, kvp.Value));
             return result.ToList().GetEnumerator();
         }
     }

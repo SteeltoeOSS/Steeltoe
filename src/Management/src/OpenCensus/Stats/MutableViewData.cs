@@ -33,7 +33,7 @@ namespace OpenCensus.Stats
 
         protected MutableViewData(IView view)
         {
-            this.View = view;
+            View = view;
         }
 
         internal IView View { get; }
@@ -56,8 +56,8 @@ namespace OpenCensus.Stats
 
         private static Func<MutableDistribution, IAggregationData> CreateDistributionData { get; } = (s) =>
         {
-            List<long> boxedBucketCounts = new List<long>();
-            foreach (long bucketCount in s.BucketCounts)
+            var boxedBucketCounts = new List<long>();
+            foreach (var bucketCount in s.BucketCounts)
             {
                 boxedBucketCounts.Add(bucketCount);
             }
@@ -73,9 +73,9 @@ namespace OpenCensus.Stats
 
         internal static IDictionary<ITagKey, ITagValue> GetTagMap(ITagContext ctx)
         {
-            if (ctx is TagContext)
+            if (ctx is TagContext context)
             {
-                return ((TagContext)ctx).Tags;
+                return context.Tags;
             }
             else
             {
@@ -95,9 +95,9 @@ namespace OpenCensus.Stats
 
             // Record all the measures in a "Greedy" way.
             // Every view aggregates every measure. This is similar to doing a GROUPBY view’s keys.
-            for (int i = 0; i < columns.Count; ++i)
+            for (var i = 0; i < columns.Count; ++i)
             {
-                ITagKey tagKey = columns[i];
+                var tagKey = columns[i];
                 if (!tags.ContainsKey(tagKey))
                 {
                     // replace not found key values by null.
@@ -199,7 +199,7 @@ namespace OpenCensus.Stats
         internal void Record(ITagContext tags, long value, ITimestamp timestamp)
         {
             // TODO(songya): shall we check for precision loss here?
-            this.Record(tags, (double)value, timestamp);
+            Record(tags, (double)value, timestamp);
         }
 
         /** Convert this {@link MutableViewData} to {@link ViewData}. */

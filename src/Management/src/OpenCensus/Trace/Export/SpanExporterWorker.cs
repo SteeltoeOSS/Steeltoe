@@ -36,20 +36,20 @@ namespace OpenCensus.Trace.Export
         {
             this.bufferSize = bufferSize;
             this.scheduleDelay = TimeSpan.FromSeconds(scheduleDelay.Seconds);
-            this.spans = new BlockingCollection<ISpan>();
+            spans = new BlockingCollection<ISpan>();
         }
 
         public void Dispose()
         {
-            this.shutdown = true;
-            this.spans.CompleteAdding();
+            shutdown = true;
+            spans.CompleteAdding();
         }
 
         internal void AddSpan(ISpan span)
         {
-            if (!this.spans.IsAddingCompleted)
+            if (!spans.IsAddingCompleted)
             {
-                if (!this.spans.TryAdd(span))
+                if (!spans.TryAdd(span))
                 {
                     // Log failure, dropped span
                 }
@@ -58,7 +58,7 @@ namespace OpenCensus.Trace.Export
 
         internal Task ExportAsync(IEnumerable<ISpanData> export, CancellationToken token)
         {
-            var handlers = this.serviceHandlers.Values;
+            var handlers = serviceHandlers.Values;
             foreach (var handler in handlers)
             {
                 try
@@ -77,24 +77,24 @@ namespace OpenCensus.Trace.Export
 
         internal void Run(object obj)
         {
-            List<ISpanData> toExport = new List<ISpanData>();
-            while (!this.shutdown)
+            var toExport = new List<ISpanData>();
+            while (!shutdown)
             {
                 try
                 {
-                    if (this.spans.TryTake(out ISpan item, this.scheduleDelay))
+                    if (spans.TryTake(out var item, scheduleDelay))
                     {
                         // Build up list
-                        this.BuildList(item, toExport);
+                        BuildList(item, toExport);
 
                         // Export them
-                        this.ExportAsync(toExport, CancellationToken.None);
+                        ExportAsync(toExport, CancellationToken.None);
 
                         // Get ready for next batch
                         toExport.Clear();
                     }
 
-                    if (this.spans.IsCompleted)
+                    if (spans.IsCompleted)
                     {
                         break;
                     }
@@ -109,12 +109,12 @@ namespace OpenCensus.Trace.Export
 
         internal void RegisterHandler(string name, IHandler handler)
         {
-            this.serviceHandlers[name] = handler;
+            serviceHandlers[name] = handler;
         }
 
         internal void UnregisterHandler(string name)
         {
-            this.serviceHandlers.TryRemove(name, out IHandler prev);
+            serviceHandlers.TryRemove(name, out var prev);
         }
 
         internal ISpanData ToSpanData(ISpan span)
@@ -135,7 +135,7 @@ namespace OpenCensus.Trace.Export
             }
 
             // Grab as many as we can
-            while (this.spans.TryTake(out item))
+            while (spans.TryTake(out item))
             {
                 span = item as Span;
                 if (span != null)
@@ -143,7 +143,7 @@ namespace OpenCensus.Trace.Export
                     toExport.Add(span.ToSpanData());
                 }
 
-                if (toExport.Count >= this.bufferSize)
+                if (toExport.Count >= bufferSize)
                 {
                     break;
                 }

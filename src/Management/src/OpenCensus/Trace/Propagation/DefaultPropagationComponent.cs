@@ -31,7 +31,7 @@ namespace OpenCensus.Trace.Propagation
         {
             get
             {
-                return this.binaryFormat;
+                return binaryFormat;
             }
         }
 
@@ -40,7 +40,7 @@ namespace OpenCensus.Trace.Propagation
         {
             get
             {
-                return this.textFormat;
+                return textFormat;
             }
         }
     }

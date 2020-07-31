@@ -44,20 +44,16 @@ namespace Steeltoe.Common.Discovery
 
         private static byte[] SerializeForCache(object data)
         {
-            using (var stream = new MemoryStream())
-            {
-                new BinaryFormatter().Serialize(stream, data);
-                return stream.ToArray();
-            }
+            using var stream = new MemoryStream();
+            new BinaryFormatter().Serialize(stream, data);
+            return stream.ToArray();
         }
 
         private static T DeserializeFromCache<T>(byte[] data)
             where T : class
         {
-            using (var stream = new MemoryStream(data))
-            {
-                return new BinaryFormatter().Deserialize(stream) as T;
-            }
+            using var stream = new MemoryStream(data);
+            return new BinaryFormatter().Deserialize(stream) as T;
         }
     }
 }

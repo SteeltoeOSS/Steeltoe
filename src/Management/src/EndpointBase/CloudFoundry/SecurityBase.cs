@@ -74,16 +74,16 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 return new SecurityResult(HttpStatusCode.Unauthorized, AUTHORIZATION_HEADER_INVALID);
             }
 
-            string checkPermissionsUri = _options.CloudFoundryApi + "/v2/apps/" + _options.ApplicationId + "/permissions";
+            var checkPermissionsUri = _options.CloudFoundryApi + "/v2/apps/" + _options.ApplicationId + "/permissions";
             var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
-            AuthenticationHeaderValue auth = new AuthenticationHeaderValue("bearer", token);
+            var auth = new AuthenticationHeaderValue("bearer", token);
             request.Headers.Authorization = auth;
 
             // If certificate validation is disabled, inject a callback to handle properly
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var prevProtocols,
+                out var prevValidator);
             try
             {
                 _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
@@ -93,25 +93,21 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                     _options.ValidateCertificates,
                     out prevProtocols,
                     out prevValidator);
-                using (var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT))
+                using var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT);
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
-                    {
-                        if (response.StatusCode != HttpStatusCode.OK)
-                        {
-                            _logger?.LogInformation(
-                                "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
-                                response.StatusCode,
-                                checkPermissionsUri);
+                    _logger?.LogInformation(
+                        "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
+                        response.StatusCode,
+                        checkPermissionsUri);
 
-                            return response.StatusCode == HttpStatusCode.Forbidden
-                                ? new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE)
-                                : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
-                        }
-
-                        return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
-                    }
+                    return response.StatusCode == HttpStatusCode.Forbidden
+                        ? new SecurityResult(HttpStatusCode.Forbidden, ACCESS_DENIED_MESSAGE)
+                        : new SecurityResult(HttpStatusCode.ServiceUnavailable, CLOUDFOUNDRY_NOT_REACHABLE_MESSAGE);
                 }
+
+                return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
             }
             catch (Exception e)
             {
@@ -126,8 +122,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
         public async Task<Permissions> GetPermissions(HttpResponseMessage response)
         {
-            string json = string.Empty;
-            Permissions permissions = Permissions.NONE;
+            var json = string.Empty;
+            var permissions = Permissions.NONE;
 
             try
             {
@@ -137,9 +133,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
                 var result = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
 
-                if (result.TryGetValue(READ_SENSITIVE_DATA, out object perm))
+                if (result.TryGetValue(READ_SENSITIVE_DATA, out var perm))
                 {
-                    bool boolResult = (bool)perm;
+                    var boolResult = (bool)perm;
                     permissions = boolResult ? Permissions.FULL : Permissions.RESTRICTED;
                 }
             }

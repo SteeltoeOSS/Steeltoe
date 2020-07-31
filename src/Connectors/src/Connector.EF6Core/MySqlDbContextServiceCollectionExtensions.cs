@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
+            var info = config.GetSingletonServiceInfo<MySqlServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -66,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -74,9 +74,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EF6
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, MySqlServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            MySqlProviderConnectorOptions mySqlConfig = new MySqlProviderConnectorOptions(config);
+            var mySqlConfig = new MySqlProviderConnectorOptions(config);
 
-            MySqlDbContextConnectorFactory factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
+            var factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

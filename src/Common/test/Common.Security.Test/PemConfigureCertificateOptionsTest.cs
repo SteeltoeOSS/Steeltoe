@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Security.Test
             Assert.NotNull(config["certificate"]);
             Assert.NotNull(config["privateKey"]);
             var pemConfig = new PemConfigureCertificateOptions(config);
-            CertificateOptions opts = new CertificateOptions();
+            var opts = new CertificateOptions();
             pemConfig.Configure(opts);
             Assert.NotNull(opts.Certificate);
             Assert.Equal(Options.DefaultName, opts.Name);

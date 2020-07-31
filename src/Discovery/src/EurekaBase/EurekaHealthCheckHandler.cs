@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Eureka
     public class EurekaHealthCheckHandler : IHealthCheckHandler
     {
         protected internal IList<IHealthContributor> _contributors;
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public EurekaHealthCheckHandler(ILogger logger = null)
         {
@@ -35,14 +35,14 @@ namespace Steeltoe.Discovery.Eureka
 
         public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
         {
-            List<HealthCheckResult> results = DoHealthChecks(_contributors);
-            HealthStatus status = AggregateStatus(results);
+            var results = DoHealthChecks(_contributors);
+            var status = AggregateStatus(results);
             return MapToInstanceStatus(status);
         }
 
         protected internal virtual List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
         {
-            List<HealthCheckResult> results = new List<HealthCheckResult>();
+            var results = new List<HealthCheckResult>();
             foreach (var contributor in contributors)
             {
                 try
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka
 
         protected internal virtual HealthStatus AggregateStatus(List<HealthCheckResult> results)
         {
-            List<HealthStatus> considered = new List<HealthStatus>();
+            var considered = new List<HealthStatus>();
 
             // Filter out warnings, ignored
             foreach (var result in results)
@@ -78,7 +78,7 @@ namespace Steeltoe.Discovery.Eureka
             }
 
             // Compute final
-            HealthStatus final = HealthStatus.UNKNOWN;
+            var final = HealthStatus.UNKNOWN;
             foreach (var status in considered)
             {
                 if (status > final)

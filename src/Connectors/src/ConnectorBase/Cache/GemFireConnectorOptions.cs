@@ -54,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
                     // server[port]
                     var portStart = locator.IndexOf('[');
                     var portEnd = locator.IndexOf(']');
-                    if (int.TryParse(locator.Substring(portStart + 1, portEnd - portStart - 1), out int parsedPort))
+                    if (int.TryParse(locator.Substring(portStart + 1, portEnd - portStart - 1), out var parsedPort))
                     {
                         toReturn.Add(locator.Substring(0, portStart), parsedPort);
                     }
@@ -67,7 +67,7 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
                 {
                     // server:port
                     var serverPort = locator.Split(':');
-                    if (int.TryParse(serverPort[1], out int parsedPort))
+                    if (int.TryParse(serverPort[1], out var parsedPort))
                     {
                         toReturn.Add(serverPort[0], parsedPort);
                     }

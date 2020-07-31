@@ -69,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-                Activity current = Activity.Current;
+                var current = Activity.Current;
                 if (current != null)
                 {
                     var context = HttpContext.Current;
@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 Logger?.LogTrace("HandleStopEventLost start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-                Activity current = Activity.Current ?? DiagnosticHelpers.GetProperty<Activity>(arg, "activity");
+                var current = Activity.Current ?? DiagnosticHelpers.GetProperty<Activity>(arg, "activity");
                 if (current != null)
                 {
                     var context = HttpContext.Current;
@@ -105,7 +105,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                 if (arg != null)
                 {
-                    Activity current = DiagnosticHelpers.GetProperty<Activity>(arg, "Activity");
+                    var current = DiagnosticHelpers.GetProperty<Activity>(arg, "Activity");
                     if (current != null)
                     {
                         var context = HttpContext.Current;
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
 
             // attempt to calculate a duration if a start time is provided
-            TimeSpan duration = current.Duration;
+            var duration = current.Duration;
             if (current.Duration.Ticks == 0)
             {
                 duration = DateTime.UtcNow - current.StartTimeUtc;
@@ -138,7 +138,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (duration.TotalMilliseconds > 0)
             {
-                ITagContext tagContext = GetTagContext(arg);
+                var tagContext = GetTagContext(arg);
                 StatsRecorder
                     .NewMeasureMap()
                     .Put(_responseTimeMeasure, duration.TotalMilliseconds)
@@ -168,8 +168,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (errors != null && errors.Length > 0)
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (Exception exp in errors)
+                var sb = new StringBuilder();
+                foreach (var exp in errors)
                 {
                     sb.Append(exp.GetType().Name);
                     sb.Append(",");

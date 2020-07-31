@@ -362,7 +362,7 @@ namespace Steeltoe.Management.Endpoint
 
             public DefaultHostingEnvironment(string profile)
             {
-                this._profile = profile;
+                _profile = profile;
             }
 
             public string EnvironmentName { get => _profile; set => throw new NotImplementedException(); }

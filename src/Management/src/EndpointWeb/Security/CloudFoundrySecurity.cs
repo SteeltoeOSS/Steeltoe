@@ -38,9 +38,9 @@ namespace Steeltoe.Management.Endpoint.Security
         public async Task<bool> IsAccessAllowed(HttpContextBase context, IEndpointOptions target)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            bool isEndpointEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
+            var isEndpointEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
 #pragma warning restore CS0618 // Type or member is obsolete
-            bool isEndpointExposed = _managementOptions == null ? true : _options.IsExposed(_managementOptions);
+            var isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
             if (Platform.IsCloudFoundry && isEndpointEnabled && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
@@ -93,16 +93,16 @@ namespace Steeltoe.Management.Endpoint.Security
 
         internal async Task<SecurityResult> GetPermissions(HttpContextBase context)
         {
-            string token = GetAccessToken(context.Request);
+            var token = GetAccessToken(context.Request);
             return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(HttpRequestBase request)
         {
-            string[] headerVals = request.Headers.GetValues(_base.AUTHORIZATION_HEADER);
+            var headerVals = request.Headers.GetValues(_base.AUTHORIZATION_HEADER);
             if (headerVals != null && headerVals.Length > 0)
             {
-                string header = headerVals[0];
+                var header = headerVals[0];
                 if (header?.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     return header.Substring(_base.BEARER.Length + 1);

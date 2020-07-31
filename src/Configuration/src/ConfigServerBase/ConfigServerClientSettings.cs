@@ -179,7 +179,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Username
         {
             get { return GetUserName(); }
-            set { this._username = value; }
+            set { _username = value; }
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public virtual string Password
         {
             get { return GetPassword(); }
-            set { this._password = value; }
+            set { _password = value; }
         }
 #pragma warning restore S4275 // Getters and setters should access the expected fields
 
@@ -313,7 +313,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 if (!string.IsNullOrEmpty(Uri))
                 {
-                    System.Uri uri = new System.Uri(Uri);
+                    var uri = new System.Uri(Uri);
                     return uri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
                 }
             }
@@ -328,7 +328,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             try
             {
-                System.Uri ri = new System.Uri(uri);
+                var ri = new System.Uri(uri);
                 return ri.GetComponents(UriComponents.HttpRequestUrl, UriFormat.Unescaped);
             }
             catch (UriFormatException)
@@ -342,10 +342,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             if (!string.IsNullOrEmpty(Uri))
             {
-                string[] uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < uris.Length; i++)
+                var uris = Uri.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+                for (var i = 0; i < uris.Length; i++)
                 {
-                    string uri = GetRawUri(uris[i]);
+                    var uri = GetRawUri(uris[i]);
                     if (string.IsNullOrEmpty(uri))
                     {
                         return Array.Empty<string>();
@@ -406,7 +406,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             {
                 if (!string.IsNullOrEmpty(uri))
                 {
-                    System.Uri u = new System.Uri(uri);
+                    var u = new System.Uri(uri);
                     return u.UserInfo;
                 }
             }
@@ -427,10 +427,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
 
             string result = null;
-            string userInfo = GetUserInfo(uri);
+            var userInfo = GetUserInfo(uri);
             if (!string.IsNullOrEmpty(userInfo))
             {
-                string[] info = userInfo.Split(COLON_DELIMIT);
+                var info = userInfo.Split(COLON_DELIMIT);
                 if (info.Length > index)
                 {
                     result = info[index];

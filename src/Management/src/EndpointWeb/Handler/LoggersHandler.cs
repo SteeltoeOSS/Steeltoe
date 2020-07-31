@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Handler
 
                     var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.InputStream);
 
-                    change.TryGetValue("configuredLevel", out string level);
+                    change.TryGetValue("configuredLevel", out var level);
 
                     _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
                     if (!string.IsNullOrEmpty(loggerName))

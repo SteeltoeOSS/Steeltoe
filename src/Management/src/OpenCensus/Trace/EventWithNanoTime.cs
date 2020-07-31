@@ -32,7 +32,7 @@ namespace OpenCensus.Trace
 
         internal ITimedEvent<T> ToSpanDataTimedEvent(ITimestampConverter timestampConverter)
         {
-            return TimedEvent<T>.Create(timestampConverter.ConvertNanoTime(this.nanoTime), this.@event);
+            return TimedEvent<T>.Create(timestampConverter.ConvertNanoTime(nanoTime), @event);
         }
     }
 }

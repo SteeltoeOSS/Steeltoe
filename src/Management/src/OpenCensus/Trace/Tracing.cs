@@ -28,19 +28,19 @@ namespace OpenCensus.Trace
     /// </summary>
     public sealed class Tracing
     {
-        private static Tracing tracing = new Tracing(true);
+        private static readonly Tracing tracing = new Tracing(true);
 
-        private ITraceComponent traceComponent = null;
+        private readonly ITraceComponent traceComponent = null;
 
         internal Tracing(bool enabled)
         {
             if (enabled)
             {
-                this.traceComponent = new TraceComponent(DateTimeOffsetClock.Instance, new RandomGenerator(), new SimpleEventQueue());
+                traceComponent = new TraceComponent(DateTimeOffsetClock.Instance, new RandomGenerator(), new SimpleEventQueue());
             }
             else
             {
-                this.traceComponent = new NoopTraceComponent();
+                traceComponent = new NoopTraceComponent();
             }
         }
 

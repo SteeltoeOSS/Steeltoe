@@ -77,14 +77,14 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleStopEvent(HttpWebRequest request, HttpStatusCode statusCode, WebHeaderCollection headers)
         {
-            if (!Pending.TryRemove(request, out SpanContext spanContext))
+            if (!Pending.TryRemove(request, out var spanContext))
             {
                 Logger?.LogDebug("HandleStopEvent: Missing span context");
                 return;
             }
 
-            ISpan span = spanContext.Active;
-            IScope scope = spanContext.ActiveScope;
+            var span = spanContext.Active;
+            var scope = spanContext.ActiveScope;
 
             if (span != null)
             {
@@ -106,13 +106,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (Pending.TryGetValue(request, out SpanContext spanContext))
+            if (Pending.TryGetValue(request, out _))
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;
             }
 
-            string spanName = ExtractSpanName(request);
+            var spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
             ISpan started;
@@ -128,7 +128,7 @@ namespace Steeltoe.Management.Tracing.Observer
                    .StartScopedSpan(out started);
             }
 
-            SpanContext existing = Pending.GetOrAdd(request, new SpanContext(started, scope));
+            var existing = Pending.GetOrAdd(request, new SpanContext(started, scope));
 
             if (existing != started)
             {

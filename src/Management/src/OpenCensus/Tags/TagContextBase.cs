@@ -37,14 +37,11 @@ public override bool Equals(object other)
                 return false;
             }
 
-            TagContextBase otherTags = (TagContextBase)other;
+            var otherTags = (TagContextBase)other;
 
-            var t1Enumerator = this.GetEnumerator();
+            var t1Enumerator = GetEnumerator();
             var t2Enumerator = otherTags.GetEnumerator();
-
-            List<ITag> tags1 = null;
-            List<ITag> tags2 = null;
-
+            List<ITag> tags1;
             if (t1Enumerator == null)
             {
                 tags1 = new List<ITag>();
@@ -54,6 +51,7 @@ public override bool Equals(object other)
                 tags1 = this.ToList();
             }
 
+            List<ITag> tags2;
             if (t2Enumerator == null)
             {
                 tags2 = new List<ITag>();
@@ -69,7 +67,7 @@ public override bool Equals(object other)
     /// <inheritdoc/>
 public override int GetHashCode()
         {
-            int hashCode = 0;
+            var hashCode = 0;
             foreach (var t in this)
             {
                 hashCode += t.GetHashCode();
@@ -82,7 +80,7 @@ public abstract IEnumerator<ITag> GetEnumerator();
 
 IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.GetEnumerator();
+            return GetEnumerator();
         }
     }
 }

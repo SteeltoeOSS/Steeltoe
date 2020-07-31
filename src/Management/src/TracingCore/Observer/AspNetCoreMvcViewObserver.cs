@@ -86,8 +86,8 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            string spanName = ExtractSpanName(viewContext);
-            IScope scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out ISpan span);
+            var spanName = ExtractSpanName(viewContext);
+            var scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out var span);
 
             span.PutMvcViewExecutingFilePath(ExtractViewPath(viewContext))
                 .PutServerSpanKindAttribute();
@@ -104,7 +104,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            IScope scope = spanContext.ActiveScope;
+            var scope = spanContext.ActiveScope;
             if (scope != null)
             {
                 scope.Dispose();

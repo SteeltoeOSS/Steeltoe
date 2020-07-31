@@ -47,7 +47,6 @@ namespace Steeltoe.Management.EndpointOwin.Mappings
                 mgmt.EndpointOptions.Add(options);
             }
 
-            var logger = loggerFactory?.CreateLogger<EndpointOwinMiddleware<IList<string>>>();
             return builder.Use<MappingsEndpointOwinMiddleware>(options, mgmtOptions, apiExplorer, loggerFactory?.CreateLogger<MappingsEndpointOwinMiddleware>());
         }
     }

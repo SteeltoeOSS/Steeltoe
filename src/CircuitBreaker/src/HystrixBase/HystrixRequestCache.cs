@@ -46,16 +46,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         private HystrixRequestCache(RequestCacheKey rcKey)
         {
-            this._rcKey = rcKey;
+            _rcKey = rcKey;
         }
 
         public T Get<T>(string cacheKey)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
-            object result = null;
+            var key = GetRequestCacheKey(cacheKey);
             if (key != null)
             {
                 var cacheInstance = RequestVariableForCache.Value;
+                object result;
                 /* look for the stored value */
                 if (cacheInstance.TryGetValue(key, out result))
                 {
@@ -63,31 +63,30 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         public void Clear(string cacheKey)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
+            var key = GetRequestCacheKey(cacheKey);
             if (key != null)
             {
                 /* remove this cache key */
                 var cacheInstance = RequestVariableForCache.Value;
-                cacheInstance.TryRemove(key, out object removed);
+                cacheInstance.TryRemove(key, out _);
             }
         }
 
         internal T PutIfAbsent<T>(string cacheKey, T f)
         {
-            ValueCacheKey key = GetRequestCacheKey(cacheKey);
-            object result = null;
+            var key = GetRequestCacheKey(cacheKey);
             if (key != null)
             {
                 var cacheInstance = RequestVariableForCache.Value;
-                result = cacheInstance.GetOrAdd(key, f);
+                var result = cacheInstance.GetOrAdd(key, f);
                 if (f.Equals(result))
                 {
-                    return default(T);
+                    return default;
                 }
                 else
                 {
@@ -95,7 +94,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         private ValueCacheKey GetRequestCacheKey(string cacheKey)
@@ -116,14 +115,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
             public ValueCacheKey(RequestCacheKey rvKey, string valueCacheKey)
             {
-                this._rvKey = rvKey;
-                this._valueCacheKey = valueCacheKey;
+                _rvKey = rvKey;
+                _valueCacheKey = valueCacheKey;
             }
 
             public override int GetHashCode()
             {
-                int prime = 31;
-                int result = 1;
+                var prime = 31;
+                var result = 1;
                 result = (prime * result) + ((_rvKey == null) ? 0 : _rvKey.GetHashCode());
                 result = (prime * result) + ((_valueCacheKey == null) ? 0 : _valueCacheKey.GetHashCode());
                 return result;
@@ -146,7 +145,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                ValueCacheKey other = (ValueCacheKey)obj;
+                var other = (ValueCacheKey)obj;
                 if (_rvKey == null)
                 {
                     if (other._rvKey != null)
@@ -185,11 +184,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 _type = 1;
                 if (commandKey == null)
                 {
-                    this._key = null;
+                    _key = null;
                 }
                 else
                 {
-                    this._key = commandKey.Name;
+                    _key = commandKey.Name;
                 }
             }
 
@@ -198,18 +197,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 _type = 2;
                 if (collapserKey == null)
                 {
-                    this._key = null;
+                    _key = null;
                 }
                 else
                 {
-                    this._key = collapserKey.Name;
+                    _key = collapserKey.Name;
                 }
             }
 
             public override int GetHashCode()
             {
-                int prime = 31;
-                int result = 1;
+                var prime = 31;
+                var result = 1;
                 result = (prime * result) + ((_key == null) ? 0 : _key.GetHashCode());
                 result = (prime * result) + _type;
                 return result;
@@ -232,7 +231,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     return false;
                 }
 
-                RequestCacheKey other = (RequestCacheKey)obj;
+                var other = (RequestCacheKey)obj;
                 if (_type != other._type)
                 {
                     return false;

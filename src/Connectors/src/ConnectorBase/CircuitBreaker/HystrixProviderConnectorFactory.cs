@@ -10,12 +10,12 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 {
     public class HystrixProviderConnectorFactory
     {
-        private HystrixRabbitMQServiceInfo _info;
-        private HystrixProviderConnectorOptions _config;
-        private HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
-        private Type _type;
+        private readonly HystrixRabbitMQServiceInfo _info;
+        private readonly HystrixProviderConnectorOptions _config;
+        private readonly HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
+        private readonly Type _type;
 
-        private MethodInfo _setUri;
+        private readonly MethodInfo _setUri;
 
         public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 if (ci.Name.Equals("SetUri"))
                 {
@@ -73,13 +73,13 @@ namespace Steeltoe.CloudFoundry.Connector.Hystrix
 
         public virtual object CreateConnection(string connectionString)
         {
-            object inst = ConnectorHelpers.CreateInstance(_type, null);
+            var inst = ConnectorHelpers.CreateInstance(_type, null);
             if (inst == null)
             {
                 return null;
             }
 
-            Uri uri = new Uri(connectionString, UriKind.Absolute);
+            var uri = new Uri(connectionString, UriKind.Absolute);
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return new HystrixConnectionFactory(inst);

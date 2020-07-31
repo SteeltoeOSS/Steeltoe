@@ -17,8 +17,8 @@ namespace Steeltoe.Management.Endpoint.Diagnostics
 
         public DiagnosticServices(IDiagnosticsManager observerManager, ILogger<DiagnosticServices> logger = null)
         {
-            this._observerManager = observerManager;
-            this._logger = logger;
+            _observerManager = observerManager;
+            _logger = logger;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

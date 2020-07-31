@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterPostgreSqlConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => PostgreSqlContainerBuilderExtensions.RegisterPostgreSqlConnection(cb, null));
@@ -43,7 +43,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterPostgreSqlConnection_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -60,7 +60,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterPostgreSqlConnection_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

@@ -22,7 +22,7 @@ namespace OpenCensus.Stats.Aggregations
     {
         internal CountData(long count)
         {
-            this.Count = count;
+            Count = count;
         }
 
         public long Count { get; }
@@ -49,7 +49,7 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "CountData{"
-                + "count=" + this.Count
+                + "count=" + Count
                 + "}";
         }
 
@@ -63,7 +63,7 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is CountData that)
             {
-                return this.Count == that.Count;
+                return Count == that.Count;
             }
 
             return false;
@@ -74,7 +74,7 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (this.Count >> 32) ^ this.Count;
+            h ^= (Count >> 32) ^ Count;
             return (int)h;
         }
     }

@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.Handler
                 return;
             }
 
-            string gzFilename = filename + ".gz";
+            var gzFilename = filename + ".gz";
             var result = Utils.CompressFile(filename, gzFilename);
 
             if (result != null)

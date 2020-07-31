@@ -12,8 +12,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 {
     public class HomeController : Controller
     {
-        private ConfigServerDataAsOptions _options;
-        private IHealthContributor _health;
+        private readonly ConfigServerDataAsOptions _options;
+        private readonly IHealthContributor _health;
 
         public HomeController(IOptions<ConfigServerDataAsOptions> options, IHealthContributor health)
         {
@@ -40,7 +40,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             if (_health != null)
             {
                 var health = _health.Health();
-                health.Details.TryGetValue("propertySources", out object sourcelist);
+                health.Details.TryGetValue("propertySources", out var sourcelist);
 
                 var nameList = ToCSV(sourcelist as IList<string>);
                 return health.Status.ToString() + "," + nameList;
@@ -53,7 +53,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         private object ToCSV(IList<string> list)
         {
-            string result = string.Empty;
+            var result = string.Empty;
             foreach (var name in list)
             {
                 result += name + ",";

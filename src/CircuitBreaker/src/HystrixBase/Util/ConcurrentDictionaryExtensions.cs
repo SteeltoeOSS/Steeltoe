@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
     {
         public static V GetOrAddEx<K, V>(this ConcurrentDictionary<K, V> dict, K key, Func<K, V> factory)
         {
-            if (dict.TryGetValue(key, out V value))
+            if (dict.TryGetValue(key, out var value))
             {
                 return value;
             }

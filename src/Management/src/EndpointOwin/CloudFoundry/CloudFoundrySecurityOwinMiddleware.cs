@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         public override async Task Invoke(IOwinContext context)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            bool isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+            var isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
 #pragma warning restore CS0618 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 }
 
                 _logger?.LogTrace("Identifying which endpoint the request at {EndpointRequestPath} is for", context.Request.Path);
-                IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+                var target = FindTargetEndpoint(context.Request.Path);
                 if (target == null)
                 {
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ENDPOINT_NOT_CONFIGURED_MESSAGE)).ConfigureAwait(false);
@@ -108,15 +108,15 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 
         internal async Task<SecurityResult> GetPermissions(IOwinContext context)
         {
-            string token = GetAccessToken(context.Request);
+            var token = GetAccessToken(context.Request);
             return await _base.GetPermissionsAsync(token).ConfigureAwait(false);
         }
 
         internal string GetAccessToken(IOwinRequest request)
         {
-            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out string[] headerVal))
+            if (request.Headers.TryGetValue(_base.AUTHORIZATION_HEADER, out var headerVal))
             {
-                string header = headerVal[0];
+                var header = headerVal[0];
                 if (header?.StartsWith(_base.BEARER, StringComparison.OrdinalIgnoreCase) == true)
                 {
                     return header.Substring(_base.BEARER.Length + 1);
@@ -138,7 +138,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
 #pragma warning restore CS0618 // Type or member is obsolete
                 foreach (var ep in configEndpoints)
                 {
-                    PathString epPath = new PathString(ep.Path);
+                    var epPath = new PathString(ep.Path);
                     if (path.StartsWithSegments(epPath))
                     {
                         return ep;

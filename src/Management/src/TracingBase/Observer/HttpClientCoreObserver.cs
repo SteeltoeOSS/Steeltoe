@@ -79,7 +79,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleExceptionEvent(HttpRequestMessage request, Exception exception)
         {
-            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out var context))
             {
                 Logger?.LogDebug("HandleExceptionEvent: Missing span context");
                 return;
@@ -106,13 +106,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (request.Properties.TryGetValue(SPANCONTEXT_KEY, out _))
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;
             }
 
-            string spanName = ExtractSpanName(request);
+            var spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
             ISpan started;
@@ -142,18 +142,16 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleStopEvent(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
         {
-            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out object context))
+            if (!request.Properties.TryGetValue(SPANCONTEXT_KEY, out var context))
             {
                 Logger?.LogDebug("HandleStopEvent: Missing span context");
                 return;
             }
 
-            SpanContext spanContext = context as SpanContext;
-
-            if (spanContext != null)
+            if (context is SpanContext spanContext)
             {
-                ISpan span = spanContext.Active;
-                IScope scope = spanContext.ActiveScope;
+                var span = spanContext.Active;
+                var scope = spanContext.ActiveScope;
 
                 if (response != null)
                 {

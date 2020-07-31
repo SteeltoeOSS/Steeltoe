@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var builder = new ConfigurationBuilder();
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts);
+            var tracing = new OpenCensusTracing(opts);
             Assert.NotNull(tracing.ExportComponent);
             Assert.NotNull(tracing.PropagationComponent);
             Assert.NotNull(tracing.TraceConfig);
@@ -54,11 +54,11 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, new Sampler());
+            var tracing = new OpenCensusTracing(opts, new Sampler());
             Assert.NotNull(tracing.ExportComponent);
             Assert.NotNull(tracing.PropagationComponent);
             Assert.NotNull(tracing.TraceConfig);

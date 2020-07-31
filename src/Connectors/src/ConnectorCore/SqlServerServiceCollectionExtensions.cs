@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime);
             return services;
@@ -68,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime);
             return services;

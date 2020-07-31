@@ -29,7 +29,7 @@ namespace OpenCensus.Stats
 
         public override IMeasureMap NewMeasureMap()
         {
-            return MeasureMap.Create(this.statsManager);
+            return MeasureMap.Create(statsManager);
         }
     }
 }

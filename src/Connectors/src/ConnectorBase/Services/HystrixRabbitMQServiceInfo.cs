@@ -11,7 +11,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
             : base(id)
         {
-            this.IsSslEnabled = sslEnabled;
+            IsSslEnabled = sslEnabled;
             RabbitInfo = new RabbitMQServiceInfo(id, uri);
         }
 
@@ -19,82 +19,28 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             : base(id)
         {
             RabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
-            this.IsSslEnabled = sslEnabled;
+            IsSslEnabled = sslEnabled;
         }
 
         public RabbitMQServiceInfo RabbitInfo { get; }
 
-        public string Scheme
-        {
-            get
-            {
-                return RabbitInfo.Scheme;
-            }
-        }
+        public string Scheme => RabbitInfo.Scheme;
 
-        public string Query
-        {
-            get
-            {
-                return RabbitInfo.Query;
-            }
-        }
+        public string Query => RabbitInfo.Query;
 
-        public string Path
-        {
-            get
-            {
-                return RabbitInfo.Path;
-            }
-        }
+        public string Path => RabbitInfo.Path;
 
-        public string Uri
-        {
-            get
-            {
-                return RabbitInfo.Uri;
-            }
-        }
+        public string Uri => RabbitInfo.Uri;
 
-        public List<string> Uris
-        {
-            get
-            {
-                return RabbitInfo.Uris;
-            }
-        }
+        public List<string> Uris => RabbitInfo.Uris;
 
-        public string Host
-        {
-            get
-            {
-                return RabbitInfo.Host;
-            }
-        }
+        public string Host => RabbitInfo.Host;
 
-        public int Port
-        {
-            get
-            {
-                return RabbitInfo.Port;
-            }
-        }
+        public int Port => RabbitInfo.Port;
 
-        public string UserName
-        {
-            get
-            {
-                return RabbitInfo.UserName;
-            }
-        }
+        public string UserName => RabbitInfo.UserName;
 
-        public string Password
-        {
-            get
-            {
-                return RabbitInfo.Password;
-            }
-        }
+        public string Password => RabbitInfo.Password;
 
         public bool IsSslEnabled { get; } = false;
     }

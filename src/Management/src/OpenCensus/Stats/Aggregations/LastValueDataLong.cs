@@ -26,7 +26,7 @@ namespace OpenCensus.Stats.Aggregations
 
         private LastValueDataLong(long lastValue)
         {
-            this.LastValue = lastValue;
+            LastValue = lastValue;
         }
 
         public long LastValue { get; }
@@ -40,7 +40,7 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "LastValueDataLong{"
-                + "lastValue=" + this.LastValue
+                + "lastValue=" + LastValue
                 + "}";
         }
 
@@ -54,7 +54,7 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is LastValueDataLong that)
             {
-                return this.LastValue == that.LastValue;
+                return LastValue == that.LastValue;
             }
 
             return false;
@@ -65,7 +65,7 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (this.LastValue >> 32) ^ this.LastValue;
+            h ^= (LastValue >> 32) ^ LastValue;
             return (int)h;
         }
 

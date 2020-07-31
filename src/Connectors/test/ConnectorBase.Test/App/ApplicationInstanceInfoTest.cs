@@ -11,7 +11,7 @@ namespace Steeltoe.CloudFoundry.Connector.App.Test
     {
         public static CloudFoundryApplicationOptions MakeCloudFoundryApplicationOptions()
         {
-            CloudFoundryApplicationOptions opts = new CloudFoundryApplicationOptions()
+            var opts = new CloudFoundryApplicationOptions()
             {
                 Application_Id = "Application_Id",
                 Application_Name = "Application_Name",
@@ -37,8 +37,8 @@ namespace Steeltoe.CloudFoundry.Connector.App.Test
         [Fact]
         public void Constructor_BuildsExpectedFromOpts()
         {
-            CloudFoundryApplicationOptions opts = MakeCloudFoundryApplicationOptions();
-            ApplicationInstanceInfo info = new ApplicationInstanceInfo(opts);
+            var opts = MakeCloudFoundryApplicationOptions();
+            var info = new ApplicationInstanceInfo(opts);
             Assert.Equal(opts.ApplicationId, info.ApplicationId);
             Assert.Equal(opts.ApplicationName, info.ApplicationName);
             Assert.Equal(opts.ApplicationUris[0], info.ApplicationUris[0]);

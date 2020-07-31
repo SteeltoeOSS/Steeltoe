@@ -29,9 +29,9 @@ namespace OpenCensus.Trace.Export.Test
         public void NoopSampledSpanStore_RegisterUnregisterAndGetSummary()
         {
             // should return empty before register
-            ISampledSpanStore sampledSpanStore =
+            var sampledSpanStore =
                 ExportComponent.NewNoopExportComponent.SampledSpanStore;
-            ISampledSpanStoreSummary summary = sampledSpanStore.Summary;
+            var summary = sampledSpanStore.Summary;
             Assert.Empty(summary.PerSpanNameSummary);
 
             // should return non-empty summaries with zero latency/error sampled spans after register
@@ -59,7 +59,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void NoopSampledSpanStore_GetLatencySampledSpans()
         {
-            ISampledSpanStore sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
+            var sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
             var latencySampledSpans =
                 sampledSpanStore.GetLatencySampledSpans(
                     SampledSpanStoreLatencyFilter.Create("TestLatencyFilter", 0, 0, 0));
@@ -69,7 +69,7 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void NoopSampledSpanStore_GetErrorSampledSpans()
         {
-            ISampledSpanStore sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
+            var sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
             var errorSampledSpans =
                 sampledSpanStore.GetErrorSampledSpans(
                     SampledSpanStoreErrorFilter.Create("TestErrorFilter", null, 0));
@@ -79,9 +79,9 @@ namespace OpenCensus.Trace.Export.Test
         [Fact]
         public void NoopSampledSpanStore_GetRegisteredSpanNamesForCollection()
         {
-            ISampledSpanStore sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
+            var sampledSpanStore = ExportComponentBase.NewNoopExportComponent.SampledSpanStore;
             sampledSpanStore.RegisterSpanNamesForCollection(new List<string>() { "TestSpan3", "TestSpan4" });
-            ISet<string> registeredSpanNames = sampledSpanStore.RegisteredSpanNamesForCollection;
+            var registeredSpanNames = sampledSpanStore.RegisteredSpanNamesForCollection;
             Assert.Equal(2, registeredSpanNames.Count);
             Assert.Contains(registeredSpanNames, (item) =>
             {

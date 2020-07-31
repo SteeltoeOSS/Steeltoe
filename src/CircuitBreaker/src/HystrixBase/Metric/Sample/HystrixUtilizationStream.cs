@@ -26,8 +26,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         public HystrixUtilizationStream(int intervalInMilliseconds)
         {
-            this.IntervalInMilliseconds = intervalInMilliseconds;
-            this._allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
+            IntervalInMilliseconds = intervalInMilliseconds;
+            _allUtilizationStream = Observable.Interval(TimeSpan.FromMilliseconds(intervalInMilliseconds))
                     .Map((t) => AllUtilization(t))
                     .OnSubscribe(() =>
                     {
@@ -41,12 +41,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         }
 
         // The data emission interval is looked up on startup only
-        private static HystrixUtilizationStream instance =
+        private static readonly HystrixUtilizationStream Instance =
                     new HystrixUtilizationStream(DataEmissionIntervalInMs);
 
         public static HystrixUtilizationStream GetInstance()
         {
-            return instance;
+            return Instance;
         }
 
          // Return a ref-counted stream that will only do work when at least one subscriber is present
@@ -90,10 +90,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         private static Func<long, Dictionary<IHystrixCommandKey, HystrixCommandUtilization>> AllCommandUtilization { get; } =
             (long timestamp) =>
             {
-                Dictionary<IHystrixCommandKey, HystrixCommandUtilization> commandUtilizationPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandUtilization>();
-                foreach (HystrixCommandMetrics commandMetrics in HystrixCommandMetrics.GetInstances())
+                var commandUtilizationPerKey = new Dictionary<IHystrixCommandKey, HystrixCommandUtilization>();
+                foreach (var commandMetrics in HystrixCommandMetrics.GetInstances())
                 {
-                    IHystrixCommandKey commandKey = commandMetrics.CommandKey;
+                    var commandKey = commandMetrics.CommandKey;
                     commandUtilizationPerKey.Add(commandKey, SampleCommandUtilization(commandMetrics));
                 }
 
@@ -103,10 +103,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
         private static Func<long, Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>> AllThreadPoolUtilization { get; } =
             (long timestamp) =>
             {
-                Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> threadPoolUtilizationPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>();
-                foreach (HystrixThreadPoolMetrics threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
+                var threadPoolUtilizationPerKey = new Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolUtilization>();
+                foreach (var threadPoolMetrics in HystrixThreadPoolMetrics.GetInstances())
                 {
-                    IHystrixThreadPoolKey threadPoolKey = threadPoolMetrics.ThreadPoolKey;
+                    var threadPoolKey = threadPoolMetrics.ThreadPoolKey;
                     threadPoolUtilizationPerKey.Add(threadPoolKey, SampleThreadPoolUtilization(threadPoolMetrics));
                 }
 

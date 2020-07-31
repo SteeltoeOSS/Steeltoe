@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         public HystrixRequestEvents(ICollection<IHystrixInvokableInfo> executions)
         {
-            this.Executions = executions;
+            Executions = executions;
         }
 
         public ICollection<IHystrixInvokableInfo> Executions { get; }
@@ -20,16 +20,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         {
             get
             {
-                Dictionary<CommandAndCacheKey, int> cachingDetector = new Dictionary<CommandAndCacheKey, int>();
-                List<IHystrixInvokableInfo> nonCachedExecutions = new List<IHystrixInvokableInfo>(Executions.Count);
-                foreach (IHystrixInvokableInfo execution in Executions)
+                var cachingDetector = new Dictionary<CommandAndCacheKey, int>();
+                var nonCachedExecutions = new List<IHystrixInvokableInfo>(Executions.Count);
+                foreach (var execution in Executions)
                 {
                     if (execution.PublicCacheKey != null)
                     {
                         // eligible for caching - might be the initial, or might be from cache
-                        CommandAndCacheKey key = new CommandAndCacheKey(execution.CommandKey.Name, execution.PublicCacheKey);
-                        int count = -1;
-                        if (cachingDetector.TryGetValue(key, out count))
+                        var key = new CommandAndCacheKey(execution.CommandKey.Name, execution.PublicCacheKey);
+                        if (cachingDetector.TryGetValue(key, out var count))
                         {
                             // key already seen
                             cachingDetector[key] = count + 1;
@@ -47,14 +46,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                     }
                 }
 
-                Dictionary<ExecutionSignature, List<int>> commandDeduper = new Dictionary<ExecutionSignature, List<int>>();
-                foreach (IHystrixInvokableInfo execution in nonCachedExecutions)
+                var commandDeduper = new Dictionary<ExecutionSignature, List<int>>();
+                foreach (var execution in nonCachedExecutions)
                 {
-                    int cachedCount = 0;
-                    string cacheKey = execution.PublicCacheKey;
+                    var cachedCount = 0;
+                    var cacheKey = execution.PublicCacheKey;
                     if (cacheKey != null)
                     {
-                        CommandAndCacheKey key = new CommandAndCacheKey(execution.CommandKey.Name, cacheKey);
+                        var key = new CommandAndCacheKey(execution.CommandKey.Name, cacheKey);
                         cachingDetector.TryGetValue(key, out cachedCount);
                     }
 
@@ -70,13 +69,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                         signature = ExecutionSignature.From(execution);
                     }
 
-                    if (commandDeduper.TryGetValue(signature, out List<int> currentLatencyList))
+                    if (commandDeduper.TryGetValue(signature, out var currentLatencyList))
                     {
                         currentLatencyList.Add(execution.ExecutionTimeInMilliseconds);
                     }
                     else
                     {
-                        List<int> newLatencyList = new List<int>
+                        var newLatencyList = new List<int>
                         {
                             execution.ExecutionTimeInMilliseconds
                         };

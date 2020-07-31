@@ -45,8 +45,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var context = CreateRequest("GET", "/");
             await middle.HandleCloudFoundryRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
         }
 
@@ -57,22 +57,20 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/actuator");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/actuator");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
 #pragma warning disable CS0618 // Type or member is obsolete
-                var links = JsonConvert.DeserializeObject<Links>(json);
+            var links = JsonConvert.DeserializeObject<Links>(json);
 #pragma warning restore CS0618 // Type or member is obsolete
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"));
-                Assert.Equal("http://localhost/actuator", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"));
-                Assert.Equal("http://localhost/actuator/info", links._links["info"].href);
-            }
+            Assert.NotNull(links);
+            Assert.True(links._links.ContainsKey("self"));
+            Assert.Equal("http://localhost/actuator", links._links["self"].href);
+            Assert.True(links._links.ContainsKey("info"));
+            Assert.Equal("http://localhost/actuator/info", links._links["info"].href);
         }
 
         [Fact]
@@ -83,17 +81,15 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
 
-                // send the request
-                var result = await client.GetAsync("http://localhost/actuator");
-                var json = await result.Content.ReadAsStringAsync();
+            // send the request
+            var result = await client.GetAsync("http://localhost/actuator");
+            var json = await result.Content.ReadAsStringAsync();
 
-                // assert
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}", json);
-            }
+            // assert
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}", json);
         }
 
         [Fact]

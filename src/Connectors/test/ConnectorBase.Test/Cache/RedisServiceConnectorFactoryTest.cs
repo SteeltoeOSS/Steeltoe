@@ -17,14 +17,14 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void Create_CanReturnRedisCache()
         {
             // arrange
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
                 Password = "password",
                 InstanceName = "instanceId"
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {
@@ -45,7 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
         public void Create_CanReturnConnectionMultiplexer()
         {
             // arrange
-            RedisCacheConnectorOptions config = new RedisCacheConnectorOptions()
+            var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
                 Port = 1234,
@@ -54,7 +54,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis.Test
                 AbortOnConnectFail = false,
                 ConnectTimeout = 1
             };
-            RedisServiceInfo si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword")
+            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword")
             {
                 ApplicationInfo = new ApplicationInstanceInfo()
                 {

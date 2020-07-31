@@ -53,7 +53,7 @@ namespace OpenCensus.Exporter.Zipkin
 
             this.exportComponent = exportComponent;
 
-            this.httpClient = client;
+            httpClient = client;
         }
 
         /// <summary>
@@ -61,16 +61,16 @@ namespace OpenCensus.Exporter.Zipkin
         /// </summary>
         public void Start()
         {
-            lock (this.lck)
+            lock (lck)
             {
-                if (this.handler != null)
+                if (handler != null)
                 {
                     return;
                 }
 
-                this.handler = new TraceExporterHandler(this.options, this.httpClient);
+                handler = new TraceExporterHandler(options, httpClient);
 
-                this.exportComponent.SpanExporter.RegisterHandler(ExporterName, this.handler);
+                exportComponent.SpanExporter.RegisterHandler(ExporterName, handler);
             }
         }
 
@@ -79,16 +79,16 @@ namespace OpenCensus.Exporter.Zipkin
         /// </summary>
         public void Stop()
         {
-            lock (this.lck)
+            lock (lck)
             {
-                if (this.handler == null)
+                if (handler == null)
                 {
                     return;
                 }
 
-                this.exportComponent.SpanExporter.UnregisterHandler(ExporterName);
+                exportComponent.SpanExporter.UnregisterHandler(ExporterName);
 
-                this.handler = null;
+                handler = null;
             }
         }
     }

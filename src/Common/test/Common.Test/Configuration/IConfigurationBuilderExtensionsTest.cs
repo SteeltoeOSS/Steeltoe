@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Configuration.Test
 {
     public class IConfigurationBuilderExtensionsTest
     {
-        private Dictionary<string, string> configEntries = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> configEntries = new Dictionary<string, string>()
                 {
                     { "foo", "${bazoo}" },
                     { "bar", "${baz}" },

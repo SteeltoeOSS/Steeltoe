@@ -129,7 +129,7 @@ namespace Steeltoe.Discovery.Consul.Registry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            AgentServiceRegistration service = new AgentServiceRegistration();
+            var service = new AgentServiceRegistration();
 
             var appName = GetAppName(options, config);
             service.ID = GetInstanceId(options, config);
@@ -152,7 +152,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static string[] CreateTags(ConsulDiscoveryOptions options)
         {
-            List<string> tags = new List<string>();
+            var tags = new List<string>();
             if (options.Tags != null)
             {
                 tags.AddRange(options.Tags);
@@ -176,7 +176,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static string GetAppName(ConsulDiscoveryOptions options, IConfiguration config)
         {
-            string appName = options.ServiceName;
+            var appName = options.ServiceName;
             if (!string.IsNullOrEmpty(appName))
             {
                 return appName;
@@ -198,19 +198,19 @@ namespace Steeltoe.Discovery.Consul.Registry
         internal static string GetDefaultInstanceId(ConsulDiscoveryOptions options, IConfiguration config)
         {
             var appName = GetAppName(options, config);
-            string vcapId = config.GetValue<string>("vcap:application:instance_id", null);
+            var vcapId = config.GetValue<string>("vcap:application:instance_id", null);
             if (!string.IsNullOrEmpty(vcapId))
             {
                 return appName + ":" + vcapId;
             }
 
-            string springId = config.GetValue<string>("spring:application:instance_id", null);
+            var springId = config.GetValue<string>("spring:application:instance_id", null);
             if (!string.IsNullOrEmpty(springId))
             {
                 return appName + ":" + springId;
             }
 
-            Random rand = new Random();
+            var rand = new Random();
             return appName + ":" + rand.Next().ToString();
         }
 
@@ -221,9 +221,9 @@ namespace Steeltoe.Discovery.Consul.Registry
                 throw new ArgumentException("Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: " + s);
             }
 
-            StringBuilder normalized = new StringBuilder();
+            var normalized = new StringBuilder();
             char prev = default;
-            foreach (char curr in s)
+            foreach (var curr in s)
             {
                 char toAppend = default;
                 if (char.IsLetterOrDigit(curr))
@@ -247,7 +247,7 @@ namespace Steeltoe.Discovery.Consul.Registry
 
         internal static AgentServiceCheck CreateCheck(int port, ConsulDiscoveryOptions options)
         {
-            AgentServiceCheck check = new AgentServiceCheck();
+            var check = new AgentServiceCheck();
             if (options.IsHeartBeatEnabled)
             {
                 check.TTL = DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl);

@@ -48,8 +48,8 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         public void UseMySql_ThrowsIfConfigurationNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
             // Act and Assert
@@ -70,9 +70,9 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         public void UseMySql_ThrowsIfServiceNameNull()
         {
             // Arrange
-            DbContextOptionsBuilder optionsBuilder = new DbContextOptionsBuilder();
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var optionsBuilder = new DbContextOptionsBuilder();
+            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+            var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
             // Act and Assert
@@ -88,7 +88,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
@@ -105,7 +105,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
         {
             // Arrange
             IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "foobar"));
@@ -124,7 +124,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -145,7 +145,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
@@ -178,7 +178,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 

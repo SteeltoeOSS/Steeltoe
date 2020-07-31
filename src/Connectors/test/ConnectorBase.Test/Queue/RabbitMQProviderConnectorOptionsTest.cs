@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 ["rabbit:client:sslEnabled"] = "true"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -60,7 +60,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 ["rabbitmq:client:sslEnabled"] = "true"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -87,12 +87,12 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
                 ["rabbit:client:sslEnabled"] = "true"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
             var sconfig = new RabbitMQProviderConnectorOptions(config);
-            string result = sconfig.ToString();
+            var result = sconfig.ToString();
             Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
         }
     }

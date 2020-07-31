@@ -32,10 +32,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         {
             get
             {
-                List<Service> results = new List<Service>();
+                var results = new List<Service>();
                 if (Services != null)
                 {
-                    foreach (KeyValuePair<string, Service[]> kvp in Services)
+                    foreach (var kvp in Services)
                     {
                         results.AddRange(kvp.Value);
                     }

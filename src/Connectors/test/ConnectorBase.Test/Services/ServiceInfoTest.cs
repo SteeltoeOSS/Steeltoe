@@ -24,7 +24,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_InitializesValues()
         {
-            ApplicationInstanceInfo info = new ApplicationInstanceInfo(ApplicationInstanceInfoTest.MakeCloudFoundryApplicationOptions());
+            var info = new ApplicationInstanceInfo(ApplicationInstanceInfoTest.MakeCloudFoundryApplicationOptions());
             var si = new TestServiceInfo("id", info);
             Assert.Equal("id", si.Id);
             Assert.Equal(info, si.ApplicationInfo);

@@ -69,8 +69,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             services.TryAddSingleton<IConfiguration>(config);
 
-            var root = config as IConfigurationRoot;
-            if (root != null)
+            if (config is IConfigurationRoot root)
             {
                 services.TryAddSingleton<IConfigurationRoot>(root);
             }

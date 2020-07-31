@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
 
         public static HystrixCollapserConfiguration Sample(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions collapserProperties)
         {
-            CollapserMetricsConfig collapserMetricsConfig = new CollapserMetricsConfig(
+            var collapserMetricsConfig = new CollapserMetricsConfig(
                     collapserProperties.MetricsRollingPercentileWindowBuckets,
                     collapserProperties.MetricsRollingPercentileWindowInMilliseconds,
                     collapserProperties.MetricsRollingPercentileEnabled,

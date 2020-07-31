@@ -28,10 +28,10 @@ namespace OpenCensus.Tags
         {
             get
             {
-                lock (this.lck)
+                lock (lck)
                 {
-                    this.isRead = true;
-                    return this.Internal;
+                    isRead = true;
+                    return Internal;
                 }
             }
         }
@@ -40,9 +40,9 @@ namespace OpenCensus.Tags
         {
             get
             {
-                lock (this.lck)
+                lock (lck)
                 {
-                    return this.currentState;
+                    return currentState;
                 }
             }
         }
@@ -50,14 +50,14 @@ namespace OpenCensus.Tags
         // Sets current state to the given state.
         internal void Set(TaggingState state)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                if (this.isRead)
+                if (isRead)
                 {
                     throw new InvalidOperationException("State was already read, cannot set state.");
                 }
 
-                this.currentState = state;
+                currentState = state;
             }
         }
     }

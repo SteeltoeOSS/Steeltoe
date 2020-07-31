@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterOAuthServiceOptions_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => OAuthContainerBuilderExtensions.RegisterOAuthServiceOptions(cb, null));
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterOAuthServiceOptions_AddsToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

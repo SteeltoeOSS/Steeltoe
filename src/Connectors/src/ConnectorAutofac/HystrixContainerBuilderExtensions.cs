@@ -34,11 +34,11 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            HystrixRabbitMQServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<HystrixRabbitMQServiceInfo>()
                 : config.GetRequiredServiceInfo<HystrixRabbitMQServiceInfo>(serviceName);
 
-            Type rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
             var hystrixConfig = new HystrixProviderConnectorOptions(config);
             var factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
 

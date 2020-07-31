@@ -35,7 +35,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MongoDbServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<MongoDbServiceInfo>()
                 : config.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
 

@@ -16,9 +16,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
         {
-            int counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-            int numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-            int counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+            var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+            var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+            var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
             return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
         }

@@ -42,50 +42,50 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         public TraceExporterHandler(ZipkinTraceExporterOptions options, HttpClient client)
         {
             this.options = options;
-            this.localEndpoint = this.GetLocalZipkinEndpoint();
-            this.httpClient = client ?? new HttpClient();
+            localEndpoint = GetLocalZipkinEndpoint();
+            httpClient = client ?? new HttpClient();
         }
 
         public void Export(IEnumerable<ISpanData> spanDataList)
         {
-            List<ZipkinSpan> zipkinSpans = new List<ZipkinSpan>();
+            var zipkinSpans = new List<ZipkinSpan>();
 
             foreach (var data in spanDataList)
             {
-                var zipkinSpan = this.GenerateSpan(data, this.localEndpoint);
+                var zipkinSpan = GenerateSpan(data, localEndpoint);
                 zipkinSpans.Add(zipkinSpan);
             }
 
-            this.SendSpansAsync(zipkinSpans);
+            SendSpansAsync(zipkinSpans);
         }
 
         internal ZipkinSpan GenerateSpan(ISpanData spanData, ZipkinEndpoint localEndpoint)
         {
-            ISpanContext context = spanData.Context;
-            long startTimestamp = this.ToEpochMicroseconds(spanData.StartTimestamp);
-            long endTimestamp = this.ToEpochMicroseconds(spanData.EndTimestamp);
+            var context = spanData.Context;
+            var startTimestamp = ToEpochMicroseconds(spanData.StartTimestamp);
+            var endTimestamp = ToEpochMicroseconds(spanData.EndTimestamp);
 
-            ZipkinSpan.Builder spanBuilder =
+            var spanBuilder =
                 ZipkinSpan.NewBuilder()
-                    .TraceId(this.EncodeTraceId(context.TraceId))
-                    .Id(this.EncodeSpanId(context.SpanId))
-                    .Kind(this.ToSpanKind(spanData))
+                    .TraceId(EncodeTraceId(context.TraceId))
+                    .Id(EncodeSpanId(context.SpanId))
+                    .Kind(ToSpanKind(spanData))
                     .Name(spanData.Name)
-                    .Timestamp(this.ToEpochMicroseconds(spanData.StartTimestamp))
+                    .Timestamp(ToEpochMicroseconds(spanData.StartTimestamp))
                     .Duration(endTimestamp - startTimestamp)
                     .LocalEndpoint(localEndpoint);
 
             if (spanData.ParentSpanId != null && spanData.ParentSpanId.IsValid)
             {
-                spanBuilder.ParentId(this.EncodeSpanId(spanData.ParentSpanId));
+                spanBuilder.ParentId(EncodeSpanId(spanData.ParentSpanId));
             }
 
             foreach (var label in spanData.Attributes.AttributeMap)
             {
-                spanBuilder.PutTag(label.Key, this.AttributeValueToString(label.Value));
+                spanBuilder.PutTag(label.Key, AttributeValueToString(label.Value));
             }
 
-            Status status = spanData.Status;
+            var status = spanData.Status;
 
             if (status != null)
             {
@@ -99,12 +99,12 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
 
             foreach (var annotation in spanData.Annotations.Events)
             {
-                spanBuilder.AddAnnotation(this.ToEpochMicroseconds(annotation.Timestamp), annotation.Event.Description);
+                spanBuilder.AddAnnotation(ToEpochMicroseconds(annotation.Timestamp), annotation.Event.Description);
             }
 
             foreach (var networkEvent in spanData.MessageEvents.Events)
             {
-                spanBuilder.AddAnnotation(this.ToEpochMicroseconds(networkEvent.Timestamp), networkEvent.Event.Type.ToString());
+                spanBuilder.AddAnnotation(ToEpochMicroseconds(networkEvent.Timestamp), networkEvent.Event.Type.ToString());
             }
 
             return spanBuilder.Build();
@@ -112,8 +112,8 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
 
         private long ToEpochMicroseconds(ITimestamp timestamp)
         {
-            long nanos = (timestamp.Seconds * NanosPerSecond) + timestamp.Nanos;
-            long micros = nanos / 1000L;
+            var nanos = (timestamp.Seconds * NanosPerSecond) + timestamp.Nanos;
+            var micros = nanos / 1000L;
             return micros;
         }
 
@@ -131,7 +131,7 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         {
             var id = traceId.ToLowerBase16();
 
-            if (id.Length > 16 && this.options.UseShortTraceIds)
+            if (id.Length > 16 && options.UseShortTraceIds)
             {
                 id = id.Substring(id.Length - 16, 16);
             }
@@ -167,10 +167,10 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         {
             try
             {
-                var requestUri = this.options.Endpoint;
-                var request = this.GetHttpRequestMessage(HttpMethod.Post, requestUri);
-                request.Content = this.GetRequestContent(spans);
-                await this.DoPost(this.httpClient, request);
+                var requestUri = options.Endpoint;
+                var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
+                request.Content = GetRequestContent(spans);
+                await DoPost(httpClient, request);
             }
             catch (Exception)
             {
@@ -181,7 +181,7 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         {
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request))
+                using (var response = await client.SendAsync(request))
                 {
                     if (response.StatusCode != HttpStatusCode.OK &&
                         response.StatusCode != HttpStatusCode.Accepted)
@@ -210,7 +210,7 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         {
             try
             {
-                string json = JsonConvert.SerializeObject(toSerialize);
+                var json = JsonConvert.SerializeObject(toSerialize);
 
                 return new StringContent(json, Encoding.UTF8, "application/json");
             }
@@ -225,16 +225,16 @@ namespace OpenCensus.Exporter.Zipkin.Implementation
         {
             var result = new ZipkinEndpoint()
             {
-                ServiceName = this.options.ServiceName,
+                ServiceName = options.ServiceName,
             };
 
-            string hostName = this.ResolveHostName();
+            var hostName = ResolveHostName();
 
             if (!string.IsNullOrEmpty(hostName))
             {
-                result.Ipv4 = this.ResolveHostAddress(hostName, AddressFamily.InterNetwork);
+                result.Ipv4 = ResolveHostAddress(hostName, AddressFamily.InterNetwork);
 
-                result.Ipv6 = this.ResolveHostAddress(hostName, AddressFamily.InterNetworkV6);
+                result.Ipv6 = ResolveHostAddress(hostName, AddressFamily.InterNetworkV6);
             }
 
             return result;

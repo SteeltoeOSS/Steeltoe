@@ -24,7 +24,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
 {
     public class CloudFoundryHostBuilderExtensionsTest
     {
-        private static Dictionary<string, string> managementSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ManagementSettings = new Dictionary<string, string>()
         {
             ["management:endpoints:path"] = "/testing",
         };
@@ -33,7 +33,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         public void AddCloudFoundryActuators_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings)).Configure(configureApp => { });
+            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(configureApp => { });
 
             // Act
             var host = hostBuilder.AddCloudFoundryActuators().Build();
@@ -63,7 +63,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         {
             // Arrange
             var hostBuilder = WebHost.CreateDefaultBuilder()
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .Configure(configureApp => { })
                 .ConfigureLogging(logging => logging.AddSerilogDynamicConsole());
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         public void AddCloudFoundryActuators_IHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
             // Act
             var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.CloudFoundry).Build();
@@ -126,7 +126,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             // Arrange
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }))
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings));
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
 
             // Act
             var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1, ActuatorContext.ActuatorAndCloudFoundry).StartAsync();
@@ -143,7 +143,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             // Arrange
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging => logging.AddSerilogDynamicConsole())
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(managementSettings))
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .ConfigureWebHost(configureApp => configureApp.UseTestServer())
                 .AddCloudFoundryActuators();
 

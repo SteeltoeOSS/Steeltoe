@@ -18,7 +18,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         public CloudFoundryOptions Options { get; internal protected set; }
 
         private static ILogger<CloudFoundryTokenValidator> _logger;
-        private JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
+        private readonly JwtSecurityTokenHandler _handler = new JwtSecurityTokenHandler();
 
         public CloudFoundryWcfTokenValidator(CloudFoundryOptions options, ILogger<CloudFoundryTokenValidator> logger = null)
             : base(options)
@@ -58,7 +58,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 headers.Add(HttpResponseHeader.WwwAuthenticate, string.Format("Bearer realm=\"default\",error=\"{0}\",error_description=\"{1}\"", message, Regex.Replace(exceptionMessage, @"\s+", " ")));
             }
 
-            WebOperationContext ctx = WebOperationContext.Current;
+            var ctx = WebOperationContext.Current;
             if (ctx != null)
             {
                 ctx.OutgoingResponse.StatusCode = HttpStatusCode.Unauthorized;
@@ -79,7 +79,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
             try
             {
-                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out SecurityToken validatedToken);
+                principal = _handler.ValidateToken(token, Options.TokenValidationParameters, out var validatedToken);
                 validJwt = validatedToken as JwtSecurityToken;
             }
             catch (Exception ex)
@@ -98,7 +98,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             CloudFoundryJwt.OnTokenValidatedAddClaims((ClaimsIdentity)principal.Identity, validJwt);
 #pragma warning restore S2259 // Null pointers should not be dereferenced
 
-            bool validScopes = ValidateScopes(validJwt);
+            var validScopes = ValidateScopes(validJwt);
             if (!validScopes)
             {
                 ThrowJwtException(null, "insufficient_scope");

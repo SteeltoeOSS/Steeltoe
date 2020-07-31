@@ -41,7 +41,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
         /// <returns>An access token</returns>
         public virtual async Task<string> GetAccessToken()
         {
-            HttpResponseMessage response = await _tokenExchanger.GetAccessTokenWithClientCredentials(Options.AuthorizationUrl + Options.AccessTokenEndpoint).ConfigureAwait(false);
+            var response = await _tokenExchanger.GetAccessTokenWithClientCredentials(Options.AuthorizationUrl + Options.AccessTokenEndpoint).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {

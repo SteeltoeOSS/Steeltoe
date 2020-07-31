@@ -34,26 +34,24 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry.Test
         public async void CloudFoundryHttpCall_ReturnsExpected()
         {
             ManagementOptions.Clear();
-            using (var server = TestServer.Create<Startup>())
-            {
-                var client = server.HttpClient;
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                Assert.NotNull(json);
+            using var server = TestServer.Create<Startup>();
+            var client = server.HttpClient;
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            Assert.NotNull(json);
 #pragma warning disable CS0618 // Type or member is obsolete
-                var links = JsonConvert.DeserializeObject<Links>(json);
+            var links = JsonConvert.DeserializeObject<Links>(json);
 #pragma warning restore CS0618 // Type or member is obsolete
-                Assert.NotNull(links);
-                Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
-                Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
-                Assert.True(links._links.ContainsKey("info"), "Info is one of the available links");
-                Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
-                Assert.False(links._links["info"].templated);
+            Assert.NotNull(links);
+            Assert.True(links._links.ContainsKey("self"), "Self is one of the available links");
+            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
+            Assert.True(links._links.ContainsKey("info"), "Info is one of the available links");
+            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+            Assert.False(links._links["info"].templated);
 
-                // this test is here to prevent breaking changes in response serialization
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false}}}", json);
-            }
+            // this test is here to prevent breaking changes in response serialization
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false},\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false}}}", json);
         }
 
         [Fact]

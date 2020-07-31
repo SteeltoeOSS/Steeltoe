@@ -42,11 +42,11 @@ namespace OpenCensus.Trace
         {
             if (isSampled)
             {
-                this.options = (byte)(this.options | TraceOptions.IsSampledBit);
+                options = (byte)(options | TraceOptions.IsSampledBit);
             }
             else
             {
-                this.options = (byte)(this.options & ~TraceOptions.IsSampledBit);
+                options = (byte)(options & ~TraceOptions.IsSampledBit);
             }
 
             return this;
@@ -58,7 +58,7 @@ namespace OpenCensus.Trace
         /// <returns>Span options built by this builder.</returns>
         public TraceOptions Build()
         {
-            return new TraceOptions(this.options);
+            return new TraceOptions(options);
         }
     }
 }

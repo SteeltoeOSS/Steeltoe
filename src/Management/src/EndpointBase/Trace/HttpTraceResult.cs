@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Trace
 
         public HttpTraceResult(List<TraceResult> list)
         {
-            this._list = list;
+            _list = list;
         }
     }
 

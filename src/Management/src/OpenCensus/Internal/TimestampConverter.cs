@@ -37,7 +37,7 @@ namespace OpenCensus.Internal
 
         public ITimestamp ConvertNanoTime(long nanoTime)
         {
-            return this.timestamp.AddNanos(nanoTime - this.nanoTime);
+            return timestamp.AddNanos(nanoTime - this.nanoTime);
         }
     }
 }

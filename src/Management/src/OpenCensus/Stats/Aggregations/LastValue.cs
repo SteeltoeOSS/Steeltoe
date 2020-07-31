@@ -62,7 +62,7 @@ namespace OpenCensus.Stats.Aggregations
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             return h;
         }
     }

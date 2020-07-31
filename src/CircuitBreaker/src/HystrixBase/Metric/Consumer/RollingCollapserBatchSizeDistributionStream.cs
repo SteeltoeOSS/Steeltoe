@@ -34,9 +34,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCollapserBatchSizeDistributionStream GetInstance(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions properties)
         {
-            int percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
-            int numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
-            int percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
+            var percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
+            var numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
+            var percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
 
             return GetInstance(collapserKey, numPercentileBuckets, percentileBucketSizeInMs);
         }

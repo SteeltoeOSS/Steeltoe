@@ -26,7 +26,7 @@ namespace OpenCensus.Trace.Export
 
         private static readonly ISampledSpanStoreSummary EmptySummary = SampledSpanStoreSummary.Create(new Dictionary<string, ISampledPerSpanNameSummary>());
 
-        private static readonly IEnumerable<ISpanData> EmptySpanData = new ISpanData[0];
+        private static readonly IEnumerable<ISpanData> EmptySpanData = Array.Empty<ISpanData>();
 
         private readonly HashSet<string> registeredSpanNames = new HashSet<string>();
 
@@ -35,9 +35,9 @@ namespace OpenCensus.Trace.Export
             get
             {
                 IDictionary<string, ISampledPerSpanNameSummary> result = new Dictionary<string, ISampledPerSpanNameSummary>();
-                lock (this.registeredSpanNames)
+                lock (registeredSpanNames)
                 {
-                    foreach (string registeredSpanName in this.registeredSpanNames)
+                    foreach (var registeredSpanName in registeredSpanNames)
                     {
                         result[registeredSpanName] = EmptyPerSpanNameSummary;
                     }
@@ -51,7 +51,7 @@ namespace OpenCensus.Trace.Export
         {
             get
             {
-                return new HashSet<string>(this.registeredSpanNames);
+                return new HashSet<string>(registeredSpanNames);
             }
         }
 
@@ -76,11 +76,11 @@ namespace OpenCensus.Trace.Export
                 throw new ArgumentNullException(nameof(spanNames));
             }
 
-            lock (this.registeredSpanNames)
+            lock (registeredSpanNames)
             {
                 foreach (var name in spanNames)
                 {
-                    this.registeredSpanNames.Add(name);
+                    registeredSpanNames.Add(name);
                 }
             }
         }
@@ -92,11 +92,11 @@ namespace OpenCensus.Trace.Export
                 throw new ArgumentNullException(nameof(spanNames));
             }
 
-            lock (this.registeredSpanNames)
+            lock (registeredSpanNames)
             {
                 foreach (var name in spanNames)
                 {
-                    this.registeredSpanNames.Remove(name);
+                    registeredSpanNames.Remove(name);
                 }
             }
         }

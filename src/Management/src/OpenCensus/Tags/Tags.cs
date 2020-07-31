@@ -30,11 +30,11 @@ namespace OpenCensus.Tags
         {
             if (enabled)
             {
-                this.tagsComponent = new TagsComponent();
+                tagsComponent = new TagsComponent();
             }
             else
             {
-                this.tagsComponent = NoopTags.NewNoopTagsComponent();
+                tagsComponent = NoopTags.NewNoopTagsComponent();
             }
         }
 

@@ -51,8 +51,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal async Task HandleMetricsRequestAsync(HttpContext context)
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
+            var request = context.Request;
+            var response = context.Response;
 
             _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             else
             {
                 // GET /metrics
-                var serialInfo = this.HandleRequest(null);
+                var serialInfo = HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
 
                 context.HandleContentNegotiation(_logger);
@@ -108,7 +108,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
         {
-            List<KeyValuePair<string, string>> results = new List<KeyValuePair<string, string>>();
+            var results = new List<KeyValuePair<string, string>>();
             if (query == null)
             {
                 return results;
@@ -145,8 +145,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         private string GetMetricName(HttpRequest request, string path)
         {
-            PathString epPath = new PathString(path);
-            if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+            var epPath = new PathString(path);
+            if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
             {
                 return remaining.Value.TrimStart('/');
             }

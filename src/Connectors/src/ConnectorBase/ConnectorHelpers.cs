@@ -18,7 +18,7 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             try
             {
-                Assembly a = Assembly.Load(new AssemblyName(name));
+                var a = Assembly.Load(new AssemblyName(name));
 
                 return a;
             }
@@ -41,12 +41,12 @@ namespace Steeltoe.CloudFoundry.Connector
         {
             foreach (var assemblyName in assemblyNames)
             {
-                Assembly assembly = FindAssembly(assemblyName);
+                var assembly = FindAssembly(assemblyName);
                 if (assembly != null)
                 {
                     foreach (var type in typeNames)
                     {
-                        Type result = FindType(assembly, type);
+                        var result = FindType(assembly, type);
                         if (result != null)
                         {
                             return result;

@@ -37,7 +37,7 @@ namespace OpenCensus.Tags
         {
             get
             {
-                return this.state.Internal == TaggingState.DISABLED
+                return state.Internal == TaggingState.DISABLED
                     ? TagContext.Empty
                     : ToTagContext(CurrentTagContextUtils.CurrentTagContext);
             }
@@ -47,7 +47,7 @@ namespace OpenCensus.Tags
         {
             get
             {
-                return this.state.Internal == TaggingState.DISABLED
+                return state.Internal == TaggingState.DISABLED
                     ? NoopTagContextBuilder.Instance
                     : new TagContextBuilder();
             }
@@ -57,22 +57,22 @@ namespace OpenCensus.Tags
         {
             get
             {
-                return this.state.Internal == TaggingState.DISABLED
+                return state.Internal == TaggingState.DISABLED
                     ? NoopTagContextBuilder.Instance
-                    : this.ToBuilder(CurrentTagContextUtils.CurrentTagContext);
+                    : ToBuilder(CurrentTagContextUtils.CurrentTagContext);
             }
         }
 
         public override ITagContextBuilder ToBuilder(ITagContext tags)
         {
-            return this.state.Internal == TaggingState.DISABLED
+            return state.Internal == TaggingState.DISABLED
                 ? NoopTagContextBuilder.Instance
                 : ToTagContextBuilder(tags);
         }
 
         public override IScope WithTagContext(ITagContext tags)
         {
-            return this.state.Internal == TaggingState.DISABLED
+            return state.Internal == TaggingState.DISABLED
                 ? NoopScope.Instance
                 : CurrentTagContextUtils.WithTagContext(ToTagContext(tags));
         }
@@ -85,7 +85,7 @@ namespace OpenCensus.Tags
             }
 else
             {
-                TagContextBuilder builder = new TagContextBuilder();
+                var builder = new TagContextBuilder();
                 foreach (var tag in tags)
                 {
                     if (tag != null)
@@ -101,13 +101,13 @@ else
         private static ITagContextBuilder ToTagContextBuilder(ITagContext tags)
         {
             // Copy the tags more efficiently in the expected case, when the TagContext is a TagContextImpl.
-            if (tags is TagContext)
+            if (tags is TagContext context)
             {
-                return new TagContextBuilder(((TagContext)tags).Tags);
+                return new TagContextBuilder(context.Tags);
             }
 else
             {
-                TagContextBuilder builder = new TagContextBuilder();
+                var builder = new TagContextBuilder();
                 foreach (var tag in tags)
                 {
                     if (tag != null)

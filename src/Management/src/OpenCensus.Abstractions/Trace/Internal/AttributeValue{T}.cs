@@ -26,7 +26,7 @@ namespace OpenCensus.Trace
     {
         internal AttributeValue(T value)
         {
-            this.Value = value;
+            Value = value;
         }
 
         /// <inheritdoc/>
@@ -80,7 +80,7 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public TArg Apply<TArg>(Func<T, TArg> function)
         {
-            return function(this.Value);
+            return function(Value);
         }
 
         /// <inheritdoc/>
@@ -93,7 +93,7 @@ namespace OpenCensus.Trace
 
             if (obj is AttributeValue<T> attribute)
             {
-                return attribute.Value.Equals(this.Value);
+                return attribute.Value.Equals(Value);
             }
 
             return false;
@@ -102,9 +102,9 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Value.GetHashCode();
+            h ^= Value.GetHashCode();
             return h;
         }
 
@@ -112,7 +112,7 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "AttributeValue{"
-                + "Value=" + this.Value.ToString()
+                + "Value=" + Value.ToString()
                 + "}";
         }
 
@@ -126,26 +126,26 @@ namespace OpenCensus.Trace
         {
             if (typeof(T) == typeof(string))
             {
-                string value = this.Value as string;
+                var value = Value as string;
                 return stringFunction(value);
             }
             else if (typeof(T) == typeof(long))
             {
-                long val = (long)(object)this.Value;
+                var val = (long)(object)Value;
                 return longFunction(val);
             }
             else if (typeof(T) == typeof(bool))
             {
-                bool val = (bool)(object)this.Value;
+                var val = (bool)(object)Value;
                 return booleanFunction(val);
             }
             else if (typeof(T) == typeof(double))
             {
-                double val = (double)(object)this.Value;
+                var val = (double)(object)Value;
                 return doubleFunction(val);
             }
 
-            return defaultFunction(this.Value);
+            return defaultFunction(Value);
         }
     }
 }

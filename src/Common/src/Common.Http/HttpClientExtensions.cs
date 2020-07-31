@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http
 {
+    [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
     public static class HttpClientExtensions
     {
         /// <summary>
@@ -20,6 +21,7 @@ namespace Steeltoe.Common.Http
         /// <param name="url">Url to POST to</param>
         /// <param name="data">Object to send</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
         {
             return PostAsJsonAsync(httpClient, new Uri(url), data);
@@ -33,6 +35,7 @@ namespace Steeltoe.Common.Http
         /// <param name="url">Url to POST to</param>
         /// <param name="data">Object to send</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
         {
             var dataAsString = JsonConvert.SerializeObject(data);
@@ -50,6 +53,7 @@ namespace Steeltoe.Common.Http
         /// <param name="data">Object to send</param>
         /// <param name="settings">Your Serializer Settings</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {
             return PostAsJsonAsync(httpClient, new Uri(url), data, settings);
@@ -64,6 +68,7 @@ namespace Steeltoe.Common.Http
         /// <param name="data">Object to send</param>
         /// <param name="settings">Your Serializer Settings</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PostAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
         {
             var dataAsString = JsonConvert.SerializeObject(data, settings);
@@ -80,6 +85,7 @@ namespace Steeltoe.Common.Http
         /// <param name="url">the http endpoint to Put to</param>
         /// <param name="data">the data to put</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data)
         {
             return PutAsJsonAsync(httpClient, new Uri(url), data);
@@ -93,6 +99,7 @@ namespace Steeltoe.Common.Http
         /// <param name="url">the http endpoint to Put to</param>
         /// <param name="data">the data to put</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data)
         {
             var dataAsString = JsonConvert.SerializeObject(data);
@@ -110,6 +117,7 @@ namespace Steeltoe.Common.Http
         /// <param name="data">the data to put</param>
         /// <param name="settings">the serialization setttings to use</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, string url, T data, JsonSerializerSettings settings)
         {
             return PutAsJsonAsync(httpClient, new Uri(url), data, settings);
@@ -124,6 +132,7 @@ namespace Steeltoe.Common.Http
         /// <param name="data">the data to put</param>
         /// <param name="settings">the serialization setttings to use</param>
         /// <returns>Task to be awaited</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static Task<HttpResponseMessage> PutAsJsonAsync<T>(this HttpClient httpClient, Uri url, T data, JsonSerializerSettings settings)
         {
             var dataAsString = JsonConvert.SerializeObject(data, settings);
@@ -138,6 +147,7 @@ namespace Steeltoe.Common.Http
         /// <typeparam name="T">Type to deserialize into</typeparam>
         /// <param name="content">Content to be deserialized</param>
         /// <returns>Your data, typed as your type</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content)
         {
             var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);
@@ -151,6 +161,7 @@ namespace Steeltoe.Common.Http
         /// <param name="content">Content to be deserialized</param>
         /// <param name="settings">Your Serializer Settings</param>
         /// <returns>Your data, typed as your type</returns>
+        [Obsolete("This will be removed in a future release. Use System.Net.Http.Json instead")]
         public static async Task<T> ReadAsJsonAsync<T>(this HttpContent content, JsonSerializerSettings settings)
         {
             var dataAsString = await content.ReadAsStringAsync().ConfigureAwait(false);

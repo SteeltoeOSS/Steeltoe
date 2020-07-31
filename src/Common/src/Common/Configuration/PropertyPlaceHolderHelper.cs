@@ -71,17 +71,17 @@ namespace Steeltoe.Common.Configuration
                 return property;
             }
 
-            StringBuilder result = new StringBuilder(property);
+            var result = new StringBuilder(property);
 
-            int startIndex = property.IndexOf(PREFIX);
+            var startIndex = property.IndexOf(PREFIX);
             while (startIndex != -1)
             {
-                int endIndex = FindEndIndex(result, startIndex);
+                var endIndex = FindEndIndex(result, startIndex);
                 if (endIndex != -1)
                 {
-                    string placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
+                    var placeholder = result.Substring(startIndex + PREFIX.Length, endIndex);
 
-                    string originalPlaceholder = placeholder;
+                    var originalPlaceholder = placeholder;
 
                     if (!visitedPlaceHolders.Add(originalPlaceholder))
                     {
@@ -92,17 +92,17 @@ namespace Steeltoe.Common.Configuration
                     placeholder = ParseStringValue(placeholder, config, visitedPlaceHolders);
 
                     // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
-                    string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
+                    var lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
 
                     // Now obtain the value for the fully resolved key...
-                    string propVal = config[lookup];
+                    var propVal = config[lookup];
                     if (propVal == null)
                     {
-                        int separatorIndex = placeholder.IndexOf(SEPARATOR);
+                        var separatorIndex = placeholder.IndexOf(SEPARATOR);
                         if (separatorIndex != -1)
                         {
-                            string actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                            string defaultValue = placeholder.Substring(separatorIndex + SEPARATOR.Length);
+                            var actualPlaceholder = placeholder.Substring(0, separatorIndex);
+                            var defaultValue = placeholder.Substring(separatorIndex + SEPARATOR.Length);
                             propVal = config[actualPlaceholder];
                             if (propVal == null)
                             {
@@ -151,8 +151,8 @@ namespace Steeltoe.Common.Configuration
 
         private static int FindEndIndex(StringBuilder property, int startIndex)
         {
-            int index = startIndex + PREFIX.Length;
-            int withinNestedPlaceholder = 0;
+            var index = startIndex + PREFIX.Length;
+            var withinNestedPlaceholder = 0;
             while (index < property.Length)
             {
                 if (SubstringMatch(property, index, SUFFIX))
@@ -160,7 +160,7 @@ namespace Steeltoe.Common.Configuration
                     if (withinNestedPlaceholder > 0)
                     {
                         withinNestedPlaceholder--;
-                        index = index + SUFFIX.Length;
+                        index += SUFFIX.Length;
                     }
                     else
                     {
@@ -170,7 +170,7 @@ namespace Steeltoe.Common.Configuration
                 else if (SubstringMatch(property, index, PREFIX))
                 {
                     withinNestedPlaceholder++;
-                    index = index + PREFIX.Length;
+                    index += PREFIX.Length;
                 }
                 else
                 {
@@ -183,9 +183,9 @@ namespace Steeltoe.Common.Configuration
 
         private static bool SubstringMatch(StringBuilder str, int index, string substring)
         {
-            for (int j = 0; j < substring.Length; j++)
+            for (var j = 0; j < substring.Length; j++)
             {
-                int i = index + j;
+                var i = index + j;
                 if (i >= str.Length || str[i] != substring[j])
                 {
                     return false;

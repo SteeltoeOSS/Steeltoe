@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_IgnoresNulls()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             obs.ProcessEvent(null, null);
         }
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_IgnoresMissingHttpRequestMessage()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             obs.ProcessEvent(string.Empty, new object());
         }
@@ -40,7 +40,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_IgnoresUnknownEvent()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             obs.ProcessEvent(string.Empty, new { Request = GetHttpRequestMessage() });
         }
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ShouldIgnore_ReturnsExpected()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
 
             Assert.True(obs.ShouldIgnoreRequest("/api/v2/spans"));
@@ -63,28 +63,28 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_Stop_NothingStarted()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request });
-            Span span = GetCurrentSpan(tracing.Tracer);
+            var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
         }
 
         [Fact]
         public void ProcessEvent_Exception_NothingStarted()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
 
             // No Exception
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request });
-            Span span = GetCurrentSpan(tracing.Tracer);
+            var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
 
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request, Exception = new Exception() });
             span = GetCurrentSpan(tracing.Tracer);
@@ -96,15 +96,15 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_Exception_PreviousStarted()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = GetCurrentSpan(tracing.Tracer);
+            var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
-            HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
+            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
+            var spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.NotNull(spanContext.ActiveScope);
@@ -116,7 +116,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var response = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var ctx));
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.AttributeMap;
@@ -136,15 +136,15 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_Stop_PreviousStarted()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = GetCurrentSpan(tracing.Tracer);
+            var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
-            HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
+            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
+            var spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.NotNull(spanContext.ActiveScope);
@@ -153,7 +153,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var response = GetHttpResponseMessage(HttpStatusCode.OK);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var ctx));
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.AttributeMap;
@@ -171,15 +171,15 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void ProcessEvent_Start()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
             obs.ProcessEvent(HttpClientCoreObserver.START_EVENT, new { Request = request });
 
-            Span span = GetCurrentSpan(tracing.Tracer);
+            var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
-            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
-            HttpClientTracingObserver.SpanContext spanContext = context as HttpClientTracingObserver.SpanContext;
+            Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
+            var spanContext = context as HttpClientTracingObserver.SpanContext;
             Assert.NotNull(spanContext);
             Assert.Equal(span, spanContext.Active);
             Assert.NotNull(spanContext.ActiveScope);
@@ -217,11 +217,11 @@ namespace Steeltoe.Management.Tracing.Observer.Test
         public void InjectTraceContext()
         {
             var opts = GetOptions();
-            OpenCensusTracing tracing = new OpenCensusTracing(opts, null);
+            var tracing = new OpenCensusTracing(opts, null);
             var obs = new HttpClientCoreObserver(opts, tracing);
             var request = GetHttpRequestMessage();
 
-            tracing.Tracer.SpanBuilder("MySpan").StartScopedSpan(out ISpan span);
+            tracing.Tracer.SpanBuilder("MySpan").StartScopedSpan(out var span);
 
             obs.InjectTraceContext(request, null);
 
@@ -269,9 +269,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private TracingOptions GetOptions(Dictionary<string, string> settings)
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
             return opts;
         }
 

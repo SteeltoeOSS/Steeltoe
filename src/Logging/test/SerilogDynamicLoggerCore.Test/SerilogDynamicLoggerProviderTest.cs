@@ -20,10 +20,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void Create_CreatesCorrectLogger()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Information));
             Assert.False(logger.IsEnabled(LogLevel.Debug));
@@ -33,10 +33,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void SetLogLevel_UpdatesLogger()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Critical));
             Assert.True(logger.IsEnabled(LogLevel.Error));
@@ -138,10 +138,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         public void GetLoggerConfigurations_ReturnsExpected()
         {
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
@@ -158,11 +158,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
 
             // act I
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
             var logConfig = provider.GetLoggerConfigurations();
 
             // assert I
@@ -193,7 +193,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
@@ -211,7 +211,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfiguration());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var originalLogConfig = provider.GetLoggerConfigurations();
 
@@ -232,40 +232,38 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
          // arrange
             var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
-            using (var unConsole = new ConsoleOutputBorrower())
+            using var unConsole = new ConsoleOutputBorrower();
+            using (LogContext.PushProperty("A", 1))
             {
-                using (LogContext.PushProperty("A", 1))
+                logger.LogInformation("Carries property A = 1");
+
+                using (LogContext.PushProperty("A", 2))
+                using (LogContext.PushProperty("B", 1))
                 {
-                    logger.LogInformation("Carries property A = 1");
-
-                    using (LogContext.PushProperty("A", 2))
-                    using (LogContext.PushProperty("B", 1))
-                    {
-                        logger.LogInformation("Carries A = 2 and B = 1");
-                    }
-
-                    logger.LogInformation("Carries property A = 1, again");
+                    logger.LogInformation("Carries A = 2 and B = 1");
                 }
 
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
-
-                var logged = unConsole.ToString();
-
-                // assert I
-                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
-                Assert.Contains(@"Carries property A = 1", logged);
-                Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged);
-                Assert.Contains(@"Carries A = 2 and B = 1", logged);
-                Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
-                Assert.Contains(@"Carries property A = 1, again", logged);
-                Assert.Matches(new Regex(@"ThreadId:<\d+>"), logged);
+                logger.LogInformation("Carries property A = 1, again");
             }
+
+            // pause the thread to allow the logging to happen
+            Thread.Sleep(100);
+
+            var logged = unConsole.ToString();
+
+            // assert I
+            Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+            Assert.Contains(@"Carries property A = 1", logged);
+            Assert.Contains(@"A.B.C.D.TestClass: {B=1, A=2, Application=""Sample""}", logged);
+            Assert.Contains(@"Carries A = 2 and B = 1", logged);
+            Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
+            Assert.Contains(@"Carries property A = 1, again", logged);
+            Assert.Matches(new Regex(@"ThreadId:<\d+>"), logged);
         }
 
         [Fact]
@@ -273,23 +271,21 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
-            LoggerFactory fac = new LoggerFactory();
+            var fac = new LoggerFactory();
             fac.AddProvider(provider);
-            ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+            var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
-            using (var unConsole = new ConsoleOutputBorrower())
-            {
-                logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
+            using var unConsole = new ConsoleOutputBorrower();
+            logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
 
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
+            // pause the thread to allow the logging to happen
+            Thread.Sleep(100);
 
-                var logged = unConsole.ToString();
+            var logged = unConsole.ToString();
 
-                // assert I
-                Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
-            }
+            // assert I
+            Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
         }
 
         [Fact]
@@ -297,9 +293,9 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         {
             // arrange
              var provider = new SerilogDynamicProvider(GetConfiguration());
-             LoggerFactory fac = new LoggerFactory();
+             var fac = new LoggerFactory();
              fac.AddProvider(provider);
-             ILogger logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+             var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
 
             // act I - log at all levels, expect Info and above to work
              using (var unConsole = new ConsoleOutputBorrower())

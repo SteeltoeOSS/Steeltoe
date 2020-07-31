@@ -18,7 +18,7 @@ namespace OpenCensus.Tags.Propagation
 {
     internal sealed class TagContextBinarySerializer : TagContextBinarySerializerBase
     {
-        private static readonly byte[] EmptyByteArray = { };
+        private static readonly byte[] EmptyByteArray = System.Array.Empty<byte>();
 
         private readonly CurrentTaggingState state;
 
@@ -29,14 +29,14 @@ namespace OpenCensus.Tags.Propagation
 
         public override byte[] ToByteArray(ITagContext tags)
         {
-            return this.state.Internal == TaggingState.DISABLED
+            return state.Internal == TaggingState.DISABLED
                 ? EmptyByteArray
                 : SerializationUtils.SerializeBinary(tags);
         }
 
         public override ITagContext FromByteArray(byte[] bytes)
         {
-            return this.state.Internal == TaggingState.DISABLED
+            return state.Internal == TaggingState.DISABLED
                 ? TagContext.Empty
                 : SerializationUtils.DeserializeBinary(bytes);
         }

@@ -144,8 +144,8 @@ namespace OpenCensus.Trace
 
         internal Status(CanonicalCode canonicalCode, string description = null)
         {
-            this.CanonicalCode = canonicalCode;
-            this.Description = description;
+            CanonicalCode = canonicalCode;
+            Description = description;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace OpenCensus.Trace
         {
             get
             {
-                return this.CanonicalCode == CanonicalCode.Ok;
+                return CanonicalCode == CanonicalCode.Ok;
             }
         }
 
@@ -176,12 +176,12 @@ namespace OpenCensus.Trace
         /// <returns>New instance of the status class with the description populated.</returns>
         public Status WithDescription(string description)
         {
-            if (this.Description == description)
+            if (Description == description)
             {
                 return this;
             }
 
-            return new Status(this.CanonicalCode, description);
+            return new Status(CanonicalCode, description);
         }
 
         /// <inheritdoc/>
@@ -197,16 +197,16 @@ namespace OpenCensus.Trace
                 return false;
             }
 
-            Status that = (Status)obj;
-            return this.CanonicalCode == that.CanonicalCode && this.Description == that.Description;
+            var that = (Status)obj;
+            return CanonicalCode == that.CanonicalCode && Description == that.Description;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int result = 1;
-            result = (31 * result) + this.CanonicalCode.GetHashCode();
-            result = (31 * result) + this.Description.GetHashCode();
+            var result = 1;
+            result = (31 * result) + CanonicalCode.GetHashCode();
+            result = (31 * result) + Description.GetHashCode();
             return result;
         }
 
@@ -214,8 +214,8 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "Status{"
-                    + "canonicalCode=" + this.CanonicalCode + ", "
-                    + "description=" + this.Description
+                    + "canonicalCode=" + CanonicalCode + ", "
+                    + "description=" + Description
                     + "}";
         }
     }

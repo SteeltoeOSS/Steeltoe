@@ -38,43 +38,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public static HystrixRollingNumberEvent From(HystrixEventType eventType)
         {
-            switch (eventType)
+            return eventType switch
             {
-                case HystrixEventType.BAD_REQUEST:
-                    return HystrixRollingNumberEvent.BAD_REQUEST;
-                case HystrixEventType.COLLAPSED:
-                    return HystrixRollingNumberEvent.COLLAPSED;
-                case HystrixEventType.EMIT:
-                    return HystrixRollingNumberEvent.EMIT;
-                case HystrixEventType.EXCEPTION_THROWN:
-                    return HystrixRollingNumberEvent.EXCEPTION_THROWN;
-                case HystrixEventType.FAILURE:
-                    return HystrixRollingNumberEvent.FAILURE;
-                case HystrixEventType.FALLBACK_EMIT:
-                    return HystrixRollingNumberEvent.FALLBACK_EMIT;
-                case HystrixEventType.FALLBACK_FAILURE:
-                    return HystrixRollingNumberEvent.FALLBACK_FAILURE;
-                case HystrixEventType.FALLBACK_MISSING:
-                    return HystrixRollingNumberEvent.FALLBACK_MISSING;
-                case HystrixEventType.FALLBACK_REJECTION:
-                    return HystrixRollingNumberEvent.FALLBACK_REJECTION;
-                case HystrixEventType.FALLBACK_SUCCESS:
-                    return HystrixRollingNumberEvent.FALLBACK_SUCCESS;
-                case HystrixEventType.RESPONSE_FROM_CACHE:
-                    return HystrixRollingNumberEvent.RESPONSE_FROM_CACHE;
-                case HystrixEventType.SEMAPHORE_REJECTED:
-                    return HystrixRollingNumberEvent.SEMAPHORE_REJECTED;
-                case HystrixEventType.SHORT_CIRCUITED:
-                    return HystrixRollingNumberEvent.SHORT_CIRCUITED;
-                case HystrixEventType.SUCCESS:
-                    return HystrixRollingNumberEvent.SUCCESS;
-                case HystrixEventType.THREAD_POOL_REJECTED:
-                    return HystrixRollingNumberEvent.THREAD_POOL_REJECTED;
-                case HystrixEventType.TIMEOUT:
-                    return HystrixRollingNumberEvent.TIMEOUT;
-                default:
-                    throw new ArgumentOutOfRangeException("Unknown HystrixEventType : " + eventType);
-            }
+                HystrixEventType.BAD_REQUEST => HystrixRollingNumberEvent.BAD_REQUEST,
+                HystrixEventType.COLLAPSED => HystrixRollingNumberEvent.COLLAPSED,
+                HystrixEventType.EMIT => HystrixRollingNumberEvent.EMIT,
+                HystrixEventType.EXCEPTION_THROWN => HystrixRollingNumberEvent.EXCEPTION_THROWN,
+                HystrixEventType.FAILURE => HystrixRollingNumberEvent.FAILURE,
+                HystrixEventType.FALLBACK_EMIT => HystrixRollingNumberEvent.FALLBACK_EMIT,
+                HystrixEventType.FALLBACK_FAILURE => HystrixRollingNumberEvent.FALLBACK_FAILURE,
+                HystrixEventType.FALLBACK_MISSING => HystrixRollingNumberEvent.FALLBACK_MISSING,
+                HystrixEventType.FALLBACK_REJECTION => HystrixRollingNumberEvent.FALLBACK_REJECTION,
+                HystrixEventType.FALLBACK_SUCCESS => HystrixRollingNumberEvent.FALLBACK_SUCCESS,
+                HystrixEventType.RESPONSE_FROM_CACHE => HystrixRollingNumberEvent.RESPONSE_FROM_CACHE,
+                HystrixEventType.SEMAPHORE_REJECTED => HystrixRollingNumberEvent.SEMAPHORE_REJECTED,
+                HystrixEventType.SHORT_CIRCUITED => HystrixRollingNumberEvent.SHORT_CIRCUITED,
+                HystrixEventType.SUCCESS => HystrixRollingNumberEvent.SUCCESS,
+                HystrixEventType.THREAD_POOL_REJECTED => HystrixRollingNumberEvent.THREAD_POOL_REJECTED,
+                HystrixEventType.TIMEOUT => HystrixRollingNumberEvent.TIMEOUT,
+                _ => throw new ArgumentOutOfRangeException("Unknown HystrixEventType : " + eventType),
+            };
         }
 
         public static bool IsCounter(HystrixRollingNumberEvent @event)

@@ -7,7 +7,6 @@ using System.Net.Http;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 {
@@ -15,8 +14,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
     {
         private readonly HttpClient _httpClient;
         private readonly CloudFoundryOptions _options;
+        private readonly string _userToken;
         private string _token;
-        private string _userToken;
 
         public JwtHeaderMessageInspector(CloudFoundryOptions options, string userToken, HttpClient httpClient = null)
         {
@@ -40,7 +39,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
             }
 
             HttpRequestMessageProperty httpRequestMessage;
-            if (request.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject))
+            if (request.Properties.TryGetValue(HttpRequestMessageProperty.Name, out var httpRequestMessageObject))
             {
                 httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
             }
@@ -72,11 +71,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
 
         private string GetAccessToken()
         {
-            CloudFoundryClientTokenResolver tokenResolver = new CloudFoundryClientTokenResolver(_options, _httpClient);
+            var tokenResolver = new CloudFoundryClientTokenResolver(_options, _httpClient);
 
             try
             {
-               string accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
+               var accessToken = tokenResolver.GetAccessToken().GetAwaiter().GetResult();
 
                return accessToken;
             }

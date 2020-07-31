@@ -25,12 +25,12 @@ namespace OpenCensus.Stats.Aggregations
     {
         internal DistributionData(double mean, long count, double min, double max, double sumOfSquaredDeviations, IList<long> bucketCounts)
         {
-            this.Mean = mean;
-            this.Count = count;
-            this.Min = min;
-            this.Max = max;
-            this.SumOfSquaredDeviations = sumOfSquaredDeviations;
-            this.BucketCounts = bucketCounts ?? throw new ArgumentNullException(nameof(bucketCounts));
+            Mean = mean;
+            Count = count;
+            Min = min;
+            Max = max;
+            SumOfSquaredDeviations = sumOfSquaredDeviations;
+            BucketCounts = bucketCounts ?? throw new ArgumentNullException(nameof(bucketCounts));
         }
 
         public double Mean { get; }
@@ -83,12 +83,12 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "DistributionData{"
-                + "mean=" + this.Mean + ", "
-                + "count=" + this.Count + ", "
-                + "min=" + this.Min + ", "
-                + "max=" + this.Max + ", "
-                + "sumOfSquaredDeviations=" + this.SumOfSquaredDeviations + ", "
-                + "bucketCounts=" + Collections.ToString(this.BucketCounts)
+                + "mean=" + Mean + ", "
+                + "count=" + Count + ", "
+                + "min=" + Min + ", "
+                + "max=" + Max + ", "
+                + "sumOfSquaredDeviations=" + SumOfSquaredDeviations + ", "
+                + "bucketCounts=" + Collections.ToString(BucketCounts)
                 + "}";
         }
 
@@ -102,12 +102,12 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is DistributionData that)
             {
-                return (DoubleUtil.ToInt64(this.Mean) == DoubleUtil.ToInt64(that.Mean))
-                     && (this.Count == that.Count)
-                     && (DoubleUtil.ToInt64(this.Min) == DoubleUtil.ToInt64(that.Min))
-                     && (DoubleUtil.ToInt64(this.Max) == DoubleUtil.ToInt64(that.Max))
-                     && (DoubleUtil.ToInt64(this.SumOfSquaredDeviations) == DoubleUtil.ToInt64(that.SumOfSquaredDeviations))
-                     && this.BucketCounts.SequenceEqual(that.BucketCounts);
+                return (DoubleUtil.ToInt64(Mean) == DoubleUtil.ToInt64(that.Mean))
+                     && (Count == that.Count)
+                     && (DoubleUtil.ToInt64(Min) == DoubleUtil.ToInt64(that.Min))
+                     && (DoubleUtil.ToInt64(Max) == DoubleUtil.ToInt64(that.Max))
+                     && (DoubleUtil.ToInt64(SumOfSquaredDeviations) == DoubleUtil.ToInt64(that.SumOfSquaredDeviations))
+                     && BucketCounts.SequenceEqual(that.BucketCounts);
             }
 
             return false;
@@ -118,17 +118,17 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Mean) >> 32) ^ DoubleUtil.ToInt64(this.Mean);
+            h ^= (DoubleUtil.ToInt64(Mean) >> 32) ^ DoubleUtil.ToInt64(Mean);
             h *= 1000003;
-            h ^= (this.Count >> 32) ^ this.Count;
+            h ^= (Count >> 32) ^ Count;
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Min) >> 32) ^ DoubleUtil.ToInt64(this.Min);
+            h ^= (DoubleUtil.ToInt64(Min) >> 32) ^ DoubleUtil.ToInt64(Min);
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Max) >> 32) ^ DoubleUtil.ToInt64(this.Max);
+            h ^= (DoubleUtil.ToInt64(Max) >> 32) ^ DoubleUtil.ToInt64(Max);
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.SumOfSquaredDeviations) >> 32) ^ DoubleUtil.ToInt64(this.SumOfSquaredDeviations);
+            h ^= (DoubleUtil.ToInt64(SumOfSquaredDeviations) >> 32) ^ DoubleUtil.ToInt64(SumOfSquaredDeviations);
             h *= 1000003;
-            h ^= this.BucketCounts.GetHashCode();
+            h ^= BucketCounts.GetHashCode();
             return (int)h;
         }
     }

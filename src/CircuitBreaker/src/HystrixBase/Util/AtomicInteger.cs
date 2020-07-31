@@ -35,27 +35,27 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
         public bool CompareAndSet(int expected, int update)
         {
-            return Interlocked.CompareExchange(ref this._value, update, expected) == expected;
+            return Interlocked.CompareExchange(ref _value, update, expected) == expected;
         }
 
         public int IncrementAndGet()
         {
-            return Interlocked.Increment(ref this._value);
+            return Interlocked.Increment(ref _value);
         }
 
         public int DecrementAndGet()
         {
-            return Interlocked.Decrement(ref this._value);
+            return Interlocked.Decrement(ref _value);
         }
 
         public int GetAndIncrement()
         {
-            return Interlocked.Increment(ref this._value) - 1;
+            return Interlocked.Increment(ref _value) - 1;
         }
 
         public int AddAndGet(int value)
         {
-            return Interlocked.Add(ref this._value, value);
+            return Interlocked.Add(ref _value, value);
         }
     }
 }

@@ -36,12 +36,12 @@ namespace OpenCensus.Stats
 
         internal override void Add(double value)
         {
-            this.LastValue = value;
+            LastValue = value;
 
             // TODO(songya): remove this once interval stats is completely removed.
-            if (!this.Initialized)
+            if (!Initialized)
             {
-                this.Initialized = true;
+                Initialized = true;
             }
         }
 
@@ -52,11 +52,11 @@ namespace OpenCensus.Stats
                 throw new ArgumentException("MutableLastValue expected.");
             }
 
-            MutableLastValue otherValue = (MutableLastValue)other;
+            var otherValue = (MutableLastValue)other;
 
             // Assume other is always newer than this, because we combined interval buckets in time order.
             // If there's a newer value, overwrite current value.
-            this.LastValue = otherValue.Initialized ? otherValue.LastValue : this.LastValue;
+            LastValue = otherValue.Initialized ? otherValue.LastValue : LastValue;
         }
 
         internal override T Match<T>(Func<MutableSum, T> p0, Func<MutableCount, T> p1, Func<MutableMean, T> p2, Func<MutableDistribution, T> p3, Func<MutableLastValue, T> p4)

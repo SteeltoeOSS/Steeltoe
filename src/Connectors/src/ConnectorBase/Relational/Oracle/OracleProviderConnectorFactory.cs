@@ -9,9 +9,9 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
 {
     public class OracleProviderConnectorFactory
     {
-        private OracleServiceInfo _info;
-        private OracleProviderConnectorOptions _config;
-        private OracleProviderConfigurer _configurer = new OracleProviderConfigurer();
+        private readonly OracleServiceInfo _info;
+        private readonly OracleProviderConnectorOptions _config;
+        private readonly OracleProviderConfigurer _configurer = new OracleProviderConfigurer();
 
         public OracleProviderConnectorFactory()
         {

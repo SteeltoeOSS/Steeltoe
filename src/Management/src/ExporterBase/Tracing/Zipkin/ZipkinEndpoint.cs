@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 return false;
             }
 
-            ZipkinEndpoint that = (ZipkinEndpoint)o;
+            var that = (ZipkinEndpoint)o;
             return ((ServiceName == null)
               ? (that.ServiceName == null) : ServiceName.Equals(that.ServiceName))
               && ((Ipv4 == null) ? (that.Ipv4 == null) : Ipv4.Equals(that.Ipv4))
@@ -44,7 +44,7 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
 
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
             h ^= (ServiceName == null) ? 0 : ServiceName.GetHashCode();
             h *= 1000003;

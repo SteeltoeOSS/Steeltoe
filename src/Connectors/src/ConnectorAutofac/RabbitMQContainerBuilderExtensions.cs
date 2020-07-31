@@ -35,15 +35,15 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            Type rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
-            Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+            var rabbitMQInterfaceType = RabbitMQTypeLocator.IConnectionFactory;
+            var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
-            RabbitMQServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<RabbitMQServiceInfo>()
                 : config.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
 
-            RabbitMQProviderConnectorOptions rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
-            RabbitMQProviderConnectorFactory factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
+            var rabbitMQConfig = new RabbitMQProviderConnectorOptions(config);
+            var factory = new RabbitMQProviderConnectorFactory(info, rabbitMQConfig, rabbitMQImplementationType);
             container.Register(c => new RabbitMQHealthContributor(factory, c.ResolveOptional<ILogger<RabbitMQHealthContributor>>())).As<IHealthContributor>();
 
             return container.Register(c => factory.Create(null)).As(rabbitMQInterfaceType, rabbitMQImplementationType);

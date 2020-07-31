@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public Link(string href)
         {
             this.href = href;
-            this.templated = href.Contains("{");
+            templated = href.Contains("{");
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "mysql://joe:joes_password@localhost:1527/big_db";
+            var uri = "mysql://joe:joes_password@localhost:1527/big_db";
             UriServiceInfo r1 = new TestUriServiceInfo("myId", "mysql", "localhost", 1527, "joe", "joes_password", "big_db");
             UriServiceInfo r2 = new TestUriServiceInfo("myId", uri);
 

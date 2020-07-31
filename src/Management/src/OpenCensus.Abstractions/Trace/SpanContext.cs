@@ -27,10 +27,10 @@ namespace OpenCensus.Trace
 
         private SpanContext(ITraceId traceId, ISpanId spanId, TraceOptions traceOptions, Tracestate tracestate)
         {
-            this.TraceId = traceId;
-            this.SpanId = spanId;
-            this.TraceOptions = traceOptions;
-            this.Tracestate = tracestate;
+            TraceId = traceId;
+            SpanId = spanId;
+            TraceOptions = traceOptions;
+            Tracestate = tracestate;
         }
 
         public ITraceId TraceId { get; }
@@ -39,7 +39,7 @@ namespace OpenCensus.Trace
 
         public TraceOptions TraceOptions { get; }
 
-        public bool IsValid => this.TraceId.IsValid && this.SpanId.IsValid;
+        public bool IsValid => TraceId.IsValid && SpanId.IsValid;
 
         public Tracestate Tracestate { get; }
 
@@ -51,10 +51,10 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int result = 1;
-            result = (31 * result) + (this.TraceId == null ? 0 : this.TraceId.GetHashCode());
-            result = (31 * result) + (this.SpanId == null ? 0 : this.SpanId.GetHashCode());
-            result = (31 * result) + (this.TraceOptions == null ? 0 : this.TraceOptions.GetHashCode());
+            var result = 1;
+            result = (31 * result) + (TraceId == null ? 0 : TraceId.GetHashCode());
+            result = (31 * result) + (SpanId == null ? 0 : SpanId.GetHashCode());
+            result = (31 * result) + (TraceOptions == null ? 0 : TraceOptions.GetHashCode());
             return result;
         }
 
@@ -71,19 +71,19 @@ namespace OpenCensus.Trace
                 return false;
             }
 
-            SpanContext that = (SpanContext)obj;
-            return this.TraceId.Equals(that.TraceId)
-                && this.SpanId.Equals(that.SpanId)
-                && this.TraceOptions.Equals(that.TraceOptions);
+            var that = (SpanContext)obj;
+            return TraceId.Equals(that.TraceId)
+                && SpanId.Equals(that.SpanId)
+                && TraceOptions.Equals(that.TraceOptions);
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "SpanContext{"
-                   + "traceId=" + this.TraceId + ", "
-                   + "spanId=" + this.SpanId + ", "
-                   + "traceOptions=" + this.TraceOptions
+                   + "traceId=" + TraceId + ", "
+                   + "spanId=" + SpanId + ", "
+                   + "traceOptions=" + TraceOptions
                    + "}";
         }
     }

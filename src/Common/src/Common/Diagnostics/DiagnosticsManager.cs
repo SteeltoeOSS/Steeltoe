@@ -39,16 +39,16 @@ namespace Steeltoe.Common.Diagnostics
                 throw new ArgumentNullException(nameof(observers));
             }
 
-            this._logger = logger;
-            this._observers = observers.ToList();
-            this._sources = polledSources.ToList();
+            _logger = logger;
+            _observers = observers.ToList();
+            _sources = polledSources.ToList();
         }
 
         internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
         {
-            this._logger = logger;
-            this._observers = new List<IDiagnosticObserver>();
-            this._sources = new List<IPolledDiagnosticSource>();
+            _logger = logger;
+            _observers = new List<IDiagnosticObserver>();
+            _sources = new List<IPolledDiagnosticSource>();
         }
 
         public IList<IDiagnosticObserver> Observers => _observers;
@@ -77,9 +77,9 @@ namespace Steeltoe.Common.Diagnostics
         {
             if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
             {
-                this._listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
+                _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
 
-                _workerThread = new Thread(this.Poller)
+                _workerThread = new Thread(Poller)
                 {
                     IsBackground = true,
                     Name = "DiagnosticsPoller"
@@ -112,7 +112,7 @@ namespace Steeltoe.Common.Diagnostics
         protected virtual void Dispose(bool disposing)
         {
             // Cleanup
-            if (!this._disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {

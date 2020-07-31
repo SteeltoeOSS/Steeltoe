@@ -15,10 +15,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string uri = GetUriFromCredentials(binding.Credentials);
-            string clientId = GetClientIdFromCredentials(binding.Credentials);
-            string clientSecret = GetClientSecretFromCredentials(binding.Credentials);
-            string accessTokenUri = GetAccessTokenUriFromCredentials(binding.Credentials);
+            var uri = GetUriFromCredentials(binding.Credentials);
+            var clientId = GetClientIdFromCredentials(binding.Credentials);
+            var clientSecret = GetClientSecretFromCredentials(binding.Credentials);
+            var accessTokenUri = GetAccessTokenUriFromCredentials(binding.Credentials);
 
             return new EurekaServiceInfo(binding.Name, uri, clientId, clientSecret, accessTokenUri);
         }

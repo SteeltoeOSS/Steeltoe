@@ -30,7 +30,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var statusMoq = new Mock<IStatusEndpoint>();
             clientMoq.Setup(c => c.Status).Returns(statusMoq.Object);
-            statusMoq.Setup(s => s.Leader(default(CancellationToken))).Returns(statusResult);
+            statusMoq.Setup(s => s.Leader(default)).Returns(statusResult);
 
             var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
             var result = await contrib.GetLeaderStatusAsync();
@@ -54,7 +54,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var clientMoq = new Mock<IConsulClient>();
             var catMoq = new Mock<ICatalogEndpoint>();
             clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
-            catMoq.Setup(c => c.Services(QueryOptions.Default, default(CancellationToken))).Returns(catResult);
+            catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
             var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
             var result = await contrib.GetCatalogServicesAsync();
@@ -83,8 +83,8 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var statusMoq = new Mock<IStatusEndpoint>();
             clientMoq.Setup(c => c.Status).Returns(statusMoq.Object);
             clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
-            statusMoq.Setup(s => s.Leader(default(CancellationToken))).Returns(statusResult);
-            catMoq.Setup(c => c.Services(QueryOptions.Default, default(CancellationToken))).Returns(catResult);
+            statusMoq.Setup(s => s.Leader(default)).Returns(statusResult);
+            catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
             var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
             var result = contrib.Health();

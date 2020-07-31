@@ -43,38 +43,38 @@ namespace OpenCensus.Stats
         {
             get
             {
-                return this.measureToViewMap.ExportedViews;
+                return measureToViewMap.ExportedViews;
             }
         }
 
         internal void RegisterView(IView view)
         {
-            this.measureToViewMap.RegisterView(view, this.clock);
+            measureToViewMap.RegisterView(view, clock);
         }
 
         internal IViewData GetView(IViewName viewName)
         {
-            return this.measureToViewMap.GetView(viewName, this.clock, this.state.Internal);
+            return measureToViewMap.GetView(viewName, clock, state.Internal);
         }
 
         internal void Record(ITagContext tags, IEnumerable<IMeasurement> measurementValues)
         {
             // TODO(songya): consider exposing No-op MeasureMap and use it when stats state is DISABLED, so
             // that we don't need to create actual MeasureMapImpl.
-            if (this.state.Internal == StatsCollectionState.ENABLED)
+            if (state.Internal == StatsCollectionState.ENABLED)
             {
-                this.queue.Enqueue(new StatsEvent(this, tags, measurementValues));
+                queue.Enqueue(new StatsEvent(this, tags, measurementValues));
             }
         }
 
         internal void ClearStats()
         {
-            this.measureToViewMap.ClearStats();
+            measureToViewMap.ClearStats();
         }
 
         internal void ResumeStatsCollection()
         {
-            this.measureToViewMap.ResumeStatsCollection(this.clock.Now);
+            measureToViewMap.ResumeStatsCollection(clock.Now);
         }
 
         private class StatsEvent : IEventQueueEntry
@@ -93,7 +93,7 @@ namespace OpenCensus.Stats
             public void Process()
             {
                 // Add Timestamp to value after it went through the DisruptorQueue.
-                this.statsManager.measureToViewMap.Record(this.tags, this.stats, this.statsManager.clock.Now);
+                statsManager.measureToViewMap.Record(tags, stats, statsManager.clock.Now);
             }
         }
 }

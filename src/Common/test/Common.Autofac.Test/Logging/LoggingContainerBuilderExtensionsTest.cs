@@ -19,14 +19,14 @@ namespace Steeltoe.Common.Autofac.Test.Logging
         {
             ContainerBuilder container = null;
             Assert.Throws<ArgumentNullException>(() => container.RegisterLogging(null));
-            ContainerBuilder container2 = new ContainerBuilder();
+            var container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterLogging(null));
         }
 
         [Fact]
         public void RegisterLogging_Registers()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             container.RegisterOptions();

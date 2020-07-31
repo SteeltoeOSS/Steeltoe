@@ -15,12 +15,12 @@ namespace Steeltoe.Discovery.Eureka
 
         public EurekaInstanceOptions()
         {
-            this.StatusPageUrlPath = Default_StatusPageUrlPath;
-            this.HealthCheckUrlPath = Default_HealthCheckUrlPath;
-            this.IsInstanceEnabledOnInit = true;
-            this.VirtualHostName = null;
-            this.SecureVirtualHostName = null;
-            this.InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
+            StatusPageUrlPath = Default_StatusPageUrlPath;
+            HealthCheckUrlPath = Default_HealthCheckUrlPath;
+            IsInstanceEnabledOnInit = true;
+            VirtualHostName = null;
+            SecureVirtualHostName = null;
+            InstanceId = GetHostName(false) + ":" + AppName + ":" + NonSecurePort;
         }
 
         // eureka:instance:appGroup
@@ -28,12 +28,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.AppGroupName;
+                return AppGroupName;
             }
 
             set
             {
-                this.AppGroupName = value;
+                AppGroupName = value;
             }
         }
 
@@ -42,12 +42,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.IsInstanceEnabledOnInit;
+                return IsInstanceEnabledOnInit;
             }
 
             set
             {
-                this.IsInstanceEnabledOnInit = value;
+                IsInstanceEnabledOnInit = value;
             }
         }
 
@@ -56,12 +56,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.NonSecurePort;
+                return NonSecurePort;
             }
 
             set
             {
-                this.NonSecurePort = value;
+                NonSecurePort = value;
             }
         }
 
@@ -70,12 +70,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.IsNonSecurePortEnabled;
+                return IsNonSecurePortEnabled;
             }
 
             set
             {
-                this.IsNonSecurePortEnabled = value;
+                IsNonSecurePortEnabled = value;
             }
         }
 
@@ -84,12 +84,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.VirtualHostName;
+                return VirtualHostName;
             }
 
             set
             {
-                this.VirtualHostName = value;
+                VirtualHostName = value;
             }
         }
 
@@ -98,12 +98,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.SecureVirtualHostName;
+                return SecureVirtualHostName;
             }
 
             set
             {
-                this.SecureVirtualHostName = value;
+                SecureVirtualHostName = value;
             }
         }
 

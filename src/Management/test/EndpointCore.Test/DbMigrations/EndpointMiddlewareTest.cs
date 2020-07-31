@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> AppSettings = new Dictionary<string, string>()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",
@@ -42,8 +42,8 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         {
             var opts = new DbMigrationsEndpointOptions();
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(AppSettings);
             var mgmtOptions = TestHelper.GetManagementOptions(opts);
             var efContext = new MockDbContext();
             var container = Substitute.For<IServiceProvider>();
@@ -83,21 +83,20 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         {
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()
-            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+            .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webhostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                var expected = JToken.FromObject(
-                    new Dictionary<string, DbMigrationsDescriptor>()
-                    {
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dbmigrations");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            var expected = JToken.FromObject(
+                new Dictionary<string, DbMigrationsDescriptor>()
+                {
                         {
                             nameof(MockDbContext), new DbMigrationsDescriptor()
                             {
@@ -105,11 +104,10 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
                                 PendingMigrations = new List<string> { "pending" }
                             }
                         }
-                    },
-                    GetSerializer());
-                var actual = JObject.Parse(json);
-                actual.Should().BeEquivalentTo(expected);
-            }
+                },
+                GetSerializer());
+            var actual = JObject.Parse(json);
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Fact]

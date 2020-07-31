@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var registration = ConsulRegistration.CreateRegistration(config, opts);
             await reg.RegisterAsync(registration);
 
-            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
             Assert.Single(sch._serviceHeartbeats);
             Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
@@ -103,13 +103,13 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var registration = ConsulRegistration.CreateRegistration(config, opts);
             await reg.RegisterAsync(registration);
 
-            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
             Assert.Single(sch._serviceHeartbeats);
             Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
 
             await reg.DeregisterAsync(registration);
-            agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
             Assert.Empty(sch._serviceHeartbeats);
         }
 
@@ -172,9 +172,9 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             await reg.SetStatusAsync(registration, "Up");
-            agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
             await reg.SetStatusAsync(registration, "Out_of_Service");
-            agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default), Times.Once);
         }
 
         [Fact]
@@ -226,7 +226,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
             var healthMoq = new Mock<IHealthEndpoint>();
 
             clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
-            healthMoq.Setup(h => h.Checks(registration.ServiceId, QueryOptions.Default, default(CancellationToken))).Returns(result);
+            healthMoq.Setup(h => h.Checks(registration.ServiceId, QueryOptions.Default, default)).Returns(result);
 
             var sch = new TtlScheduler(opts, clientMoq.Object);
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);

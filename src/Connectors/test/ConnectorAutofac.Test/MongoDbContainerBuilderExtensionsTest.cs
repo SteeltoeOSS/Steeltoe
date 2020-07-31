@@ -28,7 +28,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMongoDb_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => MongoDbContainerBuilderExtensions.RegisterMongoDbConnection(cb, null));
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMongoDb_AddsTypesToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -61,7 +61,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac.Test
         public void RegisterMongoClient_AddsHealthContributorToContainer()
         {
             // arrange
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act

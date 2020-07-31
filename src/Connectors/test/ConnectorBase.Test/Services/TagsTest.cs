@@ -8,12 +8,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
 {
     public class TagsTest
     {
-        private static Tags emptyTags = new Tags();
+        private static readonly Tags EmptyTags = new Tags();
 
         [Fact]
         public void ContainsOne()
         {
-            Tags tags = new Tags(new string[] { "test1", "test2" });
+            var tags = new Tags(new string[] { "test1", "test2" });
             Assert.True(tags.ContainsOne(new string[] { "test1", "testx" }));
             Assert.True(tags.ContainsOne(new string[] { "testx", "test2" }));
             Assert.False(tags.ContainsOne(new string[] { "testx", "testy" }));
@@ -22,13 +22,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void ContainsOne_WithEmptyTags()
         {
-            Assert.False(emptyTags.ContainsOne(new string[] { "test" }));
+            Assert.False(EmptyTags.ContainsOne(new string[] { "test" }));
         }
 
         [Fact]
         public void Contains()
         {
-            Tags tags = new Tags(new string[] { "test1", "test2" });
+            var tags = new Tags(new string[] { "test1", "test2" });
             Assert.True(tags.Contains("test1"));
             Assert.True(tags.Contains("test2"));
             Assert.False(tags.Contains("testx"));
@@ -37,13 +37,13 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void Contains_WithEmptyTags()
         {
-            Assert.False(emptyTags.Contains("test"));
+            Assert.False(EmptyTags.Contains("test"));
         }
 
         [Fact]
         public void StartsWith()
         {
-            Tags tags = new Tags("test");
+            var tags = new Tags("test");
             Assert.True(tags.StartsWith("test-123"));
             Assert.False(tags.StartsWith("abcd"));
         }
@@ -51,7 +51,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         [Fact]
         public void StartsWith_WithEmptyTags()
         {
-            Assert.False(emptyTags.StartsWith("test"));
+            Assert.False(EmptyTags.StartsWith("test"));
         }
     }
 }

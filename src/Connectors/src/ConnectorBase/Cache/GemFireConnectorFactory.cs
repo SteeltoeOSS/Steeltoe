@@ -12,8 +12,8 @@ namespace Steeltoe.CloudFoundry.Connector.GemFire
     {
         private readonly GemFireServiceInfo _info;
         private readonly ILogger<GemFireConnectorFactory> _logger;
-        private GemFireConnectorOptions _config;
-        private GemFireConfigurer _configurer = new GemFireConfigurer();
+        private readonly GemFireConnectorOptions _config;
+        private readonly GemFireConfigurer _configurer = new GemFireConfigurer();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GemFireConnectorFactory"/> class.

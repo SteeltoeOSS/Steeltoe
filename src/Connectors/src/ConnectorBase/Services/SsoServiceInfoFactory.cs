@@ -15,10 +15,10 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public override IServiceInfo Create(Service binding)
         {
-            string clientId = GetClientIdFromCredentials(binding.Credentials);
-            string clientSecret = GetClientSecretFromCredentials(binding.Credentials);
-            string authDomain = GetStringFromCredentials(binding.Credentials, "auth_domain");
-            string uri = GetUriFromCredentials(binding.Credentials);
+            var clientId = GetClientIdFromCredentials(binding.Credentials);
+            var clientSecret = GetClientSecretFromCredentials(binding.Credentials);
+            var authDomain = GetStringFromCredentials(binding.Credentials, "auth_domain");
+            var uri = GetUriFromCredentials(binding.Credentials);
 
             if (!string.IsNullOrEmpty(authDomain))
             {

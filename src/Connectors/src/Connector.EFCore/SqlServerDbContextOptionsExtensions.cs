@@ -98,7 +98,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 var parameters = ci.GetParameters();
                 if (parameters.Length == 3 &&
@@ -116,28 +116,28 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
 
         private static string GetConnection(IConfiguration config, string serviceName = null)
         {
-            SqlServerServiceInfo info = string.IsNullOrEmpty(serviceName)
+            var info = string.IsNullOrEmpty(serviceName)
                 ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
                 : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
-            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+            var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
 
-            SqlServerProviderConnectorFactory factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, null);
+            var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, null);
 
             return factory.CreateConnectionString();
         }
 
         private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
         {
-            Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
+            var extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
-            MethodInfo useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
+            var useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string) });
             if (extensionType == null)
             {
                 throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
             }
 
-            object result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
+            var result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));

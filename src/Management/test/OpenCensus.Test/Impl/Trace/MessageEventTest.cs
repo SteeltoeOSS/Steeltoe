@@ -24,7 +24,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void BuildMessageEvent_WithRequiredFields()
         {
-            IMessageEvent messageEvent = MessageEvent.Builder(MessageEventType.Sent, 1L).Build();
+            var messageEvent = MessageEvent.Builder(MessageEventType.Sent, 1L).Build();
             Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
             Assert.Equal(0L, messageEvent.UncompressedMessageSize);
@@ -33,7 +33,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void BuildMessageEvent_WithUncompressedMessageSize()
         {
-            IMessageEvent messageEvent =
+            var messageEvent =
                 MessageEvent.Builder(MessageEventType.Sent, 1L).SetUncompressedMessageSize(123L).Build();
             Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
@@ -43,7 +43,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void BuildMessageEvent_WithCompressedMessageSize()
         {
-            IMessageEvent messageEvent =
+            var messageEvent =
                 MessageEvent.Builder(MessageEventType.Sent, 1L).SetCompressedMessageSize(123L).Build();
             Assert.Equal(MessageEventType.Sent, messageEvent.Type);
             Assert.Equal(1L, messageEvent.MessageId);
@@ -53,7 +53,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void BuildMessageEvent_WithAllValues()
         {
-            IMessageEvent messageEvent =
+            var messageEvent =
                 MessageEvent.Builder(MessageEventType.Received, 1L)
                     .SetUncompressedMessageSize(123L)
                     .SetCompressedMessageSize(63L)
@@ -67,7 +67,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void MessageEvent_ToString()
         {
-            IMessageEvent messageEvent =
+            var messageEvent =
                 MessageEvent.Builder(MessageEventType.Sent, 1L)
                     .SetUncompressedMessageSize(123L)
                     .SetCompressedMessageSize(63L)

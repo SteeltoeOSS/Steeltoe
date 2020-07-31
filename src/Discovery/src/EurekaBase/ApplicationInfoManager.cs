@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Eureka
         protected static readonly ApplicationInfoManager _instance = new ApplicationInfoManager();
         protected ILogger _logger;
 
-        private object _statusChangedLock = new object();
+        private readonly object _statusChangedLock = new object();
 
         public static ApplicationInfoManager Instance
         {
@@ -54,7 +54,7 @@ namespace Steeltoe.Discovery.Eureka
 
                 lock (_statusChangedLock)
                 {
-                    InstanceStatus prev = InstanceInfo.Status;
+                    var prev = InstanceInfo.Status;
                     if (prev != value)
                     {
                         InstanceInfo.Status = value;
@@ -96,7 +96,7 @@ namespace Steeltoe.Discovery.Eureka
             if (InstanceInfo.LeaseInfo.DurationInSecs != InstanceConfig.LeaseExpirationDurationInSeconds ||
                 InstanceInfo.LeaseInfo.RenewalIntervalInSecs != InstanceConfig.LeaseRenewalIntervalInSeconds)
             {
-                LeaseInfo newLease = new LeaseInfo()
+                var newLease = new LeaseInfo()
                 {
                     DurationInSecs = InstanceConfig.LeaseExpirationDurationInSeconds,
                     RenewalIntervalInSecs = InstanceConfig.LeaseRenewalIntervalInSeconds

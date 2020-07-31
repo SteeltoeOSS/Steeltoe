@@ -35,12 +35,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.EurekaServerServiceUrls;
+                return EurekaServerServiceUrls;
             }
 
             set
             {
-                this.EurekaServerServiceUrls = value;
+                EurekaServerServiceUrls = value;
             }
         }
 
@@ -49,12 +49,12 @@ namespace Steeltoe.Discovery.Eureka
         {
             get
             {
-                return this.ValidateCertificates;
+                return ValidateCertificates;
             }
 
             set
             {
-                this.ValidateCertificates = value;
+                ValidateCertificates = value;
             }
         }
 
@@ -66,7 +66,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public class EurekaHealthConfig
         {
-            private EurekaClientOptions _options;
+            private readonly EurekaClientOptions _options;
 
             public EurekaHealthConfig(EurekaClientOptions options)
             {
@@ -118,7 +118,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public class EurekaServerConfig
         {
-            private EurekaClientOptions _options;
+            private readonly EurekaClientOptions _options;
 
             public EurekaServerConfig(EurekaClientOptions options)
             {

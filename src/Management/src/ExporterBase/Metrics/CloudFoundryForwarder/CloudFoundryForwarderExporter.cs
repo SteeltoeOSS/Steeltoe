@@ -34,23 +34,23 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         public CloudFoundryForwarderExporter(CloudFoundryForwarderOptions options, IStats stats, ILogger<CloudFoundryForwarderExporter> logger = null)
         {
-            this._options = options;
-            this._stats = stats;
-            this._viewManager = stats.ViewManager;
-            this._logger = logger;
+            _options = options;
+            _stats = stats;
+            _viewManager = stats.ViewManager;
+            _logger = logger;
             if (options.MicrometerMetricWriter)
             {
-                this._metricFormatWriter = new MicrometerMetricWriter(options, stats, logger);
+                _metricFormatWriter = new MicrometerMetricWriter(options, stats, logger);
             }
             else
             {
-                this._metricFormatWriter = new SpringBootMetricWriter(options, stats, logger);
+                _metricFormatWriter = new SpringBootMetricWriter(options, stats, logger);
             }
         }
 
         public void Start()
         {
-            _workerThread = new Thread(this.Run)
+            _workerThread = new Thread(Run)
             {
                 IsBackground = true,
                 Name = "MetricsPublisher"
@@ -79,12 +79,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             {
                 try
                 {
-                    long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+                    var timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-                    HttpClient client = GetHttpClient();
+                    var client = GetHttpClient();
                     var requestUri = new Uri(_options.Endpoint);
                     var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
-                    Message message = GetMessage(_viewManager.AllExportedViews, timeStamp);
+                    var message = GetMessage(_viewManager.AllExportedViews, timeStamp);
                     request.Content = GetRequestContent(message);
 
                     DoPost(client, request);
@@ -106,39 +106,37 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         {
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var prevProtocols,
+                out var prevValidator);
             try
             {
-                using (HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false))
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                _logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
+                if (response.StatusCode != HttpStatusCode.OK &&
+                    response.StatusCode != HttpStatusCode.Accepted)
                 {
-                    _logger?.LogDebug("DoPost {0}, status: {1}", request.RequestUri, response.StatusCode);
-                    if (response.StatusCode != HttpStatusCode.OK &&
-                        response.StatusCode != HttpStatusCode.Accepted)
+                    var headers = response.Headers;
+                    var statusCode = (int)response.StatusCode;
+
+                    if (statusCode == UNPROCESSABLE_ENTITY)
                     {
-                        var headers = response.Headers;
-                        var statusCode = (int)response.StatusCode;
-
-                        if (statusCode == UNPROCESSABLE_ENTITY)
-                        {
-                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to unprocessable payload.  Discarding metrics.");
-                        }
-                        else if (statusCode == PAYLOAD_TOO_LARGE)
-                        {
-                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
-                        }
-                        else if (statusCode == TOO_MANY_REQUESTS)
-                        {
-                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
-                        }
-                        else
-                        {
-                            _logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {status}", statusCode);
-                        }
+                        _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to unprocessable payload.  Discarding metrics.");
                     }
-
-                    return;
+                    else if (statusCode == PAYLOAD_TOO_LARGE)
+                    {
+                        _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
+                    }
+                    else if (statusCode == TOO_MANY_REQUESTS)
+                    {
+                        _logger?.LogError("Failed to send metrics to Metrics Forwarder service due to rate limiting.  Discarding metrics.");
+                    }
+                    else
+                    {
+                        _logger?.LogError("Failed to send metrics to Metrics Forwarder service. Discarding metrics.  StatusCode: {status}", statusCode);
+                    }
                 }
+
+                return;
             }
             catch (Exception e)
             {
@@ -153,8 +151,8 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal Message GetMessage(ISet<IView> exportedViews, long timeStamp)
         {
-            Instance instance = new Instance(GetInstanceId(), GetInstanceIndex(), GetMetricsForExportedViews(exportedViews, timeStamp));
-            Application application = new Application(_options.ApplicationId, new List<Instance>() { instance });
+            var instance = new Instance(GetInstanceId(), GetInstanceIndex(), GetMetricsForExportedViews(exportedViews, timeStamp));
+            var application = new Application(_options.ApplicationId, new List<Instance>() { instance });
             return new Message(new List<Application>() { application });
         }
 
@@ -163,10 +161,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             var result = new List<Metric>();
             foreach (var view in exportedViews)
             {
-                IViewData data = _viewManager.GetView(view.Name);
+                var data = _viewManager.GetView(view.Name);
                 if (data != null)
                 {
-                    IList<Metric> metrics = CreateMetricsFromViewData(data, timeStamp);
+                    var metrics = CreateMetricsFromViewData(data, timeStamp);
                     if (metrics != null)
                     {
                         result.AddRange(metrics);
@@ -181,10 +179,10 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
 
         protected internal IList<Metric> CreateMetricsFromViewData(IViewData viewData, long timeStamp)
         {
-            List<Metric> result = new List<Metric>();
+            var result = new List<Metric>();
             foreach (var entry in viewData.AggregationMap)
             {
-                IList<Metric> metrics = _metricFormatWriter.CreateMetrics(viewData, entry.Value, entry.Key, timeStamp);
+                var metrics = _metricFormatWriter.CreateMetrics(viewData, entry.Value, entry.Key, timeStamp);
                 result.AddRange(metrics);
             }
 
@@ -224,7 +222,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         {
             try
             {
-                string json = JsonConvert.SerializeObject(toSerialize);
+                var json = JsonConvert.SerializeObject(toSerialize);
                 _logger?.LogDebug("GetRequestContent generated JSON: {0}", json);
                 return new StringContent(json, Encoding.UTF8, "application/json");
             }

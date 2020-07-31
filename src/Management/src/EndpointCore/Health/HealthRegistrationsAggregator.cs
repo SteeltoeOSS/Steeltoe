@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var contributorIds = contributors.Select(x => x.Id);
             foreach (var registration in healthServiceOptions.CurrentValue.Registrations)
             {
-                HealthCheckResult h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
+                var h = registration.HealthCheck(serviceProvider).GetAwaiter().GetResult();
 
                 if (h.Status > result.Status)
                 {

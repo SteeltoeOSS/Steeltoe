@@ -52,14 +52,14 @@ namespace Steeltoe.Management.EndpointOwin.Loggers
                     _logger?.LogDebug("Incoming logger path: {0}", context.Request.Path.Value);
                     foreach (var path in GetPaths())
                     {
-                        PathString epPath = new PathString(path);
-                        if (context.Request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
+                        var epPath = new PathString(path);
+                        if (context.Request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
                         {
-                            string loggerName = remaining.Value.TrimStart('/');
+                            var loggerName = remaining.Value.TrimStart('/');
 
                             var change = ((LoggersEndpoint)_endpoint).DeserializeRequest(context.Request.Body);
 
-                            change.TryGetValue("configuredLevel", out string level);
+                            change.TryGetValue("configuredLevel", out var level);
 
                             _logger?.LogDebug("Change Request: {Logger}, {Level}", loggerName, level ?? "RESET");
                             if (!string.IsNullOrEmpty(loggerName))

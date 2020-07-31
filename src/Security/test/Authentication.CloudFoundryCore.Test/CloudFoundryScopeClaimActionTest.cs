@@ -18,7 +18,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Run_AddsClaims()
         {
-            string resp = TestHelpers.GetValidTokenInfoRequestResponse();
+            var resp = TestHelpers.GetValidTokenInfoRequestResponse();
 #if NETCOREAPP3_1
             var payload = JsonDocument.Parse(resp).RootElement;
 #else

@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Http.Test
 {
     internal class TestDiscoveryClient : IDiscoveryClient
     {
-        private IServiceInstance _instance;
+        private readonly IServiceInstance _instance;
 
         public TestDiscoveryClient(IServiceInstance instance = null)
         {

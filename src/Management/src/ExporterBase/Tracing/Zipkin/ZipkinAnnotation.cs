@@ -28,13 +28,13 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin
                 return false;
             }
 
-            ZipkinAnnotation that = (ZipkinAnnotation)o;
+            var that = (ZipkinAnnotation)o;
             return (Timestamp == that.Timestamp) && Value.Equals(that.Value);
         }
 
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
             h ^= (int)((Timestamp >> 32) ^ Timestamp);
             h *= 1000003;

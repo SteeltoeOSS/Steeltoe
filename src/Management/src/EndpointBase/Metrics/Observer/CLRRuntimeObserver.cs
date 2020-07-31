@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly IMeasureLong _memoryUsedMeasure;
         private readonly ITagContext _memoryTagValues;
 
-        private CLRRuntimeSource.HeapMetrics _previous = default(CLRRuntimeSource.HeapMetrics);
+        private CLRRuntimeSource.HeapMetrics _previous = default;
 
         public CLRRuntimeObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger<CLRRuntimeObserver> logger)
             : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 .Put(_memoryUsedMeasure, metrics.TotalMemory)
                 .Record(_memoryTagValues);
 
-            for (int i = 0; i < metrics.CollectionCounts.Count; i++)
+            for (var i = 0; i < metrics.CollectionCounts.Count; i++)
             {
                 var count = metrics.CollectionCounts[i];
                 if (_previous.CollectionCounts != null && i < _previous.CollectionCounts.Count && _previous.CollectionCounts[i] <= count)
@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         protected internal void RegisterViews()
         {
-            IView view = View.Create(
+            var view = View.Create(
                     ViewName.Create("clr.memory.used"),
                     "Current CLR memory usage",
                     _memoryUsedMeasure,

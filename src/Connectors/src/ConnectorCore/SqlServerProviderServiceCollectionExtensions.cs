@@ -39,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
 
             return services;
@@ -72,7 +72,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
 
             return services;
@@ -80,7 +80,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer
 
         private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type sqlServerConnection = SqlServerTypeLocator.SqlConnection;
+            var sqlServerConnection = SqlServerTypeLocator.SqlConnection;
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));

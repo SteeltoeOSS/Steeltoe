@@ -43,12 +43,12 @@ namespace OpenCensus.Stats
         {
             get
             {
-                ISet<IView> views = this.exportedViews;
+                var views = exportedViews;
                 if (views == null)
                 {
-                    lock (this.lck)
+                    lock (lck)
                     {
-                        this.exportedViews = views = FilterExportedViews(this.registeredViews.Values);
+                        exportedViews = views = FilterExportedViews(registeredViews.Values);
                     }
                 }
 
@@ -58,9 +58,9 @@ namespace OpenCensus.Stats
 
         internal IViewData GetView(IViewName viewName, IClock clock, StatsCollectionState state)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                MutableViewData view = this.GetMutableViewData(viewName);
+                var view = GetMutableViewData(viewName);
                 return view?.ToViewData(clock.Now, state);
             }
         }
@@ -68,10 +68,10 @@ namespace OpenCensus.Stats
         /** Enable stats collection for the given {@link View}. */
         internal void RegisterView(IView view, IClock clock)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                this.exportedViews = null;
-                this.registeredViews.TryGetValue(view.Name, out IView existing);
+                exportedViews = null;
+                registeredViews.TryGetValue(view.Name, out var existing);
                 if (existing != null)
                 {
                     if (existing.Equals(view))
@@ -85,40 +85,40 @@ namespace OpenCensus.Stats
                     }
                 }
 
-                IMeasure measure = view.Measure;
-                this.registeredMeasures.TryGetValue(measure.Name, out IMeasure registeredMeasure);
+                var measure = view.Measure;
+                registeredMeasures.TryGetValue(measure.Name, out var registeredMeasure);
                 if (registeredMeasure != null && !registeredMeasure.Equals(measure))
                 {
                     throw new ArgumentException("A different measure with the same name is already registered: " + registeredMeasure);
                 }
 
-                this.registeredViews.Add(view.Name, view);
+                registeredViews.Add(view.Name, view);
                 if (registeredMeasure == null)
                 {
-                    this.registeredMeasures.Add(measure.Name, measure);
+                    registeredMeasures.Add(measure.Name, measure);
                 }
 
-                this.AddMutableViewData(view.Measure.Name, MutableViewData.Create(view, clock.Now));
+                AddMutableViewData(view.Measure.Name, MutableViewData.Create(view, clock.Now));
             }
         }
 
         // Records stats with a set of tags.
         internal void Record(ITagContext tags, IEnumerable<IMeasurement> stats, ITimestamp timestamp)
         {
-            lock (this.lck)
+            lock (lck)
             {
                 foreach (var measurement in stats)
                 {
-                    IMeasure measure = measurement.Measure;
-                    this.registeredMeasures.TryGetValue(measure.Name, out IMeasure value);
+                    var measure = measurement.Measure;
+                    registeredMeasures.TryGetValue(measure.Name, out var value);
                     if (!measure.Equals(value))
                     {
                         // unregistered measures will be ignored.
                         continue;
                     }
 
-                    var views = this.mutableMap[measure.Name];
-                    foreach (MutableViewData view in views)
+                    var views = mutableMap[measure.Name];
+                    foreach (var view in views)
                     {
                         measurement.Match<object>(
                             (arg) =>
@@ -143,11 +143,11 @@ namespace OpenCensus.Stats
         // Clear stats for all the current MutableViewData
         internal void ClearStats()
         {
-            lock (this.lck)
+            lock (lck)
             {
-                foreach (var entry in this.mutableMap)
+                foreach (var entry in mutableMap)
                 {
-                    foreach (MutableViewData mutableViewData in entry.Value)
+                    foreach (var mutableViewData in entry.Value)
                     {
                         mutableViewData.ClearStats();
                     }
@@ -158,11 +158,11 @@ namespace OpenCensus.Stats
         // Resume stats collection for all MutableViewData.
         internal void ResumeStatsCollection(ITimestamp now)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                foreach (var entry in this.mutableMap)
+                foreach (var entry in mutableMap)
                 {
-                    foreach (MutableViewData mutableViewData in entry.Value)
+                    foreach (var mutableViewData in entry.Value)
                     {
                         mutableViewData.ResumeStatsCollection(now);
                     }
@@ -178,30 +178,30 @@ namespace OpenCensus.Stats
 
         private void AddMutableViewData(string name, MutableViewData mutableViewData)
         {
-            if (this.mutableMap.ContainsKey(name))
+            if (mutableMap.ContainsKey(name))
             {
-                this.mutableMap[name].Add(mutableViewData);
+                mutableMap[name].Add(mutableViewData);
             }
             else
             {
-                this.mutableMap.Add(name, new List<MutableViewData>() { mutableViewData });
+                mutableMap.Add(name, new List<MutableViewData>() { mutableViewData });
             }
         }
 
         private MutableViewData GetMutableViewData(IViewName viewName)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                this.registeredViews.TryGetValue(viewName, out IView view);
+                registeredViews.TryGetValue(viewName, out var view);
                 if (view == null)
                 {
                     return null;
                 }
 
-                this.mutableMap.TryGetValue(view.Measure.Name, out IList<MutableViewData> views);
+                mutableMap.TryGetValue(view.Measure.Name, out var views);
                 if (views != null)
                 {
-                    foreach (MutableViewData viewData in views)
+                    foreach (var viewData in views)
                     {
                         if (viewData.View.Name.Equals(viewName))
                         {
@@ -214,9 +214,9 @@ namespace OpenCensus.Stats
                     "Internal error: Not recording stats for view: \""
                         + viewName
                         + "\" registeredViews="
-                        + this.registeredViews
+                        + registeredViews
                         + ", mutableMap="
-                        + this.mutableMap);
+                        + mutableMap);
             }
         }
     }

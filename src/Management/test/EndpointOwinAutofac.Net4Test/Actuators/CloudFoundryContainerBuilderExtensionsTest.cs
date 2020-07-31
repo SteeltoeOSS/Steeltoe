@@ -19,9 +19,9 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         {
             // Arrange
             ContainerBuilder containerNull = null;
-            ContainerBuilder containerBuilder = new ContainerBuilder();
+            var containerBuilder = new ContainerBuilder();
             IConfigurationRoot configNull = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryActuator(containerNull, config));
@@ -36,8 +36,8 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         public void RegisterCloudFoundryMiddleware_RegistersComponents()
         {
             // Arrange
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var containerBuilder = new ContainerBuilder();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             CloudFoundryContainerBuilderExtensions.RegisterCloudFoundryActuator(containerBuilder, config);
@@ -54,9 +54,9 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         {
             // Arrange
             ContainerBuilder containerNull = null;
-            ContainerBuilder containerBuilder = new ContainerBuilder();
+            var containerBuilder = new ContainerBuilder();
             IConfigurationRoot configNull = null;
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityMiddleware(containerNull, config));
@@ -71,8 +71,8 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
         public void RegisterCloudFoundrySecurityMiddleware_RegistersComponents()
         {
             // Arrange
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            IConfigurationRoot config = new ConfigurationBuilder().Build();
+            var containerBuilder = new ContainerBuilder();
+            var config = new ConfigurationBuilder().Build();
 
             // Act
             CloudFoundryContainerBuilderExtensions.RegisterCloudFoundrySecurityMiddleware(containerBuilder, config);

@@ -109,10 +109,10 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             }
 
             var servicesOptions = GetServiceOptionsFromConfiguration(config);
-            servicesOptions.Services.TryGetValue(serviceLabel, out Service[] cfServices);
+            servicesOptions.Services.TryGetValue(serviceLabel, out var cfServices);
             if (cfServices != null)
             {
-                foreach (Service s in cfServices)
+                foreach (var s in cfServices)
                 {
                     services.ConfigureCloudFoundryService<TOption>(config, s.Name);
                 }

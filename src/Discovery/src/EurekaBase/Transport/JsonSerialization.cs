@@ -11,11 +11,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         internal static T Deserialize<T>(Stream stream)
         {
-            using (JsonReader reader = new JsonTextReader(new StreamReader(stream)))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                return (T)serializer.Deserialize(reader, typeof(T));
-            }
+            using JsonReader reader = new JsonTextReader(new StreamReader(stream));
+            var serializer = new JsonSerializer();
+            return (T)serializer.Deserialize(reader, typeof(T));
         }
     }
 }

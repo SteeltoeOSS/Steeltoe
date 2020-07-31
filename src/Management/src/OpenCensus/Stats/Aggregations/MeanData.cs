@@ -23,10 +23,10 @@ namespace OpenCensus.Stats.Aggregations
     {
         internal MeanData(double mean, long count, double min, double max)
         {
-            this.Mean = mean;
-            this.Count = count;
-            this.Min = min;
-            this.Max = max;
+            Mean = mean;
+            Count = count;
+            Min = min;
+            Max = max;
         }
 
         public double Mean { get; }
@@ -59,10 +59,10 @@ namespace OpenCensus.Stats.Aggregations
         public override string ToString()
         {
             return "MeanData{"
-                + "mean=" + this.Mean + ", "
-                + "min=" + this.Min + ", "
-                + "max=" + this.Max + ", "
-                + "count=" + this.Count
+                + "mean=" + Mean + ", "
+                + "min=" + Min + ", "
+                + "max=" + Max + ", "
+                + "count=" + Count
                 + "}";
         }
 
@@ -76,10 +76,10 @@ namespace OpenCensus.Stats.Aggregations
 
             if (o is MeanData that)
             {
-                return (DoubleUtil.ToInt64(this.Mean) == DoubleUtil.ToInt64(that.Mean))
-                        && (this.Count == that.Count)
-                        && (DoubleUtil.ToInt64(this.Min) == DoubleUtil.ToInt64(that.Min))
-                        && (DoubleUtil.ToInt64(this.Max) == DoubleUtil.ToInt64(that.Max));
+                return (DoubleUtil.ToInt64(Mean) == DoubleUtil.ToInt64(that.Mean))
+                        && (Count == that.Count)
+                        && (DoubleUtil.ToInt64(Min) == DoubleUtil.ToInt64(that.Min))
+                        && (DoubleUtil.ToInt64(Max) == DoubleUtil.ToInt64(that.Max));
             }
 
             return false;
@@ -90,13 +90,13 @@ namespace OpenCensus.Stats.Aggregations
         {
             long h = 1;
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Mean) >> 32) ^ DoubleUtil.ToInt64(this.Mean);
+            h ^= (DoubleUtil.ToInt64(Mean) >> 32) ^ DoubleUtil.ToInt64(Mean);
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Min) >> 32) ^ DoubleUtil.ToInt64(this.Min);
+            h ^= (DoubleUtil.ToInt64(Min) >> 32) ^ DoubleUtil.ToInt64(Min);
             h *= 1000003;
-            h ^= (DoubleUtil.ToInt64(this.Max) >> 32) ^ DoubleUtil.ToInt64(this.Max);
+            h ^= (DoubleUtil.ToInt64(Max) >> 32) ^ DoubleUtil.ToInt64(Max);
             h *= 1000003;
-            h ^= (this.Count >> 32) ^ this.Count;
+            h ^= (Count >> 32) ^ Count;
             return (int)h;
         }
     }

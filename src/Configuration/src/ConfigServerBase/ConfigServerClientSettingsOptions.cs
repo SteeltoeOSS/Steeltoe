@@ -57,7 +57,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public string Environment => Env;
 
-        public bool RetryEnabled => Retry != null ? Retry.Enabled : ConfigServerClientSettings.DEFAULT_RETRY_ENABLED;
+        public bool RetryEnabled => Retry != null && Retry.Enabled;
 
         public int RetryInitialInterval => Retry != null ? Retry.InitialInterval : ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
 
@@ -67,11 +67,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         public int RetryAttempts => Retry != null ? Retry.MaxAttempts : ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
 
-        public bool DiscoveryEnabled => Discovery != null ? Discovery.Enabled : ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED;
+        public bool DiscoveryEnabled => Discovery != null && Discovery.Enabled;
 
         public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID;
 
-        public bool HealthEnabled => Health != null ? Health.Enabled : ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED;
+        public bool HealthEnabled => Health == null || Health.Enabled;
 
         public long HealthTimeToLive => Health != null ? Health.TimeToLive : ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
 
@@ -97,37 +97,38 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             get
             {
-                ConfigServerClientSettings settings = new ConfigServerClientSettings();
+                var settings = new ConfigServerClientSettings
+                {
+                    Enabled = Enabled,
+                    FailFast = FailFast,
+                    ValidateCertificates = Validate_Certificates,
+                    RetryAttempts = RetryAttempts,
+                    RetryEnabled = RetryEnabled,
+                    RetryInitialInterval = RetryInitialInterval,
+                    RetryMaxInterval = RetryMaxInterval,
+                    RetryMultiplier = RetryMultiplier,
+                    Timeout = Timeout,
+                    TokenTtl = TokenTtl,
+                    TokenRenewRate = TokenRenewRate,
+                    DisableTokenRenewal = DisableTokenRenewal,
 
-                settings.Enabled = Enabled;
-                settings.FailFast = FailFast;
-                settings.ValidateCertificates = Validate_Certificates;
-                settings.RetryAttempts = RetryAttempts;
-                settings.RetryEnabled = RetryEnabled;
-                settings.RetryInitialInterval = RetryInitialInterval;
-                settings.RetryMaxInterval = RetryMaxInterval;
-                settings.RetryMultiplier = RetryMultiplier;
-                settings.Timeout = Timeout;
-                settings.TokenTtl = TokenTtl;
-                settings.TokenRenewRate = TokenRenewRate;
-                settings.DisableTokenRenewal = DisableTokenRenewal;
+                    Environment = Env,
+                    Label = Label,
+                    Name = Name,
+                    Password = Password,
+                    Uri = Uri,
+                    Username = Username,
+                    Token = Token,
+                    AccessTokenUri = Access_Token_Uri,
+                    ClientSecret = Client_Secret,
+                    ClientId = Client_Id,
 
-                settings.Environment = Env;
-                settings.Label = Label;
-                settings.Name = Name;
-                settings.Password = Password;
-                settings.Uri = Uri;
-                settings.Username = Username;
-                settings.Token = Token;
-                settings.AccessTokenUri = Access_Token_Uri;
-                settings.ClientSecret = Client_Secret;
-                settings.ClientId = Client_Id;
+                    DiscoveryEnabled = DiscoveryEnabled,
+                    DiscoveryServiceId = DiscoveryServiceId,
 
-                settings.DiscoveryEnabled = DiscoveryEnabled;
-                settings.DiscoveryServiceId = DiscoveryServiceId;
-
-                settings.HealthEnabled = HealthEnabled;
-                settings.HealthTimeToLive = HealthTimeToLive;
+                    HealthEnabled = HealthEnabled,
+                    HealthTimeToLive = HealthTimeToLive
+                };
 
                 return settings;
             }

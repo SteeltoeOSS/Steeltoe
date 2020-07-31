@@ -39,25 +39,23 @@ namespace Steeltoe.Management.EndpointOwin.Trace.Test
         [Fact]
         public async void TraceHttpCall_ReturnsExpectedData()
         {
-            using (var server = TestServer.Create<Startup>())
-            {
-                var client = server.HttpClient;
+            using var server = TestServer.Create<Startup>();
+            var client = server.HttpClient;
 
-                // first request will not have any traces as none have completed yet...
-                var emptyResult = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
-                var json = await emptyResult.Content.ReadAsStringAsync();
-                Assert.Equal(HttpStatusCode.OK, emptyResult.StatusCode);
-                Assert.Equal("[]", json);
+            // first request will not have any traces as none have completed yet...
+            var emptyResult = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
+            var json = await emptyResult.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, emptyResult.StatusCode);
+            Assert.Equal("[]", json);
 
-                // that was boring, let's go retrieve a trace of that first request!
-                var secondResult = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
-                json = await secondResult.Content.ReadAsStringAsync();
-                /* sample response: [{"timestamp":1530892771663,"info":{"method":"GET","path":"/cloudfoundryapplication/trace","headers":{"request":{"host":"localhost"},"response":{"content-type":"application/vnd.spring-boot.actuator.v1+json","status":"200"}},"timeTaken":"221"}}] */
-                Assert.Equal(HttpStatusCode.OK, secondResult.StatusCode);
-                Assert.Contains("\"path\":\"/cloudfoundryapplication/trace\"", json);
-                Assert.Contains("\"method\":\"GET\"", json);
-                Assert.Contains("\"content-type\":\"application/vnd.spring-boot.actuator.v1+json\"", json);
-            }
+            // that was boring, let's go retrieve a trace of that first request!
+            var secondResult = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
+            json = await secondResult.Content.ReadAsStringAsync();
+            /* sample response: [{"timestamp":1530892771663,"info":{"method":"GET","path":"/cloudfoundryapplication/trace","headers":{"request":{"host":"localhost"},"response":{"content-type":"application/vnd.spring-boot.actuator.v1+json","status":"200"}},"timeTaken":"221"}}] */
+            Assert.Equal(HttpStatusCode.OK, secondResult.StatusCode);
+            Assert.Contains("\"path\":\"/cloudfoundryapplication/trace\"", json);
+            Assert.Contains("\"method\":\"GET\"", json);
+            Assert.Contains("\"content-type\":\"application/vnd.spring-boot.actuator.v1+json\"", json);
         }
 
         [Fact]

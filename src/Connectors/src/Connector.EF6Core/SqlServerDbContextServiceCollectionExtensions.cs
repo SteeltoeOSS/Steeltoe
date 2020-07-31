@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -66,7 +66,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
                 throw new ArgumentNullException(nameof(config));
             }
 
-            SqlServerServiceInfo info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
             DoAdd(services, config, info, typeof(TContext), contextLifetime);
 
             return services;
@@ -74,9 +74,9 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 
         private static void DoAdd(IServiceCollection services, IConfiguration config, SqlServerServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
         {
-            SqlServerProviderConnectorOptions sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+            var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
 
-            SqlServerDbContextConnectorFactory factory = new SqlServerDbContextConnectorFactory(info, sqlServerConfig, dbContextType);
+            var factory = new SqlServerDbContextConnectorFactory(info, sqlServerConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
         }
     }

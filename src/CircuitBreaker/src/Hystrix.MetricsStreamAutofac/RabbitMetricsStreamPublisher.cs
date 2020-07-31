@@ -27,8 +27,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
         public RabbitMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<RabbitMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
             : base(options, stream, logger, discoveryClient)
         {
-            this.Factory = factory.ConnectionFactory as ConnectionFactory;
-            SslOption sslOption = this.Factory.Ssl;
+            Factory = factory.ConnectionFactory as ConnectionFactory;
+            var sslOption = Factory.Ssl;
             if (sslOption != null && sslOption.Enabled)
             {
                 logger?.LogInformation("Hystrix Metrics using TLS");
@@ -53,7 +53,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 
             try
             {
-                Connection = this.Factory.CreateConnection();
+                Connection = Factory.CreateConnection();
                 Channel = Connection.CreateModel();
                 logger?.LogInformation("Hystrix Metrics connected!");
                 return true;

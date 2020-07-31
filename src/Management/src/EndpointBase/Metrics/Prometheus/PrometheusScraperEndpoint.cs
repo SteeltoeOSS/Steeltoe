@@ -37,9 +37,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
             using var output = new MemoryStream();
             using (var writer = new StreamWriter(output))
             {
-                foreach (var view in this._stats.ViewManager.AllExportedViews)
+                foreach (var view in _stats.ViewManager.AllExportedViews)
                 {
-                    var data = this._stats.ViewManager.GetView(view.Name);
+                    var data = _stats.ViewManager.GetView(view.Name);
 
                     var builder = new PrometheusMetricBuilder()
                         .WithName(data.View.Name.AsString)
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                         (agg) => { return builder.WithType("histogram"); }, // Func<IMean, M> p2,
                         (agg) => { return builder.WithType("histogram"); }, // Func< IDistribution, M > p3,
                         (agg) => { return builder.WithType("gauge"); }, // Func<ILastValue, M> p4,
-                        (agg) => { return builder.WithType("gauge"); }); // Func< IAggregation, M > p6);
+                        (agg) => { return builder.WithType("gauge"); }); // Func< IAggregation, M > p6)
 
                     foreach (var value in data.AggregationMap)
                     {

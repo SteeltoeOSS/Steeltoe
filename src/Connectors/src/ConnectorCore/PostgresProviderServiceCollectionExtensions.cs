@@ -40,7 +40,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
+            var info = config.GetSingletonServiceInfo<PostgresServiceInfo>();
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
                 throw new ArgumentNullException(nameof(config));
             }
 
-            PostgresServiceInfo info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            var info = config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
             return services;
@@ -82,7 +82,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql
 
         private static void DoAdd(IServiceCollection services, PostgresServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            Type postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
+            var postgresConnection = ConnectorHelpers.FindType(PostgreSqlTypeLocator.Assemblies, PostgreSqlTypeLocator.ConnectionTypeNames);
             var postgresConfig = new PostgresProviderConnectorOptions(config);
             var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));

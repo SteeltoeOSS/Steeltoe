@@ -23,7 +23,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Cache
                 ["redis:client:port"] = "1234",
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             var contrib = RedisHealthContributor.GetRedisContributor(config);

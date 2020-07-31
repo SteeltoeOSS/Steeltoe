@@ -68,7 +68,7 @@ namespace OpenCensus.Trace.Propagation
             try
             {
                 ITraceId traceId;
-                string traceIdStr = getter(carrier, XB3TraceId)?.FirstOrDefault();
+                var traceIdStr = getter(carrier, XB3TraceId)?.FirstOrDefault();
                 if (traceIdStr != null)
                 {
                     if (traceIdStr.Length == TraceId.Size)
@@ -85,7 +85,7 @@ namespace OpenCensus.Trace.Propagation
                 }
 
                 ISpanId spanId;
-                string spanIdStr = getter(carrier, XB3SpanId)?.FirstOrDefault();
+                var spanIdStr = getter(carrier, XB3SpanId)?.FirstOrDefault();
                 if (spanIdStr != null)
                 {
                     spanId = SpanId.FromLowerBase16(spanIdStr);
@@ -95,7 +95,7 @@ namespace OpenCensus.Trace.Propagation
                     throw new SpanContextParseException("Missing X_B3_SPAN_ID.");
                 }
 
-                TraceOptions traceOptions = TraceOptions.Default;
+                var traceOptions = TraceOptions.Default;
                 if (SampledValue.Equals(getter(carrier, XB3Sampled)?.FirstOrDefault())
                     || FlagsValue.Equals(getter(carrier, XB3Flags)?.FirstOrDefault()))
                 {

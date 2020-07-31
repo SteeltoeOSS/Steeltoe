@@ -19,8 +19,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
         {
-            ExecutionResult.EventCounts eventCounts = execution.Eventcounts;
-            foreach (HystrixEventType eventType in ALL_EVENT_TYPES)
+            var eventCounts = execution.Eventcounts;
+            foreach (var eventType in ALL_EVENT_TYPES)
             {
                 switch (eventType)
                 {
@@ -37,12 +37,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
         {
-            foreach (HystrixEventType eventType in ALL_EVENT_TYPES)
+            foreach (var eventType in ALL_EVENT_TYPES)
             {
                 switch (eventType)
                 {
                     case HystrixEventType.EXCEPTION_THROWN:
-                        foreach (HystrixEventType exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
+                        foreach (var exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
                         {
                             var ordinal1 = (int)eventType;
                             var ordinal2 = (int)exceptionEventType;
@@ -85,14 +85,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key)
         {
-            Metrics.TryGetValue(key.Name, out HystrixCommandMetrics result);
+            Metrics.TryGetValue(key.Name, out var result);
             return result;
         }
 
         public static ICollection<HystrixCommandMetrics> GetInstances()
         {
-            List<HystrixCommandMetrics> commandMetrics = new List<HystrixCommandMetrics>();
-            foreach (HystrixCommandMetrics tpm in Metrics.Values)
+            var commandMetrics = new List<HystrixCommandMetrics>();
+            foreach (var tpm in Metrics.Values)
             {
                 commandMetrics.Add(tpm);
             }
@@ -102,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         internal static void Reset()
         {
-            foreach (HystrixCommandMetrics metricsInstance in GetInstances())
+            foreach (var metricsInstance in GetInstances())
             {
                 metricsInstance.UnsubscribeAll();
             }
@@ -209,7 +209,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         internal void MarkCommandStart(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy)
         {
-            int currentCount = _concurrentExecutionCount.IncrementAndGet();
+            var currentCount = _concurrentExecutionCount.IncrementAndGet();
             HystrixThreadEventStream.GetInstance().CommandExecutionStarted(commandKey, threadPoolKey, isolationStrategy, currentCount);
         }
 

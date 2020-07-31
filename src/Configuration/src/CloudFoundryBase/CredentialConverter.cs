@@ -12,12 +12,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
     {
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
-            if (value is string)
-            {
-                return new Credential((string)value);
-            }
-
-            return base.ConvertFrom(context, culture, value);
+            return value is string stringvalue ? new Credential(stringvalue) : base.ConvertFrom(context, culture, value);
         }
 
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)

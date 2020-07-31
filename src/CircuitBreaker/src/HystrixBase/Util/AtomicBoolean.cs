@@ -29,15 +29,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 
             set
             {
-                this._value = value ? 1 : 0;
+                _value = value ? 1 : 0;
             }
         }
 
         public bool CompareAndSet(bool expected, bool update)
         {
-            int expectedInt = expected ? 1 : 0;
-            int updateInt = update ? 1 : 0;
-            return Interlocked.CompareExchange(ref this._value, updateInt, expectedInt) == expectedInt;
+            var expectedInt = expected ? 1 : 0;
+            var updateInt = update ? 1 : 0;
+            return Interlocked.CompareExchange(ref _value, updateInt, expectedInt) == expectedInt;
         }
     }
 }

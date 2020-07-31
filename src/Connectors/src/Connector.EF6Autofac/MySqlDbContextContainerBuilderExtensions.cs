@@ -33,7 +33,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
                 throw new ArgumentNullException(nameof(config));
             }
 
-            MySqlServiceInfo info = serviceName == null
+            var info = serviceName == null
                 ? config.GetSingletonServiceInfo<MySqlServiceInfo>()
                 : config.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
 

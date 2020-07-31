@@ -29,12 +29,12 @@ namespace OpenCensus.Trace.Test
     public class SpanBuilderTest
     {
         private static readonly String SPAN_NAME = "MySpanName";
-        private SpanBuilderOptions spanBuilderOptions;
-        private TraceParams alwaysSampleTraceParams = TraceParams.Default.ToBuilder().SetSampler(Samplers.AlwaysSample).Build();
+        private readonly SpanBuilderOptions spanBuilderOptions;
+        private readonly TraceParams alwaysSampleTraceParams = TraceParams.Default.ToBuilder().SetSampler(Samplers.AlwaysSample).Build();
         private readonly TestClock testClock = TestClock.Create();
         private readonly IRandomGenerator randomHandler = new FakeRandomHandler();
-        private IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
-        private ITraceConfig traceConfig = Mock.Of<ITraceConfig>();
+        private readonly IStartEndHandler startEndHandler = Mock.Of<IStartEndHandler>();
+        private readonly ITraceConfig traceConfig = Mock.Of<ITraceConfig>();
 
         public SpanBuilderTest()
         {
@@ -49,12 +49,12 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartSpanNullParent()
         {
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions).StartSpan();
             Assert.True(span.Context.IsValid);
             Assert.True(span.Options.HasFlag(SpanOptions.RecordEvents));
             Assert.True(span.Context.TraceOptions.IsSampled);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Null(spanData.ParentSpanId);
             Assert.False(spanData.HasRemoteParent);
             Assert.Equal(testClock.Now, spanData.StartTimestamp);
@@ -64,7 +64,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartSpanNullParentWithRecordEvents()
         {
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .SetRecordEvents(true)
@@ -72,7 +72,7 @@ namespace OpenCensus.Trace.Test
             Assert.True(span.Context.IsValid);
             Assert.True(span.Options.HasFlag(SpanOptions.RecordEvents));
             Assert.False(span.Context.TraceOptions.IsSampled);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Null(spanData.ParentSpanId);
             Assert.False(spanData.HasRemoteParent);
         }
@@ -80,7 +80,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartSpanNullParentNoRecordOptions()
         {
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
@@ -92,13 +92,13 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartChildSpan()
         {
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions).StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Options.HasFlag(SpanOptions.RecordEvents));
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
             Assert.False(((Span)rootSpan).ToSpanData().HasRemoteParent);
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpan, spanBuilderOptions).StartSpan();
             Assert.True(childSpan.Context.IsValid);
             Assert.Equal(rootSpan.Context.TraceId, childSpan.Context.TraceId);
@@ -110,12 +110,12 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartRemoteSpan_NullParent()
         {
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, null, spanBuilderOptions).StartSpan();
             Assert.True(span.Context.IsValid);
             Assert.True(span.Options.HasFlag(SpanOptions.RecordEvents));
             Assert.True(span.Context.TraceOptions.IsSampled);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Null(spanData.ParentSpanId);
             Assert.False(spanData.HasRemoteParent);
         }
@@ -123,13 +123,13 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartRemoteSpanInvalidParent()
         {
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, SpanContext.Invalid, spanBuilderOptions)
                     .StartSpan();
             Assert.True(span.Context.IsValid);
             Assert.True(span.Options.HasFlag(SpanOptions.RecordEvents));
             Assert.True(span.Context.TraceOptions.IsSampled);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Null(spanData.ParentSpanId);
             Assert.False(spanData.HasRemoteParent);
         }
@@ -137,18 +137,18 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartRemoteSpan()
         {
-            ISpanContext spanContext =
+            var spanContext =
                 SpanContext.Create(
                     TraceId.GenerateRandomId(randomHandler),
                     SpanId.GenerateRandomId(randomHandler),
                     TraceOptions.Default, Tracestate.Empty);
-            ISpan span =
+            var span =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, spanContext, spanBuilderOptions)
                     .StartSpan();
             Assert.True(span.Context.IsValid);
             Assert.Equal(spanContext.TraceId, span.Context.TraceId);
             Assert.True(span.Context.TraceOptions.IsSampled);
-            ISpanData spanData = ((Span)span).ToSpanData();
+            var spanData = ((Span)span).ToSpanData();
             Assert.Equal(spanContext.SpanId, spanData.ParentSpanId);
             Assert.True(spanData.HasRemoteParent);
         }
@@ -157,7 +157,7 @@ namespace OpenCensus.Trace.Test
         public void StartRootSpan_WithSpecifiedSampler()
         {
             // Apply given sampler before default sampler for root spans.
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
@@ -169,7 +169,7 @@ namespace OpenCensus.Trace.Test
         public void StartRootSpan_WithoutSpecifiedSampler()
         {
             // Apply default sampler (always true in the tests) for root spans.
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions).StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
@@ -178,14 +178,14 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartRemoteChildSpan_WithSpecifiedSampler()
         {
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.AlwaysSample)
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
             // Apply given sampler before default sampler for spans with remote parent.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, rootSpan.Context, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
@@ -197,14 +197,14 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartRemoteChildSpan_WithoutSpecifiedSampler()
         {
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.False(rootSpan.Context.TraceOptions.IsSampled);
             // Apply default sampler (always true in the tests) for spans with remote parent.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithRemoteParent(SPAN_NAME, rootSpan.Context, spanBuilderOptions)
                     .StartSpan();
             Assert.True(childSpan.Context.IsValid);
@@ -215,14 +215,14 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartChildSpan_WithSpecifiedSampler()
         {
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.AlwaysSample)
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.True(rootSpan.Context.TraceOptions.IsSampled);
             // Apply the given sampler for child spans.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpan, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
@@ -234,14 +234,14 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartChildSpan_WithoutSpecifiedSampler()
         {
-            ISpan rootSpan =
+            var rootSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
             Assert.True(rootSpan.Context.IsValid);
             Assert.False(rootSpan.Context.TraceOptions.IsSampled);
             // Don't apply the default sampler (always true) for child spans.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpan, spanBuilderOptions).StartSpan();
             Assert.True(childSpan.Context.IsValid);
             Assert.Equal(rootSpan.Context.TraceId, childSpan.Context.TraceId);
@@ -251,18 +251,18 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartChildSpan_SampledLinkedParent()
         {
-            ISpan rootSpanUnsampled =
+            var rootSpanUnsampled =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.NeverSample)
                     .StartSpan();
             Assert.False(rootSpanUnsampled.Context.TraceOptions.IsSampled);
-            ISpan rootSpanSampled =
+            var rootSpanSampled =
                 SpanBuilder.CreateWithParent(SPAN_NAME, null, spanBuilderOptions)
                     .SetSampler(Samplers.AlwaysSample)
                     .StartSpan();
             Assert.True(rootSpanSampled.Context.TraceOptions.IsSampled);
             // Sampled because the linked parent is sampled.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithParent(SPAN_NAME, rootSpanUnsampled, spanBuilderOptions)
                     .SetParentLinks(new List<ISpan>() { rootSpanSampled })
                     .StartSpan();
@@ -278,7 +278,7 @@ namespace OpenCensus.Trace.Test
             configMock.Setup((c) => c.ActiveTraceParams).Returns(TraceParams.Default);
             // This traceId will not be sampled by the ProbabilitySampler because the first 8 bytes as long
             // is not less than probability * Long.MAX_VALUE;
-            ITraceId traceId =
+            var traceId =
                 TraceId.FromBytes(
                     new byte[] {
                         0x8F,
@@ -300,7 +300,7 @@ namespace OpenCensus.Trace.Test
                     });
 
             // If parent is sampled then the remote child must be sampled.
-            ISpan childSpan =
+            var childSpan =
                 SpanBuilder.CreateWithRemoteParent(
                         SPAN_NAME,
                         SpanContext.Create(
@@ -338,7 +338,7 @@ namespace OpenCensus.Trace.Test
 
             public FakeRandomHandler()
             {
-                this.random = new Random(1234);
+                random = new Random(1234);
             }
 
             public Random current()

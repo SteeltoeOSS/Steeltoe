@@ -14,8 +14,8 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var builder = new ConfigurationBuilder();
+            var opts = new TracingOptions(null, builder.Build());
 
             Assert.Equal("Unknown", opts.Name);
             Assert.Equal(TracingOptions.DEFAULT_INGRESS_IGNORE_PATTERN, opts.IngressIgnorePattern);
@@ -53,9 +53,9 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:useShortTraceIds"] = "true",
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
 
             Assert.Equal("foobar", opts.Name);
             Assert.Equal("pattern", opts.IngressIgnorePattern);
@@ -77,10 +77,10 @@ namespace Steeltoe.Management.Tracing.Test
             {
                 ["spring:application:name"] = "foobar"
             };
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
-            TracingOptions opts = new TracingOptions("default", config);
+            var opts = new TracingOptions("default", config);
             Assert.Equal("foobar", opts.Name);
 
             // Management name overrides spring name

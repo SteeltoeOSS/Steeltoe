@@ -32,7 +32,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromDescription()
         {
-            IAnnotation annotation = Annotation.FromDescription("MyAnnotationText");
+            var annotation = Annotation.FromDescription("MyAnnotationText");
             Assert.Equal("MyAnnotationText", annotation.Description);
             Assert.Equal(0, annotation.Attributes.Count);
         }
@@ -52,10 +52,11 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromDescriptionAndAttributes()
         {
-            Dictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
-            attributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
-            IAnnotation annotation = Annotation.FromDescriptionAndAttributes("MyAnnotationText", attributes);
+            var attributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") }
+            };
+            var annotation = Annotation.FromDescriptionAndAttributes("MyAnnotationText", attributes);
             Assert.Equal("MyAnnotationText", annotation.Description);
             Assert.Equal(attributes, annotation.Attributes);
         }
@@ -63,7 +64,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void FromDescriptionAndAttributes_EmptyAttributes()
         {
-            IAnnotation annotation =
+            var annotation =
                 Annotation.FromDescriptionAndAttributes(
                     "MyAnnotationText", new Dictionary<string, IAttributeValue>());
             Assert.Equal("MyAnnotationText", annotation.Description);
@@ -92,11 +93,12 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void Annotation_ToString()
         {
-            IAnnotation annotation = Annotation.FromDescription("MyAnnotationText");
+            var annotation = Annotation.FromDescription("MyAnnotationText");
             Assert.Contains("MyAnnotationText", annotation.ToString());
-            Dictionary<string, IAttributeValue> attributes = new Dictionary<string, IAttributeValue>();
-            attributes.Add(
-                "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue"));
+            var attributes = new Dictionary<string, IAttributeValue>
+            {
+                { "MyStringAttributeKey", AttributeValue<string>.Create("MyStringAttributeValue") }
+            };
             annotation = Annotation.FromDescriptionAndAttributes("MyAnnotationText2", attributes);
             Assert.Contains("MyAnnotationText2", annotation.ToString());
             Assert.Contains(Collections.ToString(attributes), annotation.ToString());

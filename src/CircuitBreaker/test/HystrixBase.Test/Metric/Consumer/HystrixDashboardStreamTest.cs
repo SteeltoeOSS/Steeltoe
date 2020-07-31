@@ -20,8 +20,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
     {
         private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Dashboard");
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("DashboardCommand");
-        private ITestOutputHelper output;
-        private HystrixDashboardStream stream;
+        private readonly ITestOutputHelper output;
+        private readonly HystrixDashboardStream stream;
 
         public HystrixDashboardStreamTest(ITestOutputHelper output)
             : base()
@@ -33,11 +33,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestStreamHasData()
         {
-            AtomicBoolean commandShowsUp = new AtomicBoolean(false);
-            CountdownEvent latch = new CountdownEvent(1);
-            int num = 10;
+            var commandShowsUp = new AtomicBoolean(false);
+            var latch = new CountdownEvent(1);
+            var num = 10;
 
-            for (int i = 0; i < 2; i++)
+            for (var i = 0; i < 2; i++)
             {
                 HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Observe();
@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                 (dashboardData) =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : Received data with : " + dashboardData.CommandMetrics.Count + " commands");
-                    foreach (HystrixCommandMetrics metrics in dashboardData.CommandMetrics)
+                    foreach (var metrics in dashboardData.CommandMetrics)
                     {
                         if (metrics.CommandKey.Equals(CommandKey))
                         {
@@ -72,12 +72,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestTwoSubscribersOneUnsubscribes()
         {
-            CountdownEvent latch1 = new CountdownEvent(1);
-            CountdownEvent latch2 = new CountdownEvent(1);
-            AtomicInteger payloads1 = new AtomicInteger(0);
-            AtomicInteger payloads2 = new AtomicInteger(0);
+            var latch1 = new CountdownEvent(1);
+            var latch2 = new CountdownEvent(1);
+            var payloads1 = new AtomicInteger(0);
+            var payloads2 = new AtomicInteger(0);
 
-            IDisposable s1 = stream
+            var s1 = stream
                     .Observe()
                     .Take(100)
                     .OnDispose(() =>
@@ -101,7 +101,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                             latch1.SignalEx();
                         });
 
-            IDisposable s2 = stream
+            var s2 = stream
                 .Observe()
                 .Take(100)
                 .OnDispose(() =>
@@ -126,7 +126,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     });
 
             // execute 1 command, then unsubscribe from first stream. then execute the rest
-            for (int i = 0; i < 50; i++)
+            for (var i = 0; i < 50; i++)
             {
                 HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();
@@ -147,12 +147,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestTwoSubscribersBothUnsubscribe()
         {
-            CountdownEvent latch1 = new CountdownEvent(1);
-            CountdownEvent latch2 = new CountdownEvent(1);
-            AtomicInteger payloads1 = new AtomicInteger(0);
-            AtomicInteger payloads2 = new AtomicInteger(0);
+            var latch1 = new CountdownEvent(1);
+            var latch2 = new CountdownEvent(1);
+            var payloads1 = new AtomicInteger(0);
+            var payloads2 = new AtomicInteger(0);
 
-            IDisposable s1 = stream
+            var s1 = stream
                     .Observe()
                     .Take(10)
                     .OnDispose(() =>
@@ -176,7 +176,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                             latch1.SignalEx();
                         });
 
-            IDisposable s2 = stream
+            var s2 = stream
                 .Observe()
                 .Take(10)
                 .OnDispose(() =>
@@ -201,7 +201,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                     });
 
             // execute half the commands, then unsubscribe from both streams, then execute the rest
-            for (int i = 0; i < 50; i++)
+            for (var i = 0; i < 50; i++)
             {
                 HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();
@@ -224,14 +224,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         [Fact]
         public void TestTwoSubscribersOneSlowOneFast()
         {
-            CountdownEvent latch = new CountdownEvent(1);
-            AtomicBoolean foundError = new AtomicBoolean(false);
+            var latch = new CountdownEvent(1);
+            var foundError = new AtomicBoolean(false);
 
-            IObservable<HystrixDashboardStream.DashboardData> fast = stream
+            var fast = stream
                     .Observe()
                     .ObserveOn(NewThreadScheduler.Default);
 
-            IObservable<HystrixDashboardStream.DashboardData> slow = stream
+            var slow = stream
                     .Observe()
                     .ObserveOn(NewThreadScheduler.Default)
                     .Map((n) =>
@@ -247,12 +247,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                         }
                     });
 
-            IObservable<bool> checkZippedEqual = Observable.Zip(fast, slow, (payload, payload2) =>
+            var checkZippedEqual = Observable.Zip(fast, slow, (payload, payload2) =>
                 {
                     return payload == payload2;
                 });
 
-            IDisposable s1 = checkZippedEqual
+            var s1 = checkZippedEqual
                     .Take(10000)
                     .Subscribe(
                         (b) =>
@@ -272,7 +272,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
                             latch.SignalEx();
                         });
 
-            for (int i = 0; i < 50; i++)
+            for (var i = 0; i < 50; i++)
             {
                 HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
                 cmd.Execute();

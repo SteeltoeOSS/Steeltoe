@@ -5,11 +5,13 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using RichardSzalay.MockHttp;
+using System;
 using System.Net.Http;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test
 {
+    [Obsolete]
     public class HttpClientExtensionsTest
     {
         [Fact]

@@ -29,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected override void QueueTask(Task task)
         {
-            bool isCommand = task.AsyncState is IHystrixInvokable;
+            var isCommand = task.AsyncState is IHystrixInvokable;
             if (!isCommand)
             {
                 RunContinuation(task);
@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected virtual void StartThreadPoolWorker()
         {
-            for (int i = 0; i < corePoolSize; i++)
+            for (var i = 0; i < corePoolSize; i++)
             {
                 if (!_workQueues[i].ThreadAssigned)
                 {
@@ -81,7 +81,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
                 try
                 {
-                    while (!this.shutdown)
+                    while (!shutdown)
                     {
                         Task item = null;
                         workQueue.Signal.Wait(250);
@@ -92,7 +92,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                         {
                             try
                             {
-                                Interlocked.Increment(ref this.runningTasks);
+                                Interlocked.Increment(ref runningTasks);
                                 TryExecuteTask(item);
                             }
                             catch (Exception)
@@ -101,7 +101,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                             }
                             finally
                             {
-                                Interlocked.Decrement(ref this.runningTasks);
+                                Interlocked.Decrement(ref runningTasks);
                                 Interlocked.Increment(ref completedTasks);
                             }
 
@@ -140,7 +140,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
             try
             {
-                Interlocked.Increment(ref this.runningTasks);
+                Interlocked.Increment(ref runningTasks);
                 return TryExecuteTask(task);
             }
             catch (Exception)
@@ -149,7 +149,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
             }
             finally
             {
-                Interlocked.Decrement(ref this.runningTasks);
+                Interlocked.Decrement(ref runningTasks);
                 Interlocked.Increment(ref completedTasks);
             }
 
@@ -158,7 +158,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         protected virtual bool TryAddToAny(Task task)
         {
-            foreach (ThreadTaskQueue queue in _workQueues)
+            foreach (var queue in _workQueues)
             {
                 if (queue.ThreadAssigned && queue.Task == null)
                 {
@@ -180,7 +180,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         protected void SetupWorkQueues(int size)
         {
             _workQueues = new ThreadTaskQueue[size];
-            for (int i = 0; i < size; i++)
+            for (var i = 0; i < size; i++)
             {
                 _workQueues[i] = new ThreadTaskQueue();
             }
@@ -191,10 +191,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
         {
             get
             {
-                int size = 0;
-                for (int i = 0; i < _workQueues.Length; i++)
+                var size = 0;
+                for (var i = 0; i < _workQueues.Length; i++)
                 {
-                    ThreadTaskQueue queue = _workQueues[i];
+                    var queue = _workQueues[i];
                     if (queue.ThreadAssigned && queue.Task != null)
                     {
                         size++;

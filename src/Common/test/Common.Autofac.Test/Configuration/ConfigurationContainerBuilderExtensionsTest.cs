@@ -16,14 +16,14 @@ namespace Steeltoe.Common.Configuration.Autofac.Test
         {
             ContainerBuilder container = null;
             Assert.Throws<ArgumentNullException>(() => container.RegisterConfiguration(null));
-            ContainerBuilder container2 = new ContainerBuilder();
+            var container2 = new ContainerBuilder();
             Assert.Throws<ArgumentNullException>(() => container2.RegisterConfiguration(null));
         }
 
         [Fact]
         public void RegisterConfiguration_Registers()
         {
-            ContainerBuilder container = new ContainerBuilder();
+            var container = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
             container.RegisterConfiguration(config);
 

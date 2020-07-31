@@ -44,7 +44,7 @@ namespace OpenCensus.Stats
 
         public static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
         {
-            Dictionary<TagValues, IAggregationData> results = new Dictionary<TagValues, IAggregationData>();
+            var results = new Dictionary<TagValues, IAggregationData>();
 
             foreach (var kvp in aggMap)
             {
@@ -60,7 +60,7 @@ namespace OpenCensus.Stats
         public static IAggregationData Sum(this IDictionary<TagValues, IAggregationData> aggMap, IView view)
         {
             var sum = MutableViewData.CreateMutableAggregation(view.Aggregation);
-            foreach (IAggregationData agData in aggMap.Values)
+            foreach (var agData in aggMap.Values)
             {
                 Sum(sum, agData);
             }
@@ -136,8 +136,8 @@ namespace OpenCensus.Stats
                 {
                     if (combined is MutableMean mean)
                     {
-                        mean.Count = mean.Count + arg.Count;
-                        mean.Sum = mean.Sum + (arg.Count * arg.Mean);
+                        mean.Count += arg.Count;
+                        mean.Sum += (arg.Count * arg.Mean);
                         if (arg.Min < mean.Min)
                         {
                             mean.Min = arg.Min;
@@ -159,7 +159,7 @@ namespace OpenCensus.Stats
                         // https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance#Parallel_algorithm.
                         if (dist.Count + arg.Count > 0)
                         {
-                            double delta = arg.Mean - dist.Mean;
+                            var delta = arg.Mean - dist.Mean;
                             dist.SumOfSquaredDeviations =
                                 dist.SumOfSquaredDeviations
                                     + arg.SumOfSquaredDeviations
@@ -183,8 +183,8 @@ namespace OpenCensus.Stats
                             dist.Max = arg.Max;
                         }
 
-                        IList<long> bucketCounts = arg.BucketCounts;
-                        for (int i = 0; i < bucketCounts.Count; i++)
+                        var bucketCounts = arg.BucketCounts;
+                        for (var i = 0; i < bucketCounts.Count; i++)
                         {
                             dist.BucketCounts[i] += bucketCounts[i];
                         }

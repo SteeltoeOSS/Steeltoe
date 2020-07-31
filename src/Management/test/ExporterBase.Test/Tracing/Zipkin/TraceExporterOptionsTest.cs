@@ -14,8 +14,8 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
         [Fact]
         public void InitializedWithDefaults()
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
-            TraceExporterOptions opts = new TraceExporterOptions(null, builder.Build());
+            var builder = new ConfigurationBuilder();
+            var opts = new TraceExporterOptions(null, builder.Build());
 
             Assert.Equal("Unknown", opts.ServiceName);
             Assert.True(opts.ValidateCertificates);
@@ -43,9 +43,9 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
                 ["management:tracing:exporter:zipkin:endpoint"] = "https://foo.com/api/v2/spans"
             };
 
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
-            TraceExporterOptions opts = new TraceExporterOptions(null, builder.Build());
+            var opts = new TraceExporterOptions(null, builder.Build());
 
             Assert.Equal("foobar", opts.ServiceName);
             Assert.False(opts.ValidateCertificates);
@@ -62,10 +62,10 @@ namespace Steeltoe.Management.Exporter.Tracing.Zipkin.Test
             {
                 ["spring:application:name"] = "foobar"
             };
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
-            TraceExporterOptions opts = new TraceExporterOptions("default", config);
+            var opts = new TraceExporterOptions("default", config);
             Assert.Equal("foobar", opts.ServiceName);
 
             // Management name overrides spring name

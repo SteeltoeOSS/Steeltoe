@@ -13,10 +13,10 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void Accept_AcceptsValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-identity",
-                Tags = new string[0],
+                Tags = System.Array.Empty<string>(),
                 Name = "mySSO",
                 Plan = "sso",
                 Credentials = new Credential()
@@ -26,17 +26,17 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "auth_domain", new Credential("https://sso.login.system.testcloud.com") }
                 }
             };
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var factory = new SsoServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_AcceptsValidUAAServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "user-provided",
-                Tags = new string[0],
+                Tags = System.Array.Empty<string>(),
                 Name = "mySSO",
                 Credentials = new Credential()
                 {
@@ -45,14 +45,14 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
                 }
             };
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var factory = new SsoServiceInfoFactory();
             Assert.True(factory.Accept(s));
         }
 
         [Fact]
         public void Accept_RejectsInvalidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-mysql",
                 Tags = new string[] { "foobar", "relational" },
@@ -69,17 +69,17 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
                 }
             };
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var factory = new SsoServiceInfoFactory();
             Assert.False(factory.Accept(s));
         }
 
         [Fact]
         public void Create_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "p-identity",
-                Tags = new string[0],
+                Tags = System.Array.Empty<string>(),
                 Name = "mySSO",
                 Plan = "sso",
                 Credentials = new Credential()
@@ -89,7 +89,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "auth_domain", new Credential("https://sso.login.system.testcloud.com") }
                 }
             };
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var factory = new SsoServiceInfoFactory();
             var info = factory.Create(s) as SsoServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("mySSO", info.Id);
@@ -101,10 +101,10 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void CreateWithURI_CreatesValidServiceBinding()
         {
-            Service s = new Service()
+            var s = new Service()
             {
                 Label = "user-provided",
-                Tags = new string[0],
+                Tags = System.Array.Empty<string>(),
                 Name = "mySSO",
                 Credentials = new Credential()
                 {
@@ -113,7 +113,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                     { "uri", new Credential("uaa://sso.login.system.testcloud.com") }
                 }
             };
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
+            var factory = new SsoServiceInfoFactory();
             var info = factory.Create(s) as SsoServiceInfo;
             Assert.NotNull(info);
             Assert.Equal("mySSO", info.Id);
@@ -125,14 +125,14 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void UpdateUaaScheme_UpdatesSchemeProperly()
         {
-            string uaa1 = "uaa://sso.login.system.testcloud.com";
-            SsoServiceInfoFactory factory = new SsoServiceInfoFactory();
-            string result = factory.UpdateUaaScheme(uaa1);
+            var uaa1 = "uaa://sso.login.system.testcloud.com";
+            var factory = new SsoServiceInfoFactory();
+            var result = factory.UpdateUaaScheme(uaa1);
             Assert.Equal("https://sso.login.system.testcloud.com", result);
-            string uaa2 = "uaa://uaa.system.testcloud.com";
+            var uaa2 = "uaa://uaa.system.testcloud.com";
             result = factory.UpdateUaaScheme(uaa2);
             Assert.Equal("https://uaa.system.testcloud.com", result);
-            string nonUaa = "https://uaa.system.testcloud.com";
+            var nonUaa = "https://uaa.system.testcloud.com";
             result = factory.UpdateUaaScheme(nonUaa);
             Assert.Equal(nonUaa, result);
         }

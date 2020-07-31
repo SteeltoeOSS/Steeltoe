@@ -31,12 +31,12 @@ namespace OpenCensus.Trace
 
         public IScope StartScopedSpan()
         {
-            return CurrentSpanUtils.WithSpan(this.StartSpan(), true);
+            return CurrentSpanUtils.WithSpan(StartSpan(), true);
         }
 
         public IScope StartScopedSpan(out ISpan currentSpan)
         {
-            currentSpan = this.StartSpan();
+            currentSpan = StartSpan();
             return CurrentSpanUtils.WithSpan(currentSpan, true);
         }
     }

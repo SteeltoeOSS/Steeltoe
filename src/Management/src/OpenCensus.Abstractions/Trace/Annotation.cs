@@ -29,8 +29,8 @@ namespace OpenCensus.Trace
 
         internal Annotation(string description, IDictionary<string, IAttributeValue> attributes)
         {
-            this.Description = description ?? throw new ArgumentNullException("Null description");
-            this.Attributes = attributes ?? throw new ArgumentNullException("Null attributes");
+            Description = description ?? throw new ArgumentNullException("Null description");
+            Attributes = attributes ?? throw new ArgumentNullException("Null attributes");
         }
 
         public string Description { get; }
@@ -63,8 +63,8 @@ namespace OpenCensus.Trace
 
             if (obj is Annotation annotation)
             {
-                return this.Description.Equals(annotation.Description) &&
-                    this.Attributes.SequenceEqual(annotation.Attributes);
+                return Description.Equals(annotation.Description) &&
+                    Attributes.SequenceEqual(annotation.Attributes);
             }
 
             return false;
@@ -73,11 +73,11 @@ namespace OpenCensus.Trace
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Description.GetHashCode();
+            h ^= Description.GetHashCode();
             h *= 1000003;
-            h ^= this.Attributes.GetHashCode();
+            h ^= Attributes.GetHashCode();
             return h;
         }
 
@@ -85,8 +85,8 @@ namespace OpenCensus.Trace
         public override string ToString()
         {
             return "Annotation{"
-                + "description=" + this.Description + ", "
-                + "attributes=" + Collections.ToString(this.Attributes)
+                + "description=" + Description + ", "
+                + "attributes=" + Collections.ToString(Attributes)
                 + "}";
         }
     }

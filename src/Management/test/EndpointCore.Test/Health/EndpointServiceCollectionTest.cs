@@ -24,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
-            IConfigurationRoot config2 = new ConfigurationBuilder().Build();
+            var config2 = new ConfigurationBuilder().Build();
             IHealthAggregator aggregator = null;
 
             // Act and Assert
@@ -39,14 +39,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:health:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
@@ -69,14 +69,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void AddHealthActuator_AddsCorrectServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
                 ["management:endpoints:health:enabled"] = "true"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appSettings);
             var config = configurationBuilder.Build();
 
@@ -99,7 +99,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void AddHealthContributors_AddsServices()
         {
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
             var serviceProvider = services.BuildServiceProvider();
             var contribs = serviceProvider.GetServices<IHealthContributor>();

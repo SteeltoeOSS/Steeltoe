@@ -130,7 +130,7 @@ namespace Steeltoe.Management.Census.Trace
         {
             foreach (var header in headers.AllKeys)
             {
-                IAttributeValue values = ToCommaDelimitedStringAttribute(headers.GetValues(header));
+                var values = ToCommaDelimitedStringAttribute(headers.GetValues(header));
                 span.PutAttribute(key + header, values);
             }
         }

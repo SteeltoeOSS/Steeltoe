@@ -35,8 +35,8 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         {
             if (_config != null)
             {
-                Dictionary<string, object> result = new Dictionary<string, object>();
-                Dictionary<string, object> dict = result;
+                var result = new Dictionary<string, object>();
+                var dict = result;
 
                 var section = _config.GetSection(prefix);
                 var children = section.GetChildren();

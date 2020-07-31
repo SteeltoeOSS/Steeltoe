@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         public HystrixKeyDefault(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         public string Name { get; }

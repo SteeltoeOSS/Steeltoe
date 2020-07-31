@@ -33,13 +33,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf
                 return new PrincipalPermission(PermissionState.Unrestricted);
             }
 
-            string matchACL = Environment.GetEnvironmentVariable(Role);
+            var matchACL = Environment.GetEnvironmentVariable(Role);
             if (string.IsNullOrEmpty(matchACL))
             {
                 CloudFoundryWcfTokenValidator.ThrowJwtException("Configuration for not provided for Role: " + Role, "insufficient_scope");
             }
 
-            IPrincipal principal = Thread.CurrentPrincipal;
+            var principal = Thread.CurrentPrincipal;
 
             if (principal.IsInRole(matchACL))
             {

@@ -116,7 +116,7 @@ namespace OpenCensus.Tags.Test
 
             public override IEnumerator<ITag> GetEnumerator()
             {
-                return tags == null ? null : tags.GetEnumerator();
+                return tags?.GetEnumerator();
             }
 
 

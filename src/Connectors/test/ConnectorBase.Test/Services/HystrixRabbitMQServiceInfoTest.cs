@@ -13,15 +13,15 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [Fact]
         public void Constructor_CreatesExpected()
         {
-            string uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
-            List<string> uris = new List<string>() { "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66" };
+            var uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
+            var uris = new List<string>() { "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66" };
 
             // string managementUri = "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/";
             // List<string> managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
-            bool isSSLEnabled = false;
+            var isSSLEnabled = false;
 
-            HystrixRabbitMQServiceInfo r1 = new HystrixRabbitMQServiceInfo("myId", uri, isSSLEnabled);
-            HystrixRabbitMQServiceInfo r2 = new HystrixRabbitMQServiceInfo("myId", uri, uris, isSSLEnabled);
+            var r1 = new HystrixRabbitMQServiceInfo("myId", uri, isSSLEnabled);
+            var r2 = new HystrixRabbitMQServiceInfo("myId", uri, uris, isSSLEnabled);
 
             Assert.Equal("myId", r1.Id);
             Assert.Equal("amqp", r1.Scheme);

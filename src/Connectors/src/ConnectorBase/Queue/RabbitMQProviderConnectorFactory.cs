@@ -10,10 +10,10 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 {
     public class RabbitMQProviderConnectorFactory
     {
-        private RabbitMQServiceInfo _info;
-        private RabbitMQProviderConnectorOptions _config;
-        private RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
-        private MethodInfo _setUri;
+        private readonly RabbitMQServiceInfo _info;
+        private readonly RabbitMQProviderConnectorOptions _config;
+        private readonly RabbitMQProviderConfigurer _configurer = new RabbitMQProviderConfigurer();
+        private readonly MethodInfo _setUri;
 
         public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo sinfo, RabbitMQProviderConnectorOptions config, Type connectFactory)
         {
@@ -38,7 +38,7 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
             var typeInfo = type.GetTypeInfo();
             var declaredMethods = typeInfo.DeclaredMethods;
 
-            foreach (MethodInfo ci in declaredMethods)
+            foreach (var ci in declaredMethods)
             {
                 if (ci.Name.Equals("SetUri"))
                 {
@@ -73,13 +73,13 @@ namespace Steeltoe.CloudFoundry.Connector.RabbitMQ
 
         public virtual object CreateConnection(string connectionString)
         {
-            object inst = ConnectorHelpers.CreateInstance(ConnectorType, null);
+            var inst = ConnectorHelpers.CreateInstance(ConnectorType, null);
             if (inst == null)
             {
                 return null;
             }
 
-            Uri uri = new Uri(connectionString, UriKind.Absolute);
+            var uri = new Uri(connectionString, UriKind.Absolute);
 
             ConnectorHelpers.Invoke(_setUri, inst, new object[] { uri });
             return inst;

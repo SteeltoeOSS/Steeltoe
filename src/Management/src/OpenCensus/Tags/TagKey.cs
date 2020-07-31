@@ -25,7 +25,7 @@ namespace OpenCensus.Tags
 
         internal TagKey(string name)
         {
-            this.Name = name ?? throw new ArgumentNullException(nameof(name));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public string Name { get; }
@@ -44,7 +44,7 @@ namespace OpenCensus.Tags
         public override string ToString()
         {
             return "TagKey{"
-                + "name=" + this.Name
+                + "name=" + Name
                 + "}";
         }
 
@@ -58,7 +58,7 @@ namespace OpenCensus.Tags
 
             if (o is TagKey that)
             {
-                return this.Name.Equals(that.Name);
+                return Name.Equals(that.Name);
             }
 
             return false;
@@ -67,9 +67,9 @@ namespace OpenCensus.Tags
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Name.GetHashCode();
+            h ^= Name.GetHashCode();
             return h;
         }
 

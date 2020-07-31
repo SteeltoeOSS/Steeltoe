@@ -25,11 +25,11 @@ namespace OpenCensus.Stats
     {
         internal View(IViewName name, string description, IMeasure measure, IAggregation aggregation, IList<ITagKey> columns)
         {
-            this.Name = name ?? throw new ArgumentNullException(nameof(name));
-            this.Description = description ?? throw new ArgumentNullException(nameof(description));
-            this.Measure = measure ?? throw new ArgumentNullException(nameof(measure));
-            this.Aggregation = aggregation ?? throw new ArgumentNullException(nameof(aggregation));
-            this.Columns = columns ?? throw new ArgumentNullException(nameof(columns));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+            Measure = measure ?? throw new ArgumentNullException(nameof(measure));
+            Aggregation = aggregation ?? throw new ArgumentNullException(nameof(aggregation));
+            Columns = columns ?? throw new ArgumentNullException(nameof(columns));
         }
 
         public IViewName Name { get; }
@@ -62,11 +62,11 @@ namespace OpenCensus.Stats
         public override string ToString()
         {
             return "View{"
-                + "name=" + this.Name + ", "
-                + "description=" + this.Description + ", "
-                + "measure=" + this.Measure + ", "
-                + "aggregation=" + this.Aggregation + ", "
-                + "columns=" + this.Columns + ", "
+                + "name=" + Name + ", "
+                + "description=" + Description + ", "
+                + "measure=" + Measure + ", "
+                + "aggregation=" + Aggregation + ", "
+                + "columns=" + Columns + ", "
                 + "}";
         }
 
@@ -80,11 +80,11 @@ namespace OpenCensus.Stats
 
             if (o is View that)
             {
-                return this.Name.Equals(that.Name)
-                     && this.Description.Equals(that.Description)
-                     && this.Measure.Equals(that.Measure)
-                     && this.Aggregation.Equals(that.Aggregation)
-                     && this.Columns.SequenceEqual(that.Columns);
+                return Name.Equals(that.Name)
+                     && Description.Equals(that.Description)
+                     && Measure.Equals(that.Measure)
+                     && Aggregation.Equals(that.Aggregation)
+                     && Columns.SequenceEqual(that.Columns);
             }
 
             return false;
@@ -93,17 +93,17 @@ namespace OpenCensus.Stats
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.Name.GetHashCode();
+            h ^= Name.GetHashCode();
             h *= 1000003;
-            h ^= this.Description.GetHashCode();
+            h ^= Description.GetHashCode();
             h *= 1000003;
-            h ^= this.Measure.GetHashCode();
+            h ^= Measure.GetHashCode();
             h *= 1000003;
-            h ^= this.Aggregation.GetHashCode();
+            h ^= Aggregation.GetHashCode();
             h *= 1000003;
-            h ^= this.Columns.GetHashCode();
+            h ^= Columns.GetHashCode();
             h *= 1000003;
             return h;
         }

@@ -45,7 +45,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 throw new ArgumentNullException(nameof(user));
             }
 
-            List<string> result = new List<string>();
+            var result = new List<string>();
             var scopes = user["scope"];
             if (scopes == null)
             {

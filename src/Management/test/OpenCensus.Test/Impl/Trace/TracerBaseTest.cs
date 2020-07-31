@@ -26,9 +26,9 @@ namespace OpenCensus.Trace.Test
     {
         private static readonly ITracer noopTracer = TracerBase.NoopTracer;
         private static readonly string SPAN_NAME = "MySpanName";
-        private TracerBase tracer = Mock.Of<TracerBase>();
-        private SpanBuilderBase spanBuilder = Mock.Of<SpanBuilderBase>();
-        private SpanBase span = Mock.Of<SpanBase>();
+        private readonly TracerBase tracer = Mock.Of<TracerBase>();
+        private readonly SpanBuilderBase spanBuilder = Mock.Of<SpanBuilderBase>();
+        private readonly SpanBase span = Mock.Of<SpanBase>();
 
         public TracerBaseTest()
         {
@@ -50,7 +50,7 @@ namespace OpenCensus.Trace.Test
         public void GetCurrentSpan_WithSpan()
         {
             Assert.Same(BlankSpan.Instance, noopTracer.CurrentSpan);
-            IScope ws = noopTracer.WithSpan(span);
+            var ws = noopTracer.WithSpan(span);
             try
             {
                 Assert.Same(span, noopTracer.CurrentSpan);
@@ -151,7 +151,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartSpanWithParentFromContext()
         {
-            IScope ws = tracer.WithSpan(span);
+            var ws = tracer.WithSpan(span);
             try
             {
                 Assert.Same(span, tracer.CurrentSpan);
@@ -167,7 +167,7 @@ namespace OpenCensus.Trace.Test
         [Fact]
         public void StartSpanWithInvalidParentFromContext()
         {
-            IScope ws = tracer.WithSpan(BlankSpan.Instance);
+            var ws = tracer.WithSpan(BlankSpan.Instance);
             try
             {
                 Assert.Same(BlankSpan.Instance, tracer.CurrentSpan);

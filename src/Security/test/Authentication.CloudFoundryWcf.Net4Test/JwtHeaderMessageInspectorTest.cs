@@ -27,7 +27,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
             // act
             inspector.BeforeSendRequest(ref mo, null);
             HttpRequestMessageProperty httpRequestMessage;
-            mo.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject);
+            mo.Properties.TryGetValue(HttpRequestMessageProperty.Name, out var httpRequestMessageObject);
             httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
 
             // assert
@@ -49,7 +49,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Wcf.Test
             // act
             inspector.BeforeSendRequest(ref mo, null);
             HttpRequestMessageProperty httpRequestMessage;
-            mo.Properties.TryGetValue(HttpRequestMessageProperty.Name, out object httpRequestMessageObject);
+            mo.Properties.TryGetValue(HttpRequestMessageProperty.Name, out var httpRequestMessageObject);
             httpRequestMessage = httpRequestMessageObject as HttpRequestMessageProperty;
 
             // assert

@@ -25,8 +25,8 @@ namespace OpenCensus.Trace.Export
     {
         internal Attributes(IDictionary<string, IAttributeValue> attributeMap, int droppedAttributesCount)
         {
-            this.AttributeMap = attributeMap ?? throw new ArgumentNullException("Null attributeMap");
-            this.DroppedAttributesCount = droppedAttributesCount;
+            AttributeMap = attributeMap ?? throw new ArgumentNullException("Null attributeMap");
+            DroppedAttributesCount = droppedAttributesCount;
         }
 
         public IDictionary<string, IAttributeValue> AttributeMap { get; }
@@ -48,8 +48,8 @@ namespace OpenCensus.Trace.Export
         public override string ToString()
         {
             return "Attributes{"
-                + "attributeMap=" + this.AttributeMap + ", "
-                + "droppedAttributesCount=" + this.DroppedAttributesCount
+                + "attributeMap=" + AttributeMap + ", "
+                + "droppedAttributesCount=" + DroppedAttributesCount
                 + "}";
         }
 
@@ -63,8 +63,8 @@ namespace OpenCensus.Trace.Export
 
             if (o is Attributes that)
             {
-                return this.AttributeMap.SequenceEqual(that.AttributeMap)
-                     && (this.DroppedAttributesCount == that.DroppedAttributesCount);
+                return AttributeMap.SequenceEqual(that.AttributeMap)
+                     && (DroppedAttributesCount == that.DroppedAttributesCount);
             }
 
             return false;
@@ -73,11 +73,11 @@ namespace OpenCensus.Trace.Export
     /// <inheritdoc/>
         public override int GetHashCode()
         {
-            int h = 1;
+            var h = 1;
             h *= 1000003;
-            h ^= this.AttributeMap.GetHashCode();
+            h ^= AttributeMap.GetHashCode();
             h *= 1000003;
-            h ^= this.DroppedAttributesCount;
+            h ^= DroppedAttributesCount;
             return h;
         }
     }

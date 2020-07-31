@@ -44,7 +44,7 @@ namespace Steeltoe.Management.EndpointOwin.Diagnostics
 
         private Activity BeginRequest(IOwinContext context)
         {
-            Activity activity = new Activity(ActivityName);
+            var activity = new Activity(ActivityName);
             if (_listener.IsEnabled(ActivityStartKey))
             {
                 _listener.StartActivity(activity, new { OwinContext = context });

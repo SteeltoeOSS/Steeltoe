@@ -11,20 +11,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
     {
         public static void Reset()
         {
-            commandProperties.Clear();
-            threadPoolProperties.Clear();
-            collapserProperties.Clear();
+            CommandProperties.Clear();
+            ThreadPoolProperties.Clear();
+            CollapserProperties.Clear();
         }
 
-        private static ConcurrentDictionary<string, IHystrixCommandOptions> commandProperties = new ConcurrentDictionary<string, IHystrixCommandOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixCommandOptions> CommandProperties = new ConcurrentDictionary<string, IHystrixCommandOptions>();
 
         public static IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey key, IHystrixCommandOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetCommandOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetCommandOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return commandProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCommandOptions(key, builder));
+                return CommandProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCommandOptions(key, builder));
             }
             else
             {
@@ -33,15 +33,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             }
         }
 
-        private static ConcurrentDictionary<string, IHystrixThreadPoolOptions> threadPoolProperties = new ConcurrentDictionary<string, IHystrixThreadPoolOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixThreadPoolOptions> ThreadPoolProperties = new ConcurrentDictionary<string, IHystrixThreadPoolOptions>();
 
         public static IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey key, IHystrixThreadPoolOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetThreadPoolOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetThreadPoolOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return threadPoolProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetThreadPoolOptions(key, builder));
+                return ThreadPoolProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetThreadPoolOptions(key, builder));
             }
             else
             {
@@ -50,15 +50,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
             }
         }
 
-        private static ConcurrentDictionary<string, IHystrixCollapserOptions> collapserProperties = new ConcurrentDictionary<string, IHystrixCollapserOptions>();
+        private static readonly ConcurrentDictionary<string, IHystrixCollapserOptions> CollapserProperties = new ConcurrentDictionary<string, IHystrixCollapserOptions>();
 
         public static IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey key, IHystrixCollapserOptions builder)
         {
-            HystrixOptionsStrategy hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
-            string cacheKey = hystrixPropertiesStrategy.GetCollapserOptionsCacheKey(key, builder);
+            var hystrixPropertiesStrategy = HystrixPlugins.OptionsStrategy;
+            var cacheKey = hystrixPropertiesStrategy.GetCollapserOptionsCacheKey(key, builder);
             if (cacheKey != null)
             {
-                return collapserProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCollapserOptions(key, builder));
+                return CollapserProperties.GetOrAddEx(cacheKey, (k) => hystrixPropertiesStrategy.GetCollapserOptions(key, builder));
             }
             else
             {

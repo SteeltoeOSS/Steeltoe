@@ -27,7 +27,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
-            IConfigurationRoot root = builder.Build();
+            var root = builder.Build();
 
             var instOpts = new EurekaInstanceOptions();
             EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
@@ -50,7 +50,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
-            IConfigurationRoot root = builder.Build();
+            var root = builder.Build();
 
             var instOpts = new EurekaInstanceOptions()
             {
@@ -78,7 +78,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
-            IConfigurationRoot root = builder.Build();
+            var root = builder.Build();
 
             var instOpts = new EurekaInstanceOptions();
 
@@ -101,7 +101,7 @@ namespace Steeltoe.Discovery.Eureka.Test
                 { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
             });
 
-            IConfigurationRoot root = builder.Build();
+            var root = builder.Build();
 
             var instOpts = new EurekaInstanceOptions()
             {
@@ -214,7 +214,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             EurekaPostConfigurer.UpdateConfiguration(config, null, instOpts);
 
-            EurekaInstanceOptions ro = instOpts;
+            var ro = instOpts;
 
             Assert.Equal("instanceId", ro.InstanceId);
             Assert.Equal("appName", ro.AppName);
@@ -378,9 +378,9 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -389,7 +389,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            EurekaServiceInfo si = sis[0];
+            var si = sis[0];
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -586,9 +586,9 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -597,7 +597,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            EurekaServiceInfo si = sis[0];
+            var si = sis[0];
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -795,9 +795,9 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);
@@ -806,7 +806,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            EurekaServiceInfo si = sis[0];
+            var si = sis[0];
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);

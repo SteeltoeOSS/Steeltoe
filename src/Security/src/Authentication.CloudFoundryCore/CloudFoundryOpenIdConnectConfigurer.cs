@@ -77,7 +77,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         internal static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = (context) =>
         {
             // get claimsId
-            ClaimsIdentity claimsId = context.Principal.Identity as ClaimsIdentity;
+            var claimsId = context.Principal.Identity as ClaimsIdentity;
 
             // get scopes
             var scopes = context.TokenEndpointResponse.Scope;

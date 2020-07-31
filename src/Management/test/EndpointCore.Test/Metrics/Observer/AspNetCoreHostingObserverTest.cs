@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
             act.Stop();
@@ -82,7 +82,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
 
             var context = GetHttpRequestMessage();
-            string exception = observer.GetException(context);
+            var exception = observer.GetException(context);
             Assert.Equal("None", exception);
 
             context = GetHttpRequestMessage();
@@ -139,7 +139,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
             context.Response.StatusCode = 500;
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             Thread.Sleep(1000);
             act.SetEndTime(DateTime.UtcNow);

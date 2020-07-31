@@ -35,13 +35,13 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointOwinMiddleware>();
 
-                HeapDumper obs = new HeapDumper(opts, logger: logger1);
+                var obs = new HeapDumper(opts, logger: logger1);
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointOwinMiddleware(null, ep, mopts, logger3);
                 var context = OwinTestHelpers.CreateRequest("GET", "/cloudfoundryapplication/heapdump", GetResponseBodyStream());
                 await middle.Invoke(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
-                byte[] buffer = new byte[1024];
+                var buffer = new byte[1024];
                 await context.Response.Body.ReadAsync(buffer, 0, 1024);
                 Assert.NotEqual(0, buffer[0]);
             }
@@ -52,28 +52,26 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                using (var server = TestServer.Create<Startup>())
-                {
-                    var client = server.HttpClient;
-                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
-                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                using var server = TestServer.Create<Startup>();
+                var client = server.HttpClient;
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
-                    Assert.True(result.Content.Headers.Contains("Content-Type"));
-                    var contentType = result.Content.Headers.GetValues("Content-Type");
-                    Assert.Equal("application/octet-stream", contentType.Single());
-                    Assert.True(result.Content.Headers.Contains("Content-Disposition"));
+                Assert.True(result.Content.Headers.Contains("Content-Type"));
+                var contentType = result.Content.Headers.GetValues("Content-Type");
+                Assert.Equal("application/octet-stream", contentType.Single());
+                Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                    string tempFile = Path.GetTempFileName();
-                    FileStream fs = new FileStream(tempFile, FileMode.Create);
-                    Stream input = await result.Content.ReadAsStreamAsync();
-                    await input.CopyToAsync(fs);
-                    fs.Close();
+                var tempFile = Path.GetTempFileName();
+                var fs = new FileStream(tempFile, FileMode.Create);
+                var input = await result.Content.ReadAsStreamAsync();
+                await input.CopyToAsync(fs);
+                fs.Close();
 
-                    FileStream fs2 = File.Open(tempFile, FileMode.Open);
-                    Assert.NotEqual(0, fs2.Length);
-                    fs2.Close();
-                    File.Delete(tempFile);
-                }
+                var fs2 = File.Open(tempFile, FileMode.Open);
+                Assert.NotEqual(0, fs2.Length);
+                fs2.Close();
+                File.Delete(tempFile);
             }
         }
 
@@ -82,7 +80,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
         {
             var opts = new HeapDumpEndpointOptions();
             var mopts = TestHelper.GetManagementOptions(opts);
-            HeapDumper obs = new HeapDumper(opts);
+            var obs = new HeapDumper(opts);
             var ep = new HeapDumpEndpoint(opts, obs);
             var middle = new HeapDumpEndpointOwinMiddleware(null, ep, mopts);
 
@@ -93,7 +91,7 @@ namespace Steeltoe.Management.EndpointOwin.HeapDump.Test
 
         private Stream GetResponseBodyStream()
         {
-            FileStream stream = new FileStream(Path.GetTempFileName(), FileMode.Create);
+            var stream = new FileStream(Path.GetTempFileName(), FileMode.Create);
             return stream;
         }
     }

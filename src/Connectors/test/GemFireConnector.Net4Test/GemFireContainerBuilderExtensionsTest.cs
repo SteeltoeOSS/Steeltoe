@@ -34,7 +34,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         public void RegisterGemFireConnection_Requires_Config()
         {
             // arrange
-            ContainerBuilder cb = new ContainerBuilder();
+            var cb = new ContainerBuilder();
 
             // act & assert
             Assert.Throws<ArgumentNullException>(() => GemFireContainerBuilderExtensions.RegisterGemFireConnection(cb, null, typeof(BasicAuthInitialize)));
@@ -44,7 +44,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         public void RegisterGemFireConnection_NoVCAPs_RegistersGemFire()
         {
             // arrange
-            ContainerBuilder containerBuilder = new ContainerBuilder();
+            var containerBuilder = new ContainerBuilder();
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
@@ -66,8 +66,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GemFireTestHelpers.SingleBinding_PivotalCloudCache_DevPlan_VCAP);
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+            var containerBuilder = new ContainerBuilder();
+            var configBuilder = new ConfigurationBuilder();
             configBuilder.AddCloudFoundry();
             var config = configBuilder.Build();
 
@@ -90,8 +90,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GemFireTestHelpers.MultipleBindings_PivotalCloudCache_VCAP);
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+            var containerBuilder = new ContainerBuilder();
+            var configBuilder = new ConfigurationBuilder();
             configBuilder.AddCloudFoundry();
             var config = configBuilder.Build();
 
@@ -108,8 +108,8 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GemFireTestHelpers.MultipleBindings_PivotalCloudCache_VCAP);
-            ContainerBuilder containerBuilder = new ContainerBuilder();
-            ConfigurationBuilder configBuilder = new ConfigurationBuilder();
+            var containerBuilder = new ContainerBuilder();
+            var configBuilder = new ConfigurationBuilder();
             configBuilder.AddCloudFoundry();
             var config = configBuilder.Build();
 

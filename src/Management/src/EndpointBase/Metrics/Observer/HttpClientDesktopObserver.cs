@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 return;
             }
 
-            Activity current = Activity.Current;
+            var current = Activity.Current;
             if (current == null)
             {
                 return;
@@ -114,7 +114,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (current.Duration.TotalMilliseconds > 0)
             {
-                ITagContext tagContext = GetTagContext(request, statusCode);
+                var tagContext = GetTagContext(request, statusCode);
                 StatsRecorder
                     .NewMeasureMap()
                     .Put(_clientTimeMeasure, current.Duration.TotalMilliseconds)

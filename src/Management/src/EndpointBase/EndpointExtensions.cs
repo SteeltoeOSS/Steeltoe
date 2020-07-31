@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint
 
         public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
         {
-            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out IManagementOptions matchingMgmtContext, exactMatch)
+            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out var matchingMgmtContext, exactMatch)
                 && endpoint.IsEnabled(matchingMgmtContext)
                 && endpoint.IsExposed(matchingMgmtContext)
                 && allowedMethods.Any(m => m.Method.Equals(httpMethod));

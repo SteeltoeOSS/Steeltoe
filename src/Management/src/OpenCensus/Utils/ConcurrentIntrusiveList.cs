@@ -22,7 +22,7 @@ namespace OpenCensus.Utils
     internal sealed class ConcurrentIntrusiveList<T> where T : IElement<T>
     {
         private readonly object lck = new object();
-        private T head = default(T);
+        private T head = default;
 
         public ConcurrentIntrusiveList()
         {
@@ -32,71 +32,71 @@ namespace OpenCensus.Utils
 
         public void AddElement(T element)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                if (element.Next != null || element.Previous != null || element.Equals(this.head))
+                if (element.Next != null || element.Previous != null || element.Equals(head))
                 {
                     throw new ArgumentOutOfRangeException("Element already in a list");
                 }
 
-                this.Count++;
-                if (this.head == null)
+                Count++;
+                if (head == null)
                 {
-                    this.head = element;
+                    head = element;
                 }
                 else
                 {
-                    this.head.Previous = element;
-                    element.Next = this.head;
-                    this.head = element;
+                    head.Previous = element;
+                    element.Next = head;
+                    head = element;
                 }
             }
         }
 
         public void RemoveElement(T element)
         {
-            lock (this.lck)
+            lock (lck)
             {
-                if (element.Next == null && element.Previous == null && !element.Equals(this.head))
+                if (element.Next == null && element.Previous == null && !element.Equals(head))
                 {
                     throw new ArgumentOutOfRangeException("Element not in the list");
                 }
 
-                this.Count--;
+                Count--;
                 if (element.Previous == null)
                 {
                     // This is the first element
-                    this.head = element.Next;
-                    if (this.head != null)
+                    head = element.Next;
+                    if (head != null)
                     {
                         // If more than one element in the list.
-                        this.head.Previous = default(T);
-                        element.Next = default(T);
+                        head.Previous = default;
+                        element.Next = default;
                     }
                 }
                 else if (element.Next == null)
                 {
                     // This is the last element, and there is at least another element because
                     // element.getPrev() != null.
-                    element.Previous.Next = default(T);
-                    element.Previous = default(T);
+                    element.Previous.Next = default;
+                    element.Previous = default;
                 }
                 else
                 {
                     element.Previous.Next = element.Next;
                     element.Next.Previous = element.Previous;
-                    element.Next = default(T);
-                    element.Previous = default(T);
+                    element.Next = default;
+                    element.Previous = default;
                 }
             }
         }
 
         public IList<T> Copy()
         {
-            lock (this.lck)
+            lock (lck)
             {
-                List<T> all = new List<T>(this.Count);
-                for (T e = this.head; e != null; e = e.Next)
+                var all = new List<T>(Count);
+                for (var e = head; e != null; e = e.Next)
                 {
                     all.Add(e);
                 }

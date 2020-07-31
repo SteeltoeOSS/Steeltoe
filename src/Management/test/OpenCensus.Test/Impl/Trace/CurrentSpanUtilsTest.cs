@@ -23,10 +23,10 @@ namespace OpenCensus.Trace.Test
 
     public class CurrentSpanUtilsTest
     {
-        private ISpan span;
-        private RandomGenerator random;
-        private ISpanContext spanContext;
-        private SpanOptions spanOptions;
+        private readonly ISpan span;
+        private readonly RandomGenerator random;
+        private readonly ISpanContext spanContext;
+        private readonly SpanOptions spanOptions;
 
         public CurrentSpanUtilsTest()
         {
@@ -53,7 +53,7 @@ namespace OpenCensus.Trace.Test
         public void WithSpan_CloseDetaches()
         {
             Assert.Null(CurrentSpanUtils.CurrentSpan);
-            IScope ws = CurrentSpanUtils.WithSpan(span, false);
+            var ws = CurrentSpanUtils.WithSpan(span, false);
             try
             {
                 Assert.Same(span, CurrentSpanUtils.CurrentSpan);
@@ -69,7 +69,7 @@ namespace OpenCensus.Trace.Test
         public void WithSpan_CloseDetachesAndEndsSpan()
         {
             Assert.Null(CurrentSpanUtils.CurrentSpan);
-            IScope ss = CurrentSpanUtils.WithSpan(span, true);
+            var ss = CurrentSpanUtils.WithSpan(span, true);
             try
             {
                 Assert.Same(span, CurrentSpanUtils.CurrentSpan);

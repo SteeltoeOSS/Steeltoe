@@ -55,23 +55,23 @@ namespace OpenCensus.Trace
 
         public IMessageEvent Build()
         {
-            string missing = string.Empty;
-            if (!this.type.HasValue)
+            var missing = string.Empty;
+            if (!type.HasValue)
             {
                 missing += " type";
             }
 
-            if (!this.messageId.HasValue)
+            if (!messageId.HasValue)
             {
                 missing += " messageId";
             }
 
-            if (!this.uncompressedMessageSize.HasValue)
+            if (!uncompressedMessageSize.HasValue)
             {
                 missing += " uncompressedMessageSize";
             }
 
-            if (!this.compressedMessageSize.HasValue)
+            if (!compressedMessageSize.HasValue)
             {
                 missing += " compressedMessageSize";
             }
@@ -82,10 +82,10 @@ namespace OpenCensus.Trace
             }
 
             return new MessageEvent(
-                this.type.Value,
-                this.messageId.Value,
-                this.uncompressedMessageSize.Value,
-                this.compressedMessageSize.Value);
+                type.Value,
+                messageId.Value,
+                uncompressedMessageSize.Value,
+                compressedMessageSize.Value);
         }
 
         internal MessageEventBuilder SetType(MessageEventType type)

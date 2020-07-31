@@ -25,7 +25,7 @@ namespace OpenCensus.Trace.Internal
         public static readonly BlankSpan Instance = new BlankSpan();
 
         private BlankSpan()
-            : base(SpanContext.Invalid, default(SpanOptions))
+            : base(SpanContext.Invalid, default)
         {
         }
 

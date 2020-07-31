@@ -58,8 +58,8 @@ namespace OpenCensus.Trace
         /// <returns>Span options instance.</returns>
         public EndSpanOptions Build()
         {
-            string missing = string.Empty;
-            if (!this.sampleToLocalSpanStore.HasValue)
+            var missing = string.Empty;
+            if (!sampleToLocalSpanStore.HasValue)
             {
                 missing += " sampleToLocalSpanStore";
             }
@@ -70,8 +70,8 @@ namespace OpenCensus.Trace
             }
 
             return new EndSpanOptions(
-                this.sampleToLocalSpanStore.Value,
-                this.status);
+                sampleToLocalSpanStore.Value,
+                status);
         }
     }
 }

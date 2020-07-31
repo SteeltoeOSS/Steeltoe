@@ -31,11 +31,11 @@ namespace OpenCensus.Trace.Config
 
         internal TraceParamsBuilder(TraceParams source)
         {
-            this.sampler = source.Sampler;
-            this.maxNumberOfAttributes = source.MaxNumberOfAttributes;
-            this.maxNumberOfAnnotations = source.MaxNumberOfAnnotations;
-            this.maxNumberOfMessageEvents = source.MaxNumberOfMessageEvents;
-            this.maxNumberOfLinks = source.MaxNumberOfLinks;
+            sampler = source.Sampler;
+            maxNumberOfAttributes = source.MaxNumberOfAttributes;
+            maxNumberOfAnnotations = source.MaxNumberOfAnnotations;
+            maxNumberOfMessageEvents = source.MaxNumberOfMessageEvents;
+            maxNumberOfLinks = source.MaxNumberOfLinks;
         }
 
         /// <summary>
@@ -99,28 +99,28 @@ namespace OpenCensus.Trace.Config
         /// <returns>Builder to chain operations.</returns>
         public TraceParams Build()
         {
-            string missing = string.Empty;
-            if (this.sampler == null)
+            var missing = string.Empty;
+            if (sampler == null)
             {
                 missing += " sampler";
             }
 
-            if (!this.maxNumberOfAttributes.HasValue)
+            if (!maxNumberOfAttributes.HasValue)
             {
                 missing += " maxNumberOfAttributes";
             }
 
-            if (!this.maxNumberOfAnnotations.HasValue)
+            if (!maxNumberOfAnnotations.HasValue)
             {
                 missing += " maxNumberOfAnnotations";
             }
 
-            if (!this.maxNumberOfMessageEvents.HasValue)
+            if (!maxNumberOfMessageEvents.HasValue)
             {
                 missing += " maxNumberOfMessageEvents";
             }
 
-            if (!this.maxNumberOfLinks.HasValue)
+            if (!maxNumberOfLinks.HasValue)
             {
                 missing += " maxNumberOfLinks";
             }
@@ -131,11 +131,11 @@ namespace OpenCensus.Trace.Config
             }
 
             return new TraceParams(
-                this.sampler,
-                this.maxNumberOfAttributes.Value,
-                this.maxNumberOfAnnotations.Value,
-                this.maxNumberOfMessageEvents.Value,
-                this.maxNumberOfLinks.Value);
+                sampler,
+                maxNumberOfAttributes.Value,
+                maxNumberOfAnnotations.Value,
+                maxNumberOfMessageEvents.Value,
+                maxNumberOfLinks.Value);
         }
     }
 }

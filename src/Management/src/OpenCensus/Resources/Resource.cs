@@ -70,8 +70,6 @@ namespace OpenCensus.Resources
             }
             catch (SecurityException ex)
             {
-                openCensusEnvironmentTags = string.Empty;
-
                 Log.FailedReadingEnvironmentVariableWarning(Constants.ResourceLabelsEnvironmentVariable, ex);
             }
 
@@ -104,36 +102,36 @@ namespace OpenCensus.Resources
         {
             if (rawEnvironmentTags == null)
             {
-                return new ITag[0] { };
+                return Array.Empty<ITag>();
             }
             else
             {
                 var labels = new List<ITag>();
-                string[] rawLabels = rawEnvironmentTags.Split(LabelListSplitter);
+                var rawLabels = rawEnvironmentTags.Split(LabelListSplitter);
 
-                Regex regex = new Regex("^\"|\"$", RegexOptions.Compiled);
+                var regex = new Regex("^\"|\"$", RegexOptions.Compiled);
                 
                 foreach (var rawLabel in rawLabels)
                 {
-                    string[] keyValuePair = rawLabel.Split(LabelKeyValueSplitter);
+                    var keyValuePair = rawLabel.Split(LabelKeyValueSplitter);
                     if (keyValuePair.Length != 2)
                     {
                         continue;
                     }
 
-                    string key = keyValuePair[0].Trim();
-                    string value = Regex.Replace(keyValuePair[1].Trim(), "^\"|\"$", string.Empty);
+                    var key = keyValuePair[0].Trim();
+                    var value = Regex.Replace(keyValuePair[1].Trim(), "^\"|\"$", string.Empty);
 
                     if (!IsValidAndNotEmpty(key))
                     {
                         Log.InvalidCharactersInResourceElement("Label key");
-                        return new ITag[0] { };
+                        return Array.Empty<ITag>();
                     }
 
                     if (!IsValid(value))
                     {
                         Log.InvalidCharactersInResourceElement("Label key");
-                        return new ITag[0] { };
+                        return Array.Empty<ITag>();
                     }
 
                     labels.Add(new Tag(TagKey.Create(key), TagValue.Create(value)));
