@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
     <ProjectReference Include="..\..\src\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj" />
     <ProjectReference Include="..\..\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />

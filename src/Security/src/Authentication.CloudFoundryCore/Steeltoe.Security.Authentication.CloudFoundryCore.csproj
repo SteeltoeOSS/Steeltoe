@@ -14,6 +14,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\Authentication.CloudFoundryBase\Steeltoe.Security.Authentication.CloudFoundryBase.csproj" />
     <ProjectReference Include="..\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" />
   </ItemGroup>

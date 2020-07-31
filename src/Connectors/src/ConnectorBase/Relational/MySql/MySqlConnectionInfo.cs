@@ -3,26 +3,34 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector.MySql
 {
-    public class MySqlConnectionInfo : IConnectionInfo
+    public class MySqlConnectionInfo : IConnectionInfo, IConnectionServiceInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
             var info = serviceName == null
               ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
               : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            return GetConnection(info, configuration);
+        }
 
+        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        {
+            return GetConnection((MySqlServiceInfo)serviceInfo, configuration);
+        }
+
+        private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
+        {
             var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
             var configurer = new MySqlProviderConfigurer();
             var connString = configurer.Configure(info, mySqlConfig);
             return new Connection
             {
                 ConnectionString = connString,
-                Name = "MySql" + serviceName?.Insert(0, "-")
+                Name = "MySql" + info?.Id?.Insert(0, "-")
             };
         }
     }

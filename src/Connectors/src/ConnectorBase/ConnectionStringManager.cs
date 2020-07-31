@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector
 {
@@ -19,6 +21,18 @@ namespace Steeltoe.Connector
             where T : IConnectionInfo, new()
         {
             return new T().Get(_configuration, serviceName);
+        }
+
+        internal Connection GetByTypeName(string typeName)
+        {
+            var connectionType = ConnectionTypeLocator.GetConnectionInfoType(typeName);
+            return (ReflectionHelpers.CreateInstance(connectionType) as IConnectionInfo).Get(_configuration, null);
+        }
+
+        internal Connection GetFromServiceInfo(IServiceInfo serviceInfo)
+        {
+            var connectionType = ConnectionTypeLocator.GetConnectionInfoType(serviceInfo);
+            return (ReflectionHelpers.CreateInstance(connectionType) as IConnectionInfo).Get(_configuration, serviceInfo.Id);
         }
     }
 }

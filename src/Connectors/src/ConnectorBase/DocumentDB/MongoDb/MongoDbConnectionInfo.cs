@@ -3,25 +3,33 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector.MongoDb
 {
-    public class MongoDbConnectionInfo : IConnectionInfo
+    public class MongoDbConnectionInfo : IConnectionInfo, IConnectionServiceInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
             var info = serviceName == null
                ? configuration.GetSingletonServiceInfo<MongoDbServiceInfo>()
                : configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+            return GetConnection(info, configuration);
+        }
 
+        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        {
+            return GetConnection((MongoDbServiceInfo)serviceInfo, configuration);
+        }
+
+        private Connection GetConnection(MongoDbServiceInfo info, IConfiguration configuration)
+        {
             var mongoConfig = new MongoDbConnectorOptions(configuration);
             var configurer = new MongoDbProviderConfigurer();
             return new Connection
             {
                 ConnectionString = configurer.Configure(info, mongoConfig),
-                Name = "MongoDb" + serviceName?.Insert(0, "-")
+                Name = "MongoDb" + info?.Id?.Insert(0, "-")
             };
         }
     }

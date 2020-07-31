@@ -118,6 +118,17 @@ namespace Steeltoe.Connector
             return config.GetSection("vcap:services").GetChildren().Any();
         }
 
+        public static IConfigurationBuilder AddConnectionStrings(this IConfigurationBuilder builder)
+        {
+            if (builder is null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.Add(new ConnectionStringConfigurationSource(builder.Sources));
+            return builder;
+        }
+
         internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration config)
         {
             var alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();

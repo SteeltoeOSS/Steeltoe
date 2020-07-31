@@ -7,21 +7,30 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Redis
 {
-    public class RedisConnectionInfo : IConnectionInfo
+    public class RedisConnectionInfo : IConnectionInfo, IConnectionServiceInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
             var info = serviceName == null
                 ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
                 : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+            return GetConnection(info, configuration);
+        }
 
+        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        {
+            return GetConnection((RedisServiceInfo)serviceInfo, configuration);
+        }
+
+        private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
+        {
             var redisConfig = new RedisCacheConnectorOptions(configuration);
             var configurer = new RedisCacheConfigurer();
-            var connString = configurer.Configure(info, redisConfig).ToString();
+            var connString = configurer.Configure(serviceInfo, redisConfig).ToString();
             return new Connection
             {
                 ConnectionString = connString,
-                Name = "Redis" + serviceName?.Insert(0, "-")
+                Name = "Redis" + serviceInfo.Id?.Insert(0, "-")
             };
         }
     }

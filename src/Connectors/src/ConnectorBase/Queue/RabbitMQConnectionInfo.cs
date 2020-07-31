@@ -7,20 +7,29 @@ using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.RabbitMQ
 {
-    public class RabbitMQConnectionInfo : IConnectionInfo
+    public class RabbitMQConnectionInfo : IConnectionInfo, IConnectionServiceInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
             var info = serviceName == null
               ? configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>()
               : configuration.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
+            return GetConnection(info, configuration);
+        }
 
+        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        {
+            return GetConnection((RabbitMQServiceInfo)serviceInfo, configuration);
+        }
+
+        private Connection GetConnection(RabbitMQServiceInfo info, IConfiguration configuration)
+        {
             var rabbitConfig = new RabbitMQProviderConnectorOptions(configuration);
             var configurer = new RabbitMQProviderConfigurer();
             return new Connection
             {
                 ConnectionString = configurer.Configure(info, rabbitConfig),
-                Name = "RabbitMQ" + serviceName?.Insert(0, "-")
+                Name = "RabbitMQ" + info?.Id?.Insert(0, "-")
             };
         }
     }
