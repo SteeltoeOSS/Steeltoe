@@ -12,15 +12,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixConfiguration config)
         {
-            using (StringWriter sw = new StringWriter())
+            using var sw = new StringWriter();
+            using (var writer = new JsonTextWriter(sw))
             {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    SerializeConfiguration(writer, config);
-                }
-
-                return sw.ToString();
+                SerializeConfiguration(writer, config);
             }
+
+            return sw.ToString();
         }
 
         private static void SerializeConfiguration(JsonTextWriter writer, HystrixConfiguration config)
@@ -30,8 +28,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             writer.WriteObjectFieldStart("commands");
             foreach (var entry in config.CommandConfig)
             {
-                IHystrixCommandKey key = entry.Key;
-                HystrixCommandConfiguration commandConfig = entry.Value;
+                var key = entry.Key;
+                var commandConfig = entry.Value;
                 WriteCommandConfigJson(writer, key, commandConfig);
             }
 
@@ -40,8 +38,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             writer.WriteObjectFieldStart("threadpools");
             foreach (var entry in config.ThreadPoolConfig)
             {
-                IHystrixThreadPoolKey threadPoolKey = entry.Key;
-                HystrixThreadPoolConfiguration threadPoolConfig = entry.Value;
+                var threadPoolKey = entry.Key;
+                var threadPoolConfig = entry.Value;
                 WriteThreadPoolConfigJson(writer, threadPoolKey, threadPoolConfig);
             }
 
@@ -50,8 +48,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             writer.WriteObjectFieldStart("collapsers");
             foreach (var entry in config.CollapserConfig)
             {
-                IHystrixCollapserKey collapserKey = entry.Key;
-                HystrixCollapserConfiguration collapserConfig = entry.Value;
+                var collapserKey = entry.Key;
+                var collapserConfig = entry.Value;
                 WriteCollapserConfigJson(writer, collapserKey, collapserConfig);
             }
 
@@ -65,7 +63,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteStringField("threadPoolKey", commandConfig.ThreadPoolKey.Name);
             json.WriteStringField("groupKey", commandConfig.GroupKey.Name);
             json.WriteObjectFieldStart("execution");
-            HystrixCommandConfiguration.HystrixCommandExecutionConfig executionConfig = commandConfig.ExecutionConfig;
+            var executionConfig = commandConfig.ExecutionConfig;
             json.WriteStringField("isolationStrategy", executionConfig.IsolationStrategy.ToString());
             json.WriteStringField("threadPoolKeyOverride", executionConfig.ThreadPoolKeyOverride);
             json.WriteBooleanField("requestCacheEnabled", executionConfig.IsRequestCacheEnabled);
@@ -78,7 +76,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteBooleanField("threadInterruptOnTimeout", executionConfig.IsThreadInterruptOnTimeout);
             json.WriteEndObject();
             json.WriteObjectFieldStart("metrics");
-            HystrixCommandConfiguration.HystrixCommandMetricsConfig metricsConfig = commandConfig.MetricsConfig;
+            var metricsConfig = commandConfig.MetricsConfig;
             json.WriteIntegerField("healthBucketSizeInMs", metricsConfig.HealthIntervalInMilliseconds);
             json.WriteIntegerField("percentileBucketSizeInMilliseconds", metricsConfig.RollingPercentileBucketSizeInMilliseconds);
             json.WriteIntegerField("percentileBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
@@ -87,7 +85,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteIntegerField("counterBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
             json.WriteEndObject();
             json.WriteObjectFieldStart("circuitBreaker");
-            HystrixCommandConfiguration.HystrixCommandCircuitBreakerConfig circuitBreakerConfig = commandConfig.CircuitBreakerConfig;
+            var circuitBreakerConfig = commandConfig.CircuitBreakerConfig;
             json.WriteBooleanField("enabled", circuitBreakerConfig.IsEnabled);
             json.WriteBooleanField("isForcedOpen", circuitBreakerConfig.IsForceOpen);
             json.WriteBooleanField("isForcedClosed", circuitBreakerConfig.IsForceOpen);
@@ -119,7 +117,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteIntegerField("timerDelayInMilliseconds", collapserConfig.TimerDelayInMilliseconds);
             json.WriteBooleanField("requestCacheEnabled", collapserConfig.IsRequestCacheEnabled);
             json.WriteObjectFieldStart("metrics");
-            HystrixCollapserConfiguration.CollapserMetricsConfig metricsConfig = collapserConfig.CollapserMetricsConfiguration;
+            var metricsConfig = collapserConfig.CollapserMetricsConfiguration;
             json.WriteIntegerField("percentileBucketSizeInMilliseconds", metricsConfig.RollingPercentileBucketSizeInMilliseconds);
             json.WriteIntegerField("percentileBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
             json.WriteBooleanField("percentileEnabled", metricsConfig.IsRollingPercentileEnabled);

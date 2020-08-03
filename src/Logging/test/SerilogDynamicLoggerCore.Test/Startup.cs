@@ -10,7 +10,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class Startup
     {
-        private ILogger<Startup> _logger;
+        private readonly ILogger<Startup> _logger;
 
         public Startup(ILogger<Startup> logger)
         {

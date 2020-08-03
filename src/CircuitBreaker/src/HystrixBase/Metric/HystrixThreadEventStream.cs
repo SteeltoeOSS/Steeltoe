@@ -26,38 +26,38 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         private static Action<HystrixCommandExecutionStarted> WriteCommandStartsToShardedStreams { get; } = (@event) =>
         {
-            HystrixCommandStartStream commandStartStream = HystrixCommandStartStream.GetInstance(@event.CommandKey);
+            var commandStartStream = HystrixCommandStartStream.GetInstance(@event.CommandKey);
             commandStartStream.Write(@event);
 
             if (@event.IsExecutedInThread)
             {
-                HystrixThreadPoolStartStream threadPoolStartStream = HystrixThreadPoolStartStream.GetInstance(@event.ThreadPoolKey);
+                var threadPoolStartStream = HystrixThreadPoolStartStream.GetInstance(@event.ThreadPoolKey);
                 threadPoolStartStream.Write(@event);
             }
         };
 
         private static Action<HystrixCommandCompletion> WriteCommandCompletionsToShardedStreams { get; } = (commandCompletion) =>
         {
-            HystrixCommandCompletionStream commandStream = HystrixCommandCompletionStream.GetInstance(commandCompletion.CommandKey);
+            var commandStream = HystrixCommandCompletionStream.GetInstance(commandCompletion.CommandKey);
             commandStream.Write(commandCompletion);
 
             if (commandCompletion.IsExecutedInThread || commandCompletion.IsResponseThreadPoolRejected)
             {
-                HystrixThreadPoolCompletionStream threadPoolStream = HystrixThreadPoolCompletionStream.GetInstance(commandCompletion.ThreadPoolKey);
+                var threadPoolStream = HystrixThreadPoolCompletionStream.GetInstance(commandCompletion.ThreadPoolKey);
                 threadPoolStream.Write(commandCompletion);
             }
         };
 
         private static Action<HystrixCollapserEvent> WriteCollapserExecutionsToShardedStreams { get; } = (collapserEvent) =>
         {
-            HystrixCollapserEventStream collapserStream = HystrixCollapserEventStream.GetInstance(collapserEvent.CollapserKey);
+            var collapserStream = HystrixCollapserEventStream.GetInstance(collapserEvent.CollapserKey);
             collapserStream.Write(collapserEvent);
         };
 
         internal HystrixThreadEventStream(int id)
         {
-            this._threadId = id;
-            this._threadName = "hystrix-" + _threadId;
+            _threadId = id;
+            _threadName = "hystrix-" + _threadId;
 
             _writeOnlyCommandStartSubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
             _writeOnlyCommandCompletionSubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
@@ -90,26 +90,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public void CommandExecutionStarted(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy, int currentConcurrency)
         {
-            HystrixCommandExecutionStarted @event = new HystrixCommandExecutionStarted(commandKey, threadPoolKey, isolationStrategy, currentConcurrency);
+            var @event = new HystrixCommandExecutionStarted(commandKey, threadPoolKey, isolationStrategy, currentConcurrency);
             _writeOnlyCommandStartSubject.OnNext(@event);
         }
 
         public void ExecutionDone(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
         {
-            HystrixCommandCompletion @event = HystrixCommandCompletion.From(executionResult, commandKey, threadPoolKey);
+            var @event = HystrixCommandCompletion.From(executionResult, commandKey, threadPoolKey);
             _writeOnlyCommandCompletionSubject.OnNext(@event);
         }
 
         public void CollapserResponseFromCache(IHystrixCollapserKey collapserKey)
         {
-            HystrixCollapserEvent collapserEvent = HystrixCollapserEvent.From(collapserKey, CollapserEventType.RESPONSE_FROM_CACHE, 1);
+            var collapserEvent = HystrixCollapserEvent.From(collapserKey, CollapserEventType.RESPONSE_FROM_CACHE, 1);
             _writeOnlyCollapserSubject.OnNext(collapserEvent);
         }
 
         public void CollapserBatchExecuted(IHystrixCollapserKey collapserKey, int batchSize)
         {
-            HystrixCollapserEvent batchExecution = HystrixCollapserEvent.From(collapserKey, CollapserEventType.BATCH_EXECUTED, 1);
-            HystrixCollapserEvent batchAdditions = HystrixCollapserEvent.From(collapserKey, CollapserEventType.ADDED_TO_BATCH, batchSize);
+            var batchExecution = HystrixCollapserEvent.From(collapserKey, CollapserEventType.BATCH_EXECUTED, 1);
+            var batchAdditions = HystrixCollapserEvent.From(collapserKey, CollapserEventType.ADDED_TO_BATCH, batchSize);
             _writeOnlyCollapserSubject.OnNext(batchExecution);
             _writeOnlyCollapserSubject.OnNext(batchAdditions);
         }

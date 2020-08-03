@@ -13,9 +13,9 @@ namespace Steeltoe.Management.Endpoint.Metrics
              return StatsExtensions.Sum(withTags, viewData.View);
          }
 
-         private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
-         {
-             Dictionary<TagValues, IAggregationData> results = new Dictionary<TagValues, IAggregationData>();
+        private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
+        {
+            var results = new Dictionary<TagValues, IAggregationData>();
 
              foreach (var kvp in aggMap)
              {

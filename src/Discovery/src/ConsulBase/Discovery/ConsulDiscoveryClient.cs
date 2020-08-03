@@ -139,7 +139,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
 
             async Task<IList<IServiceInstance>> GetAllInstancesAsync()
             {
-                queryOptions = queryOptions ?? QueryOptions.Default;
+                queryOptions ??= QueryOptions.Default;
                 var instances = new List<IServiceInstance>();
                 var result = await GetServicesAsync().ConfigureAwait(false);
                 foreach (var serviceId in result)

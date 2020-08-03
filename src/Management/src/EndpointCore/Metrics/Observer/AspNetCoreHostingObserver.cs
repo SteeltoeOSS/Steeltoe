@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 return;
             }
 
-            Activity current = Activity.Current;
+            var current = Activity.Current;
             if (current == null)
             {
                 return;

@@ -11,8 +11,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
         public HystrixCommandExecutionStarted(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy, int currentConcurrency)
             : base(commandKey, threadPoolKey)
         {
-            this._isolationStrategy = isolationStrategy;
-            this.CurrentConcurrency = currentConcurrency;
+            _isolationStrategy = isolationStrategy;
+            CurrentConcurrency = currentConcurrency;
         }
 
         public override bool IsExecutionStart

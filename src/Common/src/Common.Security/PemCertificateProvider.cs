@@ -9,8 +9,8 @@ namespace Steeltoe.Common.Security
 {
     public class PemCertificateProvider : ConfigurationProvider
     {
-        private IConfigurationRoot _certFileProvider;
-        private IConfigurationRoot _keyFileProvider;
+        private readonly IConfigurationRoot _certFileProvider;
+        private readonly IConfigurationRoot _keyFileProvider;
 
         public PemCertificateProvider(IConfigurationRoot certFileProvider, IConfigurationRoot keyFileProvider)
         {

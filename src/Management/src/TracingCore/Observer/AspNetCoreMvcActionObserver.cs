@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            string spanName = ExtractSpanName(descriptor);
+            var spanName = ExtractSpanName(descriptor);
             Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
 
             span.PutMvcControllerClass(ExtractControllerName(descriptor))

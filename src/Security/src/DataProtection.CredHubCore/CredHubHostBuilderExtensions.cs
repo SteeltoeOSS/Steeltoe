@@ -55,7 +55,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
                     try
                     {
                         // send the interpolate request to CredHub
-                        string interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).GetAwaiter().GetResult();
+                        var interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).GetAwaiter().GetResult();
 
                         // update the environment variable for this process
                         Environment.SetEnvironmentVariable("VCAP_SERVICES", interpolated);

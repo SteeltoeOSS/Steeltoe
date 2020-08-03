@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         }
 
         protected internal const int MAX_STORAGE = 1000;
-        private BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
+        private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new BlockingCollection<IHystrixInvokableInfo>(MAX_STORAGE);
 
         internal HystrixRequestLog()
         {
@@ -70,29 +70,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             try
             {
-                Dictionary<string, int> aggregatedCommandsExecuted = new Dictionary<string, int>();
-                Dictionary<string, int> aggregatedCommandExecutionTime = new Dictionary<string, int>();
+                var aggregatedCommandsExecuted = new Dictionary<string, int>();
+                var aggregatedCommandExecutionTime = new Dictionary<string, int>();
 
-                StringBuilder builder = new StringBuilder();
-                int estimatedLength = 0;
-                foreach (IHystrixInvokableInfo command in _allExecutedCommands)
+                var builder = new StringBuilder();
+                var estimatedLength = 0;
+                foreach (var command in _allExecutedCommands)
                 {
                     builder.Length = 0;
                     builder.Append(command.CommandKey.Name);
 
-                    List<HystrixEventType> events = new List<HystrixEventType>(command.ExecutionEvents);
+                    var events = new List<HystrixEventType>(command.ExecutionEvents);
                     if (events.Count > 0)
                     {
                         events.Sort();
 
                         // replicate functionality of Arrays.toString(events.toArray()) to append directly to existing StringBuilder
                         builder.Append("[");
-                        foreach (HystrixEventType ev in events)
+                        foreach (var ev in events)
                         {
                             switch (ev)
                             {
                                 case HystrixEventType.EMIT:
-                                    int numEmissions = command.NumberEmissions;
+                                    var numEmissions = command.NumberEmissions;
                                     if (numEmissions > 1)
                                     {
                                         builder.Append(ev).Append("x").Append(numEmissions).Append(", ");
@@ -104,7 +104,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                                     break;
                                 case HystrixEventType.FALLBACK_EMIT:
-                                    int numFallbackEmissions = command.NumberFallbackEmissions;
+                                    var numFallbackEmissions = command.NumberFallbackEmissions;
                                     if (numFallbackEmissions > 1)
                                     {
                                         builder.Append(ev).Append("x").Append(numFallbackEmissions).Append(", ");
@@ -144,9 +144,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         builder.Append("[Executed]");
                     }
 
-                    string display = builder.ToString();
+                    var display = builder.ToString();
                     estimatedLength += display.Length + 12; // add 12 chars to display length for appending totalExecutionTime and count below
-                    if (aggregatedCommandsExecuted.TryGetValue(display, out int counter))
+                    if (aggregatedCommandsExecuted.TryGetValue(display, out var counter))
                     {
                         aggregatedCommandsExecuted[display] = counter + 1;
                     }
@@ -156,7 +156,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         aggregatedCommandsExecuted.Add(display, 1);
                     }
 
-                    int executionTime = command.ExecutionTimeInMilliseconds;
+                    var executionTime = command.ExecutionTimeInMilliseconds;
                     if (executionTime < 0)
                     {
                         // do this so we don't create negative values or subtract values
@@ -178,7 +178,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                 builder.Length = 0;
                 builder.EnsureCapacity(estimatedLength);
-                foreach (string displayString in aggregatedCommandsExecuted.Keys)
+                foreach (var displayString in aggregatedCommandsExecuted.Keys)
                 {
                     if (builder.Length > 0)
                     {
@@ -186,10 +186,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                     }
 
                     builder.Append(displayString);
-                    int totalExecutionTime = aggregatedCommandExecutionTime[displayString];
+                    var totalExecutionTime = aggregatedCommandExecutionTime[displayString];
                     builder.Append("[").Append(totalExecutionTime).Append("ms]");
 
-                    int count = aggregatedCommandsExecuted[displayString];
+                    var count = aggregatedCommandsExecuted[displayString];
                     if (count > 1)
                     {
                         builder.Append("x").Append(count);

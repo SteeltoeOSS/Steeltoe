@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Linq;
 
@@ -23,13 +22,11 @@ namespace Steeltoe.Discovery.Eureka
 
         public override InstanceStatus GetStatus(InstanceStatus currentStatus)
         {
-            using (var scope = _scopeFactory.CreateScope())
-            {
-                _contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
-                var result = base.GetStatus(currentStatus);
-                _contributors = null;
-                return result;
-            }
+            using var scope = _scopeFactory.CreateScope();
+            _contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
+            var result = base.GetStatus(currentStatus);
+            _contributors = null;
+            return result;
         }
     }
 }

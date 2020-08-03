@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
@@ -20,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_Intializes_Defaults()
         {
-            EurekaInstanceOptions opts = new EurekaInstanceOptions();
+            var opts = new EurekaInstanceOptions();
             Assert.NotNull(opts.InstanceId);
             Assert.Equal("unknown", opts.AppName);
             Assert.Null(opts.AppGroupName);
@@ -112,9 +111,9 @@ namespace Steeltoe.Discovery.Eureka.Test
                     }
                 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName);

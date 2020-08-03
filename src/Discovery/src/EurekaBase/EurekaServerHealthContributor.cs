@@ -147,7 +147,7 @@ namespace Steeltoe.Discovery.Eureka
 
         internal void AddApplications(Applications applications, HealthCheckResult result)
         {
-            Dictionary<string, int> apps = new Dictionary<string, int>();
+            var apps = new Dictionary<string, int>();
 
             if (applications != null)
             {

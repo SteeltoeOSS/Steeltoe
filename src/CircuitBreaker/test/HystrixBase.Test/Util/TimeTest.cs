@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void WaitUntil_WaitsExpectedTime()
         {
-            Stopwatch stopWatch = new Stopwatch();
+            var stopWatch = new Stopwatch();
             stopWatch.Start();
             Time.WaitUntil(() => { return false; }, 1000);
             stopWatch.Stop();
@@ -27,7 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void Wait_WaitsExpectedTime()
         {
-            Stopwatch stopWatch = new Stopwatch();
+            var stopWatch = new Stopwatch();
             stopWatch.Start();
             Time.Wait(1000);
             stopWatch.Stop();

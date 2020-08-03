@@ -5,7 +5,6 @@
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Xunit;
 
@@ -23,11 +22,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void ApplicationListConstructor__AddsAppsFromList()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1" });
             app2.Add(new InstanceInfo() { InstanceId = "id2" });
 
@@ -41,7 +40,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_ThrowsIfAppNull()
         {
-            Applications apps = new Applications();
+            var apps = new Applications();
             var ex = Assert.Throws<ArgumentNullException>(() => apps.Add(null));
             Assert.Contains("app", ex.Message);
         }
@@ -49,7 +48,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add__DoesNotAddAppWithNullInstanceId()
         {
-            Application app = new Application("app");
+            var app = new Application("app");
             app.Add(new InstanceInfo { InstanceId = null });
             Assert.Equal(0, app.Count);
         }
@@ -57,11 +56,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_AddsTo_ApplicationMap()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1" });
             app2.Add(new InstanceInfo() { InstanceId = "id2" });
 
@@ -78,17 +77,17 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_UpdatesExisting_ApplicationMap()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1" });
             app2.Add(new InstanceInfo() { InstanceId = "id2" });
 
             var apps = new Applications(new List<Application>() { app1, app2 });
 
-            Application app1updated = new Application("app1");
+            var app1updated = new Application("app1");
             app1updated.Add(new InstanceInfo() { InstanceId = "id3" });
             app1updated.Add(new InstanceInfo() { InstanceId = "id4" });
 
@@ -111,11 +110,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_AddsTo_VirtualHostInstanceMaps()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -141,11 +140,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetRegisteredApplications_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1" });
             app2.Add(new InstanceInfo() { InstanceId = "id2" });
 
@@ -161,11 +160,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void RemoveInstanceFromVip_UpdatesApp_RemovesFromVirtualHostInstanceMaps()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -194,7 +193,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Single(apps.VirtualHostInstanceMap);
             Assert.False(apps.VirtualHostInstanceMap.ContainsKey("vapp1".ToUpperInvariant()));
             Assert.True(apps.VirtualHostInstanceMap.ContainsKey("vapp2".ToUpperInvariant()));
-            Assert.False(apps.VirtualHostInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> tryValue));
+            Assert.False(apps.VirtualHostInstanceMap.TryGetValue("vapp1".ToUpperInvariant(), out var tryValue));
             Assert.Equal(2, apps.VirtualHostInstanceMap["vapp2".ToUpperInvariant()].Count);
 
             Assert.NotNull(apps.SecureVirtualHostInstanceMap);
@@ -209,11 +208,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetRegisteredApplication_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1" });
             app2.Add(new InstanceInfo() { InstanceId = "id2" });
 
@@ -230,7 +229,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetRegisteredApplication_ThrowsIfAppNull()
         {
-            Applications apps = new Applications();
+            var apps = new Applications();
             var ex = Assert.Throws<ArgumentException>(() => apps.GetRegisteredApplication(null));
             Assert.Contains("appName", ex.Message);
         }
@@ -238,7 +237,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetInstancesBySecureVirtualHostName_ThrowsIfAddressNull()
         {
-            Applications apps = new Applications();
+            var apps = new Applications();
             var ex = Assert.Throws<ArgumentException>(() => apps.GetInstancesBySecureVirtualHostName(null));
             Assert.Contains("secureVirtualHostName", ex.Message);
         }
@@ -246,7 +245,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetInstancesByVirtualHostName_ThrowsIfAddressNull()
         {
-            Applications apps = new Applications();
+            var apps = new Applications();
             var ex = Assert.Throws<ArgumentException>(() => apps.GetInstancesByVirtualHostName(null));
             Assert.Contains("virtualHostName", ex.Message);
         }
@@ -254,11 +253,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetInstancesBySecureVirtualHostName_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -287,11 +286,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void GetInstancesByVirtualHostName_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -320,11 +319,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void UpdateFromDelta_EmptyDelta_NoChange()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -368,11 +367,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void UpdateFromDelta_AddNewAppNewInstance_UpdatesCorrectly()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -381,7 +380,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.Add(app2);
 
             var delta = new Applications();
-            Application app3 = new Application("app3");
+            var app3 = new Application("app3");
             app3.Add(new InstanceInfo() { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.ADDED });
             delta.Add(app3);
             apps.UpdateFromDelta(delta);
@@ -430,11 +429,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void UpdateFromDelta_ExistingAppWithAddNewInstance_UpdatesCorrectly()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
 
@@ -443,7 +442,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.Add(app2);
 
             var delta = new Applications();
-            Application deltaApp3 = new Application("app2");
+            var deltaApp3 = new Application("app2");
             deltaApp3.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.ADDED });
             delta.Add(deltaApp3);
             apps.UpdateFromDelta(delta);
@@ -482,11 +481,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void UpdateFromDelta_ExistingAppWithModifyInstance_UpdatesCorrectly()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.DOWN });
 
@@ -495,7 +494,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.Add(app2);
 
             var delta = new Applications();
-            Application deltaApp3 = new Application("app2");
+            var deltaApp3 = new Application("app2");
             deltaApp3.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP, Actiontype = ActionType.MODIFIED });
             delta.Add(deltaApp3);
             apps.UpdateFromDelta(delta);
@@ -537,11 +536,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void UpdateFromDelta_ExistingAppWithRemovedInstance_UpdatesCorrectly()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.DOWN });
 
@@ -550,7 +549,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.Add(app2);
 
             var delta = new Applications();
-            Application deltaApp3 = new Application("app2");
+            var deltaApp3 = new Application("app2");
             deltaApp3.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Actiontype = ActionType.DELETED });
             delta.Add(deltaApp3);
             apps.UpdateFromDelta(delta);
@@ -592,11 +591,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void ComputeHashCode_ReturnsExpected()
         {
-            Application app1 = new Application("app1");
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
             app1.Add(new InstanceInfo() { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
             app2.Add(new InstanceInfo() { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
 
@@ -605,19 +604,19 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             apps.Add(app2);
 
             var delta = new Applications();
-            Application app3 = new Application("app3");
+            var app3 = new Application("app3");
             app3.Add(new InstanceInfo() { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", Actiontype = ActionType.ADDED, Status = InstanceStatus.STARTING });
             delta.Add(app3);
             apps.UpdateFromDelta(delta);
 
-            string hashcode = apps.ComputeHashCode();
+            var hashcode = apps.ComputeHashCode();
             Assert.Equal("DOWN_2_OUT_OF_SERVICE_1_STARTING_1_UP_1_", hashcode);
         }
 
         [Fact]
         public void FromJsonApplications_Correct()
         {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo()
             {
                 InstanceId = "InstanceId",
                 AppName = "myApp",
@@ -654,27 +653,27 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 Actiontype = ActionType.ADDED,
                 AsgName = "AsgName"
             };
-            JsonApplication japp = new JsonApplication()
+            var japp = new JsonApplication()
             {
                 Name = "myApp",
                 Instances = new List<JsonInstanceInfo> { jinfo }
             };
 
-            JsonApplications japps = new JsonApplications()
+            var japps = new JsonApplications()
             {
                 AppsHashCode = "AppsHashCode",
                 VersionDelta = 1L,
                 Applications = new List<JsonApplication>() { japp }
             };
 
-            Applications apps = Applications.FromJsonApplications(japps);
+            var apps = Applications.FromJsonApplications(japps);
 
             Assert.Equal("AppsHashCode", apps.AppsHashCode);
             Assert.Equal(1, apps.Version);
             Assert.NotNull(apps.ApplicationMap);
             Assert.Single(apps.ApplicationMap);
 
-            Application app = apps.GetRegisteredApplication("myApp");
+            var app = apps.GetRegisteredApplication("myApp");
 
             // Verify
             Assert.NotNull(app);
@@ -683,7 +682,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(1, app.Count);
             Assert.Equal(1, app.Instances.Count);
             Assert.NotNull(app.GetInstance("InstanceId"));
-            InstanceInfo info = app.GetInstance("InstanceId");
+            var info = app.GetInstance("InstanceId");
 
             Assert.Equal("InstanceId", info.InstanceId);
             Assert.Equal("myApp", info.AppName);
@@ -725,7 +724,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJsonApplications_WithMissingInstanceId()
         {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo()
             {
                 // InstanceId = "InstanceId",
                 AppName = "myApp",
@@ -762,27 +761,27 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 Actiontype = ActionType.ADDED,
                 AsgName = "AsgName"
             };
-            JsonApplication japp = new JsonApplication()
+            var japp = new JsonApplication()
             {
                 Name = "myApp",
                 Instances = new List<JsonInstanceInfo> { jinfo }
             };
 
-            JsonApplications japps = new JsonApplications()
+            var japps = new JsonApplications()
             {
                 AppsHashCode = "AppsHashCode",
                 VersionDelta = 1L,
                 Applications = new List<JsonApplication>() { japp }
             };
 
-            Applications apps = Applications.FromJsonApplications(japps);
+            var apps = Applications.FromJsonApplications(japps);
 
             Assert.Equal("AppsHashCode", apps.AppsHashCode);
             Assert.Equal(1, apps.Version);
             Assert.NotNull(apps.ApplicationMap);
             Assert.Single(apps.ApplicationMap);
 
-            Application app = apps.GetRegisteredApplication("myApp");
+            var app = apps.GetRegisteredApplication("myApp");
 
             // Verify
             Assert.NotNull(app);

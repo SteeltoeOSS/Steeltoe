@@ -18,7 +18,8 @@ namespace Steeltoe.Connector.Redis
                 throw new ArgumentNullException(nameof(config));
             }
 
-            return config.CreateRedisServiceConnectorFactory(config, serviceName);
+            var redisConfig = new RedisCacheConnectorOptions(config);
+            return config.CreateRedisServiceConnectorFactory(redisConfig, serviceName);
         }
 
         public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration, string serviceName = null)

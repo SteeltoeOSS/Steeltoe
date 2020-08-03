@@ -40,8 +40,8 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Initialize_WithBothConfigs_InitializesAll()
         {
-            EurekaInstanceConfig instanceConfig = new EurekaInstanceConfig();
-            EurekaClientConfig clientConfig = new EurekaClientConfig()
+            var instanceConfig = new EurekaInstanceConfig();
+            var clientConfig = new EurekaClientConfig()
             {
                 ShouldRegisterWithEureka = false,
                 ShouldFetchRegistry = false
@@ -60,7 +60,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Initialize_WithClientConfig_InitializesAll()
         {
-            EurekaClientConfig clientConfig = new EurekaClientConfig()
+            var clientConfig = new EurekaClientConfig()
             {
                 ShouldRegisterWithEureka = false,
                 ShouldFetchRegistry = false

@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestSuccess()
         {
             new TestCommand("A", false, true).Execute();
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             new TestCommand("A", false, true).Execute();
             new TestCommand("A", false, true).Execute();
             new TestCommand("A", false, true).Execute();
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             new TestCommand("A", true, false).Execute();
             new TestCommand("A", true, false).Execute();
             new TestCommand("A", true, false).Execute();
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -82,7 +82,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
             }
 
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -97,7 +97,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // 1 timeout
             try
             {
-                for (int i = 0; i < 1; i++)
+                for (var i = 0; i < 1; i++)
                 {
                     result = new TestCommand("A", false, false, true).Observe();
                 }
@@ -115,7 +115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
 
             // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -125,7 +125,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestManyTimeouts()
         {
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 TestTimeout();
                 Reset();
@@ -165,7 +165,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             {
             }
 
-            string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+            var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
             // strip the actual count so we can compare reliably
             log = Regex.Replace(log, DIGITS_REGEX, "[");
@@ -175,13 +175,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestMaxLimit()
         {
-            for (int i = 0; i < HystrixRequestLog.MAX_STORAGE; i++)
+            for (var i = 0; i < HystrixRequestLog.MAX_STORAGE; i++)
             {
                 new TestCommand("A", false, true).Execute();
             }
 
             // then execute again some more
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 new TestCommand("A", false, true).Execute();
             }
@@ -208,9 +208,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.value = value;
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
-                this.timeout = false;
-                this.useFallback = true;
-                this.useCache = true;
+                timeout = false;
+                useFallback = true;
+                useCache = true;
             }
 
             public TestCommand(string value, bool fail, bool failOnFallback)
@@ -219,9 +219,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.value = value;
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
-                this.timeout = false;
-                this.useFallback = true;
-                this.useCache = true;
+                timeout = false;
+                useFallback = true;
+                useCache = true;
             }
 
             public TestCommand(string value, bool fail, bool failOnFallback, bool timeout)
@@ -235,8 +235,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 this.fail = fail;
                 this.failOnFallback = failOnFallback;
                 this.timeout = timeout;
-                this.useFallback = false;
-                this.useCache = false;
+                useFallback = false;
+                useCache = false;
             }
 
             protected override string Run()

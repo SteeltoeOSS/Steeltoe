@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void DefaultConstructor_InitializedWithDefaults()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
+            var config = new EurekaInstanceConfig();
 
             var thisHostName = config.GetHostName(false);
             var thisHostAddress = config.GetHostAddress(false);

@@ -45,7 +45,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 
         internal Exception SetExceptionIfResponseNotReceived(Exception e, string exceptionMessage)
         {
-            Exception newException = e;
+            var newException = e;
 
             if (!_complete)
             {

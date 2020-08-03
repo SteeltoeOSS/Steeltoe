@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new CloudFoundryConfigurationProvider(this.SettingsReader ?? new CloudFoundryEnvironmentSettingsReader());
+            return new CloudFoundryConfigurationProvider(SettingsReader ?? new CloudFoundryEnvironmentSettingsReader());
         }
     }
 }

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;

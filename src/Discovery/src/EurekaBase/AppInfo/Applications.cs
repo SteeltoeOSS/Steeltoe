@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Applications
     {
-        private object _addRemoveInstanceLock = new object();
+        private readonly object _addRemoveInstanceLock = new object();
 
         public string AppsHashCode { get; internal set; }
 
@@ -158,13 +158,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 var addressUppper = address.ToUpperInvariant();
                 dict.TryGetValue(addressUppper, out var instances);
-                InstanceInfo removed = null;
                 if (instances != null)
                 {
-                    instances.TryRemove(info.InstanceId, out removed);
+                    instances.TryRemove(info.InstanceId, out _);
                     if (instances.Count <= 0)
                     {
-                        dict.TryRemove(addressUppper, out instances);
+                        _ = dict.TryRemove(addressUppper, out _);
                     }
                 }
             }

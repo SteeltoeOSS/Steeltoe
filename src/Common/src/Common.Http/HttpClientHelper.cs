@@ -123,7 +123,7 @@ namespace Steeltoe.Common.Http
 
                 if (accessToken != null)
                 {
-                    AuthenticationHeaderValue auth = new AuthenticationHeaderValue("Bearer", accessToken);
+                    var auth = new AuthenticationHeaderValue("Bearer", accessToken);
                     request.Headers.Authorization = auth;
                 }
             }
@@ -146,7 +146,7 @@ namespace Steeltoe.Common.Http
             var request = new HttpRequestMessage(method, requestUri);
             if (!string.IsNullOrEmpty(password))
             {
-                AuthenticationHeaderValue auth = new AuthenticationHeaderValue(
+                var auth = new AuthenticationHeaderValue(
                     "Basic",
                     GetEncodedUserPassword(userName, password));
                 request.Headers.Authorization = auth;

@@ -21,14 +21,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
         private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>>();
         private readonly IHystrixCollapserOptions _properties;
 
-        private ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
-        private AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+        private readonly ReaderWriterLockSlim _batchLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);
+        private readonly AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
 
         public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, int maxBatchSize)
         {
-            this._properties = properties;
-            this._commandCollapser = commandCollapser;
-            this._maxBatchSize = maxBatchSize;
+            _properties = properties;
+            _commandCollapser = commandCollapser;
+            _maxBatchSize = maxBatchSize;
         }
 
         public CollapsedRequest<RequestResponseType, RequestArgumentType> Offer(RequestArgumentType arg, CancellationToken token)
@@ -58,8 +58,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     }
                     else
                     {
-                        CollapsedRequest<RequestResponseType, RequestArgumentType> collapsedRequest = new CollapsedRequest<RequestResponseType, RequestArgumentType>(arg, token);
-                        TaskCompletionSource<RequestResponseType> tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
+                        var collapsedRequest = new CollapsedRequest<RequestResponseType, RequestArgumentType>(arg, token);
+                        var tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
                         collapsedRequest.CompletionSource = tcs;
 
                         CollapsedRequest<RequestResponseType, RequestArgumentType> existing = null;
@@ -87,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          */
                         if (existing != collapsedRequest)
                         {
-                            bool requestCachingEnabled = _properties.RequestCacheEnabled;
+                            var requestCachingEnabled = _properties.RequestCacheEnabled;
                             if (requestCachingEnabled)
                             {
                                 return existing;
@@ -125,7 +125,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                 /* wait for 'offer'/'remove' threads to finish before executing the batch so 'requests' is complete */
                 _batchLock.EnterWriteLock();
 
-                List<CollapsedRequest<RequestResponseType, RequestArgumentType>> args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+                var args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
                 try
                 {
                     // Check for cancel
@@ -150,16 +150,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                     if (args.Count > 0)
                     {
                         // shard batches
-                        ICollection<ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>>> shards = _commandCollapser.DoShardRequests(args);
+                        var shards = _commandCollapser.DoShardRequests(args);
 
                         // for each shard execute its requests
-                        foreach (ICollection<ICollapsedRequest<RequestResponseType, RequestArgumentType>> shardRequests in shards)
+                        foreach (var shardRequests in shards)
                         {
                             try
                             {
                                 // create a new command to handle this batch of requests
-                                HystrixCommand<BatchReturnType> command = _commandCollapser.DoCreateObservableCommand(shardRequests);
-                                BatchReturnType result = command.Execute();
+                                var command = _commandCollapser.DoCreateObservableCommand(shardRequests);
+                                var result = command.Execute();
 
                                 try
                                 {
@@ -168,7 +168,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                                 catch (Exception mapException)
                                 {
                                     // logger.debug("Exception mapping responses to requests.", e);
-                                    foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in args)
+                                    foreach (var request in args)
                                     {
                                         try
                                         {
@@ -260,7 +260,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                          *
                          * This safety-net just prevents the CollapsedRequestFutureImpl.get() from waiting on the CountDownLatch until its max timeout.
                          */
-                        foreach (CollapsedRequest<RequestResponseType, RequestArgumentType> request in _argumentMap.Values)
+                        foreach (var request in _argumentMap.Values)
                         {
                             try
                             {
@@ -332,7 +332,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
                         _nullArg.Value = null;
                     }
 
-                    if (_argumentMap.TryRemove(arg, out CollapsedRequest<RequestResponseType, RequestArgumentType> existing))
+                    if (_argumentMap.TryRemove(arg, out _))
                     {
                         // Log
                     }

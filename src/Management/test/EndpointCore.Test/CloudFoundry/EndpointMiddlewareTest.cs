@@ -11,9 +11,7 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -57,8 +55,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             var context = CreateRequest("GET", "/");
             await middle.HandleCloudFoundryRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
         }
 
@@ -89,17 +87,15 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
                 .UseStartup<Startup>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
 
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
 
-                // send the request
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-                var json = await result.Content.ReadAsStringAsync();
+            // send the request
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+            var json = await result.Content.ReadAsStringAsync();
 
-                // assert
-                Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
-            }
+            // assert
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
         }
 
         private HttpContext CreateRequest(string method, string path)

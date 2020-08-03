@@ -19,9 +19,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolEventCounterStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingThreadPoolEventCounterStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<long[]>
         {
@@ -248,7 +248,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // should see 10 SUCCESSes, 2 SEMAPHORE_REJECTED and 2 FALLBACK_SUCCESSes
             var saturators = new List<Command>();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 saturators.Add(Command.From(groupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
             }
@@ -298,7 +298,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
             var saturators = new List<Command>();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 saturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.SUCCESS, 500));
             }
@@ -394,7 +394,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             // fallback semaphore size is 5.  So let 5 commands saturate that semaphore, then
             // let 2 more commands go to fallback.  they should get rejected by the fallback-semaphore
             var fallbackSaturators = new List<Command>();
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 fallbackSaturators.Add(CommandStreamTest.Command.From(groupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
             }

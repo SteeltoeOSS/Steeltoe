@@ -18,7 +18,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         public void Add(TimeSpan timeSpan)
         {
-            UtcNow = UtcNow + timeSpan;
+            UtcNow += timeSpan;
         }
     }
 }

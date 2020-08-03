@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
@@ -41,9 +40,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 
         private static string GetRequestUri(HttpRequest request)
         {
-            string scheme = request.Scheme;
+            var scheme = request.Scheme;
 
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
             {
                 scheme = headerScheme.ToString();
             }

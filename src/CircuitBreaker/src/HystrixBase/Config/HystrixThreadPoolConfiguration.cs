@@ -21,7 +21,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
         {
             ThreadPoolKey = threadPoolKey;
             CoreSize = coreSize;
-            this._maximumSize = maximumSize;
+            _maximumSize = maximumSize;
             MaxQueueSize = maxQueueSize;
             QueueRejectionThreshold = queueRejectionThreshold;
             KeepAliveTimeInMinutes = keepAliveTimeInMinutes;

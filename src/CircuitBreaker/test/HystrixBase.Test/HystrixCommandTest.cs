@@ -36,7 +36,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSuccess()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.EXECUTE_VALUE, command.Execute());
 
             Assert.Null(command.FailedExecutionException);
@@ -54,7 +54,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionMultipleTimes()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
             Assert.False(command.IsExecutionComplete);
 
             // first should succeed
@@ -87,7 +87,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHystrixFailureWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 command.Execute();
@@ -112,7 +112,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 command.Execute();
@@ -137,7 +137,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, command.Execute());
             Assert.Equal("Execution Failure for TestHystrixCommand", command.FailedExecutionException.Message);
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -152,11 +152,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionRejectionWithFallbackException()
         {
-            List<Thread> threads = new List<Thread>();
-            int threadRunCount = 0;
-            int exceptionCount = 0;
+            var threads = new List<Thread>();
+            var threadRunCount = 0;
+            var exceptionCount = 0;
 
-            for (int i = 0; i < 15; i++)
+            for (var i = 0; i < 15; i++)
             {
                 var thread = new Thread(() =>
                 {
@@ -201,7 +201,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithFallbackFailure()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
             try
             {
                 command.Execute();
@@ -228,8 +228,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestQueueSuccess()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
-            Task<int> future = command.ExecuteAsync();
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
+            var future = command.ExecuteAsync();
             Assert.Equal(FlexibleTestHystrixCommand.EXECUTE_VALUE, future.Result);
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
             Assert.True(command.IsSuccessfulExecution);
@@ -243,7 +243,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueKnownFailureWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 var result = await command.ExecuteAsync();
@@ -268,7 +268,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueUnknownFailureWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 var result = await command.ExecuteAsync();
@@ -293,10 +293,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestQueueFailureWithFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
             try
             {
-                Task<int> future = command.ExecuteAsync();
+                var future = command.ExecuteAsync();
                 Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, future.Result);
             }
             catch (Exception e)
@@ -317,7 +317,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueFailureWithFallbackFailure()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
             try
             {
                 var result = await command.ExecuteAsync();
@@ -341,7 +341,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestObserveSuccess()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.EXECUTE_VALUE, await command.Observe().SingleAsync());
             Assert.Null(command.FailedExecutionException);
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -373,11 +373,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCallbackThreadForThreadIsolation()
         {
-            AtomicReference<Thread> commandThread = new AtomicReference<Thread>();
-            AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
+            var commandThread = new AtomicReference<Thread>();
+            var subscribeThread = new AtomicReference<Thread>();
 
             TestHystrixCommand<bool> command = new TestCallbackThreadForThreadIsolation_TestHystrixCommand(commandThread, TestHystrixCommand<bool>.TestPropsBuilder());
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             command.ToObservable().Subscribe(
             (args) =>
             {
@@ -433,8 +433,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCallbackThreadForSemaphoreIsolation()
         {
-            AtomicReference<Thread> commandThread = new AtomicReference<Thread>();
-            AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
+            var commandThread = new AtomicReference<Thread>();
+            var subscribeThread = new AtomicReference<Thread>();
 
             var builder = TestHystrixCommand<bool>.TestPropsBuilder();
             var opts = HystrixCommandOptionsTest.GetUnitTestOptions();
@@ -442,7 +442,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             builder.SetCommandOptionDefaults(opts);
             TestHystrixCommand<bool> command = new TestCallbackThreadForSemaphoreIsolation_TestHystrixCommand(commandThread, builder);
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
             command.ToObservable().Subscribe(
             (args) =>
             {
@@ -468,7 +468,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             output.WriteLine("Command Thread: " + commandThread.Value);
             output.WriteLine("Subscribe Thread: " + subscribeThread.Value);
 
-            int mainThreadId = Thread.CurrentThread.ManagedThreadId;
+            var mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
             // semaphore should be on the calling thread
             Assert.True(commandThread.Value.ManagedThreadId.Equals(mainThreadId));
@@ -479,13 +479,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCircuitBreakerReportsOpenIfForcedOpen()
         {
-            HystrixCommandOptions opts = new HystrixCommandOptions()
+            var opts = new HystrixCommandOptions()
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP"),
                 CircuitBreakerForceOpen = true
             };
 
-            HystrixCommand<bool> cmd = new HystrixCommand<bool>(opts, () => true, () => false);
+            var cmd = new HystrixCommand<bool>(opts, () => true, () => false);
 
             Assert.False(cmd.Execute()); // fallback should fire
             output.WriteLine("RESULT : " + cmd.ExecutionEvents);
@@ -496,13 +496,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCircuitBreakerReportsClosedIfForcedClosed()
         {
-            HystrixCommandOptions opts = new HystrixCommandOptions()
+            var opts = new HystrixCommandOptions()
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("GROUP"),
                 CircuitBreakerForceOpen = false,
                 CircuitBreakerForceClosed = true
             };
-            HystrixCommand<bool> cmd = new HystrixCommand<bool>(opts, () => true, () => false);
+            var cmd = new HystrixCommand<bool>(opts, () => true, () => false);
 
             Assert.True(cmd.Execute()); // fallback should fire
             output.WriteLine("RESULT : " + cmd.ExecutionEvents);
@@ -513,13 +513,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker(key);
+            var key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
+            var circuitBreaker = new TestCircuitBreaker(key);
 
             /* fail 3 times and then it should trip the circuit and stop executing */
 
             // failure 1
-            TestHystrixCommand<int> attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
+            var attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
             await attempt1.ExecuteAsync();
 
@@ -532,7 +532,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(attempt1.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (1)");
 
             // failure 2 with a different command, same circuit breaker
-            TestHystrixCommand<int> attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
+            var attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt2.ExecuteAsync();
 
             // Time.Wait(100);
@@ -544,7 +544,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(attempt2.IsResponseShortCircuited, "Circuitbreaker unexpectedly short circuited (2)");
 
             // failure 3 of the Hystrix, 2nd for this particular HystrixCommand
-            TestHystrixCommand<int> attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
+            var attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt3.ExecuteAsync();
 
             // Time.Wait(150);
@@ -562,7 +562,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.True(attempt3.IsCircuitBreakerOpen, "Circuitbreaker unexpectedly closed (3)");
 
             // attempt 4
-            TestHystrixCommand<int> attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
+            var attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS, circuitBreaker);
             await attempt4.ExecuteAsync();
 
             // Time.Wait(100);
@@ -587,7 +587,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSuccessWithCircuitBreakerDisabled()
         {
-            TestHystrixCommand<int> command = GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
+            var command = GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.EXECUTE_VALUE, command.Execute());
 
             Assert.Equal(0, command.Builder.Metrics.CurrentConcurrentExecutionCount);
@@ -601,7 +601,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
+            var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             try
             {
                 command.Execute();
@@ -642,7 +642,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutWithFallback()
         {
-            TestHystrixCommand<int> command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
+            var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
             Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, command.Execute());
 
             // the time should be 50+ since we timeout at 50ms
@@ -661,7 +661,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutFallbackFailure()
         {
-            TestHystrixCommand<int> command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
+            var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
             try
             {
                 command.Execute();
@@ -696,7 +696,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCountersOnExecutionTimeout()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
             command.Execute();
 
             /* wait long enough for the command to have finished */
@@ -721,7 +721,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueuedExecutionTimeoutWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             try
             {
                 var result = await command.ExecuteAsync();
@@ -749,7 +749,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueuedExecutionTimeoutWithFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
             Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, await command.ExecuteAsync());
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_SUCCESS);
             Assert.NotNull(command.ExecutionException);
@@ -761,7 +761,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task TestQueuedExecutionTimeoutFallbackFailure()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
             try
             {
                 _ = await command.ExecuteAsync();
@@ -786,7 +786,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             try
             {
                 command.Observe().SingleAsync().Wait();
@@ -820,7 +820,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutWithFallback()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
             Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, command.Observe().SingleAsync().Wait());
 
             AssertCommandExecutionEvents(command, HystrixEventType.TIMEOUT, HystrixEventType.FALLBACK_SUCCESS);
@@ -833,7 +833,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutFallbackFailure()
         {
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
             try
             {
                 command.Observe().SingleAsync().Wait();
@@ -865,11 +865,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuitFallbackCounter()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker().SetForceShortCircuit(true);
-            KnownFailureTestCommandWithFallback command1 = new KnownFailureTestCommandWithFallback(circuitBreaker);
+            var circuitBreaker = new TestCircuitBreaker().SetForceShortCircuit(true);
+            var command1 = new KnownFailureTestCommandWithFallback(circuitBreaker);
             command1.Execute();
 
-            KnownFailureTestCommandWithFallback command2 = new KnownFailureTestCommandWithFallback(circuitBreaker);
+            var command2 = new KnownFailureTestCommandWithFallback(circuitBreaker);
             command2.Execute();
 
             // will be -1 because it never attempted execution
@@ -888,9 +888,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadWithNoFallback()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(1);
+            var key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
+            var circuitBreaker = new TestCircuitBreaker();
+            var pool = new SingleThreadedPoolWithQueue(1);
 
             Task<bool> f = null;
             Task<bool> f2 = null;
@@ -919,9 +919,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.False(command3.IsResponseTimedOut);
                 Assert.NotNull(command3.ExecutionException);
 
-                if (e is HystrixRuntimeException && e.InnerException is RejectedExecutionException)
+                if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e;
+                    var de = exception;
                     Assert.NotNull(de.FallbackException);
                     Assert.True(de.FallbackException is InvalidOperationException);
                     Assert.NotNull(de.ImplementingClass);
@@ -950,20 +950,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedThreadWithFallback()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-Fallback");
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(1);
+            var key = HystrixCommandKeyDefault.AsKey("Rejection-Fallback");
+            var circuitBreaker = new TestCircuitBreaker();
+            var pool = new SingleThreadedPoolWithQueue(1);
 
             // command 1 will execute in threadpool (passing through the queue)
             // command 2 will execute after spending time in the queue (after command1 completes)
             // command 3 will get rejected, since it finds pool and queue both full
-            TestCommandRejection command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
-            TestCommandRejection command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
-            TestCommandRejection command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
+            var command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
+            var command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
+            var command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS);
 
-            IObservable<bool> result1 = command1.Observe();
+            var result1 = command1.Observe();
             Time.Wait(50);  // Let cmd1 get running
-            IObservable<bool> result2 = command2.Observe();
+            var result2 = command2.Observe();
 
             Time.Wait(100);
 
@@ -991,13 +991,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadWithFallbackFailure()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(1);
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var pool = new SingleThreadedPoolWithQueue(1);
+            var key = HystrixCommandKeyDefault.AsKey("Rejection-A");
 
-            TestCommandRejection command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_FAILURE); // this should pass through the queue and sit in the pool
-            TestCommandRejection command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS); // this should sit in the queue
-            TestCommandRejection command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_FAILURE); // this should observe full queue and get rejected
+            var command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_FAILURE); // this should pass through the queue and sit in the pool
+            var command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_SUCCESS); // this should sit in the queue
+            var command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_FAILURE); // this should observe full queue and get rejected
             Task<bool> f1 = null;
             Task<bool> f2 = null;
             try
@@ -1011,9 +1011,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             catch (Exception e)
             {
                 // e.printStackTrace()
-                if (e is HystrixRuntimeException && e.InnerException is RejectedExecutionException)
+                if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e;
+                    var de = exception;
                     Assert.NotNull(de.FallbackException);
                     Assert.False(de.FallbackException is InvalidOperationException);
                     Assert.NotNull(de.ImplementingClass);
@@ -1029,16 +1029,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertCommandExecutionEvents(command1); // still in-flight, no events yet
             AssertCommandExecutionEvents(command2); // still in-flight, no events yet
             AssertCommandExecutionEvents(command3, HystrixEventType.THREAD_POOL_REJECTED, HystrixEventType.FALLBACK_FAILURE);
-            int numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
+            var numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
             Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
 
-            // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
-            HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
+                                                                          // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
+            var requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Equal(3, requestLog.AllExecutedCommands.Count);
             Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
 
             // block on the outstanding work, so we don't inadvertently affect any other tests
-            long startTime = DateTime.Now.Ticks / 10000;
+            var startTime = DateTime.Now.Ticks / 10000;
             _ = await f1;
             _ = await f2;
             Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
@@ -1050,24 +1050,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadUsingQueueSize()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-B");
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(10, 1);
+            var key = HystrixCommandKeyDefault.AsKey("Rejection-B");
+            var circuitBreaker = new TestCircuitBreaker();
+            var pool = new SingleThreadedPoolWithQueue(10, 1);
 
-            TestCommandRejection d1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-            TestCommandRejection d2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            var d1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            var d2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
 
             // Schedule 2 items, one will be taken off and start running, the second will get queued
             // the thread pool won't pick it up because we're bypassing the pool and adding to the queue directly so this will keep the queue full
-            Task t = new Task((o) => Time.Wait(500), d1);
+            var t = new Task((o) => Time.Wait(500), d1);
             t.Start(pool.GetTaskScheduler());
 
             Time.Wait(10);
 
-            Task t2 = new Task((o) => Time.Wait(500), d2);
+            var t2 = new Task((o) => Time.Wait(500), d2);
             t2.Start(pool.GetTaskScheduler());
 
-            TestCommandRejection command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            var command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
             try
             {
                 // this should fail as we already have 1 in the queue
@@ -1085,9 +1085,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.False(command.IsResponseTimedOut, "Command unexpectedly timed out");
                 Assert.NotNull(command.ExecutionException);
 
-                if (e is HystrixRuntimeException && e.InnerException is RejectedExecutionException)
+                if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
                 {
-                    HystrixRuntimeException de = (HystrixRuntimeException)e;
+                    var de = exception;
                     Assert.NotNull(de.FallbackException);
                     Assert.True(de.FallbackException is InvalidOperationException);
                     Assert.NotNull(de.ImplementingClass);
@@ -1110,8 +1110,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestDisabledTimeoutWorks()
         {
-            CommandWithDisabledTimeout cmd = new CommandWithDisabledTimeout(100, 900);
-            bool result = cmd.Execute();
+            var cmd = new CommandWithDisabledTimeout(100, 900);
+            var result = cmd.Execute();
 
             Assert.True(result, "Command result was not True");
             Assert.False(cmd.IsResponseTimedOut, "Command response timed out!");
@@ -1125,15 +1125,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestFallbackSemaphore()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
             // single thread should work
-            TestSemaphoreCommandWithSlowFallback command1 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
-            bool result = command1.Execute();
+            var command1 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
+            var result = command1.Execute();
             Assert.True(result);
 
             // 2 threads, the second should be rejected by the fallback semaphore
-            bool exceptionReceived = false;
+            var exceptionReceived = false;
             Task<bool> result2 = null;
             TestSemaphoreCommandWithSlowFallback command2 = null;
             TestSemaphoreCommandWithSlowFallback command3 = null;
@@ -1148,7 +1148,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Time.Wait(50);
                 output.WriteLine("c3 start: " + Time.CurrentTimeMillis);
                 command3 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
-                Task<bool> result3 = command3.ExecuteAsync();
+                var result3 = command3.ExecuteAsync();
                 output.WriteLine("c3 after queue: " + Time.CurrentTimeMillis);
                 _ = await result3;
             }
@@ -1175,19 +1175,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestExecutionSemaphoreWithQueue()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
             // single thread should work
-            TestSemaphoreCommand command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            bool result = await command1.ExecuteAsync();
+            var command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var result = await command1.ExecuteAsync();
             Assert.True(result);
 
-            AtomicBoolean exceptionReceived = new AtomicBoolean();
+            var exceptionReceived = new AtomicBoolean();
 
-            SemaphoreSlim semaphore = new SemaphoreSlim(1);
+            var semaphore = new SemaphoreSlim(1);
 
-            TestSemaphoreCommand command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            ThreadStart command2Action = new ThreadStart(async () =>
+            var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var command2Action = new ThreadStart(async () =>
             {
                 try
                 {
@@ -1199,8 +1199,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             });
 
-            TestSemaphoreCommand command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            ThreadStart command3Action = new ThreadStart(async () =>
+            var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var command3Action = new ThreadStart(async () =>
             {
                 try
                 {
@@ -1213,8 +1213,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
 
             // 2 threads, the second should be rejected by the semaphore
-            Thread t2 = new Thread(command2Action);
-            Thread t3 = new Thread(command3Action);
+            var t2 = new Thread(command2Action);
+            var t3 = new Thread(command3Action);
 
             t2.Start();
 
@@ -1240,24 +1240,24 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSemaphoreWithExecution()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
             // single thread should work
-            TestSemaphoreCommand command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            bool result = command1.Execute();
+            var command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var result = command1.Execute();
             Assert.False(command1.IsExecutedInThread, "Command1 not executed in thread as was expected");
             Assert.True(result, "Result was false when True was expected");
 
-            BlockingCollection<bool> results = new BlockingCollection<bool>(2);
+            var results = new BlockingCollection<bool>(2);
 
-            AtomicBoolean exceptionReceived = new AtomicBoolean();
+            var exceptionReceived = new AtomicBoolean();
 
-            SemaphoreSlim semaphore = new SemaphoreSlim(1);
+            var semaphore = new SemaphoreSlim(1);
 
-            TestSemaphoreCommand command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
 
-            bool t2Started = false;
-            ThreadStart command2Action = new ThreadStart(() =>
+            var t2Started = false;
+            var command2Action = new ThreadStart(() =>
             {
                 t2Started = true;
                 try
@@ -1270,8 +1270,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             });
 
-            TestSemaphoreCommand command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
-            ThreadStart command3Action = new ThreadStart(() =>
+            var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.RESULT_SUCCESS, TestSemaphoreCommand.FALLBACK_NOT_IMPLEMENTED);
+            var command3Action = new ThreadStart(() =>
             {
                 try
                 {
@@ -1284,8 +1284,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
 
             // 2 threads, the second should be rejected by the semaphore
-            Thread t2 = new Thread(command2Action);
-            Thread t3 = new Thread(command3Action);
+            var t2 = new Thread(command2Action);
+            var t3 = new Thread(command3Action);
 
             t2.Start();
             Assert.True(Time.WaitUntil(() => t2Started, 500), "t2 took to long to start");
@@ -1316,13 +1316,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedExecutionSemaphoreWithFallbackViaExecute()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            BlockingCollection<bool> results = new BlockingCollection<bool>(2);
+            var circuitBreaker = new TestCircuitBreaker();
+            var results = new BlockingCollection<bool>(2);
 
-            AtomicBoolean exceptionReceived = new AtomicBoolean();
+            var exceptionReceived = new AtomicBoolean();
 
-            TestSemaphoreCommandWithFallback command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
-            ThreadStart command1Action = new ThreadStart(() =>
+            var command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+            var command1Action = new ThreadStart(() =>
             {
                 try
                 {
@@ -1334,8 +1334,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             });
 
-            TestSemaphoreCommandWithFallback command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
-            ThreadStart command2Action = new ThreadStart(() =>
+            var command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+            var command2Action = new ThreadStart(() =>
             {
                 try
                 {
@@ -1348,8 +1348,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
 
             // 2 threads, the second should be rejected by the semaphore and return fallback
-            Thread t1 = new Thread(command1Action);
-            Thread t2 = new Thread(command2Action);
+            var t1 = new Thread(command1Action);
+            var t2 = new Thread(command2Action);
 
             t1.Start();
 
@@ -1380,14 +1380,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedExecutionSemaphoreWithFallbackViaObserve()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
-            BlockingCollection<IObservable<bool>> results = new BlockingCollection<IObservable<bool>>(2);
+            var results = new BlockingCollection<IObservable<bool>>(2);
 
-            AtomicBoolean exceptionReceived = new AtomicBoolean();
+            var exceptionReceived = new AtomicBoolean();
 
-            TestSemaphoreCommandWithFallback command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
-            ThreadStart command1Action = new ThreadStart(() =>
+            var command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+            var command1Action = new ThreadStart(() =>
             {
                 try
                 {
@@ -1399,8 +1399,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             });
 
-            TestSemaphoreCommandWithFallback command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
-            ThreadStart command2Action = new ThreadStart(() =>
+            var command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+            var command2Action = new ThreadStart(() =>
             {
                 try
                 {
@@ -1413,8 +1413,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             });
 
             // 2 threads, the second should be rejected by the semaphore and return fallback
-            Thread t1 = new Thread(command1Action);
-            Thread t2 = new Thread(command2Action);
+            var t1 = new Thread(command1Action);
+            var t2 = new Thread(command2Action);
 
             t1.Start();
 
@@ -1429,7 +1429,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 Assert.False(true, "We should have received a fallback response");
             }
 
-            IList<bool> blockingList = Observable.Merge(results).ToList().SingleAsync().Wait();
+            var blockingList = Observable.Merge(results).ToList().SingleAsync().Wait();
 
             // both threads should have returned values
             Assert.Equal(2, blockingList.Count);
@@ -1446,20 +1446,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestSemaphorePermitsInUse()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
             // this semaphore will be shared across multiple command instances
-            SemaphoreSlim sharedSemaphore = new SemaphoreSlim(3);
+            var sharedSemaphore = new SemaphoreSlim(3);
 
             // used to wait until all commands have started
-            CountdownEvent startLatch = new CountdownEvent((sharedSemaphore.CurrentCount * 2) + 1);
+            var startLatch = new CountdownEvent((sharedSemaphore.CurrentCount * 2) + 1);
 
             // used to signal that all command can finish
-            CountdownEvent sharedLatch = new CountdownEvent(1);
+            var sharedLatch = new CountdownEvent(1);
 
             // tracks failures to obtain semaphores
-            AtomicInteger failureCount = new AtomicInteger();
-            ThreadStart sharedSemaphoreRunnable = new ThreadStart(() =>
+            var failureCount = new AtomicInteger();
+            var sharedSemaphoreRunnable = new ThreadStart(() =>
             {
                 try
                 {
@@ -1476,19 +1476,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // creates group of threads each using command sharing a single semaphore
             // I create extra threads and commands so that I can verify that some of them fail to obtain a semaphore
-            int sharedThreadCount = sharedSemaphore.CurrentCount * 2;
-            Thread[] sharedSemaphoreThreads = new Thread[sharedThreadCount];
-            for (int i = 0; i < sharedThreadCount; i++)
+            var sharedThreadCount = sharedSemaphore.CurrentCount * 2;
+            var sharedSemaphoreThreads = new Thread[sharedThreadCount];
+            for (var i = 0; i < sharedThreadCount; i++)
             {
                 sharedSemaphoreThreads[i] = new Thread(sharedSemaphoreRunnable);
             }
 
             // creates thread using isolated semaphore
-            SemaphoreSlim isolatedSemaphore = new SemaphoreSlim(1);
+            var isolatedSemaphore = new SemaphoreSlim(1);
 
-            CountdownEvent isolatedLatch = new CountdownEvent(1);
+            var isolatedLatch = new CountdownEvent(1);
 
-            Thread isolatedThread = new Thread(new ThreadStart(() =>
+            var isolatedThread = new Thread(new ThreadStart(() =>
            {
                try
                {
@@ -1507,7 +1507,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.Equal(3, sharedSemaphore.CurrentCount);
             Assert.Equal(1, isolatedSemaphore.CurrentCount);
 
-            for (int i = 0; i < sharedThreadCount; i++)
+            for (var i = 0; i < sharedThreadCount; i++)
             {
                 sharedSemaphoreThreads[i].Start();
             }
@@ -1525,7 +1525,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             sharedLatch.SignalEx();
             isolatedLatch.SignalEx();
 
-            for (int i = 0; i < sharedThreadCount; i++)
+            for (var i = 0; i < sharedThreadCount; i++)
             {
                 sharedSemaphoreThreads[i].Join();
             }
@@ -1540,7 +1540,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // verifies that some executions failed
             // Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
-            HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
+            var requestLog = HystrixRequestLog.CurrentRequestLog;
             Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString());
             Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
         }
@@ -1562,9 +1562,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestDynamicKey()
         {
-            DynamicOwnerAndKeyTestCommand command1 = new DynamicOwnerAndKeyTestCommand(CommandGroupForUnitTest.OWNER_ONE, CommandKeyForUnitTest.KEY_ONE);
+            var command1 = new DynamicOwnerAndKeyTestCommand(CommandGroupForUnitTest.OWNER_ONE, CommandKeyForUnitTest.KEY_ONE);
             Assert.True(command1.Execute());
-            DynamicOwnerAndKeyTestCommand command2 = new DynamicOwnerAndKeyTestCommand(CommandGroupForUnitTest.OWNER_ONE, CommandKeyForUnitTest.KEY_TWO);
+            var command2 = new DynamicOwnerAndKeyTestCommand(CommandGroupForUnitTest.OWNER_ONE, CommandKeyForUnitTest.KEY_TWO);
             Assert.True(command2.Execute());
 
             // 2 different circuit breakers should be created
@@ -1574,14 +1574,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCache1()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommand<string> command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
-            SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
+            var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
 
             Assert.True(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
 
             Assert.Equal("A", f1.Result);
             Assert.Equal("A", f2.Result);
@@ -1602,14 +1602,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCache2()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommand<string> command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
-            SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "B");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
+            var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "B");
 
             Assert.True(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
 
             Assert.Equal("A", f1.Result);
             Assert.Equal("B", f2.Result);
@@ -1632,16 +1632,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCache3()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommand<string> command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
-            SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "B");
-            SuccessfulCacheableCommand<string> command3 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
+            var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "B");
+            var command3 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "A");
 
             Assert.True(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
-            Task<string> f3 = command3.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
+            var f3 = command3.ExecuteAsync();
             Assert.Equal("A", f1.Result);
             Assert.Equal("B", f2.Result);
             Assert.Equal("A", f3.Result);
@@ -1665,16 +1665,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCacheWithSlowExecution()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SlowCacheableCommand command1 = new SlowCacheableCommand(circuitBreaker, "A", 200);
-            SlowCacheableCommand command2 = new SlowCacheableCommand(circuitBreaker, "A", 100);
-            SlowCacheableCommand command3 = new SlowCacheableCommand(circuitBreaker, "A", 100);
-            SlowCacheableCommand command4 = new SlowCacheableCommand(circuitBreaker, "A", 100);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SlowCacheableCommand(circuitBreaker, "A", 200);
+            var command2 = new SlowCacheableCommand(circuitBreaker, "A", 100);
+            var command3 = new SlowCacheableCommand(circuitBreaker, "A", 100);
+            var command4 = new SlowCacheableCommand(circuitBreaker, "A", 100);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
-            Task<string> f3 = command3.ExecuteAsync();
-            Task<string> f4 = command4.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
+            var f3 = command3.ExecuteAsync();
+            var f4 = command4.ExecuteAsync();
 
             Assert.Equal("A", f2.Result);
             Assert.Equal("A", f3.Result);
@@ -1708,16 +1708,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestNoRequestCache3()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommand<string> command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "A");
-            SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "B");
-            SuccessfulCacheableCommand<string> command3 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "A");
+            var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "B");
+            var command3 = new SuccessfulCacheableCommand<string>(circuitBreaker, false, "A");
 
             Assert.True(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
-            Task<string> f3 = command3.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
+            var f3 = command3.ExecuteAsync();
 
             Assert.Equal("A", f1.Result);
             Assert.Equal("B", f2.Result);
@@ -1741,16 +1741,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCacheViaQueueSemaphore1()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommandViaSemaphore command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
-            SuccessfulCacheableCommandViaSemaphore command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "B");
-            SuccessfulCacheableCommandViaSemaphore command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
+            var command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "B");
+            var command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
 
             Assert.False(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
-            Task<string> f3 = command3.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
+            var f3 = command3.ExecuteAsync();
 
             Assert.Equal("A", f1.Result);
             Assert.Equal("B", f2.Result);
@@ -1775,16 +1775,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestNoRequestCacheViaQueueSemaphore1()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommandViaSemaphore command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
-            SuccessfulCacheableCommandViaSemaphore command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "B");
-            SuccessfulCacheableCommandViaSemaphore command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
+            var command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "B");
+            var command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
 
             Assert.False(command1.IsCommandRunningInThread);
 
-            Task<string> f1 = command1.ExecuteAsync();
-            Task<string> f2 = command2.ExecuteAsync();
-            Task<string> f3 = command3.ExecuteAsync();
+            var f1 = command1.ExecuteAsync();
+            var f2 = command2.ExecuteAsync();
+            var f3 = command3.ExecuteAsync();
 
             Assert.Equal("A", f1.Result);
             Assert.Equal("B", f2.Result);
@@ -1807,16 +1807,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestCacheViaExecuteSemaphore1()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommandViaSemaphore command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
-            SuccessfulCacheableCommandViaSemaphore command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "B");
-            SuccessfulCacheableCommandViaSemaphore command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
+            var command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "B");
+            var command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, true, "A");
 
             Assert.False(command1.IsCommandRunningInThread);
 
-            string f1 = command1.Execute();
-            string f2 = command2.Execute();
-            string f3 = command3.Execute();
+            var f1 = command1.Execute();
+            var f2 = command2.Execute();
+            var f3 = command3.Execute();
 
             Assert.Equal("A", f1);
             Assert.Equal("B", f2);
@@ -1839,16 +1839,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestNoRequestCacheViaExecuteSemaphore1()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SuccessfulCacheableCommandViaSemaphore command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
-            SuccessfulCacheableCommandViaSemaphore command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "B");
-            SuccessfulCacheableCommandViaSemaphore command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
+            var command2 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "B");
+            var command3 = new SuccessfulCacheableCommandViaSemaphore(circuitBreaker, false, "A");
 
             Assert.False(command1.IsCommandRunningInThread);
 
-            string f1 = command1.Execute();
-            string f2 = command2.Execute();
-            string f3 = command3.Execute();
+            var f1 = command1.Execute();
+            var f2 = command2.Execute();
+            var f3 = command3.Execute();
 
             Assert.Equal("A", f1);
             Assert.Equal("B", f2);
@@ -1872,8 +1872,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestNoRequestCacheOnTimeoutThrowsException()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            NoRequestCacheTimeoutWithoutFallback r1 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var circuitBreaker = new TestCircuitBreaker();
+            var r1 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 output.WriteLine("r1 value: " + r1.Execute());
@@ -1888,7 +1888,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            NoRequestCacheTimeoutWithoutFallback r2 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var r2 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 r2.Execute();
@@ -1903,8 +1903,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            NoRequestCacheTimeoutWithoutFallback r3 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
-            Task<bool> f3 = r3.ExecuteAsync();
+            var r3 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var f3 = r3.ExecuteAsync();
             try
             {
                 var res = f3.Result;
@@ -1922,7 +1922,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Time.Wait(500); // timeout on command is set to 200ms
 
-            NoRequestCacheTimeoutWithoutFallback r4 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var r4 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 r4.Execute();
@@ -1950,10 +1950,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRequestCacheOnTimeoutCausesNullPointerException()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            RequestCacheNullPointerExceptionCase command1 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-            RequestCacheNullPointerExceptionCase command2 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-            RequestCacheNullPointerExceptionCase command3 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
+            var command2 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
+            var command3 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
 
             // Expect it to time out - all results should be false
             Assert.False(command1.Execute());
@@ -1961,11 +1961,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             Assert.False(command3.Execute()); // return from cache #2
             Time.Wait(500); // timeout on command is set to 200ms
 
-            RequestCacheNullPointerExceptionCase command4 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-            bool value = command4.Execute(); // return from cache #3
+            var command4 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
+            var value = command4.Execute(); // return from cache #3
             Assert.False(value);
-            RequestCacheNullPointerExceptionCase command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-            Task<bool> f = command5.ExecuteAsync(); // return from cache #4
+            var command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
+            var f = command5.ExecuteAsync(); // return from cache #4
 
             // the bug is that we're getting a null Future back, rather than a Future that returns false
             Assert.NotNull(f);
@@ -1990,8 +1990,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRequestCacheOnTimeoutThrowsException()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            RequestCacheTimeoutWithoutFallback r1 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var circuitBreaker = new TestCircuitBreaker();
+            var r1 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 output.WriteLine("r1 value: " + r1.Execute());
@@ -2006,7 +2006,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            RequestCacheTimeoutWithoutFallback r2 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var r2 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 r2.Execute();
@@ -2021,8 +2021,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            RequestCacheTimeoutWithoutFallback r3 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
-            Task<bool> f3 = r3.ExecuteAsync();
+            var r3 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var f3 = r3.ExecuteAsync();
             try
             {
                 var res = f3.Result;
@@ -2040,7 +2040,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             Time.Wait(500); // timeout on command is set to 200ms
 
-            RequestCacheTimeoutWithoutFallback r4 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+            var r4 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
             try
             {
                 r4.Execute();
@@ -2068,9 +2068,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRequestCacheOnThreadRejectionThrowsException()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            CountdownEvent completionLatch = new CountdownEvent(1);
-            RequestCacheThreadRejectionWithoutFallback r1 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+            var circuitBreaker = new TestCircuitBreaker();
+            var completionLatch = new CountdownEvent(1);
+            var r1 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
             try
             {
                 output.WriteLine("r1: " + r1.Execute());
@@ -2085,7 +2085,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            RequestCacheThreadRejectionWithoutFallback r2 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+            var r2 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
             try
             {
                 output.WriteLine("r2: " + r2.Execute());
@@ -2101,7 +2101,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 // what we want
             }
 
-            RequestCacheThreadRejectionWithoutFallback r3 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+            var r3 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
             try
             {
                 output.WriteLine("f3: " + await r3.ExecuteAsync());
@@ -2122,7 +2122,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             completionLatch.SignalEx();
 
             // then another after the command has completed
-            RequestCacheThreadRejectionWithoutFallback r4 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+            var r4 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
             try
             {
                 output.WriteLine("r4: " + r4.Execute());
@@ -2166,19 +2166,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             /* force the RequestVariable to not be initialized */
             HystrixRequestContext.SetContextOnCurrentThread(null);
 
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
-            SuccessfulCacheableCommand<string> command = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "one");
+            var command = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "one");
             Assert.Throws<HystrixRuntimeException>(() => command.Execute());
 
-            SuccessfulCacheableCommand<string> command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "two");
+            var command2 = new SuccessfulCacheableCommand<string>(circuitBreaker, true, "two");
             await Assert.ThrowsAsync<HystrixRuntimeException>(() => command.ExecuteAsync());
         }
 
         [Fact]
         public void TestBadRequestExceptionViaExecuteInThread()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
             BadRequestCommand command1 = null;
             try
             {
@@ -2200,7 +2200,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task TestBadRequestExceptionViaQueueInThread()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
             BadRequestCommand command1 = null;
             try
             {
@@ -2230,7 +2230,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task TestBadRequestExceptionViaQueueInThreadOnResponseFromCache()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+            var circuitBreaker = new TestCircuitBreaker();
 
             // execute once to cache the value
             BadRequestCommand command1 = null;
@@ -2273,8 +2273,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestBadRequestExceptionViaExecuteInSemaphore()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            BadRequestCommand command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.SEMAPHORE);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.SEMAPHORE);
             try
             {
                 command1.Execute();
@@ -2294,8 +2294,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestCheckedExceptionViaExecute()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            CommandWithCheckedException command = new CommandWithCheckedException(circuitBreaker);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command = new CommandWithCheckedException(circuitBreaker);
             try
             {
                 command.Execute();
@@ -2319,10 +2319,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestCheckedExceptionViaObserve()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            CommandWithCheckedException command = new CommandWithCheckedException(circuitBreaker);
-            AtomicReference<Exception> t = new AtomicReference<Exception>();
-            CountdownEvent latch = new CountdownEvent(1);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command = new CommandWithCheckedException(circuitBreaker);
+            var t = new AtomicReference<Exception>();
+            var latch = new CountdownEvent(1);
             try
             {
                 command.Observe().Subscribe(
@@ -2364,7 +2364,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             TestHystrixCommand<bool> cmd = new InterruptibleCommand(new TestCircuitBreaker(), false);
 
             output.WriteLine("Starting command");
-            long timeMillis = DateTime.Now.Ticks / 10000;
+            var timeMillis = DateTime.Now.Ticks / 10000;
             try
             {
                 cmd.Execute();
@@ -2384,7 +2384,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRecoverableErrorWithNoFallbackThrowsError()
         {
-            TestHystrixCommand<int> command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 command.Execute();
@@ -2408,7 +2408,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRecoverableErrorMaskedByFallbackButLogged()
         {
-            TestHystrixCommand<int> command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS);
+            var command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS);
             Assert.Equal(FlexibleTestHystrixCommand.FALLBACK_VALUE, command.Execute());
 
             Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -2422,7 +2422,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestUnrecoverableErrorThrownWithNoFallback()
         {
-            TestHystrixCommand<int> command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED);
+            var command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.UNIMPLEMENTED);
             try
             {
                 command.Execute();
@@ -2446,7 +2446,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact] // even though fallback is implemented, that logic never fires, as this is an unrecoverable error and should be directly propagated to the caller
         public void TestUnrecoverableErrorThrownWithFallback()
         {
-            TestHystrixCommand<int> command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS);
+            var command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.SUCCESS);
             try
             {
                 command.Execute();
@@ -2471,7 +2471,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestNonBlockingCommandQueueFiresTimeout()
         {
             // see https://github.com/Netflix/Hystrix/issues/514
-            TestHystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
+            var cmd = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
             cmd.IsFallbackUserDefined = true;
 
             // await cmd.ExecuteAsync();
@@ -2556,7 +2556,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutValue()
         {
-            HystrixCommandOptions properties = new HystrixCommandOptions()
+            var properties = new HystrixCommandOptions()
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("TestKey"),
                 ExecutionTimeoutInMilliseconds = 50
@@ -2567,7 +2567,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 IsFallbackUserDefined = true
             };
 
-            string value = command.Execute();
+            var value = command.Execute();
             Assert.True(command.IsResponseTimedOut);
             Assert.Equal("timed-out", value);
         }
@@ -2576,11 +2576,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservableTimeoutNoFallbackThreadContext()
         {
-            CountdownEvent latch = new CountdownEvent(1);
-            AtomicReference<Thread> onErrorThread = new AtomicReference<Thread>();
-            AtomicBoolean isRequestContextInitialized = new AtomicBoolean();
+            var latch = new CountdownEvent(1);
+            var onErrorThread = new AtomicReference<Thread>();
+            var isRequestContextInitialized = new AtomicBoolean();
 
-            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
+            var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
             Exception onErrorEvent = null;
             command.ToObservable().Subscribe(
                 (n) =>
@@ -2631,8 +2631,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExceptionConvertedToBadRequestExceptionInExecutionHookBypassesCircuitBreaker()
         {
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            ExceptionToBadRequestByExecutionHookCommand command = new ExceptionToBadRequestByExecutionHookCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
+            var circuitBreaker = new TestCircuitBreaker();
+            var command = new ExceptionToBadRequestByExecutionHookCommand(circuitBreaker, ExecutionIsolationStrategy.THREAD);
             try
             {
                 command.Execute();
@@ -2659,7 +2659,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestInterruptFutureOnTimeout()
         {
             // given
-            InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+            var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
 
             // when
             _ = cmd.ExecuteAsync();
@@ -2674,7 +2674,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestInterruptObserveOnTimeout()
         {
             // given
-            InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+            var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
 
             // when
             cmd.Observe().Subscribe();
@@ -2689,7 +2689,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestInterruptToObservableOnTimeout()
         {
             // given
-            InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
+            var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true);
 
             // when
             cmd.ToObservable().Subscribe();
@@ -2704,11 +2704,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestCancelFutureWithInterruption()
         {
             // given
-            InterruptibleCommand cmd = new InterruptibleCommand(new TestCircuitBreaker(), true, true, 1000);
+            var cmd = new InterruptibleCommand(new TestCircuitBreaker(), true, true, 1000);
 
             // when
-            CancellationTokenSource cts = new CancellationTokenSource();
-            Task<bool> f = cmd.ExecuteAsync(cts.Token);
+            var cts = new CancellationTokenSource();
+            var f = cmd.ExecuteAsync(cts.Token);
             Time.Wait(500);
             cts.Cancel(true);
             Time.Wait(500);
@@ -2744,25 +2744,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestSemaphoreThreadSafety()
         {
-            int num_permits = 1;
-            SemaphoreSlim s = new SemaphoreSlim(num_permits);
+            var num_permits = 1;
+            var s = new SemaphoreSlim(num_permits);
 
-            int num_threads = 10;
+            var num_threads = 10;
 
-            int num_trials = 50;
+            var num_trials = 50;
 
-            for (int t = 0; t < num_trials; t++)
+            for (var t = 0; t < num_trials; t++)
             {
                 output.WriteLine("TRIAL : " + t);
 
-                AtomicInteger numAcquired = new AtomicInteger(0);
-                CountdownEvent latch = new CountdownEvent(num_threads);
+                var numAcquired = new AtomicInteger(0);
+                var latch = new CountdownEvent(num_threads);
 
-                for (int i = 0; i < num_threads; i++)
+                for (var i = 0; i < num_threads; i++)
                 {
-                    Task task = new Task(() =>
+                    var task = new Task(() =>
                         {
-                            bool acquired = s.TryAcquire();
+                            var acquired = s.TryAcquire();
                             if (acquired)
                             {
                                 try
@@ -2806,19 +2806,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCancelledTasksInQueueGetRemoved()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cancellation-A");
-            TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
-            SingleThreadedPoolWithQueue pool = new SingleThreadedPoolWithQueue(10, 1);
-            TestCommandRejection command1 = new TestCommandRejection(output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
-            TestCommandRejection command2 = new TestCommandRejection(output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            var key = HystrixCommandKeyDefault.AsKey("Cancellation-A");
+            var circuitBreaker = new TestCircuitBreaker();
+            var pool = new SingleThreadedPoolWithQueue(10, 1);
+            var command1 = new TestCommandRejection(output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
+            var command2 = new TestCommandRejection(output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FALLBACK_NOT_IMPLEMENTED);
 
             // this should go through the queue and into the thread pool
-            Task<bool> poolFiller = command1.ExecuteAsync();
+            var poolFiller = command1.ExecuteAsync();
             Time.Wait(30); // Let it start
 
             // this command will stay in the queue until the thread pool is empty
-            IObservable<bool> cmdInQueue = command2.Observe();
-            IDisposable s = cmdInQueue.Subscribe();
+            var cmdInQueue = command2.Observe();
+            var s = cmdInQueue.Subscribe();
             Time.Wait(30); // Let it get in queue
             Assert.Equal(1, pool.CurrentQueueSize);
             s.Dispose();
@@ -2842,17 +2842,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestOnRunStartHookThrowsSemaphoreIsolated()
         {
-            AtomicBoolean exceptionEncountered = new AtomicBoolean(false);
-            AtomicBoolean onThreadStartInvoked = new AtomicBoolean(false);
-            AtomicBoolean onThreadCompleteInvoked = new AtomicBoolean(false);
-            AtomicBoolean executionAttempted = new AtomicBoolean(false);
+            var exceptionEncountered = new AtomicBoolean(false);
+            var onThreadStartInvoked = new AtomicBoolean(false);
+            var onThreadCompleteInvoked = new AtomicBoolean(false);
+            var executionAttempted = new AtomicBoolean(false);
 
-            TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook failureInjectionHook = new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
+            var failureInjectionHook = new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
 
             TestHystrixCommand<int> semaphoreCmd = new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.SEMAPHORE, executionAttempted, failureInjectionHook);
             try
             {
-                int result = semaphoreCmd.Execute();
+                var result = semaphoreCmd.Execute();
                 output.WriteLine("RESULT : " + result);
             }
             catch (Exception)
@@ -2871,17 +2871,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestOnRunStartHookThrowsThreadIsolated()
         {
-            AtomicBoolean exceptionEncountered = new AtomicBoolean(false);
-            AtomicBoolean onThreadStartInvoked = new AtomicBoolean(false);
-            AtomicBoolean onThreadCompleteInvoked = new AtomicBoolean(false);
-            AtomicBoolean executionAttempted = new AtomicBoolean(false);
+            var exceptionEncountered = new AtomicBoolean(false);
+            var onThreadStartInvoked = new AtomicBoolean(false);
+            var onThreadCompleteInvoked = new AtomicBoolean(false);
+            var executionAttempted = new AtomicBoolean(false);
 
-            TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook failureInjectionHook = new TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
+            var failureInjectionHook = new TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
 
             TestHystrixCommand<int> threadCmd = new TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.THREAD, executionAttempted, failureInjectionHook);
             try
             {
-                int result = threadCmd.Execute();
+                var result = threadCmd.Execute();
                 output.WriteLine("RESULT : " + result);
             }
             catch (Exception)
@@ -2902,10 +2902,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixCommand<bool> cmd = new TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand();
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
-            IObservable<bool> o = cmd.ToObservable();
-            IDisposable s = o.
+            var o = cmd.ToObservable();
+            var s = o.
                     Finally(() =>
                     {
                         output.WriteLine("OnUnsubscribe");
@@ -2953,10 +2953,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestEarlyUnsubscribeDuringExecutionViaObserve()
         {
             HystrixCommand<bool> cmd = new TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand();
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
-            IObservable<bool> o = cmd.Observe();
-            IDisposable s = o.
+            var o = cmd.Observe();
+            var s = o.
                     Finally(() =>
                     {
                         output.WriteLine("OnUnsubscribe");
@@ -3004,10 +3004,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestEarlyUnsubscribeDuringFallback()
         {
             HystrixCommand<bool> cmd = new TestEarlyUnsubscribeDuringFallbackAsyncCommand();
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
-            IObservable<bool> o = cmd.ToObservable();
-            IDisposable s = o.
+            var o = cmd.ToObservable();
+            var s = o.
                     Finally(() =>
                     {
                         output.WriteLine("OnUnsubscribe");
@@ -3050,19 +3050,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestThenCacheHitAndCacheHitUnsubscribed()
         {
-            AsyncCacheableCommand original = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache = new AsyncCacheableCommand("foo");
+            var original = new AsyncCacheableCommand("foo");
+            var fromCache = new AsyncCacheableCommand("foo");
 
-            AtomicReference<object> originalValue = new AtomicReference<object>(null);
-            AtomicReference<object> fromCacheValue = new AtomicReference<object>(null);
+            var originalValue = new AtomicReference<object>(null);
+            var fromCacheValue = new AtomicReference<object>(null);
 
-            CountdownEvent originalLatch = new CountdownEvent(1);
-            CountdownEvent fromCacheLatch = new CountdownEvent(1);
+            var originalLatch = new CountdownEvent(1);
+            var fromCacheLatch = new CountdownEvent(1);
 
-            IObservable<object> originalObservable = original.ToObservable();
-            IObservable<object> fromCacheObservable = fromCache.ToObservable();
+            var originalObservable = original.ToObservable();
+            var fromCacheObservable = fromCache.ToObservable();
 
-            IDisposable originalSubscription = originalObservable.Finally(() =>
+            var originalSubscription = originalObservable.Finally(() =>
         {
             output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
@@ -3083,7 +3083,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         originalLatch.SignalEx();
                     });
 
-            IDisposable fromCacheSubscription = fromCacheObservable.Finally(() =>
+            var fromCacheSubscription = fromCacheObservable.Finally(() =>
                 {
                     output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                     fromCacheLatch.SignalEx();
@@ -3146,19 +3146,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestThenCacheHitAndOriginalUnsubscribed()
         {
-            AsyncCacheableCommand original = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache = new AsyncCacheableCommand("foo");
+            var original = new AsyncCacheableCommand("foo");
+            var fromCache = new AsyncCacheableCommand("foo");
 
-            AtomicReference<object> originalValue = new AtomicReference<object>(null);
-            AtomicReference<object> fromCacheValue = new AtomicReference<object>(null);
+            var originalValue = new AtomicReference<object>(null);
+            var fromCacheValue = new AtomicReference<object>(null);
 
-            CountdownEvent originalLatch = new CountdownEvent(1);
-            CountdownEvent fromCacheLatch = new CountdownEvent(1);
+            var originalLatch = new CountdownEvent(1);
+            var fromCacheLatch = new CountdownEvent(1);
 
-            IObservable<object> originalObservable = original.ToObservable();
-            IObservable<object> fromCacheObservable = fromCache.ToObservable();
+            var originalObservable = original.ToObservable();
+            var fromCacheObservable = fromCache.ToObservable();
 
-            IDisposable originalSubscription = originalObservable.Finally(() =>
+            var originalSubscription = originalObservable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
@@ -3179,7 +3179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     originalLatch.SignalEx();
                 });
 
-            IDisposable fromCacheSubscription = fromCacheObservable.Finally(() =>
+            var fromCacheSubscription = fromCacheObservable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
                 fromCacheLatch.SignalEx();
@@ -3242,23 +3242,23 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestThenTwoCacheHitsOriginalAndOneCacheHitUnsubscribed()
         {
-            AsyncCacheableCommand original = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache1 = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache2 = new AsyncCacheableCommand("foo");
+            var original = new AsyncCacheableCommand("foo");
+            var fromCache1 = new AsyncCacheableCommand("foo");
+            var fromCache2 = new AsyncCacheableCommand("foo");
 
-            AtomicReference<object> originalValue = new AtomicReference<object>(null);
-            AtomicReference<object> fromCache1Value = new AtomicReference<object>(null);
-            AtomicReference<object> fromCache2Value = new AtomicReference<object>(null);
+            var originalValue = new AtomicReference<object>(null);
+            var fromCache1Value = new AtomicReference<object>(null);
+            var fromCache2Value = new AtomicReference<object>(null);
 
-            CountdownEvent originalLatch = new CountdownEvent(1);
-            CountdownEvent fromCache1Latch = new CountdownEvent(1);
-            CountdownEvent fromCache2Latch = new CountdownEvent(1);
+            var originalLatch = new CountdownEvent(1);
+            var fromCache1Latch = new CountdownEvent(1);
+            var fromCache2Latch = new CountdownEvent(1);
 
-            IObservable<object> originalObservable = original.ToObservable();
-            IObservable<object> fromCache1Observable = fromCache1.ToObservable();
-            IObservable<object> fromCache2Observable = fromCache2.ToObservable();
+            var originalObservable = original.ToObservable();
+            var fromCache1Observable = fromCache1.ToObservable();
+            var fromCache2Observable = fromCache2.ToObservable();
 
-            IDisposable originalSubscription = originalObservable.Finally(() =>
+            var originalSubscription = originalObservable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
@@ -3279,7 +3279,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     originalLatch.SignalEx();
                 });
 
-            IDisposable fromCache1Subscription = fromCache1Observable.Finally(() =>
+            var fromCache1Subscription = fromCache1Observable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
@@ -3300,7 +3300,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         fromCache1Latch.SignalEx();
                     });
 
-            IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
+            var fromCache2Subscription = fromCache2Observable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
@@ -3383,19 +3383,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestRequestThenTwoCacheHitsAllUnsubscribed()
         {
-            AsyncCacheableCommand original = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache1 = new AsyncCacheableCommand("foo");
-            AsyncCacheableCommand fromCache2 = new AsyncCacheableCommand("foo");
+            var original = new AsyncCacheableCommand("foo");
+            var fromCache1 = new AsyncCacheableCommand("foo");
+            var fromCache2 = new AsyncCacheableCommand("foo");
 
-            CountdownEvent originalLatch = new CountdownEvent(1);
-            CountdownEvent fromCache1Latch = new CountdownEvent(1);
-            CountdownEvent fromCache2Latch = new CountdownEvent(1);
+            var originalLatch = new CountdownEvent(1);
+            var fromCache1Latch = new CountdownEvent(1);
+            var fromCache2Latch = new CountdownEvent(1);
 
-            IObservable<object> originalObservable = original.ToObservable();
-            IObservable<object> fromCache1Observable = fromCache1.ToObservable();
-            IObservable<object> fromCache2Observable = fromCache2.ToObservable();
+            var originalObservable = original.ToObservable();
+            var fromCache1Observable = fromCache1.ToObservable();
+            var fromCache2Observable = fromCache2.ToObservable();
 
-            IDisposable originalSubscription = originalObservable.Finally(() =>
+            var originalSubscription = originalObservable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
                 originalLatch.SignalEx();
@@ -3415,7 +3415,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     originalLatch.SignalEx();
                 });
 
-            IDisposable fromCache1Subscription = fromCache1Observable.Finally(() =>
+            var fromCache1Subscription = fromCache1Observable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
                 fromCache1Latch.SignalEx();
@@ -3435,7 +3435,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         fromCache1Latch.SignalEx();
                     });
 
-            IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
+            var fromCache2Subscription = fromCache2Observable.Finally(() =>
             {
                 output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
                 fromCache2Latch.SignalEx();
@@ -3521,7 +3521,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             HystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 100, FallbackResultTest.UNIMPLEMENTED);
 
-            IObservable<int> o = cmd.ToObservable()
+            var o = cmd.ToObservable()
                 .Do(
                 (i) =>
                 {
@@ -3562,7 +3562,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                     return i;
                 });
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
             o.OnSubscribe(() =>
             {
@@ -3597,9 +3597,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public void TestUnsubscribeBeforeSubscribe()
         {
             // this may happen in Observable chain, so Hystrix should make sure that command never executes/allocates in this situation
-            IObservable<string> error = Observable.Throw<string>(new Exception("foo"));
+            var error = Observable.Throw<string>(new Exception("foo"));
             HystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 100);
-            IObservable<int> cmdResult = cmd.ToObservable()
+            var cmdResult = cmd.ToObservable()
                     .Do(
                 (integer) =>
                 {
@@ -3624,12 +3624,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             // the zip operator will subscribe to each observable.  there is a race between the error of the first
             // zipped observable terminating the zip and the subscription to the command's observable
-            IObservable<string> zipped = Observable.Zip(error, cmdResult, (s, integer) =>
+            var zipped = Observable.Zip(error, cmdResult, (s, integer) =>
             {
                 return s + integer;
             });
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
             zipped.Subscribe(
                 (s) =>
@@ -3659,10 +3659,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             // results in only a single execution and propagation out of that error
             HystrixCommand<int> cmd = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, 300, FallbackResultTest.UNIMPLEMENTED, 100);
 
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
             output.WriteLine(Time.CurrentTimeMillis + " : Starting");
-            IObservable<int> o = cmd.ToObservable().Retry(2);
+            var o = cmd.ToObservable().Retry(2);
             output.WriteLine(Time.CurrentTimeMillis + " Created retried command : " + o);
 
             o.Subscribe(
@@ -3695,11 +3695,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(1, 0, 1));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                string result = hook.ExecutionSequence.ToString();
+                var result = hook.ExecutionSequence.ToString();
 
                 // Steeltoe - remove deprecated!
                 // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionEmit - !onRunSuccess - !onComplete - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ", result);
@@ -3717,7 +3717,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3740,7 +3740,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3766,7 +3766,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
                 Assert.True(hook.FallbackEventsMatch(1, 0, 1));
@@ -3790,7 +3790,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -3815,7 +3815,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3842,7 +3842,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(1, 0, 1));
@@ -3867,7 +3867,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -3891,7 +3891,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3917,7 +3917,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
@@ -3942,7 +3942,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -3963,7 +3963,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnFailFast(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithQueue(1);
                 try
                 {
@@ -3983,7 +3983,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -4002,7 +4002,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnSuccess(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithQueue(1);
                 try
                 {
@@ -4028,7 +4028,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(1, 0, 1));
@@ -4045,7 +4045,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnFailFast(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithQueue(1);
                 try
                 {
@@ -4072,7 +4072,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -4090,7 +4090,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnFailFast(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithNoQueue();
                 try
                 {
@@ -4106,7 +4106,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -4124,7 +4124,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnSuccess(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithNoQueue();
                 try
                 {
@@ -4144,7 +4144,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
@@ -4159,7 +4159,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnFailFast(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 pool = new SingleThreadedPoolWithNoQueue();
                 try
                 {
@@ -4179,7 +4179,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -4200,7 +4200,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -4222,7 +4222,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(1, 0, 1));
@@ -4236,7 +4236,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertHooksOnFailFast(
             () =>
             {
-                TestCircuitBreaker circuitBreaker = new TestCircuitBreaker();
+                var circuitBreaker = new TestCircuitBreaker();
                 circuitBreaker.SetForceShortCircuit(true);
                 var cmd = GetCircuitOpenCommand(ExecutionIsolationStrategy.THREAD, FallbackResultTest.FAILURE);
                 cmd.IsFallbackUserDefined = true;
@@ -4244,7 +4244,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 1, 0));
@@ -4257,7 +4257,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public void TestExecutionHookResponseFromCache()
         {
-            IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Hook-Cache");
+            var key = HystrixCommandKeyDefault.AsKey("Hook-Cache");
             GetCommand(key, ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 0, FallbackResultTest.UNIMPLEMENTED, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.YES, 42, 10, 10).Observe();
 
             AssertHooksOnSuccess(
@@ -4267,7 +4267,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             },
             (command) =>
             {
-                TestableExecutionHook hook = command.Builder.ExecutionHook;
+                var hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 0, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -4279,11 +4279,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override TestHystrixCommand<int> GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         {
-            IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey("Flexible-" + Interlocked.Increment(ref uniqueNameCounter));
+            var commandKey = HystrixCommandKeyDefault.AsKey("Flexible-" + Interlocked.Increment(ref uniqueNameCounter));
             var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
-            result._output = this.output;
-            var testExecHook = result._executionHook as TestableExecutionHook;
-            if (testExecHook != null)
+            result._output = output;
+            if (result._executionHook is TestableExecutionHook testExecHook)
             {
                 testExecHook._output = output;
             }
@@ -4294,9 +4293,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected override TestHystrixCommand<int> GetCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
         {
             var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
-            result._output = this.output;
-            var testExecHook = result._executionHook as TestableExecutionHook;
-            if (testExecHook != null)
+            result._output = output;
+            if (result._executionHook is TestableExecutionHook testExecHook)
             {
                 testExecHook._output = output;
             }
@@ -4555,7 +4553,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .SetExecutionSemaphore(executionSemaphore)
                 .SetFallbackSemaphore(fallbackSemaphore))
         {
-            this.result = executionResult;
+            result = executionResult;
             this.executionLatency = executionLatency;
             this.cacheEnabled = cacheEnabled;
             this.value = value;
@@ -4712,7 +4710,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override bool Run()
         {
-            long start = DateTime.Now.Ticks / 10000;
+            var start = DateTime.Now.Ticks / 10000;
             output?.WriteLine(">>> TestCommandRejection running " + sleepTime);
             try
             {
@@ -4981,8 +4979,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                  .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), executionSemaphoreCount)))
         {
             this.executionSleep = executionSleep;
-            this.ResultBehavior = resultBehavior;
-            this.FallbackBehavior = fallbackBehavior;
+            ResultBehavior = resultBehavior;
+            FallbackBehavior = fallbackBehavior;
         }
 
         public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, SemaphoreSlim semaphore, int executionSleep, int resultBehavior, int fallbackBehavior)
@@ -4991,8 +4989,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
         {
             this.executionSleep = executionSleep;
-            this.ResultBehavior = resultBehavior;
-            this.FallbackBehavior = fallbackBehavior;
+            ResultBehavior = resultBehavior;
+            FallbackBehavior = fallbackBehavior;
         }
 
         protected override bool Run()
@@ -5123,12 +5121,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected override bool Run()
         {
             // signals caller that run has started
-            this.startLatch.SignalEx();
+            startLatch.SignalEx();
 
             try
             {
                 // waits for caller to countDown latch
-                this.waitLatch.Wait();
+                waitLatch.Wait();
             }
             catch (Exception)
             {
@@ -5663,7 +5661,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private static HystrixCommandOptions GetTestOptions()
         {
-            HystrixCommandOptions options = new HystrixCommandOptions()
+            var options = new HystrixCommandOptions()
             {
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("eventGroup"),
                 FallbackIsolationSemaphoreMaxConcurrentRequests = 3
@@ -5744,7 +5742,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         protected override int RunFallback()
         {
-            TestChainedCommandSubCommand subCmd = new TestChainedCommandSubCommand(new TestCircuitBreaker());
+            var subCmd = new TestChainedCommandSubCommand(new TestCircuitBreaker());
             return subCmd.Execute();
         }
     }
@@ -5894,7 +5892,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         {
             try
             {
-                Time.WaitUntil(() => { return this._token.IsCancellationRequested; }, 500);
+                Time.WaitUntil(() => { return _token.IsCancellationRequested; }, 500);
                 _token.ThrowIfCancellationRequested();
                 return true;
             }

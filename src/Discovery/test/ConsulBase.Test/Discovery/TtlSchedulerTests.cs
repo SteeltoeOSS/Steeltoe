@@ -48,7 +48,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");
             Assert.NotEmpty(sch._serviceHeartbeats);
-            Assert.True(sch._serviceHeartbeats.TryRemove("foobar", out Timer timer));
+            Assert.True(sch._serviceHeartbeats.TryRemove("foobar", out var timer));
             Assert.NotNull(timer);
             timer.Dispose();
         }
@@ -88,10 +88,10 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");
             Assert.NotEmpty(sch._serviceHeartbeats);
-            Assert.True(sch._serviceHeartbeats.TryGetValue("foobar", out Timer timer));
+            Assert.True(sch._serviceHeartbeats.TryGetValue("foobar", out var timer));
             Assert.NotNull(timer);
             sch.Remove("foobar");
-            Assert.False(sch._serviceHeartbeats.TryGetValue("foobar", out Timer timer2));
+            Assert.False(sch._serviceHeartbeats.TryGetValue("foobar", out var timer2));
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
             var sch = new TtlScheduler(opts, client);
             sch.Add("foobar");
             Thread.Sleep(2500);
-            agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", default(CancellationToken)), Times.AtLeastOnce);
+            agentMoq.Verify(a => a.PassTTL("service:foobar", "ttl", default), Times.AtLeastOnce);
             sch.Remove("foobar");
         }
     }

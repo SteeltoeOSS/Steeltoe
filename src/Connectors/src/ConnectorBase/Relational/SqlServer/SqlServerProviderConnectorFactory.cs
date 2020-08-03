@@ -10,9 +10,9 @@ namespace Steeltoe.Connector.SqlServer
 {
     public class SqlServerProviderConnectorFactory
     {
-        private SqlServerServiceInfo _info;
-        private SqlServerProviderConnectorOptions _config;
-        private SqlServerProviderConfigurer _configurer = new SqlServerProviderConfigurer();
+        private readonly SqlServerServiceInfo _info;
+        private readonly SqlServerProviderConnectorOptions _config;
+        private readonly SqlServerProviderConfigurer _configurer = new SqlServerProviderConfigurer();
 
         public SqlServerProviderConnectorFactory()
         {

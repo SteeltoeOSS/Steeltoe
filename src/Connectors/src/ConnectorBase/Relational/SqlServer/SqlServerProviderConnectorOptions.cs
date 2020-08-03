@@ -15,7 +15,7 @@ namespace Steeltoe.Connector.SqlServer
         public const string Default_Server = "localhost";
         public const int Default_Port = 1433;
         private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:credentials";
-        private bool _cloudFoundryConfigFound = false;
+        private readonly bool _cloudFoundryConfigFound = false;
 
         public SqlServerProviderConnectorOptions()
         {

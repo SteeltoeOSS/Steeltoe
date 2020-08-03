@@ -15,9 +15,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void DefaultConstructor_SetsupDefaultOptions()
         {
-            CloudFoundryOAuthOptions opts = new CloudFoundryOAuthOptions();
+            var opts = new CloudFoundryOAuthOptions();
 
-            string authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
+            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
             Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);

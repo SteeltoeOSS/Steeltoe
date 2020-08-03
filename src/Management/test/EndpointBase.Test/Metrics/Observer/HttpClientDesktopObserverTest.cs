@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
             observer.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, null);
@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 
             var req = GetHttpRequestMessage();
 
-            Activity act = new Activity("Test");
+            var act = new Activity("Test");
             act.Start();
             Thread.Sleep(1000);
             act.SetEndTime(DateTime.UtcNow);

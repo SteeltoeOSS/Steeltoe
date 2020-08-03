@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 {
     public class HystrixConcurrencyStrategyTest : HystrixTestBase
     {
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixConcurrencyStrategyTest(ITestOutputHelper output)
             : base()
@@ -42,7 +42,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
         [Fact]
         public async Task TestThreadContextOnTimeout()
         {
-            AtomicBoolean isInitialized = new AtomicBoolean();
+            var isInitialized = new AtomicBoolean();
             await Assert.ThrowsAsync<HystrixRuntimeException>(async () =>
           {
               await new TimeoutCommand(output).ToObservable()
@@ -78,7 +78,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 
         private class SimpleCommand : HystrixCommand<string>
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             public SimpleCommand(ITestOutputHelper output, IHystrixCommandOptions opts)
                 : base(opts)
@@ -102,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency.Test
 
         private class TimeoutCommand : HystrixCommand
         {
-            private ITestOutputHelper output;
+            private readonly ITestOutputHelper output;
 
             private static IHystrixCommandOptions GetCommandOptions()
             {

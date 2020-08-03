@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         public void AddLoggersActuator_AddsCorrectServices()
         {
             // arrange
-            ServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "true",
@@ -42,7 +42,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
                 ["management:endpoints:loggers:enabled"] = "true"
             };
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
             services.AddLogging(builder =>

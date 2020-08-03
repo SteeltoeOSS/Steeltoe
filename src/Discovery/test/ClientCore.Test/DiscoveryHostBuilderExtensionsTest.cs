@@ -19,14 +19,14 @@ namespace Steeltoe.Discovery.Client.Test
 {
     public class DiscoveryHostBuilderExtensionsTest
     {
-        private static Dictionary<string, string> eurekaSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> EurekaSettings = new Dictionary<string, string>()
         {
             ["eureka:client:shouldRegister"] = "true",
             ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
             ["eureka:client:eurekaServer:retryCount"] = "0",
         };
 
-        private static Dictionary<string, string> consulSettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> ConsulSettings = new Dictionary<string, string>()
         {
             ["consul:discovery:serviceName"] = "testhost",
             ["consul:discovery:enabled"] = "true",
@@ -38,7 +38,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Eureka()
         {
             // Arrange
-            var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
+            var hostBuilder = new WebHostBuilder().Configure(configure => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
             // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
@@ -56,7 +56,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
             // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
@@ -76,7 +76,7 @@ namespace Steeltoe.Discovery.Client.Test
             // Arrange
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(c => c.UseTestServer().Configure(app => { }))
-                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(eurekaSettings));
+                .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
 
             // Act
             var host = await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
@@ -91,7 +91,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(consulSettings));
+            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
 
             // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();

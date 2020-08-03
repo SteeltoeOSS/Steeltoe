@@ -67,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             else
             {
                 // GET /metrics
-                var serialInfo = this.HandleRequest(null);
+                var serialInfo = HandleRequest(null);
                 _logger?.LogDebug("Returning: {0}", serialInfo);
 
                 context.HandleContentNegotiation(_logger);

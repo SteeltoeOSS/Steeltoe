@@ -12,15 +12,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
     {
         public static string ToJsonString(HystrixUtilization utilization)
         {
-            using (StringWriter sw = new StringWriter())
+            using var sw = new StringWriter();
+            using (var writer = new JsonTextWriter(sw))
             {
-                using (JsonTextWriter writer = new JsonTextWriter(sw))
-                {
-                    SerializeUtilization(writer, utilization);
-                }
-
-                return sw.ToString();
+                SerializeUtilization(writer, utilization);
             }
+
+            return sw.ToString();
         }
 
         private static void SerializeUtilization(JsonTextWriter json, HystrixUtilization utilization)
@@ -30,8 +28,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteObjectFieldStart("commands");
             foreach (var entry in utilization.CommandUtilizationMap)
             {
-                IHystrixCommandKey key = entry.Key;
-                HystrixCommandUtilization commandUtilization = entry.Value;
+                var key = entry.Key;
+                var commandUtilization = entry.Value;
                 WriteCommandUtilizationJson(json, key, commandUtilization);
             }
 
@@ -40,8 +38,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Serial
             json.WriteObjectFieldStart("threadpools");
             foreach (var entry in utilization.ThreadPoolUtilizationMap)
             {
-                IHystrixThreadPoolKey threadPoolKey = entry.Key;
-                HystrixThreadPoolUtilization threadPoolUtilization = entry.Value;
+                var threadPoolKey = entry.Key;
+                var threadPoolUtilization = entry.Value;
                 WriteThreadPoolUtilizationJson(json, threadPoolKey, threadPoolUtilization);
             }
 

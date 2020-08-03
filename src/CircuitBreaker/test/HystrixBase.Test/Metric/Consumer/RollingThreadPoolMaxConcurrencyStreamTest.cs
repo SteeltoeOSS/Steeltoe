@@ -17,9 +17,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 {
     public class RollingThreadPoolMaxConcurrencyStreamTest : CommandStreamTest, IDisposable
     {
+        private readonly ITestOutputHelper output;
         private RollingThreadPoolMaxConcurrencyStream stream;
         private IDisposable latchSubscription;
-        private ITestOutputHelper output;
 
         private class LatchedObserver : TestObserverBase<int>
         {
