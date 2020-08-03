@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Steeltoe.Connector.Test</RootNamespace>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

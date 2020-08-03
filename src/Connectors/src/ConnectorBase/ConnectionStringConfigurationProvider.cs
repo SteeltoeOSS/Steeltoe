@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,12 +20,15 @@ namespace Steeltoe.Connector
 
         internal ServiceInfoCreator ServiceInfoCreator { get; set; }
 
-        public ConnectionStringConfigurationProvider(IList<IConfigurationProvider> providers)
+        public ConnectionStringConfigurationProvider(IEnumerable<IConfigurationProvider> providers)
         {
-            _providers = providers;
-        }
+            if (providers is null)
+            {
+                throw new ArgumentNullException(nameof(providers));
+            }
 
-        public IList<IConfigurationProvider> Providers => _providers;
+            _providers = providers.ToList();
+        }
 
         public new IChangeToken GetReloadToken()
         {
@@ -34,13 +38,13 @@ namespace Steeltoe.Connector
 
         public override void Load()
         {
-            Configuration ??= new ConfigurationRoot(_providers);
-            ConnectionStringManager ??= new ConnectionStringManager(Configuration);
+            EnsureInitialized();
         }
 
         public override bool TryGet(string key, out string value)
         {
-            if (key.StartsWith("ConnectionStrings"))
+            EnsureInitialized();
+            if (key.StartsWith("ConnectionStrings", StringComparison.InvariantCultureIgnoreCase))
             {
                 var searchKey = key.Split(':')[1];
 
@@ -69,10 +73,8 @@ namespace Steeltoe.Connector
 
         private void EnsureInitialized()
         {
-            if (Configuration == null)
-            {
-                Configuration = new ConfigurationRoot(_providers);
-            }
+            Configuration ??= new ConfigurationRoot(_providers);
+            ConnectionStringManager ??= new ConnectionStringManager(Configuration);
         }
     }
 }

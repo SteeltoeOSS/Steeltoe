@@ -30,7 +30,7 @@ namespace Steeltoe.Connector.Redis
             return new Connection
             {
                 ConnectionString = connString,
-                Name = "Redis" + serviceInfo.Id?.Insert(0, "-")
+                Name = "Redis" + serviceInfo?.Id?.Insert(0, "-")
             };
         }
     }
