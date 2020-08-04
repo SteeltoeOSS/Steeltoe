@@ -16,7 +16,6 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
-
     [Trait("Category", "Integration")]
     public class ListenFromAutoDeleteQueueTest
     {
