@@ -54,7 +54,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected ILogger _logger;
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
-        private IOptionsMonitor<EurekaClientOptions> _configOptions;
+        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
         private JsonSerializerOptions JsonSerializerOptions { get; set; } = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
@@ -455,16 +455,14 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (var response = await client.SendAsync(request).ConfigureAwait(false))
+                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
+                    Interlocked.Exchange(ref _serviceUrl, serviceUrl);
+                    var resp = new EurekaHttpResponse(response.StatusCode)
                     {
-                        _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
-                        Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                        var resp = new EurekaHttpResponse(response.StatusCode)
-                        {
-                            Headers = response.Headers
-                        };
-                        return resp;
-                    }
+                        Headers = response.Headers
+                    };
+                    return resp;
                 }
                 catch (Exception e)
                 {
@@ -531,19 +529,17 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (var response = await client.SendAsync(request).ConfigureAwait(false))
+                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
+                    var statusCode = (int)response.StatusCode;
+                    if (statusCode >= 200 && statusCode < 300)
                     {
-                        _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
-                        var statusCode = (int)response.StatusCode;
-                        if (statusCode >= 200 && statusCode < 300)
+                        Interlocked.Exchange(ref _serviceUrl, serviceUrl);
+                        var resp = new EurekaHttpResponse(response.StatusCode)
                         {
-                            Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                            var resp = new EurekaHttpResponse(response.StatusCode)
-                            {
-                                Headers = response.Headers
-                            };
-                            return resp;
-                        }
+                            Headers = response.Headers
+                        };
+                        return resp;
                     }
                 }
                 catch (Exception e)
@@ -612,19 +608,17 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (var response = await client.SendAsync(request).ConfigureAwait(false))
+                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
+                    var statusCode = (int)response.StatusCode;
+                    if (statusCode >= 200 && statusCode < 300)
                     {
-                        _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
-                        var statusCode = (int)response.StatusCode;
-                        if (statusCode >= 200 && statusCode < 300)
+                        Interlocked.Exchange(ref _serviceUrl, serviceUrl);
+                        var resp = new EurekaHttpResponse(response.StatusCode)
                         {
-                            Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                            var resp = new EurekaHttpResponse(response.StatusCode)
-                            {
-                                Headers = response.Headers
-                            };
-                            return resp;
-                        }
+                            Headers = response.Headers
+                        };
+                        return resp;
                     }
                 }
                 catch (Exception e)
@@ -651,8 +645,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         internal string FetchAccessToken()
         {
-            var config = Config as EurekaClientOptions;
-            if (config == null || string.IsNullOrEmpty(config.AccessTokenUri))
+            if (!(Config is EurekaClientOptions config) || string.IsNullOrEmpty(config.AccessTokenUri))
             {
                 return null;
             }
@@ -841,32 +834,30 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using (var response = await client.SendAsync(request).ConfigureAwait(false))
+                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    var jroot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
+
+                    InstanceInfo infoResp = null;
+                    if (jroot != null)
                     {
-                        var jroot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
+                        infoResp = InstanceInfo.FromJsonInstance(jroot.Instance);
+                    }
 
-                        InstanceInfo infoResp = null;
-                        if (jroot != null)
+                    _logger?.LogDebug(
+                        "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
+                        requestUri.ToMaskedString(),
+                        response.StatusCode,
+                        (infoResp != null) ? infoResp.ToString() : "null",
+                        retry);
+                    var statusCode = (int)response.StatusCode;
+                    if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
+                    {
+                        Interlocked.Exchange(ref _serviceUrl, serviceUrl);
+                        var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
                         {
-                            infoResp = InstanceInfo.FromJsonInstance(jroot.Instance);
-                        }
-
-                        _logger?.LogDebug(
-                            "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
-                            requestUri.ToMaskedString(),
-                            response.StatusCode,
-                            (infoResp != null) ? infoResp.ToString() : "null",
-                            retry);
-                        var statusCode = (int)response.StatusCode;
-                        if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
-                        {
-                            Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                            var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
-                            {
-                                Headers = response.Headers
-                            };
-                            return resp;
-                        }
+                            Headers = response.Headers
+                        };
+                        return resp;
                     }
                 }
                 catch (Exception e)
@@ -982,8 +973,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
             if (!string.IsNullOrEmpty(config.ProxyHost))
             {
-                var proxyHandler = new HttpClientHandler();
-                proxyHandler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
+                var proxyHandler = new HttpClientHandler
+                {
+                    Proxy = new WebProxy(config.ProxyHost, config.ProxyPort)
+                };
                 if (!string.IsNullOrEmpty(config.ProxyPassword))
                 {
                     proxyHandler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);

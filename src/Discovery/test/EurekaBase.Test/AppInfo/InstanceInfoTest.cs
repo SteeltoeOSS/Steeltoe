@@ -15,7 +15,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void DefaultConstructor_InitializedWithDefaults()
         {
-            InstanceInfo info = new InstanceInfo();
+            var info = new InstanceInfo();
             Assert.Equal(InstanceStatus.UNKNOWN, info.OverriddenStatus);
             Assert.False(info.IsSecurePortEnabled);
             Assert.True(info.IsUnsecurePortEnabled);
@@ -33,7 +33,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJsonInstance_Correct()
         {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo()
             {
                 InstanceId = "InstanceId",
                 AppName = "AppName",
@@ -71,7 +71,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 AsgName = "AsgName"
             };
 
-            InstanceInfo info = InstanceInfo.FromJsonInstance(jinfo);
+            var info = InstanceInfo.FromJsonInstance(jinfo);
             Assert.NotNull(info);
 
             // Verify
@@ -115,8 +115,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromInstanceConfig_DefaultInstanceConfig_Correct()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var config = new EurekaInstanceConfig();
+            var info = InstanceInfo.FromInstanceConfig(config);
             Assert.NotNull(info);
 
             // Verify
@@ -159,12 +159,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromInstanceConfig_NonSecurePortFalse_SecurePortTrue_Correct()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig
+            var config = new EurekaInstanceConfig
             {
                 SecurePortEnabled = true,
                 IsNonSecurePortEnabled = false
             };
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var info = InstanceInfo.FromInstanceConfig(config);
             Assert.NotNull(info);
 
             // Verify
@@ -207,11 +207,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void ToJsonInstance_DefaultInstanceConfig_Correct()
         {
-            EurekaInstanceConfig config = new EurekaInstanceConfig();
-            InstanceInfo info = InstanceInfo.FromInstanceConfig(config);
+            var config = new EurekaInstanceConfig();
+            var info = InstanceInfo.FromInstanceConfig(config);
             Assert.NotNull(info);
 
-            JsonInstanceInfo jinfo = info.ToJsonInstance();
+            var jinfo = info.ToJsonInstance();
 
             // Verify
             Assert.Equal(config.GetHostName(false), jinfo.InstanceId);
@@ -259,11 +259,11 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_Equals()
         {
-            InstanceInfo info1 = new InstanceInfo()
+            var info1 = new InstanceInfo()
             {
                 InstanceId = "foobar"
             };
-            InstanceInfo info2 = new InstanceInfo()
+            var info2 = new InstanceInfo()
             {
                 InstanceId = "foobar"
             };
@@ -274,12 +274,12 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_NotEqual()
         {
-            InstanceInfo info1 = new InstanceInfo()
+            var info1 = new InstanceInfo()
             {
                 InstanceId = "foobar"
             };
 
-            InstanceInfo info2 = new InstanceInfo()
+            var info2 = new InstanceInfo()
             {
                 InstanceId = "foobar2"
             };
@@ -289,7 +289,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Equals_NotEqual_DiffTypes()
         {
-            InstanceInfo info1 = new InstanceInfo()
+            var info1 = new InstanceInfo()
             {
                 InstanceId = "foobar"
             };

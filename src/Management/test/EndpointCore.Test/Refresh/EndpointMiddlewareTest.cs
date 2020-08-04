@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
             var mopts = new ActuatorManagementOptions();
             mopts.EndpointOptions.Add(opts);
 
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var config = configurationBuilder.Build();
 

@@ -86,15 +86,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             /*var tagsComponent = new TagsComponent();
             var tagger = tagsComponent.Tagger;
 
-            ITagKey aKey = TagKey.Create("a");
-            ITagKey bKey = TagKey.Create("b");
-            ITagKey cKey = TagKey.Create("c");
+            var aKey = TagKey.Create("a");
+            var bKey = TagKey.Create("b");
+            var cKey = TagKey.Create("c");
 
-            string viewName = "test.test";
-            IMeasureDouble measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
+            var viewName = "test.test";
+            var measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
 
-            IViewName testViewName = ViewName.Create(viewName);
-            IView testView = View.Create(
+            var testViewName = ViewName.Create(viewName);
+            var testView = View.Create(
                                         testViewName,
                                         "test",
                                         measure,
@@ -103,14 +103,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
             stats.ViewManager.RegisterView(testView);
 
-            ITagContext context1 = tagger
+            var context1 = tagger
                 .EmptyBuilder
                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
                 .Put(TagKey.Create("c"), TagValue.Create("v1"))
                 .Build();
 
-            for (int i = 0; i < 10; i++)
+            for (var i = 0; i < 10; i++)
             {
                 stats.StatsRecorder.NewMeasureMap().Put(measure, i).Record(context1);
             }

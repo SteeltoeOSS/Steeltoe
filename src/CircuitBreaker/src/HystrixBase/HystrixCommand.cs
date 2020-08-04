@@ -199,7 +199,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             _usersToken = token;
 
-            Task<TResult> toStart = ToTask();
+            var toStart = ToTask();
             if (!toStart.IsCompleted)
             {
                 if (_execThreadTask != null)
@@ -223,29 +223,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public IObservable<TResult> Observe()
         {
-            ReplaySubject<TResult> subject = new ReplaySubject<TResult>();
-            IObservable<TResult> observable = ToObservable();
+            var subject = new ReplaySubject<TResult>();
+            var observable = ToObservable();
             var disposable = observable.Subscribe(subject);
             return subject.Finally(() => disposable.Dispose());
         }
 
         public IObservable<TResult> Observe(CancellationToken token)
         {
-            ReplaySubject<TResult> subject = new ReplaySubject<TResult>();
-            IObservable<TResult> observable = ToObservable();
+            var subject = new ReplaySubject<TResult>();
+            var observable = ToObservable();
             observable.Subscribe(subject, token);
             return observable;
         }
 
         public IObservable<TResult> ToObservable()
         {
-            IObservable<TResult> observable = Observable.FromAsync<TResult>((ct) =>
+            var observable = Observable.FromAsync<TResult>((ct) =>
             {
-                this._usersToken = ct;
-                Task<TResult> toStart = ToTask();
+                _usersToken = ct;
+                var toStart = ToTask();
                 if (!toStart.IsCompleted)
                 {
-                    if (this._execThreadTask != null)
+                    if (_execThreadTask != null)
                     {
                         StartCommand();
                     }
@@ -265,7 +265,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
             Setup();
 
-            if (PutInCacheIfAbsent(tcs.Task, out Task<TResult> fromCache))
+            if (PutInCacheIfAbsent(tcs.Task, out var fromCache))
             {
                 var task = fromCache;
                 return task;

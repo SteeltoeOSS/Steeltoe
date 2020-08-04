@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         [Fact]
         public void Constructor_Initializes()
         {
-            AgentServiceRegistration serviceRegistration = new AgentServiceRegistration()
+            var serviceRegistration = new AgentServiceRegistration()
             {
                 ID = "ID",
                 Name = "foobar",
@@ -22,9 +22,9 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
                 Port = 1234,
                 Tags = new string[] { "foo=bar" }
             };
-            ConsulDiscoveryOptions opts = new ConsulDiscoveryOptions();
-            ConsulRegistration registration = new ConsulRegistration(serviceRegistration, opts);
-            ThisServiceInstance thiz = new ThisServiceInstance(registration);
+            var opts = new ConsulDiscoveryOptions();
+            var registration = new ConsulRegistration(serviceRegistration, opts);
+            var thiz = new ThisServiceInstance(registration);
             Assert.Equal("test.foo.bar", thiz.Host);
             Assert.Equal("foobar", thiz.ServiceId);
             Assert.False(thiz.IsSecure);

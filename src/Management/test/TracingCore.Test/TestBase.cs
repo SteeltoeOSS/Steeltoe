@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Tracing.Test
     {
         public virtual TracingOptions GetOptions()
         {
-            TracingOptions opts = new TracingOptions(null, GetConfiguration());
+            var opts = new TracingOptions(null, GetConfiguration());
             return opts;
         }
 

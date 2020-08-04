@@ -231,7 +231,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             HystrixCommandExecutionHook executionHook,
             ILogger logger = null)
         {
-            this._logger = logger;
+            _logger = logger;
             commandGroup = InitGroupKey(group);
             commandKey = InitCommandKey(key, GetType());
             options = InitCommandOptions(commandKey, optionsStrategy, commandOptionsDefaults);
@@ -311,7 +311,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected static IHystrixCommandKey InitCommandKey(IHystrixCommandKey fromConstructor, Type clazz)
         {
-            if (fromConstructor == null || fromConstructor.Name.Trim().Equals(string.Empty))
+            if (fromConstructor == null || string.IsNullOrWhiteSpace(fromConstructor.Name))
             {
                 var keyName = clazz.Name;
                 return HystrixCommandKeyDefault.AsKey(keyName);
@@ -575,25 +575,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         protected Exception DecomposeException(Exception e)
         {
-            if (e is HystrixBadRequestException)
+            if (e is HystrixBadRequestException exception)
             {
-                return (HystrixBadRequestException)e;
+                return exception;
             }
 
-            if (e.InnerException is HystrixBadRequestException)
+            if (e.InnerException is HystrixBadRequestException exception1)
             {
-                return (HystrixBadRequestException)e.InnerException;
+                return exception1;
             }
 
-            if (e is HystrixRuntimeException)
+            if (e is HystrixRuntimeException exception2)
             {
-                return (HystrixRuntimeException)e;
+                return exception2;
             }
 
             // if we have an exception we know about we'll throw it directly without the wrapper exception
-            if (e.InnerException is HystrixRuntimeException)
+            if (e.InnerException is HystrixRuntimeException exception3)
             {
-                return (HystrixRuntimeException)e.InnerException;
+                return exception3;
             }
 
             // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
@@ -1184,7 +1184,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 }
                 else
                 {
-                    result = default(TResult);
+                    result = default;
                 }
 
                 return result;
@@ -1197,7 +1197,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (flatten.InnerException is TaskCanceledException && isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
                 var ex = WrapWithOnExecutionErrorHook(flatten.InnerException);
@@ -1215,7 +1215,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 if (isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
                 {
                     // End task pass
-                    return default(TResult);
+                    return default;
                 }
 
                 var ex = WrapWithOnExecutionErrorHook(e);

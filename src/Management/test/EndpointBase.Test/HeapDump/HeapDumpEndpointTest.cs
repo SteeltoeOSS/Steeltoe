@@ -7,7 +7,6 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test

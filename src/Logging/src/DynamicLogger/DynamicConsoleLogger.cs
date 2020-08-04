@@ -10,7 +10,7 @@ namespace Steeltoe.Extensions.Logging
 {
     public class DynamicConsoleLogger : ILogger
     {
-        private IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+        private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
         internal DynamicConsoleLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {

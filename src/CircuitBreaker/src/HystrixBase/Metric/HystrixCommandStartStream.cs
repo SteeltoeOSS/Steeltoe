@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         internal HystrixCommandStartStream(IHystrixCommandKey commandKey)
         {
-            this._commandKey = commandKey;
-            this._writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
-            this._readOnlyStream = _writeOnlySubject.AsObservable();
+            _commandKey = commandKey;
+            _writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
+            _readOnlyStream = _writeOnlySubject.AsObservable();
         }
 
         public static void Reset()

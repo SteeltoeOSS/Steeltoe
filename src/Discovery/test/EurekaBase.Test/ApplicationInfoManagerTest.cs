@@ -118,8 +118,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);
             Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.LeaseInfo.RenewalIntervalInSecs);
 
-            config.LeaseRenewalIntervalInSeconds = config.LeaseRenewalIntervalInSeconds + 100;
-            config.LeaseExpirationDurationInSeconds = config.LeaseExpirationDurationInSeconds + 100;
+            config.LeaseRenewalIntervalInSeconds += 100;
+            config.LeaseExpirationDurationInSeconds += 100;
             ApplicationInfoManager.Instance.RefreshLeaseInfo();
             Assert.True(info.IsDirty);
             Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);

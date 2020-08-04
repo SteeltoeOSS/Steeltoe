@@ -13,7 +13,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void MapScopes_AddsClaimAction()
         {
-            ClaimActionCollection col = new ClaimActionCollection();
+            var col = new ClaimActionCollection();
             col.MapScopes();
             Assert.Single(col);
             Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());

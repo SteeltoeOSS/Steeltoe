@@ -119,7 +119,7 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             var traceContext = ExtractTraceContext(context);
-            string spanName = ExtractSpanName(context);
+            var spanName = ExtractSpanName(context);
 
             TelemetrySpan span;
             if (!traceContext.IsValid)
@@ -161,13 +161,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 span.PutHttpResponseHeadersAttribute(AsList(context.Response.Headers));
             }
 
-            long? reqSize = ExtractRequestSize(context);
+            var reqSize = ExtractRequestSize(context);
             if (reqSize != null)
             {
                 span.PutHttpRequestSizeAttribute(reqSize.Value);
             }
 
-            long? respSize = ExtractResponseSize(context);
+            var respSize = ExtractResponseSize(context);
             if (respSize != null)
             {
                 span.PutHttpResponseSizeAttribute(respSize.Value);
@@ -228,7 +228,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal List<KeyValuePair<string, IEnumerable<string>>> AsList(IHeaderDictionary headers)
         {
-            List<KeyValuePair<string, IEnumerable<string>>> results = new List<KeyValuePair<string, IEnumerable<string>>>();
+            var results = new List<KeyValuePair<string, IEnumerable<string>>>();
             foreach (var header in headers)
             {
                 var enumerable = header.Value.AsEnumerable();

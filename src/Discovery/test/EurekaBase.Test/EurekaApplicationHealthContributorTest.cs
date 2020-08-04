@@ -13,8 +13,8 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void GetApplicationsFromConfig_ReturnsExpected()
         {
-            EurekaApplicationsHealthContributor contrib = new EurekaApplicationsHealthContributor();
-            EurekaClientConfig config = new EurekaClientConfig();
+            var contrib = new EurekaApplicationsHealthContributor();
+            var config = new EurekaClientConfig();
             var apps = contrib.GetApplicationsFromConfig(config);
             Assert.Null(apps);
             config = new EurekaClientConfig()
@@ -33,16 +33,16 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void AddApplicationHealthStatus_AddsExpected()
         {
-            EurekaApplicationsHealthContributor contrib = new EurekaApplicationsHealthContributor();
-            Application app1 = new Application("app1");
+            var contrib = new EurekaApplicationsHealthContributor();
+            var app1 = new Application("app1");
             app1.Add(new InstanceInfo() { InstanceId = "id1", Status = InstanceStatus.UP });
             app1.Add(new InstanceInfo() { InstanceId = "id2", Status = InstanceStatus.UP });
 
-            Application app2 = new Application("app2");
+            var app2 = new Application("app2");
             app2.Add(new InstanceInfo() { InstanceId = "id1", Status = InstanceStatus.DOWN });
             app2.Add(new InstanceInfo() { InstanceId = "id2", Status = InstanceStatus.STARTING });
 
-            HealthCheckResult result = new HealthCheckResult();
+            var result = new HealthCheckResult();
             contrib.AddApplicationHealthStatus("app1", null, result);
             Assert.Equal(HealthStatus.DOWN, result.Status);
             Assert.Equal("No instances found", result.Details["app1"]);
@@ -52,14 +52,18 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(HealthStatus.DOWN, result.Status);
             Assert.Equal("No instances found", result.Details["foobar"]);
 
-            result = new HealthCheckResult();
-            result.Status = HealthStatus.UP;
+            result = new HealthCheckResult
+            {
+                Status = HealthStatus.UP
+            };
             contrib.AddApplicationHealthStatus("app1", app1, result);
             Assert.Equal(HealthStatus.UP, result.Status);
             Assert.Equal("2 instances with UP status", result.Details["app1"]);
 
-            result = new HealthCheckResult();
-            result.Status = HealthStatus.UP;
+            result = new HealthCheckResult
+            {
+                Status = HealthStatus.UP
+            };
             contrib.AddApplicationHealthStatus("app2", app2, result);
             Assert.Equal(HealthStatus.DOWN, result.Status);
             Assert.Equal("0 instances with UP status", result.Details["app2"]);

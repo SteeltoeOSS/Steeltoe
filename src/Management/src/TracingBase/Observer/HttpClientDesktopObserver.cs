@@ -102,13 +102,13 @@ namespace Steeltoe.Management.Tracing.Observer
                 return;
             }
 
-            if (Pending.TryGetValue(request, out var span))
+            if (Pending.TryGetValue(request, out _))
             {
                 Logger?.LogDebug("HandleStartEvent: Continuing existing span!");
                 return;
             }
 
-            string spanName = ExtractSpanName(request);
+            var spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
 

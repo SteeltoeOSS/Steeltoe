@@ -48,8 +48,8 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                 var context = CreateRequest("GET", "/dump");
                 await middle.HandleThreadDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
-                StreamReader rdr = new StreamReader(context.Response.Body);
-                string json = await rdr.ReadToEndAsync();
+                var rdr = new StreamReader(context.Response.Body);
+                var json = await rdr.ReadToEndAsync();
                 Assert.StartsWith("[", json);
                 Assert.EndsWith("]", json);
             }
@@ -69,17 +69,15 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     loggingBuilder.AddDynamicConsole();
                 });
 
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
-                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                    var json = await result.Content.ReadAsStringAsync();
-                    Assert.NotNull(json);
-                    Assert.NotEqual("[]", json);
-                    Assert.StartsWith("[", json);
-                    Assert.EndsWith("]", json);
-                }
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/dump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+                Assert.NotEqual("[]", json);
+                Assert.StartsWith("[", json);
+                Assert.EndsWith("]", json);
             }
         }
 
@@ -97,17 +95,15 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                     loggingBuilder.AddDynamicConsole();
                 });
 
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetAsync("http://localhost/cloudfoundryapplication/threaddump");
-                    Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                    var json = await result.Content.ReadAsStringAsync();
-                    Assert.NotNull(json);
-                    Assert.NotEqual("{}", json);
-                    Assert.StartsWith("{", json);
-                    Assert.EndsWith("}", json);
-                }
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/threaddump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+                Assert.NotEqual("{}", json);
+                Assert.StartsWith("{", json);
+                Assert.EndsWith("}", json);
             }
         }
 

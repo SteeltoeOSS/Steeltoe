@@ -32,11 +32,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandSingleInterval()
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(30);
+            var timer = HystrixTimer.GetInstance();
+            var l1 = new TestListener(30);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(30);
+            var l2 = new TestListener(30);
             timer.AddTimerListener(l2);
 
             try
@@ -59,14 +59,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandMultipleIntervals()
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(100);
+            var timer = HystrixTimer.GetInstance();
+            var l1 = new TestListener(100);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(10);
+            var l2 = new TestListener(10);
             timer.AddTimerListener(l2);
 
-            TestListener l3 = new TestListener(25);
+            var l3 = new TestListener(25);
             timer.AddTimerListener(l3);
 
             try
@@ -95,12 +95,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSingleCommandRemoveListener()
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50);
+            var timer = HystrixTimer.GetInstance();
+            var l1 = new TestListener(50);
             timer.AddTimerListener(l1);
 
-            TestListener l2 = new TestListener(50);
-            TimerReference l2ref = timer.AddTimerListener(l2);
+            var l2 = new TestListener(50);
+            var l2ref = timer.AddTimerListener(l2);
 
             try
             {
@@ -150,11 +150,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
         [Trait("Category", "FlakyOnHostedAgents")]
         public void TestReset()
         {
-            HystrixTimer timer = HystrixTimer.GetInstance();
-            TestListener l1 = new TestListener(50);
-            TimerReference tref = timer.AddTimerListener(l1);
+            var timer = HystrixTimer.GetInstance();
+            var l1 = new TestListener(50);
+            var tref = timer.AddTimerListener(l1);
 
-            Task ex = tref._timerTask;
+            var ex = tref._timerTask;
 
             Assert.False(ex.IsCanceled);
 
@@ -169,10 +169,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
             Assert.Null(tref._timerTask);
 
             // assert it starts up again on use
-            TestListener l2 = new TestListener(50);
-            TimerReference tref2 = timer.AddTimerListener(l2);
+            var l2 = new TestListener(50);
+            var tref2 = timer.AddTimerListener(l2);
 
-            Task ex2 = tref2._timerTask;
+            var ex2 = tref2._timerTask;
 
             Assert.False(ex2.IsCanceled);
 

@@ -11,9 +11,9 @@ namespace Steeltoe.Connector.Redis
 {
     public class RedisServiceConnectorFactory
     {
-        private RedisServiceInfo _info;
-        private RedisCacheConnectorOptions _config;
-        private RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
+        private readonly RedisServiceInfo _info;
+        private readonly RedisCacheConnectorOptions _config;
+        private readonly RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisServiceConnectorFactory"/> class.
@@ -58,7 +58,7 @@ namespace Steeltoe.Connector.Redis
         {
             var connectionOptions = _configurer.Configure(_info, _config);
 
-            object result = null;
+            object result;
             if (Initializer == null)
             {
                 result = CreateConnection(connectionOptions.ToMicrosoftExtensionObject(OptionsType));

@@ -14,9 +14,7 @@ using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http.Json;
-using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
@@ -52,8 +50,8 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var context = CreateRequest("GET", "/loggers");
             await middle.HandleInfoRequestAsync(context);
             context.Response.Body.Seek(0, SeekOrigin.Begin);
-            StreamReader rdr = new StreamReader(context.Response.Body);
-            string json = await rdr.ReadToEndAsync();
+            var rdr = new StreamReader(context.Response.Body);
+            var json = await rdr.ReadToEndAsync();
             Assert.Equal("{}", json);
         }
 

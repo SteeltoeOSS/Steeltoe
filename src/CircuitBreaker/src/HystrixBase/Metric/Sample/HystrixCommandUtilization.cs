@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
     {
         public HystrixCommandUtilization(int concurrentCommandCount)
         {
-            this.ConcurrentCommandCount = concurrentCommandCount;
+            ConcurrentCommandCount = concurrentCommandCount;
         }
 
         public static HystrixCommandUtilization Sample(HystrixCommandMetrics commandMetrics)

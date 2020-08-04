@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         {
             while (true)
             {
-                long current = _value.Value;
+                var current = _value.Value;
                 if (current >= value)
                 {
                     return;

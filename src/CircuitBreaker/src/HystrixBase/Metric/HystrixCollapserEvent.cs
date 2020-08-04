@@ -8,9 +8,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
     {
         protected HystrixCollapserEvent(IHystrixCollapserKey collapserKey, CollapserEventType eventType, int count)
         {
-            this.CollapserKey = collapserKey;
-            this.EventType = eventType;
-            this.Count = count;
+            CollapserKey = collapserKey;
+            EventType = eventType;
+            Count = count;
         }
 
         public static HystrixCollapserEvent From(IHystrixCollapserKey collapserKey, CollapserEventType eventType, int count)

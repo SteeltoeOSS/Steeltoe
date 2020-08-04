@@ -288,8 +288,8 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             {
                 ControllerName = "foobar",
                 ActionName = "barfoo",
-                ControllerTypeInfo = this.GetType().GetTypeInfo(),
-                MethodInfo = this.GetType().GetMethod("FakeControllerMethod")
+                ControllerTypeInfo = GetType().GetTypeInfo(),
+                MethodInfo = GetType().GetMethod("FakeControllerMethod")
             };
             return desc;
         }
@@ -311,8 +311,10 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private HttpContext GetHttpRequestMessage(string method, string path)
         {
-            HttpContext context = new DefaultHttpContext();
-            context.TraceIdentifier = Guid.NewGuid().ToString();
+            HttpContext context = new DefaultHttpContext
+            {
+                TraceIdentifier = Guid.NewGuid().ToString()
+            };
 
             context.Request.Body = new MemoryStream();
             context.Response.Body = new MemoryStream();

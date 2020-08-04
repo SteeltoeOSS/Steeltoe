@@ -32,7 +32,7 @@ namespace Steeltoe.Common.LoadBalancer
         {
             var serviceName = request.Host;
             _logger?.LogTrace("ResolveServiceInstance {serviceName}", serviceName);
-            string cacheKey = IndexKeyPrefix + serviceName;
+            var cacheKey = IndexKeyPrefix + serviceName;
 
             // get instances for this service
             var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache).ConfigureAwait(false);
@@ -43,14 +43,14 @@ namespace Steeltoe.Common.LoadBalancer
             }
 
             // get next instance, or wrap back to first instance if we reach the end of the list
-            IServiceInstance serviceInstance = null;
             var nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
             if (nextInstanceIndex >= availableServiceInstances.Count)
             {
                 nextInstanceIndex = 0;
             }
 
-            serviceInstance = availableServiceInstances[nextInstanceIndex];
+            // get next instance, or wrap back to first instance if we reach the end of the list
+            var serviceInstance = availableServiceInstances[nextInstanceIndex];
             _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
             await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
             return new Uri(serviceInstance.Uri, request.PathAndQuery);
@@ -63,7 +63,7 @@ namespace Steeltoe.Common.LoadBalancer
 
         private async Task<int> GetOrInitNextIndex(string cacheKey, int initValue)
         {
-            int index = initValue;
+            var index = initValue;
             if (_distributedCache != null)
             {
                 var cacheEntry = await _distributedCache.GetAsync(cacheKey).ConfigureAwait(false);

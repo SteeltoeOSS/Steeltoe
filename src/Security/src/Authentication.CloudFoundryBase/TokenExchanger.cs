@@ -8,10 +8,8 @@ using Steeltoe.Common.Http;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Security.Claims;
 using System.Text.Json;
 using System.Threading;
@@ -42,13 +40,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public async Task<HttpResponseMessage> ExchangeCodeForToken(string code, string targetUrl, CancellationToken cancellationToken)
         {
             var requestParameters = AuthCodeTokenRequestParameters(code);
-            HttpRequestMessage requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
+            var requestMessage = GetTokenRequestMessage(requestParameters, targetUrl);
             _logger?.LogDebug("Exchanging code {code} for token at {accessTokenUrl}", code, targetUrl);
 
             HttpClientHelper.ConfigureCertificateValidation(
                 _options.ValidateCertificates,
-                out SecurityProtocolType protocolType,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var protocolType,
+                out var prevValidator);
 
             try
             {
@@ -67,17 +65,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>The user's ClaimsIdentity</returns>
         public async Task<ClaimsIdentity> ExchangeAuthCodeForClaimsIdentity(string code)
         {
-            HttpResponseMessage response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default(CancellationToken)).ConfigureAwait(false);
+            var response = await ExchangeCodeForToken(code, _options.AuthorizationUrl, default).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
                 _logger?.LogTrace("Successfully exchanged auth code for a token");
                 var tokens = JsonSerializer.Deserialize<OpenIdTokenResponse>(await response.Content.ReadAsStringAsync());
+#pragma warning restore CS0618 // Type or member is obsolete
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);
 #endif
-                JwtSecurityToken securityToken = new JwtSecurityToken(tokens.IdentityToken);
+                var securityToken = new JwtSecurityToken(tokens.IdentityToken);
 
                 return BuildIdentityWithClaims(securityToken.Claims, tokens.Scope, tokens.AccessToken);
             }
@@ -98,9 +97,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <returns>HttpResponse from the auth server</returns>
         public async Task<HttpResponseMessage> GetAccessTokenWithClientCredentials(string targetUrl)
         {
-            HttpRequestMessage requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
+            var requestMessage = GetTokenRequestMessage(ClientCredentialsTokenRequestParameters(), targetUrl);
 
-            HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out var protocolType, out var prevValidator);
 
             try
             {
@@ -182,9 +181,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             // raw dump of claims, exclude mapped typedClaimNames
             var claimsId = new ClaimsIdentity(typedClaims, _options.SignInAsAuthenticationType);
 
-            string userName = claims.First(c => c.Type == "user_name").Value;
-            string email = claims.First(c => c.Type == "email").Value;
-            string userId = claims.First(c => c.Type == "user_id").Value;
+            var userName = claims.First(c => c.Type == "user_name").Value;
+            var email = claims.First(c => c.Type == "email").Value;
+            var userId = claims.First(c => c.Type == "user_id").Value;
 
             claimsId.AddClaims(new List<Claim>
                     {

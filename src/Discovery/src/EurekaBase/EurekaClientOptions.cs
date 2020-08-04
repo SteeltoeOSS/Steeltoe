@@ -49,7 +49,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public class EurekaHealthConfig
         {
-            private EurekaClientOptions _options;
+            private readonly EurekaClientOptions _options;
 
             public EurekaHealthConfig(EurekaClientOptions options)
             {
@@ -83,7 +83,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public class EurekaServerConfig
         {
-            private EurekaClientOptions _options;
+            private readonly EurekaClientOptions _options;
 
             public EurekaServerConfig(EurekaClientOptions options)
             {

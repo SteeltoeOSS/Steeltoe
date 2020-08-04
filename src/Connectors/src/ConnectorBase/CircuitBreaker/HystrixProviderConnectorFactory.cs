@@ -11,12 +11,12 @@ namespace Steeltoe.Connector.Hystrix
 {
     public class HystrixProviderConnectorFactory
     {
-        private HystrixRabbitMQServiceInfo _info;
-        private HystrixProviderConnectorOptions _config;
-        private HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
-        private Type _type;
+        private readonly HystrixRabbitMQServiceInfo _info;
+        private readonly HystrixProviderConnectorOptions _config;
+        private readonly HystrixProviderConfigurer _configurer = new HystrixProviderConfigurer();
+        private readonly Type _type;
 
-        private MethodInfo _setUri;
+        private readonly MethodInfo _setUri;
 
         public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
         {

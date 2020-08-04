@@ -9,8 +9,8 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     internal class ConsoleOutputBorrower : IDisposable
     {
-        private StringWriter _borrowedOutput;
-        private TextWriter _originalOutput;
+        private readonly StringWriter _borrowedOutput;
+        private readonly TextWriter _originalOutput;
 
         public ConsoleOutputBorrower()
         {

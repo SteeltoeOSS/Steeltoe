@@ -38,7 +38,7 @@ namespace Steeltoe.Management
 
         public virtual TResult Invoke()
         {
-            return default(TResult);
+            return default;
         }
     }
 
@@ -60,7 +60,7 @@ namespace Steeltoe.Management
 
         public virtual TResult Invoke(TRequest arg)
         {
-            return default(TResult);
+            return default;
         }
     }
 #pragma warning restore SA1402 // File may only contain a single class

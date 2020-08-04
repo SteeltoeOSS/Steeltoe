@@ -20,34 +20,25 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static ThreadPoolEventType From(this HystrixRollingNumberEvent @event)
         {
-            switch (@event)
+            return @event switch
             {
-                case HystrixRollingNumberEvent.THREAD_EXECUTION:
-                    return ThreadPoolEventType.EXECUTED;
-                case HystrixRollingNumberEvent.THREAD_POOL_REJECTED:
-                    return ThreadPoolEventType.REJECTED;
-                default:
-                    throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.ThreadPool : " + @event);
-            }
+                HystrixRollingNumberEvent.THREAD_EXECUTION => ThreadPoolEventType.EXECUTED,
+                HystrixRollingNumberEvent.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
+                _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.ThreadPool : " + @event),
+            };
         }
 
         public static ThreadPoolEventType From(this HystrixEventType eventType)
         {
-            switch (eventType)
+            return eventType switch
             {
-                case HystrixEventType.SUCCESS:
-                    return ThreadPoolEventType.EXECUTED;
-                case HystrixEventType.FAILURE:
-                    return ThreadPoolEventType.EXECUTED;
-                case HystrixEventType.TIMEOUT:
-                    return ThreadPoolEventType.EXECUTED;
-                case HystrixEventType.BAD_REQUEST:
-                    return ThreadPoolEventType.EXECUTED;
-                case HystrixEventType.THREAD_POOL_REJECTED:
-                    return ThreadPoolEventType.REJECTED;
-                default:
-                    return ThreadPoolEventType.UNKNOWN;
-            }
+                HystrixEventType.SUCCESS => ThreadPoolEventType.EXECUTED,
+                HystrixEventType.FAILURE => ThreadPoolEventType.EXECUTED,
+                HystrixEventType.TIMEOUT => ThreadPoolEventType.EXECUTED,
+                HystrixEventType.BAD_REQUEST => ThreadPoolEventType.EXECUTED,
+                HystrixEventType.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
+                _ => ThreadPoolEventType.UNKNOWN,
+            };
         }
     }
 }

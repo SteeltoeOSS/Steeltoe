@@ -44,10 +44,10 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         {
             if (File.Exists(propFile))
             {
-                string[] lines = File.ReadAllLines(propFile);
+                var lines = File.ReadAllLines(propFile);
                 if (lines != null && lines.Length > 0)
                 {
-                    Dictionary<string, string> dict = new Dictionary<string, string>();
+                    var dict = new Dictionary<string, string>();
                     foreach (var line in lines)
                     {
                         if (line.StartsWith("#") ||
@@ -56,19 +56,19 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
                             continue;
                         }
 
-                        string[] keyVal = line.Split('=');
+                        var keyVal = line.Split('=');
                         if (keyVal == null || keyVal.Length != 2)
                         {
                             continue;
                         }
 
-                        string key = keyVal[0].Trim().Replace('.', ':');
-                        string val = keyVal[1].Replace("\\:", ":");
+                        var key = keyVal[0].Trim().Replace('.', ':');
+                        var val = keyVal[1].Replace("\\:", ":");
 
                         dict[key] = val;
                     }
 
-                    ConfigurationBuilder builder = new ConfigurationBuilder();
+                    var builder = new ConfigurationBuilder();
                     builder.AddInMemoryCollection(dict);
                     return builder.Build();
                 }
@@ -83,13 +83,13 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
         {
-            string keyToInsert = key;
+            var keyToInsert = key;
             object valueToInsert = value;
 
             if ("time".Equals(key))
             {
-                DateTime dt = DateTime.Parse(value);
-                DateTime utc = dt.ToUniversalTime();
+                var dt = DateTime.Parse(value);
+                var utc = dt.ToUniversalTime();
                 valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
             }
 

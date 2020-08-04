@@ -30,23 +30,21 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
             var stream = HystrixDashboardStream.GetInstance();
             var service = new HystrixEventSourceService(stream);
 
-            using (var listener = new HystrixEventsListener())
+            using var listener = new HystrixEventsListener();
+            var token = new CancellationTokenSource().Token;
+
+            service.OnNext(GetTestData());
+
+            int i = 0;
+            while (i++ < 100
+                && listener.CommandEvents.Count <= 0
+                && listener.ThreadPoolEvents.Count <= 0
+                && listener.CollapserEvents.Count <= 0)
             {
-                var token = new CancellationTokenSource().Token;
-
-                service.OnNext(GetTestData());
-
-                int i = 0;
-                while (i++ < 100
-                    && listener.CommandEvents.Count <= 0
-                    && listener.ThreadPoolEvents.Count <= 0
-                    && listener.CollapserEvents.Count <= 0)
-                {
-                    Thread.Sleep(1000);
-                }
-
-                Assert.True(listener.CommandEvents.Count > 0);
+                Thread.Sleep(1000);
             }
+
+            Assert.True(listener.CommandEvents.Count > 0);
         }
 
         public HystrixDashboardStream.DashboardData GetTestData()

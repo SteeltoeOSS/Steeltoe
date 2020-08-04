@@ -16,13 +16,13 @@ namespace Steeltoe.Management.Endpoint.Health
     {
         public static HealthStatus ToHealthStatus(this MicrosoftHealthStatus status)
         {
-            switch (status)
+            return status switch
             {
-                case MicrosoftHealthStatus.Healthy: return HealthStatus.UP;
-                case MicrosoftHealthStatus.Degraded: return HealthStatus.WARNING;
-                case MicrosoftHealthStatus.Unhealthy: return HealthStatus.DOWN;
-                default: return HealthStatus.UNKNOWN;
-            }
+                MicrosoftHealthStatus.Healthy => HealthStatus.UP,
+                MicrosoftHealthStatus.Degraded => HealthStatus.WARNING,
+                MicrosoftHealthStatus.Unhealthy => HealthStatus.DOWN,
+                _ => HealthStatus.UNKNOWN,
+            };
         }
 
         public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)

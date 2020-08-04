@@ -102,8 +102,10 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var spanData = span.ToSpanData();
             Assert.Equal("httpclient:/", spanData.Name);
 
-            var respHeaders = new WebHeaderCollection();
-            respHeaders.Add("TEST", "Header");
+            var respHeaders = new WebHeaderCollection
+            {
+                { "TEST", "Header" }
+            };
 
             obs.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, new { Request = request, StatusCode = HttpStatusCode.OK, Headers = respHeaders });
 
@@ -218,9 +220,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private TracingOptions GetOptions(Dictionary<string, string> settings)
         {
-            ConfigurationBuilder builder = new ConfigurationBuilder();
+            var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(settings);
-            TracingOptions opts = new TracingOptions(null, builder.Build());
+            var opts = new TracingOptions(null, builder.Build());
             return opts;
         }
 
