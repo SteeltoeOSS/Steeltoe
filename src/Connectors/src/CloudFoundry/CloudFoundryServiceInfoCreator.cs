@@ -13,39 +13,33 @@ namespace Steeltoe.Connector.CloudFoundry
     public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
     {
         private static readonly object _lock = new object();
-        private static IConfiguration _config;
         private static CloudFoundryServiceInfoCreator _me = null;
 
-        internal CloudFoundryServiceInfoCreator(IConfiguration config)
-            : base(config)
+        private CloudFoundryServiceInfoCreator(IConfiguration configuration)
+            : base(configuration)
         {
-#pragma warning disable S3010 // Static fields should not be updated in constructors
-            _config = config;
-#pragma warning restore S3010 // Static fields should not be updated in constructors
             BuildServiceInfoFactories();
             BuildServiceInfos();
         }
 
-        public static new CloudFoundryServiceInfoCreator Instance(IConfiguration config)
+        public static new CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
         {
-            if (config == null)
+            if (configuration == null)
             {
-                throw new ArgumentNullException(nameof(config));
+                throw new ArgumentNullException(nameof(configuration));
             }
 
-            if (config == _config)
+            if (configuration == _me?.Configuration)
             {
                 return _me;
             }
 
             lock (_lock)
             {
-                if (config == _config)
+                if (configuration != _me?.Configuration)
                 {
-                    return _me;
+                    _me = new CloudFoundryServiceInfoCreator(configuration);
                 }
-
-                _me = new CloudFoundryServiceInfoCreator(config);
             }
 
             return _me;
@@ -57,8 +51,8 @@ namespace Steeltoe.Connector.CloudFoundry
         {
             ServiceInfos.Clear();
 
-            var appInfo = new CloudFoundryApplicationOptions(_config);
-            var serviceOpts = new CloudFoundryServicesOptions(_config);
+            var appInfo = new CloudFoundryApplicationOptions(Configuration);
+            var serviceOpts = new CloudFoundryServicesOptions(Configuration);
 
             foreach (var serviceopt in serviceOpts.Services)
             {

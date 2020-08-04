@@ -50,7 +50,7 @@
     <TestSdkVersion>16.6.1</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
-    <XunitStudioVersion>2.4.1</XunitStudioVersion>
+    <XunitStudioVersion>2.4.3</XunitStudioVersion>
 
     <HealthChecksMySqlVersion>2.2.0</HealthChecksMySqlVersion>
     <HealthChecksMongoDbVersion>2.2.2</HealthChecksMongoDbVersion>

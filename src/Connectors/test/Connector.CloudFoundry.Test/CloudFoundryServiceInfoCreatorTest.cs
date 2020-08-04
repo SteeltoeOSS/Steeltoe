@@ -42,19 +42,6 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         }
 
         [Fact]
-        public void Constructor_ReturnsSameInstance()
-        {
-            // Arrange
-            IConfiguration config = new ConfigurationBuilder().Build();
-
-            // Act and Assert
-            var inst = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.NotNull(inst);
-            var inst2 = CloudFoundryServiceInfoCreator.Instance(config);
-            Assert.Same(inst, inst2);
-        }
-
-        [Fact]
         public void Constructor_ReturnsNewInstance()
         {
             // Arrange

@@ -68,7 +68,7 @@ namespace Steeltoe.Connector.MySql.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseMySql<TContext>(optionsBuilder, connection, mySqlOptionsAction);
+            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseMySql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null)
@@ -91,7 +91,7 @@ namespace Steeltoe.Connector.MySql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseMySql<TContext>(optionsBuilder, connection, mySqlOptionsAction);
+            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
         }
 
         private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)

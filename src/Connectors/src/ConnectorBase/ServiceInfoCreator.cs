@@ -17,12 +17,11 @@ namespace Steeltoe.Connector
     public class ServiceInfoCreator
     {
         private static readonly object _lock = new object();
-        private static IConfiguration _config;
-        private static ServiceInfoCreator _me = null;
+        private static ServiceInfoCreator _me;
 
-#pragma warning disable S3010 // Static fields should not be updated in constructors
-        protected ServiceInfoCreator(IConfiguration config) => _config = config;
-#pragma warning restore S3010 // Static fields should not be updated in constructors
+        protected internal IConfiguration Configuration { get; }
+
+        protected ServiceInfoCreator(IConfiguration configuration) => Configuration = configuration;
 
         /// <summary>
         /// Gets a value indicating whether this ServiceInfoCreator should be used
@@ -46,21 +45,19 @@ namespace Steeltoe.Connector
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (config == _config)
+            if (config == _me?.Configuration)
             {
                 return _me;
             }
 
             lock (_lock)
             {
-                if (config == _config)
+                if (config != _me?.Configuration)
                 {
-                    return _me;
+                    _me = new ServiceInfoCreator(config);
+                    _me.BuildServiceInfoFactories();
+                    _me.BuildServiceInfos();
                 }
-
-                _me = new ServiceInfoCreator(config);
-                _me.BuildServiceInfoFactories();
-                _me.BuildServiceInfos();
             }
 
             return _me;
@@ -69,11 +66,11 @@ namespace Steeltoe.Connector
         /// <summary>
         /// Get all Service Infos of type
         /// </summary>
-        /// <typeparam name="SI">Service Info Type to retrieve</typeparam>
+        /// <typeparam name="TServiceInfo">Service Info Type to retrieve</typeparam>
         /// <returns>List of matching Service Infos</returns>
-        public IEnumerable<SI> GetServiceInfos<SI>()
-            where SI : class
-                => ServiceInfos.Where(si => si is SI).Cast<SI>();
+        public IEnumerable<TServiceInfo> GetServiceInfos<TServiceInfo>()
+            where TServiceInfo : class
+                => ServiceInfos.Where(si => si is TServiceInfo).Cast<TServiceInfo>();
 
         /// <summary>
         /// Get all Service Infos of type
@@ -86,19 +83,19 @@ namespace Steeltoe.Connector
         /// <summary>
         /// Get a named service
         /// </summary>
-        /// <typeparam name="SI">Service Info type</typeparam>
+        /// <typeparam name="TServiceInfo">Service Info type</typeparam>
         /// <param name="name">Service name</param>
         /// <returns>Service info or null</returns>
-        public SI GetServiceInfo<SI>(string name)
-            where SI : class
+        public TServiceInfo GetServiceInfo<TServiceInfo>(string name)
+            where TServiceInfo : class
         {
-            var typed = GetServiceInfos<SI>();
+            var typed = GetServiceInfos<TServiceInfo>();
             foreach (var si in typed)
             {
                 var info = si as IServiceInfo;
                 if (info.Id.Equals(name))
                 {
-                    return (SI)info;
+                    return (TServiceInfo)info;
                 }
             }
 
@@ -159,8 +156,8 @@ namespace Steeltoe.Connector
         {
             ServiceInfos.Clear();
 
-            var appInfo = new ApplicationInstanceInfo(_config);
-            var serviceOpts = new ServicesOptions(_config);
+            var appInfo = new ApplicationInstanceInfo(Configuration);
+            var serviceOpts = new ServicesOptions(Configuration);
 
             foreach (var service in serviceOpts.Services.SelectMany(s => s.Value))
             {

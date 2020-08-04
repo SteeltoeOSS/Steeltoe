@@ -50,7 +50,7 @@ namespace Steeltoe.Connector
                 catch (ConnectorException)
                 {
                     // look for a service info with that id
-                    ServiceInfoCreator ??= IConfigurationExtensions.GetServiceInfoCreator(Configuration.Value);
+                    ServiceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(Configuration.Value);
                     var serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
                     if (serviceInfo is object)
                     {

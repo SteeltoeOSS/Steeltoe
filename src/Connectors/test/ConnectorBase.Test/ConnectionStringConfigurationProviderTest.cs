@@ -34,12 +34,14 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void TryGetReadsServiceBindingConnectionString()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
             var provider = new ConnectionStringConfigurationProvider(
                 new ConfigurationBuilder()
                     .AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary)
                     .Build()
                     .Providers);
-            Assert.True(provider.TryGet("connectionstrings:myRedisService", out var connectionString));
+            Assert.True(provider.TryGet("connectionstrings:myRedisService", out var connectionString), "TryGet ConnectionStrings:myRedisService");
             Assert.Equal("192.168.0.103:60287,password=133de7c8-9f3a-4df1-8a10-676ba7ddaa10,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionString);
         }
 

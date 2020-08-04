@@ -11,7 +11,7 @@ using Xunit;
 
 namespace External.Connector.Test
 {
-    public class IConfigurationExtensionsTest
+    public class ExternalConnectorTest
     {
         [Fact]
         public void CustomCreatorIsRetrieved()
@@ -20,7 +20,7 @@ namespace External.Connector.Test
             var config = new ConfigurationBuilder().Build();
 
             // act
-            var creator = IConfigurationExtensions.GetServiceInfoCreator(config);
+            var creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
 
             // assert
             Assert.IsType<TestServiceInfoCreator>(creator);
@@ -35,7 +35,7 @@ namespace External.Connector.Test
             Environment.SetEnvironmentVariable("TestServiceInfoCreator", "false");
 
             // act
-            var creator = IConfigurationExtensions.GetServiceInfoCreator(config);
+            var creator = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
 
             // assert
             Assert.IsType<ServiceInfoCreator>(creator);
