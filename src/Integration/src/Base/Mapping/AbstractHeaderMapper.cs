@@ -32,8 +32,10 @@ namespace Steeltoe.Integration.Mapping
             StandardHeaderPrefix = standardHeaderPrefix;
             RequestHeaderNames = requestHeaderNames;
             ReplyHeaderNames = replyHeaderNames;
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
             RequestHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, RequestHeaderNames);
             ReplyHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, ReplyHeaderNames);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
         }
 
         public void SetRequestHeaderNames(params string[] requestHeaderNames)

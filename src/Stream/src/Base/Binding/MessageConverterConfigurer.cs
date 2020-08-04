@@ -25,8 +25,6 @@ namespace Steeltoe.Stream.Binding
         private readonly IEnumerable<IPartitionKeyExtractorStrategy> _extractors;
         private readonly IEnumerable<IPartitionSelectorStrategy> _seledctors;
         private readonly IApplicationContext _applicationContext;
-        //private readonly IExpressionParser _expressionParser;
-        //private readonly IEvaluationContext _evaluationContext;
 
         private BindingServiceOptions Options
         {
@@ -38,16 +36,12 @@ namespace Steeltoe.Stream.Binding
 
         public MessageConverterConfigurer(
             IApplicationContext applicationContext,
-            //IExpressionParser expressionParser,
-            //IEvaluationContext evaluationContext,
             IOptionsMonitor<BindingServiceOptions> optionsMonitor,
             IMessageConverterFactory messageConverterFactory,
             IEnumerable<IPartitionKeyExtractorStrategy> extractors,
             IEnumerable<IPartitionSelectorStrategy> seledctors)
         {
             _applicationContext = applicationContext;
-            // _expressionParser = expressionParser;
-            //_evaluationContext = evaluationContext;
             _optionsMonitor = optionsMonitor;
             _messageConverterFactory = messageConverterFactory;
             _extractors = extractors;
@@ -92,8 +86,6 @@ namespace Steeltoe.Stream.Binding
                 messageChannel.AddInterceptor(
                     new PartitioningInterceptor(
                         _applicationContext,
-                        // _expressionParser,
-                        //_evaluationContext,
                         bindingOptions,
                         GetPartitionKeyExtractorStrategy(producerOptions),
                         GetPartitionSelectorStrategy(producerOptions)));

@@ -22,7 +22,6 @@ namespace Steeltoe.Stream.Binding
 
         public static object GetBindableTarget(IApplicationContext context, string name)
         {
-            //var registry = context.GetService<IDestinationRegistry>();
             return context.GetService<IMessageChannel>(name);
         }
 

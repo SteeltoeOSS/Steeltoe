@@ -27,7 +27,19 @@ namespace Steeltoe.Integration.Transformer
 
         public ITransformer Transformer { get; }
 
-        public bool IsRunning => !(Transformer is ILifecycle) || ((ILifecycle) Transformer).IsRunning;
+        public bool IsRunning
+        {
+            get
+            {
+                var asLifecycle = Transformer as ILifecycle;
+                if (asLifecycle != null)
+                {
+                    return asLifecycle.IsRunning;
+                }
+
+                return false;
+            }
+        }
 
         protected override bool ShouldCopyRequestHeaders => false;
 
@@ -44,9 +56,10 @@ namespace Steeltoe.Integration.Transformer
 
         public Task Start()
         {
-            if (Transformer is ILifecycle)
+            var asLifecycle = Transformer as ILifecycle;
+            if (asLifecycle != null)
             {
-                return ((ILifecycle)Transformer).Start();
+                return asLifecycle.Start();
             }
 
             return Task.CompletedTask;
@@ -54,9 +67,10 @@ namespace Steeltoe.Integration.Transformer
 
         public Task Stop()
         {
-            if (Transformer is ILifecycle)
+            var asLifecycle = Transformer as ILifecycle;
+            if (asLifecycle != null)
             {
-                return ((ILifecycle)Transformer).Stop();
+                return asLifecycle.Stop();
             }
 
             return Task.CompletedTask;
@@ -83,11 +97,11 @@ namespace Steeltoe.Integration.Transformer
         {
             var notPropagatedHeaders = NotPropagatedHeaders;
 
-            //if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0) 
-            //{
+            // if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0)
+            // {
             //    ((AbstractMessageProcessingTransformer)this.Transformer)
             //            .setNotPropagatedHeaders(notPropagatedHeaders.toArray(new String[0]));
-            //}
+            // }
         }
     }
 }

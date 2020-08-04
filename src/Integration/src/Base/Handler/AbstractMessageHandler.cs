@@ -77,7 +77,7 @@ namespace Steeltoe.Integration.Handler
         }
 
         public abstract void Initialize();
-        
+
         protected abstract void HandleMessageInternal(IMessage message);
     }
 }

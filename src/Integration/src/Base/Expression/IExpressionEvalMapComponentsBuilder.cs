@@ -14,6 +14,5 @@ namespace Steeltoe.Integration.Expression
         IExpressionEvalMapComponentsBuilder WithRoot(object root);
 
         IExpressionEvalMapComponentsBuilder WithReturnType(Type returnType);
-
     }
 }

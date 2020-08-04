@@ -73,9 +73,10 @@ namespace Steeltoe.Stream.Binder
             }
 
             PostProcessPollableSource(bindingTarget);
-            if (resources.Source is ILifecycle)
+            var sourceAsLifecycle = resources.Source as ILifecycle;
+            if (sourceAsLifecycle != null)
             {
-                ((ILifecycle)resources.Source).Start();
+                sourceAsLifecycle.Start();
             }
 
             var binding = new DefaultPollableChannelBinding(
@@ -83,7 +84,7 @@ namespace Steeltoe.Stream.Binder
                             name,
                             group,
                             inboundTarget,
-                            resources.Source is ILifecycle ? (ILifecycle)resources.Source : null,
+                            sourceAsLifecycle != null ? sourceAsLifecycle : null,
                             consumerOptions,
                             destination);
             return binding;

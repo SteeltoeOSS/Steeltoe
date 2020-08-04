@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Integration.Expression
 {
-
     public interface IExpressionEvalMapFinalBuilder
     {
         ExpressionEvalDictionary Build();

@@ -83,7 +83,6 @@ namespace Steeltoe.Stream.TestBinder
 
         public class ErrorMessageHandler : ILastSubscriberMessageHandler
         {
-
             public ErrorMessageHandler(TestChannelBinder binder)
             {
                 Binder = binder;

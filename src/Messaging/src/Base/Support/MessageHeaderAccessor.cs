@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.Support
                 {
                     messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
                 }
-}
+            }
 
             if (messageHeaderAccessor == null && accessorType == null)
             {

@@ -117,7 +117,6 @@ namespace Steeltoe.Integration.Expression
 
             value = Get(key);
             return true;
-
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -139,7 +138,6 @@ namespace Steeltoe.Integration.Expression
 
         public class ComponentsEvaluationCallback : IEvaluationCallback
         {
-
             private readonly IEvaluationContext _context;
 
             private readonly object _root;
@@ -150,7 +148,6 @@ namespace Steeltoe.Integration.Expression
 
             public ComponentsEvaluationCallback(IEvaluationContext context, object root, bool rootExplicitlySet, Type returnType)
             {
-
                 _context = context;
                 _root = root;
                 _rootExplicitlySet = rootExplicitlySet;

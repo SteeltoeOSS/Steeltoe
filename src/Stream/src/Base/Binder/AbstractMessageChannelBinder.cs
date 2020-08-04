@@ -665,7 +665,6 @@ namespace Steeltoe.Stream.Binder
 
                 return IntegrationServices.MessageBuilderFactory.WithPayload(payload).CopyHeaders(transformed.Headers).Build();
             }
-
         }
 
         protected class DefaultProducingMessageChannelBinding : DefaultBinding<IMessageChannel>

@@ -17,7 +17,6 @@ namespace Steeltoe.Stream.Binding
     {
         private readonly IMessageChannelConfigurer _messageChannelConfigurer;
 
-
         public SubscribableChannelBindingTargetFactory(IApplicationContext context, CompositeMessageChannelConfigurer messageChannelConfigurer)
             : base(context)
         {

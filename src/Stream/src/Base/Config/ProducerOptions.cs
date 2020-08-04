@@ -16,7 +16,6 @@ namespace Steeltoe.Stream.Config
 
         public ProducerOptions()
         {
-
         }
 
         public ProducerOptions(string bindingName)

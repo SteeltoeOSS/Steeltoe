@@ -42,6 +42,7 @@ namespace Steeltoe.Integration.Util
             {
                 services = new IntegrationServices(context);
             }
+
             return services;
         }
     }

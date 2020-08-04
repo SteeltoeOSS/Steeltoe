@@ -97,7 +97,7 @@ namespace Steeltoe.Messaging.Converter
             }
         }
 
-        public abstract string ServiceName { get;  set; }
+        public abstract string ServiceName { get; set; }
 
         public virtual T FromMessage<T>(IMessage message)
         {

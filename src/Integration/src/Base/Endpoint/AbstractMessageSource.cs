@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Endpoint
         public Dictionary<string, IExpression> HeaderExpressions { get; set; }
 
         public AbstractMessageSource(IApplicationContext context)
-            : base (context)
+            : base(context)
         {
         }
 
@@ -77,6 +77,5 @@ namespace Steeltoe.Integration.Endpoint
 
             return ExpressionEvalDictionary.From(HeaderExpressions).UsingEvaluationContext(EvaluationContext).Build();
         }
-
     }
 }

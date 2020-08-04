@@ -88,7 +88,7 @@ namespace Steeltoe.Stream.Binder
 
             // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
             var producerBinding = binder.BindProducer("bar", new DirectChannel(serviceProvider.GetService<IApplicationContext>()), producerProps);
-            Assert.True(registry.ContainsService<IMessageChannel> ("bar.errors"));
+            Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
             Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
             producerBinding.Unbind();
