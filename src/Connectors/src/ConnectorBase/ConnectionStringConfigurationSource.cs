@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Connector
 {
@@ -22,16 +23,7 @@ namespace Steeltoe.Connector
             _sources = new List<IConfigurationSource>(sources);
         }
 
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            var providers = new List<IConfigurationProvider>();
-            foreach (var source in _sources)
-            {
-                var provider = source.Build(builder);
-                providers.Add(provider);
-            }
-
-            return new ConnectionStringConfigurationProvider(providers);
-        }
+        /// <inheritdoc />
+        public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(_sources.Select(s => s.Build(builder)));
     }
 }

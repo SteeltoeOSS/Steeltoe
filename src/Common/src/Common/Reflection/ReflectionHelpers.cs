@@ -48,7 +48,7 @@ namespace Steeltoe.Common.Reflection
         /// <param name="baseType">Base type to search for</param>
         /// <returns>A list of types that have the given type as a base type</returns>
         public static IEnumerable<Type> FindDescendantTypes(Func<Assembly, bool> assemblyQuery, Type baseType)
-            => FindAssemblies(assemblyQuery).SelectMany(a => a.GetTypes()).Where(t => t.BaseType == baseType);
+            => FindAssemblies(assemblyQuery).SelectMany(a => a.GetTypes().Where(t => t.BaseType == baseType));
 
         /// <summary>
         /// Find a type specified in an assembly attribute
@@ -57,7 +57,7 @@ namespace Steeltoe.Common.Reflection
         /// <returns>A list of matching types. Won't return more than one type per assembly</returns>
         public static IEnumerable<Type> FindTypeFromAssemblyAttribute<T>()
             where T : AssemblyContainsTypeAttribute
-                => FindAssembliesWithAttribute<T>().Select(a => a.GetCustomAttribute<T>().ContainedType);
+                => FindAssembliesWithAttribute<T>().Select(assembly => assembly.GetCustomAttribute<T>().ContainedType);
 
         /// <summary>
         /// Find a list of types specified in an assembly attribute
@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Reflection
         /// <returns>A list of types with the specified attribute</returns>
         public static IEnumerable<Type> FindTypesWithAttribute<T>(Assembly assembly)
             where T : Attribute
-                => assembly.GetTypes().Where(t => t.IsDefined(typeof(T)));
+                => assembly.GetTypes().Where(type => type.IsDefined(typeof(T)));
 
         /// <summary>
         /// Finds a list of assemblies with <typeparamref name="TTypeAttribute"/> contained within assemblies with <typeparamref name="TAssemblyAttribute"/>
@@ -87,7 +87,8 @@ namespace Steeltoe.Common.Reflection
         public static IEnumerable<Type> FindTypesWithAttributeFromAssemblyAttribute<TTypeAttribute, TAssemblyAttribute>()
             where TTypeAttribute : Attribute
             where TAssemblyAttribute : AssemblyContainsTypeAttribute
-                => FindAssembliesWithAttribute<TAssemblyAttribute>().SelectMany(a => FindTypesWithAttribute<TTypeAttribute>(a));
+                => FindAssembliesWithAttribute<TAssemblyAttribute>()
+                    .SelectMany(assemblies => FindTypesWithAttribute<TTypeAttribute>(assemblies));
 
         /// <summary>
         /// Finds a list of types with the attributed identified by <typeparamref name="T"/><para></para>
@@ -96,16 +97,22 @@ namespace Steeltoe.Common.Reflection
         /// <returns>Matching types from within matching assemblies</returns>
         public static IEnumerable<Type> FindAttributedTypesFromAssemblyAttribute<T>()
             where T : AssemblyContainsTypeAttribute
-                => FindAssembliesWithAttribute<T>().SelectMany(a => a.GetTypes().Where(t => t.IsDefined(a.GetCustomAttribute<T>()?.ContainedType)));
+                => FindAssembliesWithAttribute<T>()
+                        .SelectMany(assemblies =>
+                            assemblies.GetTypes()
+                                .Where(t => t.IsDefined(assemblies.GetCustomAttribute<T>()?.ContainedType)));
 
         /// <summary>
-        /// Finds a list of types implementing the interface identified by <typeparamref name="T"/><para></para>
+        /// Finds a list of types implementing the interface identified by <typeparamref name="TAttribute"/><para></para>
         /// </summary>
-        /// <typeparam name="T">The assembly attribute that defines the desired interface type</typeparam>
+        /// <typeparam name="TAttribute">The assembly attribute that defines the desired interface type</typeparam>
         /// <returns>Matching types from within matching assemblies</returns>
-        public static IEnumerable<Type> FindInterfacedTypesFromAssemblyAttribute<T>()
-            where T : AssemblyContainsTypeAttribute
-                => FindAssembliesWithAttribute<T>().SelectMany(a => a.GetTypes().Where(t => t.IsAssignableFrom(a.GetCustomAttribute<T>()?.ContainedType)));
+        public static IEnumerable<Type> FindInterfacedTypesFromAssemblyAttribute<TAttribute>()
+            where TAttribute : AssemblyContainsTypeAttribute
+                => FindAssembliesWithAttribute<TAttribute>()
+                    .SelectMany(assemblies =>
+                        assemblies.GetTypes()
+                            .Where(types => assemblies.GetCustomAttribute<TAttribute>().ContainedType.IsAssignableFrom(types)));
 
         /// <summary>
         /// Search a list of assemblies for the first matching type

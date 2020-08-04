@@ -19,7 +19,7 @@ namespace Steeltoe.Connector
         /// <typeparam name="SI">Service info type you're looking for</typeparam>
         /// <param name="config">Configuration to search</param>
         /// <returns>List of service infos</returns>
-        public static List<SI> GetServiceInfos<SI>(this IConfiguration config)
+        public static IEnumerable<SI> GetServiceInfos<SI>(this IConfiguration config)
             where SI : class
         {
             var factory = GetServiceInfoCreator(config);
@@ -32,7 +32,7 @@ namespace Steeltoe.Connector
         /// <param name="config">Configuration to search</param>
         /// <param name="infoType">Type to search for</param>
         /// <returns>A list of relevant <see cref="IServiceInfo"/></returns>
-        public static List<IServiceInfo> GetServiceInfos(this IConfiguration config, Type infoType)
+        public static IEnumerable<IServiceInfo> GetServiceInfos(this IConfiguration config, Type infoType)
         {
             var factory = GetServiceInfoCreator(config);
             return factory.GetServiceInfos(infoType);
@@ -75,14 +75,14 @@ namespace Steeltoe.Connector
             where SI : class
         {
             var results = GetServiceInfos<SI>(config);
-            if (results.Count > 0)
+            if (results.Any())
             {
-                if (results.Count != 1)
+                if (results.Count() != 1)
                 {
                     throw new ConnectorException(string.Format("Multiple services of type: {0}, bound to application.", typeof(SI)));
                 }
 
-                return results[0];
+                return results.First();
             }
 
             return null;
@@ -113,11 +113,13 @@ namespace Steeltoe.Connector
         /// </summary>
         /// <param name="config">Application Configuration</param>
         /// <returns>true if vcap:services found in config, othwerwise false</returns>
-        public static bool HasCloudFoundryServiceConfigurations(this IConfiguration config)
-        {
-            return config.GetSection("vcap:services").GetChildren().Any();
-        }
+        public static bool HasCloudFoundryServiceConfigurations(this IConfiguration config) => config.GetSection("vcap:services").GetChildren().Any();
 
+        /// <summary>
+        /// Adds a configuration provider that uses Connector logic to fulfill requests for GetConnectionString("serviceType") or GetConnectionString("serviceBindingName")
+        /// </summary>
+        /// <param name="builder"><see cref="IConfigurationBuilder"/></param>
+        /// <returns><see cref="IConfigurationBuilder"/> with <see cref="ConnectionStringConfigurationSource"/> added</returns>
         public static IConfigurationBuilder AddConnectionStrings(this IConfigurationBuilder builder)
         {
             if (builder is null)
@@ -129,6 +131,12 @@ namespace Steeltoe.Connector
             return builder;
         }
 
+        /// <summary>
+        /// Get an instance of the first relevant <see cref="ServiceInfoCreator"/> found in any loaded assembly.
+        /// </summary>
+        /// <param name="config"><see cref="IConfiguration"/> for intializing the <see cref="ServiceInfoCreator"/></param>
+        /// <returns><see cref="ServiceInfoCreator"/></returns>
+        /// <remarks>Looks for assemblies with <see cref="ServiceInfoCreatorAssemblyAttribute"/>, returns the first<see cref="ServiceInfoCreator"/> that returns true for its property IsRelevant</remarks>
         internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration config)
         {
             var alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();

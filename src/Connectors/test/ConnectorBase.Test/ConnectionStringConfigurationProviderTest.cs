@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Redis.Test;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Threading;
 using Xunit;
@@ -49,6 +48,14 @@ namespace Steeltoe.Connector.Test
         {
             var provider = new ConnectionStringConfigurationProvider(new ConfigurationBuilder().Build().Providers);
             Assert.False(provider.TryGet("connectionstrings:myRedisService", out _));
+        }
+
+        [Fact]
+        public void TryGetReturnsHandlesUnexpectedUsagePatterns()
+        {
+            var provider = new ConnectionStringConfigurationProvider(new ConfigurationBuilder().Build().Providers);
+            Assert.False(provider.TryGet("connectionstringsmyRedisService", out _));
+            Assert.False(provider.TryGet("connectionstrings:myRedisService:banana", out _));
         }
 
         [Fact]

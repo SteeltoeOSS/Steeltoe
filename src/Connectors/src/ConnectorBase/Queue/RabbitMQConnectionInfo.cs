@@ -4,33 +4,32 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.RabbitMQ
 {
-    public class RabbitMQConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class RabbitMQConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
-              ? configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>()
-              : configuration.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
+            var info = string.IsNullOrEmpty(serviceName)
+                ? configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>()
+                : configuration.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((RabbitMQServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((RabbitMQServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType) => serviceType.Equals("rabbitmq", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is RabbitMQServiceInfo;
 
         private Connection GetConnection(RabbitMQServiceInfo info, IConfiguration configuration)
         {
             var rabbitConfig = new RabbitMQProviderConnectorOptions(configuration);
             var configurer = new RabbitMQProviderConfigurer();
-            return new Connection
-            {
-                ConnectionString = configurer.Configure(info, rabbitConfig),
-                Name = "RabbitMQ" + info?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(info, rabbitConfig), "RabbitMQ", info);
         }
     }
 }

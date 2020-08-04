@@ -3,17 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Attributes;
-using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector
 {
     /// <summary>
-    /// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />
+    /// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />
     /// </summary>
-    public sealed class ServiceInfoFactoryAssemblyAttribute : AssemblyContainsTypeAttribute
+    public sealed class ConnectionInfoAssemblyAttribute : AssemblyContainsTypeAttribute
     {
-        public ServiceInfoFactoryAssemblyAttribute()
-            : base(typeof(IServiceInfoFactory))
+        public ConnectionInfoAssemblyAttribute()
+            : base(typeof(IConnectionInfo))
         {
         }
     }

@@ -18,7 +18,7 @@ namespace Steeltoe.Connector.Services
         {
         }
 
-        public override bool Accept(Service binding)
+        public override bool Accepts(Service binding)
         {
             return TagsMatch(binding) && UriCredentialsMatchesScheme(binding.Credentials);
         }

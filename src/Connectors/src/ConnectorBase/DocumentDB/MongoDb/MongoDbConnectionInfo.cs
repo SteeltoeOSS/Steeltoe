@@ -4,33 +4,32 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.MongoDb
 {
-    public class MongoDbConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class MongoDbConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
-               ? configuration.GetSingletonServiceInfo<MongoDbServiceInfo>()
-               : configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+            var info = string.IsNullOrEmpty(serviceName)
+                ? configuration.GetSingletonServiceInfo<MongoDbServiceInfo>()
+                : configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((MongoDbServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((MongoDbServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType) => serviceType.Equals("mongodb", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MongoDbServiceInfo;
 
         private Connection GetConnection(MongoDbServiceInfo info, IConfiguration configuration)
         {
             var mongoConfig = new MongoDbConnectorOptions(configuration);
             var configurer = new MongoDbProviderConfigurer();
-            return new Connection
-            {
-                ConnectionString = configurer.Configure(info, mongoConfig),
-                Name = "MongoDb" + info?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(info, mongoConfig), "MongoDb", info);
         }
     }
 }

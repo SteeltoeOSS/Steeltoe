@@ -4,34 +4,32 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.MySql
 {
-    public class MySqlConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class MySqlConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
-              ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
-              : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+            var info = string.IsNullOrEmpty(serviceName)
+                ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
+                : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((MySqlServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((MySqlServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType) => serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MySqlServiceInfo;
 
         private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
         {
             var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
             var configurer = new MySqlProviderConfigurer();
-            var connString = configurer.Configure(info, mySqlConfig);
-            return new Connection
-            {
-                ConnectionString = connString,
-                Name = "MySql" + info?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(info, mySqlConfig), "MySql", info);
         }
     }
 }

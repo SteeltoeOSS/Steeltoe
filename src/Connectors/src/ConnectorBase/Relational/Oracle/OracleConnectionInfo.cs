@@ -4,34 +4,34 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.Oracle
 {
-    public class OracleConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class OracleConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
+            var info = string.IsNullOrEmpty(serviceName)
                 ? configuration.GetSingletonServiceInfo<OracleServiceInfo>()
                 : configuration.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((OracleServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((OracleServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType) =>
+            serviceType.Equals("oracle", StringComparison.InvariantCultureIgnoreCase) ||
+            serviceType.Equals("oracledb", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is OracleServiceInfo;
 
         private Connection GetConnection(OracleServiceInfo info, IConfiguration configuration)
         {
             var oracleConfig = new OracleProviderConnectorOptions(configuration);
             var configurer = new OracleProviderConfigurer();
-            var connString = configurer.Configure(info, oracleConfig).ToString();
-            return new Connection
-            {
-                ConnectionString = connString,
-                Name = "Oracle" + info?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(info, oracleConfig), "Oracle", info);
         }
     }
 }

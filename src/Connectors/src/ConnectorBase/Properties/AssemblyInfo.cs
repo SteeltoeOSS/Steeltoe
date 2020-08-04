@@ -13,3 +13,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Steeltoe.GemFireConnector.Test")]
 [assembly: InternalsVisibleTo("External.Connector.Test")]
 [assembly: ServiceInfoFactoryAssembly]
+[assembly: ConnectionInfoAssembly]

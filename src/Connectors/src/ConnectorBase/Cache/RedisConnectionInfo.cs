@@ -4,34 +4,34 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.Redis
 {
-    public class RedisConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class RedisConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
+            var info = string.IsNullOrEmpty(serviceName)
                 ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
                 : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((RedisServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((RedisServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType)
+            => serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo)
+            => serviceInfo is RedisServiceInfo;
 
         private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
         {
             var redisConfig = new RedisCacheConnectorOptions(configuration);
             var configurer = new RedisCacheConfigurer();
-            var connString = configurer.Configure(serviceInfo, redisConfig).ToString();
-            return new Connection
-            {
-                ConnectionString = connString,
-                Name = "Redis" + serviceInfo?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(serviceInfo, redisConfig).ToString(), "Redis", serviceInfo);
         }
     }
 }

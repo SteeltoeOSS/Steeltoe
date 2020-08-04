@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.Services
         /// </summary>
         /// <param name="binding">A service binding to evaluate</param>
         /// <returns>Gets a value indicating whether or not the binding is compatible with this factory</returns>
-        bool Accept(Service binding);
+        bool Accepts(Service binding);
 
         /// <summary>
         /// Return service information from a service binding

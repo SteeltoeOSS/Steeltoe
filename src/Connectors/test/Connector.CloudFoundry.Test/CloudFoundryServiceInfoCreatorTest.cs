@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Connector.CloudFoundry.Test
@@ -282,16 +283,10 @@ namespace Steeltoe.Connector.CloudFoundry.Test
             var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
             var result = creator.GetServiceInfos<MySqlServiceInfo>();
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-            Assert.True(result[0] is MySqlServiceInfo);
-            Assert.True(result[1] is MySqlServiceInfo);
+            Assert.Equal(2, result.Count(si => si is MySqlServiceInfo));
 
             var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
-            Assert.NotNull(result2);
-            Assert.Equal(2, result2.Count);
-            Assert.True(result2[0] is MySqlServiceInfo);
-            Assert.True(result2[1] is MySqlServiceInfo);
+            Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
 
             var result3 = creator.GetServiceInfos<RedisServiceInfo>();
             Assert.NotNull(result3);
@@ -445,15 +440,15 @@ namespace Steeltoe.Connector.CloudFoundry.Test
             Assert.NotNull(result1);
             Assert.Single(result1);
 
-            var redis1 = result1[0];
+            var redis1 = result1.First();
             Assert.Equal("10.66.32.54", redis1.Host);
 
             var resutlt2 = creator.GetServiceInfos<MongoDbServiceInfo>();
-            Assert.Equal(2, resutlt2.Count);
+            Assert.Equal(2, resutlt2.Count());
 
             var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(result3);
-            Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3[0].Host);
+            Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3.First().Host);
         }
     }
 }

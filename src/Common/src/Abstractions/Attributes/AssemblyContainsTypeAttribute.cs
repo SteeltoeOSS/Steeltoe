@@ -6,14 +6,15 @@ using System;
 
 namespace Steeltoe.Common.Attributes
 {
+    /// <summary>
+    /// This abstract attribute can be used to quickly identify assemblies containing desired types
+    /// </summary>
     [AttributeUsage(AttributeTargets.Assembly)]
-#pragma warning disable CA1813 // Avoid unsealed attributes
-    public class AssemblyContainsTypeAttribute : Attribute
-#pragma warning restore CA1813 // Avoid unsealed attributes
+    public abstract class AssemblyContainsTypeAttribute : Attribute
     {
         public Type ContainedType { get; private set; }
 
-        public AssemblyContainsTypeAttribute(Type type)
+        protected AssemblyContainsTypeAttribute(Type type)
         {
             ContainedType = type;
         }

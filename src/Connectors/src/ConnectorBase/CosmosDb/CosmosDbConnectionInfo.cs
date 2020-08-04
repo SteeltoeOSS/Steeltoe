@@ -4,33 +4,34 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.CosmosDb
 {
-    public class CosmosDbConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class CosmosDbConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
-               ? configuration.GetSingletonServiceInfo<CosmosDbServiceInfo>()
-               : configuration.GetRequiredServiceInfo<CosmosDbServiceInfo>(serviceName);
+            var info = string.IsNullOrEmpty(serviceName)
+                ? configuration.GetSingletonServiceInfo<CosmosDbServiceInfo>()
+                : configuration.GetRequiredServiceInfo<CosmosDbServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((CosmosDbServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((CosmosDbServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType)
+            => serviceType.Equals("cosmosdb", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo)
+            => serviceInfo is CosmosDbServiceInfo;
 
         private Connection GetConnection(CosmosDbServiceInfo info, IConfiguration configuration)
         {
             var cosmosConfig = new CosmosDbConnectorOptions(configuration);
             var configurer = new CosmosDbProviderConfigurer();
-            var conn = new Connection
-            {
-                ConnectionString = configurer.Configure(info, cosmosConfig),
-                Name = "CosmosDb" + info.Id?.Insert(0, "-")
-            };
+            var conn = new Connection(configurer.Configure(info, cosmosConfig), "CosmosDb", info);
             conn.Properties.Add("DatabaseId", cosmosConfig.DatabaseId);
             conn.Properties.Add("DatabaseLink", cosmosConfig.DatabaseLink);
 

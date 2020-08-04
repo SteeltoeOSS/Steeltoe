@@ -12,11 +12,11 @@ namespace Steeltoe.Connector
 {
     internal class ConnectionStringConfigurationProvider : ConfigurationProvider
     {
-        public IConfiguration Configuration { get; private set; }
+        internal Lazy<IConfiguration> Configuration { get; private set; }
 
         internal IList<IConfigurationProvider> _providers;
 
-        internal ConnectionStringManager ConnectionStringManager { get; set; }
+        internal Lazy<ConnectionStringManager> ConnectionStringManager { get; set; }
 
         internal ServiceInfoCreator ServiceInfoCreator { get; set; }
 
@@ -28,40 +28,33 @@ namespace Steeltoe.Connector
             }
 
             _providers = providers.ToList();
+            Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(_providers));
+            ConnectionStringManager = new Lazy<ConnectionStringManager>(() => new ConnectionStringManager(Configuration.Value));
         }
 
-        public new IChangeToken GetReloadToken()
-        {
-            EnsureInitialized();
-            return Configuration.GetReloadToken();
-        }
+        public new IChangeToken GetReloadToken() => Configuration.Value.GetReloadToken();
 
-        public override void Load()
-        {
-            EnsureInitialized();
-        }
-
+        /// <inheritdoc />
         public override bool TryGet(string key, out string value)
         {
-            EnsureInitialized();
-            if (key.StartsWith("ConnectionStrings", StringComparison.InvariantCultureIgnoreCase))
+            if (key.StartsWith("ConnectionStrings:", StringComparison.InvariantCultureIgnoreCase))
             {
                 var searchKey = key.Split(':')[1];
 
                 try
                 {
                     // look for a service info of that type
-                    value = ConnectionStringManager.GetByTypeName(searchKey).ConnectionString;
+                    value = ConnectionStringManager.Value.GetByTypeName(searchKey).ConnectionString;
                     return true;
                 }
                 catch (ConnectorException)
                 {
                     // look for a service info with that id
-                    ServiceInfoCreator ??= IConfigurationExtensions.GetServiceInfoCreator(Configuration);
+                    ServiceInfoCreator ??= IConfigurationExtensions.GetServiceInfoCreator(Configuration.Value);
                     var serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
                     if (serviceInfo is object)
                     {
-                        value = ConnectionStringManager.GetFromServiceInfo(serviceInfo).ConnectionString;
+                        value = ConnectionStringManager.Value.GetFromServiceInfo(serviceInfo).ConnectionString;
                         return true;
                     }
                 }
@@ -69,12 +62,6 @@ namespace Steeltoe.Connector
 
             value = null;
             return false;
-        }
-
-        private void EnsureInitialized()
-        {
-            Configuration ??= new ConfigurationRoot(_providers);
-            ConnectionStringManager ??= new ConnectionStringManager(Configuration);
         }
     }
 }

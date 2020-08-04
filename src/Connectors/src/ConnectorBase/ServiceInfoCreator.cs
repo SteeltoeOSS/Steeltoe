@@ -71,30 +71,17 @@ namespace Steeltoe.Connector
         /// </summary>
         /// <typeparam name="SI">Service Info Type to retrieve</typeparam>
         /// <returns>List of matching Service Infos</returns>
-        public List<SI> GetServiceInfos<SI>()
+        public IEnumerable<SI> GetServiceInfos<SI>()
             where SI : class
-        {
-            var results = new List<SI>();
-            foreach (var info in ServiceInfos)
-            {
-                if (info is SI si)
-                {
-                    results.Add(si);
-                }
-            }
-
-            return results;
-        }
+                => ServiceInfos.Where(si => si is SI).Cast<SI>();
 
         /// <summary>
         /// Get all Service Infos of type
         /// </summary>
         /// <param name="type">Service Info Type to retrieve</param>
         /// <returns>List of matching Service Infos</returns>
-        public List<IServiceInfo> GetServiceInfos(Type type)
-        {
-            return ServiceInfos.Where((info) => info.GetType() == type).ToList();
-        }
+        public IEnumerable<IServiceInfo> GetServiceInfos(Type type)
+            => ServiceInfos.Where((info) => info.GetType() == type);
 
         /// <summary>
         /// Get a named service
@@ -123,10 +110,7 @@ namespace Steeltoe.Connector
         /// </summary>
         /// <param name="name">Name of service info</param>
         /// <returns>Service info</returns>
-        public IServiceInfo GetServiceInfo(string name)
-        {
-            return ServiceInfos.FirstOrDefault((info) => info.Id.Equals(name));
-        }
+        public IServiceInfo GetServiceInfo(string name) => ServiceInfos.FirstOrDefault((info) => info.Id.Equals(name));
 
         internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
         {
@@ -162,7 +146,7 @@ namespace Steeltoe.Connector
         {
             foreach (var f in Factories)
             {
-                if (f.Accept(s))
+                if (f.Accepts(s))
                 {
                     return f;
                 }
@@ -178,16 +162,13 @@ namespace Steeltoe.Connector
             var appInfo = new ApplicationInstanceInfo(_config);
             var serviceOpts = new ServicesOptions(_config);
 
-            foreach (var serviceopt in serviceOpts.Services)
+            foreach (var service in serviceOpts.Services.SelectMany(s => s.Value))
             {
-                foreach (var s in serviceopt.Value)
+                var factory = FindFactory(service);
+                if (factory != null && factory.Create(service) is ServiceInfo info)
                 {
-                    var factory = FindFactory(s);
-                    if (factory != null && factory.Create(s) is ServiceInfo info)
-                    {
-                        info.ApplicationInfo = appInfo;
-                        ServiceInfos.Add(info);
-                    }
+                    info.ApplicationInfo = appInfo;
+                    ServiceInfos.Add(info);
                 }
             }
         }

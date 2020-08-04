@@ -4,45 +4,40 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.PostgreSql
 {
-    public class PostgresConnectionInfo : Connection, IConnectionInfo, IConnectionServiceInfo
+    public class PostgresConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
-             ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
-             : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+            var info = string.IsNullOrEmpty(serviceName)
+                ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
+                : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((PostgresServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((PostgresServiceInfo)serviceInfo, configuration);
 
-        public string ClientCertificate { get; set; }
+        public bool IsSameType(string serviceType) =>
+                serviceType.Equals("postgres", StringComparison.InvariantCultureIgnoreCase) ||
+                serviceType.Equals("postgresql", StringComparison.InvariantCultureIgnoreCase);
 
-        public string ClientKey { get; set; }
-
-        public string SslRootCertificate { get; set; }
+        public bool IsSameType(IServiceInfo serviceInfo)
+            => serviceInfo is PostgresServiceInfo;
 
         private Connection GetConnection(PostgresServiceInfo info, IConfiguration configuration)
         {
             var postgresConfig = new PostgresProviderConnectorOptions(configuration);
             var configurer = new PostgresProviderConfigurer();
+            var connection = new Connection(configurer.Configure(info, postgresConfig), "Postgres", info);
+            connection.Properties.Add("ClientCertificate", postgresConfig.ClientCertificate);
+            connection.Properties.Add("ClientKey", postgresConfig.ClientKey);
+            connection.Properties.Add("SslRootCertificate", postgresConfig.SslRootCertificate);
 
-            var connectionString = configurer.Configure(info, postgresConfig);
-
-            ClientCertificate = postgresConfig.ClientCertificate;
-            ClientKey = postgresConfig.ClientKey;
-            SslRootCertificate = postgresConfig.SslRootCertificate;
-
-            ConnectionString = connectionString;
-            Name = "Postgres" + info?.Id?.Insert(0, "-");
-
-            return this;
+            return connection;
         }
     }
 }

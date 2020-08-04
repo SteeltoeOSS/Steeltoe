@@ -14,7 +14,7 @@ namespace External.Connector.Test
         {
         }
 
-        public override bool Accept(Service binding)
+        public override bool Accepts(Service binding)
         {
             return true;
         }

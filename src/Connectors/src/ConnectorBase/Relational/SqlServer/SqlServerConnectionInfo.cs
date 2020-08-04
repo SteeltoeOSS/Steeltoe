@@ -4,33 +4,34 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
+using System;
 
 namespace Steeltoe.Connector.SqlServer
 {
-    public class SqlServerConnectionInfo : IConnectionInfo, IConnectionServiceInfo
+    public class SqlServerConnectionInfo : IConnectionInfo
     {
         public Connection Get(IConfiguration configuration, string serviceName)
         {
-            var info = serviceName == null
+            var info = string.IsNullOrEmpty(serviceName)
                 ? configuration.GetSingletonServiceInfo<SqlServerServiceInfo>()
                 : configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
             return GetConnection(info, configuration);
         }
 
         public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        {
-            return GetConnection((SqlServerServiceInfo)serviceInfo, configuration);
-        }
+            => GetConnection((SqlServerServiceInfo)serviceInfo, configuration);
+
+        public bool IsSameType(string serviceType) =>
+            serviceType.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase) ||
+            serviceType.Equals("mssql", StringComparison.InvariantCultureIgnoreCase);
+
+        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is SqlServerServiceInfo;
 
         private Connection GetConnection(SqlServerServiceInfo info, IConfiguration configuration)
         {
             var sqlConfig = new SqlServerProviderConnectorOptions(configuration);
             var configurer = new SqlServerProviderConfigurer();
-            return new Connection
-            {
-                ConnectionString = configurer.Configure(info, sqlConfig),
-                Name = "SqlServer" + info?.Id?.Insert(0, "-")
-            };
+            return new Connection(configurer.Configure(info, sqlConfig), "SqlServer", info);
         }
     }
 }
