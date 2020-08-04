@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Config;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IRabbitAdmin : IServiceNameAware
     {

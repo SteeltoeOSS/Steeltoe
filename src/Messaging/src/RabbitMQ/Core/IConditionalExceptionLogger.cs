@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IConditionalExceptionLogger
     {

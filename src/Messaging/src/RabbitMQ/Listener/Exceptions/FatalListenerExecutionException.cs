@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
 {
     public class FatalListenerExecutionException : Exception
     {

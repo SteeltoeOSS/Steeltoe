@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Retry
+namespace Steeltoe.Messaging.RabbitMQ.Retry
 {
     public interface IMessageRecoverer
     {

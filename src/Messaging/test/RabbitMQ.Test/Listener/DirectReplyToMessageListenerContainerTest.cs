@@ -2,18 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     [Trait("Category", "Integration")]
     public class DirectReplyToMessageListenerContainerTest : IDisposable
@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var channel1 = container.GetChannelHolder();
             var props = channel1.Channel.CreateBasicProperties();
             props.ReplyTo = Address.AMQ_RABBITMQ_REPLY_TO;
-            channel1.Channel.BasicPublish(string.Empty, TEST_RELEASE_CONSUMER_Q, props, foobytes);
+            RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TEST_RELEASE_CONSUMER_Q, props, foobytes);
             var replyChannel = connectionFactory.CreateConnection().CreateChannel(false);
             var request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
             var n = 0;
@@ -66,7 +66,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             Assert.NotNull(request);
             props = channel1.Channel.CreateBasicProperties();
-            replyChannel.BasicPublish(string.Empty, request.BasicProperties.ReplyTo, props, barbytes);
+            RC.IModelExensions.BasicPublish(replyChannel, string.Empty, request.BasicProperties.ReplyTo, props, barbytes);
             replyChannel.Close();
             Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             public AcknowledgeMode ContainerAckMode { get; set; }
 
-            public void OnMessage(IMessage message, IModel channel)
+            public void OnMessage(IMessage message, RC.IModel channel)
             {
                 try
                 {
@@ -110,7 +110,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             {
             }
 
-            public void OnMessageBatch(List<IMessage> messages, IModel channel)
+            public void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
             {
             }
 

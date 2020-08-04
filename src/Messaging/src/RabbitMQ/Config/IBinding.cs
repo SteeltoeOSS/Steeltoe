@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Services;
-using static Steeltoe.Messaging.Rabbit.Config.Binding;
+using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public interface IBinding : IDeclarable, IServiceNameAware
     {

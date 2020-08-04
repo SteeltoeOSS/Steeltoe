@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CorrelationData // : Correlation
     {

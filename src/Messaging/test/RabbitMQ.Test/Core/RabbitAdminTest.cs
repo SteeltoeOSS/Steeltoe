@@ -6,13 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,10 +21,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static Steeltoe.Messaging.Rabbit.Config.Binding;
-using IConnectionFactory = Steeltoe.Messaging.Rabbit.Connection.IConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     [Trait("Category", "Integration")]
     public class RabbitAdminTest : AbstractTest
@@ -106,8 +105,8 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
                 Assert.True(n < 100);
                 var channel = connectionFactory.CreateConnection().CreateChannel(false);
-                var consumer = new DefaultBasicConsumer(channel);
-                channel.BasicConsume(queueName, true, consumer);
+                var consumer = new RC.DefaultBasicConsumer(channel);
+                RC.IModelExensions.BasicConsume(channel, queueName, true, consumer);
                 n = 0;
                 while (n++ < 100 && MessageCount(rabbitAdmin, queueName) > 0)
                 {
@@ -272,7 +271,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void TestIgnoreDeclarationExceptionsTimeout()
         {
-            var rabbitConnectionFactory = new Mock<RabbitMQ.Client.IConnectionFactory>();
+            var rabbitConnectionFactory = new Mock<RC.IConnectionFactory>();
             var toBeThrown = new TimeoutException("test");
             rabbitConnectionFactory.Setup((c) => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
             var ccf = new CachingConnectionFactory(rabbitConnectionFactory.Object);
@@ -313,11 +312,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
             var connection = new Mock<Connection.IConnection>();
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
 
-            var channel1 = new Mock<IModel>();
-            var channel2 = new Mock<IModel>();
+            var channel1 = new Mock<RC.IModel>();
+            var channel2 = new Mock<RC.IModel>();
 
             connection.SetupSequence((c) => c.CreateChannel(false)).Returns(channel1.Object).Returns(channel2.Object);
-            var declareOk = new QueueDeclareOk("foo", 0, 0);
+            var declareOk = new RC.QueueDeclareOk("foo", 0, 0);
             channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Returns(declareOk);
             var template = new RabbitTemplate(connectionFactory.Object);
             var admin = new RabbitAdmin(template);
@@ -339,12 +338,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public void TestRetry()
         {
-            var connectionFactory = new Mock<RabbitMQ.Client.IConnectionFactory>();
-            var connection = new Mock<RabbitMQ.Client.IConnection>();
+            var connectionFactory = new Mock<RC.IConnectionFactory>();
+            var connection = new Mock<RC.IConnection>();
             connection.Setup(c => c.IsOpen).Returns(true);
             connectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
-            var channel1 = new Mock<IModel>();
+            var channel1 = new Mock<RC.IModel>();
             channel1.Setup(c => c.IsOpen).Returns(true);
             connection.Setup(c => c.CreateModel()).Returns(channel1.Object);
             channel1.Setup((c) => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Throws<Exception>();
@@ -368,7 +367,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         [Fact]
         public async Task TestMasterLocator()
         {
-            var factory = new ConnectionFactory
+            var factory = new RC.ConnectionFactory
             {
                 Uri = new Uri("amqp://guest:guest@localhost:5672/")
             };

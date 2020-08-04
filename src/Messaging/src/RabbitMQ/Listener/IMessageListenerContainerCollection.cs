@@ -5,7 +5,7 @@
 using Steeltoe.Common.Services;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IMessageListenerContainerCollection : IServiceNameAware
     {

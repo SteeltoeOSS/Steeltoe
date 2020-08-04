@@ -2,21 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Connection;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IRabbitTemplate : IServiceNameAware
     {
         Connection.IConnectionFactory ConnectionFactory { get; }
 
-        T Execute<T>(Func<IModel, T> channelCallback);
+        T Execute<T>(Func<RC.IModel, T> channelCallback);
 
         T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback)
         {

@@ -4,19 +4,19 @@
 
 using Moq;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class BlockingQueueConsumerTest
     {
@@ -82,7 +82,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             var connectionFactory = new Mock<IConnectionFactory>();
             var connection = new Mock<IConnection>();
-            var channel = new Mock<R.IModel>();
+            var channel = new Mock<RC.IModel>();
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
             connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
             connection.Setup(c => c.IsOpen).Returns(true);
@@ -104,12 +104,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 {
                     if (throws.Value)
                     {
-                        throw new R.Exceptions.OperationInterruptedException(new R.ShutdownEventArgs(R.ShutdownInitiator.Peer, 0, "Expected"));
+                        throw new RC.Exceptions.OperationInterruptedException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, 0, "Expected"));
                     }
 
-                    return new R.QueueDeclareOk("any", 0, 0);
+                    return new RC.QueueDeclareOk("any", 0, 0);
                 });
-            channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
+            channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
                 .Returns("consumerTag");
             var blockingQueueConsumer = new BlockingQueueConsumer(
                 connectionFactory.Object,
@@ -136,7 +136,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             var connectionFactory = new Mock<IConnectionFactory>();
             var connection = new Mock<IConnection>();
-            var channel = new Mock<R.IModel>();
+            var channel = new Mock<RC.IModel>();
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
             connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
             connection.Setup(c => c.IsOpen).Returns(true);
@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 null,
                 queue);
             blockingQueueConsumer.Start();
-            channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.AUTO.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()));
+            channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.AUTO.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()));
             blockingQueueConsumer.Stop();
         }
 
@@ -167,16 +167,16 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             var connectionFactory = new Mock<IConnectionFactory>();
             var connection = new Mock<IConnection>();
-            var channel = new Mock<R.IModel>();
+            var channel = new Mock<RC.IModel>();
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
             connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
             connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
             var n = new AtomicInteger();
-            var consumerCaptor = new AtomicReference<R.IBasicConsumer>();
+            var consumerCaptor = new AtomicReference<RC.IBasicConsumer>();
             var consumerLatch = new CountdownEvent(2);
-            channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
-                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, R.IBasicConsumer>((a1, a2, a3, a4, a5, a6, a7) =>
+            channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((a1, a2, a3, a4, a5, a6, a7) =>
                 {
                     consumerCaptor.Value = a7;
                     consumerLatch.Signal();
@@ -228,7 +228,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         private void TestRequeueOrNotDefaultYes(Exception ex, bool expectedRequeue)
         {
             var connectionFactory = new Mock<IConnectionFactory>();
-            var channel = new Mock<R.IModel>();
+            var channel = new Mock<RC.IModel>();
             var blockingQueueConsumer = new BlockingQueueConsumer(
                 connectionFactory.Object,
                 new DefaultMessageHeadersConverter(),
@@ -244,7 +244,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         private void TestRequeueOrNotDefaultNo(Exception ex, bool expectedRequeue)
         {
             var connectionFactory = new Mock<IConnectionFactory>();
-            var channel = new Mock<R.IModel>();
+            var channel = new Mock<RC.IModel>();
             var blockingQueueConsumer = new BlockingQueueConsumer(
                connectionFactory.Object,
                new DefaultMessageHeadersConverter(),
@@ -259,7 +259,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             TestRequeueOrNotGuts(ex, expectedRequeue, channel, blockingQueueConsumer);
         }
 
-        private void TestRequeueOrNotGuts(Exception ex, bool expectedRequeue, Mock<R.IModel> channel, BlockingQueueConsumer blockingQueueConsumer)
+        private void TestRequeueOrNotGuts(Exception ex, bool expectedRequeue, Mock<RC.IModel> channel, BlockingQueueConsumer blockingQueueConsumer)
         {
             blockingQueueConsumer.Channel = channel.Object;
             var deliveryTags = new HashSet<ulong>

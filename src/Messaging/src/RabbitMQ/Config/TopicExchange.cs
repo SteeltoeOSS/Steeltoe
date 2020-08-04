@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class TopicExchange : AbstractExchange, ITopicExchange
     {

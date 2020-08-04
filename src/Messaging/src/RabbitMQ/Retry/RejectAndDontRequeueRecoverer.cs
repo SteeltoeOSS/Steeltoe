@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Retry
+namespace Steeltoe.Messaging.RabbitMQ.Retry
 {
     public class RejectAndDontRequeueRecoverer : IMessageRecoverer
     {

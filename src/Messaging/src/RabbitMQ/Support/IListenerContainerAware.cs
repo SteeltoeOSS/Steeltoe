@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public interface IListenerContainerAware
     {

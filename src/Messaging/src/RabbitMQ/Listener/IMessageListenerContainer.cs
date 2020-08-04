@@ -6,7 +6,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Services;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IMessageListenerContainer : ISmartLifecycle, IDisposable, IServiceNameAware
     {

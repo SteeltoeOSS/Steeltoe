@@ -2,19 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     [Trait("Category", "Integration")]
     public class BlockingQueueConsumerIntegrationTest
@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
             catch (FatalListenerStartupException e)
             {
-                Assert.IsType<R.Exceptions.WireFormattingException>(e.InnerException);
+                Assert.IsType<RC.Exceptions.WireFormattingException>(e.InnerException);
             }
             finally
             {

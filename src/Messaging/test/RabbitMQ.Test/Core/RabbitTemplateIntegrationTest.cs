@@ -4,18 +4,17 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
-using Steeltoe.Messaging.Rabbit.Support.PostProcessor;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
+using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,9 +25,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     [Trait("Category", "Integration")]
     public class RabbitTemplateIntegrationTest : IDisposable
@@ -121,7 +120,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
                 catch (RabbitConnectException e)
                 {
-                    Assert.IsType<R.Exceptions.AlreadyClosedException>(e.InnerException);
+                    Assert.IsType<RC.Exceptions.AlreadyClosedException>(e.InnerException);
                 }
             }
             finally
@@ -1030,7 +1029,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public void TestRouting()
         {
             var connection1 = new Mock<Connection.IConnection>();
-            var channel1 = new Mock<R.IModel>();
+            var channel1 = new Mock<RC.IModel>();
             cf1.Setup(f => f.CreateConnection()).Returns(connection1.Object);
             connection1.Setup(c => c.CreateChannel(false)).Returns(channel1.Object);
             connection1.Setup(c => c.IsOpen).Returns(true);
@@ -1038,17 +1037,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             var testPP = new TestPostProcessor("foo");
             routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPP);
-            channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<R.IBasicProperties>(), It.IsAny<byte[]>()));
+            channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
 
             var connection2 = new Mock<Connection.IConnection>();
-            var channel2 = new Mock<R.IModel>();
+            var channel2 = new Mock<RC.IModel>();
             cf2.Setup(f => f.CreateConnection()).Returns(connection2.Object);
             connection2.Setup(c => c.CreateChannel(false)).Returns(channel2.Object);
             connection2.Setup(c => c.IsOpen).Returns(true);
             channel2.Setup(c => c.IsOpen).Returns(true);
             var testPP2 = new TestPostProcessor("bar");
             routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPP2);
-            channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<R.IBasicProperties>(), It.IsAny<byte[]>()));
+            channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
         }
 
         [Fact]
@@ -1096,7 +1095,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 Assert.Contains("NOT_FOUND", shutdownArgs.ReplyText);
             }
 
-            var signal = new R.ShutdownEventArgs(ShutdownInitiator.Library, 320, "CONNECTION_FORCED", 10, 0);
+            var signal = new RC.ShutdownEventArgs(RC.ShutdownInitiator.Library, 320, "CONNECTION_FORCED", 10, 0);
             connectionFactory.ConnectionShutdownCompleted(this, signal);
 
             Assert.True(connLatch.Wait(TimeSpan.FromSeconds(10)));
@@ -1376,7 +1375,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             {
             }
 
-            public void OnShutDown(ShutdownEventArgs args)
+            public void OnShutDown(RC.ShutdownEventArgs args)
             {
                 shutdown.Value = new ShutdownSignalException(args);
                 connLatch.Signal();
@@ -1394,11 +1393,11 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 this.shutdownLatch = shutdownLatch;
             }
 
-            public void OnCreate(IModel channel, bool transactional)
+            public void OnCreate(RC.IModel channel, bool transactional)
             {
             }
 
-            public void OnShutDown(ShutdownEventArgs args)
+            public void OnShutDown(RC.ShutdownEventArgs args)
             {
                 shutdown.Value = new ShutdownSignalException(args);
                 shutdownLatch.Signal();
@@ -1614,7 +1613,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
             public int LocalPort => Delegate.LocalPort;
 
-            public R.IConnection Connection => Delegate.Connection;
+            public RC.IConnection Connection => Delegate.Connection;
 
             public void AddBlockedListener(IBlockedListener listener)
             {
@@ -1626,7 +1625,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 Delegate.Close();
             }
 
-            public R.IModel CreateChannel(bool transactional = false)
+            public RC.IModel CreateChannel(bool transactional = false)
             {
                 var chan = Delegate.CreateChannel(transactional);
                 return new MockChannel(chan);
@@ -1643,18 +1642,18 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private class MockConsumer : R.IBasicConsumer
+        private class MockConsumer : RC.IBasicConsumer
         {
-            public MockConsumer(R.IBasicConsumer deleg)
+            public MockConsumer(RC.IBasicConsumer deleg)
             {
                 Delegate = deleg;
             }
 
-            public R.IBasicConsumer Delegate { get; }
+            public RC.IBasicConsumer Delegate { get; }
 
-            public R.IModel Model => Delegate.Model;
+            public RC.IModel Model => Delegate.Model;
 
-            public event EventHandler<R.Events.ConsumerEventArgs> ConsumerCancelled
+            public event EventHandler<RC.Events.ConsumerEventArgs> ConsumerCancelled
             {
                 add
                 {
@@ -1690,12 +1689,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 }
             }
 
-            public void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, R.IBasicProperties properties, byte[] body)
+            public void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
             {
                 Delegate.HandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
             }
 
-            public void HandleModelShutdown(object model, R.ShutdownEventArgs reason)
+            public void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
             {
                 throw new NotImplementedException();
             }
@@ -1703,12 +1702,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private class MockChannel : PublisherCallbackChannel
         {
-            public MockChannel(R.IModel channel, ILogger logger = null)
+            public MockChannel(RC.IModel channel, ILogger logger = null)
                 : base(channel, logger)
             {
             }
 
-            public override string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, R.IBasicConsumer consumer)
+            public override string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer consumer)
             {
                 return base.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, new MockConsumer(consumer));
             }

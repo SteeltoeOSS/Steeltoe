@@ -6,7 +6,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Services;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IRabbitListenerEndpointRegistrar : IServiceNameAware
     {

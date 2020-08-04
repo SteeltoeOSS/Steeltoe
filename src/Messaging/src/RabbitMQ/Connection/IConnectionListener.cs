@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public interface IConnectionListener
     {
@@ -24,6 +24,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         /// Called when connection is forced to close
         /// </summary>
         /// <param name="args">the event</param>
-        void OnShutDown(ShutdownEventArgs args);
+        void OnShutDown(RC.ShutdownEventArgs args);
     }
 }

@@ -6,24 +6,24 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Listener.Support;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Transaction;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Transaction;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
@@ -463,7 +463,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private SimpleConsumer Consume(string queue, Connection.IConnection connection)
         {
-            R.IModel channel = null;
+            RC.IModel channel = null;
             SimpleConsumer consumer = null;
             try
             {
@@ -886,15 +886,15 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             }
         }
 
-        protected internal class SimpleConsumer : R.DefaultBasicConsumer
+        protected internal class SimpleConsumer : RC.DefaultBasicConsumer
         {
             private readonly DirectMessageListenerContainer _container;
             private readonly Connection.IConnection _connection;
-            private readonly R.IModel _targetChannel;
+            private readonly RC.IModel _targetChannel;
             private readonly ILogger _logger;
             private readonly object _lock = new object();
 
-            public SimpleConsumer(DirectMessageListenerContainer container, Connection.IConnection connection, R.IModel channel, string queue, ILogger logger = null)
+            public SimpleConsumer(DirectMessageListenerContainer container, Connection.IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
                 : base(channel)
             {
                 _container = container;
@@ -964,7 +964,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 return Epoch;
             }
 
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, R.IBasicProperties properties, byte[] body)
+            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
             {
                 var envelope = new Envelope(deliveryTag, redelivered, exchange, routingKey);
                 var messageHeaders = _container.MessageHeadersConverter.ToMessageHeaders(properties, envelope, EncodingUtils.Utf8);

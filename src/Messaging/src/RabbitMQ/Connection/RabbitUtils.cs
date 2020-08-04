@@ -3,17 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public static class RabbitUtils
     {
@@ -51,7 +51,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void CloseChannel(IModel channel, ILogger logger = null)
+        public static void CloseChannel(RC.IModel channel, ILogger logger = null)
         {
             if (channel != null)
             {
@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void CommitIfNecessary(IModel channel, ILogger logger = null)
+        public static void CommitIfNecessary(RC.IModel channel, ILogger logger = null)
         {
             if (channel == null)
             {
@@ -95,7 +95,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void RollbackIfNecessary(IModel channel, ILogger logger = null)
+        public static void RollbackIfNecessary(RC.IModel channel, ILogger logger = null)
         {
             if (channel == null)
             {
@@ -113,7 +113,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void CloseMessageConsumer(IModel channel, List<string> consumerTags, bool transactional, ILogger logger = null)
+        public static void CloseMessageConsumer(RC.IModel channel, List<string> consumerTags, bool transactional, ILogger logger = null)
         {
             if (!channel.IsOpen)
             {
@@ -145,7 +145,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void Cancel(IModel channel, string consumerTag, ILogger logger = null)
+        public static void Cancel(RC.IModel channel, string consumerTag, ILogger logger = null)
         {
             try
             {
@@ -161,7 +161,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void DeclareTransactional(IModel channel, ILogger logger = null)
+        public static void DeclareTransactional(RC.IModel channel, ILogger logger = null)
         {
             try
             {
@@ -174,7 +174,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static void SetPhysicalCloseRequired(IModel channel, bool b)
+        public static void SetPhysicalCloseRequired(RC.IModel channel, bool b)
         {
             if (channel is IChannelProxy asProxy)
             {
@@ -197,14 +197,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return mustClose.Value;
         }
 
-        public static bool IsNormalChannelClose(ShutdownEventArgs args)
+        public static bool IsNormalChannelClose(RC.ShutdownEventArgs args)
         {
             return IsNormalShutdown(args) ||
                     (args.ClassId == ChannelClose_ClassId
                     && args.MethodId == ChannelClose_MethodId
                     && args.ReplyCode == ReplySuccess
                     && args.ReplyText == "OK") ||
-                    (args.Initiator == ShutdownInitiator.Application
+                    (args.Initiator == RC.ShutdownInitiator.Application
                     && args.ClassId == 0 && args.MethodId == 0
                     && args.ReplyText == "Goodbye");
         }
@@ -215,25 +215,25 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                     && sig.MethodId == ConnectionClose_MethodId
                     && sig.ReplyCode == ReplySuccess
                     && sig.ReplyText == "OK") ||
-                    (sig.Initiator == ShutdownInitiator.Application
+                    (sig.Initiator == RC.ShutdownInitiator.Application
                     && sig.ClassId == 0 && sig.MethodId == 0
                     && sig.ReplyText == "Goodbye");
         }
 
-        public static bool IsNormalShutdown(ShutdownEventArgs args)
+        public static bool IsNormalShutdown(RC.ShutdownEventArgs args)
         {
             return (args.ClassId == ConnectionClose_ClassId
                     && args.MethodId == ConnectionClose_MethodId
                     && args.ReplyCode == ReplySuccess
                     && args.ReplyText == "OK") ||
-                    (args.Initiator == ShutdownInitiator.Application
+                    (args.Initiator == RC.ShutdownInitiator.Application
                     && args.ClassId == 0 && args.MethodId == 0
                     && args.ReplyText == "Goodbye");
         }
 
         public static bool IsPassiveDeclarationChannelClose(Exception exception)
         {
-            ShutdownEventArgs cause = null;
+            RC.ShutdownEventArgs cause = null;
             if (exception is ShutdownSignalException)
             {
                 cause = ((ShutdownSignalException)exception).Args;
@@ -256,7 +256,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public static bool IsMismatchedQueueArgs(Exception exception)
         {
             var cause = exception;
-            ShutdownEventArgs args = null;
+            RC.ShutdownEventArgs args = null;
             while (cause != null && args == null)
             {
                 if (cause is ShutdownSignalException)
@@ -282,7 +282,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public static bool IsMismatchedQueueArgs(ShutdownEventArgs args)
+        public static bool IsMismatchedQueueArgs(RC.ShutdownEventArgs args)
         {
             return args.ClassId == Queue_ClassId
                 && args.MethodId == Declare_MethodId
@@ -306,7 +306,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         internal static bool IsExchangeDeclarationFailure(RabbitIOException e)
         {
             Exception cause = e;
-            ShutdownEventArgs args = null;
+            RC.ShutdownEventArgs args = null;
             while (cause != null && args == null)
             {
                 if (cause is OperationInterruptedException)

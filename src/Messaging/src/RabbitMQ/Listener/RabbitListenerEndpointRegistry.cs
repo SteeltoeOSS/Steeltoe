@@ -11,7 +11,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry

@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.
+namespace Steeltoe.Messaging.RabbitMQ.
     Exceptions
 {
     public class RabbitTimeoutException : RabbitException

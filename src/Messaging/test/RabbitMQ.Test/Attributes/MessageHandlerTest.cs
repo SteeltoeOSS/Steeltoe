@@ -5,14 +5,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System.Collections.Generic;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     public class MessageHandlerTest
     {
@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             var invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod("Listen1"));
             var message = Message.Create("foo");
             var list = new List<IMessage>() { message };
-            var mockChannel = new Mock<R.IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             var adapter = new HandlerAdapter(invMethod);
             adapter.Invoke(Message.Create(list), mockChannel.Object);
             Assert.Same(list, foo.MessagingMessages);

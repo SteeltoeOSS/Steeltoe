@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions
 {
     public class RabbitUnsupportedEncodingException : RabbitException
     {

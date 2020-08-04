@@ -4,22 +4,22 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class RabbitAdmin : IRabbitAdmin, IConnectionListener, IServiceNameAware
     {
@@ -141,7 +141,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 var declareOk = RabbitTemplate.Execute(
                     channel =>
                     {
-                        return channel.QueueDeclare();
+                        return RC.IModelExensions.QueueDeclare(channel);
                     });
                 return new Queue(declareOk.QueueName, false, true, true); // NOSONAR never null
             }
@@ -201,7 +201,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 {
                     try
                     {
-                        channel.QueueDelete(queueName);
+                        RC.IModelExensions.QueueDelete(channel, queueName);
                         return true;
                     }
                     catch (RabbitMQClientException e)
@@ -372,7 +372,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             _logger?.LogDebug("OnClose for connection: {connection}", connection?.ToString());
         }
 
-        public void OnShutDown(ShutdownEventArgs args)
+        public void OnShutDown(RC.ShutdownEventArgs args)
         {
             _logger?.LogDebug("OnShutDown for connection: {args}", args.ToString());
         }
@@ -511,7 +511,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     || (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
         }
 
-        private void DeclareExchanges(IModel channel, params IExchange[] exchanges)
+        private void DeclareExchanges(RC.IModel channel, params IExchange[] exchanges)
         {
             foreach (var exchange in exchanges)
             {
@@ -552,9 +552,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private List<QueueDeclareOk> DeclareQueues(IModel channel, params IQueue[] queues)
+        private List<RC.QueueDeclareOk> DeclareQueues(RC.IModel channel, params IQueue[] queues)
         {
-            var declareOks = new List<QueueDeclareOk>(queues.Length);
+            var declareOks = new List<RC.QueueDeclareOk>(queues.Length);
             for (var i = 0; i < queues.Length; i++)
             {
                 var queue = queues[i];
@@ -599,7 +599,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return declareOks;
         }
 
-        private void CloseChannelAfterIllegalArg(IModel channel, IQueue queue)
+        private void CloseChannelAfterIllegalArg(RC.IModel channel, IQueue queue)
         {
             _logger?.LogError("Exception while declaring queue'{queueName}'", queue.QueueName);
             try
@@ -615,7 +615,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private void DeclareBindings(IModel channel, params IBinding[] bindings)
+        private void DeclareBindings(RC.IModel channel, params IBinding[] bindings)
         {
             foreach (var binding in bindings)
             {

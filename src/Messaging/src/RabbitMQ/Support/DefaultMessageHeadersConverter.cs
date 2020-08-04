@@ -3,15 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public class DefaultMessageHeadersConverter : IMessageHeadersConverter
     {
@@ -37,13 +37,13 @@ namespace Steeltoe.Messaging.Rabbit.Support
             _convertLongLongStrings = convertLongLongStrings;
         }
 
-        public virtual void FromMessageHeaders(IMessageHeaders headers, IBasicProperties target, Encoding charset)
+        public virtual void FromMessageHeaders(IMessageHeaders headers, RC.IBasicProperties target, Encoding charset)
         {
             var source = headers;
             target.Headers = ConvertHeadersIfNecessary(headers);
             if (source.Timestamp.HasValue)
             {
-                target.Timestamp = new AmqpTimestamp(source.Timestamp.Value);
+                target.Timestamp = new RC.AmqpTimestamp(source.Timestamp.Value);
             }
 
             target.MessageId = source.Id?.ToString();
@@ -86,7 +86,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
             }
         }
 
-        public virtual IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset)
+        public virtual IMessageHeaders ToMessageHeaders(RC.IBasicProperties source, Envelope envelope, Encoding charset)
         {
             var target = new RabbitHeaderAccessor();
             var headers = source.Headers;
@@ -187,8 +187,8 @@ namespace Steeltoe.Messaging.Rabbit.Support
                 || (value is bool) || (value is byte) || (value is sbyte)
                 || (value is uint) || (value is int) || (value is long)
                 || (value is float) || (value is double) || (value is decimal)
-                || (value is short) || (value is AmqpTimestamp)
-                || (value is IList) || (value is IDictionary) || (value is BinaryTableValue)
+                || (value is short) || (value is RC.AmqpTimestamp)
+                || (value is IList) || (value is IDictionary) || (value is RC.BinaryTableValue)
                 || (value is object[]) || (value is Type);
 
             if (!valid)
@@ -231,7 +231,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
             }
             else if (value is byte[])
             {
-                value = new BinaryTableValue((byte[])value);
+                value = new RC.BinaryTableValue((byte[])value);
             }
 
             return value;

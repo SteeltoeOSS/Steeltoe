@@ -1,28 +1,29 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
-using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Transaction;
-using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text;
 using System.Threading;
-using System.Threading.Channels;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class ListenFromAutoDeleteQueueTest
     {
+        public const string Exch1 = "testContainerWithAutoDeleteQueues";
+        public const string Exch2 = "otherExchange";
+        public const string Q1 = "anon";
+        public const string Q2 = "anon2";
+        public const string Q3 = "otherAnon";
+
         private DirectMessageListenerContainer listenerContainer1;
         private DirectMessageListenerContainer listenerContainer2;
         private DirectMessageListenerContainer listenerContainer3;
@@ -32,12 +33,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         private Connection.IConnectionFactory connectionFactory;
         private AppendingListener listener;
         private TestAdmin containerAdmin;
-
-        public const string Exch1 = "testContainerWithAutoDeleteQueues";
-        public const string Exch2 = "otherExchange";
-        public const string Q1 = "anon";
-        public const string Q2 = "anon2";
-        public const string Q3 = "otherAnon";
 
         public ListenFromAutoDeleteQueueTest()
         {
@@ -89,7 +84,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             listenerContainer4.AddQueueNames(Q2);
             listenerContainer4.MessageListener = adapter;
             listenerContainer4.AutoDeclare = false;
-
         }
 
         [Fact]
@@ -188,7 +182,6 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             public TestAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
                 : base(connectionFactory, logger)
             {
-
             }
 
             public new void Initialize()
@@ -197,6 +190,5 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 base.Initialize();
             }
         }
-
     }
 }

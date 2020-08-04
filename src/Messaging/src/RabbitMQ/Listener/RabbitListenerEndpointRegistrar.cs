@@ -7,7 +7,7 @@ using Steeltoe.Messaging.Handler.Attributes.Support;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
     {

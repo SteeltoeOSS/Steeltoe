@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
 using Steeltoe.Common.Expression;
@@ -14,12 +13,12 @@ using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Core;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -27,8 +26,9 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IServiceNameAware, IDisposable
@@ -36,10 +36,10 @@ namespace Steeltoe.Messaging.Rabbit.Core
         public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
 
         internal readonly object _lock = new object();
-        internal readonly ConcurrentDictionary<IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<IModel, RabbitTemplate>();
+        internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<RC.IModel, RabbitTemplate>();
         internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
         internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
-        internal readonly AsyncLocal<IModel> _dedicatedChannels = new AsyncLocal<IModel>();
+        internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new AsyncLocal<RC.IModel>();
         internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
         internal bool _evaluatedFastReplyTo;
         internal bool _usingFastReplyTo;
@@ -386,7 +386,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        public virtual void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+        public virtual void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
         {
             var callback = ReturnCallback;
             if (callback == null)
@@ -420,7 +420,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        public virtual void Revoke(IModel channel)
+        public virtual void Revoke(RC.IModel channel)
         {
             _publisherConfirmChannels.Remove(channel, out _);
             _logger?.LogDebug("Removed publisher confirm channel: {channel} from map, size now {size}", channel, _publisherConfirmChannels.Count);
@@ -1171,7 +1171,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     .Sum();
         }
 
-        public virtual void Execute(Action<IModel> action)
+        public virtual void Execute(Action<RC.IModel> action)
         {
             _ = Execute<object>(
                 (channel) =>
@@ -1181,12 +1181,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }, ConnectionFactory);
         }
 
-        public virtual T Execute<T>(Func<IModel, T> action)
+        public virtual T Execute<T>(Func<RC.IModel, T> action)
         {
             return Execute(action, ConnectionFactory);
         }
 
-        public virtual void AddListener(IModel channel)
+        public virtual void AddListener(RC.IModel channel)
         {
             if (channel is IPublisherCallbackChannel publisherCallbackChannel)
             {
@@ -1219,7 +1219,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             Interlocked.Increment(ref _activeTemplateCallbacks);
             RabbitResourceHolder resourceHolder = null;
             Connection.IConnection connection = null;
-            IModel channel;
+            RC.IModel channel;
             var connectionFactory = ConnectionFactory;
             if (IsChannelTransacted)
             {
@@ -1392,7 +1392,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                     }
                     else
                     {
-                        var queueDeclaration = channel.QueueDeclare();
+                        var queueDeclaration = RC.IModelExensions.QueueDeclare(channel);
                         replyTo = queueDeclaration.QueueName;
                     }
 
@@ -1646,7 +1646,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return message;
         }
 
-        protected virtual void DoSend(IModel channel, string exchangeArg, string routingKeyArg, IMessage message, bool mandatory, CorrelationData correlationData, CancellationToken cancellationToken)
+        protected virtual void DoSend(RC.IModel channel, string exchangeArg, string routingKeyArg, IMessage message, bool mandatory, CorrelationData correlationData, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -1706,7 +1706,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             Send(destination.ExchangeName, destination.RoutingKey, message, null);
         }
 
-        protected virtual void SendToRabbit(IModel channel, string exchange, string routingKey, bool mandatory, IMessage message)
+        protected virtual void SendToRabbit(RC.IModel channel, string exchange, string routingKey, bool mandatory, IMessage message)
         {
             byte[] body = message.Payload as byte[];
             if (body == null)
@@ -1719,7 +1719,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             channel.BasicPublish(exchange, routingKey, mandatory, convertedMessageProperties, body);
         }
 
-        protected virtual bool IsChannelLocallyTransacted(IModel channel)
+        protected virtual bool IsChannelLocallyTransacted(RC.IModel channel)
         {
             return IsChannelTransacted && !ConnectionFactoryUtils.IsChannelTransactional(channel, ConnectionFactory);
         }
@@ -1908,12 +1908,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return BuildMessage(delivery.Envelope, delivery.Properties, delivery.Body, null);
         }
 
-        private IMessage BuildMessageFromResponse(BasicGetResult response)
+        private IMessage BuildMessageFromResponse(RC.BasicGetResult response)
         {
             return BuildMessage(new Envelope(response.DeliveryTag, response.Redelivered, response.Exchange, response.RoutingKey), response.BasicProperties, response.Body, response.MessageCount);
         }
 
-        private IMessage BuildMessage(Envelope envelope, IBasicProperties properties, byte[] body, uint? msgCount)
+        private IMessage BuildMessage(Envelope envelope, RC.IBasicProperties properties, byte[] body, uint? msgCount)
         {
             var messageProps = MessagePropertiesConverter.ToMessageHeaders(properties, envelope, Encoding);
             if (msgCount.HasValue)
@@ -1988,7 +1988,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return replyTo;
         }
 
-        private void SetupConfirm(IModel channel, IMessage message, CorrelationData correlationDataArg)
+        private void SetupConfirm(RC.IModel channel, IMessage message, CorrelationData correlationDataArg)
         {
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel)
@@ -2010,7 +2010,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private IMessage DoSendAndReceiveAsListener(string exchange, string routingKey, IMessage message, CorrelationData correlationData, IModel channel, CancellationToken cancellationToken)
+        private IMessage DoSendAndReceiveAsListener(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -2111,7 +2111,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private IMessage ExchangeMessages(string exchange, string routingKey, IMessage message, CorrelationData correlationData, IModel channel, PendingReply pendingReply, string messageTag, CancellationToken cancellationToken)
+        private IMessage ExchangeMessages(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel, PendingReply pendingReply, string messageTag, CancellationToken cancellationToken)
         {
             IMessage reply;
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
@@ -2133,7 +2133,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return reply;
         }
 
-        private void CancelConsumerQuietly(IModel channel, DefaultBasicConsumer consumer)
+        private void CancelConsumerQuietly(RC.IModel channel, RC.DefaultBasicConsumer consumer)
         {
             RabbitUtils.Cancel(channel, consumer.ConsumerTag);
         }
@@ -2154,7 +2154,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return result;
         }
 
-        private IMessage ReceiveForReply(string queueName, IModel channel, CancellationToken cancellationToken)
+        private IMessage ReceiveForReply(string queueName, RC.IModel channel, CancellationToken cancellationToken)
         {
             var channelTransacted = IsChannelTransacted;
             var channelLocallyTransacted = IsChannelLocallyTransacted(channel);
@@ -2207,13 +2207,13 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return receiveMessage;
         }
 
-        private Delivery ConsumeDelivery(IModel channel, string queueName, int timeoutMillis, CancellationToken cancellationToken)
+        private Delivery ConsumeDelivery(RC.IModel channel, string queueName, int timeoutMillis, CancellationToken cancellationToken)
         {
             Delivery delivery = null;
             Exception exception = null;
             var future = new TaskCompletionSource<Delivery>();
 
-            DefaultBasicConsumer consumer = null;
+            RC.DefaultBasicConsumer consumer = null;
             try
             {
                 var consumeTimeout = timeoutMillis < 0 ? DEFAULT_CONSUME_TIMEOUT : timeoutMillis;
@@ -2268,7 +2268,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage)
+        private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
         {
             object receive = receiveMessage;
             if (!typeof(R).IsAssignableFrom(receive.GetType()))
@@ -2295,7 +2295,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return true;
         }
 
-        private void DoSendReply<S>(Func<IMessage, S, Address> replyToAddressCallback, IModel channel, IMessage receiveMessage, S reply)
+        private void DoSendReply<S>(Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage, S reply)
         {
             var replyTo = replyToAddressCallback(receiveMessage, reply);
 
@@ -2337,13 +2337,12 @@ namespace Steeltoe.Messaging.Rabbit.Core
             DoSend(channel, replyTo.ExchangeName, replyTo.RoutingKey, replyMessage, ReturnCallback != null && IsMandatoryFor(replyMessage), null, default);
         }
 
-        private DefaultBasicConsumer CreateConsumer(string queueName, IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancelationToken)
+        private RC.DefaultBasicConsumer CreateConsumer(string queueName, RC.IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancelationToken)
         {
             channel.BasicQos(0, 1, false);
             var latch = new CountdownEvent(1);
             var consumer = new DefaultTemplateConsumer(channel, latch, future, queueName, cancelationToken);
-
-            var consumeResult = channel.BasicConsume(queueName, false, consumer);
+            var consumeResult = RC.IModelExensions.BasicConsume(channel, queueName, false, consumer);
 
             // Waiting for consumeOK, if latch hasn't signaled, then consumeOK response never hit
             if (!latch.Wait(TimeSpan.FromMilliseconds(timeoutMillis)))
@@ -2391,7 +2390,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return ConnectionFactory;
         }
 
-        private T Execute<T>(Func<IModel, T> action, Connection.IConnectionFactory connectionFactory)
+        private T Execute<T>(Func<RC.IModel, T> action, Connection.IConnectionFactory connectionFactory)
         {
             if (RetryTemplate != null)
             {
@@ -2413,7 +2412,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private T DoExecute<T>(Func<IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory)
+        private T DoExecute<T>(Func<RC.IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory)
         {
             // NOSONAR complexity
             if (channelCallback == null)
@@ -2421,7 +2420,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 throw new ArgumentNullException(nameof(channelCallback));
             }
 
-            IModel channel = null;
+            RC.IModel channel = null;
             var invokeScope = false;
 
             // No need to check the thread local if we know that no invokes are in process
@@ -2492,7 +2491,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private T InvokeAction<T>(Func<IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory, IModel channel)
+        private T InvokeAction<T>(Func<RC.IModel, T> channelCallback, Connection.IConnectionFactory connectionFactory, RC.IModel channel)
         {
             if (!_confirmsOrReturnsCapable.HasValue)
             {
@@ -2508,7 +2507,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return channelCallback(channel);
         }
 
-        private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, IModel channel)
+        private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
         {
             if (acks != null && nacks != null && channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
             {
@@ -2518,7 +2517,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             return null;
         }
 
-        private void CleanUpAfterAction(IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, Connection.IConnection connection)
+        private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, Connection.IConnection connection)
         {
             if (!invokeScope)
             {
@@ -2534,7 +2533,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        private void CleanUpAfterAction(RabbitResourceHolder resourceHolder, Connection.IConnection connection, IModel channel, ConfirmListener listener)
+        private void CleanUpAfterAction(RabbitResourceHolder resourceHolder, Connection.IConnection connection, RC.IModel channel, ConfirmListener listener)
         {
             if (listener != null)
             {
@@ -2646,14 +2645,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
             private readonly RabbitTemplate _template;
             private readonly PendingReply _pendingReply;
 
-            public DoSendAndReceiveTemplateConsumer(RabbitTemplate template, IModel channel, PendingReply pendingReply)
+            public DoSendAndReceiveTemplateConsumer(RabbitTemplate template, RC.IModel channel, PendingReply pendingReply)
                 : base(channel)
             {
                 _template = template;
                 _pendingReply = pendingReply;
             }
 
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
             {
                 var messageProperties = _template
                     .MessagePropertiesConverter
@@ -2673,7 +2672,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 _pendingReply.Reply(reply);
             }
 
-            public override void HandleModelShutdown(object model, ShutdownEventArgs reason)
+            public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
             {
                 base.HandleModelShutdown(model, reason);
                 if (!RabbitUtils.IsNormalChannelClose(reason))
@@ -2694,7 +2693,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
             private readonly string _queueName;
             private readonly CancellationToken _cancellationToken;
 
-            public DefaultTemplateConsumer(IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
+            public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancelationToken)
                 : base(channel)
             {
                 _latch = latch;
@@ -2721,14 +2720,14 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 base.HandleBasicConsumeOk(consumerTag);
             }
 
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, IBasicProperties properties, byte[] body)
+            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
             {
                 base.HandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
                 _completionSource.TrySetResult(new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, _queueName));
                 Signal();
             }
 
-            public override void HandleModelShutdown(object model, ShutdownEventArgs reason)
+            public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
             {
                 base.HandleModelShutdown(model, reason);
                 if (!RabbitUtils.IsNormalChannelClose(reason))
@@ -2748,9 +2747,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
             }
         }
 
-        protected abstract class AbstractTemplateConsumer : DefaultBasicConsumer
+        protected abstract class AbstractTemplateConsumer : RC.DefaultBasicConsumer
         {
-            protected AbstractTemplateConsumer(IModel channel)
+            protected AbstractTemplateConsumer(RC.IModel channel)
                 : base(channel)
             {
             }
@@ -2765,9 +2764,9 @@ namespace Steeltoe.Messaging.Rabbit.Core
         {
             private Action<object, BasicAckEventArgs> _acks;
             private Action<object, BasicNackEventArgs> _nacks;
-            private IModel _channel;
+            private RC.IModel _channel;
 
-            public ConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, IModel channel)
+            public ConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
             {
                 _channel = channel;
                 _acks = acks;

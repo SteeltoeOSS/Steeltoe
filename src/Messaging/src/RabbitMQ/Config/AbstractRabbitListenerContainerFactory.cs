@@ -9,16 +9,16 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListenerContainerFactory<C>
         where C : AbstractMessageListenerContainer
@@ -67,7 +67,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
                 if (_messageConverter == null)
                 {
-                    _messageConverter = new Rabbit.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<Rabbit.Support.Converter.SimpleMessageConverter>());
+                    _messageConverter = new RabbitMQ.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
                 }
 
                 return _messageConverter;

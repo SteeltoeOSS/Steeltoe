@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Net;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public abstract class AbstractConnectionFactory : IConnectionFactory
@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public const int DEFAULT_CLOSE_TIMEOUT = 30000;
         protected readonly ILoggerFactory _loggerFactory;
         protected readonly ILogger _logger;
-        protected readonly RabbitMQ.Client.IConnectionFactory _rabbitConnectionFactory;
+        protected readonly RC.IConnectionFactory _rabbitConnectionFactory;
 
         private const string PUBLISHER_SUFFIX = ".publisher";
         private readonly CompositeConnectionListener _connectionListener;
@@ -29,14 +29,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         private int _defaultConnectionNameStrategyCounter;
 
         protected AbstractConnectionFactory(
-            RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory,
+            RC.IConnectionFactory rabbitConnectionFactory,
             ILoggerFactory loggerFactory = null)
             : this(rabbitConnectionFactory, null, loggerFactory)
         {
         }
 
         protected AbstractConnectionFactory(
-            RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory,
+            RC.IConnectionFactory rabbitConnectionFactory,
             AbstractConnectionFactory publisherConnectionFactory,
             ILoggerFactory loggerFactory = null)
         {
@@ -56,7 +56,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             ServiceName = GetType().Name + "@" + GetHashCode();
         }
 
-        public virtual RabbitMQ.Client.ConnectionFactory RabbitConnectionFactory => _rabbitConnectionFactory as RabbitMQ.Client.ConnectionFactory;
+        public virtual RC.ConnectionFactory RabbitConnectionFactory => _rabbitConnectionFactory as RC.ConnectionFactory;
 
         public virtual string Username
         {
@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public virtual bool ShuffleAddresses { get; set; }
 
-        public virtual List<AmqpTcpEndpoint> Addresses { get; set; }
+        public virtual List<RC.AmqpTcpEndpoint> Addresses { get; set; }
 
         public virtual bool HasPublisherConnectionFactory => PublisherConnectionFactory != null;
 
@@ -206,7 +206,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             if (!string.IsNullOrEmpty(addresses))
             {
-                var endpoints = AmqpTcpEndpoint.ParseMultiple(addresses);
+                var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
                 if (endpoints.Length > 0)
                 {
                     Addresses = endpoints.ToList();
@@ -243,7 +243,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return ServiceName;
         }
 
-        protected internal virtual void ConnectionShutdownCompleted(object sender, ShutdownEventArgs args)
+        protected internal virtual void ConnectionShutdownCompleted(object sender, RC.ShutdownEventArgs args)
         {
             ConnectionListener.OnShutDown(args);
         }
@@ -317,9 +317,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return ServiceName + ":" + Interlocked.Increment(ref _defaultConnectionNameStrategyCounter) + PUBLISHER_SUFFIX;
         }
 
-        private RabbitMQ.Client.IConnection Connect(string connectionName)
+        private RC.IConnection Connect(string connectionName)
         {
-            RabbitMQ.Client.IConnection rabbitConnection;
+            RC.IConnection rabbitConnection;
             if (Addresses != null)
             {
                 var addressesToConnect = Addresses;

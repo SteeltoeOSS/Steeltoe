@@ -4,21 +4,20 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public abstract class AbstractConnectionFactoryTest
     {
         [Fact]
         public void TestWithListener()
         {
-            var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var mockConnection = new Mock<R.IConnection>();
+            var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+            var mockConnection = new Mock<RC.IConnection>();
             mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
 
             // var mockLogger = new Mock<ILoggerFactory>();
@@ -52,8 +51,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         [Fact]
         public void TestWithListenerRegisteredAfterOpen()
         {
-            var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var mockConnection = new Mock<R.IConnection>();
+            var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+            var mockConnection = new Mock<RC.IConnection>();
             var listener = new IncrementConnectionListener();
             mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object, null);
@@ -75,10 +74,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         [Fact]
         public void TestCloseInvalidConnection()
         {
-            var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var mockConnection1 = new Mock<R.IConnection>();
-            var mockConnection2 = new Mock<R.IConnection>();
-            var mockChanel2 = new Mock<R.IModel>();
+            var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+            var mockConnection1 = new Mock<RC.IConnection>();
+            var mockConnection2 = new Mock<RC.IConnection>();
+            var mockChanel2 = new Mock<RC.IModel>();
             mockConnectionFactory.SetupSequence((f) => f.CreateConnection(It.IsAny<string>()))
                 .Returns(mockConnection1.Object)
                 .Returns(mockConnection2.Object);
@@ -98,13 +97,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         [Fact]
         public void TestDestroyBeforeUsed()
         {
-            var mockConnectionFactory = new Mock<R.IConnectionFactory>();
+            var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object, null);
             connectionFactory.Destroy();
             mockConnectionFactory.Verify((f) => f.CreateConnection(It.IsAny<string>()), Times.Never);
         }
 
-        protected abstract AbstractConnectionFactory CreateConnectionFactory(R.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory);
+        protected abstract AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory);
 
         protected class IncrementConnectionListener : IConnectionListener
         {
@@ -120,7 +119,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 Interlocked.Increment(ref Called);
             }
 
-            public void OnShutDown(ShutdownEventArgs args)
+            public void OnShutDown(RC.ShutdownEventArgs args)
             {
             }
         }

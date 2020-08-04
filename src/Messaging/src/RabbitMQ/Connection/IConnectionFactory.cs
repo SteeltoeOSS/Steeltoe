@@ -5,7 +5,7 @@
 using Steeltoe.Common.Services;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public interface IConnectionFactory : IDisposable, IServiceNameAware
     {

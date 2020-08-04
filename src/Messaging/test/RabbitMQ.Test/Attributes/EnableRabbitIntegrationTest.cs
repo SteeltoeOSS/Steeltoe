@@ -6,24 +6,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
-using Steeltoe.Messaging.Rabbit.Test;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
+using Steeltoe.Messaging.RabbitMQ.Test;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
@@ -36,10 +35,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static Steeltoe.Messaging.Rabbit.Attributes.EnableRabbitIntegrationTest;
-using R = RabbitMQ.Client;
+using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationTest;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     [Trait("Category", "Integration")]
     public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
@@ -685,7 +684,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
             public AtomicReference<IMessage> Message { get; set; } = new AtomicReference<IMessage>();
 
-            public AtomicReference<R.IModel> ErrorHandlerChannel { get; set; } = new AtomicReference<IModel>();
+            public AtomicReference<RC.IModel> ErrorHandlerChannel { get; set; } = new AtomicReference<RC.IModel>();
 
             public StartupFixture()
             {
@@ -1014,7 +1013,7 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
             [DeclareQueueBinding(Name = "auto.binding", QueueName = "auto.declare", ExchangeName = "auto.exch", RoutingKey = "auto.rk")]
             [RabbitListener(Id = "threadNamer", Binding = "auto.binding", ContainerFactory = "txListenerContainerFactory")]
-            public string HandleWithDeclare(string foo, R.IModel channel)
+            public string HandleWithDeclare(string foo, RC.IModel channel)
             {
                 ChannelBoundOk = TxRabbitTemplate.Execute(c => c.Equals(channel));
                 return foo.ToUpper() + Thread.CurrentThread.Name;
@@ -1227,14 +1226,14 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             }
 
             [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "MANUAL")]
-            public string Manual1(string input, R.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
+            public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
             {
                 channel.BasicAck(tag, false);
                 return input.ToUpper();
             }
 
             [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{MANUAL}")]
-            public string Manual2(string input, R.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
+            public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
             {
                 channel.BasicAck(tag, false);
                 return input.ToUpper();
@@ -1516,18 +1515,18 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
 
         public class ThrowANewExceptionErrorHandler : IRabbitListenerErrorHandler
         {
-            public ThrowANewExceptionErrorHandler(AtomicReference<R.IModel> errorHandlerChannel)
+            public ThrowANewExceptionErrorHandler(AtomicReference<RC.IModel> errorHandlerChannel)
             {
                 ErrorHandlerChannel = errorHandlerChannel;
             }
 
             public string ServiceName { get; set; } = "throwANewException";
 
-            public AtomicReference<IModel> ErrorHandlerChannel { get; }
+            public AtomicReference<RC.IModel> ErrorHandlerChannel { get; }
 
             public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
             {
-                ErrorHandlerChannel.Value = message.Headers.Get<R.IModel>(RabbitMessageHeaders.CHANNEL);
+                ErrorHandlerChannel.Value = message.Headers.Get<RC.IModel>(RabbitMessageHeaders.CHANNEL);
                 throw new InvalidOperationException("from error handler", exception.InnerException);
             }
         }

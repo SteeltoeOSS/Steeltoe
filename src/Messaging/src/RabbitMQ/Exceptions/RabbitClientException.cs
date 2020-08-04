@@ -4,7 +4,7 @@
 
 using RabbitMQ.Client.Exceptions;
 
-namespace Steeltoe.Messaging.Rabbit.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions
 {
     public class RabbitClientException : RabbitException
     {
