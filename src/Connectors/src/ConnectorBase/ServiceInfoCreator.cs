@@ -45,18 +45,16 @@ namespace Steeltoe.Connector
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (config == _me?.Configuration)
+            if (config != _me?.Configuration)
             {
-                return _me;
-            }
-
-            lock (_lock)
-            {
-                if (config != _me?.Configuration)
+                lock (_lock)
                 {
-                    _me = new ServiceInfoCreator(config);
-                    _me.BuildServiceInfoFactories();
-                    _me.BuildServiceInfos();
+                    if (config != _me?.Configuration)
+                    {
+                        _me = new ServiceInfoCreator(config);
+                        _me.BuildServiceInfoFactories();
+                        _me.BuildServiceInfos();
+                    }
                 }
             }
 

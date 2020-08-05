@@ -29,16 +29,14 @@ namespace Steeltoe.Connector.CloudFoundry
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            if (configuration == _me?.Configuration)
+            if (configuration != _me?.Configuration)
             {
-                return _me;
-            }
-
-            lock (_lock)
-            {
-                if (configuration != _me?.Configuration)
+                lock (_lock)
                 {
-                    _me = new CloudFoundryServiceInfoCreator(configuration);
+                    if (configuration != _me?.Configuration)
+                    {
+                        _me = new CloudFoundryServiceInfoCreator(configuration);
+                    }
                 }
             }
 
