@@ -9,7 +9,7 @@ using Steeltoe.Discovery.Consul;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Discovery.ConsulBase.Test
+namespace Steeltoe.Discovery.Consul.Test
 {
     public class ConsulDiscoveryClientBuilderExtensionsTest
     {
