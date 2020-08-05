@@ -133,15 +133,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorCore.Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientCore", "Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj", "{44DCBDB9-C766-499E-AA72-16EC400CC995}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ConsulBase", "Discovery\src\ConsulBase\Steeltoe.Discovery.ConsulBase.csproj", "{C3098547-C3B5-4136-9CEB-30466EE1FA53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Consul", "Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj", "{C3098547-C3B5-4136-9CEB-30466EE1FA53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase", "Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj", "{E6DBF77D-04A3-4422-A7D2-D3131DF5B829}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka", "Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj", "{E6DBF77D-04A3-4422-A7D2-D3131DF5B829}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientCore.Test", "Discovery\test\ClientCore.Test\Steeltoe.Discovery.ClientCore.Test.csproj", "{929135C8-73B8-4F4E-97C9-2488208CC061}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ConsulBase.Test", "Discovery\test\ConsulBase.Test\Steeltoe.Discovery.ConsulBase.Test.csproj", "{B5D0C674-1958-43BF-B644-0865E9DDCCBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Consul.Test", "Discovery\test\Consul.Test\Steeltoe.Discovery.Consul.Test.csproj", "{B5D0C674-1958-43BF-B644-0865E9DDCCBD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.EurekaBase.Test", "Discovery\test\EurekaBase.Test\Steeltoe.Discovery.EurekaBase.Test.csproj", "{23B95817-4183-4B42-BF27-EA575184DB2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka.Test", "Discovery\test\Eureka.Test\Steeltoe.Discovery.Eureka.Test.csproj", "{23B95817-4183-4B42-BF27-EA575184DB2D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicLogger", "Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj", "{43DC1B99-588C-4984-AEAC-43AA5B47D84C}"
 EndProject
@@ -283,9 +283,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Kuberne
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.Kubernetes.Test", "Management\test\Kubernetes.Test\Steeltoe.Management.Kubernetes.Test.csproj", "{AA2096C7-66E5-4362-AEC4-E0E3C30A006A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.KubernetesBase", "Discovery\src\KubernetesBase\Steeltoe.Discovery.KubernetesBase.csproj", "{A321C345-10CD-42F5-8BA1-DB1C7B63A600}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Kubernetes", "Discovery\src\Kubernetes\Steeltoe.Discovery.Kubernetes.csproj", "{A321C345-10CD-42F5-8BA1-DB1C7B63A600}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.KubernetesBase.Test", "Discovery\test\KubernetesBase.Test\Steeltoe.Discovery.KubernetesBase.Test.csproj", "{C774E935-C1BF-468D-9153-793337CD90A9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Discovery.Kubernetes.Test", "Discovery\test\Kubernetes.Test\Steeltoe.Discovery.Kubernetes.Test.csproj", "{C774E935-C1BF-468D-9153-793337CD90A9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <Description>Client for service discovery with Kubernetes native service discovery</Description>
-    <Namespace>Steeltoe.Discovery.Kubernetes</Namespace>
     <PackageTags>aspnetcore;Kubernetes;Spring;Spring Cloud</PackageTags>
     <RootNamespace>Steeltoe.Discovery.Kubernetes</RootNamespace>
   </PropertyGroup>
