@@ -4,9 +4,9 @@
     <Description>Steeltoe Messaging Base</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
-    <AssemblyName>Steeltoe.Messaging.Base</AssemblyName>
-    <PackageId>Steeltoe.Messaging.Base</PackageId>
-    <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <AssemblyName>Steeltoe.Messaging.MessagingBase</AssemblyName>
+    <PackageId>Steeltoe.Messaging.MessagingBase</PackageId>
+    <PackageTags>Messaging, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />

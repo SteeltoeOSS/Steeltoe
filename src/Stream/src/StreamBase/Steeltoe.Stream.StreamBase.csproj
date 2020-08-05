@@ -4,7 +4,7 @@
     <Description>Steeltoe Stream Base </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
-    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -12,8 +12,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />
-    <ProjectReference Include="..\..\..\Messaging\src\Base\Steeltoe.Messaging.Base.csproj" />
-    <ProjectReference Include="..\..\..\Integration\src\Base\Steeltoe.Integration.Base.csproj" />
+    <ProjectReference Include="..\..\..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
+    <ProjectReference Include="..\..\..\Integration\src\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
   </ItemGroup>
 

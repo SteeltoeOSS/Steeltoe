@@ -4,7 +4,7 @@
     <Description>Steeltoe Integration Base</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Integration</RootNamespace>
-    <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
