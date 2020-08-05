@@ -21,16 +21,37 @@ namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryServiceCollectionExtensions
     {
+        /// <summary>
+        /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
+        /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
+        /// <param name="config">Application configuration</param>
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null)
         {
             return services.AddDiscoveryClient(config, null);
         }
 
+        /// <summary>
+        /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
+        /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="lifecycle">Add custom code for app shutdown events</param>
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
         {
             return services.AddDiscoveryClient(config, null, lifecycle);
         }
 
+        /// <summary>
+        /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
+        /// If no clients are available or configured, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// </summary>
+        /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
+        /// <param name="config">Application configuration</param>
+        /// <param name="serviceName">Specify the name of a service binding to use</param>
+        /// <param name="lifecycle">Add custom code for app shutdown events</param>
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null, IDiscoveryLifecycle lifecycle = null)
         {
             Action<DiscoveryClientBuilder> builderAction = null;
@@ -180,7 +201,10 @@ namespace Steeltoe.Discovery.Client
                 ApplicationStopping = lifeCycle.ApplicationStopping;
 
                 // hook things up so that that things are unregistered when the application terminates
-                ApplicationStopping.Register(() => { client.ShutdownAsync().GetAwaiter().GetResult(); });
+                ApplicationStopping.Register(() =>
+                {
+                    client.ShutdownAsync().GetAwaiter().GetResult();
+                });
             }
 
             public CancellationToken ApplicationStopping { get; set; }
