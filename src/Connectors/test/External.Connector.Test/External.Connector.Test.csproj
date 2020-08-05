@@ -14,6 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
   </ItemGroup>
 </Project>

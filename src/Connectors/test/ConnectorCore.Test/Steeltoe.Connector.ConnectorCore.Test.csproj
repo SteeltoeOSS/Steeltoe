@@ -38,6 +38,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
     <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
-    <ProjectReference Include="..\..\src\ConnectorCore\Steeltoe.ConnectorCore.csproj" />
+    <ProjectReference Include="..\..\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
   </ItemGroup>
 </Project>

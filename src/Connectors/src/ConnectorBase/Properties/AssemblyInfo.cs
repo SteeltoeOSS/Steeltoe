@@ -5,8 +5,8 @@
 using Steeltoe.Connector;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.ConnectorBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.ConnectorCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.ConnectorBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.ConnectorCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.CloudFoundry.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EFCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connector.EF6Core.Test")]

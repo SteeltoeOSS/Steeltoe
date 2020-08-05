@@ -8,7 +8,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
   </ItemGroup>
 </Project>

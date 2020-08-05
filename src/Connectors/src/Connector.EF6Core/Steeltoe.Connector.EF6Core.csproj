@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
   </ItemGroup>
 </Project>
