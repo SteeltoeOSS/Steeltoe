@@ -4,7 +4,7 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
+namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
     public interface ISerilogOptions
     {
