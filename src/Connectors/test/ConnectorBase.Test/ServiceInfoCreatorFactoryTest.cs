@@ -22,8 +22,8 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void FactoryReturnsDefaultType()
         {
-            Environment.SetEnvironmentVariable("vcap_application", string.Empty);
-            Environment.SetEnvironmentVariable("vcap_services", string.Empty);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
             var serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddConnectionStrings().Build());
             Assert.IsType<ServiceInfoCreator>(serviceInfoCreator);
         }
@@ -44,7 +44,7 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void FactoryReturnsCloudFoundryCreatorForCloudFoundry()
         {
-            Environment.SetEnvironmentVariable("vcap_application", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             var serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddCloudFoundry().Build());
             Assert.IsType<CloudFoundryServiceInfoCreator>(serviceInfoCreator);
         }
