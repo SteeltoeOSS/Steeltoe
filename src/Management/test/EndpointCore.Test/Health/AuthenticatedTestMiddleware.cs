@@ -21,7 +21,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public async Task Invoke(HttpContext context)
         {
             var claimsIdentity = new ClaimsIdentity(new List<Claim> { new Claim("healthdetails", "show") }, "TestAuthentication");
-            ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
             context.User = claimsPrincipal;
 
             await _next(context);

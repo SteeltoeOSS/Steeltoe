@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             }
 
             // GET request
-            var serialInfo = this.HandleRequest(null);
+            var serialInfo = HandleRequest(null);
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);

@@ -6,5 +6,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.EurekaBase.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.EurekaBase.Test")]
-[assembly: InternalsVisibleTo("Pivotal.Discovery.ClientCore.Test")]

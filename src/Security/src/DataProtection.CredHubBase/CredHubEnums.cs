@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
@@ -31,7 +30,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     /// <summary>
     /// Overwrite mode for existing credentials (https://credhub-api.cfapps.io/#overwriting-credential-values)
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OverwiteMode
     {
         [EnumMember(Value = "no-overwrite")]
@@ -43,7 +42,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     /// <summary>
     /// Uses for certificates
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum KeyUsage
     {
         digital_signature,
@@ -60,7 +59,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     /// <summary>
     /// Extended key usage for certificates
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum ExtendedKeyUsage
     {
         [Description("Client Auth")]
@@ -74,7 +73,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     /// <summary>
     /// Operations that can be allowed for an actor
     /// </summary>
-    [JsonConverter(typeof(StringEnumConverter))]
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public enum OperationPermissions
     {
         read,

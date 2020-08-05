@@ -29,10 +29,11 @@ namespace Steeltoe.Discovery.Eureka
 
         public HealthCheckResult Health()
         {
-            var result = new HealthCheckResult();
-
-            result.Status = HealthStatus.UP;
-            result.Description = "No monitored applications";
+            var result = new HealthCheckResult
+            {
+                Status = HealthStatus.UP,
+                Description = "No monitored applications"
+            };
 
             var appNames = GetMonitoredApplications(_discoveryClient.ClientConfig);
 
@@ -77,7 +78,7 @@ namespace Steeltoe.Discovery.Eureka
 
         internal IList<string> GetMonitoredApplications(IEurekaClientConfig clientConfig)
         {
-            IList<string> configApps = GetApplicationsFromConfig(clientConfig);
+            var configApps = GetApplicationsFromConfig(clientConfig);
             if (configApps != null)
             {
                 return configApps;
@@ -94,7 +95,7 @@ namespace Steeltoe.Discovery.Eureka
                 var monitoredApps = config.HealthMonitoredApps?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 if (monitoredApps != null && monitoredApps.Length > 0)
                 {
-                    List<string> results = new List<string>();
+                    var results = new List<string>();
                     foreach (var str in monitoredApps)
                     {
                         results.Add(str.Trim());

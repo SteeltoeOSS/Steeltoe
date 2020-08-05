@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Generic;
 
@@ -23,8 +22,8 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>service instances</returns>
         public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
         {
-            EurekaClientOptions config = ConfigureClientOptions(configuration);
-            LookupClient client = GetLookupClient(config, logFactory);
+            var config = ConfigureClientOptions(configuration);
+            var client = GetLookupClient(config, logFactory);
             var result = client.GetInstancesInternal(serviceId);
             client.ShutdownAsync().GetAwaiter().GetResult();
             return result;
@@ -39,7 +38,7 @@ namespace Steeltoe.Discovery.Eureka
         /// <returns>all registered services</returns>
         public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
         {
-            EurekaClientOptions config = ConfigureClientOptions(configuration);
+            var config = ConfigureClientOptions(configuration);
             var client = GetLookupClient(config, logFactory);
             var result = client.GetServicesInternal();
             client.ShutdownAsync().GetAwaiter().GetResult();
@@ -76,9 +75,9 @@ namespace Steeltoe.Discovery.Eureka
 
             public IList<IServiceInstance> GetInstancesInternal(string serviceId)
             {
-                IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
-                List<IServiceInstance> instances = new List<IServiceInstance>();
-                foreach (InstanceInfo info in infos)
+                var infos = GetInstancesByVipAddress(serviceId, false);
+                var instances = new List<IServiceInstance>();
+                foreach (var info in infos)
                 {
                     _logger?.LogDebug($"GetInstances returning: {info}");
                     instances.Add(new EurekaServiceInstance(info));
@@ -89,15 +88,15 @@ namespace Steeltoe.Discovery.Eureka
 
             public IList<string> GetServicesInternal()
             {
-                Applications applications = Applications;
+                var applications = Applications;
                 if (applications == null)
                 {
                     return new List<string>();
                 }
 
-                IList<Application> registered = applications.GetRegisteredApplications();
-                List<string> names = new List<string>();
-                foreach (Application app in registered)
+                var registered = applications.GetRegisteredApplications();
+                var names = new List<string>();
+                foreach (var app in registered)
                 {
                     if (app.Instances.Count == 0)
                     {

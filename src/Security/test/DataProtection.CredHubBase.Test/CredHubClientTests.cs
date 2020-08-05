@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json.Linq;
 using RichardSzalay.MockHttp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -16,8 +16,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
 {
     public class CredHubClientTests
     {
-        private Uri tokenUri = new Uri("http://uaa-server/oauth/token");
-        private string credHubBase = "http://credhubServer/api/";
+        private readonly Uri tokenUri = new Uri("http://uaa-server/oauth/token");
+        private readonly string credHubBase = "http://credhubServer/api/";
 
         [Fact]
         public async void CreateAsync_RequestsToken_Once()
@@ -60,7 +60,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         public async void WriteAsync_Sets_Json()
         {
             // arrange
-            var jsonObject = JObject.Parse("{'key': 123,'key_list': ['val1','val2'],'is_true': true}");
+            var jsonObject = JsonSerializer.Deserialize<JsonElement>(@"{""key"": 123,""key_list"": [""val1"",""val2""],""is_true"": true}");
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Put, credHubBase + "/v1/data")
@@ -244,8 +244,8 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
             var credId = Guid.Parse("f82cc4a6-4490-4ed7-92c9-5115006bd691");
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
-                .Expect(HttpMethod.Get, $"{credHubBase}/v1/data/{credId}")
-                .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-20T17:37:57Z\",\"id\":\"f82cc4a6-4490-4ed7-92c9-5115006bd691\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyText\n-----END RSA PRIVATE KEY-----\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
+                .Expect(HttpMethod.Get, $"{credHubBase}v1/data/{credId}")
+                .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-20T17:37:57Z\",\"id\":\"f82cc4a6-4490-4ed7-92c9-5115006bd691\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyText\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
             var client = await InitializeClientAsync(mockHttpMessageHandler);
 
             // act
@@ -305,7 +305,7 @@ namespace Steeltoe.Security.DataProtection.CredHub.Test
         public async void GetByNameWithHistoryAsync_Gets()
         {
             // arrange
-            int revisionCount = 3;
+            var revisionCount = 3;
             var mockHttpMessageHandler = InitializedHandlerWithLogin();
             var mockRequest = mockHttpMessageHandler
                 .Expect(HttpMethod.Get, $"{credHubBase}/v1/data?name=/example&versions={revisionCount}")

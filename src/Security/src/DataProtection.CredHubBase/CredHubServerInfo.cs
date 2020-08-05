@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
@@ -12,7 +12,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
     /// </summary>
     public class CredHubServerInfo
     {
-        [JsonProperty("auth-server")]
+        [JsonPropertyName("auth-server")]
         public Dictionary<string, string> AuthServer { get; set; }
 
         public Dictionary<string, string> App { get; set; }

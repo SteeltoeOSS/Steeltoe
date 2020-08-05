@@ -15,7 +15,7 @@ namespace Steeltoe.Common.Net
     /// </summary>
     public class WindowsNetworkFileShare : IDisposable
     {
-        // private const int NO_ERROR = 0;
+        // private const int NO_ERROR = 0
         private const int ERROR_ACCESS_DENIED = 5;
         private const int ERROR_ALREADY_ASSIGNED = 85;
         private const int ERROR_PATH_NOT_FOUND = 53;
@@ -69,7 +69,7 @@ namespace Steeltoe.Common.Net
         };
 
         private readonly string _networkName;
-        private IMPR _mpr;
+        private readonly IMPR _mpr;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsNetworkFileShare"/> class.

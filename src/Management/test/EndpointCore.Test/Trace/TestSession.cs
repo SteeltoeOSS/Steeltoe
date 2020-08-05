@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             return Task.FromResult(0);
         }
 
-        public Task CommitAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task CommitAsync(CancellationToken cancellationToken = default)
         {
             return CommitAsync();
         }
@@ -41,7 +41,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             return Task.FromResult(0);
         }
 
-        public Task LoadAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public Task LoadAsync(CancellationToken cancellationToken = default)
         {
             return LoadAsync();
         }

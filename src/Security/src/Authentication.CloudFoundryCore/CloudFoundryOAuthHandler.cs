@@ -10,10 +10,8 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -111,13 +109,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         {
             _logger?.LogDebug("CreateTicketAsync()");
 
-            HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
-            HttpClient client = GetHttpClient();
+            var request = GetTokenInfoRequestMessage(tokens);
+            var client = GetHttpClient();
 
             HttpClientHelper.ConfigureCertificateValidation(
                 Options.ValidateCertificates,
-                out SecurityProtocolType prevProtocols,
-                out RemoteCertificateValidationCallback prevValidator);
+                out var prevProtocols,
+                out var prevValidator);
 
             HttpResponseMessage response = null;
             try
@@ -181,7 +179,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         private static void AddQueryString(IDictionary<string, string> queryStrings, AuthenticationProperties properties, string name, string defaultValue = null)
         {
-            if (!properties.Items.TryGetValue(name, out string value))
+            if (!properties.Items.TryGetValue(name, out var value))
             {
                 value = defaultValue;
             }

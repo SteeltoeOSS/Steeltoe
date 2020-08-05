@@ -2,31 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
+using Steeltoe.Common.Http.Serialization;
 using System.Collections.Generic;
-using System.IO;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport
 {
     internal class JsonApplications
     {
-        [JsonProperty("apps__hashcode")]
+        [JsonPropertyName("apps__hashcode")]
         public string AppsHashCode { get; set; }
 
-        [JsonProperty("versions__delta")]
+        [JsonPropertyName("versions__delta")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
         public long VersionDelta { get; set; }
 
-        [JsonProperty("application")]
+        [JsonPropertyName("application")]
         [JsonConverter(typeof(JsonApplicationConverter))]
         public IList<JsonApplication> Applications { get; set; }
-
-        public JsonApplications()
-        {
-        }
-
-        internal static JsonApplications Deserialize(Stream stream)
-        {
-            return JsonSerialization.Deserialize<JsonApplications>(stream);
-        }
     }
 }

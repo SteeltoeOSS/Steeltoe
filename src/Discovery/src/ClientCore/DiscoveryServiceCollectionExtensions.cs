@@ -6,276 +6,116 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
-using Steeltoe.Common.HealthChecks;
-using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.Discovery;
-using Steeltoe.Common.Net;
-using Steeltoe.Common.Options;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
-using Steeltoe.Discovery.Consul;
-using Steeltoe.Discovery.Consul.Discovery;
-using Steeltoe.Discovery.Consul.Registry;
-using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Client.SimpleClients;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 
 namespace Steeltoe.Discovery.Client
 {
     public static class DiscoveryServiceCollectionExtensions
     {
-        public const string EUREKA_PREFIX = "eureka";
-        public const string CONSUL_PREFIX = "consul";
-
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, DiscoveryOptions discoveryOptions, IDiscoveryLifecycle lifecycle = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (discoveryOptions == null)
-            {
-                throw new ArgumentNullException(nameof(discoveryOptions));
-            }
-
-            if (discoveryOptions.ClientType == DiscoveryClientType.EUREKA)
-            {
-                var clientOptions = discoveryOptions.ClientOptions as EurekaClientOptions;
-                if (clientOptions == null)
-                {
-                    throw new ArgumentException("Missing Client Options");
-                }
-
-                services.AddSingleton<IOptionsMonitor<EurekaClientOptions>>(new OptionsMonitorWrapper<EurekaClientOptions>(clientOptions));
-
-                var regOptions = discoveryOptions.RegistrationOptions as EurekaInstanceOptions;
-                if (regOptions == null)
-                {
-                    clientOptions.ShouldRegisterWithEureka = false;
-                    regOptions = new EurekaInstanceOptions();
-                }
-
-                services.AddSingleton<IOptionsMonitor<EurekaInstanceOptions>>(new OptionsMonitorWrapper<EurekaInstanceOptions>(regOptions));
-
-                AddEurekaServices(services, lifecycle);
-            }
-            else
-            {
-                throw new ArgumentException("Client type UNKNOWN");
-            }
-
-            services.TryAddTransient<DiscoveryHttpMessageHandler>();
-            return services;
-        }
-
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, Action<DiscoveryOptions> setupOptions, IDiscoveryLifecycle lifecycle = null)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (setupOptions == null)
-            {
-                throw new ArgumentNullException(nameof(setupOptions));
-            }
-
-            var options = new DiscoveryOptions();
-            setupOptions(options);
-
-            return services.AddDiscoveryClient(options, lifecycle);
+            return services.AddDiscoveryClient(config, null);
         }
 
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var info = GetSingletonDiscoveryServiceInfo(config);
-
-            AddDiscoveryServices(services, info, config, lifecycle);
-
-            return services;
+            return services.AddDiscoveryClient(config, null, lifecycle);
         }
 
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName, IDiscoveryLifecycle lifecycle = null)
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null, IDiscoveryLifecycle lifecycle = null)
         {
-            if (services == null)
+            Action<DiscoveryClientBuilder> builderAction = null;
+            config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var info = string.IsNullOrEmpty(serviceName)
+                ? GetSingletonDiscoveryServiceInfo(config)
+                : GetNamedDiscoveryServiceInfo(config, serviceName);
+
+            // todo: provide a hook for specifying additional assemblies to search
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(n => n.FullName.StartsWith("Steeltoe.Discovery"));
+
+            // iterate assemblies for implementations of IDiscoveryClientExtension
+            var implementations = new List<IDiscoveryClientExtension>();
+            foreach (var assembly in assemblies)
             {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                throw new ArgumentNullException(nameof(serviceName));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var info = GetNamedDiscoveryServiceInfo(config, serviceName);
-
-            AddDiscoveryServices(services, info, config, lifecycle);
-
-            return services;
-        }
-
-        private static void AddDiscoveryServices(IServiceCollection services, IServiceInfo info, IConfiguration config, IDiscoveryLifecycle lifecycle)
-        {
-            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
-            if (IsEurekaConfigured(config, info))
-            {
-                ConfigureEurekaServices(services, config, info, netOptions);
-                AddEurekaServices(services, lifecycle);
-            }
-            else if (IsConsulConfigured(config, info))
-            {
-                ConfigureConsulServices(services, config, info, netOptions);
-                AddConsulServices(services, config, lifecycle);
-            }
-            else
-            {
-                throw new ArgumentException("Discovery client type UNKNOWN, check configuration");
-            }
-
-            services.TryAddTransient<DiscoveryHttpMessageHandler>();
-            services.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
-        }
-
-        #region Consul
-        private static bool IsConsulConfigured(IConfiguration config, IServiceInfo info)
-        {
-            var clientConfigsection = config.GetSection(CONSUL_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
-            return childCount > 0;
-        }
-
-        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
-        {
-            var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
-            services.Configure<ConsulOptions>(consulSection);
-            var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
-            services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
-            services.PostConfigure<ConsulDiscoveryOptions>(options =>
-            {
-                options.NetUtils = new InetUtils(netOptions);
-                options.ApplyNetUtils();
-            });
-        }
-
-        private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
-        {
-            services.AddSingleton((p) =>
-            {
-                var consulOptions = p.GetRequiredService<IOptions<ConsulOptions>>();
-                return ConsulClientFactory.CreateClient(consulOptions.Value);
-            });
-
-            services.AddSingleton<IScheduler, TtlScheduler>();
-            services.AddSingleton<IConsulServiceRegistry, ConsulServiceRegistry>();
-            services.AddSingleton<IConsulRegistration>((p) =>
-            {
-                var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-                var appInfo = services.GetApplicationInstanceInfo();
-                return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
-            });
-            services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();
-            services.AddSingleton<IDiscoveryClient, ConsulDiscoveryClient>();
-            services.AddSingleton<IHealthContributor, ConsulHealthContributor>();
-        }
-        #endregion Consul
-
-        #region Eureka
-        private static bool IsEurekaConfigured(IConfiguration config, IServiceInfo info)
-        {
-            var clientConfigsection = config.GetSection(EUREKA_PREFIX);
-            int childCount = clientConfigsection.GetChildren().Count();
-            return childCount > 0 || info is EurekaServiceInfo;
-        }
-
-        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
-        {
-            var einfo = info as EurekaServiceInfo;
-            var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
-            services.Configure<EurekaClientOptions>(clientSection);
-            services.PostConfigure<EurekaClientOptions>((options) =>
-            {
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-            });
-
-            var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
-            services.Configure<EurekaInstanceOptions>(instSection);
-            services.PostConfigure<EurekaInstanceOptions>((options) =>
-            {
-                IApplicationInstanceInfo appInfo = null;
-                if (einfo?.ApplicationInfo == null)
+                var clientExtensions = assembly.GetTypes().Where(t => t.GetInterface("IDiscoveryClientExtension") != null);
+                foreach (var clientExtension in clientExtensions)
                 {
-                    appInfo = services.GetApplicationInstanceInfo();
+                    implementations.Add(Activator.CreateInstance(clientExtension) as IDiscoveryClientExtension);
                 }
-
-                options.NetUtils = new InetUtils(netOptions);
-                options.ApplyNetUtils();
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
-            });
-        }
-
-        private static void AddEurekaServices(IServiceCollection services, IDiscoveryLifecycle lifecycle)
-        {
-            services.AddSingleton<EurekaApplicationInfoManager>();
-            services.AddSingleton<EurekaDiscoveryManager>();
-
-            services.AddSingleton<EurekaDiscoveryClient>();
-            if (lifecycle == null)
-            {
-                services.AddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
             }
-            else
+
+            if (implementations.Count == 1)
+            {
+                builderAction = builder => builder.Extensions.Add(implementations.First());
+            }
+            else if (implementations.Count > 1)
+            {
+                // if none configured, that's ok because AddServiceDiscovery has a plan
+                var configured = implementations.Where(client => client.IsConfigured(config, info));
+                if (configured.Count() == 1)
+                {
+                    builderAction = builder => builder.Extensions.Add(configured.Single());
+                }
+                else if (configured.Count() > 1)
+                {
+                    throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been added and configured! This is not supported, please only configure a single client type.");
+                }
+            }
+
+            if (lifecycle != null)
             {
                 services.AddSingleton(lifecycle);
             }
 
-            services.AddSingleton<IDiscoveryClient>((p) =>
-            {
-                var eurekaService = p.GetService<EurekaDiscoveryClient>();
-
-                // Wire in health checker if present
-                if (eurekaService != null)
-                {
-                    eurekaService.HealthCheckHandler = p.GetService<IHealthCheckHandler>();
-                }
-
-                return eurekaService;
-            });
-
-            services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
-
-            var serviceProvider = services.BuildServiceProvider();
-            var certOptions = serviceProvider.GetService<IOptions<CertificateOptions>>();
-            var existingHandler = serviceProvider.GetService<IHttpClientHandlerProvider>();
-            if (certOptions != null && existingHandler is null)
-            {
-                services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
-            }
+            return services.AddServiceDiscovery(builderAction);
         }
 
-        #endregion Eureka
+        /// <summary>
+        /// Adds service discovery to your application. If <paramref name="builderAction"/> is not provided, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// </summary>
+        /// <param name="serviceCollection"><see cref="IServiceCollection"/> to configure</param>
+        /// <param name="builderAction">Provided by the desired <see cref="IDiscoveryClient"/> implementation</param>
+        /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
+        /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
+        public static IServiceCollection AddServiceDiscovery(this IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction = null)
+        {
+            if (serviceCollection is null)
+            {
+                throw new ArgumentNullException(nameof(serviceCollection));
+            }
 
-        #region ServiceInfo
-        private static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
+            if (builderAction is null)
+            {
+                builderAction = (builder) => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
+            }
+
+            ApplyDiscoveryOptions(serviceCollection, builderAction);
+
+            serviceCollection.TryAddTransient<DiscoveryHttpMessageHandler>();
+            serviceCollection.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
+            serviceCollection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
+            serviceCollection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
+            serviceCollection.TryAddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
+            return serviceCollection;
+        }
+
+        /// <summary>
+        /// Retrieve a single, named <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+        /// </summary>
+        /// <param name="config">The <see cref="IConfiguration"/> to search</param>
+        /// <param name="serviceName">Name of service binding to find</param>
+        /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found</exception>
+        public static IServiceInfo GetNamedDiscoveryServiceInfo(IConfiguration config, string serviceName)
         {
             var info = config.GetServiceInfo(serviceName);
             if (info == null)
@@ -291,7 +131,12 @@ namespace Steeltoe.Discovery.Client
             return info;
         }
 
-        private static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
+        /// <summary>
+        /// Retrieve a single <see cref="IServiceInfo"/> that is expected to work with Service Discovery
+        /// </summary>
+        /// <param name="config">The <see cref="IConfiguration"/> to search</param>
+        /// <exception cref="ConnectorException">Thrown if multiple service infos are found</exception>
+        public static IServiceInfo GetSingletonDiscoveryServiceInfo(IConfiguration config)
         {
             // Note: Could be other discovery type services in future
             var eurekaInfos = config.GetServiceInfos<EurekaServiceInfo>();
@@ -309,12 +154,24 @@ namespace Steeltoe.Discovery.Client
             return null;
         }
 
-        private static bool IsRecognizedDiscoveryService(IServiceInfo info)
+        private static void ApplyDiscoveryOptions(IServiceCollection serviceCollection, Action<DiscoveryClientBuilder> builderAction)
         {
-            return info is EurekaServiceInfo;
+            var builder = new DiscoveryClientBuilder();
+
+            builderAction?.Invoke(builder);
+
+            foreach (var ext in builder.Extensions)
+            {
+                ext.ApplyServices(serviceCollection);
+            }
+
+            if (serviceCollection.Count(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IDiscoveryClient))) > 1)
+            {
+                throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been configured! This is not supported, please only use a single client type.");
+            }
         }
 
-        #endregion ServiceInfo
+        private static bool IsRecognizedDiscoveryService(IServiceInfo info) => info is EurekaServiceInfo;
 
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
@@ -327,26 +184,6 @@ namespace Steeltoe.Discovery.Client
             }
 
             public CancellationToken ApplicationStopping { get; set; }
-        }
-
-        public class OptionsMonitorWrapper<T> : IOptionsMonitor<T>
-        {
-            public OptionsMonitorWrapper(T option)
-            {
-                CurrentValue = option;
-            }
-
-            public T CurrentValue { get; }
-
-            public T Get(string name)
-            {
-                return CurrentValue;
-            }
-
-            public IDisposable OnChange(Action<T, string> listener)
-            {
-                return null;
-            }
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     {
         private const int NUM_CONCURRENT_COMMANDS = 30;
-        private ITestOutputHelper output;
+        private readonly ITestOutputHelper output;
 
         public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
             : base()
@@ -28,26 +28,26 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         [Fact]
         public async Task TestTimeoutRace()
         {
-            int num_trials = 10;
+            var num_trials = 10;
 
-            for (int i = 0; i < num_trials; i++)
+            for (var i = 0; i < num_trials; i++)
             {
-                List<IObservable<string>> observables = new List<IObservable<string>>();
+                var observables = new List<IObservable<string>>();
                 HystrixRequestContext context = null;
 
                 try
                 {
                     context = HystrixRequestContext.InitializeContext();
-                    for (int j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
+                    for (var j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
                     {
                         observables.Add(new TestCommand().Observe());
                     }
 
-                    IObservable<string> overall = Observable.Merge(observables);
+                    var overall = Observable.Merge(observables);
 
-                    IList<string> results = await overall.ToList().FirstAsync(); // wait for all commands to complete
+                    var results = await overall.ToList().FirstAsync(); // wait for all commands to complete
 
-                    foreach (string s in results)
+                    foreach (var s in results)
                     {
                         if (s == null)
                         {
@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                         }
                     }
 
-                    foreach (IHystrixInvokableInfo hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
+                    foreach (var hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
                     {
                         if (!hi.IsResponseTimedOut)
                         {
@@ -99,7 +99,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public TestCommand()
             : base(GetOptions())
             {
-                this.IsFallbackUserDefined = true;
+                IsFallbackUserDefined = true;
             }
 
             protected override string Run()
@@ -115,7 +115,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixCommandOptions GetOptions()
             {
-                HystrixCommandOptions opts = new HystrixCommandOptions()
+                var opts = new HystrixCommandOptions()
                 {
                     GroupKey = HystrixCommandGroupKeyDefault.AsKey("testTimeoutConcurrency"),
                     CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
@@ -129,7 +129,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
             private static IHystrixThreadPoolOptions GetThreadPoolOptions()
             {
-                HystrixThreadPoolOptions opts = new HystrixThreadPoolOptions()
+                var opts = new HystrixThreadPoolOptions()
                 {
                     CoreSize = NUM_CONCURRENT_COMMANDS,
                     MaxQueueSize = NUM_CONCURRENT_COMMANDS,

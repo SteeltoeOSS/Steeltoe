@@ -18,7 +18,7 @@ namespace Steeltoe.Connector.MySql
         public const string Default_Server = "localhost";
         public const int Default_Port = 3306;
         private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
-        private bool _cloudFoundryConfigFound = false;
+        private readonly bool _cloudFoundryConfigFound = false;
 
         public MySqlProviderConnectorOptions()
         {

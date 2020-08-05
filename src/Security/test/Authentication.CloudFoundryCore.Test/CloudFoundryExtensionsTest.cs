@@ -83,14 +83,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
         {
             var builder = GetHostBuilder<TestServerStartup>();
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/");
-                Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-                var location = result.Headers.Location.ToString();
-                Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/");
+            Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+            var location = result.Headers.Location.ToString();
+            Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
         }
 
         [Fact]
@@ -117,12 +115,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public async void AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
         {
             var builder = GetHostBuilder<TestServerJwtStartup>();
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/");
-                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/");
+            Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
         }
 
         [Fact]
@@ -132,15 +128,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
 
             var builder = GetHostBuilder<TestServerOpenIdStartup>();
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/");
-                var body = await result.Content.ReadAsStringAsync();
-                Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-                var location = result.Headers.Location.ToString();
-                Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/");
+            var body = await result.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
+            var location = result.Headers.Location.ToString();
+            Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
         }
 
         [Fact]

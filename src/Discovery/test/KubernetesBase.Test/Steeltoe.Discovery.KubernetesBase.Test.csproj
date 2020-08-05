@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedtest.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KubernetesBase\Steeltoe.Discovery.KubernetesBase.csproj" />
+  </ItemGroup>
+
+</Project>

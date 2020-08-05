@@ -13,7 +13,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Run_AddsClaims()
         {
-            string resp = TestHelpers.GetValidTokenInfoRequestResponse();
+            var resp = TestHelpers.GetValidTokenInfoRequestResponse();
             var payload = JsonDocument.Parse(resp).RootElement;
             var action = new CloudFoundryScopeClaimAction("scope", ClaimValueTypes.String);
             var ident = new ClaimsIdentity();

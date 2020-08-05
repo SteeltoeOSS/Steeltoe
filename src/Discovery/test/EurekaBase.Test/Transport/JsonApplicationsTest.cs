@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.Test;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
@@ -43,8 +44,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                         }]
                     }]
                 }";
-            var stream = TestHelpers.StringToStream(json);
-            var result = JsonApplications.Deserialize(stream);
+            var result = JsonSerializer.Deserialize<JsonApplications>(json);
             Assert.NotNull(result);
             Assert.Equal("UP_1_", result.AppsHashCode);
             Assert.Equal(1, result.VersionDelta);

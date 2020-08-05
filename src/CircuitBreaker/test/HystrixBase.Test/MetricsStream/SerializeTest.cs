@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         public void ToJsonList_ReturnsExpected()
         {
             var stream = HystrixDashboardStream.GetInstance();
-            CountdownEvent latch = new CountdownEvent(1);
+            var latch = new CountdownEvent(1);
 
             List<string> result = null;
             var subscription = stream.Observe()
@@ -56,7 +56,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                        latch.SignalEx();
                    });
 
-            MyCommand cmd = new MyCommand();
+            var cmd = new MyCommand();
             cmd.Execute();
 
             latch.Wait(10000);
@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
 
             Assert.NotNull(dict["origin"]);
             Assert.NotNull(dict["data"]);
-            JObject cmdData = (JObject)dict["data"];
+            var cmdData = (JObject)dict["data"];
 
             Assert.NotNull(cmdData["type"]);
             var type = cmdData["type"].Value<string>();

@@ -84,8 +84,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
             provider.Load();
 
-            string value = null;
-            Assert.True(provider.TryGet("p-config-server:0:name", out value));
+            Assert.True(provider.TryGet("p-config-server:0:name", out var value));
             Assert.Equal("myConfigServer", value);
 
             Assert.True(provider.TryGet("p-config-server:0:credentials:uri", out value));

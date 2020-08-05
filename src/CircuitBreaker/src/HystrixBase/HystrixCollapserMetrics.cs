@@ -23,8 +23,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public static ICollection<HystrixCollapserMetrics> GetInstances()
         {
-            List<HystrixCollapserMetrics> collapserMetrics = new List<HystrixCollapserMetrics>();
-            foreach (HystrixCollapserMetrics tpm in Metrics.Values)
+            var collapserMetrics = new List<HystrixCollapserMetrics>();
+            foreach (var tpm in Metrics.Values)
             {
                 collapserMetrics.Add(tpm);
             }
@@ -38,8 +38,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
         {
             {
-                CollapserEventType eventType = collapserEvent.EventType;
-                int count = collapserEvent.Count;
+                var eventType = collapserEvent.EventType;
+                var count = collapserEvent.Count;
                 initialCountArray[(int)eventType] += count;
                 return initialCountArray;
             }
@@ -48,7 +48,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
         {
             {
-                foreach (CollapserEventType eventType in ALL_EVENT_TYPES)
+                foreach (var eventType in ALL_EVENT_TYPES)
                 {
                     cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
                 }

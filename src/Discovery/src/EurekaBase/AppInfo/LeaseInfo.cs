@@ -29,7 +29,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static LeaseInfo FromJson(JsonLeaseInfo jinfo)
         {
-            LeaseInfo info = new LeaseInfo();
+            var info = new LeaseInfo();
             if (jinfo != null)
             {
                 info.RenewalIntervalInSecs = jinfo.RenewalIntervalInSecs;
@@ -46,7 +46,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal static LeaseInfo FromConfig(IEurekaInstanceConfig config)
         {
-            LeaseInfo info = new LeaseInfo()
+            var info = new LeaseInfo()
             {
                 RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
                 DurationInSecs = config.LeaseExpirationDurationInSeconds
@@ -62,15 +62,15 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         internal JsonLeaseInfo ToJson()
         {
-            JsonLeaseInfo jinfo = new JsonLeaseInfo()
+            var jinfo = new JsonLeaseInfo()
             {
-                RenewalIntervalInSecs = this.RenewalIntervalInSecs,
-                DurationInSecs = this.DurationInSecs,
-                RegistrationTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.RegistrationTimestamp, DateTimeKind.Utc)),
-                LastRenewalTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.LastRenewalTimestamp, DateTimeKind.Utc)),
-                LastRenewalTimestampLegacy = DateTimeConversions.ToJavaMillis(new DateTime(this.LastRenewalTimestampLegacy, DateTimeKind.Utc)),
-                EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.EvictionTimestamp, DateTimeKind.Utc)),
-                ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(this.ServiceUpTimestamp, DateTimeKind.Utc))
+                RenewalIntervalInSecs = RenewalIntervalInSecs,
+                DurationInSecs = DurationInSecs,
+                RegistrationTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(RegistrationTimestamp, DateTimeKind.Utc)),
+                LastRenewalTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestamp, DateTimeKind.Utc)),
+                LastRenewalTimestampLegacy = DateTimeConversions.ToJavaMillis(new DateTime(LastRenewalTimestampLegacy, DateTimeKind.Utc)),
+                EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(EvictionTimestamp, DateTimeKind.Utc)),
+                ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(ServiceUpTimestamp, DateTimeKind.Utc))
             };
             return jinfo;
         }

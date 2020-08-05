@@ -37,6 +37,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
                 LastRequest = new HttpRequestInfo(context.Request);
                 context.Response.StatusCode = ReturnStatus;
+                context.Response.Headers.Add("content-type", "application/json");
                 await context.Response.WriteAsync(Response);
             });
         }

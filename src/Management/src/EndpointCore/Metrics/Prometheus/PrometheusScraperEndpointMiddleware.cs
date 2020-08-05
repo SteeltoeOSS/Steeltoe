@@ -38,8 +38,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal Task HandleMetricsRequestAsync(HttpContext context)
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
+            var request = context.Request;
+            var response = context.Response;
 
             _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 

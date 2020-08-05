@@ -33,9 +33,9 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(info);
             Assert.NotNull(info._links);
             Assert.True(info._links.ContainsKey("self"));
-            Assert.Equal("http://localhost:5000/foobar", info._links["self"].href);
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
             Assert.True(info._links.ContainsKey("info"));
-            Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].href);
+            Assert.Equal("http://localhost:5000/foobar/info", info._links["info"].Href);
             Assert.Equal(2, info._links.Count);
         }
 
@@ -51,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(info);
             Assert.NotNull(info._links);
             Assert.True(info._links.ContainsKey("self"));
-            Assert.Equal("http://localhost:5000/foobar", info._links["self"].href);
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
             Assert.Single(info._links);
         }
 
@@ -70,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.NotNull(info);
             Assert.NotNull(info._links);
             Assert.True(info._links.ContainsKey("self"));
-            Assert.Equal("http://localhost:5000/foobar", info._links["self"].href);
+            Assert.Equal("http://localhost:5000/foobar", info._links["self"].Href);
             Assert.False(info._links.ContainsKey("info"));
             Assert.Single(info._links);
         }

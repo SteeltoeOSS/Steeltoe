@@ -4,7 +4,7 @@
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
-using System.IO;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test
@@ -38,8 +38,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     ""actionType"":""ADDED""
 }";
 
-            Stream stream = TestHelpers.StringToStream(json);
-            var result = JsonInstanceInfo.Deserialize(stream);
+            var result = JsonSerializer.Deserialize<JsonInstanceInfo>(json);
             Assert.NotNull(result);
             Assert.Equal("localhost:foo", result.InstanceId);
             Assert.Equal("localhost", result.HostName);

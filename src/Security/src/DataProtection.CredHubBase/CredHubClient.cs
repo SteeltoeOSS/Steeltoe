@@ -3,38 +3,37 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
+using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class CredHubClient : ICredHubClient
     {
+        internal JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions
+        {
+            IgnoreNullValues = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
         private const int DEFAULT_TIMEOUT = 3000;
 
         private static HttpClient _httpClient;
         private static HttpClientHandler _httpClientHandler;
         private static ILogger _logger;
         private static string _baseCredHubUrl;
-        private JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
 
-        private bool _validateCertificates;
+        private readonly bool _validateCertificates;
 
         public CredHubClient(bool validateCertificates = true)
         {
@@ -65,7 +64,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<CredHubClient> InitializeAsync(CredHubOptions options)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 Uri tokenUri;
@@ -84,30 +83,24 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 }
 
                 // login to UAA
-                var header = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.ClientId}:{options.ClientSecret}")));
-                _httpClient.DefaultRequestHeaders.Authorization = header;
-                var postParams = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("response_type", "token")
-                };
-                var response = await _httpClient.PostAsync(tokenUri, new FormUrlEncodedContent(postParams)).ConfigureAwait(false);
+                var token = await HttpClientHelper.GetAccessToken(
+                    tokenUri,
+                    options.ClientId,
+                    options.ClientSecret,
+                    additionalParams: new Dictionary<string, string> { { "response_type", "token" } },
+                    httpClient: _httpClient,
+                    logger: _logger);
 
-                if (response.IsSuccessStatusCode)
+                if (token is object)
                 {
-                    _logger?.LogTrace(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-
                     // set the token
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", payload.Value<string>("access_token"));
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     return this;
                 }
                 else
                 {
-                    _logger?.LogCritical($"Authentication with UAA Server failed, status code: {response.StatusCode}");
-                    _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    throw new AuthenticationException($"Authentication with UAA Server failed, status code: {response.StatusCode}");
+                    throw new AuthenticationException($"Authentication with UAA Server failed");
                 }
             }
             finally
@@ -119,11 +112,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
 #pragma warning disable SA1202 // Elements must be ordered by access
         public async Task<CredHubCredential<T>> WriteAsync<T>(CredentialSetRequest credentialRequest)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
-                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings).ConfigureAwait(false);
+                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
             }
@@ -135,12 +129,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest requestParameters)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
 
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, _serializerSettings).ConfigureAwait(false);
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -161,11 +156,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<CredHubCredential<T>> RegenerateInternalAsync<T>(string name)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
+#pragma warning disable CS0618 // Type or member is obsolete
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } }).ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -186,11 +183,13 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<RegeneratedCertificates> BulkRegenerateInternalAsync(string certificateAuthority)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/bulk-regenerate");
+#pragma warning disable CS0618 // Type or member is obsolete
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string> { { "signed_by", certificateAuthority } }).ConfigureAwait(false);
+#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
             }
             finally
@@ -211,11 +210,11 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<CredHubCredential<T>> GetByIdInternalAsync<T>(Guid id)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
-                _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data{id}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data/{id}").ConfigureAwait(false);
+                _logger?.LogTrace($"About to GET {_baseCredHubUrl}v1/data/{id}");
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}v1/data/{id}").ConfigureAwait(false);
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
             }
             finally
@@ -236,7 +235,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<CredHubCredential<T>> GetByNameInternalAsync<T>(string name)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&current=true");
@@ -261,7 +260,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<List<CredHubCredential<T>>> GetByNameWithHistoryInternalAsync<T>(string name, int entries)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&versions={entries}");
@@ -286,7 +285,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<List<FoundCredential>> FindByNameInternalAsync(string name)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name-like={name}");
@@ -311,7 +310,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<List<FoundCredential>> FindByPathInternalAsync(string path)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?path={path}");
@@ -336,7 +335,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         public async Task<bool> DeleteByNameInternalAsync(string name)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/data?name={name}");
@@ -367,7 +366,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<List<CredentialPermission>> GetPermissionsInternalAsync(string name)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/permissions?credential_name={name}");
@@ -397,12 +396,12 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<List<CredentialPermission>> AddPermissionsInternalAsync(string name, List<CredentialPermission> permissions)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/permissions");
                 var newPermissions = new CredentialPermissions { CredentialName = name, Permissions = permissions };
-                var addResponse = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, _serializerSettings).ConfigureAwait(false);
+                _ = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, SerializerOptions).ConfigureAwait(false);
 
                 return await GetPermissionsAsync(name).ConfigureAwait(false);
             }
@@ -429,7 +428,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<bool> DeletePermissionInternalAsync(string name, string actor)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}");
@@ -460,7 +459,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
 
         private async Task<string> InterpolateServiceDataInternalAsync(string serviceData)
         {
-            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType, out RemoteCertificateValidationCallback prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/interpolate");
@@ -485,7 +484,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         {
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadAsJsonAsync<T>().ConfigureAwait(false);
+                return await response.Content.ReadFromJsonAsync<T>(SerializerOptions).ConfigureAwait(false);
             }
             else
             {

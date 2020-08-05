@@ -42,23 +42,22 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
 
         public static IWebHostBuilder StartupByEpName(this IWebHostBuilder builder, EndpointNames endpointName)
         {
-            switch (endpointName)
+            return endpointName switch
             {
-                case EndpointNames.Cloudfoundry: return builder.UseStartup<CloudFoundryStartup>();
-                case EndpointNames.Hypermedia: return builder.UseStartup<HyperMediaStartup>();
-                case EndpointNames.Info: return builder.UseStartup<InfoStartup>();
-                case EndpointNames.Metrics: return builder.UseStartup<MetricsStartup>();
-                case EndpointNames.Loggers: return builder.UseStartup<LoggersStartup>();
-                case EndpointNames.Health: return builder.UseStartup<HealthStartup>();
-                case EndpointNames.Trace: return builder.UseStartup<TraceStartup>();
-                case EndpointNames.DbMigrations: return builder.UseStartup<DbMigrationsStartup>();
-                case EndpointNames.Env: return builder.UseStartup<EnvStartup>();
-                case EndpointNames.Mappings: return builder.UseStartup<MappingsStartup>();
-                case EndpointNames.Refresh: return builder.UseStartup<RefreshStartup>();
-                case EndpointNames.ThreadDump: return builder.UseStartup<ThreadDumpStartup>();
-            }
-
-            return builder;
+                EndpointNames.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
+                EndpointNames.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
+                EndpointNames.Info => builder.UseStartup<InfoStartup>(),
+                EndpointNames.Metrics => builder.UseStartup<MetricsStartup>(),
+                EndpointNames.Loggers => builder.UseStartup<LoggersStartup>(),
+                EndpointNames.Health => builder.UseStartup<HealthStartup>(),
+                EndpointNames.Trace => builder.UseStartup<TraceStartup>(),
+                EndpointNames.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
+                EndpointNames.Env => builder.UseStartup<EnvStartup>(),
+                EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
+                EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
+                EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
+                _ => builder,
+            };
         }
     }
 

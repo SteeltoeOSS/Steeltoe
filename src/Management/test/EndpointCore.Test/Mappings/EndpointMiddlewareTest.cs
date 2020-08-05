@@ -76,15 +76,13 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
                 loggingBuilder.AddConfiguration(webhostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/mappings");
-                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-                var json = await result.Content.ReadAsStringAsync();
-                var expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
-                Assert.Equal(expected, json);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/mappings");
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            var json = await result.Content.ReadAsStringAsync();
+            var expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
+            Assert.Equal(expected, json);
         }
 
         private HttpContext CreateRequest(string method, string path)

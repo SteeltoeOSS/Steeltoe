@@ -57,10 +57,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (Source.IsEnabled(HEAP_EVENT))
             {
-                long totalMemory = GC.GetTotalMemory(false);
+                var totalMemory = GC.GetTotalMemory(false);
 
-                List<long> counts = new List<long>(GC.MaxGeneration);
-                for (int i = 0; i < GC.MaxGeneration; i++)
+                var counts = new List<long>(GC.MaxGeneration);
+                for (var i = 0; i < GC.MaxGeneration; i++)
                 {
                     counts.Add(GC.CollectionCount(i));
                 }
@@ -70,8 +70,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (Source.IsEnabled(THREADS_EVENT))
             {
-                ThreadPool.GetAvailableThreads(out int availWorkerThreads, out int availCompPortThreads);
-                ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompPortThreads);
+                ThreadPool.GetAvailableThreads(out var availWorkerThreads, out var availCompPortThreads);
+                ThreadPool.GetMaxThreads(out var maxWorkerThreads, out var maxCompPortThreads);
                 Source.Write(THREADS_EVENT, new ThreadMetrics(availWorkerThreads, availCompPortThreads, maxWorkerThreads, maxCompPortThreads));
             }
         }

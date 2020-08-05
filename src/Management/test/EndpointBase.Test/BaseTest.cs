@@ -36,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Test
             var options = new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true,
+                IgnoreNullValues = true
             };
             options.Converters.Add(new HealthConverter());
             options.Converters.Add(new MetricsResponseConverter());

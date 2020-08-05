@@ -10,11 +10,12 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
+    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj" />
+    <ProjectReference Include="..\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
   </ItemGroup>
 </Project>

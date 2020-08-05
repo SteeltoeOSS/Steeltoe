@@ -13,8 +13,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         protected HystrixCommandEvent(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
         {
-            this._commandKey = commandKey;
-            this._threadPoolKey = threadPoolKey;
+            _commandKey = commandKey;
+            _threadPoolKey = threadPoolKey;
         }
 
         public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = (commandEvent) =>

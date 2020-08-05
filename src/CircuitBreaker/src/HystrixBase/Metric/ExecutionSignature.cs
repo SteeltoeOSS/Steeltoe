@@ -10,12 +10,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount, IHystrixCollapserKey collapserKey, int collapserBatchSize)
         {
-            this.CommandName = commandKey.Name;
-            this.Eventcounts = eventCounts;
-            this._cacheKey = cacheKey;
-            this.CachedCount = cachedCount;
-            this.CollapserKey = collapserKey;
-            this.CollapserBatchSize = collapserBatchSize;
+            CommandName = commandKey.Name;
+            Eventcounts = eventCounts;
+            _cacheKey = cacheKey;
+            CachedCount = cachedCount;
+            CollapserKey = collapserKey;
+            CollapserBatchSize = collapserBatchSize;
         }
 
         public static ExecutionSignature From(IHystrixInvokableInfo execution)
@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                 return false;
             }
 
-            ExecutionSignature that = (ExecutionSignature)o;
+            var that = (ExecutionSignature)o;
 
             if (!CommandName.Equals(that.CommandName))
             {
@@ -57,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
 
         public override int GetHashCode()
         {
-            int result = CommandName.GetHashCode();
+            var result = CommandName.GetHashCode();
             result = (31 * result) + Eventcounts.GetHashCode();
             result = (31 * result) + (_cacheKey != null ? _cacheKey.GetHashCode() : 0);
             return result;

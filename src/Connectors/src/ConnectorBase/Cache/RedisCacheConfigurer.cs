@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Connector.Services;
-using System.Net;
 
 namespace Steeltoe.Connector.Redis
 {

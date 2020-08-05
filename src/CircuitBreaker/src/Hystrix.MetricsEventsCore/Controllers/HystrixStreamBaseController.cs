@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
 
         public HystrixStreamBaseController(IObservable<string> observable)
         {
-            this.SampleStream = observable;
+            SampleStream = observable;
         }
 
         protected void HandleRequest()

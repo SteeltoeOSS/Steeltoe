@@ -27,8 +27,8 @@ namespace Steeltoe.Common.Discovery.Test
     }
 }";
             var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             var cbuilder = new ConfigurationBuilder();
             cbuilder.SetBasePath(directory);
             cbuilder.AddJsonFile(fileName);

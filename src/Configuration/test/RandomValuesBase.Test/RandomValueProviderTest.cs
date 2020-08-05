@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_Ignores()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("foo:bar", out string value);
+            prov.TryGet("foo:bar", out var value);
             Assert.Null(value);
         }
 
@@ -28,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_String()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:string", out string value);
+            prov.TryGet("random:string", out var value);
             Assert.NotNull(value);
         }
 
@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_Uuid()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:uuid", out string value);
+            prov.TryGet("random:uuid", out var value);
             Assert.NotNull(value);
         }
 
@@ -44,7 +44,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomInt()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int", out string value);
+            prov.TryGet("random:int", out var value);
             Assert.NotNull(value);
         }
 
@@ -52,9 +52,9 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomIntRange()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int[4,10]", out string value);
+            prov.TryGet("random:int[4,10]", out var value);
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 4, 10);
         }
 
@@ -62,9 +62,9 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomIntMax()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int(10)", out string value);
+            prov.TryGet("random:int(10)", out var value);
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 0, 10);
         }
 
@@ -72,7 +72,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomLong()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long", out string value);
+            prov.TryGet("random:long", out var value);
             Assert.NotNull(value);
         }
 
@@ -80,9 +80,9 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomLongRange()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long[4,10]", out string value);
+            prov.TryGet("random:long[4,10]", out var value);
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 4, 10);
         }
 
@@ -90,9 +90,9 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         public void TryGet_RandomLongMax()
         {
             var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long(10)", out string value);
+            prov.TryGet("random:long(10)", out var value);
             Assert.NotNull(value);
-            int val = int.Parse(value);
+            var val = int.Parse(value);
             Assert.InRange(val, 0, 10);
         }
     }

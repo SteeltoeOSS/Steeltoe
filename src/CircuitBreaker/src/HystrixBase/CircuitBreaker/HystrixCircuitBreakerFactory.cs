@@ -9,22 +9,22 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
     public static class HystrixCircuitBreakerFactory
     {
-        private static ConcurrentDictionary<string, ICircuitBreaker> circuitBreakersByCommand = new ConcurrentDictionary<string, ICircuitBreaker>();
+        private static readonly ConcurrentDictionary<string, ICircuitBreaker> CircuitBreakersByCommand = new ConcurrentDictionary<string, ICircuitBreaker>();
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
         {
-            return circuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
+            return CircuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
         }
 
         public static ICircuitBreaker GetInstance(IHystrixCommandKey key)
         {
-            circuitBreakersByCommand.TryGetValue(key.Name, out ICircuitBreaker previouslyCached);
+            CircuitBreakersByCommand.TryGetValue(key.Name, out var previouslyCached);
             return previouslyCached;
         }
 
         internal static void Reset()
         {
-            circuitBreakersByCommand.Clear();
+            CircuitBreakersByCommand.Clear();
         }
     }
 }

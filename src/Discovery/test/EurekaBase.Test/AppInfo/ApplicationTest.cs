@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void DefaultConstructor_InitializedWithDefaults()
         {
-            Application app = new Application("foobar");
+            var app = new Application("foobar");
             Assert.Equal("foobar", app.Name);
             Assert.Equal(0, app.Count);
             Assert.NotNull(app.Instances);
@@ -25,14 +25,14 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void InstancesConstructor_InitializedCorrectly()
         {
-            List<InstanceInfo> infos = new List<InstanceInfo>()
+            var infos = new List<InstanceInfo>()
             {
                 new InstanceInfo() { InstanceId = "1" },
                 new InstanceInfo() { InstanceId = "2" },
                 new InstanceInfo() { InstanceId = "2" } // Note duplicate
             };
 
-            Application app = new Application("foobar", infos);
+            var app = new Application("foobar", infos);
 
             Assert.Equal("foobar", app.Name);
             Assert.Equal(2, app.Count);
@@ -46,8 +46,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_Adds()
         {
-            Application app = new Application("foobar");
-            InstanceInfo info = new InstanceInfo()
+            var app = new Application("foobar");
+            var info = new InstanceInfo()
             {
                 InstanceId = "1"
             };
@@ -64,8 +64,8 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void Add_Add_Updates()
         {
-            Application app = new Application("foobar");
-            InstanceInfo info = new InstanceInfo()
+            var app = new Application("foobar");
+            var info = new InstanceInfo()
             {
                 InstanceId = "1",
                 Status = InstanceStatus.DOWN
@@ -76,7 +76,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.NotNull(app.GetInstance("1"));
             Assert.Equal(InstanceStatus.DOWN, app.GetInstance("1").Status);
 
-            InstanceInfo info2 = new InstanceInfo()
+            var info2 = new InstanceInfo()
             {
                 InstanceId = "1",
                 Status = InstanceStatus.UP
@@ -91,7 +91,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
         [Fact]
         public void FromJsonApplication_Correct()
         {
-            JsonInstanceInfo jinfo = new JsonInstanceInfo()
+            var jinfo = new JsonInstanceInfo()
             {
                 InstanceId = "InstanceId",
                 AppName = "myApp",
@@ -129,13 +129,13 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
                 AsgName = "AsgName"
             };
 
-            JsonApplication japp = new JsonApplication()
+            var japp = new JsonApplication()
             {
                 Name = "myApp",
                 Instances = new List<JsonInstanceInfo> { jinfo }
             };
 
-            Application app = Application.FromJsonApplication(japp);
+            var app = Application.FromJsonApplication(japp);
 
             // Verify
             Assert.NotNull(app);
@@ -144,7 +144,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo.Test
             Assert.Equal(1, app.Count);
             Assert.Equal(1, app.Instances.Count);
             Assert.NotNull(app.GetInstance("InstanceId"));
-            InstanceInfo info = app.GetInstance("InstanceId");
+            var info = app.GetInstance("InstanceId");
 
             Assert.Equal("InstanceId", info.InstanceId);
             Assert.Equal("myApp", info.AppName);

@@ -6,7 +6,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test

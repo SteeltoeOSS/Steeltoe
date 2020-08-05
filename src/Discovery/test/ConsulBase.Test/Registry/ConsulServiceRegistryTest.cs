@@ -9,7 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -173,9 +172,9 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
 
             var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
             await reg.SetStatusAsync(registration, "Up");
-            agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.DisableServiceMaintenance(registration.InstanceId, default), Times.Once);
             await reg.SetStatusAsync(registration, "Out_of_Service");
-            agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default(CancellationToken)), Times.Once);
+            agentMoq.Verify(a => a.EnableServiceMaintenance(registration.InstanceId, "OUT_OF_SERVICE", default), Times.Once);
         }
 
         [Fact]

@@ -12,8 +12,8 @@ namespace Steeltoe.Connector
     {
         protected const char Default_Terminator = ';';
         protected const char Default_Separator = '=';
-        private char _keyValueTerm;
-        private char _keyValueSep;
+        private readonly char _keyValueTerm;
+        private readonly char _keyValueSep;
 
         public AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator)
             : this(terminator, separator)

@@ -23,48 +23,32 @@ namespace Steeltoe.Management.Endpoint.Loggers
 
         public static string MapLogLevel(LogLevel level)
         {
-            switch (level)
+            return level switch
             {
-                case LogLevel.None:
-                    return "OFF";
-                case LogLevel.Critical:
-                    return "FATAL";
-                case LogLevel.Error:
-                    return "ERROR";
-                case LogLevel.Warning:
-                    return "WARN";
-                case LogLevel.Information:
-                    return "INFO";
-                case LogLevel.Debug:
-                    return "DEBUG";
-                case LogLevel.Trace:
-                    return "TRACE";
-                default:
-                    return "OFF";
-            }
+                LogLevel.None => "OFF",
+                LogLevel.Critical => "FATAL",
+                LogLevel.Error => "ERROR",
+                LogLevel.Warning => "WARN",
+                LogLevel.Information => "INFO",
+                LogLevel.Debug => "DEBUG",
+                LogLevel.Trace => "TRACE",
+                _ => "OFF",
+            };
         }
 
         public static LogLevel? MapLogLevel(string level)
         {
-            switch (level)
+            return level switch
             {
-                case "OFF":
-                    return LogLevel.None;
-                case "FATAL":
-                    return LogLevel.Critical;
-                case "ERROR":
-                    return LogLevel.Error;
-                case "WARN":
-                    return LogLevel.Warning;
-                case "INFO":
-                    return LogLevel.Information;
-                case "DEBUG":
-                    return LogLevel.Debug;
-                case "TRACE":
-                    return LogLevel.Trace;
-                default:
-                    return null;
-            }
+                "OFF" => LogLevel.None,
+                "FATAL" => LogLevel.Critical,
+                "ERROR" => LogLevel.Error,
+                "WARN" => LogLevel.Warning,
+                "INFO" => LogLevel.Information,
+                "DEBUG" => LogLevel.Debug,
+                "TRACE" => LogLevel.Trace,
+                _ => null,
+            };
         }
     }
 }

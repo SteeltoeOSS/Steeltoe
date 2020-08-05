@@ -8,10 +8,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
     {
         public HystrixThreadPoolUtilization(int currentActiveCount, int currentCorePoolSize, int currentPoolSize, int currentQueueSize)
         {
-            this.CurrentActiveCount = currentActiveCount;
-            this.CurrentCorePoolSize = currentCorePoolSize;
-            this.CurrentPoolSize = currentPoolSize;
-            this.CurrentQueueSize = currentQueueSize;
+            CurrentActiveCount = currentActiveCount;
+            CurrentCorePoolSize = currentCorePoolSize;
+            CurrentPoolSize = currentPoolSize;
+            CurrentQueueSize = currentQueueSize;
         }
 
         public static HystrixThreadPoolUtilization Sample(HystrixThreadPoolMetrics threadPoolMetrics)

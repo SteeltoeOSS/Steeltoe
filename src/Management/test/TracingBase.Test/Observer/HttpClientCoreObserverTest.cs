@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request });
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request });
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
 
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request, Exception = new Exception() });
             span = GetCurrentSpan(tracing.Tracer);

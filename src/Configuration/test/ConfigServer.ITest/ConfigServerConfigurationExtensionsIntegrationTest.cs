@@ -101,17 +101,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 });
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-                Assert.Equal(
-                    "spam" +
-                    "from foo development" +
-                    "Spring Cloud Samples" +
-                    "https://github.com/spring-cloud-samples", result);
-            }
+            Assert.Equal(
+                "spam" +
+                "from foo development" +
+                "Spring Cloud Samples" +
+                "https://github.com/spring-cloud-samples", result);
         }
 
         [Fact]
@@ -191,17 +189,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             try
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-                    Assert.Equal(
-                        "spam" +
-                        "from foo development" +
-                        "Spring Cloud Samples" +
-                        "https://github.com/spring-cloud-samples", result);
-                }
+                Assert.Equal(
+                    "spam" +
+                    "from foo development" +
+                    "Spring Cloud Samples" +
+                    "https://github.com/spring-cloud-samples", result);
             }
             finally
             {
@@ -287,17 +283,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             try
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-                using (var server = new TestServer(builder))
-                {
-                    var client = server.CreateClient();
-                    var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-                    Assert.Equal(
-                        "spam" +
-                        "barcelona" +
-                        "Spring Cloud Samples" +
-                        "https://github.com/spring-cloud-samples", result);
-                }
+                Assert.Equal(
+                    "spam" +
+                    "barcelona" +
+                    "Spring Cloud Samples" +
+                    "https://github.com/spring-cloud-samples", result);
             }
             finally
             {
@@ -435,12 +429,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                 });
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-            using (var server = new TestServer(builder))
-            {
-                var client = server.CreateClient();
-                var result = await client.GetStringAsync("http://localhost/Home/Health");
-                Assert.Equal("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml,", result);
-            }
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var result = await client.GetStringAsync("http://localhost/Home/Health");
+
+            // changed to StartsWith on 7/23 because SCCS is appending " document #0)" to application.yml ??
+            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml", result);
         }
     }
 }

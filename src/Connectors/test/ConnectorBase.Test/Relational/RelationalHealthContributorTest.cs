@@ -106,7 +106,7 @@ namespace Steeltoe.Connector.Relational.Test
         {
             // arrange
             var implementationType = SqlServerTypeLocator.SqlConnection;
-            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 10 };
+            var sqlConfig = new SqlServerProviderConnectorOptions() { Timeout = 1 };
             var sInfo = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://localhost:1433/databaseName=invalidDatabaseName", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
             var logrFactory = new LoggerFactory();
             var connFactory = new SqlServerProviderConnectorFactory(sInfo, sqlConfig, implementationType);

@@ -25,9 +25,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         public static RollingCommandUserLatencyDistributionStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
         {
-            int percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
-            int numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
-            int percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
+            var percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
+            var numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
+            var percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
 
             return GetInstance(commandKey, numPercentileBuckets, percentileBucketSizeInMs);
         }

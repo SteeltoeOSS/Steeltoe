@@ -16,8 +16,8 @@ namespace Steeltoe.Management.Tracing
 
         public TracingLogProcessor(ITracingOptions options, ITracing tracing)
         {
-            this._options = options;
-            this._tracing = tracing;
+            _options = options;
+            _tracing = tracing;
         }
 
         public string Process(string inputLogMessage)

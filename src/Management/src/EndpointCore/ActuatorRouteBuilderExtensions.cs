@@ -21,7 +21,6 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint
 {

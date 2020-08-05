@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Services
 {
     public class DB2ServiceInfoFactory : RelationalServiceInfoFactory
     {
-        private static Tags _db2tags = new Tags(new string[] { "sqldb", "dashDB", "db2" });
+        private static readonly Tags _db2tags = new Tags(new string[] { "sqldb", "dashDB", "db2" });
 
         public DB2ServiceInfoFactory()
             : base(_db2tags, DB2ServiceInfo.DB2_SCHEME)

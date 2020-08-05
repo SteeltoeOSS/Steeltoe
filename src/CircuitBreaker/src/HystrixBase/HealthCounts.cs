@@ -28,14 +28,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public HealthCounts Plus(long[] eventTypeCounts)
         {
-            long updatedTotalCount = TotalRequests;
-            long updatedErrorCount = ErrorCount;
+            var updatedTotalCount = TotalRequests;
+            var updatedErrorCount = ErrorCount;
 
-            long successCount = eventTypeCounts[(int)HystrixEventType.SUCCESS];
-            long failureCount = eventTypeCounts[(int)HystrixEventType.FAILURE];
-            long timeoutCount = eventTypeCounts[(int)HystrixEventType.TIMEOUT];
-            long threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.THREAD_POOL_REJECTED];
-            long semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SEMAPHORE_REJECTED];
+            var successCount = eventTypeCounts[(int)HystrixEventType.SUCCESS];
+            var failureCount = eventTypeCounts[(int)HystrixEventType.FAILURE];
+            var timeoutCount = eventTypeCounts[(int)HystrixEventType.TIMEOUT];
+            var threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.THREAD_POOL_REJECTED];
+            var semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SEMAPHORE_REJECTED];
 
             updatedTotalCount += successCount + failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;
             updatedErrorCount += failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;
