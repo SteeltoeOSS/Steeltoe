@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -12,6 +14,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
+using System;
 using System.Linq;
 
 namespace Steeltoe.Discovery.Consul
@@ -45,6 +48,11 @@ namespace Steeltoe.Discovery.Consul
             {
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
+            });
+            services.TryAddSingleton(serviceProvider =>
+            {
+                var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
+                return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
             });
         }
 
