@@ -41,7 +41,7 @@ namespace Steeltoe.Stream.Binder
         {
             get
             {
-                if (_expressionParser != null)
+                if (_expressionParser == null)
                 {
                     _expressionParser = IntegrationContextUtils.GetExpressionParser(_applicationContext);
                 }
@@ -59,7 +59,7 @@ namespace Steeltoe.Stream.Binder
         {
             get
             {
-                if (_evaluationContext != null)
+                if (_evaluationContext == null)
                 {
                     _evaluationContext = IntegrationContextUtils.GetEvaluationContext(_applicationContext);
                 }
