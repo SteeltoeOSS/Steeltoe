@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
@@ -8,7 +8,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
   <ItemGroup>
-    <ProjectReference Include="..\..\src\KubernetesBase\Steeltoe.Management.KubernetesBase.csproj" />
+    <ProjectReference Include="..\..\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" />
   </ItemGroup>
 
 </Project>
