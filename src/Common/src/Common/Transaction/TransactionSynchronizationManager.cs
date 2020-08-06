@@ -12,7 +12,6 @@ using System.Threading;
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to common
     public static class TransactionSynchronizationManager
     {
         private static readonly AsyncLocal<Dictionary<object, object>> _resources = new AsyncLocal<Dictionary<object, object>>();

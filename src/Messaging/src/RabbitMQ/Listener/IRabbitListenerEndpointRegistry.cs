@@ -7,7 +7,7 @@ using Steeltoe.Common.Services;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IRabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable, IServiceNameAware
     {

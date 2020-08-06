@@ -4,9 +4,9 @@
 
 using System;
 using System.Collections.Generic;
-using static Steeltoe.Messaging.Rabbit.Config.Binding;
+using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class BindingBuilder
     {

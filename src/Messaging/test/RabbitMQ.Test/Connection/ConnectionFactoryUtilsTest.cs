@@ -6,7 +6,7 @@ using Moq;
 using Steeltoe.Common.Transaction;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class ConnectionFactoryUtilsTest
     {

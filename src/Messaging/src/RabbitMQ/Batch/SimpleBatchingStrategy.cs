@@ -3,14 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Buffers.Binary;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Batch
+namespace Steeltoe.Messaging.RabbitMQ.Batch
 {
     public class SimpleBatchingStrategy : IBatchingStrategy
     {
@@ -127,6 +127,7 @@ namespace Steeltoe.Messaging.Rabbit.Batch
             var index = 0;
             while (index < bodyLength)
             {
+                accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 var slice = byteBuffer.Slice(index);
                 var length = BinaryPrimitives.ReadInt32BigEndian(slice);
                 index += 4;

@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Config;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class DeclarationExceptionEvent : RabbitAdminEvent
     {

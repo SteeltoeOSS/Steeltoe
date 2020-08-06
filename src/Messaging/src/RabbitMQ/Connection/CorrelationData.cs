@@ -4,7 +4,7 @@
 
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CorrelationData // : Correlation
     {
@@ -14,13 +14,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             FutureSource = new TaskCompletionSource<Confirm>();
         }
 
-        public string Id { get; set; }
+        public virtual string Id { get; set; }
 
-        public IMessage ReturnedMessage { get; set; }
+        public virtual IMessage ReturnedMessage { get; set; }
 
-        public TaskCompletionSource<Confirm> FutureSource { get; }
+        public virtual TaskCompletionSource<Confirm> FutureSource { get; }
 
-        public Task<Confirm> Future
+        public virtual Task<Confirm> Future
         {
             get
             {

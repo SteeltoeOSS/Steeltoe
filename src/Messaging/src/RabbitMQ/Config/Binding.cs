@@ -5,7 +5,7 @@
 using Steeltoe.Common.Services;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class Binding : AbstractDeclarable, IServiceNameAware, IBinding
     {

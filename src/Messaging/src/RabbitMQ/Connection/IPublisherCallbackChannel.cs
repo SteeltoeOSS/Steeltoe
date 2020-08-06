@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
-    public interface IPublisherCallbackChannel : IModel
+    public interface IPublisherCallbackChannel : RC.IModel
     {
         /// <summary>
         /// Add a publisher callback listener
@@ -49,13 +49,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         /// <summary>
         /// Gets the underlying RabbitMQ model
         /// </summary>
-        RabbitMQ.Client.IModel Channel { get; }
+        RC.IModel Channel { get; }
 
         /// <summary>
         /// Set a callback to be invoked after the ack/nack has been handled
         /// </summary>
         /// <param name="callback">the callback</param>
-        void SetAfterAckCallback(Action<IModel> callback);
+        void SetAfterAckCallback(Action<RC.IModel> callback);
 
         public interface IListener
         {
@@ -75,13 +75,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             /// <param name="routingKey">the routing key used when the message was originally published.</param>
             /// <param name="properties">the content header of the message.</param>
             /// <param name="body">the body of the message</param>
-            void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, IBasicProperties properties, byte[] body);
+            void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body);
 
             /// <summary>
             /// When called this listener should remove all references to the channel
             /// </summary>
             /// <param name="channel">the channel</param>
-            void Revoke(IModel channel);
+            void Revoke(RC.IModel channel);
 
             /// <summary>
             /// Gets the UUID used to identify this listener for returns

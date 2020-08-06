@@ -25,7 +25,7 @@ namespace Steeltoe.Stream.MockBinder
         public void ConfigureServices(IServiceCollection services)
         {
             var mock = new Mock<IBinder<object>>() { DefaultValue = DefaultValue.Mock };
-            mock.Setup((b) => b.Name).Returns("mock");
+            mock.Setup((b) => b.ServiceName).Returns("mock");
             services.AddSingleton<IBinder<object>>(mock.Object);
             services.AddSingleton<IBinder>((p) => p.GetRequiredService<IBinder<object>>());
         }

@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public class Delivery
     {
-        public Delivery(string consumerTag, Envelope envelope, IBasicProperties properties, byte[] body, string queue)
+        public Delivery(string consumerTag, Envelope envelope, RC.IBasicProperties properties, byte[] body, string queue)
         {
             ConsumerTag = consumerTag;
             Envelope = envelope;
@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.Rabbit.Support
 
         public Envelope Envelope { get; }
 
-        public IBasicProperties Properties { get; }
+        public RC.IBasicProperties Properties { get; }
 
         public byte[] Body { get; }
 

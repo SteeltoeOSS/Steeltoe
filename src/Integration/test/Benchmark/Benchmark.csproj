@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Base\Steeltoe.Integration.Base.csproj" />
+    <ProjectReference Include="..\..\src\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
-    // TODO: AMQP class
     public abstract class AbstractDeclarable : IDeclarable
     {
         protected List<object> _declaringAdmins = new List<object>();

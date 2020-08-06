@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IConsumerTagStrategy : IServiceNameAware
     {

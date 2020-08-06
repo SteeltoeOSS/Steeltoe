@@ -5,21 +5,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownListener
     {
@@ -129,12 +129,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+        protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
             : this(rabbitConnectionFactory, false, CachingMode.CHANNEL, loggerFactory)
         {
         }
 
-        protected internal CachingConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
+        protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
             : base(rabbitConnectionFactory, loggerFactory)
         {
             CacheMode = cachingMode;
@@ -163,9 +163,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        private static ConnectionFactory NewRabbitConnectionFactory()
+        private static RC.ConnectionFactory NewRabbitConnectionFactory()
         {
-            var connectionFactory = new ConnectionFactory
+            var connectionFactory = new RC.ConnectionFactory
             {
                 AutomaticRecoveryEnabled = false
             };
@@ -240,7 +240,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             set
             {
-                // TODO: Check mode
                 if (value < 1)
                 {
                     throw new ArgumentException(nameof(ConnectionLimit));
@@ -365,7 +364,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public void ChannelShutdownCompleted(object sender, ShutdownEventArgs args)
+        public void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args)
         {
             _closeExceptionLogger.Log(_logger, "Channel shutdown", args.Cause);
             ChannelListener.OnShutDown(args);
@@ -404,7 +403,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            return null; // NOSONAR - never reach here - exceptions
+            return null;
         }
 
         public override void Destroy()
@@ -506,7 +505,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         #region Protected
 
-        protected void Reset(LinkedList<IChannelProxy> channels, LinkedList<IChannelProxy> txChannels, Dictionary<IModel, IChannelProxy> channelsAwaitingAcks)
+        protected void Reset(LinkedList<IChannelProxy> channels, LinkedList<IChannelProxy> txChannels, Dictionary<RC.IModel, IChannelProxy> channelsAwaitingAcks)
         {
             _active = false;
             CloseAndClear(channels);
@@ -569,7 +568,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private void PutConnectionName(IDictionary<string, object> props, IConnectionProxy connection, string keySuffix)
         {
-            var targetConnection = connection.TargetConnection; // NOSONAR (close())
+            var targetConnection = connection.TargetConnection;
             if (targetConnection != null)
             {
                 var del = targetConnection.Connection;
@@ -586,7 +585,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         private void ConfigureRabbitConnectionFactory(RabbitOptions options)
         {
-            var factory = _rabbitConnectionFactory as ConnectionFactory;
+            var factory = _rabbitConnectionFactory as RC.ConnectionFactory;
             var host = options.DetermineHost();
             if (host != null)
             {
@@ -618,23 +617,34 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 factory.RequestedHeartbeat = asShortSeconds;
             }
 
-            if (options.Ssl.Enabled)
+            if (options.DetermineSslEnabled())
             {
                 factory.Ssl.Enabled = true;
 
-                // TODO: More
-                // map.from(ssl::getAlgorithm).whenNonNull().to(factory::setSslAlgorithm);
-                // map.from(ssl::getKeyStoreType).to(factory::setKeyStoreType);
-                // map.from(ssl::getKeyStore).to(factory::setKeyStore);
-                // map.from(ssl::getKeyStorePassword).to(factory::setKeyStorePassphrase);
-                // map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
-                // map.from(ssl::getTrustStore).to(factory::setTrustStore);
-                // map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
-                // map.from(ssl::isValidateServerCertificate).to((validate)->factory
-                //        .setSkipServerCertificateValidation(!validate));
-                // map.from(ssl::getVerifyHostname)
-                //        .to(factory::setEnableHostnameVerification);
-                // setUpSSL(); from FactoryBean
+                if (!options.Ssl.ValidateServerCertificate)
+                {
+                    factory.Ssl.AcceptablePolicyErrors = System.Net.Security.SslPolicyErrors.RemoteCertificateNotAvailable
+                        | System.Net.Security.SslPolicyErrors.RemoteCertificateChainErrors;
+                }
+
+                if (!options.Ssl.VerifyHostname)
+                {
+                    factory.Ssl.AcceptablePolicyErrors = System.Net.Security.SslPolicyErrors.RemoteCertificateNameMismatch;
+                }
+                else
+                {
+                    factory.Ssl.ServerName = options.Ssl.ServerName;
+                }
+
+                if (!string.IsNullOrEmpty(options.Ssl.CertPath))
+                {
+                    factory.Ssl.CertPath = options.Ssl.CertPath;
+                }
+
+                if (!string.IsNullOrEmpty(options.Ssl.CertPassphrase))
+                {
+                    factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
+                }
             }
 
             if (options.ConnectionTimeout.HasValue)
@@ -644,7 +654,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        private IModel GetChannel(ChannelCachingConnectionProxy connection, bool transactional)
+        private RC.IModel GetChannel(ChannelCachingConnectionProxy connection, bool transactional)
         {
             SemaphoreSlim permits = null;
             if (ChannelCheckoutTimeout > 0)
@@ -812,7 +822,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        private IModel CreateBareChannel(ChannelCachingConnectionProxy connection, bool transactional)
+        private RC.IModel CreateBareChannel(ChannelCachingConnectionProxy connection, bool transactional)
         {
             if (CacheMode == CachingMode.CHANNEL)
             {
@@ -851,10 +861,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 return DoCreateBareChannel(connection, transactional);
             }
 
-            return null; // NOSONAR doCreate will throw an exception
+            return null;
         }
 
-        private IModel DoCreateBareChannel(ChannelCachingConnectionProxy conn, bool transactional)
+        private RC.IModel DoCreateBareChannel(ChannelCachingConnectionProxy conn, bool transactional)
         {
             var channel = conn.CreateBareChannel(transactional);
             if (!ConfirmType.NONE.Equals(_confirmType))
@@ -876,11 +886,10 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             if (channel != null)
             {
-                // channel.AddShutdownListener(this);
                 channel.ModelShutdown += ChannelShutdownCompleted;
             }
 
-            return channel; // NOSONAR - Simple connection throws exception
+            return channel;
         }
 
         private long CurrentTimeMillis()
@@ -1030,7 +1039,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             public CachedPublisherCallbackChannelProxy(
                 CachingConnectionFactory factory,
                 ChannelCachingConnectionProxy connection,
-                IModel target,
+                RC.IModel target,
                 LinkedList<IChannelProxy> channelList,
                 bool transactional,
                 ILogger logger)
@@ -1040,7 +1049,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             #region IPublisherCallbackChannel
 
-            public IModel Channel
+            public RC.IModel Channel
             {
                 get
                 {
@@ -1073,7 +1082,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 PublisherCallbackChannel.AddPendingConfirm(listener, sequence, pendingConfirm);
             }
 
-            public void SetAfterAckCallback(Action<IModel> callback)
+            public void SetAfterAckCallback(Action<RC.IModel> callback)
             {
                 PublisherCallbackChannel.SetAfterAckCallback(callback);
             }
@@ -1122,13 +1131,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             protected readonly bool _confirmSelected;
             protected readonly bool _publisherConfirms;
             protected readonly ILogger _logger;
-            protected IModel _target;
+            protected RC.IModel _target;
             protected bool _txStarted;
 
             public CachedChannelProxy(
                 CachingConnectionFactory factory,
                 ChannelCachingConnectionProxy connection,
-                IModel target,
+                RC.IModel target,
                 LinkedList<IChannelProxy> channelList,
                 bool transactional,
                 ILogger logger)
@@ -1146,7 +1155,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             #region IChannelProxy
 
-            public IModel TargetChannel => _target;
+            public RC.IModel TargetChannel => _target;
 
             public bool IsTransactional => _transactional;
 
@@ -1172,7 +1181,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public ShutdownEventArgs CloseReason
+            public RC.ShutdownEventArgs CloseReason
             {
                 get
                 {
@@ -1189,7 +1198,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public IBasicConsumer DefaultConsumer
+            public RC.IBasicConsumer DefaultConsumer
             {
                 get
                 {
@@ -1470,7 +1479,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public event EventHandler<ShutdownEventArgs> ModelShutdown
+            public event EventHandler<RC.ShutdownEventArgs> ModelShutdown
             {
                 add
                 {
@@ -1566,7 +1575,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, IBasicConsumer consumer)
+            public string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer consumer)
             {
                 try
                 {
@@ -1580,7 +1589,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public BasicGetResult BasicGet(string queue, bool autoAck)
+            public RC.BasicGetResult BasicGet(string queue, bool autoAck)
             {
                 try
                 {
@@ -1617,7 +1626,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public void BasicPublish(string exchange, string routingKey, bool mandatory, IBasicProperties basicProperties, byte[] body)
+            public void BasicPublish(string exchange, string routingKey, bool mandatory, RC.IBasicProperties basicProperties, byte[] body)
             {
                 try
                 {
@@ -1738,7 +1747,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public IBasicProperties CreateBasicProperties()
+            public RC.IBasicProperties CreateBasicProperties()
             {
                 try
                 {
@@ -1752,7 +1761,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public IBasicPublishBatch CreateBasicPublishBatch()
+            public RC.IBasicPublishBatch CreateBasicPublishBatch()
             {
                 try
                 {
@@ -1934,7 +1943,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
+            public RC.QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
             {
                 try
                 {
@@ -1962,7 +1971,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public QueueDeclareOk QueueDeclarePassive(string queue)
+            public RC.QueueDeclareOk QueueDeclarePassive(string queue)
             {
                 try
                 {
@@ -2465,7 +2474,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         internal class ChannelCachingConnectionProxy : IConnectionProxy
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
         {
-            internal readonly Dictionary<IModel, IChannelProxy> _channelsAwaitingAcks = new Dictionary<IModel, IChannelProxy>();
+            internal readonly Dictionary<RC.IModel, IChannelProxy> _channelsAwaitingAcks = new Dictionary<RC.IModel, IChannelProxy>();
             internal int _closeNotified;
             private readonly CachingConnectionFactory _factory;
             private readonly ILogger _logger;
@@ -2479,12 +2488,12 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             internal IConnection Target { get; set; }
 
-            public IModel CreateChannel(bool transactional = false)
+            public RC.IModel CreateChannel(bool transactional = false)
             {
                 return _factory.GetChannel(this, transactional);
             }
 
-            public IModel CreateBareChannel(bool transactional)
+            public RC.IModel CreateBareChannel(bool transactional)
             {
                 if (Target == null)
                 {
@@ -2580,7 +2589,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
             public IConnection TargetConnection => Target;
 
-            public RabbitMQ.Client.IConnection Connection
+            public RC.IConnection Connection
             {
                 get { return Target.Connection; }
             }

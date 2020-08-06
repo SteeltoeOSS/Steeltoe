@@ -5,14 +5,14 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Listener.Support;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -22,9 +22,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Channels;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class BlockingQueueConsumer
     {
@@ -146,7 +146,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public AcknowledgeMode AcknowledgeMode { get; }
 
-        public R.IModel Channel { get; internal set; }
+        public RC.IModel Channel { get; internal set; }
 
         public bool Exclusive { get; }
 
@@ -158,7 +158,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public Dictionary<string, object> ConsumerArgs { get; } = new Dictionary<string, object>();
 
-        public R.ShutdownEventArgs Shutdown { get; private set; }
+        public RC.ShutdownEventArgs Shutdown { get; private set; }
 
         public HashSet<ulong> DeliveryTags { get; internal set; } = new HashSet<ulong>();
 
@@ -355,9 +355,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     + ", acknowledgeMode=" + AcknowledgeMode + " local queue size=" + Queue.Count;
         }
 
-        internal List<R.DefaultBasicConsumer> CurrentConsumers()
+        internal List<RC.DefaultBasicConsumer> CurrentConsumers()
         {
-            return Consumers.Values.ToList<R.DefaultBasicConsumer>();
+            return Consumers.Values.ToList<RC.DefaultBasicConsumer>();
         }
 
         protected bool HasDelivery => !(Queue.Count == 0);
@@ -530,7 +530,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     {
                         Channel.QueueDeclarePassive(queueName);
                     }
-                    catch (R.Exceptions.WireFormattingException e)
+                    catch (RC.Exceptions.WireFormattingException e)
                     {
                         try
                         {
@@ -546,7 +546,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                         throw new FatalListenerStartupException("Illegal Argument on Queue Declaration", e);
                     }
                 }
-                catch (R.Exceptions.RabbitMQClientException e)
+                catch (RC.Exceptions.RabbitMQClientException e)
                 {
                     Logger?.LogWarning("Failed to declare queue: {name} ", queueName);
                     if (!Channel.IsOpen)
@@ -582,7 +582,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                     {
                         bool available = true;
                         IConnection connection = null;
-                        R.IModel channelForCheck = null;
+                        RC.IModel channelForCheck = null;
                         try
                         {
                             channelForCheck = ConnectionFactory.CreateConnection().CreateChannel(false);
@@ -673,9 +673,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return message;
         }
 
-        private class InternalConsumer : R.DefaultBasicConsumer
+        private class InternalConsumer : RC.DefaultBasicConsumer
         {
-            public InternalConsumer(BlockingQueueConsumer consumer, R.IModel channel, string queue, ILogger<InternalConsumer> logger = null)
+            public InternalConsumer(BlockingQueueConsumer consumer, RC.IModel channel, string queue, ILogger<InternalConsumer> logger = null)
                 : base(channel)
             {
                 Consumer = consumer;
@@ -703,7 +703,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 // }
             }
 
-            public override void HandleModelShutdown(object model, R.ShutdownEventArgs reason)
+            public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
             {
                 base.HandleModelShutdown(model, reason);
 
@@ -733,7 +733,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 Canceled = true;
             }
 
-            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, R.IBasicProperties properties, byte[] body)
+            public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
             {
                 Logger?.LogDebug("Storing delivery for consumer tag: {tag} with deliveryTag: {deliveryTag} for consumer: {consumer}", ConsumerTag, deliveryTag, ToString());
                 try

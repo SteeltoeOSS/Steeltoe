@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
-using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     [Trait("Category", "Integration")]
     public class CachingConnectionFactoryIntegrationTests : IDisposable
@@ -84,7 +84,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 connectionFactory.CreateConnection(),
                 connectionFactory.CreateConnection()
             };
-            var channels = new List<IModel>
+            var channels = new List<RC.IModel>
             {
                 connections[0].CreateChannel(false)
             };
@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             var allocatedConnections = connectionFactory._allocatedConnections;
             Assert.Equal(2, allocatedConnections.Count);
             Assert.NotSame(connections[0], connections[1]);
-            var channels = new List<IModel>();
+            var channels = new List<RC.IModel>();
             for (var i = 0; i < 5; i++)
             {
                 channels.Add(connections[0].CreateChannel(false));
@@ -286,8 +286,8 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                         latch.Signal();
                         throw new ShutdownSignalException(args);
                     };
-                    var tag = channel.BasicConsume(route, false, new DefaultBasicConsumer(channel));
-                    var result = channel.BasicConsume(route, false, tag, new DefaultBasicConsumer(channel));
+                    var tag = RC.IModelExensions.BasicConsume(channel, route, false, new RC.DefaultBasicConsumer(channel));
+                    var result = RC.IModelExensions.BasicConsume(channel, route, false, tag, new RC.DefaultBasicConsumer(channel));
                     throw new Exception("Expected Exception, got: " + result);
                 });
                 throw new Exception("Expected AmqpIOException");

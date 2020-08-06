@@ -4,11 +4,11 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IRabbitListenerEndpoint
     {

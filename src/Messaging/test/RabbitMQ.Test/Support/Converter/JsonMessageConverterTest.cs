@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Messaging.Converter;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {
     public class JsonMessageConverterTest
     {

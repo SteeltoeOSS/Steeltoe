@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public interface IExchange : IDeclarable, IServiceNameAware
     {

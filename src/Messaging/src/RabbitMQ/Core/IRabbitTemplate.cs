@@ -2,21 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Connection;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public interface IRabbitTemplate : IServiceNameAware
     {
         Connection.IConnectionFactory ConnectionFactory { get; }
 
-        T Execute<T>(Func<IModel, T> channelCallback);
+        T Execute<T>(Func<RC.IModel, T> channelCallback);
 
         T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback)
         {
@@ -65,29 +65,17 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         T ReceiveAndConvert<T>(string queueName, int timeoutMillis);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback, string replyExchange, string replyRoutingKey);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, string replyExchange, string replyRoutingKey);
 
-        bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
 
-        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback)
-            where R : class
-            where S : class;
+        bool ReceiveAndReply<R, S>(string queueName, Func<R, S> callback, Func<IMessage, S, Address> replyToAddressCallback);
 
         IMessage SendAndReceive(string exchange, string routingKey, IMessage message);
 

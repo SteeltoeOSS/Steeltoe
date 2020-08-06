@@ -6,16 +6,16 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Listener.Support;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +24,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using R = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public abstract class AbstractMessageListenerContainer : IMessageListenerContainer
@@ -147,7 +147,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public virtual IMessageHeadersConverter MessageHeadersConverter { get; set; }
 
-        public virtual IRabbitAdmin AmqpAdmin { get; set; }
+        public virtual IRabbitAdmin RabbitAdmin { get; set; }
 
         public virtual bool MissingQueuesFatal { get; set; } = true;
 
@@ -605,7 +605,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
         {
             lock (_lock)
             {
-                var admin = AmqpAdmin;
+                var admin = RabbitAdmin;
                 if (!IsLazyLoad && admin != null && AutoDeclare)
                 {
                     try
@@ -897,12 +897,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual void ConfigureAdminIfNeeded()
         {
-            if (AmqpAdmin == null && ApplicationContext != null)
+            if (RabbitAdmin == null && ApplicationContext != null)
             {
                 var admins = ApplicationContext.GetServices<IRabbitAdmin>();
                 if (admins.Count() == 1)
                 {
-                    AmqpAdmin = admins.Single();
+                    RabbitAdmin = admins.Single();
                 }
                 else
                 {
@@ -932,11 +932,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         protected virtual void CheckMismatchedQueues()
         {
-            if (MismatchedQueuesFatal && AmqpAdmin != null)
+            if (MismatchedQueuesFatal && RabbitAdmin != null)
             {
                 try
                 {
-                    AmqpAdmin.Initialize();
+                    RabbitAdmin.Initialize();
                 }
                 catch (RabbitConnectException e)
                 {
@@ -1045,7 +1045,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             return Queues.ToDictionary((q) => q.ActualName);
         }
 
-        protected virtual bool CauseChainHasImmediateAcknowledgeAmqpException(Exception exception)
+        protected virtual bool CauseChainHasImmediateAcknowledgeRabbitException(Exception exception)
         {
             // if (ex instanceof Error) {
             //    return false;

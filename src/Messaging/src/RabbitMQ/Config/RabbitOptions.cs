@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Collections.Generic;
 using System.Security.Authentication;
-using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class RabbitOptions
     {
@@ -140,6 +140,18 @@ namespace Steeltoe.Messaging.Rabbit.Config
             return address.VirtualHost ?? VirtualHost;
         }
 
+        public bool DetermineSslEnabled()
+        {
+            var parsed = ParsedAddresses;
+            if (parsed.Count == 0)
+            {
+                return Ssl.Enabled;
+            }
+
+            var address = parsed[0];
+            return address.SecureConnection != null ? address.SecureConnection.Value : Ssl.Enabled;
+        }
+
         public TimeSpan? RequestedHeartbeat { get; set; }
 
         public bool PublisherConfirms { get; set; }
@@ -162,7 +174,13 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
             public bool VerifyHostname { get; set; } = true;
 
-            public SslProtocols Algorithm { get; set; } = SslProtocols.Tls11;
+            public string CertPath { get; set; }
+
+            public string CertPassphrase { get; set; }
+
+            public string ServerName { get; set; }
+
+            public SslProtocols Algorithm { get; set; } = SslProtocols.Tls13 | SslProtocols.Tls12;
         }
 
         public class CacheOptions
@@ -252,6 +270,7 @@ namespace Steeltoe.Messaging.Rabbit.Config
         private class Address
         {
             private const string PREFIX_AMQP = "amqp://";
+            private const string PREFIX_AMQP_SECURE = "amqps://";
 
             public Address(string input)
             {
@@ -272,11 +291,19 @@ namespace Steeltoe.Messaging.Rabbit.Config
 
             public string VirtualHost { get; private set; }
 
+            public bool? SecureConnection { get; private set; }
+
             private string TrimPrefix(string input)
             {
                 if (input.StartsWith(PREFIX_AMQP))
                 {
                     input = input.Substring(PREFIX_AMQP.Length);
+                    SecureConnection = false;
+                }
+                else if (input.StartsWith(PREFIX_AMQP_SECURE))
+                {
+                    input = input.Substring(PREFIX_AMQP_SECURE.Length);
+                    SecureConnection = true;
                 }
 
                 return input;

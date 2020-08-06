@@ -49,6 +49,12 @@ namespace Steeltoe.Common.Transaction
             }
         }
 
+        public static void TriggerAfterCompletion(int completionStatus)
+        {
+            var synchronizations = TransactionSynchronizationManager.GetSynchronizations();
+            InvokeAfterCompletion(synchronizations, completionStatus);
+        }
+
         public static void InvokeAfterCompletion(List<ITransactionSynchronization> synchronizations, int completionStatus, ILogger logger = null)
         {
             if (synchronizations != null)

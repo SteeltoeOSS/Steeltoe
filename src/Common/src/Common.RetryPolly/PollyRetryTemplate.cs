@@ -63,6 +63,7 @@ namespace Steeltoe.Common.Retry
             var context = new Context();
 
             context.Add(RETRYCONTEXT_KEY, retryContext);
+            RetrySynchronizationManager.Register(retryContext);
             if (recoveryCallback != null)
             {
                 retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);
@@ -86,6 +87,7 @@ namespace Steeltoe.Common.Retry
                 }, context);
 
             CallListenerClose(retryContext, retryContext.LastException);
+            RetrySynchronizationManager.Clear();
             return result;
         }
 
@@ -101,6 +103,7 @@ namespace Steeltoe.Common.Retry
             var context = new Context();
 
             context.Add(RETRYCONTEXT_KEY, retryContext);
+            RetrySynchronizationManager.Register(retryContext);
             if (recoveryCallback != null)
             {
                 retryContext.SetAttribute(RECOVERY_CALLBACK_KEY, recoveryCallback);
@@ -119,6 +122,7 @@ namespace Steeltoe.Common.Retry
             }, context);
 
             CallListenerClose(retryContext, retryContext.LastException);
+            RetrySynchronizationManager.Clear();
         }
 
         private Policy<T> BuildPolicy<T>()
@@ -165,7 +169,9 @@ namespace Steeltoe.Common.Retry
             }
             else
             {
-                return new RetryContext();
+                var result = new RetryContext();
+                RetrySynchronizationManager.Register(result);
+                return result;
             }
         }
 

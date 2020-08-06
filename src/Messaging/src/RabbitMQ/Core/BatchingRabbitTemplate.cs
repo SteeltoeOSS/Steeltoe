@@ -5,14 +5,14 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class BatchingRabbitTemplate : RabbitTemplate
     {
@@ -34,11 +34,32 @@ namespace Steeltoe.Messaging.Rabbit.Core
         }
 
         public BatchingRabbitTemplate(
+            RabbitOptions options,
+            Connection.IConnectionFactory connectionFactory,
+            ISmartMessageConverter messageConverter,
+            IBatchingStrategy batchingStrategy,
+            ILogger logger = null)
+            : base(options, connectionFactory, messageConverter, logger)
+        {
+            _batchingStrategy = batchingStrategy;
+        }
+
+        public BatchingRabbitTemplate(
             IOptionsMonitor<RabbitOptions> optionsMonitor,
             Connection.IConnectionFactory connectionFactory,
             IBatchingStrategy batchingStrategy,
             ILogger logger = null)
             : base(optionsMonitor, connectionFactory, logger)
+        {
+            _batchingStrategy = batchingStrategy;
+        }
+
+        public BatchingRabbitTemplate(
+            RabbitOptions options,
+            Connection.IConnectionFactory connectionFactory,
+            IBatchingStrategy batchingStrategy,
+            ILogger logger = null)
+            : base(options, connectionFactory, logger)
         {
             _batchingStrategy = batchingStrategy;
         }

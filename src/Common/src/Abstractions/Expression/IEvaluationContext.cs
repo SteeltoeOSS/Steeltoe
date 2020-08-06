@@ -11,6 +11,6 @@ namespace Steeltoe.Common.Expression
     /// </summary>
     public interface IEvaluationContext
     {
-        ITypeConverter TypeConverter { get; }
+        ITypeConverter TypeConverter { get; set; }
     }
 }

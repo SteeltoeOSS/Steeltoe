@@ -5,10 +5,10 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DefaultExceptionStrategy : IFatalExceptionStrategy
     {

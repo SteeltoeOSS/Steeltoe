@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class SimpleRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
     {

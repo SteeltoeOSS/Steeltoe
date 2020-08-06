@@ -4,11 +4,11 @@
 
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 using System.IO;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public static class RabbitExceptionTranslator
     {

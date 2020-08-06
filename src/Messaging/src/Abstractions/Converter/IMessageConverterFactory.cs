@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.Converter
         /// <summary>
         /// Gets a single composite message converter for all registered converters
         /// </summary>
-        IMessageConverter MessageConverterForAllRegistered { get; }
+        ISmartMessageConverter MessageConverterForAllRegistered { get; }
 
         /// <summary>
         /// Gets all the message converters provided by this factory

@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class MessageTest
     {

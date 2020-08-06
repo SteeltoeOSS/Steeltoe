@@ -5,17 +5,17 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Util;
 using System;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     [Trait("Category", "Integration")]
     public class RabbitBindingIntegrationTest : IDisposable
@@ -267,7 +267,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
                 return null;
             }
 
-            return new Rabbit.Support.Converter.SimpleMessageConverter().FromMessage<string>(response);
+            return new RabbitMQ.Support.Converter.SimpleMessageConverter().FromMessage<string>(response);
         }
 
         private BlockingQueueConsumer CreateConsumer(IConnectionFactory connectionFactory)

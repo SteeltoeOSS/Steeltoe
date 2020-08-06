@@ -13,6 +13,8 @@ namespace Steeltoe.Common.Retry
 
         private const string RETRY_COUNT = "RetryContext.RetryCount";
 
+        private const string RETRY_PARENT = "RetryContext.RetryParent";
+
         public Exception LastException
         {
             get
@@ -53,6 +55,28 @@ namespace Steeltoe.Common.Retry
 #pragma warning restore S4275 // Getters and setters should access the expected fields
             {
                 SetAttribute(RETRY_COUNT, value);
+            }
+        }
+
+        public IRetryContext Parent
+        {
+            get
+            {
+                return (IRetryContext)GetAttribute(RETRY_PARENT);
+            }
+
+#pragma warning disable S4275 // Getters and setters should access the expected fields
+            set
+#pragma warning restore S4275 // Getters and setters should access the expected fields
+            {
+                if (value == null && HasAttribute(RETRY_PARENT))
+                {
+                    RemoveAttribute(RETRY_PARENT);
+                }
+                else
+                {
+                    SetAttribute(RETRY_PARENT, value);
+                }
             }
         }
     }

@@ -4,16 +4,17 @@
 
 using RabbitMQ.Client.Impl;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using Xunit;
-using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     [Trait("Category", "Integration")]
     public class ContainerShutDownTest : AbstractTest
@@ -37,7 +38,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
 
             // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
-            var field = typeof(RabbitMQ.Client.Framing.Impl.Connection)
+            var field = typeof(RC.Framing.Impl.Connection)
                 .GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.NotNull(field);
             var channels = (SessionManager)field.GetValue(connection.Target.Connection);

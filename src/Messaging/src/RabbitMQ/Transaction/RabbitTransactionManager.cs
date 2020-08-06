@@ -4,11 +4,11 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Transaction;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Transaction
+namespace Steeltoe.Messaging.RabbitMQ.Transaction
 {
     public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager
     {

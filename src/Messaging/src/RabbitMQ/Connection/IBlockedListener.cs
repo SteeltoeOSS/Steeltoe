@@ -5,9 +5,8 @@
 using RabbitMQ.Client.Events;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
-    // TODO: This is a RabbitMQ type
     public interface IBlockedListener
     {
         void HandleBlocked(object sender, ConnectionBlockedEventArgs args);

@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Order;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 {
     public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor, IOrdered
     {

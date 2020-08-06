@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Services;
 using Steeltoe.Stream.Config;
 using System;
 
@@ -13,13 +14,8 @@ namespace Steeltoe.Stream.Binder
     /// channel adapter, another message channel, etc.
     /// </summary>
     /// TODO:  Figure out Closable/Disposable usage
-    public interface IBinder // : IDisposable
+    public interface IBinder : IServiceNameAware // : IDisposable
     {
-        /// <summary>
-        /// Gets the name of the binder
-        /// </summary>
-        string Name { get; }
-
         /// <summary>
         /// Gets the target type this binder can bind to
         /// </summary>

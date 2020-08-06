@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
 {
     public class QueuesNotAvailableException : FatalListenerStartupException
     {

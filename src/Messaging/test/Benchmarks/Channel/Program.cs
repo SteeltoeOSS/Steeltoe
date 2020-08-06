@@ -44,6 +44,8 @@ public class Program
     {
         public int Count;
 
+        public string ServiceName { get; set; } = nameof(CounterHandler);
+
         public void HandleMessage(IMessage message)
         {
             Count++;
