@@ -104,7 +104,7 @@ namespace Steeltoe.Stream
 
             foreach (var name in names)
             {
-                var dir = currentDirectory.Replace("Base.Test", name);
+                var dir = currentDirectory.Replace("StreamBase.Test", name);
                 results.Add(dir);
             }
 
