@@ -74,7 +74,7 @@ namespace Steeltoe.Integration.Transformer
             }
             else
             {
-                throw new MessageConversionException("Failed to convert Message content, message missing byte[] or string:" + payload.GetType());
+                throw new MessageConversionException("Failed to convert Message content, message missing byte[] or string: " + payload.GetType());
             }
 
             if (removeHeaders)
