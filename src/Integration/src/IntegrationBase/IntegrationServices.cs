@@ -36,11 +36,7 @@ namespace Steeltoe.Integration
             {
                 if (_messageBuilderFactory == null)
                 {
-                    _messageBuilderFactory = _context?.GetService<IMessageBuilderFactory>();
-                    if (_messageBuilderFactory == null)
-                    {
-                        _messageBuilderFactory = new DefaultMessageBuilderFactory();
-                    }
+                    _messageBuilderFactory = _context?.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
                 }
 
                 return _messageBuilderFactory;
