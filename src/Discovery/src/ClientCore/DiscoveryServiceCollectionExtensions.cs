@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -170,6 +171,11 @@ namespace Steeltoe.Discovery.Client
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
             });
+            services.TryAddSingleton(serviceProvider =>
+            {
+                var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
+                return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
+            });
         }
 
         private static void AddConsulServices(IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle)
@@ -218,6 +224,11 @@ namespace Steeltoe.Discovery.Client
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+            });
+            services.TryAddSingleton(serviceProvider =>
+            {
+                var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
+                return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
             });
         }
 
