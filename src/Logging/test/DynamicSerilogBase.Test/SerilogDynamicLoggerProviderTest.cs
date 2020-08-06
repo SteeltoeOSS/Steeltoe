@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicLoggerProviderTest
     {
