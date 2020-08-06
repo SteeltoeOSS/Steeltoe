@@ -11,6 +11,8 @@ namespace Steeltoe.Stream.Config
     /// </summary>
     public interface IConsumerOptions
     {
+        string BindingName { get; }
+
         bool AutoStartup { get; }
 
         int Concurrency { get; }
@@ -20,6 +22,8 @@ namespace Steeltoe.Stream.Config
         int InstanceCount { get; }
 
         int InstanceIndex { get; }
+
+        List<int> InstanceIndexList { get; }
 
         int MaxAttempts { get; }
 
@@ -38,5 +42,7 @@ namespace Steeltoe.Stream.Config
         bool UseNativeDecoding { get; }
 
         bool Multiplex { get; }
+
+        IConsumerOptions Clone();
     }
 }

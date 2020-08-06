@@ -6,13 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.PostProcessor;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +22,7 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     [Trait("Category", "Integration")]
     public class BatchingRabbitTemplateTest : IDisposable

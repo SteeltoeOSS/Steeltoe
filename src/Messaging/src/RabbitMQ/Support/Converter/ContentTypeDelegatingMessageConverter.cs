@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {
     public class ContentTypeDelegatingMessageConverter : ISmartMessageConverter
     {

@@ -5,7 +5,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class Address
     {

@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.TestBinder
 
         public IMessage LastError { get; private set; }
 
-        public override string Name => "testbinder";
+        public override string ServiceName { get; set; } = "testbinder";
 
         public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
 
@@ -86,9 +86,12 @@ namespace Steeltoe.Stream.TestBinder
             public ErrorMessageHandler(TestChannelBinder binder)
             {
                 Binder = binder;
+                ServiceName = GetType().Name + "@" + GetHashCode();
             }
 
             public TestChannelBinder Binder { get; }
+
+            public virtual string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {
@@ -109,10 +112,17 @@ namespace Steeltoe.Stream.TestBinder
 
         public class TestMessageListeningContainer : IMessageHandler
         {
+            public TestMessageListeningContainer()
+            {
+                ServiceName = GetType().Name + "@" + GetHashCode();
+            }
+
             public void HandleMessage(IMessage message)
             {
                 MessageListener.Invoke(message);
             }
+
+            public virtual string ServiceName { get; set; }
 
             public Action<IMessage> MessageListener { get; set; }
         }

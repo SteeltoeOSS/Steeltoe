@@ -6,7 +6,7 @@ using Steeltoe.Common.Services;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public abstract class AbstractExchange : AbstractDeclarable, IExchange, IServiceNameAware
     {

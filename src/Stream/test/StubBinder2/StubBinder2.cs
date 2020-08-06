@@ -12,7 +12,7 @@ namespace Steeltoe.Stream.StubBinder2
     {
         public const string BINDER_NAME = "binder2";
 
-        public string Name { get; set; } = BINDER_NAME;
+        public string ServiceName { get; set; } = BINDER_NAME;
 
         public Type TargetType => typeof(object);
 

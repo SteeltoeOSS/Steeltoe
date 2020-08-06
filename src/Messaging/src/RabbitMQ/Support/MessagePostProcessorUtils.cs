@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Order;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public static class MessagePostProcessorUtils
     {

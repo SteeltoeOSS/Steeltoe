@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to Common
     public abstract class AbstractPlatformTransactionManager : IPlatformTransactionManager
     {
         public const int SYNCHRONIZATION_ALWAYS = 0;

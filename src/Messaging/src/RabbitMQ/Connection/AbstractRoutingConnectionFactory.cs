@@ -6,7 +6,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRoutingConnectionFactory

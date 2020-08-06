@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Config;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using System;
 using System.Collections.Generic;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class SingleConnectionFactory : AbstractConnectionFactory
     {
@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         }
 
         public SingleConnectionFactory(string hostname, int port, ILoggerFactory loggerFactory = null)
-            : base(new RabbitMQ.Client.ConnectionFactory(), loggerFactory)
+            : base(new RC.ConnectionFactory(), loggerFactory)
         {
             if (string.IsNullOrEmpty(hostname))
             {
@@ -45,13 +45,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         }
 
         public SingleConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
-            : base(new RabbitMQ.Client.ConnectionFactory(), loggerFactory)
+            : base(new RC.ConnectionFactory(), loggerFactory)
         {
             Uri = uri;
             ServiceName = DEFAULT_SERVICE_NAME;
         }
 
-        public SingleConnectionFactory(RabbitMQ.Client.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+        public SingleConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
             : base(rabbitConnectionFactory, loggerFactory)
         {
             ServiceName = DEFAULT_SERVICE_NAME;
@@ -136,7 +136,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 Target = target;
             }
 
-            public IModel CreateChannel(bool transactional)
+            public RC.IModel CreateChannel(bool transactional)
             {
                 if (!IsOpen)
                 {
@@ -205,7 +205,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 }
             }
 
-            public RabbitMQ.Client.IConnection Connection
+            public RC.IConnection Connection
             {
                 get
                 {

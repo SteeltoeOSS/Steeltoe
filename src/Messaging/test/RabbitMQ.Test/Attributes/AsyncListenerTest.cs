@@ -7,21 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
-using static Steeltoe.Messaging.Rabbit.Attributes.AsyncListenerTest;
+using static Steeltoe.Messaging.RabbitMQ.Attributes.AsyncListenerTest;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     [Trait("Category", "Integration")]
     public class AsyncListenerTest : IClassFixture<StartupFixture>

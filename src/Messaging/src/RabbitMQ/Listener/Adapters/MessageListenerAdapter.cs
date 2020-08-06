@@ -3,18 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             return previous;
         }
 
-        public override void OnMessage(IMessage message, IModel channel)
+        public override void OnMessage(IMessage message, RC.IModel channel)
         {
             // Check whether the delegate is a IMessageListener impl itself.
             // In that case, the adapter will simply act as a pass-through.
@@ -111,7 +111,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        protected virtual object[] BuildListenerArguments(object extractedMessage, IModel channel, IMessage message)
+        protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
         {
             return BuildListenerArguments(extractedMessage);
         }

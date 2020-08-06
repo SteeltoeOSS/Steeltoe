@@ -6,7 +6,6 @@ using System;
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to common
     public abstract class ResourceHolderSupport : IResourceHolder
     {
         private int _referenceCount = 0;

@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Extensions
+namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
     public static class MessageHeaderExtensions
     {
@@ -96,7 +96,7 @@ namespace Steeltoe.Messaging.Rabbit.Extensions
 
         public static Type InferredArgumentType(this IMessageHeaders headers)
         {
-            return headers.Get<Type>(RabbitMessageHeaders.INFERRED_ARGUMENT_TYPE);
+            return headers.Get<Type>(MessageHeaders.INFERRED_ARGUMENT_TYPE);
         }
 
         public static uint? MessageCount(this IMessageHeaders headers)

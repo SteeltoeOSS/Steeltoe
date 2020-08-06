@@ -6,13 +6,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Rabbit.Host
+namespace Steeltoe.Messaging.RabbitMQ.Host
 {
     public class RabbitHostService : IHostedService
     {

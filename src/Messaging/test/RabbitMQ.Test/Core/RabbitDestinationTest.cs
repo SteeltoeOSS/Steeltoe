@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class RabbitDestinationTest
     {

@@ -30,7 +30,16 @@ namespace Steeltoe.Common.Transaction
 
         public bool RollbackOn(Exception exception)
         {
-            return false; // TODO: Not sure on this??
+            if (exception is OutOfMemoryException ||
+                exception is InvalidProgramException ||
+                exception is AccessViolationException ||
+                exception is StackOverflowException ||
+                exception is BadImageFormatException)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         protected StringBuilder GetAttributeDescription()

@@ -5,21 +5,21 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Host;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Host;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     [Trait("Category", "Integration")]
     public class ContainerInitializationTest : AbstractTest, IDisposable
@@ -201,7 +201,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
             services.TryAddSingleton<Connection.IConnectionFactory, CachingConnectionFactory>();
-            services.TryAddSingleton<Converter.ISmartMessageConverter, Rabbit.Support.Converter.SimpleMessageConverter>();
+            services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
             return services;
         }
 
@@ -218,11 +218,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 this.preventContainerRedeclareQueueLatch = preventContainerRedeclareQueueLatch;
             }
 
-            public void OnCreate(IModel channel, bool transactional)
+            public void OnCreate(RC.IModel channel, bool transactional)
             {
             }
 
-            public void OnShutDown(ShutdownEventArgs args)
+            public void OnShutDown(RC.ShutdownEventArgs args)
             {
                 if (RabbitUtils.IsNormalChannelClose(args))
                 {

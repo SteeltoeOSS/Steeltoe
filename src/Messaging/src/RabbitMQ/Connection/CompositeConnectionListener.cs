@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using System.Collections.Generic;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CompositeConnectionListener : IConnectionListener
     {
@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public void OnShutDown(ShutdownEventArgs args)
+        public void OnShutDown(RC.ShutdownEventArgs args)
         {
             _logger?.LogDebug("OnShutDown");
             var listeners = _connectionListeners;

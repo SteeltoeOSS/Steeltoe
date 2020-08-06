@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Xunit;
-using static Steeltoe.Messaging.Rabbit.Connection.CachingConnectionFactory;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     [Trait("Category", "Integration")]
     public class CachePropertiesTest

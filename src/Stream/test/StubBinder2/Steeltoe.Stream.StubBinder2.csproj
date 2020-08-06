@@ -19,7 +19,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Base\Steeltoe.Stream.Base.csproj" />
+    <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
   </ItemGroup>
 
 </Project>

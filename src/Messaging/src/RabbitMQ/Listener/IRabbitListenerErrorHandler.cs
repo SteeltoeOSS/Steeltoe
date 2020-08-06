@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Services;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IRabbitListenerErrorHandler : IServiceNameAware
     {

@@ -3,26 +3,26 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
 using System;
 using Xunit;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class PublisherCallbackChannelTest
     {
         [Fact]
         public void ShutdownWhileCreate()
         {
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             var npe = new AtomicBoolean();
-            mockChannel.SetupAdd((m) => m.ModelShutdown += It.IsAny<EventHandler<ShutdownEventArgs>>())
-                .Callback<EventHandler<ShutdownEventArgs>>((handler) =>
+            mockChannel.SetupAdd((m) => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
+                .Callback<EventHandler<RC.ShutdownEventArgs>>((handler) =>
                 {
                     try
                     {
-                        handler.Invoke(null, new ShutdownEventArgs(ShutdownInitiator.Peer, (ushort)RabbitUtils.NotFound, string.Empty));
+                        handler.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, (ushort)RabbitUtils.NotFound, string.Empty));
                     }
                     catch (NullReferenceException)
                     {

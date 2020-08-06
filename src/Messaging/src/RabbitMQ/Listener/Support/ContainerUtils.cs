@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Messaging.Rabbit.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Support
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Support
 {
     public static class ContainerUtils
     {

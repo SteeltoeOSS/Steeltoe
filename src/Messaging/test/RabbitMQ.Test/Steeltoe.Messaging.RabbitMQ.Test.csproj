@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Steeltoe.Messaging.Rabbit</RootNamespace>
+    <RootNamespace>Steeltoe.Messaging.RabbitMQ</RootNamespace>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />

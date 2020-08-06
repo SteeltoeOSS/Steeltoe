@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Listener;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class RoutingConnectionFactoryTest
     {
@@ -111,9 +111,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             var connection1 = new Mock<IConnection>();
             var connection2 = new Mock<IConnection>();
             var defautConnection = new Mock<IConnection>();
-            var channel1 = new Mock<IModel>();
-            var channel2 = new Mock<IModel>();
-            var defaultChannel = new Mock<IModel>();
+            var channel1 = new Mock<RC.IModel>();
+            var channel2 = new Mock<RC.IModel>();
+            var defaultChannel = new Mock<RC.IModel>();
 
             connectionFactory1.SetupSequence((f) => f.CreateConnection())
                 .Returns(connection1.Object);
@@ -188,7 +188,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var connectionFactory1 = new Mock<IConnectionFactory>();
             var connection1 = new Mock<IConnection>();
-            var channel1 = new Mock<IModel>();
+            var channel1 = new Mock<RC.IModel>();
 
             var factories = new Dictionary<object, IConnectionFactory>
             {
@@ -234,7 +234,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         {
             var connectionFactory1 = new Mock<IConnectionFactory>();
             var connection1 = new Mock<IConnection>();
-            var channel1 = new Mock<IModel>();
+            var channel1 = new Mock<RC.IModel>();
 
             var factories = new Dictionary<object, IConnectionFactory>
             {

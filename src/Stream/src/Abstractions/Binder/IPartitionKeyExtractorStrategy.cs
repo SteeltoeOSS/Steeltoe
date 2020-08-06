@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Services;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.Binder
@@ -9,13 +10,8 @@ namespace Steeltoe.Stream.Binder
     /// <summary>
     /// Strategy for extracting a partition key from a Message.
     /// </summary>
-    public interface IPartitionKeyExtractorStrategy
+    public interface IPartitionKeyExtractorStrategy : IServiceNameAware
     {
-        /// <summary>
-        /// Gets the name of the strategy
-        /// </summary>
-        string Name { get; }
-
         /// <summary>
         /// Extract the partition key from the incoming message
         /// </summary>

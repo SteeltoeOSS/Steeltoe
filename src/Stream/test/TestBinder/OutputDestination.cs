@@ -42,9 +42,12 @@ namespace Steeltoe.Stream.TestBinder
         {
             private readonly OutputDestination _outputDestination;
 
+            public virtual string ServiceName { get; set; }
+
             public MessageHandler(OutputDestination thiz)
             {
                 _outputDestination = thiz;
+                ServiceName = GetType().Name + "@" + GetHashCode();
             }
 
             public void HandleMessage(IMessage message)

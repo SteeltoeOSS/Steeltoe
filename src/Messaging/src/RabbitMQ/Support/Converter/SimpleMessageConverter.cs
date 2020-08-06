@@ -5,13 +5,13 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.Support;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {
     public class SimpleMessageConverter : AbstractMessageConverter
     {

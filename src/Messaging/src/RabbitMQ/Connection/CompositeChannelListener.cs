@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using System.Collections.Generic;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CompositeChannelListener : IChannelListener
     {
@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             _logger = logger;
         }
 
-        public void OnCreate(IModel channel, bool transactional)
+        public void OnCreate(RC.IModel channel, bool transactional)
         {
             _logger?.LogDebug("OnCreate");
             var listeners = _channelListeners;
@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public void OnShutDown(ShutdownEventArgs @event)
+        public void OnShutDown(RC.ShutdownEventArgs @event)
         {
             _logger?.LogDebug("OnShutDown");
             var listeners = _channelListeners;

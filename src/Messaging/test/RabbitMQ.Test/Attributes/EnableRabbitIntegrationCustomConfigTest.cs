@@ -6,28 +6,28 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
-using static Steeltoe.Messaging.Rabbit.Attributes.EnableRabbitIntegrationCustomConfigTest;
+using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationCustomConfigTest;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     [Trait("Category", "Integration")]
     public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStartupFixture>
@@ -332,13 +332,13 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             }
 
             [RabbitListener("test.notconverted.channel")]
-            public string JustChannel(IModel channel)
+            public string JustChannel(RC.IModel channel)
             {
                 return "barAndChannel";
             }
 
             [RabbitListener("test.notconverted.messagechannel")]
-            public string MessageChannel(Foo2 foo2, IMessage message, IModel channel)
+            public string MessageChannel(Foo2 foo2, IMessage message, RC.IModel channel)
             {
                 return foo2 + message.GetType().Name + "AndChannel";
             }

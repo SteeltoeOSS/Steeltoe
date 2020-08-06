@@ -4,23 +4,22 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         [Fact]
         public void TestWithChannelListener()
         {
-            var mockConnectionFactory = new Mock<R.IConnectionFactory>();
-            var mockConnection = new Mock<R.IConnection>();
-            var mockChannel = new Mock<R.IModel>();
+            var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+            var mockConnection = new Mock<RC.IConnection>();
+            var mockChannel = new Mock<RC.IModel>();
 
             mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
             mockConnection.Setup(c => c.IsOpen).Returns(true);
@@ -57,18 +56,18 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 this.called = called;
             }
 
-            public void OnCreate(IModel channel, bool transactional)
+            public void OnCreate(RC.IModel channel, bool transactional)
             {
                 called.IncrementAndGet();
             }
 
-            public void OnShutDown(ShutdownEventArgs args)
+            public void OnShutDown(RC.ShutdownEventArgs args)
             {
                 throw new NotImplementedException();
             }
         }
 
-        protected override AbstractConnectionFactory CreateConnectionFactory(RabbitMQ.Client.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory)
+        protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory)
         {
             var scf = new SingleConnectionFactory(mockConnectionFactory, loggerFactory);
             return scf;

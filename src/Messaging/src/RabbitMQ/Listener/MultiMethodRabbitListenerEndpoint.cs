@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Invocation;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class MultiMethodRabbitListenerEndpoint : MethodRabbitListenerEndpoint
     {

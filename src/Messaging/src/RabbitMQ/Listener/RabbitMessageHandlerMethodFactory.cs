@@ -7,13 +7,13 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
-using Steeltoe.Messaging.Rabbit.Support.Converter;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class RabbitMessageHandlerMethodFactory : DefaultMessageHandlerMethodFactory
     {

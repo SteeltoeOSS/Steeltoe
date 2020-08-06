@@ -2,13 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using Steeltoe.Common.Transaction;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public static class ConnectionFactoryUtils
     {
@@ -22,7 +21,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return GetTransactionalResourceHolder(connectionFactory, synchedLocalTransactionAllowed, false);
         }
 
-        public static bool IsChannelTransactional(R.IModel channel, IConnectionFactory connectionFactory)
+        public static bool IsChannelTransactional(RC.IModel channel, IConnectionFactory connectionFactory)
         {
             if (channel == null || connectionFactory == null)
             {
@@ -75,7 +74,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             return connectionFactory.CreateConnection();
         }
 
-        public static void RegisterDeliveryTag(IConnectionFactory connectionFactory, R.IModel channel, ulong tag)
+        public static void RegisterDeliveryTag(IConnectionFactory connectionFactory, RC.IModel channel, ulong tag)
         {
             if (connectionFactory == null)
             {
@@ -118,7 +117,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
 
             var connection = resourceFactory.GetConnection(resourceHolderToUse);
-            IModel channel;
+            RC.IModel channel;
             try
             {
                 /*
@@ -169,13 +168,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public interface IResourceFactory
         {
-            IModel GetChannel(RabbitResourceHolder holder);
+            RC.IModel GetChannel(RabbitResourceHolder holder);
 
             IConnection GetConnection(RabbitResourceHolder holder);
 
             IConnection CreateConnection2();
 
-            IModel CreateChannel(IConnection connection);
+            RC.IModel CreateChannel(IConnection connection);
 
             bool IsSynchedLocalTransactionAllowed { get; }
         }
@@ -195,7 +194,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 PublisherConnectionIfPossible = publisherConnectionIfPossible;
             }
 
-            public IModel CreateChannel(IConnection connection)
+            public RC.IModel CreateChannel(IConnection connection)
             {
                 return connection.CreateChannel(IsSynchedLocalTransactionAllowed);
             }
@@ -205,7 +204,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 return ConnectionFactoryUtils.CreateConnection(ConnectionFactory, PublisherConnectionIfPossible);
             }
 
-            public IModel GetChannel(RabbitResourceHolder holder)
+            public RC.IModel GetChannel(RabbitResourceHolder holder)
             {
                 return holder.GetChannel();
             }

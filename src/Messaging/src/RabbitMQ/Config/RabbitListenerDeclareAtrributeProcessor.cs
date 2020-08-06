@@ -5,13 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Configuration;
-using Steeltoe.Messaging.Rabbit.Attributes;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public static class RabbitListenerDeclareAtrributeProcessor
     {

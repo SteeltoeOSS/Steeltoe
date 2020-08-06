@@ -7,13 +7,13 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Reflection;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
     {
@@ -128,18 +128,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private string ResolveSendTo(string value)
         {
-            // TODO:
-            // if (getBeanFactory() != null)
-            // {
-            //    String resolvedValue = getBeanExpressionContext().getBeanFactory().resolveEmbeddedValue(value);
-            //    Object newValue = getResolver().evaluate(resolvedValue, getBeanExpressionContext());
-            //    Assert.isInstanceOf(String, newValue, "Invalid @SendTo expression");
-            //    return (String)newValue;
-            // }
-            // else
-            // {
-            //    return value;
-            // }
+            // TODO: Expression support will change this code
             if (ApplicationContext != null)
             {
                 value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);

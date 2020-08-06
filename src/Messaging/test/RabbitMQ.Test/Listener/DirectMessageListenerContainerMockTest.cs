@@ -3,19 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectMessageListenerContainerMockTest
     {
@@ -25,7 +24,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connectionFactory = new Mock<Connection.IConnectionFactory>();
             var connection = new Mock<Connection.IConnection>();
             var channel = new Mock<IChannelProxy>();
-            var rabbitChannel = new Mock<R.IModel>();
+            var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
@@ -36,9 +35,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             channel.Setup((c) => c.IsOpen).Returns(() => isOpen.Value);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new R.QueueDeclareOk("test", 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
             channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
+                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
                 .Returns("consumerTag");
 
             var latch1 = new CountdownEvent(1);
@@ -76,20 +75,20 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connectionFactory = new Mock<Connection.IConnectionFactory>();
             var connection = new Mock<Connection.IConnection>();
             var channel = new Mock<IChannelProxy>();
-            var rabbitChannel = new Mock<R.IModel>();
+            var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
             connection.Setup((c) => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
             connection.Setup((c) => c.IsOpen).Returns(true);
             channel.Setup((c) => c.IsOpen).Returns(true);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new R.QueueDeclareOk("test", 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
 
-            var consumer = new AtomicReference<R.IBasicConsumer>();
+            var consumer = new AtomicReference<RC.IBasicConsumer>();
             var latch1 = new CountdownEvent(1);
             channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
-                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, R.IBasicConsumer>(
+                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
                 (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
                 {
                     consumer.Value = cons;
@@ -185,7 +184,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connectionFactory = new Mock<Connection.IConnectionFactory>();
             var connection = new Mock<Connection.IConnection>();
             var channel = new Mock<IChannelProxy>();
-            var rabbitChannel = new Mock<R.IModel>();
+            var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
@@ -203,12 +202,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 (name) =>
                 declare.Value = name)
                 .Returns(() =>
-                    new R.QueueDeclareOk(declare.Value, 0, 0));
+                    new RC.QueueDeclareOk(declare.Value, 0, 0));
 
             var latch1 = new CountdownEvent(2);
             var latch3 = new CountdownEvent(3);
             channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
+                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
                 .Callback(
                 () =>
                 {
@@ -262,11 +261,11 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             channel.Verify(
                 c =>
-                c.BasicConsume("test1", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()),
+                c.BasicConsume("test1", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()),
                 Times.Once());
             channel.Verify(
                 c =>
-                c.BasicConsume("test2", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()),
+                c.BasicConsume("test2", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()),
                 Times.Exactly(2));
             await container.Stop();
         }
@@ -277,7 +276,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connectionFactory = new Mock<Connection.IConnectionFactory>();
             var connection = new Mock<Connection.IConnection>();
             var channel = new Mock<IChannelProxy>();
-            var rabbitChannel = new Mock<R.IModel>();
+            var rabbitChannel = new Mock<RC.IModel>();
             channel.Setup(c => c.TargetChannel).Returns(rabbitChannel.Object);
 
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
@@ -286,14 +285,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             channel.Setup(c => c.IsOpen).Returns(true);
             rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new R.QueueDeclareOk("test", 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
 
-            var consumer = new AtomicReference<R.IBasicConsumer>();
+            var consumer = new AtomicReference<RC.IBasicConsumer>();
             var latch1 = new CountdownEvent(1);
             var latch2 = new CountdownEvent(1);
             channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
-                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, R.IBasicConsumer>(
+                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
                     (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
                     {
                         consumer.Value = cons;
@@ -329,9 +328,9 @@ namespace Steeltoe.Messaging.Rabbit.Listener
             var connectionFactory = new Mock<Connection.IConnectionFactory>();
             var connection = new Mock<Connection.IConnection>();
             var channel = new Mock<IChannelProxy>();
-            var rabbitChannel1 = new Mock<R.IModel>();
-            var rabbitChannel2 = new Mock<R.IModel>();
-            var target = new AtomicReference<R.IModel>(rabbitChannel1.Object);
+            var rabbitChannel1 = new Mock<RC.IModel>();
+            var rabbitChannel2 = new Mock<RC.IModel>();
+            var target = new AtomicReference<RC.IModel>(rabbitChannel1.Object);
             channel.Setup(c => c.TargetChannel).Returns(() => target.Value);
 
             connectionFactory.Setup((f) => f.CreateConnection()).Returns(connection.Object);
@@ -341,14 +340,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             rabbitChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             rabbitChannel2.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new R.QueueDeclareOk("test", 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
 
-            var consumer = new AtomicReference<R.IBasicConsumer>();
+            var consumer = new AtomicReference<RC.IBasicConsumer>();
             var latch1 = new CountdownEvent(1);
             var latch2 = new CountdownEvent(1);
             channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<R.IBasicConsumer>()))
-                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, R.IBasicConsumer>(
+                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+                .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
                     (queue, autoAck, consumerTag, noLocal, exclusive, args, cons) =>
                     {
                         consumer.Value = cons;
@@ -381,10 +380,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         private class TestListener2 : IMessageListener
         {
-            private readonly AtomicReference<IModel> target;
-            private readonly IModel @object;
+            private readonly AtomicReference<RC.IModel> target;
+            private readonly RC.IModel @object;
 
-            public TestListener2(AtomicReference<IModel> target, IModel @object)
+            public TestListener2(AtomicReference<RC.IModel> target, RC.IModel @object)
             {
                 this.target = target;
                 this.@object = @object;

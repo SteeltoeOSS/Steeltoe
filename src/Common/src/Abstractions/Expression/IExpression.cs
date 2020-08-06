@@ -32,6 +32,8 @@ namespace Steeltoe.Common.Expression
 
         object GetValue(IEvaluationContext context, object rootObject);
 
+        object GetValue(IEvaluationContext context, Type desiredResultType);
+
         object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType);
 
         T GetValue<T>(IEvaluationContext context);

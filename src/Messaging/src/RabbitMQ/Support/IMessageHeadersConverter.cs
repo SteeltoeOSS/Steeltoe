@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Text;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public interface IMessageHeadersConverter
     {
-        IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset);
+        IMessageHeaders ToMessageHeaders(RC.IBasicProperties source, Envelope envelope, Encoding charset);
 
-        void FromMessageHeaders(IMessageHeaders source, IBasicProperties target, Encoding charset);
+        void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset);
     }
 }

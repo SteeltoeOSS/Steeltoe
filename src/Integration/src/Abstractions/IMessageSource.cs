@@ -22,12 +22,12 @@ namespace Steeltoe.Integration
     /// A typed interface for any source of Messages that can be polled.
     /// </summary>
     /// <typeparam name="T">the type of payload in the message</typeparam>
-    public interface IMessageSource<out T> : IMessage
+    public interface IMessageSource<out T> : IMessageSource
     {
         /// <summary>
         /// Poll for a message from the source
         /// </summary>
         /// <returns>the message</returns>
-        IMessage<T> Receive();
+        new IMessage<T> Receive();
     }
 }

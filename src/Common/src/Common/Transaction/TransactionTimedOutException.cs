@@ -6,7 +6,6 @@ using System;
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to Common
     public class TransactionTimedOutException : TransactionException
     {
         public TransactionTimedOutException(string msg)

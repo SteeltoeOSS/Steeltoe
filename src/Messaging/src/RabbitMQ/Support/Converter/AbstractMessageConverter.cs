@@ -4,11 +4,11 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Net.Sockets;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {
     public abstract class AbstractMessageConverter : ISmartMessageConverter
     {

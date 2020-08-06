@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Reflection;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 {
     public class JsonMessageConverter : AbstractMessageConverter
     {

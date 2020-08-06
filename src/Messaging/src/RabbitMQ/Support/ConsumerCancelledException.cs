@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public class ConsumerCancelledException : Exception
     {

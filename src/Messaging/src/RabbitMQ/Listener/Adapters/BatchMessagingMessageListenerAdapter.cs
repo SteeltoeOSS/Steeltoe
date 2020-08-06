@@ -3,18 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdapter, IChannelAwareBatchMessageListener
     {
@@ -33,7 +33,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         private IBatchingStrategy BatchingStrategy { get; }
 
-        public override void OnMessageBatch(List<IMessage> messages, IModel channel)
+        public override void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
         {
             IMessage converted = null;
 

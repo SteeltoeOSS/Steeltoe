@@ -7,12 +7,12 @@ using System.Reflection;
 namespace Steeltoe.Messaging.Handler.Invocation
 {
     /// <summary>
-    /// TODO: Evaluate if this can be removed
+    /// Async return value handler
     /// </summary>
     public interface IAsyncHandlerMethodReturnValueHandler : IHandlerMethodReturnValueHandler
     {
         /// <summary>
-        /// TODO: Evaluate if this can be removed
+        /// Check if async return value
         /// </summary>
         /// <param name="returnValue">the value</param>
         /// <param name="parameterInfo">the return type info</param>
