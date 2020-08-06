@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// Sets Steeltoe <see cref="IDynamicLoggerProvider"/> Serilog implementation as a LoggerProvider which supports
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
-        /// <param name="builder">The <see cref="IHostBuilder"/> for configuring the WebHostBuilder  </param>
+        /// <param name="builder">The <see cref="IHostBuilder"/> to configure</param>
         /// <param name="configureLogger">The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
         /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Serilog.Log.Logger"/>.</param>
         /// <returns>The <see cref="IHostBuilder"/></returns>
