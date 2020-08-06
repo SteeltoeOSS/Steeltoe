@@ -6,7 +6,7 @@ using k8s.Models;
 using Steeltoe.Common.Kubernetes;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.KubernetesCore.Test
+namespace Steeltoe.Management.Kubernetes.Test
 {
     internal class FakePodUtilities : IPodUtilities
     {

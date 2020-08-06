@@ -6,7 +6,7 @@ using Steeltoe.Management.Info;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.KubernetesCore.Test
+namespace Steeltoe.Management.Kubernetes.Test
 {
     public class KubernetesInfoContributorTest
     {

@@ -11,7 +11,7 @@ using Steeltoe.Management.Info;
 using System;
 using System.Linq;
 
-namespace Steeltoe.Management.KubernetesCore
+namespace Steeltoe.Management.Kubernetes
 {
     public static class ServiceCollectionExtensions
     {

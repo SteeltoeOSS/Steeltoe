@@ -6,7 +6,7 @@ using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.KubernetesCore
+namespace Steeltoe.Management.Kubernetes
 {
     public class KubernetesInfoContributor : IInfoContributor
     {
