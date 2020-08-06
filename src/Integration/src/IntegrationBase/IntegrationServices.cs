@@ -54,11 +54,7 @@ namespace Steeltoe.Integration
             {
                 if (_expressionParser == null)
                 {
-                    _expressionParser = _context?.GetService<IExpressionParser>();
-                    if (_expressionParser == null)
-                    {
-                        _expressionParser = new ExpressionParser();
-                    }
+                    _expressionParser = _context?.GetService<IExpressionParser>() ?? new ExpressionParser();
                 }
 
                 return _expressionParser;
@@ -76,11 +72,7 @@ namespace Steeltoe.Integration
             {
                 if (_channelResolver == null)
                 {
-                    _channelResolver = _context?.GetService<IDestinationResolver<IMessageChannel>>();
-                    if (_channelResolver == null)
-                    {
-                        _channelResolver = new DefaultMessageChannelResolver(_context);
-                    }
+                    _channelResolver = _context?.GetService<IDestinationResolver<IMessageChannel>>() ?? new DefaultMessageChannelResolver(_context);
                 }
 
                 return _channelResolver;
@@ -98,11 +90,7 @@ namespace Steeltoe.Integration
             {
                 if (_conversionService == null)
                 {
-                    _conversionService = _context?.GetService<IConversionService>();
-                    if (_conversionService == null)
-                    {
-                        _conversionService = DefaultConversionService.Singleton;
-                    }
+                    _conversionService = _context?.GetService<IConversionService>() ?? DefaultConversionService.Singleton;
                 }
 
                 return _conversionService;
@@ -120,11 +108,7 @@ namespace Steeltoe.Integration
             {
                 if (_idGenerator == null)
                 {
-                    _idGenerator = _context?.GetService<IIDGenerator>();
-                    if (_idGenerator == null)
-                    {
-                        _idGenerator = new DefaultIdGenerator();
-                    }
+                    _idGenerator = _context?.GetService<IIDGenerator>() ?? new DefaultIdGenerator();
                 }
 
                 return _idGenerator;

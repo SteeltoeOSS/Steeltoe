@@ -37,11 +37,7 @@ namespace Steeltoe.Integration.Util
 
         public static IIntegrationServices GetIntegrationServices(IApplicationContext context)
         {
-            var services = context?.GetService<IIntegrationServices>();
-            if (services == null)
-            {
-                services = new IntegrationServices(context);
-            }
+            var services = context?.GetService<IIntegrationServices>() ?? new IntegrationServices(context);
 
             return services;
         }

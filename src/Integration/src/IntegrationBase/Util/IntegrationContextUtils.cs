@@ -41,11 +41,7 @@ namespace Steeltoe.Integration.Util
 
         public static IExpressionParser GetExpressionParser(IApplicationContext context)
         {
-            var result = context.GetService<IExpressionParser>();
-            if (result == null)
-            {
-                result = new ExpressionParser();
-            }
+            var result = context.GetService<IExpressionParser>() ?? new ExpressionParser();
 
             return result;
         }
