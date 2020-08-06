@@ -13,7 +13,12 @@ namespace Steeltoe.Common.Discovery
 {
     public static class IServiceInstanceProviderExtensions
     {
-        public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(this IServiceInstanceProvider serviceInstanceProvider, string serviceId, IDistributedCache distributedCache = null, string serviceInstancesKeyPrefix = "ServiceInstances-")
+        public static async Task<IList<IServiceInstance>> GetInstancesWithCacheAsync(
+            this IServiceInstanceProvider serviceInstanceProvider,
+            string serviceId,
+            IDistributedCache distributedCache = null,
+            DistributedCacheEntryOptions cacheOptions = null,
+            string serviceInstancesKeyPrefix = "ServiceInstances-")
         {
             // if distributed cache was provided, just make the call back to the provider
             if (distributedCache != null)
@@ -30,7 +35,7 @@ namespace Steeltoe.Common.Discovery
             var instances = serviceInstanceProvider.GetInstances(serviceId);
             if (distributedCache != null)
             {
-                await distributedCache.SetAsync(serviceInstancesKeyPrefix + serviceId, SerializeForCache(MapToSerializable(instances))).ConfigureAwait(false);
+                await distributedCache.SetAsync(serviceInstancesKeyPrefix + serviceId, SerializeForCache(MapToSerializable(instances)), cacheOptions ?? new DistributedCacheEntryOptions()).ConfigureAwait(false);
             }
 
             return instances;

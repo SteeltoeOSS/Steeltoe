@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Steeltoe.Messaging.Rabbit.Util
+namespace Steeltoe.Messaging.RabbitMQ.Util
 {
     public class ActiveObjectCounter<T>
     {

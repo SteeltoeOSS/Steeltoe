@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class RabbitReconnectProblemTest
     {
@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public void SurviveAReconnect()
         {
             var myQueue = new Config.Queue("my-queue");
-            var cf = new ConnectionFactory
+            var cf = new RC.ConnectionFactory
             {
                 Uri = new Uri("amqp://localhost")
             };

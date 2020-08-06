@@ -27,5 +27,9 @@ namespace Steeltoe.Common.Contexts
         bool ContainsService(string name, Type serviceType);
 
         bool ContainsService<T>(string name);
+
+        void Register(string name, object instance);
+
+        object Deregister(string name);
     }
 }

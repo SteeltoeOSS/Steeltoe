@@ -3,22 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
+
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static Steeltoe.Messaging.Rabbit.Connection.CorrelationData;
-using static Steeltoe.Messaging.Rabbit.Connection.IPublisherCallbackChannel;
+using static Steeltoe.Messaging.RabbitMQ.Connection.CorrelationData;
+using static Steeltoe.Messaging.RabbitMQ.Connection.IPublisherCallbackChannel;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class PublisherCallbackChannel : IPublisherCallbackChannel
@@ -34,9 +35,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         private readonly ConcurrentDictionary<string, IListener> _listeners = new ConcurrentDictionary<string, IListener>();
         private readonly SortedDictionary<ulong, IListener> _listenerForSeq = new SortedDictionary<ulong, IListener>();
         private readonly ConcurrentDictionary<string, PendingConfirm> _pendingReturns = new ConcurrentDictionary<string, PendingConfirm>();
-        private Action<IModel> _afterAckCallback;
+        private Action<RC.IModel> _afterAckCallback;
 
-        public PublisherCallbackChannel(IModel channel, ILogger logger = null)
+        public PublisherCallbackChannel(RC.IModel channel, ILogger logger = null)
         {
             Channel = channel;
             _logger = logger;
@@ -45,7 +46,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         #region IPublisherCallbackChannel
 
-        public virtual IModel Channel { get; }
+        public virtual RC.IModel Channel { get; }
 
         public virtual IList<PendingConfirm> Expire(IPublisherCallbackChannel.IListener listener, long cutoffTime)
         {
@@ -157,7 +158,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public virtual void SetAfterAckCallback(Action<IModel> callback)
+        public virtual void SetAfterAckCallback(Action<RC.IModel> callback)
         {
             if (GetPendingConfirmsCount() == 0 && callback != null)
             {
@@ -174,9 +175,9 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public virtual int ChannelNumber => Channel.ChannelNumber;
 
-        public virtual ShutdownEventArgs CloseReason => Channel.CloseReason;
+        public virtual RC.ShutdownEventArgs CloseReason => Channel.CloseReason;
 
-        public virtual IBasicConsumer DefaultConsumer { get => Channel.DefaultConsumer; set => Channel.DefaultConsumer = value; }
+        public virtual RC.IBasicConsumer DefaultConsumer { get => Channel.DefaultConsumer; set => Channel.DefaultConsumer = value; }
 
         public virtual bool IsClosed => Channel.IsClosed;
 
@@ -264,7 +265,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
             }
         }
 
-        public virtual event EventHandler<ShutdownEventArgs> ModelShutdown
+        public virtual event EventHandler<RC.ShutdownEventArgs> ModelShutdown
         {
             add
             {
@@ -285,14 +286,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public virtual void BasicCancel(string consumerTag) => Channel.BasicCancel(consumerTag);
 
-        public virtual string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, IBasicConsumer consumer)
+        public virtual string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer consumer)
             => Channel.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, consumer);
 
-        public virtual BasicGetResult BasicGet(string queue, bool autoAck) => Channel.BasicGet(queue, autoAck);
+        public virtual RC.BasicGetResult BasicGet(string queue, bool autoAck) => Channel.BasicGet(queue, autoAck);
 
         public virtual void BasicNack(ulong deliveryTag, bool multiple, bool requeue) => Channel.BasicNack(deliveryTag, multiple, requeue);
 
-        public virtual void BasicPublish(string exchange, string routingKey, bool mandatory, IBasicProperties basicProperties, byte[] body)
+        public virtual void BasicPublish(string exchange, string routingKey, bool mandatory, RC.IBasicProperties basicProperties, byte[] body)
             => Channel.BasicPublish(exchange, routingKey, mandatory, basicProperties, body);
 
         public virtual void BasicQos(uint prefetchSize, ushort prefetchCount, bool global) => Channel.BasicQos(prefetchSize, prefetchCount, global);
@@ -321,19 +322,15 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public virtual void Close(ushort replyCode, string replyText)
         {
             Channel.Close(replyCode, replyText);
-
-            // if (this.delegate instanceof AutorecoveringChannel) {
-            //    ClosingRecoveryListener.removeChannel((AutorecoveringChannel)this.delegate);
-            // }
         }
 
         public virtual void ConfirmSelect() => Channel.ConfirmSelect();
 
         public virtual uint ConsumerCount(string queue) => Channel.ConsumerCount(queue);
 
-        public virtual IBasicProperties CreateBasicProperties() => Channel.CreateBasicProperties();
+        public virtual RC.IBasicProperties CreateBasicProperties() => Channel.CreateBasicProperties();
 
-        public virtual IBasicPublishBatch CreateBasicPublishBatch() => Channel.CreateBasicPublishBatch();
+        public virtual RC.IBasicPublishBatch CreateBasicPublishBatch() => Channel.CreateBasicPublishBatch();
 
         public virtual void ExchangeBind(string destination, string source, string routingKey, IDictionary<string, object> arguments)
             => Channel.ExchangeBind(destination, source, routingKey, arguments);
@@ -367,13 +364,13 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         public virtual void QueueBindNoWait(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
             => Channel.QueueBindNoWait(queue, exchange, routingKey, arguments);
 
-        public virtual QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
+        public virtual RC.QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
             => Channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
 
         public virtual void QueueDeclareNoWait(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
             => Channel.QueueDeclareNoWait(queue, durable, exclusive, autoDelete, arguments);
 
-        public virtual QueueDeclareOk QueueDeclarePassive(string queue) => Channel.QueueDeclarePassive(queue);
+        public virtual RC.QueueDeclareOk QueueDeclarePassive(string queue) => Channel.QueueDeclarePassive(queue);
 
         public virtual uint QueueDelete(string queue, bool ifUnused, bool ifEmpty) => Channel.QueueDelete(queue, ifUnused, ifEmpty);
 
@@ -409,7 +406,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         #endregion
 
         #region Private
-        private void ShutdownCompleted(object sender, ShutdownEventArgs e)
+        private void ShutdownCompleted(object sender, RC.ShutdownEventArgs e)
         {
             ShutdownCompleted(e.ReplyText);
         }
@@ -452,7 +449,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
                 confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
             }
 
-            string uuidObject = messageProperties.Get<string>(RETURN_LISTENER_CORRELATION_KEY);
+            var uuidObject = messageProperties.Get<string>(RETURN_LISTENER_CORRELATION_KEY);
 
             IListener listener = null;
             if (uuidObject != null)

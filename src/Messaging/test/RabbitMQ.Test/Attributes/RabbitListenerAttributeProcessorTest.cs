@@ -8,17 +8,17 @@ using Microsoft.Extensions.Hosting;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
-using R = RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     [Trait("Category", "Integration")]
     public class RabbitListenerAttributeProcessorTest
@@ -205,14 +205,14 @@ namespace Steeltoe.Messaging.Rabbit.Attributes
             {
                 var mockConnectionFactory = new Mock<IConnectionFactory>();
                 var mockConnection = new Mock<IConnection>();
-                var mockChannel = new Mock<R.IModel>();
+                var mockChannel = new Mock<RC.IModel>();
                 mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
                 mockConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(mockChannel.Object);
                 mockChannel.Setup((c) => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
                 mockConnection.Setup((c) => c.IsOpen).Returns(true);
                 mockChannel.Setup((c) => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
-                mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new R.QueueDeclareOk(queueName.Value, 0, 0))
+                mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                     .Callback<string>((name) => queueName.Value = name);
 
                 var services = new ServiceCollection();

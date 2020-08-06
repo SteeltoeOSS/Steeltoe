@@ -11,6 +11,8 @@ namespace Steeltoe.Stream.Config
     /// </summary>
     public interface IProducerOptions
     {
+        string BindingName { get; }
+
         bool AutoStartup { get; }
 
         string PartitionKeyExpression { get; }
@@ -32,5 +34,7 @@ namespace Steeltoe.Stream.Config
         bool ErrorChannelEnabled { get; }
 
         bool IsPartitioned { get; }
+
+        IProducerOptions Clone();
     }
 }

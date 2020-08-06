@@ -5,9 +5,8 @@
 using RabbitMQ.Client.Events;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
-    // TODO: This is an RabbitMQ type
     public interface IRecoveryListener
     {
         void HandleConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs args);

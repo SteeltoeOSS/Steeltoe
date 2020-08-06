@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class ExchangeBuilder : AbstractBuilder
     {

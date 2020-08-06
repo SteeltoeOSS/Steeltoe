@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Net;
@@ -18,10 +18,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
-using static Steeltoe.Messaging.Rabbit.Config.Binding;
-using R = RabbitMQ.Client;
+using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     [Trait("Category", "Integration")]
     public class RabbitAdminIntegrationTest : IDisposable
@@ -448,7 +448,7 @@ namespace Steeltoe.Messaging.Rabbit.Core
 
         private bool QueueExists(Queue queue)
         {
-            var cf = new R.ConnectionFactory
+            var cf = new RC.ConnectionFactory
             {
                 HostName = "localhost"
             };

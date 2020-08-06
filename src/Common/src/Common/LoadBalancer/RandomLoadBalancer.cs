@@ -15,6 +15,7 @@ namespace Steeltoe.Common.LoadBalancer
         private static readonly Random _random = new Random();
         private readonly IServiceInstanceProvider _serviceInstanceProvider;
         private readonly IDistributedCache _distributedCache;
+        private readonly DistributedCacheEntryOptions _cacheOptions;
         private readonly ILogger _logger;
 
         /// <summary>
@@ -23,18 +24,20 @@ namespace Steeltoe.Common.LoadBalancer
         /// </summary>
         /// <param name="serviceInstanceProvider">Provider of service instance information</param>
         /// <param name="distributedCache">For caching service instance data</param>
+        /// <param name="cacheEntryOptions">Configuration for cache entries of service instance data</param>
         /// <param name="logger">For logging</param>
-        public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, ILogger logger = null)
+        public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
         {
             _serviceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
             _distributedCache = distributedCache;
+            _cacheOptions = cacheEntryOptions;
             _logger = logger;
         }
 
         public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
         {
             _logger?.LogTrace("ResolveServiceInstance {serviceInstance}", request.Host);
-            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache).ConfigureAwait(false);
+            var availableServiceInstances = await _serviceInstanceProvider.GetInstancesWithCacheAsync(request.Host, _distributedCache, _cacheOptions).ConfigureAwait(false);
             if (availableServiceInstances.Count > 0)
             {
                 // load balancer instance selection predictability is not likely to be a security concern

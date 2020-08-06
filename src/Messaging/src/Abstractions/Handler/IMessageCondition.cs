@@ -6,7 +6,6 @@ namespace Steeltoe.Messaging.Handler
 {
     /// <summary>
     /// Contract for mapping conditions to messages.
-    /// TODO: Look at not exposing this (i.e. internal)
     /// </summary>
     public interface IMessageCondition
     {
@@ -14,7 +13,6 @@ namespace Steeltoe.Messaging.Handler
 
     /// <summary>
     /// Contract for mapping conditions to messages
-    /// TODO: Look at not exposing this (i.e. internal)
     /// </summary>
     /// <typeparam name="T">the kind of condition that this condition can be combined with</typeparam>
     public interface IMessageCondition<T> : IMessageCondition

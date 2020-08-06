@@ -22,5 +22,10 @@ namespace Steeltoe.Common.Retry
         /// Gets the number of retry attempts
         /// </summary>
         int RetryCount { get; }
+
+        /// <summary>
+        /// Gets the parent context if present
+        /// </summary>
+        IRetryContext Parent { get; }
     }
 }

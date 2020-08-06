@@ -4,7 +4,7 @@
     <Description>Steeltoe Stream StubBinder1</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream.StubBinder1</RootNamespace>
-    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   
@@ -17,7 +17,7 @@
 
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Base\Steeltoe.Stream.Base.csproj" />
+    <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
   </ItemGroup>
 
 </Project>

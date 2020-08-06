@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +15,14 @@ namespace Steeltoe.Common.Lifecycle
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         private readonly List<ILifecycle> _lifecyclesServices;
+        private readonly ILogger _logger;
 
-        public DefaultLifecycleProcessor(IEnumerable<ILifecycle> lifecyclesServices, IEnumerable<ISmartLifecycle> smartLifecyclesServices)
+        public DefaultLifecycleProcessor(IEnumerable<ILifecycle> lifecyclesServices, IEnumerable<ISmartLifecycle> smartLifecyclesServices, ILogger logger = null)
         {
             var lifecycles = lifecyclesServices.ToList();
             lifecycles.AddRange(smartLifecyclesServices);
             _lifecyclesServices = lifecycles;
+            _logger = logger;
         }
 
         public int TimeoutPerShutdownPhase { get; set; } = 30000;
@@ -68,7 +71,7 @@ namespace Steeltoe.Common.Lifecycle
                     phases.TryGetValue(phase, out var group);
                     if (group == null)
                     {
-                        group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, autoStartupOnly);
+                        group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, autoStartupOnly, _logger);
                         phases.Add(phase, group);
                     }
 
@@ -96,7 +99,7 @@ namespace Steeltoe.Common.Lifecycle
                 phases.TryGetValue(phase, out var group);
                 if (group == null)
                 {
-                    group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, false);
+                    group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, false, _logger);
                     phases.Add(phase, group);
                 }
 
@@ -144,13 +147,16 @@ namespace Steeltoe.Common.Lifecycle
 
             private readonly List<LifecycleGroupMember> _members = new List<LifecycleGroupMember>();
 
+            private readonly ILogger _logger;
+
             private int _smartMemberCount;
 
-            public LifecycleGroup(int phase, int timeout, bool autoStartupOnly)
+            public LifecycleGroup(int phase, int timeout, bool autoStartupOnly, ILogger logger = null)
             {
                 _phase = phase;
                 _timeout = timeout;
                 _autoStartupOnly = autoStartupOnly;
+                _logger = logger;
             }
 
             public void Add(ILifecycle bean)
@@ -196,16 +202,16 @@ namespace Steeltoe.Common.Lifecycle
                 {
                     Task.WaitAll(tasks.ToArray(), _timeout);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // Log
+                    _logger?.LogError(e, "Exception waiting for lifecycle tasks to stop");
                 }
 
                 foreach (var task in tasks)
                 {
                     if (!task.IsCompleted)
                     {
-                        // TODO: Log each that didn't stop
+                        _logger?.LogWarning("Not all lifecycle tasks completed");
                         break;
                     }
                 }

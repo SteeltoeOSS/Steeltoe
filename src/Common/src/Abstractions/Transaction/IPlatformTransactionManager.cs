@@ -4,7 +4,6 @@
 
 namespace Steeltoe.Common.Transaction
 {
-    // TODO: Move this to Common
     public interface IPlatformTransactionManager
     {
         ITransactionStatus GetTransaction(ITransactionDefinition definition);

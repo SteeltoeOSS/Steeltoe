@@ -3,24 +3,24 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Expressions;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Support;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Expressions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Support;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListener
     {
@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
         {
             _logger = logger;
-            MessageConverter = new Rabbit.Support.Converter.SimpleMessageConverter();
+            MessageConverter = new RabbitMQ.Support.Converter.SimpleMessageConverter();
             ApplicationContext = context;
         }
 
@@ -101,14 +101,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(beforeSendReplyPostProcessors);
         }
 
-        public abstract void OnMessage(IMessage message, IModel channel);
+        public abstract void OnMessage(IMessage message, RC.IModel channel);
 
         public virtual void OnMessage(IMessage message)
         {
             throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
         }
 
-        public virtual void OnMessageBatch(List<IMessage> messages, IModel channel)
+        public virtual void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
         {
             throw new NotSupportedException("This listener does not support message batches");
         }
@@ -118,7 +118,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             throw new NotSupportedException("This listener does not support message batches");
         }
 
-        protected internal virtual IMessage<byte[]> BuildMessage(IModel channel, object result, Type genericType)
+        protected internal virtual IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
         {
             var converter = MessageConverter;
             if (converter != null && !(result is IMessage<byte[]>))
@@ -150,12 +150,12 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             return message;
         }
 
-        protected virtual void HandleResult(InvocationResult resultArg, IMessage request, IModel channel)
+        protected virtual void HandleResult(InvocationResult resultArg, IMessage request, RC.IModel channel)
         {
             HandleResult(resultArg, request, channel, null);
         }
 
-        protected virtual void HandleResult(InvocationResult resultArg, IMessage request, IModel channel, object source)
+        protected virtual void HandleResult(InvocationResult resultArg, IMessage request, RC.IModel channel, object source)
         {
             if (channel != null)
             {
@@ -194,7 +194,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        protected virtual void DoHandleResult(InvocationResult resultArg, IMessage request, IModel channel, object source)
+        protected virtual void DoHandleResult(InvocationResult resultArg, IMessage request, RC.IModel channel, object source)
         {
             _logger?.LogDebug("Listener method returned result [{result}] - generating response message for it", resultArg);
             try
@@ -275,7 +275,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             return replyTo;
         }
 
-        protected void SendResponse(IModel channel, Address replyTo, IMessage<byte[]> messageIn)
+        protected void SendResponse(RC.IModel channel, Address replyTo, IMessage<byte[]> messageIn)
         {
             var message = messageIn;
             if (BeforeSendReplyPostProcessors != null)
@@ -334,14 +334,14 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        protected virtual void DoPublish(IModel channel, Address replyTo, IMessage<byte[]> message)
+        protected virtual void DoPublish(RC.IModel channel, Address replyTo, IMessage<byte[]> message)
         {
             var props = channel.CreateBasicProperties();
             MessagePropertiesConverter.FromMessageHeaders(message.Headers, props, EncodingUtils.GetEncoding(Encoding));
             channel.BasicPublish(replyTo.ExchangeName, replyTo.RoutingKey, MandatoryPublish, props, message.Payload);
         }
 
-        protected virtual void PostProcessChannel(IModel channel, IMessage response)
+        protected virtual void PostProcessChannel(RC.IModel channel, IMessage response)
         {
         }
 
@@ -380,7 +380,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             return replyTo;
         }
 
-        private void AsyncSuccess(InvocationResult resultArg, IMessage request, IModel channel, object source, object deferredResult)
+        private void AsyncSuccess(InvocationResult resultArg, IMessage request, RC.IModel channel, object source, object deferredResult)
         {
             if (deferredResult == null)
             {
@@ -409,7 +409,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        private void BasicAck(IMessage request, IModel channel)
+        private void BasicAck(IMessage request, RC.IModel channel)
         {
             var tag = request.Headers.DeliveryTag();
             var deliveryTag = tag.HasValue ? tag.Value : 0;
@@ -423,7 +423,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        private void AsyncFailure(IMessage request, IModel channel, Exception exception)
+        private void AsyncFailure(IMessage request, RC.IModel channel, Exception exception)
         {
             _logger?.LogError(exception, "Async method was completed with an exception for {request} ", request);
             try

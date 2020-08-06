@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using System;
 using System.Text;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public class ShutdownSignalException : Exception
     {
-        private ShutdownEventArgs _args;
+        private RC.ShutdownEventArgs _args;
 
-        public ShutdownSignalException(ShutdownEventArgs args)
+        public ShutdownSignalException(RC.ShutdownEventArgs args)
         {
             _args = args;
         }
@@ -25,11 +25,11 @@ namespace Steeltoe.Messaging.Rabbit.Support
 
         public string ReplyText => _args.ReplyText;
 
-        public ShutdownInitiator Initiator => _args.Initiator;
+        public RC.ShutdownInitiator Initiator => _args.Initiator;
 
         public object Cause => _args.Cause;
 
-        public ShutdownEventArgs Args => _args;
+        public RC.ShutdownEventArgs Args => _args;
 
         public override string ToString()
         {

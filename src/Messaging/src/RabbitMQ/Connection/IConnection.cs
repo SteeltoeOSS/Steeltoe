@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using System;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public interface IConnection : IDisposable
     {
@@ -24,7 +24,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         /// </summary>
         /// <param name="transactional">true if transaction support on channel</param>
         /// <returns>the new channel</returns>
-        IModel CreateChannel(bool transactional = false);
+        RC.IModel CreateChannel(bool transactional = false);
 
         /// <summary>
         /// Close the connection
@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         /// <summary>
         /// Gets the underlying RabbitMQ connection
         /// </summary>
-        RabbitMQ.Client.IConnection Connection { get; }
+        RC.IConnection Connection { get; }
 
         /// <summary>
         /// Add a Blocked listener to the connection

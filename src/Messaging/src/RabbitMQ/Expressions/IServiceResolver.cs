@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Expression;
 
-namespace Steeltoe.Messaging.Rabbit.Expressions
+namespace Steeltoe.Messaging.RabbitMQ.Expressions
 {
     public interface IServiceResolver
     {

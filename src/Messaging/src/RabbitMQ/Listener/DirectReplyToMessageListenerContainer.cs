@@ -3,18 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectReplyToMessageListenerContainer : DirectMessageListenerContainer
     {
-        internal readonly ConcurrentDictionary<IModel, SimpleConsumer> _inUseConsumerChannels = new ConcurrentDictionary<IModel, SimpleConsumer>();
+        internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> _inUseConsumerChannels = new ConcurrentDictionary<RC.IModel, SimpleConsumer>();
         internal readonly ConcurrentDictionary<SimpleConsumer, long> _whenUsed = new ConcurrentDictionary<SimpleConsumer, long>();
         private const int DEFAULT_IDLE = 60000;
         private int _consumerCount;
@@ -208,13 +208,13 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
         public class ChannelHolder
         {
-            public ChannelHolder(IModel channel, int consumerEpoch)
+            public ChannelHolder(RC.IModel channel, int consumerEpoch)
             {
                 Channel = channel;
                 ConsumerEpoch = consumerEpoch;
             }
 
-            public IModel Channel { get; }
+            public RC.IModel Channel { get; }
 
             public int ConsumerEpoch { get; }
 
@@ -249,7 +249,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 }
             }
 
-            public void OnMessage(IMessage message, IModel channel)
+            public void OnMessage(IMessage message, RC.IModel channel)
             {
                 if (_listener is IChannelAwareMessageListener chanAwareListener)
                 {
@@ -280,7 +280,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
                 throw new InvalidOperationException("Should never be called for a ChannelAwareMessageListener");
             }
 
-            public void OnMessageBatch(List<IMessage> messages, IModel channel)
+            public void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
             {
                 if (_listener is IChannelAwareMessageListener chanAwareListener)
                 {

@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Extensions
+namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
     public static class ApplicationContextExtensions
     {

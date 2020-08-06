@@ -3,21 +3,21 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
-using Steeltoe.Messaging.Rabbit.Test;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Test;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessagingMessageListenerAdapterTest : AbstractTest
     {
@@ -32,7 +32,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 .SetHeader(RabbitMessageHeaders.TYPE, "msg_type")
                 .SetHeader(RabbitMessageHeaders.REPLY_TO, "reply")
                 .Build();
-            var session = new Mock<IModel>();
+            var session = new Mock<RC.IModel>();
             var listener = GetSimpleInstance("Echo", typeof(IMessage<string>));
             var replyMessage = listener.BuildMessage(session.Object, result, null);
             Assert.NotNull(replyMessage);
@@ -46,7 +46,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void ExceptionInListener()
         {
             var message = MessageTestUtils.CreateTextMessage("foo");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("Fail", typeof(string));
             try
@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void ExceptionInListenerBadReturnExceptionSetting()
         {
             var message = MessageTestUtils.CreateTextMessage("foo");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("Fail", true, typeof(string));
             try
@@ -92,7 +92,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void ExceptionInMultiListenerReturnException()
         {
             var message = MessageTestUtils.CreateTextMessage("foo");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetMultiInstance("Fail", "FailWithReturn", true, typeof(string), typeof(byte[]));
             try
@@ -137,7 +137,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void ExceptionInInvocation()
         {
             var message = MessageTestUtils.CreateTextMessage("foo");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("WrongParam", typeof(int));
             try
@@ -159,10 +159,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void GenericMessageTest1()
         {
             var message = MessageTestUtils.CreateTextMessage("\"foo\"");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("WithGenericMessageObjectType", typeof(IMessage<object>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessage(message, mockChannel.Object);
@@ -173,10 +173,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void GenericMessageTest2()
         {
             var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar\" }");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("WithGenericMessageFooType", typeof(IMessage<Foo>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessage(message, mockChannel.Object);
@@ -187,10 +187,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void GenericMessageTest3()
         {
             var message = MessageTestUtils.CreateTextMessage("\"foo\"");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("WithNonGenericMessage", typeof(IMessage));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessage(message, mockChannel.Object);
@@ -201,10 +201,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void GenericMessageTest4()
         {
             var message = MessageTestUtils.CreateTextMessage("{ \"foo\" : \"bar\" }");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetSimpleInstance("WithGenericMessageDictionaryType", typeof(IMessage<Dictionary<string, string>>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessage(message, mockChannel.Object);
@@ -215,10 +215,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void BatchMessagesTest()
         {
             var message = MessageTestUtils.CreateTextMessage("{ \"foo1\" : \"bar1\" }");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetBatchInstance("WithMessageBatch", typeof(List<IMessage<byte[]>>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);
@@ -229,10 +229,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void BatchTypedMessagesTest()
         {
             var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar1\" }");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetBatchInstance("WithTypedMessageBatch", typeof(List<IMessage<Foo>>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);
@@ -243,10 +243,10 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         public void BatchTypedObjectTest()
         {
             var message = MessageTestUtils.CreateTextMessage("{ \"foostring\" : \"bar1\" }");
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var listener = GetBatchInstance("WithFooBatch", typeof(List<Foo>));
-            listener.MessageConverter = new Rabbit.Support.Converter.JsonMessageConverter();
+            listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
             listener.OnMessageBatch(new List<IMessage>() { message }, mockChannel.Object);

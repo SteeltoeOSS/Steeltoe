@@ -3,13 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support
 {
     public static class RabbitMessageBuilder
     {

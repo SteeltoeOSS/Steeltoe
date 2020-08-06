@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Description>Steeltoe Messaging RabbitMQ</Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>Steeltoe.Messaging.Rabbit</RootNamespace>
+    <RootNamespace>Steeltoe.Messaging.RabbitMQ</RootNamespace>
     <AssemblyName>Steeltoe.Messaging.RabbitMQ</AssemblyName>
     <PackageId>Steeltoe.Messaging.RabbitMQ</PackageId>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
@@ -14,8 +14,8 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Base\Steeltoe.Messaging.Base.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
+    <ProjectReference Include="..\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,14 +4,14 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Connection;
-using Steeltoe.Messaging.Rabbit.Core;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Messaging.Rabbit.Extensions
+namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
     public static class ServiceProviderExtensions
     {

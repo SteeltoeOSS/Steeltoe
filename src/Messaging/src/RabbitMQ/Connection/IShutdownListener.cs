@@ -2,13 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
-    // TODO: This is an RabbitMQ type
     public interface IShutdownListener
     {
-        void ChannelShutdownCompleted(object sender, ShutdownEventArgs args);
+        void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args);
     }
 }

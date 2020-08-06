@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core
 {
     public class Base64UrlNamingStrategy : INamingStrategy
     {

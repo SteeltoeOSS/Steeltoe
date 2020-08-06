@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes
 {
     public abstract class DeclareQueueBase : Attribute
     {

@@ -3,18 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
-using Steeltoe.Messaging.Rabbit.Listener.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
     {
@@ -62,7 +62,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
 
         public HandlerAdapter HandlerAdapter { get; set; }
 
-        public override void OnMessage(IMessage amqpMessage, IModel channel)
+        public override void OnMessage(IMessage amqpMessage, RC.IModel channel)
         {
             PreprocesMessage(amqpMessage);
             var headers = amqpMessage.Headers;
@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             InvokeHandlerAndProcessResult(amqpMessage, channel, message);
         }
 
-        protected internal override IMessage<byte[]> BuildMessage(IModel channel, object result, Type genericType)
+        protected internal override IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
         {
             var converter = MessageConverter;
             if (converter != null)
@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             return (IMessage<byte[]>)result;
         }
 
-        protected void InvokeHandlerAndProcessResult(IMessage amqpMessage, IModel channel, IMessage message)
+        protected void InvokeHandlerAndProcessResult(IMessage amqpMessage, RC.IModel channel, IMessage message)
         {
             _logger?.LogDebug("Processing [{message}]", message);
             InvocationResult result = null;
@@ -170,7 +170,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             }
         }
 
-        private InvocationResult InvokeHandler(IMessage amqpMessage, IModel channel, IMessage message)
+        private InvocationResult InvokeHandler(IMessage amqpMessage, RC.IModel channel, IMessage message)
         {
             try
             {
@@ -195,7 +195,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                     + "Bean [" + HandlerAdapter.Instance + "]";
         }
 
-        private void ReturnOrThrow(IMessage amqpMessage, IModel channel, IMessage message, Exception exceptionToRetrun, Exception exceptionToThrow)
+        private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToRetrun, Exception exceptionToThrow)
         {
             if (!ReturnExceptions)
             {
@@ -267,7 +267,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         private bool IsEligibleParameter(ParameterInfo methodParameter)
         {
             var parameterType = methodParameter.ParameterType;
-            if (parameterType.Equals(typeof(IModel)))
+            if (parameterType.Equals(typeof(RC.IModel)))
             {
                 return false;
             }

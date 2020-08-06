@@ -5,16 +5,16 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
-using Steeltoe.Messaging.Rabbit.Batch;
-using Steeltoe.Messaging.Rabbit.Config;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Expressions;
-using Steeltoe.Messaging.Rabbit.Listener.Adapters;
+using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Expressions;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public abstract class AbstractRabbitListenerEndpoint : IRabbitListenerEndpoint
     {
@@ -112,7 +112,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener
 
             if (Admin != null)
             {
-                container.AmqpAdmin = Admin;
+                container.RabbitAdmin = Admin;
             }
 
             SetupMessageListener(listenerContainer);

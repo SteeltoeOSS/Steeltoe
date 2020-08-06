@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
 using System.Collections.Generic;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit
+namespace Steeltoe.Messaging.RabbitMQ
 {
-    public class MockRabbitBasicProperties : IBasicProperties
+    public class MockRabbitBasicProperties : RC.IBasicProperties
     {
         public string AppId { get; set; }
 
@@ -33,17 +33,17 @@ namespace Steeltoe.Messaging.Rabbit
 
         public string ReplyTo { get; set; }
 
-        public PublicationAddress ReplyToAddress { get; set; }
+        public RC.PublicationAddress ReplyToAddress { get; set; }
 
-        public AmqpTimestamp Timestamp { get; set; }
+        public RC.AmqpTimestamp Timestamp { get; set; }
 
         public string Type { get; set; }
 
         public string UserId { get; set; }
 
-        ushort IContentHeader.ProtocolClassId => 0;
+        ushort RC.IContentHeader.ProtocolClassId => 0;
 
-        string IContentHeader.ProtocolClassName => string.Empty;
+        string RC.IContentHeader.ProtocolClassName => string.Empty;
 
         public ushort ProtocolClassId;
 
@@ -162,7 +162,7 @@ namespace Steeltoe.Messaging.Rabbit
 
         public bool IsTimestampPresent()
         {
-            return !default(AmqpTimestamp).Equals(Timestamp);
+            return !default(RC.AmqpTimestamp).Equals(Timestamp);
         }
 
         public bool IsTypePresent()

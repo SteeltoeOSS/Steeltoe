@@ -4,20 +4,20 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
-using Steeltoe.Messaging.Rabbit.Core;
-using Steeltoe.Messaging.Rabbit.Extensions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class MessageListenerAdapterTest
     {
@@ -42,7 +42,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
         {
             var extendedAdapter = new ExtendedListenerAdapter(null);
             var called = new AtomicBoolean(false);
-            var channelMock = new Mock<IModel>();
+            var channelMock = new Mock<RC.IModel>();
             var delgate = new TestDelegate(called);
             extendedAdapter.Instance = delgate;
             extendedAdapter.ContainerAckMode = Core.AcknowledgeMode.MANUAL;
@@ -127,8 +127,8 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
             accessor.ReplyTo = "foo/bar";
             var ex = new Exception();
-            var mockChannel = new Mock<IModel>();
-            mockChannel.Setup(c => c.BasicPublish("foo", "bar", false, It.IsAny<IBasicProperties>(), It.IsAny<byte[]>()))
+            var mockChannel = new Mock<RC.IModel>();
+            mockChannel.Setup(c => c.BasicPublish("foo", "bar", false, It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()))
                 .Throws(ex);
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
@@ -154,7 +154,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 ContainerAckMode = AcknowledgeMode.MANUAL,
                 ResponseExchange = "default"
             };
-            var mockChannel = new Mock<IModel>();
+            var mockChannel = new Mock<RC.IModel>();
             mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
             mockChannel.Setup(c => c.BasicAck(It.IsAny<ulong>(), false))
                 .Callback(() => called.Signal());
@@ -273,7 +273,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
                 this.called = called;
             }
 
-            public void HandleMessage(string input, IModel channel, IMessage message)
+            public void HandleMessage(string input, RC.IModel channel, IMessage message)
             {
                 Assert.NotNull(input);
                 Assert.NotNull(channel);
@@ -296,7 +296,7 @@ namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
             {
             }
 
-            protected override object[] BuildListenerArguments(object extractedMessage, IModel channel, IMessage message)
+            protected override object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
             {
                 return new object[] { extractedMessage, channel, message };
             }

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
 
-namespace Steeltoe.Messaging.Rabbit.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 {
     public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostProcessor
     {

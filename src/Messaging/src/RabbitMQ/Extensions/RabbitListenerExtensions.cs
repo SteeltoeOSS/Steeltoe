@@ -4,10 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Messaging.Rabbit.Config;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using System;
 
-namespace Steeltoe.Messaging.Rabbit.Extensions
+namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
     public static class RabbitListenerExtensions
     {

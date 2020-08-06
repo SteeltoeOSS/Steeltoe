@@ -52,6 +52,12 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         /// </summary>
         public Metadata Metadata { get; set; } = new Metadata();
 
+        /// <summary>
+        /// Gets or sets the time in seconds that service instance cache records should remain active
+        /// </summary>
+        /// <remarks>configuration property: eureka:client:cacheTTL</remarks>
+        public int CacheTTL { get; set; } = 15;
+
         public override string ToString()
         {
             return $"serviceName: {ServiceName}, serviceLabels: {ServiceLabels}";

@@ -6,7 +6,7 @@ using Steeltoe.Common.Expression;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class InvocationResult
     {

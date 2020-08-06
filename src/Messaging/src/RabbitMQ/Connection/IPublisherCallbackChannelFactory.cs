@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RabbitMQ.Client;
+using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     /// <summary>
     /// Factory for creating publisher callbacks
@@ -16,6 +16,6 @@ namespace Steeltoe.Messaging.Rabbit.Connection
         /// </summary>
         /// <param name="channel">the channel</param>
         /// <returns>the callback</returns>
-        IPublisherCallbackChannel CreateChannel(IModel channel);
+        IPublisherCallbackChannel CreateChannel(RC.IModel channel);
     }
 }

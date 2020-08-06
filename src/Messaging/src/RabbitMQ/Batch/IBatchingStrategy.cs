@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Batch
+namespace Steeltoe.Messaging.RabbitMQ.Batch
 {
     public interface IBatchingStrategy
     {

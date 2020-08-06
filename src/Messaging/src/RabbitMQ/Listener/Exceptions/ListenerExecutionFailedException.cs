@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Rabbit.Listener.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
 {
     public class ListenerExecutionFailedException : Exception
     {

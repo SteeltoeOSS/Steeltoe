@@ -3,25 +3,25 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RabbitMQ.Client;
 using RabbitMQ.Client.Exceptions;
-using Steeltoe.Messaging.Rabbit.Exceptions;
-using Steeltoe.Messaging.Rabbit.Support;
+using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
+using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.Rabbit.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class SimpleConnection : IConnection, NetworkConnection
+    public class SimpleConnection : IConnection, RC.NetworkConnection
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly RabbitMQ.Client.IConnection _connection;
+        private readonly RC.IConnection _connection;
         private readonly int _closeTimeout;
         private readonly ILogger _logger;
 
         public int LocalPort => _connection.LocalPort;
 
-        public RabbitMQ.Client.IConnection Connection => _connection;
+        public RC.IConnection Connection => _connection;
 
         public bool IsOpen => _connection.IsOpen;
 
@@ -31,14 +31,14 @@ namespace Steeltoe.Messaging.Rabbit.Connection
 
         public int RemotePort => _connection.Endpoint.Port;
 
-        public SimpleConnection(RabbitMQ.Client.IConnection connection, int closeTimeout, ILogger logger = null)
+        public SimpleConnection(RC.IConnection connection, int closeTimeout, ILogger logger = null)
         {
             _connection = connection;
             _closeTimeout = closeTimeout;
             _logger = logger;
         }
 
-        public IModel CreateChannel(bool transactional = false)
+        public RC.IModel CreateChannel(bool transactional = false)
         {
             try
             {

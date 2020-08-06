@@ -3,16 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Messaging.Rabbit.Attributes;
-using Steeltoe.Messaging.Rabbit.Listener;
+using Steeltoe.Messaging.RabbitMQ.Attributes;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Rabbit.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config
 {
-    // TODO: Internal?
     public class RabbitListenerMetadata
     {
         internal static readonly Dictionary<Type, RabbitListenerMetadata> _typeCache = new Dictionary<Type, RabbitListenerMetadata>();
