@@ -30,7 +30,7 @@ namespace Steeltoe.Connector.Services.Test
                 }
             };
             var factory = new DB2ServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -54,7 +54,7 @@ namespace Steeltoe.Connector.Services.Test
                 }
             };
             var factory = new DB2ServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]

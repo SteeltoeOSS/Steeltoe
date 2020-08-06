@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.Services.Test
             Assert.NotNull(s);
 
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace Steeltoe.Connector.Services.Test
             };
 
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace Steeltoe.Connector.Services.Test
                 }
             };
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace Steeltoe.Connector.Services.Test
             };
 
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -131,7 +131,7 @@ namespace Steeltoe.Connector.Services.Test
                 }
             };
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace Steeltoe.Connector.Services.Test
                 }
             };
             var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]

@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Relational;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
@@ -103,7 +102,7 @@ namespace Steeltoe.Connector.PostgreSql.Test
 
             // Act
             PostgresServiceCollectionExtensions.AddPostgresHealthContributor(services, config);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             // Assert
             Assert.NotNull(healthContributor);

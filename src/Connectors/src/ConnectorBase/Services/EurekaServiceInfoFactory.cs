@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Extensions.Configuration;
+using System;
 
 namespace Steeltoe.Connector.Services
 {
     public class EurekaServiceInfoFactory : ServiceInfoFactory
     {
         public EurekaServiceInfoFactory()
-            : base(new Tags("eureka"), System.Array.Empty<string>())
+            : base(new Tags("eureka"), Array.Empty<string>())
         {
         }
 

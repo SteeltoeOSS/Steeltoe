@@ -141,14 +141,14 @@ namespace Steeltoe.Discovery.Client
             // Note: Could be other discovery type services in future
             var eurekaInfos = config.GetServiceInfos<EurekaServiceInfo>();
 
-            if (eurekaInfos.Count > 0)
+            if (eurekaInfos.Any())
             {
-                if (eurekaInfos.Count != 1)
+                if (eurekaInfos.Count() != 1)
                 {
                     throw new ConnectorException("Multiple discovery service types bound to application.");
                 }
 
-                return eurekaInfos[0];
+                return eurekaInfos.First();
             }
 
             return null;

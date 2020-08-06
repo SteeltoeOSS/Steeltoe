@@ -24,11 +24,11 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         }
 
         [Fact]
-        public void Constructors__InitializesProperties()
+        public void Constructors_InitializesProperties()
         {
             var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
-            ILoggerFactory factory = new LoggerFactory();
+            var sources = new List<IConfigurationSource>() { memSource };
+            var factory = new LoggerFactory();
 
             var source = new PlaceholderResolverSource(sources, factory);
             Assert.Equal(factory, source._loggerFactory);
@@ -39,12 +39,11 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         }
 
         [Fact]
-        public void Build__ReturnsProvider()
+        public void Build_ReturnsProvider()
         {
             // Arrange
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
-            ILoggerFactory factory = new LoggerFactory();
 
             // Act and Assert
             var source = new PlaceholderResolverSource(sources, null);

@@ -30,12 +30,12 @@ namespace Steeltoe.Common
         /// <summary>
         /// Gets a value indicating whether or not the platform is Cloud Foundry by checking if VCAP_APPLICATION has been set
         /// </summary>
-        public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
+        public static bool IsCloudFoundry => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VCAP_APPLICATION));
 
         /// <summary>
         /// Gets a value indicating whether or not the platform is Kubernetes by checking if KUBERNETES_HOST has been set
         /// </summary>
-        public static bool IsKubernetes => Environment.GetEnvironmentVariable(KUBERNETES_HOST) != null;
+        public static bool IsKubernetes => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(KUBERNETES_HOST));
 
         /// <summary>
         /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes
