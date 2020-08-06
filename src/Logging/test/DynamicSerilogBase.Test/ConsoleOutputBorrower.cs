@@ -5,7 +5,7 @@
 using System;
 using System.IO;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     internal class ConsoleOutputBorrower : IDisposable
     {

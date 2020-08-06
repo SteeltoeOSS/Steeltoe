@@ -4,16 +4,16 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Serilog.AspNetCore;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using static Serilog.ConfigurationLoggerConfigurationExtensions;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
+namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
     /// <summary>
     /// A wrapper for the <see cref="Serilog.Core.Logger"/> to dynamically set log levels

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
 {
     public class Startup
     {
