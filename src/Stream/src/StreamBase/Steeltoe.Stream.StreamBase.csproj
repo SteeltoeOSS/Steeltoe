@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Steeltoe Stream Base </Description>
+    <Description>
+      Steeltoe Stream Base
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
     <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>

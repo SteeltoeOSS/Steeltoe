@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Steeltoe Stream Test Binder</Description>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Description>
+      Steeltoe Stream Test Binder
+      **PLEASE NOTE** This package is experimental and is not production-ready.  </Description>
+      <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream.TestBinder</RootNamespace>
     <AssemblyName>Steeltoe.Stream.TestBinder</AssemblyName>
     <PackageId>Steeltoe.Stream.TestBinder</PackageId>

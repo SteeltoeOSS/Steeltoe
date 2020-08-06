@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <Description>Steeltoe Stream Abstractions</Description>
+    <Description>
+      Steeltoe Stream Abstractions
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream</RootNamespace>
     <AssemblyName>Steeltoe.Stream.Abstractions</AssemblyName>

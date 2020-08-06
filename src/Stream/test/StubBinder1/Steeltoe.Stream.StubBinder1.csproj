@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Description>Steeltoe Stream StubBinder1</Description>
+    <Description>
+      Steeltoe Stream StubBinder1
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Stream.StubBinder1</RootNamespace>
     <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
