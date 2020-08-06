@@ -4,4 +4,5 @@
 
 using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("Steeltoe.Discovery.Eureka.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Discovery.ClientCore.Test")]

@@ -20,7 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
     <ProjectReference Include="..\..\src\ConfigServerBase\Steeltoe.Extensions.Configuration.ConfigServerBase.csproj" />
     <ProjectReference Include="..\..\src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
   </ItemGroup>
