@@ -10,6 +10,7 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test
@@ -385,7 +386,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            var si = sis[0];
+            var si = sis.First();
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -590,7 +591,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            var si = sis[0];
+            var si = sis.First();
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
@@ -796,7 +797,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var sis = config.GetServiceInfos<EurekaServiceInfo>();
             Assert.Single(sis);
-            var si = sis[0];
+            var si = sis.First();
 
             var clientOpts = new EurekaClientOptions();
             var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);

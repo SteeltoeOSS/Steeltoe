@@ -17,9 +17,9 @@ namespace Steeltoe.Connector.Services
         {
         }
 
-        public override bool Accept(Service binding)
+        public override bool Accepts(Service binding)
         {
-            var result = base.Accept(binding);
+            var result = base.Accepts(binding);
             if (result)
             {
                 result = !HystrixRabbitMQServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);

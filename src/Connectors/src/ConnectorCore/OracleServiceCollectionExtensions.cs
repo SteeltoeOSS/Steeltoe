@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Relational;
 using Steeltoe.Connector.Services;
 using System;
 using System.Data;
@@ -75,7 +74,7 @@ namespace Steeltoe.Connector.Oracle
         {
             var oracleConfig = new OracleProviderConnectorOptions(config);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, OracleTypeLocator.OracleConnection);
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), contextLifetime));
         }
     }
 }

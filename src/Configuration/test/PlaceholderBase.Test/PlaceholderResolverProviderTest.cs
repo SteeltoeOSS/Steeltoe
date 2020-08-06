@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
     public class PlaceholderResolverProviderTest
     {
         [Fact]
-        public void Constructor__ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             // Arrange
             IConfiguration configuration = null;
@@ -26,7 +26,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         }
 
         [Fact]
-        public void Constructor__ThrowsIfListIConfigurationProviderNull()
+        public void Constructor_ThrowsIfListIConfigurationProviderNull()
         {
             // Arrange
             IList<IConfigurationProvider> providers = null;

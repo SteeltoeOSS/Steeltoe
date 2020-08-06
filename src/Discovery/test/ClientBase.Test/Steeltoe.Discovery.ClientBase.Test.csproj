@@ -20,7 +20,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Security\Steeltoe.Common.Security.csproj" />
-    <ProjectReference Include="..\..\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\..\src\ClientBase\Steeltoe.Discovery.ClientBase.csproj" />
     <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />
     <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
     <ProjectReference Include="..\..\src\Kubernetes\Steeltoe.Discovery.Kubernetes.csproj" />

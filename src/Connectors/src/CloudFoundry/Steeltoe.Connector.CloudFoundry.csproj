@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+  </ItemGroup>
+</Project>

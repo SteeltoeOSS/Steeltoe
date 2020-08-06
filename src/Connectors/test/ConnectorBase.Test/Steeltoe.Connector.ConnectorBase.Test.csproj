@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
+    <RootNamespace>Steeltoe.Connector.Test</RootNamespace>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedtest.props" />
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="$(MoqVersion)" />
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.7.0" />
+    <PackageReference Include="Azure.Cosmos" Version="4.0.0-preview3" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(MicrosoftExtensionsRedisVersion)" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />
+    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" /> -->
+    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" />-->
+    <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\..\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
+  </ItemGroup>
+</Project>

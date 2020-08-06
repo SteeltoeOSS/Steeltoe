@@ -5,6 +5,7 @@
 using Steeltoe.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Connector.Services
 {
@@ -15,8 +16,8 @@ namespace Steeltoe.Connector.Services
         private static readonly List<string> _passwordList = new List<string>() { "password", "pw" };
         private static readonly List<string> _hostList = new List<string>() { "hostname", "host" };
 
-        public ServiceInfoFactory(Tags tags, string scheme)
-            : this(tags, new string[] { scheme })
+        protected ServiceInfoFactory(Tags tags, string scheme)
+            : this(tags, new List<string> { scheme })
         {
             if (string.IsNullOrEmpty(scheme))
             {
@@ -24,7 +25,7 @@ namespace Steeltoe.Connector.Services
             }
         }
 
-        public ServiceInfoFactory(Tags tags, string[] schemes)
+        protected ServiceInfoFactory(Tags tags, IEnumerable<string> schemes)
         {
             ServiceInfoTags = tags ?? throw new ArgumentNullException(nameof(tags));
             UriSchemes = schemes;
@@ -38,22 +39,9 @@ namespace Steeltoe.Connector.Services
             }
         }
 
-        public virtual string DefaultUriScheme
-        {
-            get
-            {
-                if (UriSchemes != null && UriSchemes.Length > 0)
-                {
-                    return UriSchemes[0];
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
+        public virtual string DefaultUriScheme => UriSchemes?.Any() == true ? UriSchemes.First() : null;
 
-        public virtual bool Accept(Service binding)
+        public virtual bool Accepts(Service binding)
         {
             return TagsMatch(binding) || LabelStartsWithTag(binding) ||
                  UriMatchesScheme(binding) || UriKeyMatchesScheme(binding);
@@ -65,19 +53,11 @@ namespace Steeltoe.Connector.Services
 
         protected List<string> UriKeys { get; set; } = new List<string> { "uri", "url" };
 
-        protected string[] UriSchemes { get; set; }
+        protected IEnumerable<string> UriSchemes { get; set; }
 
-        protected internal virtual bool TagsMatch(Service binding)
-        {
-            var serviceTags = binding.Tags;
-            return ServiceInfoTags.ContainsOne(serviceTags);
-        }
+        protected internal virtual bool TagsMatch(Service binding) => ServiceInfoTags.ContainsOne(binding.Tags);
 
-        protected internal virtual bool LabelStartsWithTag(Service binding)
-        {
-            var label = binding.Label;
-            return ServiceInfoTags.StartsWith(label);
-        }
+        protected internal virtual bool LabelStartsWithTag(Service binding) => ServiceInfoTags.StartsWith(binding.Label);
 
         protected internal virtual bool UriMatchesScheme(Service binding)
         {
@@ -132,54 +112,34 @@ namespace Steeltoe.Connector.Services
         }
 
         protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, _userList);
-        }
+            => GetStringFromCredentials(credentials, _userList);
 
         protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, _passwordList);
-        }
+            => GetStringFromCredentials(credentials, _passwordList);
 
         protected internal virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetIntFromCredentials(credentials, "port");
-        }
+            => GetIntFromCredentials(credentials, "port");
 
         protected internal virtual int GetTlsPortFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetIntFromCredentials(credentials, "tls_port");
-        }
+            => GetIntFromCredentials(credentials, "tls_port");
 
         protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, _hostList);
-        }
+            => GetStringFromCredentials(credentials, _hostList);
 
         protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, UriKeys);
-        }
+            => GetStringFromCredentials(credentials, UriKeys);
 
         protected internal virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, "client_id");
-        }
+            => GetStringFromCredentials(credentials, "client_id");
 
         protected internal virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, "client_secret");
-        }
+            => GetStringFromCredentials(credentials, "client_secret");
 
         protected internal virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
-        {
-            return GetStringFromCredentials(credentials, "access_token_uri");
-        }
+            => GetStringFromCredentials(credentials, "access_token_uri");
 
         protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
-        {
-            return GetStringFromCredentials(credentials, new List<string>() { key });
-        }
+            => GetStringFromCredentials(credentials, new List<string>() { key });
 
         protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
         {

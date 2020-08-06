@@ -11,7 +11,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
-    <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.ConnectorBase.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

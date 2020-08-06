@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <RootNamespace>Steeltoe.Connector</RootNamespace>
+    <Description>Package for using service connectors in your ASP.NET Core application</Description>
+    <PackageTags>connectors;aspnetcore;services</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(DiagnosticsExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
+  </ItemGroup>
+</Project>
