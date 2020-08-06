@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
 using System;
 
-namespace Steeltoe.Management.Kubernetes
+namespace Steeltoe.Management.KubernetesCore
 {
     public class KubernetesActuatorsStartupFilter : IStartupFilter
     {

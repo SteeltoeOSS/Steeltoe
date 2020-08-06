@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
 
-namespace Steeltoe.Management.Kubernetes
+namespace Steeltoe.Management.KubernetesCore
 {
     public static class HostBuilderExtensions
     {

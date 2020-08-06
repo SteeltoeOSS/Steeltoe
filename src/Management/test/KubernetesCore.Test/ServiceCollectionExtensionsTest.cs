@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Kubernetes.Test
+namespace Steeltoe.Management.KubernetesCore.Test
 {
     public class ServiceCollectionExtensionsTest
     {
