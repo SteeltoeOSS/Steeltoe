@@ -14,11 +14,11 @@ using Steeltoe.Connector.SqlServer;
 using System;
 using System.Data;
 
-namespace Steeltoe.Connector.Relational
+namespace Steeltoe.Connector
 {
-    public class RelationalHealthContributor : IHealthContributor
+    public class RelationalDbHealthContributor : IHealthContributor
     {
-        public static IHealthContributor GetMySqlContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        public static IHealthContributor GetMySqlContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
         {
             if (configuration == null)
             {
@@ -30,10 +30,10 @@ namespace Steeltoe.Connector.Relational
             var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, mySqlConnection);
             var connection = factory.Create(null) as IDbConnection;
-            return new RelationalHealthContributor(connection, logger);
+            return new RelationalDbHealthContributor(connection, logger);
         }
 
-        public static IHealthContributor GetPostgreSqlContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        public static IHealthContributor GetPostgreSqlContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
         {
             if (configuration == null)
             {
@@ -45,10 +45,10 @@ namespace Steeltoe.Connector.Relational
             var postgresConfig = new PostgresProviderConnectorOptions(configuration);
             var factory = new PostgresProviderConnectorFactory(info, postgresConfig, postgresConnection);
             var connection = factory.Create(null) as IDbConnection;
-            return new RelationalHealthContributor(connection, logger);
+            return new RelationalDbHealthContributor(connection, logger);
         }
 
-        public static IHealthContributor GetSqlServerContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        public static IHealthContributor GetSqlServerContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
         {
             if (configuration == null)
             {
@@ -60,10 +60,10 @@ namespace Steeltoe.Connector.Relational
             var sqlServerConfig = new SqlServerProviderConnectorOptions(configuration);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, sqlServerConnection);
             var connection = factory.Create(null) as IDbConnection;
-            return new RelationalHealthContributor(connection, logger);
+            return new RelationalDbHealthContributor(connection, logger);
         }
 
-        public static IHealthContributor GetOracleContributor(IConfiguration configuration, ILogger<RelationalHealthContributor> logger = null)
+        public static IHealthContributor GetOracleContributor(IConfiguration configuration, ILogger<RelationalDbHealthContributor> logger = null)
         {
             if (configuration == null)
             {
@@ -75,13 +75,13 @@ namespace Steeltoe.Connector.Relational
             var oracleConfig = new OracleProviderConnectorOptions(configuration);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
             var connection = factory.Create(null) as IDbConnection;
-            return new RelationalHealthContributor(connection, logger);
+            return new RelationalDbHealthContributor(connection, logger);
         }
 
         public readonly IDbConnection _connection;
-        private readonly ILogger<RelationalHealthContributor> _logger;
+        private readonly ILogger<RelationalDbHealthContributor> _logger;
 
-        public RelationalHealthContributor(IDbConnection connection, ILogger<RelationalHealthContributor> logger = null)
+        public RelationalDbHealthContributor(IDbConnection connection, ILogger<RelationalDbHealthContributor> logger = null)
         {
             _connection = connection;
             _logger = logger;

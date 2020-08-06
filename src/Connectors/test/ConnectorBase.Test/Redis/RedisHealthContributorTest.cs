@@ -5,12 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.Services;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Connector.Cache.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     public class RedisHealthContributorTest
     {

@@ -5,13 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Oracle;
-using Steeltoe.Connector.Relational;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.ConnectorCore.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test
 {
     public class OracleServiceCollectionExtensionsTest
     {
@@ -69,7 +67,7 @@ namespace Steeltoe.ConnectorCore.Oracle.Test
 
             // Act
             OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             // Assert
             Assert.NotNull(healthContributor);

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Connector.Relational;
 using Steeltoe.Connector.Services;
 using System;
 using System.Data;
@@ -84,7 +83,7 @@ namespace Steeltoe.Connector.SqlServer
             services.Add(new ServiceDescriptor(sqlServerConnection, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
             {
-                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), ServiceLifetime.Singleton));
             }
         }
     }

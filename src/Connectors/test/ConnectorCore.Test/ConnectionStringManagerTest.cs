@@ -3,12 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Connector.CosmosDb;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MongoDb.Test;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.MySql.Test;
-using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.PostgreSql.Test;
 using Steeltoe.Connector.RabbitMQ;
