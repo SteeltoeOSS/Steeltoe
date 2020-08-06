@@ -7,7 +7,7 @@ using Serilog.Events;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
+namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
     /// <summary>
     /// Implements a subset of the Serilog Options needed for SerilogDynamicProvider
