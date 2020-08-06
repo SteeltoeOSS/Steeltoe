@@ -3,14 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Kubernetes.Discovery;
+using System;
 using System.Linq;
 
 namespace Steeltoe.Discovery.Kubernetes
@@ -56,6 +59,11 @@ namespace Steeltoe.Discovery.Kubernetes
                 var kubernetesOptions = p.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
                 var kubernetes = p.GetRequiredService<IKubernetes>();
                 return KubernetesDiscoveryClientFactory.CreateClient(kubernetesOptions.Value, kubernetes);
+            });
+            services.TryAddSingleton(serviceProvider =>
+            {
+                var clientOptions = serviceProvider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+                return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
             });
         }
     }

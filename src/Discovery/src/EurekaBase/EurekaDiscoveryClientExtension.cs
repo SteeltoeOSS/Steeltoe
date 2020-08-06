@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
@@ -12,6 +14,7 @@ using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
+using System;
 using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
 
@@ -77,6 +80,11 @@ namespace Steeltoe.Discovery.Eureka
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
+            });
+            services.TryAddSingleton(serviceProvider =>
+            {
+                var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
+                return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
             });
         }
 

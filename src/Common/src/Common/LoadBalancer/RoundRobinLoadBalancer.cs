@@ -18,12 +18,14 @@ namespace Steeltoe.Common.LoadBalancer
         internal readonly IServiceInstanceProvider ServiceInstanceProvider;
         internal readonly IDistributedCache _distributedCache;
         internal readonly ConcurrentDictionary<string, int> NextIndexForService = new ConcurrentDictionary<string, int>();
+        private readonly DistributedCacheEntryOptions _cacheOptions;
         private readonly ILogger _logger;
 
-        public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, ILogger logger = null)
+        public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
         {
             ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
             _distributedCache = distributedCache;
+            _cacheOptions = cacheEntryOptions;
             _logger = logger;
             _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", _distributedCache == null);
         }
@@ -35,7 +37,7 @@ namespace Steeltoe.Common.LoadBalancer
             var cacheKey = IndexKeyPrefix + serviceName;
 
             // get instances for this service
-            var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache).ConfigureAwait(false);
+            var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheOptions).ConfigureAwait(false);
             if (!availableServiceInstances.Any())
             {
                 _logger?.LogError("No service instances available for {serviceName}", serviceName);
