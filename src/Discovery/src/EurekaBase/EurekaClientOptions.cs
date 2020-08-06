@@ -58,6 +58,12 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
+        /// <summary>
+        /// Gets or sets the time in seconds that service instance cache records should remain active
+        /// </summary>
+        /// <remarks>configuration property: eureka:client:cacheTTL</remarks>
+        public int CacheTTL { get; set; } = 15;
+
         // Configuration property: eureka:client:eurekaServer
         public EurekaServerConfig EurekaServer { get; set; }
 

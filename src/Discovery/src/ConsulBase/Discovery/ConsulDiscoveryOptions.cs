@@ -258,6 +258,11 @@ namespace Steeltoe.Discovery.Consul.Discovery
             return result;
         }
 
+        /// <summary>
+        /// Gets or sets the time in seconds that service instance cache records should remain active
+        /// </summary>
+        public int CacheTTL { get; set; } = 15;
+
         // public int CatalogServicesWatchDelay { get; set; } = 1000;
 
         // public int CatalogServicesWatchTimeout { get; set; } = 2;
