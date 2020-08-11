@@ -36,35 +36,29 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         private Queue expiringQueue;
         private Connection.IConnectionFactory connectionFactory;
         private AppendingListener listener;
-        private RabbitAdmin containerAdmin;
-
-        private ServiceCollection serviceCollection;
+        private TestAdmin containerAdmin;
 
         public ListenFromAutoDeleteQueueTest()
         {
-            serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            serviceCollection.AddRabbitServices();
-            serviceCollection.AddRabbitAdmin();
-
-            connectionFactory = serviceCollection.BuildServiceProvider().GetService<CachingConnectionFactory>();
-            var e1 = new Config.DirectExchange("testContainerWithAutoDeleteQueues", false, true);
-            serviceCollection.AddRabbitExchange(e1);
-            var q1 = new Config.Queue(Q1, false, false, true);
-            serviceCollection.AddRabbitQueue(q1);
-
-            serviceCollection.AddRabbitTemplate();
+            connectionFactory = new CachingConnectionFactory("localhost")
+            {
+                IsPublisherReturns = true
+            };
 
             // Container Admin
-            containerAdmin = serviceCollection.BuildServiceProvider().GetService<RabbitAdmin>();
+            containerAdmin = new TestAdmin(connectionFactory);
+
+            // Exchange
+            var directExchange = new DirectExchange("testContainerWithAutoDeleteQueues", true, true);
 
             listenerContainer1 = new DirectMessageListenerContainer(null, connectionFactory, "container1");
             listenerContainer1.ConsumersPerQueue = 2;
             listenerContainer1.AddQueueNames(Q1, Q2);
-
-            var binding = BindingBuilder.Bind(q1).To(e1).With(Q1);
-            serviceCollection.AddRabbitBinding(binding);
-            serviceCollection.AddSingleton<IBinding>(binding);
+            containerAdmin.DeclareExchange(directExchange);
+            containerAdmin.DeclareQueue(new Config.Queue(Q1, true, false, true));
+            containerAdmin.DeclareQueue(new Config.Queue(Q2, true, false, true));
+            containerAdmin.DeclareBinding(new Binding("b1", Q1, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q1, null));
+            containerAdmin.DeclareBinding(new Binding("b2", Q2, Binding.DestinationType.QUEUE, directExchange.ExchangeName, Q2, null));
 
             // Listener
             listener = new AppendingListener();
@@ -74,9 +68,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer1._startedLatch.Wait(TimeSpan.FromSeconds(10));
 
             // Conditional declarations
-            containerAdmin.DeclareQueue(new Queue(Q3));
             var otherExchange = new DirectExchange(Exch2, true, true);
-            otherExchange.DeclaringAdmins = new List<object>() { containerAdmin };
+            containerAdmin.DeclareExchange(otherExchange);
+            containerAdmin.DeclareQueue(new Config.Queue(Q3, true, false, true));
+            containerAdmin.DeclareBinding(new Binding("b3", Q3, Binding.DestinationType.QUEUE, otherExchange.ExchangeName, Q3, null));
 
             listenerContainer2 = new DirectMessageListenerContainer(null, connectionFactory, "container2");
             listenerContainer2.IsAutoStartup = false;
@@ -84,8 +79,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer2.AddQueueNames(Q3);
             listenerContainer2.MessageListener = adapter;
 
-            expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>() { { "x-expires", 100 } });
-
+            expiringQueue = new Config.Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>() { { "x-expires", 200 } });
+            containerAdmin.DeclareQueue(expiringQueue);
             listenerContainer3 = new DirectMessageListenerContainer(null, connectionFactory, "container3");
             listenerContainer3.IsAutoStartup = false;
             listenerContainer3.ShutdownTimeout = 50;
@@ -101,10 +96,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             listenerContainer4.AutoDeclare = false;
         }
 
-        [Fact(Skip ="WIP")]
+        [Fact]
         public void TestStopStart()
         {
-            var rabbitTemplate = serviceCollection.BuildServiceProvider().GetService<RabbitTemplate>();
+            var rabbitTemplate = new RabbitTemplate(connectionFactory);
             rabbitTemplate.ConvertAndSend(Exch1, Q1, "foo");
             listener.Latch.Wait(TimeSpan.FromSeconds(10));
             Assert.True(listener.Queue.Count > 0);
@@ -116,7 +111,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             Assert.True(listener.Queue.Count > 0);
         }
 
-        [Fact(Skip = "WIP")]
+        [Fact]
         public void TestStopStartConditionalDeclarations()
         {
             var rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -134,7 +129,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             Assert.True(listener.Queue.Count > 0);
         }
 
-        [Fact(Skip = "WIP")]
+        [Fact]
         public void TestRedeclareXExpiresQueue()
         {
             var rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -153,7 +148,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             Assert.True(listener.Queue.Count > 0);
         }
 
-        [Fact(Skip = "WIP")]
+        [Fact]
         public void TestAutoDeclareFalse()
         {
             var rabbitTemplate = new RabbitTemplate(connectionFactory);
@@ -174,6 +169,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             containerAdmin.DeleteQueue(Q1);
             containerAdmin.DeleteQueue(Q2);
+            containerAdmin.DeleteQueue(Q3);
+            containerAdmin.DeleteQueue(expiringQueue.ActualName);
+            containerAdmin.DeleteExchange("testContainerWithAutoDeleteQueues");
+            containerAdmin.DeleteExchange("otherExchange");
         }
 
         private class AppendingListener : IReplyingMessageListener<string, string>
