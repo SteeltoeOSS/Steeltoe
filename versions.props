@@ -17,6 +17,7 @@
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>4.6.0</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
+    <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
     <KubernetesClientVersion>2.0.16</KubernetesClientVersion>

@@ -15,6 +15,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(DiagnosticSourceVersion)" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemReflectionVersion)" />
   </ItemGroup>
 
   <ItemGroup>

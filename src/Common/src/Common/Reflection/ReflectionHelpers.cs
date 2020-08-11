@@ -5,8 +5,10 @@
 using Steeltoe.Common.Attributes;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Steeltoe.Common.Reflection
 {
@@ -66,7 +68,10 @@ namespace Steeltoe.Common.Reflection
         /// <returns>A list of matching types</returns>
         public static IEnumerable<Assembly> FindAssembliesWithAttribute<T>()
             where T : AssemblyContainsTypeAttribute
-                => FindAssemblies(assembly => assembly.GetCustomAttribute<T>() is object);
+        {
+            TryLoadAssembliesWithAttribute<T>();
+            return FindAssemblies(assembly => assembly.GetCustomAttribute<T>() is object);
+        }
 
         /// <summary>
         /// Finds a list of types with <typeparamref name="T"/>
@@ -269,6 +274,46 @@ namespace Steeltoe.Common.Reflection
             if (prop != null && prop.CanWrite)
             {
                 prop.SetValue(obj, value, null);
+            }
+        }
+
+        /// <summary>
+        /// Try to make sure all assemblies with the given attribute have been loaded into the current AppDomain
+        /// </summary>
+        /// <typeparam name="T">Assembly Attribute Type</typeparam>
+        private static void TryLoadAssembliesWithAttribute<T>()
+            where T : AssemblyContainsTypeAttribute
+        {
+            var runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
+            var paths = new List<string>(runtimeAssemblies)
+            {
+                Assembly.GetExecutingAssembly().Location,
+                typeof(T).Assembly.Location
+            };
+
+            using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(paths));
+            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
+            foreach (var assembly in assemblypaths)
+            {
+                var filename = Path.GetFileNameWithoutExtension(assembly);
+                if (!loadedAssemblies.Any(a => a.FullName.StartsWith(filename, StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    try
+                    {
+                        var assemblyRef = loadContext.LoadFromAssemblyPath(assembly);
+
+                        // haven't been able to get actual type comparison to work (assembly of the attribute not found?), falling back on matching the type name
+                        if (CustomAttributeData.GetCustomAttributes(assemblyRef).Any(attr => attr.AttributeType.FullName.Equals(typeof(T).FullName)))
+                        {
+                            FindAssembly(filename);
+                        }
+                    }
+                    catch
+                    {
+                        // most failures here are situations that aren't relevant, so just fail silently
+                    }
+                }
             }
         }
     }
