@@ -20,7 +20,7 @@ namespace Steeltoe.Connector.MySql
         /// <summary>
         /// Gets a list of MySQL types that implement IDbConnection
         /// </summary>
-        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "MySql.Data.MySqlClient.MySqlConnection" };
+        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "MySql.Data.MySqlClient.MySqlConnection", "MySqlConnector.MySqlConnection" };
 
         /// <summary>
         /// Gets MySqlConnection from a MySQL Library
