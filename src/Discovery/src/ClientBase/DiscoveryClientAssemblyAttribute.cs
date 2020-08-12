@@ -16,7 +16,7 @@ namespace Steeltoe.Discovery
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="DiscoveryClientAssemblyAttribute"/> class.
-        /// Used to override the default ServiceInfoCreator
+        /// Used to identify assemblies that contain a discovery client
         /// </summary>
         /// <param name="discoveryClientExtensionType">The <see cref="IDiscoveryClientExtension"/></param>
         public DiscoveryClientAssemblyAttribute(Type discoveryClientExtensionType)
