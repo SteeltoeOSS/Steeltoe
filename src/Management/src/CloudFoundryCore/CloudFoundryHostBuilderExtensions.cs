@@ -44,7 +44,7 @@ namespace Steeltoe.Management.CloudFoundry
         public static IWebHostBuilder AddCloudFoundryActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return webHostBuilder
-                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
                 .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 
@@ -57,7 +57,7 @@ namespace Steeltoe.Management.CloudFoundry
         public static IHostBuilder AddCloudFoundryActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             return hostBuilder
-                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
                 .ConfigureServices((context, collection) => ConfigureServices(collection, context.Configuration, mediaTypeVersion, buildCorsPolicy));
         }
 

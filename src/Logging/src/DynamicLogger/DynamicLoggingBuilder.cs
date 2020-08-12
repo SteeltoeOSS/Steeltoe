@@ -20,28 +20,24 @@ namespace Steeltoe.Extensions.Logging
         /// Adds Dynamic Console Logger Provider
         /// </summary>
         /// <param name="builder">Your ILoggingBuilder</param>
-        /// <param name="ensureCleanSetup">If true removes any <see cref="ConsoleLoggerProvider"/>, ensures logging config classes are available</param>
-        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder, bool ensureCleanSetup = false)
+        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (ensureCleanSetup)
+            // remove the original ConsoleLoggerProvider to prevent duplicate logging
+            var serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+            if (serviceDescriptor != null)
             {
-                // remove the original ConsoleLoggerProvider to prevent duplicate logging
-                var serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
-                if (serviceDescriptor != null)
-                {
-                    builder.Services.Remove(serviceDescriptor);
-                }
+                builder.Services.Remove(serviceDescriptor);
+            }
 
-                // make sure logger provider configurations are available
-                if (!builder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
-                {
-                    builder.AddConfiguration();
-                }
+            // make sure logger provider configurations are available
+            if (!builder.Services.Any(descriptor => descriptor.ServiceType == typeof(ILoggerProviderConfiguration<ConsoleLoggerProvider>)))
+            {
+                builder.AddConfiguration();
             }
 
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
