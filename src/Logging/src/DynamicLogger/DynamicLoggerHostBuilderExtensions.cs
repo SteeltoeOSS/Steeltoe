@@ -21,7 +21,7 @@ namespace Steeltoe.Extensions.Logging
                 throw new ArgumentNullException(nameof(hostBuilder));
             }
 
-            return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true));
+            return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole());
         }
     }
 }

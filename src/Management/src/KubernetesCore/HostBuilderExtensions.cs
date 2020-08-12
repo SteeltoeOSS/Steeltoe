@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Kubernetes
         public static IHostBuilder AddKubernetesActuators(this IHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             return hostBuilder
-                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddKubernetesActuators();
@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Kubernetes
         public static IWebHostBuilder AddKubernetesActuators(this IWebHostBuilder webHostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
         {
             return webHostBuilder
-                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true))
+                .ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole())
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddKubernetesActuators();
