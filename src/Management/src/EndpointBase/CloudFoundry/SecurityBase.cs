@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -32,12 +31,14 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         private readonly ICloudFoundryOptions _options;
         private readonly IManagementOptions _mgmtOptions;
         private readonly ILogger _logger;
+        private HttpClient _httpClient;
 
-        public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null)
+        public SecurityBase(ICloudFoundryOptions options, IManagementOptions mgmtOptions, ILogger logger = null, HttpClient httpClient = null)
         {
             _options = options;
             _mgmtOptions = mgmtOptions;
             _logger = logger;
+            _httpClient = httpClient;
         }
 
         [Obsolete("Use Exposure Options instead.")]
@@ -87,14 +88,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             try
             {
                 _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
-
-                // If certificate validation is disabled, inject a callback to handle properly
-                HttpClientHelper.ConfigureCertificateValidation(
-                    _options.ValidateCertificates,
-                    out prevProtocols,
-                    out prevValidator);
-                using var client = HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT);
-                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DEFAULT_GETPERMISSIONS_TIMEOUT);
+                using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     _logger?.LogInformation(
