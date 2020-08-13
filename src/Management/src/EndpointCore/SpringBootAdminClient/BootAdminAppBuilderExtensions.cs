@@ -3,16 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using IApplicationLifetime = Microsoft.Extensions.Hosting.IApplicationLifetime;
@@ -25,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         internal static RegistrationResult RegistrationResult { get; private set; }
 
-        public static void RegisterSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration, HttpClient testClient = null)
+        public static void RegisterSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration, HttpClient httpClient = null)
         {
             if (builder is null)
             {
@@ -50,12 +47,11 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                 ServiceUrl = new Uri($"{basePath}/"),
                 Metadata = new Metadata() { Startup = DateTime.Now }
             };
-            Action onStarted = () =>
+            httpClient ??= HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
+            void OnStarted()
             {
-                var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
-
                 var content = JsonConvert.SerializeObject(app);
-                var buffer = System.Text.Encoding.UTF8.GetBytes(content);
+                var buffer = Encoding.UTF8.GetBytes(content);
                 var byteContent = new ByteArrayContent(buffer);
                 byteContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
                 var result = httpClient.PostAsync($"{options.Url}/instances", byteContent).Result;
@@ -64,26 +60,26 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                     var task = result.Content.ReadAsStringAsync();
                     RegistrationResult = JsonConvert.DeserializeObject<RegistrationResult>(task.Result);
                 }
-            };
-            Action onStopped = () =>
+            }
+
+            void OnStopped()
             {
                 if (RegistrationResult == null || string.IsNullOrEmpty(RegistrationResult.Id))
                 {
                     return;
                 }
 
-                var httpClient = testClient ?? HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
-                var result = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").Result;
-            };
+                _ = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").Result;
+            }
 
 #if NETCOREAPP3_1
             var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
-            lifetime.ApplicationStarted.Register(onStarted);
-            lifetime.ApplicationStopped.Register(onStopped);
+            lifetime.ApplicationStarted.Register(OnStarted);
+            lifetime.ApplicationStopped.Register(OnStopped);
 #else
             var lifetime = builder.ApplicationServices.GetService<IApplicationLifetime>();
-            lifetime.ApplicationStarted.Register(onStarted);
-            lifetime.ApplicationStopped.Register(onStopped);
+            lifetime.ApplicationStarted.Register(OnStarted);
+            lifetime.ApplicationStopped.Register(OnStopped);
 #endif
         }
     }

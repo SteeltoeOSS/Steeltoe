@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -170,7 +169,8 @@ namespace Steeltoe.Common.Http
             string clientSecret,
             int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
             bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
-            ILogger logger = null)
+            ILogger logger = null,
+            HttpClient httpClient = null)
         {
             if (string.IsNullOrEmpty(accessTokenUri))
             {
@@ -194,22 +194,22 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
             }
 
-            return GetAccessTokenInternal(parsedUri, clientId, clientSecret, timeout, validateCertificates, logger);
+            httpClient ??= GetHttpClient(validateCertificates, timeout);
+            return GetAccessTokenInternal(parsedUri, clientId, clientSecret, validateCertificates, httpClient, logger);
         }
 
         private static async Task<string> GetAccessTokenInternal(
             Uri accessTokenUri,
             string clientId,
             string clientSecret,
-            int timeout,
             bool validateCertificates,
+            HttpClient httpClient,
             ILogger logger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
-            var client = GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
+            ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
 
             var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;
@@ -221,22 +221,19 @@ namespace Steeltoe.Common.Http
 
             try
             {
-                using (client)
+                using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
-                    if (response.StatusCode != HttpStatusCode.OK)
-                    {
-                        logger?.LogInformation(
-                            "GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                            response.StatusCode,
-                            WebUtility.UrlEncode(accessTokenUri.OriginalString));
-                        return null;
-                    }
-
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    var token = payload.Value<string>("access_token");
-                    return token;
+                    logger?.LogInformation(
+                        "GetAccessToken returned status: {0} while obtaining access token from: {1}",
+                        response.StatusCode,
+                        WebUtility.UrlEncode(accessTokenUri.OriginalString));
+                    return null;
                 }
+
+                var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                var token = payload.Value<string>("access_token");
+                return token;
             }
             catch (Exception e)
             {
@@ -244,7 +241,7 @@ namespace Steeltoe.Common.Http
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
+                RestoreCertificateValidation(validateCertificates, prevProtocols, prevValidator);
             }
 
             return null;

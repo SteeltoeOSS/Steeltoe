@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Net.Security;
 using System.Text;
 using System.Threading;
 
@@ -22,6 +21,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private const int UNPROCESSABLE_ENTITY = 422;
         private const int PAYLOAD_TOO_LARGE = 413;
         private const int TOO_MANY_REQUESTS = 429;
+        private static HttpClient _httpClient;
 
         private readonly ILogger<CloudFoundryForwarderExporter> _logger;
         private readonly ICloudFoundryMetricWriter _metricFormatWriter;
@@ -37,6 +37,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             _options = options;
             _stats = stats;
             _viewManager = stats.ViewManager;
+            _httpClient ??= GetHttpClient();
             _logger = logger;
             if (options.MicrometerMetricWriter)
             {
@@ -81,13 +82,12 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 {
                     var timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-                    var client = GetHttpClient();
                     var requestUri = new Uri(_options.Endpoint);
                     var request = GetHttpRequestMessage(HttpMethod.Post, requestUri);
                     var message = GetMessage(_viewManager.AllExportedViews, timeStamp);
                     request.Content = GetRequestContent(message);
 
-                    DoPost(client, request);
+                    DoPost(_httpClient, request);
 
                     Thread.Sleep(_options.RateMilli);
                 }
@@ -115,7 +115,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
                 if (response.StatusCode != HttpStatusCode.OK &&
                     response.StatusCode != HttpStatusCode.Accepted)
                 {
-                    var headers = response.Headers;
+                    _ = response.Headers;
                     var statusCode = (int)response.StatusCode;
 
                     if (statusCode == UNPROCESSABLE_ENTITY)

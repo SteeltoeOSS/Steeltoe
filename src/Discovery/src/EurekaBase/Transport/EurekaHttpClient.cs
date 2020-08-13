@@ -11,11 +11,9 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -37,20 +35,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
         private const int DEFAULT_NUMBER_OF_RETRIES = 3;
         private const string HTTP_X_DISCOVERY_ALLOW_REDIRECT = "X-Discovery-AllowRedirect";
 
-        protected virtual IEurekaClientConfig Config
-        {
-            get
-            {
-                if (_configOptions != null)
-                {
-                    return _configOptions.CurrentValue;
-                }
+        protected virtual IEurekaClientConfig Config => _configOptions?.CurrentValue ?? _config;
 
-                return _config;
-            }
-        }
-
-        protected HttpClient _client;
+        protected HttpClient _httpClient;
         protected ILogger _logger;
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private static readonly char[] COLON_DELIMIT = new char[] { ':' };
@@ -65,7 +52,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         }
 
         public EurekaHttpClient(IEurekaClientConfig config, HttpClient client, ILoggerFactory logFactory = null)
-            : this(config, new Dictionary<string, string>(), logFactory) => _client = client;
+            : this(config, new Dictionary<string, string>(), logFactory) => _httpClient = client;
 
         public EurekaHttpClient(IEurekaClientConfig config, ILoggerFactory logFactory = null, IEurekaDiscoveryClientHandlerProvider handlerProvider = null)
             : this(config, new Dictionary<string, string>(), logFactory, handlerProvider)
@@ -99,12 +86,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -119,7 +105,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 {
                     request.Content = GetRequestContent(new JsonInstanceInfoRoot(info.ToJsonInstance()));
 
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
@@ -141,7 +127,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -196,11 +181,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -213,7 +197,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     var jinfo = JsonInstanceInfo.Deserialize(stream);
 
@@ -246,7 +230,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -312,12 +295,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -330,7 +312,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     var jroot = JsonApplicationRoot.Deserialize(stream);
 
@@ -363,7 +345,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -429,12 +410,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -447,7 +427,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     _logger?.LogDebug("CancelAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                     Interlocked.Exchange(ref _serviceUrl, serviceUrl);
                     var resp = new EurekaHttpResponse(response.StatusCode)
@@ -462,7 +442,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -503,12 +482,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -521,7 +499,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     _logger?.LogDebug("DeleteStatusOverrideAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                     var statusCode = (int)response.StatusCode;
                     if (statusCode >= 200 && statusCode < 300)
@@ -540,7 +518,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -582,12 +559,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -600,7 +576,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     _logger?.LogDebug("StatusUpdateAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                     var statusCode = (int)response.StatusCode;
                     if (statusCode >= 200 && statusCode < 300)
@@ -619,7 +595,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -647,7 +622,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 config.ClientId,
                 config.ClientSecret,
                 DEFAULT_GETACCESSTOKEN_TIMEOUT,
-                config.ValidateCertificates).GetAwaiter().GetResult();
+                config.ValidateCertificates,
+                _logger,
+                _httpClient).GetAwaiter().GetResult();
         }
 
         internal IList<string> GetServiceUrlCandidates()
@@ -807,12 +784,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -825,7 +801,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     var jroot = JsonInstanceInfoRoot.Deserialize(stream);
 
@@ -858,7 +834,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -882,12 +857,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
+            _httpClient ??= GetHttpClient(Config);
 
             // For Retrys
             for (var retry = 0; retry < GetRetryCount(Config); retry++)
             {
-                var client = GetHttpClient(Config);
-
                 // If certificate validation is disabled, inject a callback to handle properly
                 HttpClientHelper.ConfigureCertificateValidation(
                     Config.ValidateCertificates,
@@ -900,7 +874,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    using var response = await client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     var jroot = JsonApplicationsRoot.Deserialize(stream);
 
@@ -933,7 +907,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 }
                 finally
                 {
-                    DisposeHttpClient(client);
                     HttpClientHelper.RestoreCertificateValidation(Config.ValidateCertificates, prevProtocols, prevValidator);
                 }
 
@@ -946,9 +919,9 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         protected virtual HttpClient GetHttpClient(IEurekaClientConfig config)
         {
-            if (_client != null)
+            if (_httpClient != null)
             {
-                return _client;
+                return _httpClient;
             }
 
             if (_handlerProvider != null)
@@ -1001,19 +974,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
-        }
-
-        protected virtual void DisposeHttpClient(HttpClient client)
-        {
-            if (client == null)
-            {
-                return;
-            }
-
-            if (_client != client)
-            {
-                client.Dispose();
-            }
         }
 
         private static string CommaDelimit(ICollection<string> toJoin)
