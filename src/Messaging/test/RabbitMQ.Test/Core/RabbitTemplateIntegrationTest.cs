@@ -938,7 +938,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     receiveCount.IncrementAndGet();
                     return payload * 3;
                 });
-                if (DateTimeOffset.Now.ToUnixTimeMilliseconds() > start * 10000)
+                if (DateTimeOffset.Now.ToUnixTimeMilliseconds() > start + 20000)
                 {
                     throw new Exception("Something wrong with RabbitMQ");
                 }

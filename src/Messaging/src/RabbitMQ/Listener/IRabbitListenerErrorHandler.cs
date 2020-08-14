@@ -9,6 +9,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public interface IRabbitListenerErrorHandler : IServiceNameAware
     {
-        object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception);
+        object HandleError(IMessage origMessage, IMessage message, ListenerExecutionFailedException exception);
     }
 }

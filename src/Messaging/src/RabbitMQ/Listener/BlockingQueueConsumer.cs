@@ -510,7 +510,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             if (consumerTag != null)
             {
-                Consumers.TryAdd(queue, consumer);
                 Logger?.LogDebug("Started on queue '{queue}' with tag {consumerTag} : {consumer}", queue, consumerTag, ToString());
             }
             else
@@ -696,6 +695,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 base.HandleBasicConsumeOk(consumerTag);
                 ConsumerTag = consumerTag;
                 Logger?.LogDebug("ConsumeOK: {consumer} {consumerTag}", Consumer.ToString(), consumerTag);
+                Consumer.Consumers.TryAdd(QueueName, this);
 
                 // if (BlockingQueueConsumer.this.applicationEventPublisher != null) {
                 //    BlockingQueueConsumer.this.applicationEventPublisher

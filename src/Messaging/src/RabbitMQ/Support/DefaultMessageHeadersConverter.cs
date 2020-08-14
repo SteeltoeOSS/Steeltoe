@@ -46,11 +46,31 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 target.Timestamp = new RC.AmqpTimestamp(source.Timestamp.Value);
             }
 
-            target.MessageId = source.Id?.ToString();
-            target.UserId = source.UserId();
-            target.AppId = source.AppId();
-            target.ClusterId = source.ClusterId();
-            target.Type = source.Type();
+            if (source.Id != null)
+            {
+                target.MessageId = source.Id;
+            }
+
+            if (source.UserId() != null)
+            {
+                target.UserId = source.UserId();
+            }
+
+            if (source.AppId() != null)
+            {
+                target.AppId = source.AppId();
+            }
+
+            if (source.ClusterId() != null)
+            {
+                target.ClusterId = source.ClusterId();
+            }
+
+            if (source.Type() != null)
+            {
+                target.Type = source.Type();
+            }
+
             if (source.DeliveryMode().HasValue)
             {
                 target.DeliveryMode = (byte)source.DeliveryMode().Value;
@@ -60,19 +80,31 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 target.DeliveryMode = (byte)RabbitHeaderAccessor.DEFAULT_DELIVERY_MODE;
             }
 
-            target.Expiration = source.Expiration();
+            if (source.Expiration() != null)
+            {
+                target.Expiration = source.Expiration();
+            }
+
             if (source.Priority().HasValue)
             {
                 target.Priority = (byte)source.Priority().Value;
             }
 
-            target.ContentType = source.ContentType();
+            if (source.ContentType() != null)
+            {
+                target.ContentType = source.ContentType();
+            }
+
             if (string.IsNullOrEmpty(target.ContentType))
             {
                 target.ContentType = RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE;
             }
 
-            target.ContentEncoding = source.ContentEncoding();
+            if (source.ContentEncoding() != null)
+            {
+                target.ContentEncoding = source.ContentEncoding();
+            }
+
             var correlationId = source.CorrelationId();
             if (!string.IsNullOrEmpty(correlationId))
             {
@@ -231,7 +263,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             }
             else if (value is byte[])
             {
-                value = new RC.BinaryTableValue((byte[])value);
+                value =  new RC.BinaryTableValue((byte[])value);
             }
 
             return value;
