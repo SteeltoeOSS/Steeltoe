@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
             // act
             var host = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .UseSerilogDynamicConsole((context, loggerConfiguration) =>
+                .AddDynamicSerilog((context, loggerConfiguration) =>
                 {
                     loggerConfiguration
                         .MinimumLevel.Error()
