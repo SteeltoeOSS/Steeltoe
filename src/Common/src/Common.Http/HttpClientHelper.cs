@@ -31,12 +31,23 @@ namespace Steeltoe.Common.Http
 
         private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
 
-        public static HttpClient GetHttpClient(bool validateCertificates, int timeout)
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(bool validateCertificates, int timeoutMillis)
         {
-            return GetHttpClient(validateCertificates, null, timeout);
+            return GetHttpClient(validateCertificates, null, timeoutMillis);
         }
 
-        public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeout)
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+        /// <param name="handler">A pre-defined <see cref="HttpClientHandler"/></param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeoutMillis)
         {
             HttpClient client;
             if (Platform.IsFullFramework)
@@ -62,19 +73,30 @@ namespace Steeltoe.Common.Http
                 }
             }
 
-            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
             client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
             return client;
         }
 
-        public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeout = 15)
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="handler">A pre-defined <see cref="HttpMessageHandler"/></param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeoutMillis = 1500)
         {
             var client = handler == null ? new HttpClient() : new HttpClient(handler);
-            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
             client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
             return client;
         }
 
+        /// <summary>
+        /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not certificates should be validated</param>
+        /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
+        /// <param name="prevValidator">Pre-existing certificate validation callback</param>
         public static void ConfigureCertificateValidation(
             bool validateCertificates,
             out SecurityProtocolType protocolType,
@@ -94,6 +116,12 @@ namespace Steeltoe.Common.Http
             }
         }
 
+        /// <summary>
+        /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not certificates should be validated</param>
+        /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
+        /// <param name="prevValidator">Pre-existing certificate validation callback</param>
         public static void RestoreCertificateValidation(
             bool validateCertificates,
             SecurityProtocolType protocolType,
@@ -121,6 +149,12 @@ namespace Steeltoe.Common.Http
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 
+        /// <summary>
+        /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+        /// </summary>
+        /// <param name="method"><see cref="HttpMethod"/></param>
+        /// <param name="requestUri">The remote Uri</param>
+        /// <param name="getAccessToken">A means of including a bearer token</param>
         public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
         {
             var request = GetRequestMessage(method, requestUri, null, null);
@@ -139,6 +173,13 @@ namespace Steeltoe.Common.Http
             return request;
         }
 
+        /// <summary>
+        /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+        /// </summary>
+        /// <param name="method"><see cref="HttpMethod"/></param>
+        /// <param name="requestUri">The remote Uri</param>
+        /// <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty</param>
+        /// <param name="password">Optional Basic Auth Password</param>
         public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
         {
             if (method == null)
