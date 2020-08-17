@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Steeltoe.Connector;
 using System;
 using System.Reflection;
@@ -15,7 +14,7 @@ namespace Steeltoe.Discovery.Client
     {
         /// <summary>
         /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
-        /// If is no discovery client package reference is used, a <see cref="NoOpDiscoveryClient"/> will be configured
+        /// Uses reflection to find discovery client packages. If no package is found, a <see cref="NoOpDiscoveryClient"/> will be configured
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
