@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Availability;
+using Steeltoe.Extensions.Logging;
+using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -65,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -96,7 +98,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/env");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -161,7 +163,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -222,7 +224,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
                 // Assert
                 var response = host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
-                Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             }
         }
 
@@ -254,7 +256,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -302,7 +304,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -333,7 +335,33 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddLoggers_IHostBuilder_MultipleLoggersScenarios()
+        {
+            // Add Serilog + DynamicConsole = runs OK
+            // Arrange
+            var hostBuilder = new HostBuilder().UseSerilogDynamicConsole().AddDynamicLogging().ConfigureWebHost(testServerWithRouting);
+
+            // Act
+            var host = await hostBuilder.AddLoggersActuator().StartAsync();
+
+            // Assert
+            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+
+            // Add DynamicConsole + Serilog = throws exception
+            // Arrange
+            hostBuilder = new HostBuilder().AddDynamicLogging().UseSerilogDynamicConsole().ConfigureWebHost(testServerWithRouting);
+
+            // Act
+            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
+
+            // Assert
+            Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier", exception.Message);
+
         }
 
         [Fact]
@@ -364,7 +392,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -395,7 +423,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -426,7 +454,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -462,7 +490,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
                 // Assert
                 var response = host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
-                Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             }
         }
 
@@ -494,7 +522,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -525,11 +553,11 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -543,11 +571,11 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Assert
             var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
             response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         [Fact]
@@ -577,7 +605,7 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
 
             var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
-            Assert.Equal(System.Net.HttpStatusCode.OK, response.Result.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
         }
 
         private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());

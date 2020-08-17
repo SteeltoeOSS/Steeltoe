@@ -30,12 +30,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         private LogEventLevel? _defaultLevel = null;
         private bool _disposed = false;
 
-        [Obsolete("Will be removed in a future release; Use SerilogDynamicProvider(IConfiguration, ISerilogOptions, Logger, LoggingLevelSwitch) instead")]
-        public SerilogDynamicProvider(IConfiguration configuration, Logger logger, LoggingLevelSwitch loggingLevelSwitch, ISerilogOptions options = null)
-            : this(configuration, options, logger, loggingLevelSwitch)
-        {
-        }
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SerilogDynamicProvider"/> class.
         /// Any Serilog settings can be passed in the IConfiguration as needed.

@@ -23,10 +23,10 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
                 .UseSerilogDynamicConsole((context, loggerConfiguration) =>
                 {
                     loggerConfiguration
-                    .MinimumLevel.Error()
-                    .Enrich.WithExceptionDetails()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .WriteTo.Sink(testSink, LogEventLevel.Error);
+                        .MinimumLevel.Error()
+                        .Enrich.WithExceptionDetails()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                        .WriteTo.Sink(testSink, LogEventLevel.Error);
                 })
                 .Build();
 
