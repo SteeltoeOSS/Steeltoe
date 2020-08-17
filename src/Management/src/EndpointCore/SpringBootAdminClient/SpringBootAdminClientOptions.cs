@@ -21,6 +21,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         public string BasePath { get; set; }
 
+        public bool ValidateCertificates { get; set; } = true;
+
         public Dictionary<string, object> Metadata { get; set; }
 
         public SpringBootAdminClientOptions(IConfiguration config, IApplicationInstanceInfo appInfo)
