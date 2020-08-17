@@ -67,6 +67,14 @@ namespace Steeltoe.Common.Http
             return client;
         }
 
+        public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeout = 15)
+        {
+            var client = handler == null ? new HttpClient() : new HttpClient(handler);
+            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
+            return client;
+        }
+
         public static void ConfigureCertificateValidation(
             bool validateCertificates,
             out SecurityProtocolType protocolType,
@@ -203,7 +211,7 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
             }
 
-            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, logger, additionalParams, httpClient);
+            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
         }
 
         private static async Task<string> GetAccessTokenInternal(
@@ -212,9 +220,9 @@ namespace Steeltoe.Common.Http
             string clientSecret,
             int timeout,
             bool validateCertificates,
-            ILogger logger,
+            HttpClient httpClient,
             Dictionary<string, string> additionalParams,
-            HttpClient httpClient = null)
+            ILogger logger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
             logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");

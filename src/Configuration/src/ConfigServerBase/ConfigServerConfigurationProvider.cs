@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public const string STATE_HEADER = "X-Config-State";
 
         protected ConfigServerClientSettings _settings; // Current settings
-        protected HttpClient _client;
+        protected HttpClient _httpClient;
         protected ILogger _logger;
         protected ILoggerFactory _loggerFactory;
         protected IConfiguration _configuration;
@@ -76,7 +76,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             _loggerFactory = logFactory;
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _client = null;
             _configuration = new ConfigurationBuilder().Build();
         }
 
@@ -89,7 +88,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _logger = logFactory?.CreateLogger<ConfigServerConfigurationProvider>();
             _loggerFactory = logFactory;
             _configuration = new ConfigurationBuilder().Build();
@@ -115,7 +114,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
             : this(source.DefaultSettings, source.LogFactory)
         {
-            _client = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _ = source.Configuration as IConfigurationRoot;
             _configuration = WrapWithPlaceholderResolver(source.Configuration);
             ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
@@ -457,10 +456,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
         {
             // Get client if not already set
-            if (_client == null)
-            {
-                _client = GetHttpClient(_settings);
-            }
+            _httpClient ??= GetHttpClient(_settings);
 
             Exception error = null;
             foreach (var requestUri in requestUris)
@@ -486,7 +482,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 // Invoke config server
                 try
                 {
-                    using var response = await _client.SendAsync(request).ConfigureAwait(false);
+                    using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
                     // Log status
                     var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
@@ -548,10 +544,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
         {
             // Get client if not already set
-            if (_client == null)
-            {
-                _client = GetHttpClient(_settings);
-            }
+            _httpClient ??= GetHttpClient(_settings);
 
             // Get the request message
             var request = GetRequestMessage(requestUri);
@@ -562,7 +555,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             // Invoke config server
             try
             {
-                using var response = await _client.SendAsync(request).ConfigureAwait(false);
+                using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound)
@@ -791,7 +784,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 _settings.ClientId,
                 _settings.ClientSecret,
                 _settings.Timeout,
-                _settings.ValidateCertificates).GetAwaiter().GetResult();
+                _settings.ValidateCertificates,
+                _httpClient,
+                _logger).GetAwaiter().GetResult();
         }
 
         // fire and forget
@@ -812,17 +807,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 out var prevProtocols,
                 out var prevValidator);
 
-            HttpClient client = null;
             try
             {
-                client = GetHttpClient(Settings);
+                _httpClient ??= GetHttpClient(Settings);
 
                 var uri = GetVaultRenewUri();
                 var message = GetVaultRenewMessage(uri);
 
                 _logger?.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 
-                using var response = await client.SendAsync(message).ConfigureAwait(false);
+                using var response = await _httpClient.SendAsync(message).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     _logger?.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
@@ -834,7 +828,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             }
             finally
             {
-                client.Dispose();
                 HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
