@@ -263,7 +263,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             }
             else if (value is byte[])
             {
-                value =  new RC.BinaryTableValue((byte[])value);
+                value = new RC.BinaryTableValue((byte[])value);
             }
 
             return value;

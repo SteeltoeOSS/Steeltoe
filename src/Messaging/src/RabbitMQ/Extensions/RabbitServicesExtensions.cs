@@ -107,6 +107,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return services.AddSingleton(queue);
         }
 
+        public static IServiceCollection AddRabbitQueue(this IServiceCollection services, Func<IServiceProvider, IQueue> factory)
+        {
+            services.AddSingleton<IQueue>(p =>
+            {
+                return factory(p);
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, string queueName, Action<IServiceProvider, Queue> configure = null)
         {
             services.AddSingleton<IQueue>(p =>
@@ -129,6 +139,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             {
                 services.AddRabbitExchange(e);
             }
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitExchange(this IServiceCollection services, Func<IServiceProvider, IExchange> factory)
+        {
+            services.AddSingleton<IExchange>(p =>
+            {
+                return factory(p);
+            });
 
             return services;
         }
@@ -170,6 +190,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             {
                 services.AddRabbitBinding(b);
             }
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitBinding(this IServiceCollection services, Func<IServiceProvider, IBinding> factory)
+        {
+            services.AddSingleton<IBinding>(p =>
+            {
+                return factory(p);
+            });
 
             return services;
         }

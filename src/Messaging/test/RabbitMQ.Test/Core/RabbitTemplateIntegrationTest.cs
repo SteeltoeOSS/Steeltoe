@@ -548,7 +548,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var admin = new RabbitAdmin(cachingConnectionFactory);
             var replyQueue = admin.DeclareQueue();
             template.ReplyAddress = replyQueue.QueueName;
-            template.UseCorrelationId = true;
+            template.UserCorrelationId = true;
             template.ReplyTimeout = 10000;
             var container = new DirectMessageListenerContainer(null, cachingConnectionFactory);
             container.SetQueues(replyQueue);

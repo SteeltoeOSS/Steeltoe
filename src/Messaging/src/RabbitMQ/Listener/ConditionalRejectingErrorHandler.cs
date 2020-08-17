@@ -39,7 +39,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public virtual bool HandleError(Exception exception)
         {
             _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
-            if (!CauseChainContainsARADRE(exception) && _exceptionStrategy.IsFatal(exception))
+            if (!CauseChainContainsRRADRE(exception) && _exceptionStrategy.IsFatal(exception))
             {
                 if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException)
                 {
@@ -64,7 +64,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return true;
         }
 
-        protected virtual bool CauseChainContainsARADRE(Exception exception)
+        protected virtual bool CauseChainContainsRRADRE(Exception exception)
         {
             var cause = exception.InnerException;
             while (cause != null)
