@@ -37,10 +37,10 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
-    public class ManagementHostBuilderExtensionsTest
+    public class ManagementWebHostBuilderExtensionsTest
     {
         [Fact]
-        public void AddDbMigrationsActuator_IHostBuilder()
+        public void AddDbMigrationsActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddDbMigrationsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -71,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddEnvActuator_IHostBuilder()
+        public void AddEnvActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -88,7 +88,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddEnvActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -102,7 +102,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddHealthActuator_IHostBuilder()
+        public void AddHealthActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -119,7 +119,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddHealthActuator_IHostBuilder_WithTypes()
+        public void AddHealthActuator_IWebHostBuilder_WithTypes()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -136,7 +136,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddHealthActuator_IHostBuilder_WithAggregator()
+        public void AddHealthActuator_IWebHostBuilder_WithAggregator()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -153,7 +153,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -167,7 +167,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddHealthActuator_IHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
+        public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -192,7 +192,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddHeapDumpActuator_IHostBuilder()
+        public void AddHeapDumpActuator_IWebHostBuilder()
         {
             if (Platform.IsWindows)
             {
@@ -212,7 +212,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddHeapDumpActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddHeapDumpActuator_IWebHostBuilder_IStartupFilterFires()
         {
             if (Platform.IsWindows)
             {
@@ -229,7 +229,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddHypermediaActuator_IHostBuilder()
+        public void AddHypermediaActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -246,7 +246,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddHypermediaActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -260,7 +260,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddInfoActuator_IHostBuilder()
+        public void AddInfoActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -277,7 +277,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddInfoActuator_IHostBuilder_WithTypes()
+        public void AddInfoActuator_IWebHostBuilder_WithTypes()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -294,7 +294,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddInfoActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -308,7 +308,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddLoggersActuator_IHostBuilder()
+        public void AddLoggersActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -325,7 +325,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddLoggersActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -339,7 +339,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddLoggers_IHostBuilder_MultipleLoggersScenarios()
+        public async Task AddLoggers_IWebHostBuilder_MultipleLoggersScenarios()
         {
             // Add Serilog + DynamicConsole = runs OK
             // Arrange
@@ -364,7 +364,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddMappingsActuator_IHostBuilder()
+        public void AddMappingsActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -381,7 +381,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddMappingsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -395,7 +395,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddMetricsActuator_IHostBuilder()
+        public void AddMetricsActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -412,7 +412,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddMetricsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -426,7 +426,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddRefreshActuator_IHostBuilder()
+        public void AddRefreshActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -443,7 +443,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddRefreshActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -457,7 +457,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddThreadDumpActuator_IHostBuilder()
+        public void AddThreadDumpActuator_IWebHostBuilder()
         {
             if (Platform.IsWindows)
             {
@@ -477,7 +477,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddThreadDumpActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddThreadDumpActuator_IWebHostBuilder_IStartupFilterFires()
         {
             if (Platform.IsWindows)
             {
@@ -494,7 +494,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddTraceActuator_IHostBuilder()
+        public void AddTraceActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -511,7 +511,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddTraceActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -525,7 +525,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddCloudFoundryActuator_IHostBuilder()
+        public void AddCloudFoundryActuator_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -542,7 +542,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddAllActuators_IHostBuilder_IStartupFilterFires()
+        public async Task AddAllActuators_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
@@ -560,7 +560,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddAllActuatorsWithConventions_IHostBuilder_IStartupFilterFires()
+        public async Task AddAllActuatorsWithConventions_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithSecureRouting);
@@ -578,7 +578,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public void AddAllActuators_IHostBuilder()
+        public void AddAllActuators_IWebHostBuilder()
         {
             // Arrange
             var hostBuilder = new HostBuilder();
@@ -595,7 +595,7 @@ namespace Steeltoe.Management.Endpoint.Test
         }
 
         [Fact]
-        public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
+        public async Task AddCloudFoundryActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
             var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
