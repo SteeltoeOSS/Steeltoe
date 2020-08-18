@@ -24,6 +24,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             {
                 throw new ArgumentNullException(nameof(config));
             }
+
             services.AddActuatorManagementOptions(config);
             services.TryAddSingleton<IActuatorHypermediaOptions>(provider =>
                 {
