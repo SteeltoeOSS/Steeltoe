@@ -33,13 +33,14 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        public static void AddAllActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version = MediaTypeVersion.V2)
+        public static void AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
