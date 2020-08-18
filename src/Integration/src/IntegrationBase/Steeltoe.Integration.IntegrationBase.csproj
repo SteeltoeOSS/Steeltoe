@@ -1,7 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   
   <PropertyGroup>
-    <Description>Steeltoe Integration Base</Description>
+    <Description>
+      Steeltoe Integration Base
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Steeltoe.Integration</RootNamespace>
     <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
