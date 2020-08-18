@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client.SimpleClients;
@@ -60,18 +61,13 @@ namespace Steeltoe.Discovery.Client
                 ? GetSingletonDiscoveryServiceInfo(config)
                 : GetNamedDiscoveryServiceInfo(config, serviceName);
 
-            // todo: provide a hook for specifying additional assemblies to search
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(n => n.FullName.StartsWith("Steeltoe.Discovery"));
-
             // iterate assemblies for implementations of IDiscoveryClientExtension
             var implementations = new List<IDiscoveryClientExtension>();
-            foreach (var assembly in assemblies)
+
+            var extensions = ReflectionHelpers.FindInterfacedTypesFromAssemblyAttribute<DiscoveryClientAssemblyAttribute>();
+            foreach (var clientExtension in extensions)
             {
-                var clientExtensions = assembly.GetTypes().Where(t => t.GetInterface("IDiscoveryClientExtension") != null);
-                foreach (var clientExtension in clientExtensions)
-                {
-                    implementations.Add(Activator.CreateInstance(clientExtension) as IDiscoveryClientExtension);
-                }
+                implementations.Add(Activator.CreateInstance(clientExtension) as IDiscoveryClientExtension);
             }
 
             if (implementations.Count == 1)
