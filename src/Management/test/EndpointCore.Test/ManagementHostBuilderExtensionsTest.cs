@@ -66,8 +66,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -97,8 +97,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddEnvActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/env");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -162,8 +162,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddHealthActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -223,8 +223,8 @@ namespace Steeltoe.Management.Endpoint.Test
                 var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
 
                 // Assert
-                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
-                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+                var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 
@@ -255,8 +255,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddHypermediaActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -303,8 +303,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddInfoActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -334,8 +334,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -349,8 +349,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             // Add DynamicConsole + Serilog = throws exception
             // Arrange
@@ -390,8 +390,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddMappingsActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -421,8 +421,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddMetricsActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -452,8 +452,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddRefreshActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -488,8 +488,8 @@ namespace Steeltoe.Management.Endpoint.Test
                 var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
 
                 // Assert
-                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
-                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+                var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 
@@ -520,8 +520,8 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddTraceActuator().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -551,12 +551,12 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddAllActuators().StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -569,12 +569,12 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -603,8 +603,8 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
 
-            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());

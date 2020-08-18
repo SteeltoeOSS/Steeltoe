@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddDbMigrationsActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddDbMigrationsActuator().Build();
@@ -60,21 +60,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddDbMigrationsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
+            var host = hostBuilder.AddDbMigrationsActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddEnvActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddEnvActuator().Build();
@@ -91,21 +91,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddEnvActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddEnvActuator().StartAsync();
+            var host = hostBuilder.AddEnvActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/env");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddHealthActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddHealthActuator().Build();
@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddHealthActuator_IWebHostBuilder_WithTypes()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddHealthActuator(new Type[] { typeof(DownContributor) }).Build();
@@ -139,7 +139,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddHealthActuator_IWebHostBuilder_WithAggregator()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new Type[] { typeof(DownContributor) }).Build();
@@ -156,24 +156,24 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddHealthActuator().StartAsync();
+            var host = hostBuilder.AddHealthActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task AddHealthActuator_IWebHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // start the server, get a client
-            var host = await hostBuilder.AddHealthActuator().StartAsync();
+            var host = hostBuilder.AddHealthActuator().Start();
             var client = host.GetTestClient();
 
             // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
@@ -197,7 +197,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder();
+                var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
                 // Act
                 var host = hostBuilder.AddHeapDumpActuator().Build();
@@ -217,14 +217,14 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+                var hostBuilder = testServerWithRouting;
 
                 // Act
-                var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
+                var host = hostBuilder.AddHeapDumpActuator().Start();
 
                 // Assert
-                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
-                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+                var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 
@@ -232,7 +232,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddHypermediaActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddHypermediaActuator().Build();
@@ -249,21 +249,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHypermediaActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddHypermediaActuator().StartAsync();
+            var host = hostBuilder.AddHypermediaActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddInfoActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddInfoActuator().Build();
@@ -280,7 +280,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddInfoActuator_IWebHostBuilder_WithTypes()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddInfoActuator(new IInfoContributor[] { new AppSettingsInfoContributor(new ConfigurationBuilder().Build()) }).Build();
@@ -297,21 +297,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddInfoActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddInfoActuator().StartAsync();
+            var host = hostBuilder.AddInfoActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddLoggersActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddLoggersActuator().Build();
@@ -328,36 +328,40 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddLoggersActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddLoggersActuator().StartAsync();
+            var host = hostBuilder.AddLoggersActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async Task AddLoggers_IWebHostBuilder_MultipleLoggersScenarios()
+        public async Task AddLoggers_IWebHostBuilder_MultipleLoggersScenario1()
         {
             // Add Serilog + DynamicConsole = runs OK
             // Arrange
-            var hostBuilder = new HostBuilder().AddDynamicSerilog().AddDynamicLogging().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddSerilogDynamicConsole().AddDynamicConsole());
 
             // Act
-            var host = await hostBuilder.AddLoggersActuator().StartAsync();
+            var host = hostBuilder.AddLoggersActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
 
+        [Fact]
+        public void AddLoggers_IWebHostBuilder_MultipleLoggersScenario2()
+        {
             // Add DynamicConsole + Serilog = throws exception
             // Arrange
-            hostBuilder = new HostBuilder().AddDynamicLogging().AddDynamicSerilog().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddDynamicConsole().AddSerilogDynamicConsole());
 
             // Act
-            var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
+            var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.AddLoggersActuator().Start());
 
             // Assert
             Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier", exception.Message);
@@ -367,7 +371,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddMappingsActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddMappingsActuator().Build();
@@ -384,21 +388,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMappingsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddMappingsActuator().StartAsync();
+            var host = hostBuilder.AddMappingsActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddMetricsActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddMetricsActuator().Build();
@@ -415,21 +419,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddMetricsActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddMetricsActuator().StartAsync();
+            var host = hostBuilder.AddMetricsActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddRefreshActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddRefreshActuator().Build();
@@ -446,14 +450,14 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddRefreshActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddRefreshActuator().StartAsync();
+            var host = hostBuilder.AddRefreshActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
@@ -462,7 +466,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder();
+                var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
                 // Act
                 var host = hostBuilder.AddThreadDumpActuator().Build();
@@ -482,14 +486,14 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+                var hostBuilder = testServerWithRouting;
 
                 // Act
-                var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
+                var host = hostBuilder.AddThreadDumpActuator().Start();
 
                 // Assert
-                var response = host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
-                Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+                var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
         }
 
@@ -497,7 +501,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public void AddTraceActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddTraceActuator().Build();
@@ -514,21 +518,21 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddTraceActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddTraceActuator().StartAsync();
+            var host = hostBuilder.AddTraceActuator().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddCloudFoundryActuator_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddCloudFoundryActuator().Build();
@@ -545,43 +549,44 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddAllActuators_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddAllActuators().StartAsync();
+            var host = hostBuilder.AddAllActuators().Start();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public async Task AddAllActuatorsWithConventions_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithSecureRouting);
+            var hostBuilder = testServerWithSecureRouting;
 
             // Act
-            var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
+            var host = hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
+            var client = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = host.GetTestServer().CreateClient().GetAsync("/actuator");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/info");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
-            response = host.GetTestServer().CreateClient().GetAsync("/actuator/health");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await client.GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await client.GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await client.GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
         public void AddAllActuators_IWebHostBuilder()
         {
             // Arrange
-            var hostBuilder = new HostBuilder();
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
 
             // Act
             var host = hostBuilder.AddAllActuators().Build();
@@ -598,18 +603,18 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddCloudFoundryActuator_IWebHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = testServerWithRouting;
 
             // Act
-            var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
+            var host = hostBuilder.AddCloudFoundryActuator().Start();
 
-            var response = host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
-            Assert.Equal(HttpStatusCode.OK, response.Result.StatusCode);
+            var response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
-        private Action<IWebHostBuilder> testServerWithSecureRouting =
-            builder => builder.UseTestServer()
+        private IWebHostBuilder testServerWithRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        private IWebHostBuilder testServerWithSecureRouting =
+            new WebHostBuilder().UseTestServer()
             .ConfigureServices(s =>
             {
                 s.AddRouting();
