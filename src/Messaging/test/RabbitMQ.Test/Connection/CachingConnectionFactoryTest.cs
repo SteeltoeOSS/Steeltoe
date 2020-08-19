@@ -1298,7 +1298,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mock = new Mock<RC.ConnectionFactory>();
             IList<RC.AmqpTcpEndpoint> captured = null;
-            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>(), It.IsAny<string>()))
+            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
                 .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
             var ccf = new CachingConnectionFactory(mock.Object);
             ccf.SetAddresses("mq1");
@@ -1314,7 +1314,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         {
             var mock = new Mock<RC.ConnectionFactory>();
             IList<RC.AmqpTcpEndpoint> captured = null;
-            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>(), It.IsAny<string>()))
+            mock.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
                 .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captured = arg1);
             mock.Setup((f) => f.AutomaticRecoveryEnabled).Returns(true);
             var ccf = new CachingConnectionFactory(mock.Object);
@@ -1436,8 +1436,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
             var mockConnection = new Mock<RC.IConnection>();
             var mockChannel = new Mock<RC.IModel>();
-            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>(), It.IsAny<string>()))
-                .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, arg2) => captors.Add(arg1))
+            mockConnectionFactory.Setup((f) => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
+                .Callback<IList<RC.AmqpTcpEndpoint>>((arg1) => captors.Add(arg1))
                 .Returns(mockConnection.Object);
             mockConnection.Setup((c) => c.CreateModel()).Returns(mockChannel.Object);
             mockConnection.Setup((c) => c.IsOpen).Returns(true);

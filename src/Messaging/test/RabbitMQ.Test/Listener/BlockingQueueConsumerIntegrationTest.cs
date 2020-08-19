@@ -42,11 +42,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 QUEUE2_NAME);
             var prefix = Guid.NewGuid().ToString();
             blockingQueueConsumer.TagStrategy = new TagStrategy(prefix);
-            var latch = new CountdownEvent(2);
             try
             {
                 blockingQueueConsumer.Start();
+                int n = 0;
                 var consumers = blockingQueueConsumer.CurrentConsumers();
+
+                // Wait for consumers
+                while (n < 100)
+                {
+                    if (consumers.Count < 2)
+                    {
+                        n++;
+                        Thread.Sleep(100);
+                        consumers = blockingQueueConsumer.CurrentConsumers();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
                 Assert.Equal(2, consumers.Count);
                 var tags = new List<string>() { consumers[0].ConsumerTag, consumers[1].ConsumerTag };
                 Assert.Contains(prefix + "#" + QUEUE1_NAME, tags);

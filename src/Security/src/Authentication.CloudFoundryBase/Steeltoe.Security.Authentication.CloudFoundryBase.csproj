@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry</RootNamespace>
     <Description>Base Security Provider for CloudFoundry</Description>
     <PackageTags>CloudFoundry;security;oauth2;sso;openid</PackageTags>

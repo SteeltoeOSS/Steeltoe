@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe Library for handling retries</Description>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.RetryPolly</AssemblyName>
     <PackageId>Steeltoe.Common.Retry</PackageId>
     <PackageTags>NET Core;Retry;</PackageTags>

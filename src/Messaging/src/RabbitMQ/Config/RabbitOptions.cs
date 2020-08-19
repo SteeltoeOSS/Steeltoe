@@ -178,7 +178,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             public string CertPassphrase { get; set; }
 
-            public string ServerName { get; set; }
+            public string ServerHostName { get; set; }
 
             public SslProtocols Algorithm { get; set; } = SslProtocols.Tls13 | SslProtocols.Tls12;
         }

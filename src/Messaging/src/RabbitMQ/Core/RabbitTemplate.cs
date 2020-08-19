@@ -218,7 +218,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        public virtual bool UseCorrelationId { get; set; }
+        public virtual bool UserCorrelationId { get; set; }
 
         public virtual bool UsePublisherConnection { get; set; }
 
@@ -1873,7 +1873,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private void RestoreProperties(IMessage message, PendingReply pendingReply)
         {
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-            if (!UseCorrelationId)
+            if (!UserCorrelationId)
             {
                 // Restore the inbound correlation data
                 var savedCorrelation = pendingReply.SavedCorrelation;
@@ -2016,7 +2016,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var pendingReply = new PendingReply();
             var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
-            if (UseCorrelationId)
+            if (UserCorrelationId)
             {
                 object correlationId;
                 if (CorrelationKey != null)
@@ -2081,7 +2081,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ReplyTo = ReplyAddress;
-            if (!UseCorrelationId)
+            if (!UserCorrelationId)
             {
                 object savedCorrelation = null;
                 if (CorrelationKey == null)

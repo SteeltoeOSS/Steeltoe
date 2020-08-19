@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <Description>Steeltoe Messaging Abstractions</Description>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>

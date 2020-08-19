@@ -107,6 +107,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return services.AddSingleton(queue);
         }
 
+        public static IServiceCollection AddRabbitQueue(this IServiceCollection services, Func<IServiceProvider, IQueue> factory)
+        {
+            services.AddSingleton<IQueue>(p =>
+            {
+                return factory(p);
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, string queueName, Action<IServiceProvider, Queue> configure = null)
         {
             services.AddSingleton<IQueue>(p =>
@@ -129,6 +139,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             {
                 services.AddRabbitExchange(e);
             }
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitExchange(this IServiceCollection services, Func<IServiceProvider, IExchange> factory)
+        {
+            services.AddSingleton<IExchange>(p =>
+            {
+                return factory(p);
+            });
 
             return services;
         }
@@ -174,6 +194,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return services;
         }
 
+        public static IServiceCollection AddRabbitBinding(this IServiceCollection services, Func<IServiceProvider, IBinding> factory)
+        {
+            services.AddSingleton<IBinding>(p =>
+            {
+                return factory(p);
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddRabbitBinding(this IServiceCollection services, IBinding binding)
         {
             services.AddSingleton<IBinding>(binding);
@@ -206,7 +236,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return services;
         }
 
-        public static IServiceCollection AddRabbitServices(this IServiceCollection services)
+        public static IServiceCollection AddRabbitServices(this IServiceCollection services, bool useJsonMessageConverter = false)
         {
             if (services == null)
             {
@@ -216,7 +246,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             services.AddRabbitHostingServices();
 
             services.AddRabbitConnectionFactory();
-            services.AddRabbitDefaultMessageConverter();
+            if (useJsonMessageConverter)
+            {
+                services.AddRabbitJsonMessageConverter();
+            }
+            else
+            {
+                services.AddRabbitDefaultMessageConverter();
+            }
+
             services.AddRabbitMessageHandlerMethodFactory();
             services.AddRabbitListenerContainerFactory();
             services.AddRabbitListenerEndpointRegistry();
@@ -550,6 +588,51 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             services.TryAddSingleton<IMessageHandlerMethodFactory>((p) =>
             {
                 var instance = (F)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(F));
+                if (!string.IsNullOrEmpty(serviceName))
+                {
+                    instance.ServiceName = serviceName;
+                }
+
+                if (configure != null)
+                {
+                    configure(p, instance);
+                }
+
+                instance.Initialize();
+
+                return instance;
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, Func<IServiceProvider, DirectMessageListenerContainer> factory)
+        {
+            return services.AddRabbitListenerContainer<DirectMessageListenerContainer>(factory);
+        }
+
+        public static IServiceCollection AddRabbitDirecListenerContainer(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
+        {
+            return services.AddRabbitListenerContainer<DirectMessageListenerContainer>(serviceName, configure);
+        }
+
+        public static IServiceCollection AddRabbitListenerContainer<C>(this IServiceCollection services, Func<IServiceProvider, C> factory)
+            where C : AbstractMessageListenerContainer
+        {
+            services.AddSingleton<ISmartLifecycle>((p) =>
+            {
+                return factory(p);
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitListenerContainer<C>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, C> configure = null)
+            where C : AbstractMessageListenerContainer
+        {
+            services.AddSingleton<ISmartLifecycle>((p) =>
+            {
+                var instance = (C)ActivatorUtilities.CreateInstance(p, typeof(C));
                 if (!string.IsNullOrEmpty(serviceName))
                 {
                     instance.ServiceName = serviceName;

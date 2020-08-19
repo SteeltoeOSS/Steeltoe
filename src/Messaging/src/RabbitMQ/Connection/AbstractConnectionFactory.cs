@@ -332,7 +332,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
                 _logger?.LogInformation("Attempting to connect to: {address} ", addressesToConnect);
 
-                rabbitConnection = _rabbitConnectionFactory.CreateConnection(addressesToConnect, connectionName);
+                rabbitConnection = _rabbitConnectionFactory.CreateConnection(addressesToConnect);
             }
             else
             {
