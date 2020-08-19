@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1</TargetFrameworks>
     <Description>Steeltoe common library for security</Description>
     <PackageTags>NET Core;NET Framework;certificates</PackageTags>
   </PropertyGroup>
