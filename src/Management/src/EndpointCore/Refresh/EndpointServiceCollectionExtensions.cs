@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
         /// Adds components of the Refresh actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:refresh)</param>
         public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)

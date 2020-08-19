@@ -16,7 +16,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         /// Adds components of the Loggers actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add logging to</param>
-        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:loggers)</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:loggers)</param>
         public static void AddLoggersActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
