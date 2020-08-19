@@ -302,6 +302,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             Assert.Equal("message", result);
             result = template.ReceiveAndConvert<string>(route);
             Assert.Null(result);
+            admin.DeleteQueue(CF_INTEGRATION_TEST_QUEUE);
         }
 
         [Fact]

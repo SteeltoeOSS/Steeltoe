@@ -794,7 +794,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
                     f.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
                     f.ReplyRecoveryCallback = new DefaultReplyRecoveryCallback();
-                    f.ChannelTransacted = true;
+                    f.IsChannelTransacted = true;
                 });
 
                 // Add named container factory directListenerContainerFactory

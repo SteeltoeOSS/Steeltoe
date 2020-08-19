@@ -189,6 +189,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public void Dispose()
             {
+                var admin = Provider.GetRabbitAdmin();
+                admin.DeleteQueue(TEST_QUEUE);
+                admin.DeleteQueue(TEST_QUEUE2);
                 Provider.Dispose();
             }
         }

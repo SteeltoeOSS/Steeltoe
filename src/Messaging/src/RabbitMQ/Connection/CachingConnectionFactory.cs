@@ -142,9 +142,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
             if (!isPublisherFactory)
             {
-                if (RabbitConnectionFactory != null && RabbitConnectionFactory.AutomaticRecoveryEnabled)
+                if (RabbitConnectionFactory != null && (RabbitConnectionFactory.AutomaticRecoveryEnabled || RabbitConnectionFactory.TopologyRecoveryEnabled))
                 {
                     RabbitConnectionFactory.AutomaticRecoveryEnabled = false;
+                    RabbitConnectionFactory.TopologyRecoveryEnabled = false;
                     _logger?.LogWarning("***\nAutomatic Recovery was Enabled in the provided connection factory;\n"
                             + "while Steeltoe is generally compatible with this feature, there\n"
                             + "are some corner cases where problems arise. Steeltoe\n"
@@ -633,7 +634,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
                 else
                 {
-                    factory.Ssl.ServerName = options.Ssl.ServerName;
+                    factory.Ssl.ServerName = options.Ssl.ServerHostName;
                 }
 
                 if (!string.IsNullOrEmpty(options.Ssl.CertPath))
@@ -645,6 +646,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 {
                     factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
                 }
+
+                factory.Ssl.Version = options.Ssl.Algorithm;
             }
 
             if (options.ConnectionTimeout.HasValue)

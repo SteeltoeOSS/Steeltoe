@@ -77,7 +77,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         public AcknowledgeMode? AcknowledgeMode { get; set; }
 
-        public bool? ChannelTransacted { get; set; }
+        public bool? IsChannelTransacted { get; set; }
 
         public IPlatformTransactionManager TransactionManager { get; set; }
 
@@ -190,9 +190,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 instance.AcknowledgeMode = AcknowledgeMode.Value;
             }
 
-            if (ChannelTransacted.HasValue)
+            if (IsChannelTransacted.HasValue)
             {
-                instance.IsChannelTransacted = ChannelTransacted.Value;
+                instance.IsChannelTransacted = IsChannelTransacted.Value;
             }
 
             if (ApplicationContext != null)

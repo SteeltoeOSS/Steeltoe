@@ -41,7 +41,7 @@ namespace Steeltoe.Messaging.RabbitMQ
 
         public string UserId { get; set; }
 
-        ushort RC.IContentHeader.ProtocolClassId => 0;
+        int RC.IContentHeader.ProtocolClassId => 0;
 
         string RC.IContentHeader.ProtocolClassName => string.Empty;
 
@@ -173,6 +173,11 @@ namespace Steeltoe.Messaging.RabbitMQ
         public bool IsUserIdPresent()
         {
             return UserId != null;
+        }
+
+        public void SetPersistent(bool persistent)
+        {
+            Persistent = persistent;
         }
     }
 }
