@@ -360,7 +360,7 @@ namespace Steeltoe.Management.Endpoint.Test
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
 
             // Assert
-            Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier", exception.Message);
+            Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message);
         }
 
         [Fact]

@@ -39,7 +39,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
                 {
-                    builder.AddSerilogDynamicConsole();
+                    builder.AddDynamicSerilog();
                 })
                 .BuildServiceProvider();
 
@@ -61,7 +61,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
                 {
-                    builder.AddSerilogDynamicConsole();
+                    builder.AddDynamicSerilog();
                 })
                 .BuildServiceProvider();
 
@@ -95,7 +95,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
                 {
-                    builder.AddSerilogDynamicConsole();
+                    builder.AddDynamicSerilog();
                 }).BuildServiceProvider();
 
             // act
@@ -118,7 +118,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder =>
                 {
-                    builder.AddSerilogDynamicConsole();
+                    builder.AddDynamicSerilog();
                 }).BuildServiceProvider();
 
             // act
@@ -137,7 +137,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
-                .AddLogging(builder => builder.AddSerilogDynamicConsole())
+                .AddLogging(builder => builder.AddDynamicSerilog())
                 .BuildServiceProvider();
 
             // act

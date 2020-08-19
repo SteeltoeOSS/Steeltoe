@@ -343,7 +343,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             // Add Serilog + DynamicConsole = runs OK
             // Arrange
-            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddSerilogDynamicConsole().AddDynamicConsole());
+            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddDynamicSerilog().AddDynamicConsole());
 
             // Act
             var host = hostBuilder.AddLoggersActuator().Start();
@@ -358,13 +358,13 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             // Add DynamicConsole + Serilog = throws exception
             // Arrange
-            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddDynamicConsole().AddSerilogDynamicConsole());
+            var hostBuilder = testServerWithRouting.ConfigureLogging(builder => builder.AddDynamicConsole().AddDynamicSerilog());
 
             // Act
             var exception = Assert.Throws<InvalidOperationException>(() => hostBuilder.AddLoggersActuator().Start());
 
             // Assert
-            Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier", exception.Message);
+            Assert.Contains("An IDynamicLoggerProvider has already been configured! Call 'AddDynamicSerilog' earlier", exception.Message);
         }
 
         [Fact]

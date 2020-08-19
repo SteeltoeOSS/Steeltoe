@@ -76,7 +76,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var hostBuilder = WebHost.CreateDefaultBuilder()
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .Configure(configureApp => { })
-                .ConfigureLogging(logging => logging.AddSerilogDynamicConsole());
+                .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
             // Act
             var host = hostBuilder.AddCloudFoundryActuators().Build();
@@ -191,7 +191,7 @@ namespace Steeltoe.Management.CloudFoundry.Test
         {
             // Arrange
             var hostBuilder = Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging => logging.AddSerilogDynamicConsole())
+                .ConfigureLogging(logging => logging.AddDynamicSerilog())
                 .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
                 .ConfigureWebHost(testServerWithRouting)
                 .AddCloudFoundryActuators();
