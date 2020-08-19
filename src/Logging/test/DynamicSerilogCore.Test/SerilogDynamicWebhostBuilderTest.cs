@@ -7,7 +7,7 @@ using Serilog.Events;
 using Serilog.Exceptions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicWebhostBuilderTest
     {

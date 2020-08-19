@@ -36,7 +36,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// </summary>
         /// <param name="configuration">Serilog readable <see cref="IConfiguration"/></param>
         /// <param name="logger">Serilog logger<see cref="Serilog.Core.Logger"/></param>
-        /// <param name="loggingLevelSwitch">Serilog global log level switch<see cref="Serilog.Core.LoggingLevelSwitch"/></param>
+        /// <param name="loggingLevelSwitch">Serilog global log level switch<see cref="LoggingLevelSwitch"/></param>
         /// <param name="options">Subset of Serilog options managed by wrapper<see cref="ISerilogOptions"/></param>
         public SerilogDynamicProvider(IConfiguration configuration, ISerilogOptions options = null, Logger logger = null, LoggingLevelSwitch loggingLevelSwitch = null)
         {

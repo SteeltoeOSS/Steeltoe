@@ -31,7 +31,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                         configureLogger(hostContext, loggerConfiguration);
                     }
 
-                    logBuilder.AddSerilogDynamicConsole(loggerConfiguration, preserveStaticLogger);
+                    logBuilder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger);
                 });
         }
 
@@ -47,9 +47,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         public static IHostBuilder UseSerilogDynamicConsole(
             this IHostBuilder hostBuilder,
             Action<HostBuilderContext, LoggerConfiguration> configureLogger = null,
-            bool preserveStaticLogger = false)
-        {
-            return hostBuilder.AddDynamicSerilog(configureLogger, preserveStaticLogger);
-        }
+            bool preserveStaticLogger = false) => hostBuilder.AddDynamicSerilog(configureLogger, preserveStaticLogger);
     }
 }

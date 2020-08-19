@@ -7,7 +7,7 @@ using Serilog;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
 using System;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilogCore
+namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
     public static class SerilogWebHostBuilderExtensions
     {
@@ -32,7 +32,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilogCore
                         configureLogger(hostContext, loggerConfiguration);
                     }
 
-                    logBuilder.AddSerilogDynamicConsole(loggerConfiguration, preserveStaticLogger);
+                    logBuilder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger);
                 });
         }
 
@@ -48,9 +48,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilogCore
         public static IWebHostBuilder UseSerilogDynamicConsole(
             this IWebHostBuilder hostBuilder,
             Action<WebHostBuilderContext, LoggerConfiguration> configureLogger = null,
-            bool preserveStaticLogger = false)
-        {
-            return hostBuilder.AddDynamicSerilog(configureLogger, preserveStaticLogger);
-        }
+            bool preserveStaticLogger = false) => hostBuilder.AddDynamicSerilog(configureLogger, preserveStaticLogger);
     }
 }
