@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
-        /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
         public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder)
         {
@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
-        /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
+        /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
         /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/></param>
         /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Log.Logger"/>.</param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
