@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Info;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
@@ -21,8 +22,18 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         public void Contribute(IInfoBuilder builder)
         {
-            builder.WithInfo("applicationVersionInfo", _applicationInfo);
-            builder.WithInfo("steeltoeVersionInfo", _steeltoeInfo);
+            builder.WithInfo("applicationVersionInfo", GetImportantDetails(_applicationInfo));
+            builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoeInfo));
+        }
+
+        private Dictionary<string, string> GetImportantDetails(FileVersionInfo info)
+        {
+            return new Dictionary<string, string>
+            {
+                { "ProductName", info.ProductName },
+                { "FileVersion", info.FileVersion },
+                { "ProductVersion", info.ProductVersion }
+            };
         }
     }
 }

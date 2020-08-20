@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.Management.Endpoint
@@ -28,6 +29,8 @@ namespace Steeltoe.Management.Endpoint
                     var builder = endpoints.MapAllActuators();
                     _configureConventions?.Invoke(builder);
                 });
+
+                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
             };
         }
     }

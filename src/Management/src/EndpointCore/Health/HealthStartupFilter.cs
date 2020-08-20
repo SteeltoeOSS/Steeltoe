@@ -13,6 +13,18 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthStartupFilter : IStartupFilter
     {
+        public static void InitializeAvailability(IServiceProvider serviceProvider)
+        {
+            var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
+            var availability = serviceProvider.GetService<ApplicationAvailability>();
+            lifetime.ApplicationStarted.Register(() =>
+            {
+                availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
+                availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
+            });
+            lifetime.ApplicationStopping.Register(() => availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
+        }
+
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
@@ -23,14 +35,7 @@ namespace Steeltoe.Management.Endpoint.Health
                     endpoints.Map<HealthEndpointCore>();
                 });
 
-                var lifetime = app.ApplicationServices.GetService<IHostApplicationLifetime>();
-                var availability = app.ApplicationServices.GetService<ApplicationAvailability>();
-                lifetime.ApplicationStarted.Register(() =>
-                {
-                    availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
-                    availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
-                });
-                lifetime.ApplicationStopping.Register(() => availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
+                InitializeAvailability(app.ApplicationServices);
             };
         }
     }
