@@ -19,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-        public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration, ILoggerFactory loggerFactory = null)
+        public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
@@ -37,7 +37,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         /// <param name="hostBuilder">Your WebHostBuilder</param>
         /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
         /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-        public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration, ILoggerFactory loggerFactory = null)
+        public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
         {
             hostBuilder
                 .ConfigureAppConfiguration((context, config) =>
