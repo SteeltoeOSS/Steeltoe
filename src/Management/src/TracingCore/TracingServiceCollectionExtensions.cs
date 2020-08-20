@@ -19,14 +19,14 @@ namespace Steeltoe.Management.Tracing
 {
     public static class TracingServiceCollectionExtensions
     {
-        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config, Action<TracerBuilder> configureTracer = null)
+        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config = null, Action<TracerBuilder> configureTracer = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
+            if ((config ?? services.BuildServiceProvider().GetService<IConfiguration>()) == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
@@ -36,14 +36,14 @@ namespace Steeltoe.Management.Tracing
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, TracingService>());
 
-            services.TryAddSingleton<ITracingOptions>((p) =>
+            services.TryAddSingleton<ITracingOptions>((serviceProvider) =>
             {
-                return new TracingOptions(appInstanceInfo, config);
+                return new TracingOptions(appInstanceInfo, config ?? serviceProvider.GetRequiredService<IConfiguration>());
             });
 
-            services.TryAddSingleton<ITraceExporterOptions>((p) =>
+            services.TryAddSingleton<ITraceExporterOptions>((serviceProvider) =>
             {
-                return new TraceExporterOptions(appInstanceInfo, config);
+                return new TraceExporterOptions(appInstanceInfo, config ?? serviceProvider.GetRequiredService<IConfiguration>());
             });
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());

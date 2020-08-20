@@ -7,7 +7,7 @@ using Serilog.Events;
 using Serilog.Exceptions;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicWebhostBuilderTest
     {
@@ -20,13 +20,13 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilogCore.Test
             // act
             var host = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .UseSerilogDynamicConsole((context, loggerConfiguration) =>
+                .AddDynamicSerilog((context, loggerConfiguration) =>
                 {
                     loggerConfiguration
-                    .MinimumLevel.Error()
-                    .Enrich.WithExceptionDetails()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .WriteTo.Sink(testSink, LogEventLevel.Error);
+                        .MinimumLevel.Error()
+                        .Enrich.WithExceptionDetails()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                        .WriteTo.Sink(testSink, LogEventLevel.Error);
                 })
                 .Build();
 

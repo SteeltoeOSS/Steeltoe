@@ -23,14 +23,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         /// Adds components of the Heap Dump actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:heapdump)</param>
+        public static void AddHeapDumpActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));

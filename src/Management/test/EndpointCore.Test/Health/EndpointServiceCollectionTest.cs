@@ -22,16 +22,16 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthActuator_ThrowsOnNulls()
         {
             // Arrange
-            IServiceCollection services2 = new ServiceCollection();
-            var config2 = new ConfigurationBuilder().Build();
+            IServiceCollection services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
             IHealthAggregator aggregator = null;
 
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
-            Assert.Contains("services", ex.Message);
-            var ex2 = Assert.Throws<InvalidOperationException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2));
-            Assert.Equal("No service for type 'Microsoft.Extensions.Configuration.IConfiguration' has been registered.", ex2.Message);
-            var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
+            Assert.Equal("services", ex.ParamName);
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator());
+            Assert.Equal("config", ex2.ParamName);
+            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(config, aggregator));
             Assert.Contains(nameof(aggregator), ex3.Message);
         }
 

@@ -17,9 +17,9 @@ namespace Steeltoe.Management.CloudFoundry
         /// Add Actuators to Microsoft DI
         /// </summary>
         /// <param name="services">Service collection</param>
-        /// <param name="config">Application Configuration</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided</param>
         /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
-        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+        public static void AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config = null, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -41,11 +41,6 @@ namespace Steeltoe.Management.CloudFoundry
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
             }
 
             services.AddCors(setup =>
