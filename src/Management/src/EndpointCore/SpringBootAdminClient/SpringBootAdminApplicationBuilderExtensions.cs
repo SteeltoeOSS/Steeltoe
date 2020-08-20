@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             var mgmtOptions = new ManagementEndpointOptions(configuration);
             var healthOptions = new HealthEndpointOptions(configuration);
             var basePath = options.BasePath.TrimEnd('/');
+            httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
 
             var app = new Application()
             {
@@ -63,7 +65,6 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
             lifetime.ApplicationStarted.Register(() =>
             {
                 logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
-                httpClient ??= Common.Http.HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
 
                 var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
                 if (result.IsSuccessStatusCode)
@@ -83,7 +84,6 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
                     return;
                 }
 
-                httpClient ??= Common.Http.HttpClientHelper.GetHttpClient(false, ConnectionTimeoutMs);
                 _ = httpClient.DeleteAsync($"{options.Url}/instances/{RegistrationResult.Id}").GetAwaiter().GetResult();
             });
         }

@@ -21,6 +21,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         private readonly string _jwtKeyUrl;
         private readonly HttpMessageHandler _httpHandler;
         private readonly bool _validateCertificates;
+        private HttpClient _httpClient;
 
         public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
         {
@@ -108,12 +109,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual HttpClient GetHttpClient()
         {
-            var client = _httpHandler is null
-                ? new HttpClient()
-                : new HttpClient(_httpHandler);
+            if (_httpClient == null)
+            {
+                if (_httpHandler is null)
+                {
+                    // default HttpClient timeout is 100 seconds
+                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, 100);
+                }
+                else
+                {
+                    _httpClient = HttpClientHelper.GetHttpClient(_httpHandler);
+                }
+            }
 
-            client.DefaultRequestHeaders.UserAgent.ParseAdd(HttpClientHelper.SteeltoeUserAgent);
-            return client;
+            return _httpClient;
         }
 
         private void TrimKey(JsonWebKey key, byte[] existing)
