@@ -75,8 +75,9 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 
 ## Roadmaps
 
-* [3.0.0](roadmaps/3.0.0.md) - In Progress
-* [2.5.0](roadmaps/2.5.0.md) - In Progress
+* [3.1.0](roadmaps/3.1.0.md) - In Progress (expected by end of 2020)
+* [3.0.0](roadmaps/3.0.0.md) - Released (8/2020)
+* [2.5.0](roadmaps/2.5.0.md) - In Progress (expected 9/2020)
 * [2.4.0](roadmaps/2.4.0.md) - Released (11/2019)
    * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.1) - Released (1/2020)
    * [2.4.2](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.2) - Released (2/2020)
