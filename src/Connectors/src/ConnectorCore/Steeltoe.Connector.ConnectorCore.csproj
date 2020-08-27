@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Connector</RootNamespace>
-    <Description>Package for using service connectors in your ASP.NET Core application</Description>
+    <Description>Package for using service connectors in your .NET Core application</Description>
     <PackageTags>connectors;aspnetcore;services</PackageTags>
   </PropertyGroup>
 

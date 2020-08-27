@@ -7,6 +7,25 @@ namespace Steeltoe.Connector.MongoDb.Test
     public static class MongoDbTestHelpers
     {
         /// <summary>
+        /// Sample User-Provided Service
+        /// </summary>
+        public static string Single_UserProvidedService = @"
+            {
+                ""user-provided"": [{
+                    ""name"": ""mongodb-user-provided-service"",
+                    ""instance_name"": ""mongodb-user-provided-service"",
+                    ""binding_name"": null,
+                    ""credentials"": {
+                        ""uri"": ""mongodb://user:password@host:28000/testdb""
+                    },
+                    ""syslog_drain_url"": """",
+                    ""volume_mounts"": [],
+                    ""label"": ""user-provided"",
+                    ""tags"": []
+                }]
+            }";
+
+        /// <summary>
         /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF
         /// </summary>
         public static string SingleBinding_a9s_SingleServer_VCAP = @"
