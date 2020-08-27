@@ -15,7 +15,7 @@ pr:
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  PackageVersion: $[format('3.0.0-{0}', variables['Build.BuildId'])]
+  PackageVersion: $[format('3.0.1-{0}', variables['Build.BuildId'])]
 strategy:
   matrix:
     Linux_Build_and_Test:
