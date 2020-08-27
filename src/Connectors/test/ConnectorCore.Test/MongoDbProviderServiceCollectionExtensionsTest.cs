@@ -182,6 +182,31 @@ namespace Steeltoe.Connector.MongoDb.Test
         }
 
         [Fact]
+        public void AddMongoClient_With_UPS_VCAPs_AddsMongoClient()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.Single_UserProvidedService);
+            var builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            services.AddMongoClient(config);
+            var service = services.BuildServiceProvider().GetService<MongoClient>();
+            var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
+
+            // Assert
+            Assert.NotNull(service);
+            Assert.NotNull(serviceByInterface);
+            var connSettings = service.Settings;
+            Assert.Equal(28000, connSettings.Server.Port);
+            Assert.Equal("host", connSettings.Server.Host);
+            Assert.Equal("user", connSettings.Credential.Username);
+        }
+
+        [Fact]
         public void AddMongoClientConnection_AddsMongoDbHealthContributor()
         {
             // Arrange
