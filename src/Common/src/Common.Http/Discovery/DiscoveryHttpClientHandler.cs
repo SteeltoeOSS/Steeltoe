@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
@@ -24,9 +25,10 @@ namespace Steeltoe.Common.Discovery
         /// </summary>
         /// <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration)</param>
         /// <param name="logger">ILogger for capturing logs from Discovery operations</param>
-        public DiscoveryHttpClientHandler(IDiscoveryClient discoveryClient, ILogger logger = null)
+        /// <param name="loadBalancer">The load balancer to use</param>
+        public DiscoveryHttpClientHandler(IDiscoveryClient discoveryClient, ILogger logger = null, ILoadBalancer loadBalancer = null)
         {
-            _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger);
+            _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger, loadBalancer);
             _logger = logger;
         }
 
