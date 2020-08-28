@@ -3,12 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Steeltoe.Common.LoadBalancer;
 
 namespace Steeltoe.Common.Discovery
 {
