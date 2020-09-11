@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
@@ -20,12 +22,27 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         /// <param name="writer">StreamWriter to write to.</param>
         public static void WriteMetricsCollection(this PrometheusExporter exporter, StreamWriter writer)
         {
-            foreach (var metric in exporter.GetAndClearDoubleMetrics())
+            var doubleMetrics = exporter.GetAndClearDoubleMetrics();
+            var metricNames = new HashSet<string>();
+
+            foreach (var metric in doubleMetrics)
             {
                 var labels = metric.Labels;
+
+                bool isFirst = false;
+                if (!metricNames.Contains(metric.MetricName))
+                {
+                    isFirst = true;
+                    metricNames.Add(metric.MetricName);
+                }
+
                 var builder = new PrometheusMetricBuilder()
-                    .WithName(metric.MetricName)
-                    .WithDescription(metric.MetricDescription);
+                    .WithName(metric.MetricName);
+
+                if (isFirst)
+                {
+                    builder = builder.WithDescription(metric.MetricDescription);
+                }
 
                 switch (metric.AggregationType)
                 {
@@ -33,8 +50,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                         {
                             var doubleSum = metric.Data as SumData<double>;
                             var doubleValue = doubleSum.Sum;
+                            if (isFirst)
+                            {
+                                builder = builder.WithType("counter");
+                            }
 
-                            builder = builder.WithType("counter");
                             var metricValueBuilder = builder.AddValue();
                             metricValueBuilder = metricValueBuilder.WithValue(doubleValue);
 
@@ -51,7 +71,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                         {
                             var doubleSummary = metric.Data as SummaryData<double>;
 
-                            builder = builder.WithType("summary");
+                            if (isFirst)
+                            {
+                                builder = builder.WithType("summary");
+                            }
+
                             var metricValueBuilder = builder.AddValue();
                             var mean = 0D;
 
@@ -77,8 +101,19 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
             {
                 var labels = metric.Labels;
                 var builder = new PrometheusMetricBuilder()
-                    .WithName(metric.MetricName)
-                    .WithDescription(metric.MetricDescription);
+                    .WithName(metric.MetricName);
+
+                bool isFirst = false;
+                if (!metricNames.Contains(metric.MetricName))
+                {
+                    isFirst = true;
+                    metricNames.Add(metric.MetricName);
+                }
+
+                if (isFirst)
+                {
+                    builder = builder.WithDescription(metric.MetricDescription);
+                }
 
                 switch (metric.AggregationType)
                 {
@@ -86,7 +121,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                         {
                             var longSum = metric.Data as SumData<long>;
                             var longValue = longSum.Sum;
-                            builder = builder.WithType("counter");
+
+                            if (isFirst)
+                            {
+                                builder = builder.WithType("counter");
+                            }
 
                             foreach (var label in labels)
                             {
@@ -103,7 +142,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
                         {
                             var longSummary = metric.Data as SummaryData<long>;
 
-                            builder = builder.WithType("summary");
+                            if (isFirst)
+                            {
+                                builder = builder.WithType("summary");
+                            }
+
                             var metricValueBuilder = builder.AddValue();
                             var mean = 0L;
 
