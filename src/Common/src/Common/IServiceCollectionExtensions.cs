@@ -23,7 +23,7 @@ namespace Steeltoe.Common
             if (!appInfo.Any())
             {
                 var config = sp.GetRequiredService<IConfiguration>();
-                var newAppInfo = new ApplicationInstanceInfo(config);
+                var newAppInfo = new ApplicationInstanceInfo(config, true);
                 serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
                 return newAppInfo;
             }

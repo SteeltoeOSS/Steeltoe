@@ -154,7 +154,7 @@ namespace Steeltoe.Connector
         {
             ServiceInfos.Clear();
 
-            var appInfo = new ApplicationInstanceInfo(Configuration);
+            var appInfo = new ApplicationInstanceInfo(Configuration, true);
             var serviceOpts = new ServicesOptions(Configuration);
 
             foreach (var service in serviceOpts.Services.SelectMany(s => s.Value))
