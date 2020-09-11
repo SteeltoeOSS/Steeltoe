@@ -78,6 +78,28 @@ namespace Steeltoe.Discovery.Eureka
                 options.SecureVirtualHostName = options.AppName;
             }
 
+            if (string.IsNullOrEmpty(options.RegistrationMethod))
+            {
+                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
+                if (!string.IsNullOrEmpty(springRegMethod))
+                {
+                    options.RegistrationMethod = springRegMethod;
+                }
+            }
+
+            // try to pull some values out of server config to override defaults, but only if registration method hasn't been set
+            // if registration method has been set, the user probably wants to define their own behavior
+            var urls = config["urls"];
+            if (!string.IsNullOrEmpty(urls) && string.IsNullOrEmpty(options.RegistrationMethod))
+            {
+                Console.WriteLine(urls);
+                var addresses = urls.Split(";");
+                foreach (var address in addresses)
+                {
+                    SetOptionsFromUrls(options, new Uri(address));
+                }
+            }
+
             if (defaultId.Equals(options.InstanceId))
             {
                 var springInstanceId = instanceInfo?.InstanceId;
@@ -87,16 +109,14 @@ namespace Steeltoe.Discovery.Eureka
                 }
                 else
                 {
-                    options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
-                }
-            }
-
-            if (string.IsNullOrEmpty(options.RegistrationMethod))
-            {
-                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
-                if (!string.IsNullOrEmpty(springRegMethod))
-                {
-                    options.RegistrationMethod = springRegMethod;
+                    if (options.SecurePortEnabled)
+                    {
+                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.SecurePort;
+                    }
+                    else
+                    {
+                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
+                    }
                 }
             }
         }
@@ -139,6 +159,23 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
+        private static void SetOptionsFromUrls(EurekaInstanceOptions options, Uri uri)
+        {
+            if (uri.Scheme == "http")
+            {
+                if (options.Port == DEFAULT_NONSECUREPORT && uri.Port != DEFAULT_NONSECUREPORT)
+                {
+                    options.Port = uri.Port;
+                    options.HostName = uri.Host;
+                }
+            }
+            else if (uri.Scheme == "https" && options.SecurePort == DEFAULT_SECUREPORT && uri.Port != DEFAULT_SECUREPORT)
+            {
+                options.SecurePort = uri.Port;
+                options.HostName = uri.Host;
+            }
+        }
+
         private static void UpdateWithDefaultsForHost(EurekaServiceInfo si, EurekaInstanceOptions instOptions, string hostName)
         {
             UpdateWithDefaults(si, instOptions);
@@ -150,8 +187,21 @@ namespace Steeltoe.Discovery.Eureka
         {
             UpdateWithDefaults(si, instOptions);
             instOptions.PreferIpAddress = true;
-            instOptions.NonSecurePort = si.ApplicationInfo.Port;
-            instOptions.SecurePort = si.ApplicationInfo.Port;
+            if (int.TryParse(si.ApplicationInfo.Port, out var port))
+            {
+                instOptions.NonSecurePort = port;
+                instOptions.SecurePort = port;
+            }
+            else
+            {
+                if (si.ApplicationInfo.Port.Contains(";"))
+                {
+                    var ports = si.ApplicationInfo.Port.Split(";");
+                    instOptions.Port = int.Parse(ports[0]);
+                    instOptions.SecurePort = int.Parse(ports[1]);
+                }
+            }
+
             instOptions.InstanceId = si.ApplicationInfo.InternalIP + ":" + si.ApplicationInfo.InstanceId;
         }
 
