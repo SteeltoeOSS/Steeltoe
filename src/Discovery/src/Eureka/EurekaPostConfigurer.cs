@@ -187,21 +187,8 @@ namespace Steeltoe.Discovery.Eureka
         {
             UpdateWithDefaults(si, instOptions);
             instOptions.PreferIpAddress = true;
-            if (int.TryParse(si.ApplicationInfo.Port, out var port))
-            {
-                instOptions.NonSecurePort = port;
-                instOptions.SecurePort = port;
-            }
-            else
-            {
-                if (si.ApplicationInfo.Port.Contains(";"))
-                {
-                    var ports = si.ApplicationInfo.Port.Split(";");
-                    instOptions.Port = int.Parse(ports[0]);
-                    instOptions.SecurePort = int.Parse(ports[1]);
-                }
-            }
-
+            instOptions.NonSecurePort = si.ApplicationInfo.Port;
+            instOptions.SecurePort = si.ApplicationInfo.Port;
             instOptions.InstanceId = si.ApplicationInfo.InternalIP + ":" + si.ApplicationInfo.InstanceId;
         }
 

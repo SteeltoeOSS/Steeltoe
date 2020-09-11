@@ -77,6 +77,13 @@ namespace Steeltoe.Common
             SecondChanceSetIdProperties(this.configuration);
         }
 
+        public ApplicationInstanceInfo(IConfiguration configuration, bool noPrefix)
+            : base(configuration, ApplicationRoot)
+        {
+            this.configuration = configuration;
+            SecondChanceSetIdProperties(this.configuration);
+        }
+
         public ApplicationInstanceInfo(IConfiguration configuration, string configPrefix)
             : base(configuration, BuildConfigString(configPrefix, ApplicationRoot))
         {
@@ -100,7 +107,9 @@ namespace Steeltoe.Common
             set { Application_Id = value; }
         }
 
-        public virtual string ApplicationName => configuration?.GetValue(AppNameKey, DefaultAppName);
+        public virtual string Name { get; set; }
+
+        public virtual string ApplicationName => Name ?? configuration?.GetValue(AppNameKey, DefaultAppName);
 
         public string ApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null)
         {

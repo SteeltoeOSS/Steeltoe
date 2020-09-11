@@ -45,8 +45,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public string CF_Api { get; set; }
 
-        public string Name { get; set; }
-
         public override string ApplicationName => Name;
 
         public string Start { get; set; }
