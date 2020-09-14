@@ -28,6 +28,7 @@ namespace Steeltoe.Discovery.Eureka
         internal const string UNKNOWN_ZONE = "unknown";
         internal const int DEFAULT_NONSECUREPORT = 80;
         internal const int DEFAULT_SECUREPORT = 443;
+        private const string WILDCART_HOST = "---asterisk---";
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
         {
@@ -92,11 +93,16 @@ namespace Steeltoe.Discovery.Eureka
             var urls = config["urls"];
             if (!string.IsNullOrEmpty(urls) && string.IsNullOrEmpty(options.RegistrationMethod))
             {
-                Console.WriteLine(urls);
                 var addresses = urls.Split(";");
                 foreach (var address in addresses)
                 {
-                    SetOptionsFromUrls(options, new Uri(address));
+                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
+                            && (address.Contains("*") || address.Contains("::")))
+                    {
+                        Uri.TryCreate(address.Replace("*", WILDCART_HOST).Replace("::", $"{WILDCART_HOST}:"), UriKind.Absolute, out uri);
+                    }
+
+                    SetOptionsFromUrls(options, uri);
                 }
             }
 
@@ -166,12 +172,15 @@ namespace Steeltoe.Discovery.Eureka
                 if (options.Port == DEFAULT_NONSECUREPORT && uri.Port != DEFAULT_NONSECUREPORT)
                 {
                     options.Port = uri.Port;
-                    options.HostName = uri.Host;
                 }
             }
             else if (uri.Scheme == "https" && options.SecurePort == DEFAULT_SECUREPORT && uri.Port != DEFAULT_SECUREPORT)
             {
                 options.SecurePort = uri.Port;
+            }
+
+            if (!uri.Host.Equals(WILDCART_HOST) && !uri.Host.Equals("0.0.0.0"))
+            {
                 options.HostName = uri.Host;
             }
         }

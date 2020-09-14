@@ -868,5 +868,19 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("1", map[EurekaPostConfigurer.CF_INSTANCE_INDEX]);
             Assert.Equal(EurekaPostConfigurer.UNKNOWN_ZONE, map[EurekaPostConfigurer.ZONE]);
         }
+
+        [Fact]
+        public void UpdateConfigurationFindsUrls()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+            var instOpts = new EurekaInstanceOptions();
+            var appInfo = new ApplicationInstanceInfo(config);
+
+            EurekaPostConfigurer.UpdateConfiguration(config, instOpts, appInfo);
+
+            Assert.Equal("myapp", instOpts.HostName);
+            Assert.Equal(1234, instOpts.SecurePort);
+            Assert.Equal(1233, instOpts.Port);
+        }
     }
 }
