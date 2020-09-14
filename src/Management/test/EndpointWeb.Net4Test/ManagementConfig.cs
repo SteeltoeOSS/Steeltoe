@@ -27,7 +27,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
         private static IEnumerable<IHealthContributor> GetHealthContributors(IConfiguration configuration)
         {
-            var healthContributors = new List<IHealthContributor> { new DiskSpaceContributor(), };
+            var healthContributors = new List<IHealthContributor> { new DiskSpaceContributor(), new ConfiguredHealthContributor(configuration) };
 
             return healthContributors;
         }

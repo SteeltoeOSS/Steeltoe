@@ -92,10 +92,48 @@ namespace Steeltoe.Management.EndpointWeb.Test
 
             Assert.NotEmpty(response.Content);
             Assert.Contains("status", response.Content);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async void HealthHandler_ReturnsDetailsd()
+        public async void HealthHandler_Returns503WhenDown()
+        {
+            var settings = new Settings(DefaultTestSettingsConfig.DefaultSettings)
+            {
+                { "unhealthy", "true" }
+            };
+
+            using var server = new TestServer(settings);
+            var client = server.HttpClient;
+
+            var response = await client.GetAsync("http://localhost/management/health", "GET");
+
+            Assert.NotEmpty(response.Content);
+            Assert.Contains("status", response.Content);
+            Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        }
+
+        [Fact]
+        public async void HealthHandler_CanReturn200WhenDown()
+        {
+            var settings = new Settings(DefaultTestSettingsConfig.DefaultSettings)
+            {
+                { "unhealthy", "true" },
+                { "management:endpoints:health:HttpStatusFromHealth", "false" }
+            };
+
+            using var server = new TestServer(settings);
+            var client = server.HttpClient;
+
+            var response = await client.GetAsync("http://localhost/management/health", "GET");
+
+            Assert.NotEmpty(response.Content);
+            Assert.Contains("status", response.Content);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async void HealthHandler_ReturnsDetails()
         {
             var settings = DefaultTestSettingsConfig.DefaultSettings;
 

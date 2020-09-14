@@ -12,6 +12,7 @@ using Steeltoe.Management.EndpointCore;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -59,7 +60,11 @@ namespace Steeltoe.Management.Endpoint.Health
         protected internal string DoRequest(HttpContext context)
         {
             var result = _endpoint.Invoke(new CoreSecurityContext(context));
-            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            if (((HealthEndpointOptions)_mgmtOptions.FirstOrDefault().EndpointOptions.FirstOrDefault(o => o is HealthEndpointOptions)).HttpStatusFromHealth)
+            {
+                context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            }
+
             return Serialize(result);
         }
     }
