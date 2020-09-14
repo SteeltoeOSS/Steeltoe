@@ -53,7 +53,7 @@ Steeltoe is fully open source and is found under the SteeltoeOSS organization on
 
 These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
 
-* Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/aspnet/Configuration) services
+* Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/dotnet/extensions/tree/master/src/Configuration) services
 * Common - Common packages to other Steeltoe components
 * CircuitBreaker - monitor and isolate requests to remote dependent services with latency and fault tolerance logic
 * Connectors - simplify the process of configuring and using back-end services locally and in the cloud
