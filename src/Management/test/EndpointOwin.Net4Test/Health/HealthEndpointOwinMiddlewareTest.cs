@@ -66,6 +66,17 @@ namespace Steeltoe.Management.EndpointOwin.Health.Test
         }
 
         [Fact]
+        public async void HealthHttpCall_AlwaysOK()
+        {
+            using var server = TestServer.Create<StartupOK>();
+            var client = server.HttpClient;
+
+            // check the health... expect OK status with unknown detail
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/unknown");
+            await AssertHealthResponseAsync(HttpStatusCode.OK, HealthStatus.UNKNOWN, result);
+        }
+
+        [Fact]
         public void HealthEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
         {
             var opts = new HealthEndpointOptions();
