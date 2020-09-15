@@ -27,10 +27,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions)
         {
-
             Admin = new RabbitAdmin(connectionFactory);
-            //AutoDeclareContext.refresh();
-            //Admin.setApplicationContext(this.autoDeclareContext);
+
+            // AutoDeclareContext.refresh();
+            // Admin.setApplicationContext(this.autoDeclareContext);
             Admin.Initialize();
             Customizers = customizers;
             Options = bindingsOptions;
@@ -178,11 +178,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             else
             {
-                baseQueueName = GetGroupedName(name,  anonymous ? anonQueueNameGenerator.GenerateName() : group);
+                baseQueueName = GetGroupedName(name, anonymous ? anonQueueNameGenerator.GenerateName() : group);
             }
 
             // logger.info("declaring queue for inbound: " + baseQueueName + ", bound to: " + name);
-
             var prefix = consumerProperties.Prefix;
             var exchangeName = ApplyPrefix(prefix, name);
             var exchange = BuildExchange(consumerProperties, exchangeName);
@@ -330,7 +329,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 arguments.Add(entry.Key, entry.Value);
             }
 
-            if (exchange is RabbitConfig.TopicExchange) 
+            if (exchange is RabbitConfig.TopicExchange)
             {
                 var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.TopicExchange)exchange).With(routingKey);
                 DeclareBinding(queue.QueueName, binding);
@@ -388,6 +387,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         private void AutoBindDLQ(string baseQueueName, string routingKey, BinderConfig.RabbitCommonOptions properties)
         {
             var autoBindDlq = properties.AutoBindDlq.Value;
+
             // this.logger.debug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
             if (autoBindDlq)
             {
@@ -417,9 +417,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
                 var dlRoutingKey = properties.DeadLetterRoutingKey == null ? routingKey : properties.DeadLetterRoutingKey;
                 var dlBindingName = dlq.QueueName + "." + dlxName + "." + dlRoutingKey + ".binding";
-                var dlqBinding = new RabbitConfig.Binding(dlBindingName, dlq.QueueName, DestinationType.QUEUE, dlxName, dlRoutingKey , arguments);
+                var dlqBinding = new RabbitConfig.Binding(dlBindingName, dlq.QueueName, DestinationType.QUEUE, dlxName, dlRoutingKey, arguments);
                 DeclareBinding(dlqName, dlqBinding);
-                if (properties is BinderConfig.RabbitConsumerOptions  && ((BinderConfig.RabbitConsumerOptions)properties).RepublishToDlq.Value) 
+                if (properties is BinderConfig.RabbitConsumerOptions && ((BinderConfig.RabbitConsumerOptions)properties).RepublishToDlq.Value)
                 {
                     /*
                      * Also bind with the base queue name when republishToDlq is used, which does not know about partitioning
@@ -456,17 +456,17 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                //this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
+                // this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
             }
             catch (Exception e)
             {
                 if (this.notOurAdminException)
                 {
                     this.notOurAdminException = false;
-                    throw e;
+                    throw;
                 }
 
-               // this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred", e);
+                // this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred", e);
             }
 
             AddToAutoDeclareContext(beanName, queue);
@@ -510,6 +510,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 {
                     args.Add("x-dead-letter-exchange", properties.DlqDeadLetterExchange);
                 }
+
                 if (properties.DlqDeadLetterRoutingKey != null)
                 {
                     args.Add("x-dead-letter-routing-key", properties.DlqDeadLetterRoutingKey);
@@ -625,32 +626,31 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                //this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available");
+                // this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available");
             }
             catch (Exception e)
             {
                 if (this.notOurAdminException)
                 {
                     this.notOurAdminException = false;
-                    throw e;
+                    throw;
                 }
 
-                //this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred",  e);
+                // this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred",  e);
             }
 
             AddToAutoDeclareContext(rootName + ".exchange", exchange);
         }
 
-        //private void addToAutoDeclareContext(String name, Object bean)
-        //{
+        // private void addToAutoDeclareContext(String name, Object bean)
+        // {
         //    synchronized(this.autoDeclareContext) {
         //        if (!this.autoDeclareContext.containsBean(name))
         //        {
         //            this.autoDeclareContext.getBeanFactory().registerSingleton(name, bean);
         //        }
         //    }
-        //}
-
+        // }
         private void DeclareBinding(string rootName, RabbitConfig.IBinding bindingArg)
         {
             var binding = bindingArg;
@@ -672,7 +672,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 if (this.notOurAdminException)
                 {
                     this.notOurAdminException = false;
-                    throw e;
+                    throw;
                 }
 
                 // this.logger.debug("Declaration of binding: " + rootName + ".binding deferred", e);
@@ -681,8 +681,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             AddToAutoDeclareContext(rootName + ".binding", binding);
         }
 
-        //public void CleanAutoDeclareContext(ConsumerDestination destination,  ExtendedConsumerProperties<RabbitConsumerProperties> consumerProperties)
-        //{
+        // public void CleanAutoDeclareContext(ConsumerDestination destination,  ExtendedConsumerProperties<RabbitConsumerProperties> consumerProperties)
+        // {
         //    synchronized(this.autoDeclareContext) {
         //        Stream.of(StringUtils.tokenizeToStringArray(destination.getName(), ",", true,
         //                true)).forEach(name-> {
@@ -694,10 +694,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         //            removeSingleton(dlq);
         //        });
         //    }
-        //}
+        // }
 
-        //private void RemoveSingleton(string name)
-        //{
+        // private void RemoveSingleton(string name)
+        // {
         //    if (this.autoDeclareContext.containsBean(name))
         //    {
         //        ConfigurableListableBeanFactory beanFactory = this.autoDeclareContext
@@ -706,13 +706,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         //            ((DefaultListableBeanFactory)beanFactory).destroySingleton(name);
         //        }
         //    }
-        //}
+        // }
 
-        //public void onApplicationEvent(DeclarationExceptionEvent event) 
-        //{
+        // public void onApplicationEvent(DeclarationExceptionEvent event)
+        // {
         //    this.notOurAdminException = true; // our admin doesn't have an event publisher
-        //}
-
+        // }
         private class RabbitProducerDestination : IProducerDestination
         {
             public RabbitConfig.IExchange Exchange { get; }

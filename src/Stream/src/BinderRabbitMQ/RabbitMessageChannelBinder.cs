@@ -45,7 +45,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
         private static readonly Regex _interceptorNeededPattern = new Regex("(payload|#root|#this)");
 
-        public RabbitMessageChannelBinder(IApplicationContext context, Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory connectionFactory,  RabbitOptions rabbitOptions,  RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
+        public RabbitMessageChannelBinder(IApplicationContext context, Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
         {
         }
@@ -116,11 +116,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return BindingsOptions.GetRabbitProducerOptions(channelName);
         }
 
-        //public string GetDefaultsPrefix()
-        //{
+        // public string GetDefaultsPrefix()
+        // {
         //    return this.extendedBindingProperties.getDefaultsPrefix();
-        //}
-
+        // }
         protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination producerDestination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {
             if (producerProperties.HeaderMode == HeaderMode.EmbeddedHeaders)
@@ -185,15 +184,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             }
 
-            //DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.outboundMapper();
-            //List<String> headerPatterns = new ArrayList<>(
+            // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.outboundMapper();
+            // List<String> headerPatterns = new ArrayList<>(
             //        extendedProperties.getHeaderPatterns().length + 1);
-            //headerPatterns.add("!" + BinderHeaders.PARTITION_HEADER);
-            //headerPatterns.addAll(Arrays.asList(extendedProperties.getHeaderPatterns()));
-            //mapper.setRequestHeaderNames(
+            // headerPatterns.add("!" + BinderHeaders.PARTITION_HEADER);
+            // headerPatterns.addAll(Arrays.asList(extendedProperties.getHeaderPatterns()));
+            // mapper.setRequestHeaderNames(
             //        headerPatterns.toArray(new String[headerPatterns.size()]));
-            //endpoint.setHeaderMapper(mapper);
-
+            // endpoint.setHeaderMapper(mapper);
             endpoint.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
             if (errorChannel != null)
             {
@@ -203,7 +201,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel) ? extendedProperties.ConfirmAckChannel : IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
                 if (!ackChannelBeanName.Equals(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME) && !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
                 {
-                    //GenericApplicationContext context = (GenericApplicationContext)getApplicationContext();
+                    // GenericApplicationContext context = (GenericApplicationContext)getApplicationContext();
                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
                     ApplicationContext.Register(ackChannelBeanName, ackChannel);
                 }
@@ -217,13 +215,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return endpoint;
         }
 
-        protected void PostProcessOutputChannel(IMessageChannel outputChannel,  RabbitProducerOptions extendedProperties)
+        protected void PostProcessOutputChannel(IMessageChannel outputChannel, RabbitProducerOptions extendedProperties)
         {
             if (ExpressionInterceptorNeeded(extendedProperties))
             {
                 var rkExpression = ExpressionParser.ParseExpression(extendedProperties.RoutingKeyExpression);
                 var delayExpression = ExpressionParser.ParseExpression(extendedProperties.DelayExpression);
-                ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0,  new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression,  EvaluationContext));
+                ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0, new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression, EvaluationContext));
             }
         }
 
@@ -255,16 +253,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 listenerContainer.FailedDeclarationRetryInterval = properties.FailedDeclarationRetryInterval.Value;
             }
-            //if (getApplicationEventPublisher() != null)
-            //{
+
+            // if (getApplicationEventPublisher() != null)
+            // {
             //    listenerContainer
             //            .setApplicationEventPublisher(getApplicationEventPublisher());
-            //}
-            //else if (getApplicationContext() != null)
-            //{
+            // }
+            // else if (getApplicationContext() != null)
+            // {
             //    listenerContainer.setApplicationEventPublisher(getApplicationContext());
-            //}
-
+            // }
             ListenerContainerCustomizer?.Configure(listenerContainer, consumerDestination.Name, group);
             if (!string.IsNullOrEmpty(properties.ConsumerTagPrefix))
             {
@@ -275,9 +273,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer);
             adapter.BindSourceMessage = true;
             adapter.ServiceName = "inbound." + destination;
-            //DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
-            //mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
-            //adapter.setHeaderMapper(mapper);
+
+            // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
+            // mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
+            // adapter.setHeaderMapper(mapper);
             var errorInfrastructure = RegisterErrorInfrastructure(consumerDestination, group, consumerOptions);
             if (consumerOptions.MaxAttempts > 1)
             {
@@ -350,7 +349,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var superHandler = base.GetErrorMessageHandler(destination, group, consumerOptions);
             var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
             return new DefaultPolledConsumerErrorMessageHandler(superHandler, properties);
-
         }
 
         protected override string GetErrorsBaseName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
@@ -360,14 +358,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected override void AfterUnbindConsumer(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            ProvisioningProvider.CleanAutoDeclareContext(destination,  consumerOptions);
+            ProvisioningProvider.CleanAutoDeclareContext(destination, consumerOptions);
         }
 
         private string GetDeadLetterExchangeName(RabbitCommonOptions properties)
         {
             if (properties.DeadLetterExchange == null)
             {
-                return ApplyPrefix(properties.Prefix,  RabbitCommonOptions.DEAD_LETTER_EXCHANGE);
+                return ApplyPrefix(properties.Prefix, RabbitCommonOptions.DEAD_LETTER_EXCHANGE);
             }
             else
             {
@@ -379,19 +377,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var rkExpression = extendedProperties.RoutingKeyExpression;
             var delayExpression = extendedProperties.DelayExpression;
-            return (rkExpression != null && _interceptorNeededPattern.IsMatch(rkExpression)) || (delayExpression != null  && _interceptorNeededPattern.IsMatch(delayExpression));
+            return (rkExpression != null && _interceptorNeededPattern.IsMatch(rkExpression)) || (delayExpression != null && _interceptorNeededPattern.IsMatch(delayExpression));
         }
 
         private void CheckConnectionFactoryIsErrorCapable()
         {
-            //if (!(ConnectionFactory is CachingConnectionFactory))
-            //{
+            // if (!(ConnectionFactory is CachingConnectionFactory))
+            // {
             //    logger.warn(
             //            "Unknown connection factory type, cannot determine error capabilities: "
             //                    + ConnectionFactory.GetType());
-            //}
-            //else
-            //{
+            // }
+            // else
+            // {
             //    CachingConnectionFactory ccf = (CachingConnectionFactory)ConnectionFactory;
             //    if (!ccf.IsPublisherConfirms && !ccf.IsPublisherReturns)
             //    {
@@ -411,7 +409,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //                "Producer error channel is enabled, but the connection factory is only configured to "
             //                        + "handle negatively acked messages; returned messages will not be reported");
             //    }
-            //}
+            // }
         }
 
         private IExpression BuildPartitionRoutingExpression(string expressionRoot, bool rootIsExpression)
@@ -477,7 +475,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                    //logger.error("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                    // logger.error("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                 }
                 else if (amqpMessage == null)
                 {
@@ -489,7 +487,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 else
                 {
                     var payload = errorMessage.Payload as MessagingException;
-                    if (payload != null) 
+                    if (payload != null)
                     {
                         var ack = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(payload.FailedMessage);
                         if (ack != null)
@@ -521,14 +519,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message)
             {
-                //message.Headers.Get<>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
-
+                // message.Headers.Get<>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                    //logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
-
-                    throw new ListenerExecutionFailedException("Unexpected error message " + message.ToString(),  new RabbitRejectAndDontRequeueException(string.Empty), null);
+                    // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
+                    throw new ListenerExecutionFailedException("Unexpected error message " + message.ToString(), new RabbitRejectAndDontRequeueException(string.Empty), null);
                 }
 
                 _recoverer.Recover(errorMessage, errorMessage.Payload);
@@ -561,18 +557,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message)
             {
-                //Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
+                // Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                    //logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
+                    // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
                     return;
                 }
 
                 var cause = errorMessage.Payload as Exception;
                 if (!ShouldRepublish(cause))
                 {
-                    //logger.debug("Skipping republish of: " + message);
+                    // logger.debug("Skipping republish of: " + message);
                     return;
                 }
 
@@ -590,7 +586,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 if (_maxStackTraceLength > 0 && stackTraceAsString.Length > _maxStackTraceLength)
                 {
                     stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
-                    //logger.warn("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+
+                    // logger.warn("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
                 }
 
                 accessor.SetHeader(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, stackTraceAsString);
@@ -677,4 +674,3 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
     }
 }
-;

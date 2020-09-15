@@ -13,6 +13,5 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public RabbitProducerOptions Producer { get; set; }
 
         public RabbitConsumerOptions Consumer { get; set; }
-
     }
 }

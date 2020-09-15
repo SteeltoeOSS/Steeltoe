@@ -16,7 +16,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         // spring.cloud.stream.rabbit.bindings.<channelName>.producer
         // spring.cloud.stream.rabbit.default.consumer   NOTE: Different from Spring
         // spring.cloud.stream.rabbit.default.producer NOTE: Diffrent from Spring
-
         public RabbitBindingsOptions()
         {
         }
@@ -42,7 +41,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             RabbitBindings.TryGetValue(binding, out var options);
             if (options != null && options.Consumer != null)
             {
-
                 results = options.Consumer;
             }
 

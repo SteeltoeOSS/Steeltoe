@@ -26,13 +26,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //ConfigureServicesInvoked = true; // Testing
-            //services.AddSingleton<TestChannelBinderProvisioner>();
-            //services.AddSingleton<InputDestination>();
-            //services.AddSingleton<OutputDestination>();
-            //services.AddSingleton<TestChannelBinder>();
-            //services.AddSingleton<IBinder<object>>((p) => (IBinder<object>)p.GetRequiredService<TestChannelBinder>());
-            //services.AddSingleton<IBinder>((p) => p.GetRequiredService<TestChannelBinder>());
+            // ConfigureServicesInvoked = true; // Testing
+            // services.AddSingleton<TestChannelBinderProvisioner>();
+            // services.AddSingleton<InputDestination>();
+            // services.AddSingleton<OutputDestination>();
+            // services.AddSingleton<TestChannelBinder>();
+            // services.AddSingleton<IBinder<object>>((p) => (IBinder<object>)p.GetRequiredService<TestChannelBinder>());
+            // services.AddSingleton<IBinder>((p) => p.GetRequiredService<TestChannelBinder>());
         }
     }
 }

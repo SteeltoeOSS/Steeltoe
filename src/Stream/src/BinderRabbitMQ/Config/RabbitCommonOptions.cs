@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using RabbitConfig = Steeltoe.Messaging.Rabbit.Config;
+using RabbitConfig = Steeltoe.Messaging.RabbitMQ.Config;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
