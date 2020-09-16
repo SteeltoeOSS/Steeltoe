@@ -11,7 +11,7 @@
           <SingleHit>false</SingleHit>
           <UseSourceLink>true</UseSourceLink>
           <IncludeTestAssembly>false</IncludeTestAssembly>
-          <SkipAutoProps>true</SkipAutoProps>
+          <SkipAutoProps>false</SkipAutoProps>
         </Configuration>
       </DataCollector>
     </DataCollectors>
