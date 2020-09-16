@@ -2,7 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -68,6 +72,35 @@ namespace Steeltoe.Management.Endpoint
                 && endpoint.IsEnabled(matchingMgmtContext)
                 && endpoint.IsExposed(matchingMgmtContext)
                 && allowedMethods.Any(m => m.Method.Equals(httpMethod));
+        }
+
+        public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> mgmtOptions, string requestPath, ILogger logger = null)
+        {
+            var match = mgmtOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path));
+            if (match != null)
+            {
+                logger?.LogTrace("Request path matched base path owned by {optionsType}", match.GetType().Name);
+                return match;
+            }
+            else
+            {
+                try
+                {
+                    if (Platform.IsCloudFoundry)
+                    {
+                        return mgmtOptions.First(option => option is CloudFoundryManagementOptions);
+                    }
+                    else
+                    {
+                        return mgmtOptions.First(option => option is ActuatorManagementOptions);
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    logger?.LogError("Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
+                    return mgmtOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
+                }
+            }
         }
 
         private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
