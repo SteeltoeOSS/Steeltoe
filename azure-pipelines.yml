@@ -15,6 +15,7 @@ jobs:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     PackageVersion: $[format('2.5.0-ci{0}', variables['Build.BuildId'])]
+    disable.coverage.autogenerate: 'true'
   strategy:
     matrix:
       Linux_Build_and_Test:
@@ -65,24 +66,43 @@ jobs:
       projectKey: 'SteeltoeOSS_steeltoe'
       extraProperties: |
         sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)\**\*opencover.xml
-        sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)\*.trx
+        sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)\*.trx
         sonar.exclusions=$(Build.SourcesDirectory)\src\Management\src\OpenCensus*
         sonar.coverage.exclusions=**/*Test*/**/*,**/OpenCensus/**,**/OpenCensus.*/**
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
       command: build
-      projects: 'src/Steeltoe.All.sln'
+      projects: src/Steeltoe.All.sln
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
   - task: DotNetCoreCLI@2
+    condition: ne( variables['Agent.OS'], 'Windows_NT' )
     displayName: dotnet test
     inputs:
       command: test
       projects: '**/*.Test/*.csproj'
-      arguments: '--no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Include="[Steeltoe.*]*" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*"'
-  - pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator "-reports:**\*.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
+      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: src/Steeltoe.All.sln
+      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '*.trx'
+      mergeTestResults: true
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
     condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: Create Code coverage report
+    inputs:
+      reports: '$(Build.SourcesDirectory)\**\coverage.opencover.xml'
+      targetdir: '$(Build.SourcesDirectory)\CodeCoverage'
+      reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
   - task: PublishCodeCoverageResults@1
     condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: 'Publish code coverage'
@@ -119,7 +139,7 @@ jobs:
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
-    condition: always()
+    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)
       ArtifactName: Packages
