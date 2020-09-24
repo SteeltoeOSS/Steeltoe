@@ -170,6 +170,7 @@ namespace Steeltoe.Discovery.Client
             {
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
+                options.ApplyConfigUrls(config);
             });
             services.TryAddSingleton(serviceProvider =>
             {

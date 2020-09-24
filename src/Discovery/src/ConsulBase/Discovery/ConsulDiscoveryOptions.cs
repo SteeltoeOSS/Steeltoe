@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Net;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -16,6 +18,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
     public class ConsulDiscoveryOptions
     {
         public const string CONSUL_DISCOVERY_CONFIGURATION_PREFIX = "consul:discovery";
+        private const string WILDCARD_HOST = "---asterisk---";
 
         private string _hostName;
         private string _scheme = "http";
@@ -263,8 +266,54 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// </summary>
         public int CacheTTL { get; set; } = 15;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to register a Url from ASP.NET Core configuration
+        /// </summary>
+        public bool UseAspNetCoreUrls { get; set; } = true;
+
         // public int CatalogServicesWatchDelay { get; set; } = 1000;
 
         // public int CatalogServicesWatchTimeout { get; set; } = 2;
+        public void ApplyConfigUrls(IConfiguration config)
+        {
+            // try to pull some values out of server config to override defaults, but only if not using NetUtils
+            // if NetUtils are configured, the user probably wants to define their own behavior
+            var urls = config["urls"];
+            if (!string.IsNullOrEmpty(urls) && !UseNetUtils && UseAspNetCoreUrls)
+            {
+                var uris = new List<Uri>();
+                var addresses = urls.Split(';');
+                foreach (var address in addresses)
+                {
+                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
+                            && (address.Contains("*") || address.Contains("::")))
+                    {
+                        Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:"), UriKind.Absolute, out uri);
+                    }
+
+                    uris.Add(uri);
+                }
+
+                SetOptionsFromUris(uris);
+            }
+        }
+
+        private void SetOptionsFromUris(List<Uri> uris)
+        {
+            // prefer https
+            var configAddress = uris.FirstOrDefault(u => u.Scheme.Equals("https"));
+            if (configAddress == null)
+            {
+                configAddress = uris.FirstOrDefault();
+            }
+
+            Port = configAddress.Port;
+
+            // only set the host if it isn't a wildcard
+            if (!configAddress.Host.Equals(WILDCARD_HOST) && !configAddress.Host.Equals("0.0.0.0"))
+            {
+                HostName = configAddress.Host;
+            }
+        }
     }
 }

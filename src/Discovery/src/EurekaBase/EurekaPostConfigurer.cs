@@ -28,6 +28,7 @@ namespace Steeltoe.Discovery.Eureka
         internal const string UNKNOWN_ZONE = "unknown";
         internal const int DEFAULT_NONSECUREPORT = 80;
         internal const int DEFAULT_SECUREPORT = 443;
+        private const string WILDCARD_HOST = "---asterisk---";
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
         {
@@ -72,6 +73,33 @@ namespace Steeltoe.Discovery.Eureka
                 options.SecureVirtualHostName = options.AppName;
             }
 
+            if (string.IsNullOrEmpty(options.RegistrationMethod))
+            {
+                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
+                if (!string.IsNullOrEmpty(springRegMethod))
+                {
+                    options.RegistrationMethod = springRegMethod;
+                }
+            }
+
+            // try to pull some values out of server config to override defaults, but only if registration method hasn't been set
+            // if registration method has been set, the user probably wants to define their own behavior
+            var urls = config["urls"];
+            if (!string.IsNullOrEmpty(urls) && string.IsNullOrEmpty(options.RegistrationMethod))
+            {
+                var addresses = urls.Split(';');
+                foreach (var address in addresses)
+                {
+                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
+                            && (address.Contains("*") || address.Contains("::")))
+                    {
+                        Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:"), UriKind.Absolute, out uri);
+                    }
+
+                    SetOptionsFromUrls(options, uri);
+                }
+            }
+
             if (defaultId.Equals(options.InstanceId))
             {
                 var springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
@@ -81,19 +109,17 @@ namespace Steeltoe.Discovery.Eureka
                 }
                 else
                 {
-                    options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
+                    if (options.SecurePortEnabled)
+                    {
+                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.SecurePort;
+                    }
+                    else
+                    {
+                        options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
+                    }
                 }
             }
-
-            if (string.IsNullOrEmpty(options.RegistrationMethod))
-            {
-                var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
-                if (!string.IsNullOrEmpty(springRegMethod))
-                {
-                    options.RegistrationMethod = springRegMethod;
-                }
-            }
-        }
+       }
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
@@ -130,6 +156,26 @@ namespace Steeltoe.Discovery.Eureka
             if (HOST_REGISTRATIONMETHOD.Equals(instOptions.RegistrationMethod, StringComparison.OrdinalIgnoreCase))
             {
                 UpdateWithDefaultsForHost(si, instOptions, instOptions.HostName);
+            }
+        }
+
+        private static void SetOptionsFromUrls(EurekaInstanceOptions options, Uri uri)
+        {
+            if (uri.Scheme == "http")
+            {
+                if (options.Port == DEFAULT_NONSECUREPORT && uri.Port != DEFAULT_NONSECUREPORT)
+                {
+                    options.Port = uri.Port;
+                }
+            }
+            else if (uri.Scheme == "https" && options.SecurePort == DEFAULT_SECUREPORT && uri.Port != DEFAULT_SECUREPORT)
+            {
+                options.SecurePort = uri.Port;
+            }
+
+            if (!uri.Host.Equals(WILDCARD_HOST) && !uri.Host.Equals("0.0.0.0"))
+            {
+                options.HostName = uri.Host;
             }
         }
 
