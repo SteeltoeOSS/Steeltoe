@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Client
     {
         public const string WILDCARD_HOST = "---asterisk---";
 
-        public static List<Uri> GetUrlsFromConfig(IConfiguration config)
+        public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
         {
             var urls = config["urls"];
             var uris = new List<Uri>();

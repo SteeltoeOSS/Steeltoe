@@ -220,7 +220,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
-            instOpts.ApplyConfigUrls(ConfigurationUrlHelpers.GetUrlsFromConfig(config), ConfigurationUrlHelpers.WILDCARD_HOST);
+            instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
 
             Assert.Equal("myapp", instOpts.HostName);
             Assert.Equal(1234, instOpts.SecurePort);

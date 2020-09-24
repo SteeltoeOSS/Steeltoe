@@ -139,7 +139,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public void ApplyConfigUrls(List<Uri> addresses, string wildcard_hostname)
         {
-            // try to pull some values out of server config to override defaults, but only if registration method hasn't been set
+            // only use addresses from config if there are any and registration method hasn't been set
             // if registration method has been set, the user probably wants to define their own behavior
             if (addresses.Any() && string.IsNullOrEmpty(RegistrationMethod))
             {
