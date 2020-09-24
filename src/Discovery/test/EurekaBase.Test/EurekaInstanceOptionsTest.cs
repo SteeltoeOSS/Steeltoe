@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common;
 using Steeltoe.Common.Net;
+using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -211,6 +212,19 @@ namespace Steeltoe.Discovery.Eureka.Test
             // assert
             Assert.NotNull(opts.HostName);
             Assert.InRange(noSlowReverseDNSQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        }
+
+        [Fact]
+        public void UpdateConfigurationFindsUrls()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+            var instOpts = new EurekaInstanceOptions();
+
+            instOpts.ApplyConfigUrls(ConfigurationUrlHelpers.GetUrlsFromConfig(config), ConfigurationUrlHelpers.WILDCARD_HOST);
+
+            Assert.Equal("myapp", instOpts.HostName);
+            Assert.Equal(1234, instOpts.SecurePort);
+            Assert.Equal(1233, instOpts.Port);
         }
     }
 }
