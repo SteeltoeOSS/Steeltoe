@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using T=System.Threading.Tasks;
+using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
 {
@@ -586,7 +586,9 @@ namespace Steeltoe.Discovery.Eureka
             return regResult;
         }
 
-        protected void Initialize()
+        protected void Initialize() => InitializeAsync().GetAwaiter().GetResult();
+
+        protected async T.Task InitializeAsync()
         {
             _localRegionApps = new Applications
             {
@@ -600,8 +602,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (ClientConfig.ShouldRegisterWithEureka && _appInfoManager.InstanceInfo != null)
             {
-                var result = RegisterAsync();
-                if (!result.GetAwaiter().GetResult())
+                if (!await RegisterAsync().ConfigureAwait(false))
                 {
                     _logger?.LogInformation("Initial Registration failed.");
                 }
@@ -617,8 +618,7 @@ namespace Steeltoe.Discovery.Eureka
 
             if (ClientConfig.ShouldFetchRegistry)
             {
-                var result = FetchRegistryAsync(true);
-                result.GetAwaiter().GetResult();
+                await FetchRegistryAsync(true).ConfigureAwait(false);
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
                 _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
             }
