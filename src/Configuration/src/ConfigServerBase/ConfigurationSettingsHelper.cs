@@ -178,7 +178,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetClientSecret(string configPrefix, IConfiguration config)
         {
-           return GetSetting(
+           return ConfigurationValuesHelper.GetSetting(
                "credentials:client_secret",
                config,
                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
