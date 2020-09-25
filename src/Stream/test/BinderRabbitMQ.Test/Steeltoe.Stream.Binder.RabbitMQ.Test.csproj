@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj" />
     <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />

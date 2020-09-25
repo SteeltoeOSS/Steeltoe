@@ -2,6 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -10,6 +15,7 @@ using Steeltoe.Stream.Provisioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 using BinderConfig = Steeltoe.Stream.Binder.Rabbit.Config;
 using RabbitConfig = Steeltoe.Messaging.RabbitMQ.Config;
@@ -19,6 +25,22 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
     public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     {
         private const string GROUP_INDEX_DELIMITER = ".";
+        private readonly IApplicationContext _autoDeclareContext;
+
+        private class GivenNamingStrategy : INamingStrategy
+        {
+            private readonly Func<string> strategy;
+
+            public GivenNamingStrategy(Func<string> strategy)
+            {
+                this.strategy = strategy;
+            }
+
+            public string GenerateName()
+            {
+                return strategy();
+            }
+        }
 
         public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions)
             : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions)
@@ -30,13 +52,17 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             Admin = new RabbitAdmin(connectionFactory);
 
             // AutoDeclareContext.refresh();
-            // Admin.setApplicationContext(this.autoDeclareContext);
+            var serviceProvider = new ServiceCollection().BuildServiceProvider();
+            _autoDeclareContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            Admin.ApplicationContext = _autoDeclareContext;
             Admin.Initialize();
             Customizers = customizers;
             Options = bindingsOptions;
         }
 
         private RabbitAdmin Admin { get; }
+
+        private bool _notOurAdminException;
 
         private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
 
@@ -197,7 +223,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             if (anonymous)
             {
                 var anonQueueName = queueName;
-                queue = new AnonymousQueue((org.springframework.amqp.core.NamingStrategy)()->anonQueueName, GetQueueArgs(queueName, consumerProperties, false));
+                queue = new AnonymousQueue(new GivenNamingStrategy(() => anonQueueName), GetQueueArgs(queueName, consumerProperties, false));
             }
             else
             {
@@ -460,9 +486,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (Exception e)
             {
-                if (this.notOurAdminException)
+                if (this._notOurAdminException)
                 {
-                    this.notOurAdminException = false;
+                    this._notOurAdminException = false;
                     throw;
                 }
 
@@ -630,9 +656,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (Exception e)
             {
-                if (this.notOurAdminException)
+                if (this._notOurAdminException)
                 {
-                    this.notOurAdminException = false;
+                    this._notOurAdminException = false;
                     throw;
                 }
 
@@ -642,15 +668,16 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             AddToAutoDeclareContext(rootName + ".exchange", exchange);
         }
 
-        // private void addToAutoDeclareContext(String name, Object bean)
-        // {
-        //    synchronized(this.autoDeclareContext) {
-        //        if (!this.autoDeclareContext.containsBean(name))
-        //        {
-        //            this.autoDeclareContext.getBeanFactory().registerSingleton(name, bean);
-        //        }
-        //    }
-        // }
+        private void AddToAutoDeclareContext(String name, Object bean)
+        {
+            lock (_autoDeclareContext) {
+                if (!_autoDeclareContext.ContainsService(name, bean.GetType()))
+                {
+                    _autoDeclareContext.Register(name, bean);
+                }
+            }
+        }
+
         private void DeclareBinding(string rootName, RabbitConfig.IBinding bindingArg)
         {
             var binding = bindingArg;
@@ -669,9 +696,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (Exception e)
             {
-                if (this.notOurAdminException)
+                if (this._notOurAdminException)
                 {
-                    this.notOurAdminException = false;
+                    this._notOurAdminException = false;
                     throw;
                 }
 
@@ -681,20 +708,20 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             AddToAutoDeclareContext(rootName + ".binding", binding);
         }
 
-        // public void CleanAutoDeclareContext(ConsumerDestination destination,  ExtendedConsumerProperties<RabbitConsumerProperties> consumerProperties)
-        // {
-        //    synchronized(this.autoDeclareContext) {
-        //        Stream.of(StringUtils.tokenizeToStringArray(destination.getName(), ",", true,
-        //                true)).forEach(name-> {
-        //            name = name.trim();
-        //            removeSingleton(name + ".binding");
-        //            removeSingleton(name);
-        //            String dlq = name + ".dlq";
-        //            removeSingleton(dlq + ".binding");
-        //            removeSingleton(dlq);
-        //        });
-        //    }
-        // }
+        public void CleanAutoDeclareContext(IConsumerDestination destination, IConsumerOptions consumerProperties)
+        {
+            lock(_autoDeclareContext) {
+                //Stream.of(StringUtils.tokenizeToStringArray(destination.getName(), ",", true,
+                //        true)).forEach(name-> {
+                //    name = name.trim();
+                //    removeSingleton(name + ".binding");
+                //    removeSingleton(name);
+                //    String dlq = name + ".dlq";
+                //    removeSingleton(dlq + ".binding");
+                //    removeSingleton(dlq);
+                //});
+            }
+        }
 
         // private void RemoveSingleton(string name)
         // {

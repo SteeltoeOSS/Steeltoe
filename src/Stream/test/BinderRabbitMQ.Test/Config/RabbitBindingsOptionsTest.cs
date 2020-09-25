@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using Xunit;
-using RabbitCore = Steeltoe.Messaging.Rabbit.Core;
+using RabbitCore = Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config
 {

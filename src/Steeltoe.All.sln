@@ -301,6 +301,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientBa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientBase.Test", "Discovery\test\ClientBase.Test\Steeltoe.Discovery.ClientBase.Test.csproj", "{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.RabbitMQ", "Stream\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj", "{D00E5CE7-3EF2-4E56-9A86-078022644262}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -783,6 +785,10 @@ Global
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -908,6 +914,7 @@ Global
 		{96AF536F-BCEC-46D2-BCD0-C1737418ED44} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 		{E2BE4A3F-1C35-41ED-99D1-7630B5369942} = {31BAEBB1-696E-44A1-B1EF-0D150E6D2559}
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A} = {31BAEBB1-696E-44A1-B1EF-0D150E6D2559}
+		{D00E5CE7-3EF2-4E56-9A86-078022644262} = {4F1EA720-AA18-4955-A854-016B26F6CED1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
