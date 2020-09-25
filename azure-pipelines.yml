@@ -2,7 +2,6 @@ trigger:
   branches:
     include:
     - master
-    - 2.x
   paths:
     exclude:
     - README.md
@@ -10,7 +9,6 @@ trigger:
     - roadmaps/*
 pr:
 - master
-- 2.x
 
 variables:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -75,10 +73,21 @@ steps:
   inputs:
     command: test
     projects: src/Steeltoe.All.sln
-    arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) /p:CollectCoverage=true /p:CoverletOutputFormat="opencover" /p:Exclude="[*.Test*]*%2c[*]Microsoft.Diagnostics*""'
-- pwsh: dotnet tool install -g dotnet-reportgenerator-globaltool; reportgenerator "-reports:**\*.opencover.xml" "-targetdir:$(Build.SourcesDirectory)\CodeCoverage" -reporttypes:Cobertura
+    arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+    publishTestResults: false
+- task: PublishTestResults@2
+  condition: always()
+  inputs:
+    testResultsFormat: VSTest
+    testResultsFiles: '*.trx'
+    mergeTestResults: true
+- task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: Create Code coverage report
+  inputs:
+    reports: '$(Build.SourcesDirectory)\**\coverage.opencover.xml'
+    targetdir: '$(Build.SourcesDirectory)\CodeCoverage'
+    reporttypes: 'HtmlInline_AzurePipelines;Cobertura'
 - task: PublishCodeCoverageResults@1
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: 'Publish code coverage'

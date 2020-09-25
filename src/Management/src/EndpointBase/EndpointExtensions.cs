@@ -3,7 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -66,6 +73,35 @@ namespace Steeltoe.Management.Endpoint
             var exposed = endpoint.IsExposed(mgmtContext);
             logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {mgmtContext.Path}, enabled: {enabled}, exposed: {exposed}");
             return enabled && exposed;
+        }
+
+        public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> mgmtOptions, string requestPath, ILogger logger = null)
+        {
+            var match = mgmtOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path));
+            if (match != null)
+            {
+                logger?.LogTrace("Request path matched base path owned by {optionsType}", match.GetType().Name);
+                return match;
+            }
+            else
+            {
+                try
+                {
+                    if (Platform.IsCloudFoundry)
+                    {
+                        return mgmtOptions.First(option => option is CloudFoundryManagementOptions);
+                    }
+                    else
+                    {
+                        return mgmtOptions.First(option => option is ActuatorManagementOptions);
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    logger?.LogError("Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
+                    return mgmtOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
+                }
+            }
         }
 
         public static string GetContextPath(this IEndpointOptions options, IManagementOptions mgmtContext)

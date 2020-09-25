@@ -255,6 +255,20 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 Assert.NotNull(unknownJson);
                 Assert.Contains("\"status\":\"UP\"", unknownJson);
             }
+
+            builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:health:HttpStatusFromHealth"] = "false" }));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var downResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, downResult.StatusCode);
+                var downJson = await downResult.Content.ReadAsStringAsync();
+                Assert.NotNull(downJson);
+                Assert.Contains("\"status\":\"DOWN\"", downJson);
+            }
         }
 
         [Fact]
