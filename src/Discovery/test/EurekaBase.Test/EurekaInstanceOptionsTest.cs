@@ -215,16 +215,36 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public void UpdateConfigurationFindsUrls()
+        public void UpdateConfigurationFindsHttpUrl()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "http://myapp:1233" } }).Build();
+            var instOpts = new EurekaInstanceOptions();
+
+            instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+            instOpts.SetInstanceId(config);
+
+            Assert.Equal("myapp", instOpts.HostName);
+            Assert.Equal(1233, instOpts.Port);
+            Assert.False(instOpts.SecurePortEnabled);
+            Assert.True(instOpts.NonSecurePortEnabled);
+            Assert.EndsWith(":unknown:1233", instOpts.InstanceId);
+        }
+
+        [Fact]
+        public void UpdateConfigurationFindsUrlsPicksHttps()
         {
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+            instOpts.SetInstanceId(config);
 
             Assert.Equal("myapp", instOpts.HostName);
             Assert.Equal(1234, instOpts.SecurePort);
             Assert.Equal(1233, instOpts.Port);
+            Assert.True(instOpts.SecurePortEnabled);
+            Assert.False(instOpts.NonSecurePortEnabled);
+            Assert.EndsWith(":unknown:1234", instOpts.InstanceId);
         }
     }
 }

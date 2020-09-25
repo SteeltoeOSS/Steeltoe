@@ -152,6 +152,8 @@ namespace Steeltoe.Discovery.Eureka
                     else if (address.Scheme == "https" && SecurePort == DEFAULT_SECUREPORT)
                     {
                         SecurePort = address.Port;
+                        SecurePortEnabled = true;
+                        NonSecurePortEnabled = false;
                     }
 
                     if (!address.Host.Equals(wildcard_hostname) && !address.Host.Equals("0.0.0.0"))
@@ -164,8 +166,8 @@ namespace Steeltoe.Discovery.Eureka
 
         public void SetInstanceId(IConfiguration config)
         {
-            var defaultId = GetHostName(false) + ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
-            if (defaultId.Equals(InstanceId))
+            var defaultIdEnding = ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
+            if (InstanceId.EndsWith(defaultIdEnding))
             {
                 var springInstanceId = config.GetValue<string>(EurekaPostConfigurer.SPRING_APPLICATION_INSTANCEID_KEY);
                 if (!string.IsNullOrEmpty(springInstanceId))
