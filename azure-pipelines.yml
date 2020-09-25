@@ -1,13 +1,14 @@
 trigger:
   branches:
     include:
-    - master
     - 2.x
   paths:
     exclude:
     - README.md
     - project-docs/*
     - roadmaps/*
+pr:
+- 2.x
 
 jobs:
 - job:
