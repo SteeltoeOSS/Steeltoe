@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.App;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -31,6 +32,7 @@ namespace Steeltoe.Discovery.Eureka.Test
 
             var instOpts = new EurekaInstanceOptions();
             EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            instOpts.SetInstanceId(root);
 
             Assert.Equal("bar", instOpts.AppName);
             Assert.Equal("instance", instOpts.InstanceId);
@@ -83,6 +85,7 @@ namespace Steeltoe.Discovery.Eureka.Test
             var instOpts = new EurekaInstanceOptions();
 
             EurekaPostConfigurer.UpdateConfiguration(root, instOpts);
+            instOpts.SetInstanceId(root);
 
             Assert.Equal("bar", instOpts.AppName);
             Assert.EndsWith("bar:80", instOpts.InstanceId, StringComparison.OrdinalIgnoreCase);

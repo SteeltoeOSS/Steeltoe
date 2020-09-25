@@ -26,8 +26,6 @@ namespace Steeltoe.Discovery.Eureka
         internal const string INSTANCE_ID = "instanceId";
         internal const string ZONE = "zone";
         internal const string UNKNOWN_ZONE = "unknown";
-        internal const int DEFAULT_NONSECUREPORT = 80;
-        internal const int DEFAULT_SECUREPORT = 443;
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
         {
@@ -51,8 +49,6 @@ namespace Steeltoe.Discovery.Eureka
 
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options)
         {
-            var defaultId = options.GetHostName(false) + ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
-
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
                 var springAppName = config.GetValue<string>(SPRING_APPLICATION_NAME_KEY);
@@ -72,19 +68,6 @@ namespace Steeltoe.Discovery.Eureka
                 options.SecureVirtualHostName = options.AppName;
             }
 
-            if (defaultId.Equals(options.InstanceId))
-            {
-                var springInstanceId = config.GetValue<string>(SPRING_APPLICATION_INSTANCEID_KEY);
-                if (!string.IsNullOrEmpty(springInstanceId))
-                {
-                    options.InstanceId = springInstanceId;
-                }
-                else
-                {
-                    options.InstanceId = options.GetHostName(false) + ":" + options.AppName + ":" + options.NonSecurePort;
-                }
-            }
-
             if (string.IsNullOrEmpty(options.RegistrationMethod))
             {
                 var springRegMethod = config.GetValue<string>(SPRING_CLOUD_DISCOVERY_REGISTRATIONMETHOD_KEY);
@@ -93,7 +76,7 @@ namespace Steeltoe.Discovery.Eureka
                     options.RegistrationMethod = springRegMethod;
                 }
             }
-        }
+       }
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
@@ -152,8 +135,8 @@ namespace Steeltoe.Discovery.Eureka
         private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
             UpdateWithDefaults(si, instOptions);
-            instOptions.NonSecurePort = DEFAULT_NONSECUREPORT;
-            instOptions.SecurePort = DEFAULT_SECUREPORT;
+            instOptions.NonSecurePort = EurekaInstanceOptions.DEFAULT_NONSECUREPORT;
+            instOptions.SecurePort = EurekaInstanceOptions.DEFAULT_SECUREPORT;
 
             if (si.ApplicationInfo.ApplicationUris?.Length > 0)
             {
