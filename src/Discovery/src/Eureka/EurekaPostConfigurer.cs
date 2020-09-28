@@ -93,7 +93,7 @@ namespace Steeltoe.Discovery.Eureka
             var urls = config["urls"];
             if (!string.IsNullOrEmpty(urls) && string.IsNullOrEmpty(options.RegistrationMethod))
             {
-                var addresses = urls.Split(";");
+                var addresses = urls.Split(';');
                 foreach (var address in addresses)
                 {
                     if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)

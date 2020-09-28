@@ -729,7 +729,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();
-            if (url[^1] != '/')
+            if (!url.EndsWith("/"))
             {
                 url += '/';
             }
