@@ -44,6 +44,8 @@ namespace Steeltoe.Management.Endpoint
 
         public List<IEndpointOptions> EndpointOptions { get; set; }
 
+        public bool UseStatusCodeFromResponse { get; set; } = true;
+
         public static ManagementOptions GetInstance()
         {
             if (_instance == null)

@@ -83,5 +83,63 @@ namespace Steeltoe.Management.EndpointWeb.Test
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }
+
+        [Fact]
+        public async void CloudFoundrySecurityMiddleware_Returns_Overrides()
+        {
+            var appSettings = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["management:endpoints:UseStatusCodeFromResponse"] = "false"
+            };
+
+            using (var server = new TestServer(new Settings(appSettings)))
+            {
+                var client = server.HttpClient;
+
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info", "GET");
+
+                Assert.NotNull(result);
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal("{\"security_error\":\"Application id is not available\"}", result.Content);
+            }
+
+            var appSettings2 = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["info:application:name"] = "foobar",
+                ["vcap:application:application_id"] = "foobar",
+                ["management:endpoints:UseStatusCodeFromResponse"] = "false"
+            };
+
+            using (var server = new TestServer(new Settings(appSettings2)))
+            {
+                var client = server.HttpClient;
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info", "GET");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                Assert.Equal("{\"security_error\":\"Cloud controller URL is not available\"}", result.Content);
+            }
+
+            var appSettings3 = new Dictionary<string, string>()
+            {
+                ["management:endpoints:enabled"] = "true",
+                ["management:endpoints:path"] = "/",
+                ["management:endpoints:info:enabled"] = "true",
+                ["info:application:name"] = "foobar",
+                ["vcap:application:application_id"] = "foobar",
+                ["vcap:application:cf_api"] = "http://localhost:9999/foo"
+            };
+
+            using (var server = new TestServer(new Settings(appSettings3)))
+            {
+                var client = server.HttpClient;
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info", "GET");
+                Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
+            }
+        }
     }
 }

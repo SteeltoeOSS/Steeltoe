@@ -243,7 +243,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
 
             builder = new WebHostBuilder()
                .UseStartup<Startup>()
-               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:health:HttpStatusFromHealth"] = "false" }));
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:UseStatusCodeFromResponse"] = "false" }));
 
             using (var server = new TestServer(builder))
             {

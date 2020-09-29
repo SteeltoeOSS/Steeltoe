@@ -10,7 +10,6 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Security;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.EndpointOwin.Health
@@ -43,7 +42,7 @@ namespace Steeltoe.Management.EndpointOwin.Health
                 context.Response.Headers.SetValues("Content-Type", new string[] { "application/vnd.spring-boot.actuator.v2+json;charset-UTF-8" });
 
                 var managementOptions = _mgmtOptions.OptionsForContext(context.Request.Path.ToString(), _logger);
-                if (((HealthEndpointOptions)managementOptions.EndpointOptions.FirstOrDefault(o => o is HealthEndpointOptions)).HttpStatusFromHealth)
+                if (managementOptions.UseStatusCodeFromResponse)
                 {
                     context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
                 }

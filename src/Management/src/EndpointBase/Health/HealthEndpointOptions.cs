@@ -47,7 +47,5 @@ namespace Steeltoe.Management.Endpoint.Health
         public EndpointClaim Claim { get; set; }
 
         public string Role { get; set; }
-
-        public bool HttpStatusFromHealth { get; set; } = true;
     }
 }

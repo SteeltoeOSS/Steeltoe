@@ -17,5 +17,11 @@ namespace Steeltoe.Management.Endpoint
         string Path { get; }
 
         List<IEndpointOptions> EndpointOptions { get;  }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not to use accurate HTTP status codes
+        /// </summary>
+        /// <remarks>IIS or HWC the buildpack will (by default) scrub the response body when 503 is returned</remarks>
+        public bool UseStatusCodeFromResponse { get; set; }
     }
 }

@@ -20,15 +20,15 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         private readonly ILogger<CloudFoundrySecurityOwinMiddleware> _logger;
         private readonly ICloudFoundryOptions _options;
         private readonly SecurityBase _base;
-        private readonly IManagementOptions _mgmtOptions;
+        private readonly IManagementOptions _managementOptions;
 
         public CloudFoundrySecurityOwinMiddleware(OwinMiddleware next, ICloudFoundryOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundrySecurityOwinMiddleware> logger = null)
             : base(next)
         {
             _options = options;
             _logger = logger;
-            _mgmtOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
-            _base = new SecurityBase(options, _mgmtOptions, logger);
+            _managementOptions = mgmtOptions.OfType<CloudFoundryManagementOptions>().Single();
+            _base = new SecurityBase(options, _managementOptions, logger);
         }
 
         [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
@@ -43,7 +43,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         public override async Task Invoke(IOwinContext context)
         {
 #pragma warning disable CS0618 // Type or member is obsolete
-            var isEnabled = _mgmtOptions == null ? _options.IsEnabled : _options.IsEnabled(_mgmtOptions);
+            var isEnabled = _managementOptions == null ? _options.IsEnabled : _options.IsEnabled(_managementOptions);
 #pragma warning restore CS0618 // Type or member is obsolete
 
             // if running on Cloud Foundry, security is enabled, the path starts with /cloudfoundryapplication...
@@ -131,7 +131,7 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             List<IEndpointOptions> configEndpoints;
 
             // Remove in 3.0
-            if (_mgmtOptions == null)
+            if (_managementOptions == null)
             {
 #pragma warning disable CS0618 // Type or member is obsolete
                 configEndpoints = _options.Global.EndpointOptions;
@@ -148,10 +148,10 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
                 return null;
             }
 
-            configEndpoints = _mgmtOptions.EndpointOptions;
+            configEndpoints = _managementOptions.EndpointOptions;
             foreach (var ep in configEndpoints)
             {
-                var contextPath = _mgmtOptions.Path;
+                var contextPath = _managementOptions.Path;
                 if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
                 {
                     contextPath += "/";
@@ -171,7 +171,13 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
         {
             LogError(context, error);
             context.Response.Headers.SetValues("Content-Type", new string[] { "application/json;charset=UTF-8" });
-            context.Response.StatusCode = (int)error.Code;
+
+            // allowing override of 400-level errors is more likely to cause confusion than to be useful
+            if (_managementOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
+            {
+                context.Response.StatusCode = (int)error.Code;
+            }
+
             await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 

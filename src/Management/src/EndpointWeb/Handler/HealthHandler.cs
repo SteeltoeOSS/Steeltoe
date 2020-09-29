@@ -9,7 +9,6 @@ using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.EndpointWeb.Security;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Web;
 
 namespace Steeltoe.Management.Endpoint.Handler
@@ -35,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Handler
             context.Response.Headers.Set("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
             context.Response.Write(Serialize(result));
             var managementOptions = _mgmtOptions.OptionsForContext(context.Request.Path, _logger);
-            if (((HealthEndpointOptions)managementOptions.EndpointOptions.FirstOrDefault(o => o is HealthEndpointOptions)).HttpStatusFromHealth)
+            if (managementOptions.UseStatusCodeFromResponse)
             {
                 context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
             }
