@@ -51,6 +51,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1B
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\codecov.yml = ..\codecov.yml
+		..\coverlet.runsettings = ..\coverlet.runsettings
 		..\nuget.config = ..\nuget.config
 		..\sharedproject.props = ..\sharedproject.props
 		..\sharedtest.props = ..\sharedtest.props

@@ -1,4 +1,4 @@
-<!-- Workaround. Remove once we're on 3.1.300+
+<!-- Workaround. Remove sometime in the future... .NET SDK 3.1.300+	alone doesn't seem to have fixed it here
 https://github.com/dotnet/sourcelink/issues/572 -->
 <Project>
   <PropertyGroup>
