@@ -119,7 +119,7 @@ namespace Steeltoe.Management.EndpointWeb.Test
             var settings = new Settings(DefaultTestSettingsConfig.DefaultSettings)
             {
                 { "unhealthy", "true" },
-                { "management:endpoints:health:HttpStatusFromHealth", "false" }
+                { "management:endpoints:UseStatusCodeFromResponse", "false" }
             };
 
             using var server = new TestServer(settings);

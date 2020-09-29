@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.Endpoint.Security;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint
 {
