@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public bool? RepublishToDlq { get; set; }
 
-        public RabbitCore.MessageDeliveryMode? RepublishDeliveyMode { get; set; }
+        public RabbitCore.MessageDeliveryMode? RepublishDeliveryMode { get; set; }
 
         public bool? RequeueRejected { get; set; }
 
@@ -91,9 +91,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 RepublishToDlq = defaultOptions != null ? defaultOptions.RepublishToDlq : true;
             }
 
-            if (!RepublishDeliveyMode.HasValue)
+            if (!RepublishDeliveryMode.HasValue)
             {
-                RepublishDeliveyMode = defaultOptions != null ? defaultOptions.RepublishDeliveyMode : RabbitCore.MessageDeliveryMode.PERSISTENT;
+                RepublishDeliveryMode = defaultOptions != null ? defaultOptions.RepublishDeliveryMode : RabbitCore.MessageDeliveryMode.PERSISTENT;
             }
 
             if (!RequeueRejected.HasValue)

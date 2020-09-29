@@ -594,9 +594,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 accessor.SetHeader(RepublishMessageRecoverer.X_EXCEPTION_MESSAGE, cause.InnerException != null ? cause.InnerException.Message : cause.Message);
                 accessor.SetHeader(RepublishMessageRecoverer.X_ORIGINAL_EXCHANGE, accessor.ReceivedExchange);
                 accessor.SetHeader(RepublishMessageRecoverer.X_ORIGINAL_ROUTING_KEY, accessor.ReceivedRoutingKey);
-                if (_properties.RepublishDeliveyMode != null)
+                if (_properties.RepublishDeliveryMode != null)
                 {
-                    accessor.DeliveryMode = _properties.RepublishDeliveyMode.Value;
+                    accessor.DeliveryMode = _properties.RepublishDeliveryMode.Value;
                 }
 
                 _template.Send(_exchange, _routingKey != null ? _routingKey : accessor.ConsumerQueue, message);

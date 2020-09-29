@@ -19,6 +19,14 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public int? BatchTimeout { get; set; }
 
+        //Do we need this?
+        public bool? DurableSubscription { get; set; }
+
+        public bool? Exclusive { get; set; }
+
+        public long? FailedDeclarationRetryInterval { get; set; }
+        // end 
+
         public bool? Transacted { get; set; }
 
         public MessageDeliveryMode? DeliveryMode { get; set; }

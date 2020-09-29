@@ -286,7 +286,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         {
             public bool? Enabled { get; set; }
 
-            public int? InitialGroupSize { get; set; }
+            public int? InitialQuorumSize { get; set; }
 
             public int? DeliveryLimit { get; set; }
         }

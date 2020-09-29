@@ -602,9 +602,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     args.Add("x-delivery-limit", quorum.DeliveryLimit.Value);
                 }
 
-                if (quorum.InitialGroupSize != null)
+                if (quorum.InitialQuorumSize != null)
                 {
-                    args.Add("x-quorum-initial-group-size", quorum.InitialGroupSize.Value);
+                    args.Add("x-quorum-initial-group-size", quorum.InitialQuorumSize.Value);
                 }
             }
 

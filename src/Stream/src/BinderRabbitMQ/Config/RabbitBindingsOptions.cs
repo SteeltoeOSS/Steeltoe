@@ -31,14 +31,14 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             PostProcess();
         }
 
-        public Dictionary<string, RabbitBindingOptions> RabbitBindings { get; set; }
+        public Dictionary<string, RabbitBindingOptions> Bindings { get; set; }
 
         public RabbitBindingOptions Default { get; set; }
 
         public RabbitConsumerOptions GetRabbitConsumerOptions(string binding)
         {
             var results = Default.Consumer;
-            RabbitBindings.TryGetValue(binding, out var options);
+            Bindings.TryGetValue(binding, out var options);
             if (options != null && options.Consumer != null)
             {
                 results = options.Consumer;
@@ -50,7 +50,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public RabbitProducerOptions GetRabbitProducerOptions(string binding)
         {
             var results = Default.Producer;
-            RabbitBindings.TryGetValue(binding, out var options);
+            Bindings.TryGetValue(binding, out var options);
             if (options != null && options.Producer != null)
             {
                 results = options.Producer;
@@ -80,12 +80,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             Default.Producer.PostProcess();
 
-            if (RabbitBindings == null)
+            if (Bindings == null)
             {
-                RabbitBindings = new Dictionary<string, RabbitBindingOptions>();
+                Bindings = new Dictionary<string, RabbitBindingOptions>();
             }
 
-            foreach (var binding in RabbitBindings)
+            foreach (var binding in Bindings)
             {
                 var bo = binding.Value;
                 if (bo.Consumer != null)
