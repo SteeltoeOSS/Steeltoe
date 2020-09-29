@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
+using Steeltoe.Discovery.Client;
 using System;
 using System.Linq;
 
@@ -26,9 +27,6 @@ namespace Steeltoe.Discovery.Eureka
         internal const string INSTANCE_ID = "instanceId";
         internal const string ZONE = "zone";
         internal const string UNKNOWN_ZONE = "unknown";
-        internal const int DEFAULT_NONSECUREPORT = 80;
-        internal const int DEFAULT_SECUREPORT = 443;
-        private const string WILDCART_HOST = "---asterisk---";
 
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
         {
@@ -52,7 +50,7 @@ namespace Steeltoe.Discovery.Eureka
 
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
         {
-            var defaultId = options.GetHostName(false) + ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
+            var defaultIdEnding = ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
 
             if (EurekaInstanceOptions.Default_Appname.Equals(options.AppName))
             {
@@ -88,25 +86,9 @@ namespace Steeltoe.Discovery.Eureka
                 }
             }
 
-            // try to pull some values out of server config to override defaults, but only if registration method hasn't been set
-            // if registration method has been set, the user probably wants to define their own behavior
-            var urls = config["urls"];
-            if (!string.IsNullOrEmpty(urls) && string.IsNullOrEmpty(options.RegistrationMethod))
-            {
-                var addresses = urls.Split(';');
-                foreach (var address in addresses)
-                {
-                    if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
-                            && (address.Contains("*") || address.Contains("::")))
-                    {
-                        Uri.TryCreate(address.Replace("*", WILDCART_HOST).Replace("::", $"{WILDCART_HOST}:"), UriKind.Absolute, out uri);
-                    }
+            options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
 
-                    SetOptionsFromUrls(options, uri);
-                }
-            }
-
-            if (defaultId.Equals(options.InstanceId))
+            if (options.InstanceId.EndsWith(defaultIdEnding))
             {
                 var springInstanceId = instanceInfo?.InstanceId;
                 if (!string.IsNullOrEmpty(springInstanceId))
@@ -165,26 +147,6 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        private static void SetOptionsFromUrls(EurekaInstanceOptions options, Uri uri)
-        {
-            if (uri.Scheme == "http")
-            {
-                if (options.Port == DEFAULT_NONSECUREPORT && uri.Port != DEFAULT_NONSECUREPORT)
-                {
-                    options.Port = uri.Port;
-                }
-            }
-            else if (uri.Scheme == "https" && options.SecurePort == DEFAULT_SECUREPORT && uri.Port != DEFAULT_SECUREPORT)
-            {
-                options.SecurePort = uri.Port;
-            }
-
-            if (!uri.Host.Equals(WILDCART_HOST) && !uri.Host.Equals("0.0.0.0"))
-            {
-                options.HostName = uri.Host;
-            }
-        }
-
         private static void UpdateWithDefaultsForHost(EurekaServiceInfo si, EurekaInstanceOptions instOptions, string hostName)
         {
             UpdateWithDefaults(si, instOptions);
@@ -204,8 +166,8 @@ namespace Steeltoe.Discovery.Eureka
         private static void UpdateWithDefaultsForRoute(EurekaServiceInfo si, EurekaInstanceOptions instOptions)
         {
             UpdateWithDefaults(si, instOptions);
-            instOptions.NonSecurePort = DEFAULT_NONSECUREPORT;
-            instOptions.SecurePort = DEFAULT_SECUREPORT;
+            instOptions.NonSecurePort = EurekaInstanceOptions.DEFAULT_NONSECUREPORT;
+            instOptions.SecurePort = EurekaInstanceOptions.DEFAULT_SECUREPORT;
 
             if (si.ApplicationInfo.Uris.Any())
             {

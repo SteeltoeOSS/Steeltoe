@@ -15,6 +15,29 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerConfigurationBuilderExtensionsTest
     {
+        private const string VcapApplication = @" 
+                {
+                    ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
+                    ""application_name"": ""foo"",
+                    ""application_uris"": [
+                        ""foo.10.244.0.34.xip.io""
+                    ],
+                    ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
+                    ""limits"": {
+                        ""disk"": 1024,
+                        ""fds"": 16384,
+                        ""mem"": 256
+                    },
+                    ""name"": ""foo"",
+                    ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
+                    ""space_name"": ""my-space"",
+                    ""uris"": [
+                        ""foo.10.244.0.34.xip.io""
+                    ],
+                    ""users"": null,
+                    ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                }";
+
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
@@ -344,35 +367,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("myPassword", settings.Password);
         }
 
-        [Fact]
-        public void AddConfigServer_VCAP_SERVICES_Override_Defaults()
-        {
-            // Arrange
-            var configurationBuilder = new ConfigurationBuilder();
-            const string vcap_application = @" 
-                {
-                    ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
-                    ""application_name"": ""foo"",
-                    ""application_uris"": [
-                        ""foo.10.244.0.34.xip.io""
-                    ],
-                    ""application_version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"",
-                    ""limits"": {
-                        ""disk"": 1024,
-                        ""fds"": 16384,
-                        ""mem"": 256
-                    },
-                    ""name"": ""foo"",
-                    ""space_id"": ""06450c72-4669-4dc6-8096-45f9777db68a"",
-                    ""space_name"": ""my-space"",
-                    ""uris"": [
-                        ""foo.10.244.0.34.xip.io""
-                    ],
-                    ""users"": null,
-                    ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
-                }";
-
-            const string vcap_services = @"
+        private const string VCAPServicesV2 = @"
                 {
                     ""p-config-server"": [
                     {
@@ -396,8 +391,68 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                         ]
                     }]
                 }";
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+
+        private const string VCAPServicesV3 = @"
+                {
+                    ""p.config-server"": [
+                    {
+                        ""name"": ""config-server"",
+                        ""instance_name"": ""config-server"",
+                        ""binding_name"": null,
+                        ""credentials"": {
+                            ""uri"": ""https://uri-from-vcap-services"",
+                            ""client_secret"": ""some-secret"",
+                            ""client_id"": ""some-client-id"",
+                            ""access_token_uri"": ""https://uaa-uri-from-vcap-services/oauth/token""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""volume_mounts"": [],
+                        ""label"": ""p-config-server"",
+                        ""plan"": ""standard"",
+                        ""provider"": null,
+                        ""tags"": [
+                            ""configuration"",
+                            ""spring-cloud""
+                        ]
+                    }]
+                }";
+
+        private const string VCAPServicesAlt = @"
+                {
+                    ""config-server"": [
+                    {
+                        ""name"": ""config-server"",
+                        ""instance_name"": ""config-server"",
+                        ""binding_name"": null,
+                        ""credentials"": {
+                            ""uri"": ""https://uri-from-vcap-services"",
+                            ""client_secret"": ""some-secret"",
+                            ""client_id"": ""some-client-id"",
+                            ""access_token_uri"": ""https://uaa-uri-from-vcap-services/oauth/token""
+                        },
+                        ""syslog_drain_url"": null,
+                        ""volume_mounts"": [],
+                        ""label"": ""p-config-server"",
+                        ""plan"": ""standard"",
+                        ""provider"": null,
+                        ""tags"": [
+                            ""configuration"",
+                            ""spring-cloud""
+                        ]
+                    }]
+                }";
+
+        [Theory]
+        [InlineData(VCAPServicesV2)]
+        [InlineData(VCAPServicesV3)]
+        [InlineData(VCAPServicesAlt)]
+        public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapservices)
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapservices);
             var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
             // Act

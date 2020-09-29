@@ -131,7 +131,7 @@ namespace Steeltoe.Discovery.Client.Test
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config);
 
             // Act
-            services.AddServiceDiscovery();
+            services.AddDiscoveryClient();
             var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
 
             // assert
@@ -655,6 +655,60 @@ namespace Steeltoe.Discovery.Client.Test
             var reg = provider.GetService<IConsulRegistration>();
             Assert.NotNull(reg);
             Assert.Equal("fromtest", reg.Host);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsulUrlConfiguration_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" }
+            };
+
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+            services.AddDiscoveryClient(config);
+            var provider = services.BuildServiceProvider();
+
+            Assert.NotNull(provider.GetService<IDiscoveryClient>());
+            Assert.NotNull(provider.GetService<IConsulClient>());
+            Assert.NotNull(provider.GetService<IScheduler>());
+            Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
+            var reg = provider.GetService<IConsulRegistration>();
+            Assert.NotNull(reg);
+            Assert.Equal("myapp", reg.Host);
+            Assert.Equal(1234, reg.Port);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsul_UrlBypassWorks()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" },
+                { "Consul:Discovery:UseAspNetCoreUrls", "false" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+            var reg = provider.GetService<IConsulRegistration>();
+
+            Assert.NotNull(reg);
+            Assert.NotEqual("myapp", reg.Host);
+            Assert.Equal(0, reg.Port);
             Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
             Assert.NotNull(provider.GetService<IHealthContributor>());
         }

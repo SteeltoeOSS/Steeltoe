@@ -3,15 +3,19 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Net;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Discovery.Eureka
 {
     public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistrationOptions
     {
         public const string EUREKA_INSTANCE_CONFIGURATION_PREFIX = "eureka:instance";
-
         public new const string Default_StatusPageUrlPath = "/info";
         public new const string Default_HealthCheckUrlPath = "/health";
+        internal const int DEFAULT_NONSECUREPORT = 80;
+        internal const int DEFAULT_SECUREPORT = 443;
 
         public EurekaInstanceOptions()
         {
@@ -114,6 +118,33 @@ namespace Steeltoe.Discovery.Eureka
             }
 
             return _thisHostName;
+        }
+
+        public void ApplyConfigUrls(List<Uri> addresses, string wildcard_hostname)
+        {
+            // only use addresses from config if there are any and registration method hasn't been set
+            // if registration method has been set, the user probably wants to define their own behavior
+            if (addresses.Any() && string.IsNullOrEmpty(RegistrationMethod))
+            {
+                foreach (var address in addresses)
+                {
+                    if (address.Scheme == "http" && Port == DEFAULT_NONSECUREPORT)
+                    {
+                        Port = address.Port;
+                    }
+                    else if (address.Scheme == "https" && SecurePort == DEFAULT_SECUREPORT)
+                    {
+                        SecurePort = address.Port;
+                        SecurePortEnabled = true;
+                        NonSecurePortEnabled = false;
+                    }
+
+                    if (!address.Host.Equals(wildcard_hostname) && !address.Host.Equals("0.0.0.0"))
+                    {
+                        HostName = address.Host;
+                    }
+                }
+            }
         }
     }
 }

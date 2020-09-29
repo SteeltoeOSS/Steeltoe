@@ -48,6 +48,7 @@ namespace Steeltoe.Discovery.Consul
             {
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
+                options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
             });
             services.TryAddSingleton(serviceProvider =>
             {
