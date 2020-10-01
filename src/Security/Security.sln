@@ -58,13 +58,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Security", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{053D9225-E9F0-4121-BE90-073BE457AADC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.ConnectorBase.csproj", "{33B96400-DD55-4883-A83C-E66DBF67A0ED}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Abstractions", "..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj", "{59BAD377-F076-42D5-B321-510986D2906E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Abstractions", "..\Connectors\src\Abstractions\Steeltoe.Connector.Abstractions.csproj", "{9FAC2302-5737-43DF-BC96-A4113F41B6C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.Abstractions", "..\Configuration\src\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj", "{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase", "..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj", "{3B956CF1-91A2-4D62-9538-054D2C40D42F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,10 +146,6 @@ Global
 		{053D9225-E9F0-4121-BE90-073BE457AADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{053D9225-E9F0-4121-BE90-073BE457AADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{053D9225-E9F0-4121-BE90-073BE457AADC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{33B96400-DD55-4883-A83C-E66DBF67A0ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33B96400-DD55-4883-A83C-E66DBF67A0ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33B96400-DD55-4883-A83C-E66DBF67A0ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33B96400-DD55-4883-A83C-E66DBF67A0ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{59BAD377-F076-42D5-B321-510986D2906E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59BAD377-F076-42D5-B321-510986D2906E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59BAD377-F076-42D5-B321-510986D2906E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -160,6 +158,14 @@ Global
 		{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B956CF1-91A2-4D62-9538-054D2C40D42F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B956CF1-91A2-4D62-9538-054D2C40D42F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B956CF1-91A2-4D62-9538-054D2C40D42F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B956CF1-91A2-4D62-9538-054D2C40D42F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -183,10 +189,11 @@ Global
 		{E9C7110C-F12F-40B4-AB11-4AAAF1B4A330} = {BA3B33D3-64A5-4219-B4C2-787C4BD505F7}
 		{7C5DB43D-2728-430B-8AFB-9F239CF93E18} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{053D9225-E9F0-4121-BE90-073BE457AADC} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
-		{33B96400-DD55-4883-A83C-E66DBF67A0ED} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{59BAD377-F076-42D5-B321-510986D2906E} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{9FAC2302-5737-43DF-BC96-A4113F41B6C5} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 		{C699011E-AB0A-4FA4-B0C6-9BE3D75A2FD3} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{3B956CF1-91A2-4D62-9538-054D2C40D42F} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
+		{91D9A0F8-679F-421A-BFF0-F6D6BEAEB3C9} = {2FE6A5FE-4512-41A9-9994-90C12DF1C409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BED45957-EDAD-4686-B959-BD5DA962F7B0}
