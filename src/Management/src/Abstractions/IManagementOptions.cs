@@ -13,5 +13,7 @@ namespace Steeltoe.Management
         string Path { get; }
 
         List<IEndpointOptions> EndpointOptions { get; }
+
+        public bool UseStatusCodeFromResponse { get; set; }
     }
 }

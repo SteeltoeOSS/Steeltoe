@@ -190,7 +190,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             using (var server = new TestServer(builder3))
             {
                 var client = server.CreateClient();
-                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/barfoo");
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/info");
                 Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
             }
         }

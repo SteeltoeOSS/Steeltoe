@@ -47,8 +47,7 @@ namespace Steeltoe.Management.Endpoint.Health
         protected internal string DoRequest(HttpContext context)
         {
             var result = _endpoint.Invoke(new CoreSecurityContext(context));
-            var managementOptions = _mgmtOptions.OptionsForContext(context.Request.Path, _logger);
-            if (managementOptions.UseStatusCodeFromResponse)
+            if (_mgmtOptions.UseStatusCodeFromResponse)
             {
                 context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
             }
