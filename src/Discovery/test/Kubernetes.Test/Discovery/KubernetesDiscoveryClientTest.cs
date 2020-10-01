@@ -4,6 +4,7 @@
 
 using k8s;
 using RichardSzalay.MockHttp;
+using Steeltoe.Common;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using System;
 using System.Collections.Generic;
@@ -23,11 +24,11 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, mockHttpMessageHandler.ToHttpClient());
             const string expectedDesc = "Steeltoe provided Kubernetes native service discovery client";
-            var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
+            var k8SDiscoveryOptions = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions());
 
             // act
             var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions),
+                new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions.CurrentValue),
                 client,
                 k8SDiscoveryOptions);
 
@@ -38,10 +39,10 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         [Fact]
         public void GetInstances_ThrowsOnNull()
         {
-            var k8SDiscoveryOptions = new KubernetesDiscoveryOptions();
+            var k8SDiscoveryOptions = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions());
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" });
             var testK8SDiscoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions),
+                new DefaultIsServicePortSecureResolver(k8SDiscoveryOptions.CurrentValue),
                 client,
                 k8SDiscoveryOptions);
 
@@ -77,13 +78,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 AllNamespaces = true
-            };
+            });
 
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -132,13 +133,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
-            };
+            });
 
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -176,13 +177,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
-            };
+            });
 
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -221,13 +222,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
-            };
+            });
 
             IDiscoveryClient discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -263,13 +264,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
-            };
+            });
 
             var discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -306,13 +307,13 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
                 config: new KubernetesClientConfiguration { Host = "http://localhost" },
                 httpClient: mockHttpMessageHandler.ToHttpClient());
 
-            var options = new KubernetesDiscoveryOptions()
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(new KubernetesDiscoveryOptions()
             {
                 Namespace = "test"
-            };
+            });
 
             var discoveryClient = new KubernetesDiscoveryClient(
-                new DefaultIsServicePortSecureResolver(options),
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
                 client,
                 options);
 
@@ -321,6 +322,56 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
             {
                 { "label", "value" }
             });
+
+            // assert
+            Assert.NotNull(services);
+            Assert.Equal(actual: services.Count, expected: 2);
+            Assert.True(services.Contains("endpoint1"));
+            Assert.True(services.Contains("endpoint2"));
+        }
+
+        [Fact]
+        public void EnabledPropertyWorksBothWays()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+
+            mockHttpMessageHandler
+                .When(HttpMethod.Get, "/api/v1/namespaces/test/services")
+                .Respond(
+                    HttpStatusCode.OK,
+                    new StringContent(
+                        "{\"apiVersion\":\"v1\",\"items\":[{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":" +
+                        "{\"labels\":{\"label1\":\"value1\"},\"name\":\"endpoint1\",\"namespace\":\"test\",\"uid\":" +
+                        "\"uids1\"}},{\"apiVersion\":\"v1\",\"kind\":\"Service\",\"metadata\":{\"labels\":{\"label2\":" +
+                        "\"value2\"},\"name\":\"endpoint2\",\"namespace\":\"test\",\"uid\":\"uids2\"}}]," +
+                        "\"kind\":\"List\",\"metadata\"" +
+                        ":{\"resourceVersion\":\"\",\"selfLink\":\"\"}}"));
+
+            using var client = new k8s.Kubernetes(
+                config: new KubernetesClientConfiguration { Host = "http://localhost" },
+                httpClient: mockHttpMessageHandler.ToHttpClient());
+
+            var k8sOptions = new KubernetesDiscoveryOptions() { Enabled = false, Namespace = "test" };
+            var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(k8sOptions);
+
+            var discoveryClient = new KubernetesDiscoveryClient(
+                new DefaultIsServicePortSecureResolver(options.CurrentValue),
+                client,
+                options);
+
+            // act
+            var services = discoveryClient.Services;
+
+            // assert
+            Assert.NotNull(services);
+            Assert.Empty(services);
+
+            // turn it on
+            k8sOptions.Enabled = true;
+
+            // act
+            services = discoveryClient.Services;
 
             // assert
             Assert.NotNull(services);

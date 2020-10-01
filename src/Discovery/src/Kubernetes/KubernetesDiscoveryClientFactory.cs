@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using System;
 
@@ -10,7 +11,7 @@ namespace Steeltoe.Discovery.Kubernetes
 {
     public static class KubernetesDiscoveryClientFactory
     {
-        public static IDiscoveryClient CreateClient(KubernetesDiscoveryOptions options, IKubernetes kubernetes)
+        public static IDiscoveryClient CreateClient(IOptionsMonitor<KubernetesDiscoveryOptions> options, IKubernetes kubernetes)
         {
             if (options == null)
             {
@@ -22,7 +23,7 @@ namespace Steeltoe.Discovery.Kubernetes
                 throw new ArgumentNullException(nameof(kubernetes));
             }
 
-            var isServicePortSecureResolver = new DefaultIsServicePortSecureResolver(options);
+            var isServicePortSecureResolver = new DefaultIsServicePortSecureResolver(options.CurrentValue);
 
             return new KubernetesDiscoveryClient(isServicePortSecureResolver, kubernetes, options);
         }

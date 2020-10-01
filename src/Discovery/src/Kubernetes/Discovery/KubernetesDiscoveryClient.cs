@@ -5,6 +5,7 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
     {
         private const string DefaultNamespace = "default";
         private readonly ILogger<KubernetesDiscoveryClient> _logger;
-        private readonly KubernetesDiscoveryOptions _discoveryOptions;
+        private readonly IOptionsMonitor<KubernetesDiscoveryOptions> _discoveryOptions;
         private readonly DefaultIsServicePortSecureResolver _isServicePortSecureResolver;
 
         public string Description => "Steeltoe provided Kubernetes native service discovery client";
@@ -29,7 +30,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         public KubernetesDiscoveryClient(
             DefaultIsServicePortSecureResolver isServicePortSecureResolver,
             IKubernetes kubernetesClient,
-            KubernetesDiscoveryOptions discoveryOptions,
+            IOptionsMonitor<KubernetesDiscoveryOptions> discoveryOptions,
             ILogger<KubernetesDiscoveryClient> logger = null)
         {
             _isServicePortSecureResolver = isServicePortSecureResolver;
@@ -40,22 +41,29 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
 
         public IList<string> GetServices(IDictionary<string, string> labels)
         {
-            var labelSelectorValue =
-                labels != null ?
-                    string.Join(",", labels.Keys.Select(k => k + "=" + labels[k])) :
-                    null;
-            if (_discoveryOptions.AllNamespaces)
+            if (!_discoveryOptions.CurrentValue.Enabled)
             {
-                return KubernetesClient.ListServiceForAllNamespaces(
-                        labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
+                return Array.Empty<string>();
             }
             else
             {
-                return KubernetesClient.ListNamespacedService(
-                    namespaceParameter: _discoveryOptions.Namespace,
-                    labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
+                var labelSelectorValue =
+                    labels != null ?
+                        string.Join(",", labels.Keys.Select(k => k + "=" + labels[k])) :
+                        null;
+                if (_discoveryOptions.CurrentValue.AllNamespaces)
+                {
+                    return KubernetesClient.ListServiceForAllNamespaces(
+                            labelSelector: labelSelectorValue).Items
+                        .Select(service => service.Metadata.Name).ToList();
+                }
+                else
+                {
+                    return KubernetesClient.ListNamespacedService(
+                        namespaceParameter: _discoveryOptions.CurrentValue.Namespace,
+                        labelSelector: labelSelectorValue).Items
+                        .Select(service => service.Metadata.Name).ToList();
+                }
             }
         }
 
@@ -66,10 +74,10 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
                 throw new ArgumentNullException(nameof(serviceId));
             }
 
-            var endpoints = _discoveryOptions.AllNamespaces
+            var endpoints = _discoveryOptions.CurrentValue.AllNamespaces
                 ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
                 : KubernetesClient.ListNamespacedEndpoints(
-                    _discoveryOptions.Namespace ?? DefaultNamespace,
+                    _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
                     fieldSelector: $"metadata.name={serviceId}").Items;
 
             var subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
@@ -88,7 +96,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
 
         public IServiceInstance GetLocalServiceInstance()
         {
-            var instances = GetInstances(_discoveryOptions.ServiceName);
+            var instances = GetInstances(_discoveryOptions.CurrentValue.ServiceName);
             if (instances.Count == 1)
             {
                 return instances.First();
@@ -117,7 +125,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
                     namespaceParameter: k8SNamespace,
                     fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
                 var serviceMetadata = GetServiceMetadata(service);
-                var metadataProps = _discoveryOptions.Metadata;
+                var metadataProps = _discoveryOptions.CurrentValue.Metadata;
 
                 foreach (var subset in subsets)
                 {
@@ -165,7 +173,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         private IDictionary<string, string> GetServiceMetadata(V1Service service)
         {
             var serviceMetadata = new Dictionary<string, string>();
-            var metadataProps = _discoveryOptions.Metadata;
+            var metadataProps = _discoveryOptions.CurrentValue.Metadata;
             if (metadataProps.AddLabels)
             {
                 var labelMetadata = GetDictionaryWithPrefixedKeys(
@@ -202,8 +210,8 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
             {
                 endpointPort = ports
                     .FirstOrDefault(port =>
-                        string.IsNullOrEmpty(_discoveryOptions.PrimaryPortName) ||
-                        _discoveryOptions.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
+                        string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
+                        _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
             }
 
             return endpointPort;
@@ -212,7 +220,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
         {
             // Start with config or default
-            var es = new EndpointSubsetNs { Namespace = _discoveryOptions.Namespace ?? DefaultNamespace };
+            var es = new EndpointSubsetNs { Namespace = _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace };
 
             if (endpoints?.Subsets == null)
             {
