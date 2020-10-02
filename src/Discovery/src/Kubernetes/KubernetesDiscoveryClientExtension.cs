@@ -56,9 +56,9 @@ namespace Steeltoe.Discovery.Kubernetes
             });
             services.AddSingleton((p) =>
             {
-                var kubernetesOptions = p.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+                var kubernetesOptions = p.GetRequiredService<IOptionsMonitor<KubernetesDiscoveryOptions>>();
                 var kubernetes = p.GetRequiredService<IKubernetes>();
-                return KubernetesDiscoveryClientFactory.CreateClient(kubernetesOptions.Value, kubernetes);
+                return KubernetesDiscoveryClientFactory.CreateClient(kubernetesOptions, kubernetes);
             });
             services.TryAddSingleton(serviceProvider =>
             {
