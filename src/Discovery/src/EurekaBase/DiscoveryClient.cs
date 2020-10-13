@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Eureka
         protected IEurekaHttpClient _httpClient;
         protected Random _random = new Random();
         protected ILogger _logger;
-        protected int _shutdown = 0;
+        protected int _shutdown = -1;
         protected ApplicationInfoManager _appInfoManager;
 
         public long LastGoodHeartbeatTimestamp { get; internal set; }
@@ -590,6 +590,11 @@ namespace Steeltoe.Discovery.Eureka
 
         protected async T.Task InitializeAsync()
         {
+            if (_shutdown == 0)
+            {
+                return;
+            }
+
             _localRegionApps = new Applications
             {
                 ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
@@ -622,6 +627,8 @@ namespace Steeltoe.Discovery.Eureka
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
                 _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
             }
+
+            _shutdown = 0;
         }
 
         private bool IsHealthCheckHandlerEnabled()
