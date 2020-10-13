@@ -157,7 +157,13 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             LogError(context, error);
             context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");
-            context.Response.StatusCode = (int)error.Code;
+
+            // allowing override of 400-level errors is more likely to cause confusion than to be useful
+            if (_mgmtOptions.UseStatusCodeFromResponse || (int)error.Code < 500)
+            {
+                context.Response.StatusCode = (int)error.Code;
+            }
+
             await context.Response.WriteAsync(_base.Serialize(error)).ConfigureAwait(false);
         }
 

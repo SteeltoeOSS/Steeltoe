@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
     <ProjectReference Include="..\..\src\EurekaBase\Steeltoe.Discovery.EurekaBase.csproj" />
   </ItemGroup>
 

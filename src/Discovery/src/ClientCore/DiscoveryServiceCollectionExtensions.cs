@@ -170,6 +170,7 @@ namespace Steeltoe.Discovery.Client
             {
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
+                options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
             });
             services.TryAddSingleton(serviceProvider =>
             {
@@ -224,6 +225,8 @@ namespace Steeltoe.Discovery.Client
                 options.NetUtils = new InetUtils(netOptions);
                 options.ApplyNetUtils();
                 EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
+                options.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+                options.SetInstanceId(config);
             });
             services.TryAddSingleton(serviceProvider =>
             {

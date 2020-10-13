@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Net;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
@@ -263,8 +265,41 @@ namespace Steeltoe.Discovery.Consul.Discovery
         /// </summary>
         public int CacheTTL { get; set; } = 15;
 
+        /// <summary>
+        /// Gets or sets a value indicating whether to register a Url from ASP.NET Core configuration
+        /// </summary>
+        public bool UseAspNetCoreUrls { get; set; } = true;
+
         // public int CatalogServicesWatchDelay { get; set; } = 1000;
 
         // public int CatalogServicesWatchTimeout { get; set; } = 2;
+
+        /// <summary>
+        /// Set properties from addresses found in configuration
+        /// </summary>
+        /// <param name="addresses">A list of addresses the application is listening on</param>
+        /// <param name="wildcard_hostname">String representation of a wildcard hostname</param>
+        public void ApplyConfigUrls(List<Uri> addresses, string wildcard_hostname)
+        {
+            // try to pull some values out of server config to override defaults, but only if not using NetUtils
+            // if NetUtils are configured, the user probably wants to define their own behavior
+            if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls)
+            {
+                // prefer https
+                var configAddress = addresses.FirstOrDefault(u => u.Scheme.Equals("https"));
+                if (configAddress == null)
+                {
+                    configAddress = addresses.FirstOrDefault();
+                }
+
+                Port = configAddress.Port;
+
+                // only set the host if it isn't a wildcard
+                if (!configAddress.Host.Equals(wildcard_hostname) && !configAddress.Host.Equals("0.0.0.0"))
+                {
+                    HostName = configAddress.Host;
+                }
+            }
+        }
     }
 }

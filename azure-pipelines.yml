@@ -1,13 +1,14 @@
 trigger:
   branches:
     include:
-    - master
     - 2.x
   paths:
     exclude:
     - README.md
     - project-docs/*
     - roadmaps/*
+pr:
+- 2.x
 
 jobs:
 - job:
@@ -92,6 +93,7 @@ jobs:
       arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: PublishTestResults@2
+    condition: always()
     inputs:
       testResultsFormat: VSTest
       testResultsFiles: '*.trx'

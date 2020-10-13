@@ -15,6 +15,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         private const string VCAP_APPLICATION_PREFIX = "vcap:application";
         private const string VCAP_SERVICES_CONFIGSERVER_PREFIX = "vcap:services:p-config-server:0";
         private const string VCAP_SERVICES_CONFIGSERVER30_PREFIX = "vcap:services:p.config-server:0";
+        private const string VCAP_SERVICES_CONFIGSERVERALT_PREFIX = "vcap:services:config-server:0";
 
         public static void Initialize(string configPrefix, ConfigServerClientSettings settings, IConfiguration config)
         {
@@ -184,6 +185,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
                VCAP_SERVICES_CONFIGSERVER_PREFIX,
                VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+               VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
                configPrefix);
         }
 
@@ -195,6 +197,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 ConfigServerClientSettings.DEFAULT_CLIENT_ID,
                 VCAP_SERVICES_CONFIGSERVER_PREFIX,
                 VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
                 configPrefix);
         }
 
@@ -206,6 +209,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI,
                 VCAP_SERVICES_CONFIGSERVER_PREFIX,
                 VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                VCAP_SERVICES_CONFIGSERVERALT_PREFIX,
                 configPrefix);
         }
 
@@ -228,7 +232,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 def,
                 configPrefix,
                 VCAP_SERVICES_CONFIGSERVER_PREFIX,
-                VCAP_SERVICES_CONFIGSERVER30_PREFIX);
+                VCAP_SERVICES_CONFIGSERVER30_PREFIX,
+                VCAP_SERVICES_CONFIGSERVERALT_PREFIX);
         }
 
         /// <summary>
