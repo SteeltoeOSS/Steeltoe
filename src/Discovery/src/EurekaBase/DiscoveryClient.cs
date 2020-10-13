@@ -595,6 +595,8 @@ namespace Steeltoe.Discovery.Eureka
                 return;
             }
 
+            _shutdown = 0;
+
             _localRegionApps = new Applications
             {
                 ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
@@ -627,8 +629,6 @@ namespace Steeltoe.Discovery.Eureka
                 var intervalInMilli = ClientConfig.RegistryFetchIntervalSeconds * 1000;
                 _cacheRefreshTimer = StartTimer("Query", intervalInMilli, CacheRefreshTaskAsync);
             }
-
-            _shutdown = 0;
         }
 
         private bool IsHealthCheckHandlerEnabled()
