@@ -89,6 +89,28 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
+        public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
+        {
+            var opts = new MetricsEndpointOptions();
+            var mopts = new ActuatorManagementOptions();
+            mopts.Path = "/";
+
+            mopts.EndpointOptions.Add(opts);
+
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+
+            var context1 = CreateRequest("GET", "/metrics");
+            Assert.Null(middle.GetMetricName(context1.Request));
+
+            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+            Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+
+            var context3 = CreateRequest("GET", "/metrics", "?tag=key:value&tag=key1:value1");
+            Assert.Null(middle.GetMetricName(context3.Request));
+        }
+
+        [Fact]
         public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
