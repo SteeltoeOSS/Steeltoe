@@ -11,11 +11,12 @@
   <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Common.Net\Steeltoe.Common.Net.csproj" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="xunit.runner.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Common.Net\Steeltoe.Common.Net.csproj" />
   </ItemGroup>
 </Project>

@@ -11,6 +11,12 @@
   <Import Project="..\..\..\..\targetframework.props" />
 
   <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\Common.Autofac\Steeltoe.Common.Autofac.csproj" />
   </ItemGroup>
 </Project>
