@@ -104,6 +104,34 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
+        public async void LoggersActuator_AcceptsPost_When_ManagementPath_Is_Slash()
+        {
+            var appSettings = new Dictionary<string, string>(AppSettings);
+            appSettings["management:endpoints:path"] = "/";
+            appSettings.Add("Management:Endpoints:Actuator:Exposure:Include:0", "*");
+
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings))
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+                   loggingBuilder.AddDynamicConsole();
+               });
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            HttpContent content = new StringContent("{\"configuredLevel\":\"ERROR\"}");
+            var changeResult = await client.PostAsync("http://localhost/loggers/Default", content);
+            Assert.Equal(HttpStatusCode.OK, changeResult.StatusCode);
+
+            var validationResult = await client.GetAsync("http://localhost/loggers");
+            var json = await validationResult.Content.ReadAsStringAsync();
+            dynamic parsedObject = JsonConvert.DeserializeObject(json);
+            Assert.Equal("ERROR", parsedObject.loggers.Default.effectiveLevel.ToString());
+        }
+
+        [Fact]
         public async void LoggersActuator_UpdateNameSpace_UpdatesChildren()
         {
             var builder = new WebHostBuilder()
