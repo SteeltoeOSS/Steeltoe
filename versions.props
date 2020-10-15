@@ -5,7 +5,6 @@
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
     <CSharpVersion>4.5.0</CSharpVersion>
-    <DiagnosticSourceVersion>4.4.1</DiagnosticSourceVersion>
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <EFCoreVersion>2.0.0</EFCoreVersion>
     <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
@@ -15,7 +14,7 @@
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
-    <SystemDiagnosticsVersion>4.6.0</SystemDiagnosticsVersion>
+    <SystemDiagnosticsVersion>4.7.1</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
@@ -37,7 +36,7 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>1.3.1-preview.27.gdd2237a3be</CoverletVersion>
+    <CoverletVersion>3.0.0-preview.1</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>

@@ -240,5 +240,32 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.True(instOpts.SecurePortEnabled);
             Assert.False(instOpts.NonSecurePortEnabled);
        }
+
+        [Fact]
+        public void UpdateConfigurationHandlesPlus()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://+;http://+" } }).Build();
+            var instOpts = new EurekaInstanceOptions();
+
+            instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+
+            Assert.Equal(80, instOpts.Port);
+            Assert.Equal(443, instOpts.SecurePort);
+            Assert.True(instOpts.SecurePortEnabled);
+            Assert.False(instOpts.NonSecurePortEnabled);
+        }
+
+        [Fact]
+        public void UpdateConfigurationUsesDefaultsWhenNoUrl()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { }).Build();
+            var instOpts = new EurekaInstanceOptions();
+
+            instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+
+            Assert.Equal(80, instOpts.Port);
+            Assert.False(instOpts.SecurePortEnabled);
+            Assert.True(instOpts.NonSecurePortEnabled);
+        }
     }
 }
