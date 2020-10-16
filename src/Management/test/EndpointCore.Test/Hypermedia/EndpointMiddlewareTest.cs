@@ -83,6 +83,28 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         }
 
         [Fact]
+        public async void HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            appSettings.Add("Management:Endpoints:Path", "/");
+
+            // arrange a server and client
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+
+            // send the request
+            var result = await client.GetAsync("http://localhost/");
+            var json = await result.Content.ReadAsStringAsync();
+
+            // assert
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}", json);
+        }
+
+        [Fact]
         public void RoutesByPathAndVerb()
         {
             var options = new HypermediaEndpointOptions();
