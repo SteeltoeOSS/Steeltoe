@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}");
+                    paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}".Replace("//", "/"));
                 }
 
                 foreach (var path in paths)

@@ -49,7 +49,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                     {
                         if (!links._links.ContainsKey(opt.Id))
                         {
-                            links._links.Add(opt.Id, new Link(baseUrl + "/" + opt.Path));
+                            var linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
+                            links._links.Add(opt.Id, new Link(linkPath));
                         }
                         else if (links._links.ContainsKey(opt.Id))
                         {
