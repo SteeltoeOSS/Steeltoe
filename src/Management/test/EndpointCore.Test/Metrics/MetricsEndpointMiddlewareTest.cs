@@ -8,10 +8,12 @@ using OpenCensus.Stats.Aggregations;
 using OpenCensus.Stats.Measures;
 using OpenCensus.Tags;
 using Steeltoe.Management.Census.Stats;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
@@ -85,6 +87,30 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
 
             var context3 = CreateRequest("GET", "/cloudfoundryapplication/metrics", "?tag=key:value&tag=key1:value1");
+            Assert.Null(middle.GetMetricName(context3.Request));
+        }
+
+        [Fact]
+        public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
+        {
+            var opts = new MetricsEndpointOptions();
+
+            var mopts = TestHelper.GetManagementOptions(opts);
+            var stats = new OpenCensusStats();
+
+            var amOpts = mopts.Where(m => m.GetType() == typeof(ActuatorManagementOptions)).FirstOrDefault() as ActuatorManagementOptions;
+            amOpts.Path = "/";
+
+            var ep = new MetricsEndpoint(opts, stats);
+            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
+
+            var context1 = CreateRequest("GET", "/metrics");
+            Assert.Null(middle.GetMetricName(context1.Request));
+
+            var context2 = CreateRequest("GET", "/metrics/Foo.Bar.Class");
+            Assert.Equal("Foo.Bar.Class", middle.GetMetricName(context2.Request));
+
+            var context3 = CreateRequest("GET", "/metrics", "?tag=key:value&tag=key1:value1");
             Assert.Null(middle.GetMetricName(context3.Request));
         }
 

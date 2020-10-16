@@ -60,7 +60,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}"));
+                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}".Replace("//", "/")));
                 }
 
                 foreach (var path in paths)

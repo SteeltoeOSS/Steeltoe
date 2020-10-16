@@ -93,7 +93,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return GetMetricName(request, _endpoint.Path);
             }
 
-            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}"));
+            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}".Replace("//", "/")));
             foreach (var path in paths)
             {
                 var metricName = GetMetricName(request, path);
