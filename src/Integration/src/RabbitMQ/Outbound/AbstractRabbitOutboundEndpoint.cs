@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
+using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Rabbit.Support;
@@ -22,7 +23,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Rabbit.Outbound
 {
-    public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler
+    public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
     {
         private readonly object _lock = new object();
         private readonly string _no_id = Guid.Empty.ToString();
@@ -80,6 +81,8 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         private Task ConfirmChecker { get; set; }
 
         private CancellationTokenSource TokenSource { get; set; }
+
+        public bool IsRunning => throw new NotImplementedException();
 
         public void SetExchangeNameExpressionString(string exchangeNameExpression)
         {
@@ -461,6 +464,20 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             {
                 DelayGenerator = new ExpressionEvaluatingMessageProcessor<int>(context, DelayExpression);
             }
+        }
+
+        Task ILifecycle.Start()
+        {
+            // throw new NotImplementedException();
+            // TODO: Fix implementation
+            return Task.CompletedTask;
+        }
+
+        Task ILifecycle.Stop()
+        {
+            // throw new NotImplementedException();
+            // TODO: Fix implementation
+            return Task.CompletedTask;
         }
 
         protected class CorrelationDataWrapper : CorrelationData

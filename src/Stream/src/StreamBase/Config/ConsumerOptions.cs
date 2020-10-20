@@ -76,9 +76,9 @@ namespace Steeltoe.Stream.Config
 
         HeaderMode IConsumerOptions.HeaderMode => HeaderMode.Value;
 
-        bool IConsumerOptions.UseNativeDecoding => UseNativeDecoding.Value;
+        bool IConsumerOptions.UseNativeDecoding => UseNativeDecoding.GetValueOrDefault();
 
-        bool IConsumerOptions.Multiplex => Multiplex.Value;
+        bool IConsumerOptions.Multiplex => Multiplex.GetValueOrDefault();
 
         public IConsumerOptions Clone()
         {
@@ -166,6 +166,7 @@ namespace Steeltoe.Stream.Config
             {
                 AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
             }
+            
         }
     }
 }

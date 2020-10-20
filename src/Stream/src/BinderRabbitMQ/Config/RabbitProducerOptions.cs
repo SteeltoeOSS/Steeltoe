@@ -9,6 +9,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
     public class RabbitProducerOptions : RabbitCommonOptions
     {
+        public RabbitProducerOptions()
+        {
+            PostProcess();
+        }
+
         public bool? Compress { get; set; }
 
         public bool? BatchingEnabled { get; set; }
@@ -95,6 +100,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             {
                 ConfirmAckChannel = defaultOptions != null ? defaultOptions.ConfirmAckChannel : null;
             }
+
+            base.PostProcess(defaultOptions);
         }
     }
 }

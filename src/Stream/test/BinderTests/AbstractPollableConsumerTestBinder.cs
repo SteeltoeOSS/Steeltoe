@@ -32,5 +32,10 @@ namespace Steeltoe.Stream.Binder
         {
             throw new NotImplementedException();
         }
+
+        public override void Cleanup()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

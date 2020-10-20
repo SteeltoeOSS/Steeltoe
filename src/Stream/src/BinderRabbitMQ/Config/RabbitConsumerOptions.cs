@@ -14,6 +14,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public RabbitConsumerOptions()
             : base()
         {
+            PostProcess();
         }
 
         public bool? Transacted { get; set; }
@@ -50,7 +51,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public int? FrameMaxHeadroom { get; set; }
 
-        public RabbitConfig.ContainerType? ContainerType { get; } = RabbitConfig.ContainerType.DIRECT;
+        public RabbitConfig.ContainerType? ContainerType { get; set; } = RabbitConfig.ContainerType.DIRECT;
 
         public string AnonymousGroupPrefix { get; set; }
 
@@ -145,6 +146,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             {
                 AnonymousGroupPrefix = defaultOptions != null ? defaultOptions.AnonymousGroupPrefix : "anonymous.";
             }
+
+            base.PostProcess();
         }
     }
 }

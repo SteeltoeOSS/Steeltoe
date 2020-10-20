@@ -10,6 +10,7 @@ using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
 using System;
@@ -80,7 +81,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public IProducerDestination ProvisionProducerDestination(string name, IProducerOptions options)
         {
-            var producerProperties = Options.GetRabbitProducerOptions(options.BindingName);
+            var producerProperties =/* Options.GetRabbitProducerOptions(options.BindingName);*/
+                ((ExtendedProducerOptions<RabbitProducerOptions>) options).Extension;
+
             var exchangeName = ApplyPrefix(producerProperties.Prefix, name);
             var exchange = BuildExchange(producerProperties, exchangeName);
             if (producerProperties.DeclareExchange.Value)
@@ -189,7 +192,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private IConsumerDestination DoProvisionConsumerDestination(string name, string group, IConsumerOptions options)
         {
-            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+            var consumerProperties = /*Options.GetRabbitConsumerOptions(options.BindingName);*/
+                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
             var anonymous = string.IsNullOrEmpty(group);
             Base64UrlNamingStrategy anonQueueNameGenerator = null;
             if (anonymous)

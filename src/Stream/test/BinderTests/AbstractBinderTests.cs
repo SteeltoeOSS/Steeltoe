@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -16,9 +18,9 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Stream.Binder
 {
-    public abstract class AbstractBinderTests<T, B>
-        where B : AbstractBinder<IMessageChannel>
-        where T : AbstractTestBinder<B>
+    public abstract class AbstractBinderTests<B, T>
+        where B : AbstractTestBinder<T>
+        where T : AbstractBinder<IMessageChannel>
     {
         protected virtual ISmartMessageConverter MessageConverter { get; set; }
 
@@ -36,6 +38,18 @@ namespace Steeltoe.Stream.Binder
             Output = output;
             Services = new ServiceCollection();
             ConfigBuilder = new ConfigurationBuilder();
+        }
+
+        public void Cleanup()
+        {
+            //if(this .TestClean)
+        }
+
+        protected BindingOptions CreateProducerBindingOptions(ProducerOptions producerOptions)
+        {
+            var bindingOptions = new BindingOptions();
+            bindingOptions.Producer = producerOptions;
+            return bindingOptions;
         }
 
         [Fact]
@@ -93,23 +107,47 @@ namespace Steeltoe.Stream.Binder
 
         protected abstract B GetBinder();
 
-        protected abstract IConsumerOptions CreateConsumerOptions();
+        protected abstract ConsumerOptions CreateConsumerOptions();
 
-        protected abstract IProducerOptions CreateProducerOptions();
+        protected abstract ProducerOptions CreateProducerOptions();
 
         private MessageConverterConfigurer CreateConverterConfigurer(string channelName, BindingOptions bindingProperties)
         {
-            // var bindingServiceProperties = new BindingServiceOptions();
-            // bindingServiceProperties.Bindings.Add(channelName, bindingProperties);
-            // ConfigurableApplicationContext applicationContext = new GenericApplicationContext();
-            // applicationContext.refresh();
-            // bindingServiceProperties.setApplicationContext(applicationContext);
-            // bindingServiceProperties.setConversionService(new DefaultConversionService());
+             var bindingServiceProperties = new BindingServiceOptions();
+             bindingServiceProperties.Bindings.Add(channelName, bindingProperties);
+            var serviceCollection = new ServiceCollection();
+            
+            var configuration = new ConfigurationBuilder().Build();
+             var applicationContext = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configuration);
+            //applicationContext.refresh();
+            //  bindingServiceProperties.con
+            //     bindingServiceProperties.setConversionService(new DefaultConversionService());
             // bindingServiceProperties.afterPropertiesSet();
-            // MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(bindingServiceProperties, new CompositeMessageConverterFactory(null, null));
+            var bindingServiceOptionsMonitor = new BindingServiceOptionsMonitor(bindingServiceProperties);
+             MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), null, null);
             // messageConverterConfigurer.setBeanFactory(applicationContext.getBeanFactory());
-            // return messageConverterConfigurer;
-            return null;
+            return messageConverterConfigurer;
+            
+        }
+
+        private class BindingServiceOptionsMonitor : IOptionsMonitor<BindingServiceOptions>
+        {
+            public BindingServiceOptionsMonitor(BindingServiceOptions options)
+            {
+                CurrentValue = options;
+            }
+
+            public BindingServiceOptions CurrentValue { get; set; }
+
+            public BindingServiceOptions Get(string name)
+            {
+                return CurrentValue;
+            }
+
+            public IDisposable OnChange(Action<BindingServiceOptions, string> listener)
+            {
+                return null;
+            }
         }
     }
 }

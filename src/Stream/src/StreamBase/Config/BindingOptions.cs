@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Config
     {
         public BindingOptions()
         {
+            this.ContentType = DEFAULT_CONTENT_TYPE.ToString();
         }
 
         public static readonly MimeType DEFAULT_CONTENT_TYPE = MimeTypeUtils.APPLICATION_JSON;
@@ -18,7 +19,7 @@ namespace Steeltoe.Stream.Config
 
         public string Group { get; set; }
 
-        public string ContentType { get; set; }
+        public string ContentType { get; set; } 
 
         public string Binder { get; set; }
 

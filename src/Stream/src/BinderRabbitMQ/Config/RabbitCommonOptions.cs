@@ -15,7 +15,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public string ExchangeType { get; set; }
 
-        public bool? DeclareExchange { get; set; }
+        public bool? DeclareExchange { get; set; } 
 
         public bool? ExchangeDurable { get; set; }
 
@@ -93,7 +93,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         {
             if (ExchangeType == null)
             {
-                ExchangeType = defaultOptions != null ? defaultOptions.ExchangeType : RabbitConfig.ExchangeType.DIRECT;
+                ExchangeType = defaultOptions != null ? defaultOptions.ExchangeType : RabbitConfig.ExchangeType.TOPIC; // RabbitConfig.ExchangeType.DIRECT;
             }
 
             if (!DeclareExchange.HasValue)

@@ -233,7 +233,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
 
             var destination = consumerDestination.Name;
-            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+
+            //  var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+            var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
             var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory);
             listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.Value;
             listenerContainer.IsChannelTransacted = properties.Transacted.Value;

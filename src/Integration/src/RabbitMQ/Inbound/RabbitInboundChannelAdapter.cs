@@ -61,6 +61,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
         public bool BindSourceMessage { get; set; }
 
+        //Todo: Do we need this? 
         // private volatile RabbitHeaderMapper HeaderMapper = DefaultAmqpHeaderMapper.inboundMapper();
         private AbstractMessageListenerContainer MessageListenerContainer { get; }
 

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
@@ -14,6 +15,8 @@ namespace Steeltoe.Stream.Binder
         where C : AbstractBinder<IMessageChannel>
     {
         protected HashSet<string> _queues = new HashSet<string>();
+
+        protected HashSet<string> _exchanges = new HashSet<string>();
 
         private C _binder;
 
@@ -40,6 +43,11 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
+        public IApplicationContext ApplicationContext
+        {
+            get { return Binder?.ApplicationContext; }
+        }
+
         public string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
@@ -64,6 +72,8 @@ namespace Steeltoe.Stream.Binder
             _queues.Add(name);
             return _binder.BindProducer(name, outboundTarget, producerOptions);
         }
+
+        public abstract void Cleanup();
 
         private void CheckChannelIsConfigured(IMessageChannel messageChannel, IConsumerOptions options)
         {

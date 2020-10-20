@@ -12,5 +12,6 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="xunit.core" Version="2.4.1" />
   </ItemGroup>
 </Project>

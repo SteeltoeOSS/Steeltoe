@@ -105,7 +105,8 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        protected virtual IApplicationContext ApplicationContext
+        //TODO: Made public for tests - figure out another way
+        public virtual IApplicationContext ApplicationContext
         {
             get { return _context; }
         }

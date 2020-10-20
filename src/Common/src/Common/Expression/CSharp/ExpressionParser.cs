@@ -10,12 +10,16 @@ namespace Steeltoe.Common.Expression.CSharp
     {
         public IExpression ParseExpression(string expressionString)
         {
-            throw new NotImplementedException();
+            // TODO: SPEL
+            // throw new NotImplementedException();
+            return null;
         }
 
         public IExpression ParseExpression(string expressionString, IParserContext context)
         {
-            throw new NotImplementedException();
+            // TODO: SPEL
+            // throw new NotImplementedException();
+            return null;
         }
     }
 }

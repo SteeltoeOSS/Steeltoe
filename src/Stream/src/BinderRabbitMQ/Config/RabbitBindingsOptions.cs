@@ -18,6 +18,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         // spring.cloud.stream.rabbit.default.producer NOTE: Diffrent from Spring
         public RabbitBindingsOptions()
         {
+            PostProcess();
         }
 
         internal RabbitBindingsOptions(IConfiguration config)
@@ -38,6 +39,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public RabbitConsumerOptions GetRabbitConsumerOptions(string binding)
         {
             var results = Default.Consumer;
+
+            if (binding == null)
+            {
+                return results;
+            }
+
             Bindings.TryGetValue(binding, out var options);
             if (options != null && options.Consumer != null)
             {

@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Integration\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
