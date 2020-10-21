@@ -910,6 +910,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 }));
             }
 
+            // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
             for (var i = 0; i < count; i++)
             {
                 tasks.Add(Task.Run(() =>
@@ -928,6 +930,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     results.TryAdd(request, obj);
                 }));
             }
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
             var receiveCount = new AtomicInteger();
             var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
