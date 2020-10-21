@@ -65,7 +65,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                     {
                         var formatter = new BinaryFormatter();
                         var stream = new MemoryStream(message.Payload);
+
+                        // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                         content = formatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                     }
                     catch (Exception e)
                     {
@@ -118,7 +122,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
                 {
                     var formatter = new BinaryFormatter();
                     var stream = new MemoryStream(512);
+
+                    // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                     formatter.Serialize(stream, payload);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                     bytes = stream.ToArray();
                     accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
                 }
