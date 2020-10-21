@@ -18,13 +18,13 @@ strategy:
   matrix:
     Linux_Build_and_Test:
       imageName: ubuntu-latest
-      skipFilter: '--filter "Category!=Integration&Category!=SkipOnLinux"'
+      skipFilter: '--filter "Category!=SkipOnLinux"' #Category!=Integration&
     MacOS_Build_and_Test:
       imageName: macOS-latest
-      skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      skipFilter: '--filter "Category!=SkipOnMacOS"' #Category!=Integration&
     Windows_Build_Test_and_Package:
       imageName: windows-latest
-      skipFilter: '--filter "Category!=Integration"'
+      skipFilter: '--filter "Category!=SkipNothingOnWindows"' #Category!=Integration
 pool:
   vmImage: $(imageName)
 
@@ -75,6 +75,10 @@ steps:
     command: build
     projects: src/Steeltoe.All.sln
     arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+- script: |
+    docker run -d --name configserver -p 8888:8888 steeltoeoss/configserver
+    docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+  displayName: 'Start Docker Services'
 - task: DotNetCoreCLI@2
   displayName: dotnet test
   inputs:
@@ -82,6 +86,13 @@ steps:
     projects: src/Steeltoe.All.sln
     arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
     publishTestResults: false
+- script: |
+    docker kill configserver
+    docker rm configserver
+    docker kill rabbitmq
+    docker rm rabbitmq
+  condition: always()
+  displayName: 'Stop Docker Services'
 - task: PublishTestResults@2
   condition: always()
   inputs:
