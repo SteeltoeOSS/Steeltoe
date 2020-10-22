@@ -22,7 +22,7 @@ strategy:
       integrationTests: false
     Linux_net5:
       imageName: ubuntu-latest
-      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux" --blame-hang --blame-hang-timeout 4m'
       integrationTests: false
     Linux_Integration_and_Hystrix_Tests:
       imageName: ubuntu-latest
@@ -34,7 +34,7 @@ strategy:
       integrationTests: false
     MacOS_net5:
       imageName: macOS-latest
-      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS" --blame-hang --blame-hang-timeout 4m'
       integrationTests: false
     MacOS_Hystrix_Tests:
       imageName: macOS-latest
@@ -47,7 +47,7 @@ strategy:
       integrationTests: false
     Windows_net5:
       imageName: windows-latest
-      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker" --blame-hang --blame-hang-timeout 4m'
       package: false
       integrationTests: false
     Windows_Hystrix_Tests:
@@ -134,14 +134,14 @@ steps:
     testResultsFiles: '*.trx'
     mergeTestResults: true
 - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
   displayName: Create code coverage report
   inputs:
     reports: '$(Build.SourcesDirectory)\**\coverage.opencover.xml'
     targetdir: '$(Build.ArtifactStagingDirectory)\CodeCoverage'
     reporttypes: 'Cobertura'
 - task: PublishBuildArtifacts@1
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
   displayName: Publish code coverage artifacts
   inputs:
     PathtoPublish: $(Build.ArtifactStagingDirectory)\CodeCoverage
@@ -180,7 +180,7 @@ steps:
     publishLocation: Container
 - bash: bash <(curl -s https://codecov.io/bash)
   displayName: 'Upload to codecov.io'
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
+  condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
 - task: PublishCodeCoverageResults@1
   condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
   displayName: 'Publish code coverage'
