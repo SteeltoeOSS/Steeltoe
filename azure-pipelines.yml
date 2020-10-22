@@ -137,14 +137,14 @@ steps:
   condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
   displayName: Create code coverage report
   inputs:
-    reports: '$(Build.SourcesDirectory)\**\coverage.opencover.xml'
-    targetdir: '$(Build.ArtifactStagingDirectory)\CodeCoverage'
+    reports: '$(Build.SourcesDirectory)/**/coverage.opencover.xml'
+    targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage'
     reporttypes: 'Cobertura'
 - task: PublishBuildArtifacts@1
   condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
   displayName: Publish code coverage artifacts
   inputs:
-    PathtoPublish: $(Build.ArtifactStagingDirectory)\CodeCoverage
+    PathtoPublish: $(Build.ArtifactStagingDirectory)/CodeCoverage
     ArtifactName: coverageResults-$(Agent.JobName)
 - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
