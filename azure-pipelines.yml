@@ -182,7 +182,7 @@ steps:
   displayName: 'Upload to codecov.io'
   condition: or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true'))
 - task: PublishCodeCoverageResults@1
-  condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
   displayName: 'Publish code coverage'
   inputs:
     codeCoverageTool: Cobertura

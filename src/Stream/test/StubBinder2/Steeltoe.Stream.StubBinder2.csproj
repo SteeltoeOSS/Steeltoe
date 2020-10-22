@@ -20,7 +20,6 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
   </ItemGroup>
