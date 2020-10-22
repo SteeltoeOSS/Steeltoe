@@ -16,17 +16,25 @@ variables:
   PackageVersion: $[format('3.0.2-{0}', variables['Build.BuildId'])]
 strategy:
   matrix:
-    Linux_Build_and_Test:
+    Linux_netcoreapp3_1:
       imageName: ubuntu-latest
-      skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
+      skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
+      integrationTests: false
+    Linux_net5:
+      imageName: ubuntu-latest
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
       integrationTests: false
     Linux_Integration_and_Hystrix_Tests:
       imageName: ubuntu-latest
       skipFilter: '--filter "(Category=Integration|FullyQualifiedName~CircuitBreaker)&Category!=SkipOnLinux"'
       integrationTests: true
-    MacOS_Build_and_Test:
+    MacOS_netcoreapp3_1:
       imageName: macOS-latest
-      skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
+      skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
+      integrationTests: false
+    MacOS_net5:
+      imageName: macOS-latest
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
       integrationTests: false
     MacOS_Hystrix_Tests:
       imageName: macOS-latest
@@ -34,8 +42,13 @@ strategy:
       integrationTests: false
     Windows_Build_Test_and_Package:
       imageName: windows-latest
-      skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
+      skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
       package: true
+      integrationTests: false
+    Windows_net5:
+      imageName: windows-latest
+      skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
+      package: false
       integrationTests: false
     Windows_Hystrix_Tests:
       imageName: windows-latest
@@ -104,7 +117,7 @@ steps:
   inputs:
     command: test
     projects: src/Steeltoe.All.sln
-    arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+    arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) /p:CopyLocalLockFileAssemblies=true --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
     publishTestResults: false
 - script: |
     docker kill configserver
@@ -112,7 +125,7 @@ steps:
     docker kill rabbitmq
     docker rm rabbitmq
   condition: eq(variables['integrationTests'], 'true')
-  displayName: 'Stop Docker Services'
+  displayName: 'Stop Docker services'
 - task: PublishTestResults@2
   condition: always()
   displayName: Publish test results
