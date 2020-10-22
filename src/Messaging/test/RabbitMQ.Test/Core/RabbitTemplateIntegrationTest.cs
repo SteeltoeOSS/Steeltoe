@@ -910,8 +910,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 }));
             }
 
-            // TODO: don't disable this warning! https://aka.ms/binaryformatter
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
             for (var i = 0; i < count; i++)
             {
                 tasks.Add(Task.Run(() =>
@@ -922,15 +920,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     messageHeaders.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
                     var formatter = new BinaryFormatter();
                     var stream = new MemoryStream(512);
+
+                    // TODO: don't disable this warning! https://aka.ms/binaryformatter
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                     formatter.Serialize(stream, request);
                     var bytes = stream.ToArray();
                     var reply = template.SendAndReceive(Message.Create<byte[]>(bytes, messageHeaders.MessageHeaders));
                     stream = new MemoryStream((byte[])reply.Payload);
                     var obj = formatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
                     results.TryAdd(request, obj);
                 }));
             }
-#pragma warning restore SYSLIB0011 // Type or member is obsolete
 
             var receiveCount = new AtomicInteger();
             var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
