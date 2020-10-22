@@ -21,10 +21,10 @@ strategy:
       skipFilter: '--filter "Category!=SkipOnLinux"' #Category!=Integration&
     MacOS_Build_and_Test:
       imageName: macOS-latest
-      skipFilter: '--filter "Category!=SkipOnMacOS"' #Category!=Integration&
+      skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"' #
     Windows_Build_Test_and_Package:
       imageName: windows-latest
-      skipFilter: '--filter "Category!=SkipNothingOnWindows"' #Category!=Integration
+      skipFilter: '--filter "Category!=Integration"' #Category!=SkipNothingOnWindows
 pool:
   vmImage: $(imageName)
 
@@ -44,12 +44,14 @@ steps:
     PackageVersion: $(PackageVersion)
     PackageVersionOverride: $(PackageVersionOverride)
 - task: UseDotNet@2
+  displayName: 'Use .NET 3.1 sdk'
+  inputs:
+    version: 3.1.x
+- task: UseDotNet@2
   displayName: 'Use .NET 5 sdk'
   inputs:
-    packageType: sdk
     version: 5.0.x
     includePreviewVersions: true
-    installationPath: $(Agent.ToolsDirectory)/dotnet
 - task: DotNetCoreCLI@2
   displayName: dotnet restore
   inputs:
@@ -78,6 +80,7 @@ steps:
 - script: |
     docker run -d --name configserver -p 8888:8888 steeltoeoss/configserver
     docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+  condition: eq( variables['Agent.OS'], 'Linux' )
   displayName: 'Start Docker Services'
 - task: DotNetCoreCLI@2
   displayName: dotnet test
@@ -91,7 +94,7 @@ steps:
     docker rm configserver
     docker kill rabbitmq
     docker rm rabbitmq
-  condition: always()
+  condition: eq( variables['Agent.OS'], 'Linux' )
   displayName: 'Stop Docker Services'
 - task: PublishTestResults@2
   condition: always()
