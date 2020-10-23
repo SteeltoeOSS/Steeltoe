@@ -185,8 +185,8 @@ steps:
   condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
   displayName: Consolidate coverage for all jobs
   inputs:
-    reports: '$(Build.ArtifactStagingDirectory)/CodeCoverage-*/Cobertura.xml'
-    targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage'
+    reports: '$(Pipeline.Workspace)\**\CodeCoverage-*\Cobertura.xml'
+    targetdir: '$(Build.ArtifactStagingDirectory)\CodeCoverage'
     reporttypes: 'Cobertura'
 - task: PublishCodeCoverageResults@1
   condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
