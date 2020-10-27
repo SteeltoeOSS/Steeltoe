@@ -24,7 +24,7 @@ namespace Steeltoe.Discovery.Client
                     if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
                             && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
                     {
-                        Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:").Replace("+", $"{WILDCARD_HOST}:"), UriKind.Absolute, out uri);
+                        Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:").Replace("+", $"{WILDCARD_HOST}"), UriKind.Absolute, out uri);
                     }
 
                     uris.Add(uri);
