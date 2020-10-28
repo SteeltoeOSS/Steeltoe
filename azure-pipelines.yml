@@ -111,9 +111,15 @@ jobs:
     displayName: dotnet test
     inputs:
       command: test
-      projects: |
-        '**/*.Test/*.csproj'
-        '**/*.ITest/*.csproj'
+      projects: '**/*.Test/*.csproj'
+      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    condition: eq(variables['integrationTests'], 'true')
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: '**/*.ITest/*.csproj'
       arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
