@@ -21,6 +21,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Cache
             {
                 ["redis:client:host"] = "localhost",
                 ["redis:client:port"] = "1234",
+                ["redis:client:connectTimeout"] = "1"
             };
 
             var configurationBuilder = new ConfigurationBuilder();
