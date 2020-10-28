@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>2.5.1</VersionPrefix>
+    <VersionPrefix>2.5.2</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
