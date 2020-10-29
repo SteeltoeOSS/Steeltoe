@@ -154,6 +154,9 @@ jobs:
     inputs:
       PathtoPublish: $(Build.ArtifactStagingDirectory)/CodeCoverage-$(Agent.JobName)
       ArtifactName: coverageResults-$(Agent.JobName)
+  - bash: bash <(curl -s https://codecov.io/bash)
+    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
+    displayName: 'Upload to codecov.io'
   - task: SonarCloudAnalyze@1
     condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
     displayName: Run Code Analysis
