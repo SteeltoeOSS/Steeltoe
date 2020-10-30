@@ -109,7 +109,6 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
   - task: DotNetCoreCLI@2
-    condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: dotnet test
     inputs:
       command: test
