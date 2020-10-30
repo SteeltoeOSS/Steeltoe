@@ -22,24 +22,30 @@ jobs:
       Linux_standard:
         imageName: ubuntu-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
+        testProjects: '**/*.Test/*.csproj'
         sonarAnalyze: true
       Linux_integration_and_Hystrix:
         imageName: ubuntu-latest
         skipFilter: '--filter "(Category=Integration|FullyQualifiedName~CircuitBreaker)&Category!=SkipOnLinux"'
+        testProjects: '**/*Hystrix*.Test/*.csproj'
         integrationTests: true
       MacOS_standard:
         imageName: macOS-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
+        testProjects: '**/*.Test/*.csproj'
       MacOS_Hystrix:
         imageName: macOS-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker&Category!=SkipOnMacOS"'
+        testProjects: '**/*Hystrix*.Test/*.csproj'
       Windows_standard:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
+        testProjects: 'src/Steeltoe.All.sln'
         package: true
       Windows_Hystrix:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker"'
+        testProjects: '**/*Hystrix*.Test/*.csproj'
   pool:
     vmImage: $(imageName) 
   steps:
@@ -102,32 +108,24 @@ jobs:
       command: build
       projects: src/Steeltoe.All.sln
       arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
-  - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoeoss/configserver
-    condition: eq(variables['integrationTests'], 'true')
-    displayName: 'Start Docker services'
-  - task: DotNetCoreCLI@2
-    condition: ne( variables['Agent.OS'], 'Windows_NT' )
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: '**/*.Test/*.csproj'
-      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
-  - task: DotNetCoreCLI@2
-    condition: eq(variables['integrationTests'], 'true')
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: '**/*.ITest/*.csproj'
-      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
   - task: DotNetCoreCLI@2
     condition: eq( variables['Agent.OS'], 'Windows_NT' )
     displayName: dotnet test
     inputs:
       command: test
-      projects: src/Steeltoe.All.sln
+      projects: $(testProjects)
+      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - script: |
+      docker run -d --name configserver -p 8888:8888 steeltoeoss/configserver
+    condition: eq(variables['integrationTests'], 'true')
+    displayName: 'Start Docker services'
+  - task: DotNetCoreCLI@2
+    condition: eq(variables['integrationTests'], 'true')
+    displayName: Integration tests
+    inputs:
+      command: test
+      projects: '**/*.ITest/*.csproj'
       arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
