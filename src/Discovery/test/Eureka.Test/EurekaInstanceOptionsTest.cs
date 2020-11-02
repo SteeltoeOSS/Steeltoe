@@ -244,7 +244,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationHandlesPlus()
         {
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://+;http://+" } }).Build();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://+:443;http://+:80" } }).Build();
             var instOpts = new EurekaInstanceOptions();
 
             instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
