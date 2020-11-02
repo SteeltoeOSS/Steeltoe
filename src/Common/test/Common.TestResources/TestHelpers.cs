@@ -55,7 +55,9 @@ namespace Steeltoe
             serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
             serviceCollection.AddLogging(builder => builder.AddConsole((opts) =>
             {
+#if NETCOREAPP3_1
                 opts.DisableColors = true;
+#endif
             }));
             serviceCollection.AddLogging(builder => builder.AddDebug());
             return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();

@@ -138,6 +138,9 @@ namespace Steeltoe.Common.Hosting.Test
         }
 
         [Fact]
+#if NET5_0
+        [Trait("Category", "SkipOnMacOS")] // for .NET 5, this test produces an admin prompt on OSX
+#endif
         public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
         {
             // Arrange
