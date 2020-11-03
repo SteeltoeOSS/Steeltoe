@@ -18,7 +18,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act & assert
-            Assert.Throws<ArgumentNullException>(() => SqlServerDbContextContainerBuilderExtensions.RegisterDbContext<GoodSqlServerDbContext>(null, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextContainerBuilderExtensions.RegisterSqlServerDbContext<GoodSqlServerDbContext>(null, config));
+            Assert.Equal("container", ex.ParamName);
         }
 
         [Fact]
@@ -28,7 +29,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             var cb = new ContainerBuilder();
 
             // act & assert
-            Assert.Throws<ArgumentNullException>(() => SqlServerDbContextContainerBuilderExtensions.RegisterDbContext<GoodSqlServerDbContext>(cb, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextContainerBuilderExtensions.RegisterSqlServerDbContext<GoodSqlServerDbContext>(cb, null));
+            Assert.Equal("config", ex.ParamName);
         }
 
         [Fact]
@@ -39,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
-            var regBuilder = SqlServerDbContextContainerBuilderExtensions.RegisterDbContext<GoodSqlServerDbContext>(container, config);
+            var regBuilder = container.RegisterSqlServerDbContext<GoodSqlServerDbContext>(config);
             var services = container.Build();
             var dbConn = services.Resolve<GoodSqlServerDbContext>();
 
