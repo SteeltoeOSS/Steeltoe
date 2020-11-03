@@ -18,7 +18,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act & assert
-            Assert.Throws<ArgumentNullException>(() => OracleDbContextContainerBuilderExtensions.RegisterDbContext<GoodOracleDbContextcs>(null, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextContainerBuilderExtensions.RegisterOracleDbContext<GoodOracleDbContextcs>(null, config));
+            Assert.Equal("container", ex.ParamName);
         }
 
         [Fact]
@@ -28,7 +29,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             var cb = new ContainerBuilder();
 
             // act & assert
-            Assert.Throws<ArgumentNullException>(() => OracleDbContextContainerBuilderExtensions.RegisterDbContext<GoodOracleDbContextcs>(cb, null));
+            var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextContainerBuilderExtensions.RegisterOracleDbContext<GoodOracleDbContextcs>(cb, null));
+            Assert.Equal("config", ex.ParamName);
         }
 
         [Fact]
@@ -39,7 +41,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             IConfiguration config = new ConfigurationBuilder().Build();
 
             // act
-            _ = OracleDbContextContainerBuilderExtensions.RegisterDbContext<GoodOracleDbContextcs>(container, config);
+            _ = container.RegisterOracleDbContext<GoodOracleDbContextcs>(config);
             var services = container.Build();
             var dbConn = services.Resolve<GoodOracleDbContextcs>();
 

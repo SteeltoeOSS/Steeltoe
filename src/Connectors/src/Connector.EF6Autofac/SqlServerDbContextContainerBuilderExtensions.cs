@@ -21,7 +21,19 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
         /// <param name="config">Your app config</param>
         /// <param name="serviceName">Name of service instance</param>
         /// <returns><see cref="IRegistrationBuilder{TLimit, TActivatorData, TRegistrationStyle}"/></returns>
+        [Obsolete("Use RegisterSqlServerDbContext instead")]
         public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterDbContext<TContext>(this ContainerBuilder container, IConfiguration config, string serviceName = null)
+            => container.RegisterSqlServerDbContext<TContext>(config, serviceName);
+
+        /// <summary>
+        /// Add your SqlServer-based DbContext to the ContainerBuilder
+        /// </summary>
+        /// <typeparam name="TContext">Your DbContext</typeparam>
+        /// <param name="container">Autofac <see cref="ContainerBuilder" /></param>
+        /// <param name="config">Your app config</param>
+        /// <param name="serviceName">Name of service instance</param>
+        /// <returns><see cref="IRegistrationBuilder{TLimit, TActivatorData, TRegistrationStyle}"/></returns>
+        public static IRegistrationBuilder<object, SimpleActivatorData, SingleRegistrationStyle> RegisterSqlServerDbContext<TContext>(this ContainerBuilder container, IConfiguration config, string serviceName = null)
         {
             if (container == null)
             {
