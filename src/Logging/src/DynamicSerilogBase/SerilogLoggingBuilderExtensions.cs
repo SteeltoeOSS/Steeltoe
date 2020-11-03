@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
     public static class SerilogLoggingBuilderExtensions
     {
         /// <summary>
-        /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
+        /// Add Serilog with Console sink, wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
@@ -27,8 +27,8 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         }
 
         /// <summary>
-        /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
-        /// dynamically controlling the minimum log level via management endpoints
+        /// Add Serilog, wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
+        /// dynamically controlling the minimum log level via management endpoints. Will add a Console sink if <paramref name="loggerConfiguration"/> is not provided.
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
         /// <param name="loggerConfiguration">An initial <see cref="LoggerConfiguration"/></param>
@@ -42,7 +42,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             }
 
             var serilogOptions = new SerilogOptions(builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>());
-            loggerConfiguration ??= new LoggerConfiguration();
+            loggerConfiguration ??= new LoggerConfiguration().WriteTo.Console();
 
             // Add a level switch that controls the "Default" level at the root
             var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
