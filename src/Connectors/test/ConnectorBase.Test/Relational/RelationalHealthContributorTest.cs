@@ -145,7 +145,7 @@ namespace Steeltoe.CloudFoundry.Connector.Relational.Test
             // arrange
             var implementationType = MySqlTypeLocator.MySqlConnection;
             var sqlConfig = new MySqlProviderConnectorOptions() { ConnectionTimeout = 1 };
-            var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:80;databaseName=invalidDatabaseName");
+            var sInfo = new MySqlServiceInfo("MyId", "mysql://localhost:3307;databaseName=invalidDatabaseName");
             var logrFactory = new LoggerFactory();
             var connFactory = new MySqlProviderConnectorFactory(sInfo, sqlConfig, implementationType);
             var h = new RelationalHealthContributor((IDbConnection)connFactory.Create(null), logrFactory.CreateLogger<RelationalHealthContributor>());
