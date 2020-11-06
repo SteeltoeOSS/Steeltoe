@@ -12,7 +12,12 @@ namespace Steeltoe.Common.Expression.CSharp
         {
             // TODO: SPEL
             // throw new NotImplementedException();
-            return null;
+            if (int.TryParse(expressionString, out int result))
+            {
+                return new ValueExpression<int>(result);
+            }
+
+            return new ValueExpression<string>(expressionString);
         }
 
         public IExpression ParseExpression(string expressionString, IParserContext context)

@@ -15,6 +15,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public RabbitProxy()
         {
+        }
+
+        public void Start()
+        {
             _listener = new TcpListener(IPAddress.Loopback, 0);
             _listener.Start();
             var listenerThread = new Thread(new ParameterizedThreadStart(StartListener));

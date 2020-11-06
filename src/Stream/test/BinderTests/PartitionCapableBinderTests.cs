@@ -1,7 +1,9 @@
-﻿using Steeltoe.Common.Lifecycle;
+﻿using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Rabbit.Inbound;
+using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Config;
@@ -18,7 +20,8 @@ namespace Steeltoe.Stream.Binder
         where B : AbstractTestBinder<T>
         where T : AbstractBinder<IMessageChannel>
     {
-        //protected static SpelExpressionParser
+        protected static ExpressionParser expressionParser = new ExpressionParser();
+
         protected PartitionCapableBinderTests(ITestOutputHelper output)
             : base(output)
         {
@@ -86,21 +89,21 @@ namespace Steeltoe.Stream.Binder
             binding2.Unbind();
         }
 
-        protected RabbitInboundChannelAdapter ExtractEndpoint(IBinding binding)
+        protected ILifecycle ExtractEndpoint(IBinding binding)
         {
-            return GetFieldValue<RabbitInboundChannelAdapter>(binding, "_lifecycle");
+            return GetFieldValue<ILifecycle>(binding, "_lifecycle");
         }
 
-        protected T GetFieldValue<T>(object current, string name)
+        protected PT GetFieldValue<PT>(object current, string name)
         {
-            var fi = current.GetType().GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            return (T)fi.GetValue(current);
+            var fi = current.GetType().GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            return (PT)fi.GetValue(current);
         }
 
-        protected T GetPropertyValue<T>(object current, string name)
+        protected PT GetPropertyValue<PT>(object current, string name)
         {
-            var pi = current.GetType().GetProperty(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            return (T)pi.GetValue(current);
+            var pi = current.GetType().GetProperty(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            return (PT)pi.GetValue(current);
         }
     }
 }

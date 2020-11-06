@@ -21,6 +21,7 @@
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj" />
     <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
+    <PackageReference Include="EasyNetQ.Management.Client" Version="1.3.0" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />

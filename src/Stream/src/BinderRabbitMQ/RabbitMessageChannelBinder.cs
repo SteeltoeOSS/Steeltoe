@@ -127,7 +127,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 throw new InvalidOperationException("The RabbitMQ binder does not support embedded headers since RabbitMQ supports headers natively");
             }
 
-            var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
+            //var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
+            var extendedProperties = ((ExtendedProducerOptions<RabbitProducerOptions>)producerProperties).Extension;
             var prefix = extendedProperties.Prefix;
             var exchangeName = producerDestination.Name;
             var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
@@ -212,6 +213,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
 
             endpoint.HeadersMappedLast = true;
+            endpoint.Initialize();
             return endpoint;
         }
 

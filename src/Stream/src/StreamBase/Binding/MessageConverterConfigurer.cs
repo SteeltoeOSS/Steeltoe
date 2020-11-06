@@ -39,13 +39,13 @@ namespace Steeltoe.Stream.Binding
             IOptionsMonitor<BindingServiceOptions> optionsMonitor,
             IMessageConverterFactory messageConverterFactory,
             IEnumerable<IPartitionKeyExtractorStrategy> extractors,
-            IEnumerable<IPartitionSelectorStrategy> seledctors)
+            IEnumerable<IPartitionSelectorStrategy> selectors)
         {
             _applicationContext = applicationContext;
             _optionsMonitor = optionsMonitor;
             _messageConverterFactory = messageConverterFactory;
             _extractors = extractors;
-            _seledctors = seledctors;
+            _seledctors = selectors;
         }
 
         public void ConfigureInputChannel(IMessageChannel messageChannel, string channelName)
@@ -114,7 +114,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionKeyExtractorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionKeyExtractorName))
             {
-                strategy = _extractors.FirstOrDefault((s) => s.ServiceName == options.PartitionKeyExtractorName);
+                strategy = _extractors?.FirstOrDefault((s) => s.ServiceName == options.PartitionKeyExtractorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException("PartitionKeyExtractorStrategy bean with the name '" + options.PartitionKeyExtractorName + "' can not be found.");
@@ -122,12 +122,12 @@ namespace Steeltoe.Stream.Binding
             }
             else
             {
-                if (_extractors.Count() > 1)
+                if (_extractors?.Count() > 1)
                 {
                     throw new InvalidOperationException("Multiple `IPartitionKeyExtractorStrategy` found from service container.");
                 }
 
-                if (_extractors.Count() == 1)
+                if (_extractors?.Count() == 1)
                 {
                     strategy = _extractors.Single();
                 }
@@ -368,7 +368,7 @@ namespace Steeltoe.Stream.Binding
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            var objMessage = (IMessage<object>)message;
+            var objMessage = message is IMessage<object> ? (IMessage<object>)message : Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
 
             if (!message.Headers.ContainsKey(BinderHeaders.PARTITION_OVERRIDE))
             {

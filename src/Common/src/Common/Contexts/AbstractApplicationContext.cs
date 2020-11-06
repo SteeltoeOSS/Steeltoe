@@ -56,6 +56,27 @@ namespace Steeltoe.Common.Contexts
             return ContainsService(name, typeof(T));
         }
 
+        public bool ContainsService(string name)
+        {
+            if (_instances.TryGetValue(name, out object instance))
+            {
+                return true;
+            }
+
+            // TODO: This will not work, do we need a work around?
+            var found = ServiceProvider.GetServices(typeof(object)).SingleOrDefault<object>((service) =>
+            {
+                if (service is IServiceNameAware nameAware)
+                {
+                    return nameAware.ServiceName == name;
+                }
+
+                return false;
+            });
+
+            return found != null;
+        }
+
         public object GetService(string name, Type serviceType)
         {
             if (_instances.TryGetValue(name, out var instance) && serviceType.IsInstanceOfType(instance))

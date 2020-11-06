@@ -22,11 +22,11 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public int ReplyCode { get; }
 
-        private string ReplyText { get; }
+        public string ReplyText { get; }
 
-        private string Exchange { get; }
+        public string Exchange { get; }
 
-        private string RoutingKey { get; }
+        public string RoutingKey { get; }
 
         public override string ToString()
         {

@@ -61,9 +61,15 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             Options = bindingsOptions;
         }
 
+        public RabbitExchangeQueueProvisioner(CachingConnectionFactory cf)
+        {
+            this.cf = cf;
+        }
+
         private RabbitAdmin Admin { get; }
 
         private bool _notOurAdminException;
+        private CachingConnectionFactory cf;
 
         private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
 
@@ -714,30 +720,27 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public void CleanAutoDeclareContext(IConsumerDestination destination, IConsumerOptions consumerProperties)
         {
-            lock(_autoDeclareContext) {
-                //Stream.of(StringUtils.tokenizeToStringArray(destination.getName(), ",", true,
-                //        true)).forEach(name-> {
-                //    name = name.trim();
-                //    removeSingleton(name + ".binding");
-                //    removeSingleton(name);
-                //    String dlq = name + ".dlq";
-                //    removeSingleton(dlq + ".binding");
-                //    removeSingleton(dlq);
-                //});
+            lock (_autoDeclareContext)
+            {
+                destination.Name.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(name =>
+                {
+                    name = name.Trim();
+                    RemoveSingleton(name + ".binding");
+                    RemoveSingleton(name);
+                    var dlq = name + ".dlq";
+                    RemoveSingleton(dlq + ".binding");
+                    RemoveSingleton(dlq);
+                });
             }
         }
 
-        // private void RemoveSingleton(string name)
-        // {
-        //    if (this.autoDeclareContext.containsBean(name))
-        //    {
-        //        ConfigurableListableBeanFactory beanFactory = this.autoDeclareContext
-        //                .getBeanFactory();
-        //        if (beanFactory instanceof DefaultListableBeanFactory) {
-        //            ((DefaultListableBeanFactory)beanFactory).destroySingleton(name);
-        //        }
-        //    }
-        // }
+        private void RemoveSingleton(string name)
+        {
+            if (_autoDeclareContext.ContainsService(name))
+            {
+                _autoDeclareContext.Deregister(name);
+            }
+        }
 
         // public void onApplicationEvent(DeclarationExceptionEvent event)
         // {

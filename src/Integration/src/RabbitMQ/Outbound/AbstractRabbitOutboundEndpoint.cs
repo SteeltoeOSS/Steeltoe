@@ -18,6 +18,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -78,11 +79,11 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
         public bool Running { get; set; }
 
+        public bool IsRunning => Running;
+
         private Task ConfirmChecker { get; set; }
 
         private CancellationTokenSource TokenSource { get; set; }
-
-        public bool IsRunning => throw new NotImplementedException();
 
         public void SetExchangeNameExpressionString(string exchangeNameExpression)
         {
@@ -276,6 +277,19 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             if (RoutingKeyGenerator != null)
             {
                 key = RoutingKeyGenerator.ProcessMessage(requestMessage);
+            }
+
+            // TODO: SPEL implementation
+
+            var partitionLookup = "headers['scst_partition']";
+
+            if (key.Contains(partitionLookup))
+            {
+                var value = requestMessage.Headers["scst_partition"].ToString();
+                var prefix = new Regex("\'([^+]+)\'");
+                var foo = prefix.Match(key);
+                var prefixValue = prefix.Match(key).Groups[1].Value;
+                return prefixValue + value;
             }
 
             return key;

@@ -37,6 +37,8 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
         public TimeSpan WaitForConfirmTimeout { get; set; }
 
+        public new void Initialize() => base.Initialize();
+
         public void Confirm(CorrelationData correlationData, bool ack, string cause)
         {
             HandleConfirm(correlationData, ack, cause);

@@ -28,6 +28,8 @@ namespace Steeltoe.Common.Contexts
 
         bool ContainsService<T>(string name);
 
+        bool ContainsService(string name);
+
         void Register(string name, object instance);
 
         object Deregister(string name);

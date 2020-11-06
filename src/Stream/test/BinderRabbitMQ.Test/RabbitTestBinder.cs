@@ -22,11 +22,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private readonly HashSet<string> _prefixes = new HashSet<string>();
 
-        //public IApplicationContext ApplicationContext
-        //{
-        //    get { base.PollableConsumerBinder.ap}
-        //}
-
         public static IApplicationContext GetApplicationContext()
         {
             var serviceProvider = new ServiceCollection().BuildServiceProvider();

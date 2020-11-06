@@ -45,6 +45,13 @@ namespace Steeltoe.Stream.Binder
             //if(this .TestClean)
         }
 
+        protected BindingOptions CreateConsumerBindingOptions(ConsumerOptions consumerOptions)
+        {
+            var bindingOptions = new BindingOptions();
+            bindingOptions.Consumer = consumerOptions;
+            return bindingOptions;
+        }
+
         protected BindingOptions CreateProducerBindingOptions(ProducerOptions producerOptions)
         {
             var bindingOptions = new BindingOptions();
@@ -85,6 +92,7 @@ namespace Steeltoe.Stream.Binder
 
         protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)
         {
+            
             var messageConverterConfigurer = CreateConverterConfigurer(channelName, bindingProperties);
             var channel = new DirectChannel();
             channel.ServiceName = channelName;
@@ -115,16 +123,21 @@ namespace Steeltoe.Stream.Binder
         {
              var bindingServiceProperties = new BindingServiceOptions();
              bindingServiceProperties.Bindings.Add(channelName, bindingProperties);
-            var serviceCollection = new ServiceCollection();
-            
-            var configuration = new ConfigurationBuilder().Build();
-             var applicationContext = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configuration);
+            // var serviceCollection = new ServiceCollection();
+
+            //var configuration = new ConfigurationBuilder().Build();
+            //var applicationContext = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configuration);
             //applicationContext.refresh();
             //  bindingServiceProperties.con
             //     bindingServiceProperties.setConversionService(new DefaultConversionService());
             // bindingServiceProperties.afterPropertiesSet();
+            var applicationContext = GetBinder().ApplicationContext;
+
+            var extractors = applicationContext.GetServices<IPartitionKeyExtractorStrategy>();
+            var selectors = applicationContext.GetServices<IPartitionSelectorStrategy>();
             var bindingServiceOptionsMonitor = new BindingServiceOptionsMonitor(bindingServiceProperties);
-             MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), null, null);
+            
+            MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
             // messageConverterConfigurer.setBeanFactory(applicationContext.getBeanFactory());
             return messageConverterConfigurer;
             
