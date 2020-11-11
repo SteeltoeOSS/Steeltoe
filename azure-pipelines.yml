@@ -116,7 +116,7 @@ jobs:
       arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 /p:CopyLocalLockFileAssemblies=true $(skipFilter) --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
-      docker run -d --name configserver -p 8888:8888 steeltoeoss/configserver
+      docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server
     condition: eq(variables['integrationTests'], 'true')
     displayName: 'Start Docker services'
   - task: DotNetCoreCLI@2
