@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Serilog.Core;
 using System;
 using System.Linq;
@@ -66,7 +67,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                 // Add a level switch that controls the "Default" level at the root
                 var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
-                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch);
+                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch).WriteTo.Console(); // If there is no Console in the Configuration, or there is Configuration, go ahead and add console
 
                 var logger = loggerConfiguration.CreateLogger();
 
@@ -102,7 +103,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                 // Add a level switch that controls the "Default" level at the root
                 var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
-                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch);
+                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch).WriteTo.Console(); // If there is no Console in the Configuration, or there is Configuration, go ahead and add console
 
                 var logger = loggerConfiguration.CreateLogger();
 
