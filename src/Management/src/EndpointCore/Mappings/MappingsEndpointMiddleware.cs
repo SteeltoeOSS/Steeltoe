@@ -124,7 +124,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 paths.Add(_options.Path);
             }
 
-            foreach (var path in paths)
+            foreach (var path in paths.Distinct())
             {
                 var pathString = new PathString(path);
                 if (context.Request.Path.Equals(pathString))
