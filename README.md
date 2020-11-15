@@ -65,7 +65,7 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 #### Other Repositories
 
 * [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [steeltoe.io/docs](steeltoe.io/docs) site
+* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [steeltoe.io/docs](https://steeltoe.io/docs) site
 * [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io (Blazor) website
 * [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
 * [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
