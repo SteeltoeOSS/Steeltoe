@@ -40,7 +40,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       ""cloud"": {
                         ""config"": {
                             ""uri"": ""http://localhost:8888"",
-                            ""env"": ""development""
+                            ""env"": ""development"",
+                            ""failfast"": ""true""
                         }
                       }
                     }
@@ -83,7 +84,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                             ""env"": ""development"",
                             ""health"": {
                                 ""enabled"": true
-                            }
+                            },
+                            ""failfast"": ""true""
                         }
                       }
                     }
@@ -169,7 +171,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""spring"": {
                         ""cloud"": {
                             ""config"": {
-                                ""validateCertificates"": false
+                                ""validateCertificates"": false,
+                                ""failfast"": ""true""
                             }
                         }
                     }
@@ -264,7 +267,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""spring"": {
                         ""cloud"": {
                             ""config"": {
-                                ""validate_certificates"": false
+                                ""validate_certificates"": false,
+                                ""failfast"": ""true""
                             }
                         }
                     }
@@ -412,7 +416,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                             ""env"": ""development"",
                             ""health"": {
                                 ""enabled"": true
-                            }
+                            },
+                            ""failfast"": ""true""
                         }
                       }
                     }
