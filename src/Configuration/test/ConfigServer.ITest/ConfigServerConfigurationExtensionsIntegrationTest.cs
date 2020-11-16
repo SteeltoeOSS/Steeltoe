@@ -433,7 +433,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             using var server = new TestServer(builder);
             var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
-            Assert.Equal("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml,", result);
+
+            // after switching to new config server image, this value now ends with " (document #0),"
+            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml", result);
         }
     }
 }
