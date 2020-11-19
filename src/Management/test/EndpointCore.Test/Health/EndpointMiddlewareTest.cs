@@ -117,7 +117,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("details"));
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -140,7 +141,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("details"));
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -163,7 +165,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("details"));
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
