@@ -89,6 +89,24 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
         }
 
         [Fact]
+        public void AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+            var services = new ServiceCollection();
+            var provider = services
+                .AddSingleton<IConfiguration>(configuration)
+                .AddSingleton<ConsoleLoggerProvider>()
+                .AddLogging(builder =>
+                {
+                    builder.AddSerilogDynamicConsole(true);
+                })
+                .BuildServiceProvider();
+
+            Assert.Contains(services, d => d.ImplementationType == typeof(ConsoleLoggerProvider));
+        }
+
+        [Fact]
         public void AddDynamicConsole_AddsAllLoggerProviders()
         {
             // arrange
