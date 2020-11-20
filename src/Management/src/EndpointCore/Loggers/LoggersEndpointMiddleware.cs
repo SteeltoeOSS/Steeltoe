@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                     paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}".Replace("//", "/"));
                 }
 
-                foreach (var path in paths)
+                foreach (var path in paths.Distinct())
                 {
                     if (ChangeLoggerLevel(request, path))
                     {
@@ -84,11 +85,19 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 change.TryGetValue("configuredLevel", out var level);
 
                 _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+
                 if (!string.IsNullOrEmpty(loggerName))
                 {
-                    var changeReq = new LoggersChangeRequest(loggerName, level);
-                    HandleRequest(changeReq);
-                    return true;
+                    if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+                    {
+                        _logger?.LogDebug("Invalid LogLevel specified: {0}", level);
+                    }
+                    else
+                    {
+                        var changeReq = new LoggersChangeRequest(loggerName, level);
+                        HandleRequest(changeReq);
+                        return true;
+                    }
                 }
             }
 
