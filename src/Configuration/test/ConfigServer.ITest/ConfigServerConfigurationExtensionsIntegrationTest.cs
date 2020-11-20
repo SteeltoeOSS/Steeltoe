@@ -351,7 +351,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         //      fetchRegistry: true
         //      serviceUrl:
         //          defaultZone: http://localhost:8761/eureka/
-        [Fact]
+        [Fact(Skip = "Config server image needs to be enhanced to support discovery-first")]
         [Trait("Category", "Integration")]
         public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
         {
@@ -366,6 +366,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                         ""config"": {
                             ""uri"": ""http://localhost:8888"",
                             ""env"": ""development"",
+                            ""failfast"": ""true"",
                             ""discovery"": {
                                 ""enabled"": true
                             }
