@@ -73,6 +73,25 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
+        public async void LoggersActuator_ReturnsBadRequest()
+        {
+            var builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+               .ConfigureLogging((context, loggingBuilder) =>
+               {
+                   loggingBuilder.AddConfiguration(context.Configuration);
+                   loggingBuilder.AddDynamicConsole();
+               });
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            HttpContent content = new StringContent("{\"configuredLevel\":\"BadData\"}");
+            var changeResult = await client.PostAsync("http://localhost/cloudfoundryapplication/loggers/Default", content);
+            Assert.Equal(HttpStatusCode.BadRequest, changeResult.StatusCode);
+        }
+
+        [Fact]
         public async void LoggersActuator_AcceptsPost()
         {
             var builder = new WebHostBuilder()

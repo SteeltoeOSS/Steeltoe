@@ -39,7 +39,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       ""cloud"": {
                         ""config"": {
                             ""uri"": ""http://localhost:8888"",
-                            ""env"": ""development""
+                            ""env"": ""development"",
+                            ""failfast"": ""true""
                         }
                       }
                     }
@@ -82,7 +83,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                             ""env"": ""development"",
                             ""health"": {
                                 ""enabled"": true
-                            }
+                            },
+                            ""failfast"": ""true""
                         }
                       }
                     }
@@ -168,7 +170,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""spring"": {
                         ""cloud"": {
                             ""config"": {
-                                ""validateCertificates"": false
+                                ""validateCertificates"": false,
+                                ""failfast"": ""true""
                             }
                         }
                     }
@@ -263,7 +266,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""spring"": {
                         ""cloud"": {
                             ""config"": {
-                                ""validate_certificates"": false
+                                ""validate_certificates"": false,
+                                ""failfast"": ""true""
                             }
                         }
                     }
@@ -346,7 +350,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         //      fetchRegistry: true
         //      serviceUrl:
         //          defaultZone: http://localhost:8761/eureka/
-        [Fact]
+        [Fact(Skip = "Config server image needs to be enhanced to support discovery-first")]
         [Trait("Category", "Integration")]
         public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
         {
@@ -361,6 +365,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                         ""config"": {
                             ""uri"": ""http://localhost:8888"",
                             ""env"": ""development"",
+                            ""failfast"": ""true"",
                             ""discovery"": {
                                 ""enabled"": true
                             }
@@ -411,7 +416,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                             ""env"": ""development"",
                             ""health"": {
                                 ""enabled"": true
-                            }
+                            },
+                            ""failfast"": ""true""
                         }
                       }
                     }
@@ -433,7 +439,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
 
-            // changed to StartsWith on 7/23 because SCCS is appending " document #0)" to application.yml ??
+            // after switching to new config server image, this value now ends with " (document #0),"
             Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml", result);
         }
     }
