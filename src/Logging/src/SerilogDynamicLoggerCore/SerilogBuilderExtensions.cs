@@ -25,7 +25,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
-        /// <param name="preserveDefaultConsole">When true, do not remove the default console</param>
+        /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
         public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder, bool preserveDefaultConsole = false)
         {
