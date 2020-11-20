@@ -63,7 +63,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                     paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}".Replace("//", "/")));
                 }
 
-                foreach (var path in paths)
+                foreach (var path in paths.Distinct())
                 {
                     if (ChangeLoggerLevel(request, path))
                     {
@@ -96,11 +96,19 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 change.TryGetValue("configuredLevel", out var level);
 
                 _logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
+
                 if (!string.IsNullOrEmpty(loggerName))
                 {
-                    var changeReq = new LoggersChangeRequest(loggerName, level);
-                    HandleRequest(changeReq);
-                    return true;
+                    if (!string.IsNullOrEmpty(level) && LoggerLevels.MapLogLevel(level) == null)
+                    {
+                        _logger?.LogDebug("Invalid LogLevel specified: {0}", level);
+                    }
+                    else
+                    {
+                        var changeReq = new LoggersChangeRequest(loggerName, level);
+                        HandleRequest(changeReq);
+                        return true;
+                    }
                 }
             }
 

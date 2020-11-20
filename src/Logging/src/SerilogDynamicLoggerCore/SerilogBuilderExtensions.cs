@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Configuration;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Serilog;
 using Serilog.Core;
 using System;
 using System.Linq;
@@ -20,16 +21,26 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
     public static class SerilogBuilderExtensions
     {
         /// <summary>
-        /// Add Steeltoe logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
+        /// Add Serilog logger wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
         /// dynamically controlling the minimum log level via management endpoints
         /// </summary>
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory  </param>
+        /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
-        public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder)
+        public static ILoggingBuilder AddSerilogDynamicConsole(this ILoggingBuilder builder, bool preserveDefaultConsole = false)
         {
             if (builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
             {
                 throw new InvalidOperationException("An IDynamicLoggerProvider has already been configured! Call 'AddSerilogDynamicConsole' earlier in program.cs (Before AddCloudFoundryActuators()) or remove duplicate IDynamicLoggerProvider entries.");
+            }
+
+            if (!preserveDefaultConsole)
+            {
+                var defaultConsoleDescriptor = builder.Services.FirstOrDefault(d => d.ImplementationType == typeof(ConsoleLoggerProvider));
+                if (defaultConsoleDescriptor != null)
+                {
+                    builder.Services.Remove(defaultConsoleDescriptor);
+                }
             }
 
             builder.Services.AddSingleton<ISerilogOptions, SerilogOptions>();
@@ -60,7 +71,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                 // Add a level switch that controls the "Default" level at the root
                 var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
-                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch);
+                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch).WriteTo.Console(); // If there is no Console in the Configuration, or there is Configuration, go ahead and add console
 
                 var logger = loggerConfiguration.CreateLogger();
 
@@ -96,7 +107,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                 // Add a level switch that controls the "Default" level at the root
                 var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
-                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch);
+                loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch).WriteTo.Console(); // If there is no Console in the Configuration, or there is Configuration, go ahead and add console
 
                 var logger = loggerConfiguration.CreateLogger();
 

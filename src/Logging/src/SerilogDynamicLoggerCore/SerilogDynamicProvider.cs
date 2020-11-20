@@ -77,6 +77,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             _globalLogger = logger ?? new Serilog.LoggerConfiguration()
                 .MinimumLevel.ControlledBy(loggingLevelSwitch)
                 .ReadFrom.Configuration(configuration)
+                .WriteTo.SerilogConsole() // Add a console in case one is not configured
                 .CreateLogger();
         }
 
