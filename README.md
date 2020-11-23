@@ -51,7 +51,7 @@ Steeltoe is fully open source and is found under the SteeltoeOSS organization on
 
 ### Steeltoe Core Components
 
-These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
+These are located in the [Steeltoe](https://github.com/SteeltoeOSS/Steeltoe) repository:
 
 * Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/dotnet/extensions/tree/master/src/Configuration) services
 * Common - Common packages to other Steeltoe components
@@ -65,11 +65,16 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 #### Other Repositories
 
 * [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [steeltoe.io/docs](https://steeltoe.io/docs) site
-* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io (Blazor) website
-* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
+* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [docs.steeltoe.io](https://docs.steeltoe.io) site
+* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the [Steeltoe.io](https://steeltoe.io) website
+* [Initializr](https://start.steeltoe.io)
+   * [InitializrWeb](https://github.com/SteeltoeOSS/InitializrWeb) - The Initializr Web UI source code
+   * [InitializrApi](https://github.com/SteeltoeOSS/InitializrApi) - The Initializr Api source code
+   * [InitializrConfig](https://github.com/SteeltoeOSS/InitializrConfig) - The Initializr configuration and template data
+   * [InitializrConfigServer](https://github.com/SteeltoeOSS/InitializrConfigServer) - The Initializr Configuration Server
 * [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
+* [Schema](https://github.com/SteeltoeOSS/Schema) - The schema build for Steeltoe components
 * [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
 
 
