@@ -1,4 +1,4 @@
-# Steeltoe Open Source Software
+# Steeltoe .NET Open Source Software
 
 [![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
 
@@ -75,8 +75,8 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 
 ## Roadmaps and Releases
 * [3.2.0](https://github.com/SteeltoeOSS/Steeltoe/milestone/20) - In Planning
-* [3.1.0](roadmaps/3.1.0.md) - In Progress (expected by end of 2020)
-* [3.0.0](roadmaps/3.0.0.md) - Released (8/2020)
+* [3.1.0](https://github.com/SteeltoeOSS/Steeltoe/milestone/14) - In Progress (expected by end of 2020)
+* [3.0.0](https://github.com/SteeltoeOSS/Steeltoe/releases/tag/3.0.0) - Released (8/2020)
    * [3.0.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/3.0.1) - Released (10/2020)
    * [3.0.2](https://github.com/SteeltoeOSS/Steeltoe/milestone/21) - In Progress
 * [2.5.0](roadmaps/2.5.0.md) - Released (10/2020)
