@@ -98,6 +98,16 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
             }
 
+            if (observerOptions.HttpClientCore)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
+            }
+
+            if (observerOptions.HttpClientDesktop)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
+            }
+
             if (observerOptions.GCEvents)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
