@@ -9,6 +9,7 @@ using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Integration.Rabbit.Support
@@ -29,6 +30,15 @@ namespace Steeltoe.Integration.Rabbit.Support
 
             if (inputMessage is IMessage)
             {
+                var imessage = (IMessage)inputMessage;
+                imessage.Headers.ToList().ForEach(header =>
+                {
+                    if (!headers.ContainsKey(header.Key))
+                    {
+                        headers.Add(header.Key, header.Value);
+                    }
+                });
+
                 return new ErrorMessage(exception, headers, (IMessage)inputMessage);
             }
             else

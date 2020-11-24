@@ -92,7 +92,6 @@ namespace Steeltoe.Stream.Binder
 
         protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)
         {
-            
             var messageConverterConfigurer = CreateConverterConfigurer(channelName, bindingProperties);
             var channel = new DirectChannel();
             channel.ServiceName = channelName;

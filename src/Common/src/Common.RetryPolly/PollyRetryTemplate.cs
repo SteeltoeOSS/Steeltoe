@@ -156,6 +156,7 @@ namespace Steeltoe.Common.Retry
                             return result;
                         }, (ex, context) =>
                         {
+                            throw ex.Exception;
                         });
 
             return fallbackPolicy.Wrap(retryPolicy);

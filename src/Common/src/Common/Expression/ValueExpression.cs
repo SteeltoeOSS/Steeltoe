@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression
         private V _value;
         private Type _asClass;
 
-        public string ExpressionString => throw new NotImplementedException();
+        public string ExpressionString => _value.ToString();
 
         public ValueExpression(V value)
         {

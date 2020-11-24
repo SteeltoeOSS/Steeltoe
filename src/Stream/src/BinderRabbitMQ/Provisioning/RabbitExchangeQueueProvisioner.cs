@@ -43,28 +43,28 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions)
-            : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext)
+            : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext)
         {
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext)
         {
             Admin = new RabbitAdmin(connectionFactory);
 
             // AutoDeclareContext.refresh();
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            _autoDeclareContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            _autoDeclareContext = applicationContext;//  new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
             Admin.ApplicationContext = _autoDeclareContext;
             Admin.Initialize();
             Customizers = customizers;
             Options = bindingsOptions;
         }
 
-        public RabbitExchangeQueueProvisioner(CachingConnectionFactory cf)
-        {
-            this.cf = cf;
-        }
+        //public RabbitExchangeQueueProvisioner(CachingConnectionFactory cf): this(cf, )
+        //{
+        //    this.cf = cf;
+        //}
 
         private RabbitAdmin Admin { get; }
 

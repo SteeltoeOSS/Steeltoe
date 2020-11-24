@@ -236,7 +236,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             //Assert.Equal(RabbitCore.MessageDeliveryMode.NON_PERSISTENT, outputBinding.DeliveryMode);
         }
 
-        private IEnumerable<Tuple<string,string, string>> GetOptionsConfigPairs(IConfigurationSection config, object optionsObject,  string inputBindingsKey)
+        private IEnumerable<Tuple<string, string, string>> GetOptionsConfigPairs(IConfigurationSection config, object optionsObject,  string inputBindingsKey)
         {
             var inputBindingSection = config.GetSection(inputBindingsKey);
             var children = inputBindingSection.GetChildren();
@@ -280,10 +280,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 }
                 else
                 {
-
-                    yield return new Tuple<string,string, string>(inputBindingsKey +":"+ child.Key, value?.ToString(), child.Value);
+                    yield return new Tuple<string, string, string>(inputBindingsKey + ":" + child.Key, value?.ToString(), child.Value);
                 }
-                //Assert.True(child.Value.Equals(value.ToString(), StringComparison.OrdinalIgnoreCase), $"{child.Key} expected to be {child.Value} type {child.Value.GetType().Name} but was {value} {value.GetType().Name}");
+
+                // Assert.True(child.Value.Equals(value.ToString(), StringComparison.OrdinalIgnoreCase), $"{child.Key} expected to be {child.Value} type {child.Value.GetType().Name} but was {value} {value.GetType().Name}");
 
             }
         }

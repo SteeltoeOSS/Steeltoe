@@ -28,25 +28,33 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {
-    public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>
+    public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
     {
         private RabbitTestBinder _testBinder;
         private CachingConnectionFactory _cachingConnectionFactory;
         private readonly string TEST_PREFIX = "bindertest.";
         private static string BIG_EXCEPTION_MESSAGE = new string('x', 10_000);
         private int maxStackTraceSize;
+
         public RabbitBinderTests(ITestOutputHelper output) : base(output)
         {
         }
 
-  
+        public void Dispose()
+        {
+            Cleanup(GetBinder());
+        }
+      
+
         protected override ConsumerOptions CreateConsumerOptions()
         {
             return new ExtendedConsumerOptions<RabbitConsumerOptions>(new RabbitConsumerOptions());
@@ -120,66 +128,36 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //      assertThat(TestUtils.getPropertyValue(requestMatchers.get(3), "pattern"))
             //		.isEqualTo("foo");
         }
-        private Exception BigCause(Exception cause)
-    {
-        if (cause.StackTrace.Length > this.maxStackTraceSize)
-        {
-            return cause;
-        }
 
-        return BigCause(new Exception(BIG_EXCEPTION_MESSAGE, cause));
-    }
+        private Exception BigCause(Exception innerException = null)
+        {
+         //   Exception innerException = null;
+            try
+            {
+                var capturedException = innerException ?? new Exception(BIG_EXCEPTION_MESSAGE);
+                ExceptionDispatchInfo.Capture(capturedException).Throw();
+            }
+            catch (Exception ex)
+            {
+                if (ex.StackTrace != null && ex.StackTrace.Length > this.maxStackTraceSize)
+                {
+                    return ex;
+                }
+
+                innerException = ex;
+            }
+
+            return BigCause(innerException);
+        }
 
         private class TestMessageHandler : IMessageHandler
         {
-            private readonly CountdownEvent _latch;// = new CountdownEvent(3);
-            private readonly Action action;
-            private readonly Action<IMessage> actionWithMessage;
-
-            // Latching handler with latch count
-            //public TestMessageHandler(int count)
-            //{
-            //    _latch = new CountdownEvent(count);
-            //}
-
-            //// Action handler
-            //public TestMessageHandler(Action action)
-            //{
-            //    this.action = action;
-            //}
-
-            //public TestMessageHandler(Action<IMessage> action)
-            //{
-            //    this.actionWithMessage = action;
-            //}
-
             public string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
             public Action<IMessage> OnHandleMessage { get; set; }
 
             public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
-            //{
-            //    if (_latch != null) //TODO: Get rid of 
-            //    {
-            //        _latch.Signal();
-            //        throw new Exception();
-            //    }
-
-            //    if (action != null) //TODO: Get rid of 
-            //    {
-            //        action.Invoke();
-            //        return;
-            //    }
-
-            //    if (actionWithMessage != null)
-            //    {
-            //        actionWithMessage.Invoke(message);
-            //        return;
-            //    }
-
-            //}
-
-            public bool Wait() => _latch.Wait(TimeSpan.FromSeconds(10));
+         
         }
 
         private void Cleanup(RabbitTestBinder binder)
@@ -206,9 +184,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _cachingConnectionFactory;
         }
 
-        public class TestPartitionKeyExtractorClass : IPartitionKeyExtractorStrategy
+
+        public class TestPartitionSupport : IPartitionKeyExtractorStrategy, IPartitionSelectorStrategy
         {
-            public TestPartitionKeyExtractorClass(string serviceName)
+            public TestPartitionSupport(string serviceName)
             {
                 ServiceName = serviceName;
             }
@@ -219,21 +198,26 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 return message.Payload;
             }
-        }
-
-        public class TestPartitionSelectorClass : IPartitionSelectorStrategy
-        {
-            public TestPartitionSelectorClass(string serviceName)
-            {
-                ServiceName = serviceName;
-            }
-
-            public string ServiceName { get; set; }
 
             public int SelectPartition(object key, int partitionCount)
             {
                 return (int)key;
             }
         }
+
+        //public class TestPartitionSelectorClass : IPartitionSelectorStrategy
+        //{
+        //    public TestPartitionSelectorClass(string serviceName)
+        //    {
+        //        ServiceName = serviceName;
+        //    }
+
+        //    public string ServiceName { get; set; }
+
+        //    public int SelectPartition(object key, int partitionCount)
+        //    {
+        //        return (int)key;
+        //    }
+        //}
     }
 }

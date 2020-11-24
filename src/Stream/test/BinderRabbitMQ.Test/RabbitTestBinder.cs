@@ -22,14 +22,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private readonly HashSet<string> _prefixes = new HashSet<string>();
 
+        private static IApplicationContext _applicationContext;
+
         public static IApplicationContext GetApplicationContext()
         {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            return new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            if (_applicationContext == null)
+            {
+                var serviceProvider = new ServiceCollection().BuildServiceProvider();
+                _applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            }
+
+            return _applicationContext;
         }
 
         public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions)
-            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions)))
+            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext())))
         {
         }
 
