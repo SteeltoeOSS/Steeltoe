@@ -7,7 +7,6 @@
     <CSharpVersion>4.5.0</CSharpVersion>
     <DriveInfoVersion>4.3.1</DriveInfoVersion>
     <EFCoreVersion>2.0.0</EFCoreVersion>
-    <EFCoreTestVersion>2.1.2</EFCoreTestVersion>
     <HttpVersion>4.3.4</HttpVersion>
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
     <HttpClientVersion>4.3.3</HttpClientVersion>
@@ -27,8 +26,6 @@
     <MySqlV6>6.10.7</MySqlV6>
     <MySqlV8>8.0.14</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion>2.0.1</PomeloEFCoreVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
     <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
     <StackExchangeVersion>2.0.513</StackExchangeVersion>
@@ -76,8 +73,15 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
+    <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
+    <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
+    <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
+    <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCoreVersion>5.0.0-rc.2.20475.17</AspNetCoreVersion>
+    <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
+    <EFCoreTestVersion>5.0.0</EFCoreTestVersion>
+    <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
+    <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
   </PropertyGroup>
 </Project>
