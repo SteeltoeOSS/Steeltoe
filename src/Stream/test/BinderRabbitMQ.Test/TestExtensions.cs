@@ -31,6 +31,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             return Encoding.UTF8.GetBytes(input);
         }
+
         public static string GetString(this byte[] input)
         {
             return Encoding.UTF8.GetString(input);

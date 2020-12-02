@@ -48,6 +48,7 @@ namespace Steeltoe.Integration.Channel
             var added = Dispatcher.AddHandler(handler);
             if (added)
             {
+                Logger?.LogTrace("Channel '" + ServiceName + "' has " + handler.ServiceName + " subscriber(s).");
                 Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
             }
 

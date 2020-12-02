@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.CSharp;
@@ -20,10 +20,12 @@ namespace Steeltoe.Stream.Binder
         private readonly IApplicationContext _context;
         private IEvaluationContext _evaluationContext;
         private IExpressionParser _expressionParser;
+        private ILogger _logger;
 
-        protected AbstractBinder(IApplicationContext context)
+        protected AbstractBinder(IApplicationContext context, ILogger logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         public static string ApplyPrefix(string prefix, string name)
@@ -119,7 +121,7 @@ namespace Steeltoe.Stream.Binder
 
         protected RetryTemplate BuildRetryTemplate(IConsumerOptions options)
         {
-            return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier);
+            return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
         }
 
         protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)

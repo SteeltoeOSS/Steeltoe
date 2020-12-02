@@ -1851,7 +1851,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     true,
                     (int)templateOptions.Retry.InitialInterval.TotalMilliseconds,
                     (int)templateOptions.Retry.MaxInterval.TotalMilliseconds,
-                    templateOptions.Retry.Multiplier);
+                    templateOptions.Retry.Multiplier,
+                    _logger);
             }
 
             if (templateOptions.ReceiveTimeout.HasValue)

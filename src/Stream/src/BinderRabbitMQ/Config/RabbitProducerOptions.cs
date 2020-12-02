@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
     {
         public RabbitProducerOptions()
         {
-          //  PostProcess();
+       //     PostProcess();
         }
 
         public bool? Compress { get; set; }

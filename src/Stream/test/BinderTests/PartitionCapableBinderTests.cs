@@ -1,4 +1,5 @@
-﻿using Steeltoe.Common.Expression.CSharp;
+﻿using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Expression.CSharp;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
@@ -12,7 +13,6 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
-
 namespace Steeltoe.Stream.Binder
 {
     public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B, T>
@@ -22,8 +22,8 @@ namespace Steeltoe.Stream.Binder
     {
         protected static ExpressionParser expressionParser = new ExpressionParser();
 
-        protected PartitionCapableBinderTests(ITestOutputHelper output)
-            : base(output)
+        protected PartitionCapableBinderTests(ITestOutputHelper output, ILogger logger)
+            : base(output, logger)
         {
 
             //oducerOptions.PartitionKeyExpression = ??
@@ -51,11 +51,11 @@ namespace Steeltoe.Stream.Binder
 
             Message<byte[]> receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
-            Assert.Equal(receivedMessage1.Payload.ToString(), testPayload1);
+            Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage1.Payload));
 
             Message<byte[]> receivedMessage2 = (Message<byte[]>)Receive(input2);
             Assert.NotNull(receivedMessage2);
-            Assert.Equal(receivedMessage2.Payload.ToString(), testPayload1);
+            Assert.Equal( testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
             binding2.Unbind();
 
@@ -75,14 +75,14 @@ namespace Steeltoe.Stream.Binder
 
             receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
-            Assert.Equal(receivedMessage1.Payload.ToString(), testPayload2);
+            Assert.Equal( testPayload2, Encoding.UTF8.GetString(receivedMessage1.Payload));
             receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
             Assert.NotNull(receivedMessage1.Payload);
 
             receivedMessage2 = (Message<byte[]>)Receive(input2);
             Assert.NotNull(receivedMessage2);
-            Assert.Equal(receivedMessage2.Payload.ToString(), testPayload3);
+            Assert.Equal(testPayload3, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
             producerBinding.Unbind();
             binding1.Unbind();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
@@ -35,12 +36,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _applicationContext;
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions)
-            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext())))
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILogger logger)
+            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), logger)), logger)
         {
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger logger)
         {
             //var serviceCollection = new ServiceCollection();
             //var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -48,7 +49,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //binder.setApplicationContext do we need this?
             
             PollableConsumerBinder = binder;
-            _rabbitAdmin = new RabbitAdmin(connectionFactory);
+            _rabbitAdmin = new RabbitAdmin(connectionFactory, logger);
 
         }
 

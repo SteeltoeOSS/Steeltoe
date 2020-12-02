@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
@@ -27,9 +28,10 @@ namespace Steeltoe.Integration.Rabbit.Inbound
     public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint // ,IOrderlyShutdownCapable
     {
         private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
+        private readonly ILogger _logger;
 
-        public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer)
-            : base(context)
+        public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger)
+            : base(context, logger)
         {
             if (listenerContainer == null)
             {
@@ -43,10 +45,11 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                             "configure its own listener implementation.");
             }
 
+            _logger = logger;
             listenerContainer.IsAutoStartup = true;
             MessageListenerContainer = listenerContainer;
             ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
-            var messageListener = new Listener(this);
+            var messageListener = new Listener(this, logger);
             MessageListenerContainer.MessageListener = messageListener;
             MessageListenerContainer.Initialize();
         }
@@ -121,10 +124,12 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         protected class Listener : IChannelAwareMessageListener
         {
             private readonly RabbitInboundChannelAdapter _adapter;
+            private readonly ILogger _logger;
 
-            public Listener(RabbitInboundChannelAdapter adapter)
+            public Listener(RabbitInboundChannelAdapter adapter, ILogger logger)
             {
                 _adapter = adapter;
+                _logger = logger;
             }
 
             public AcknowledgeMode ContainerAckMode { get; set; }
@@ -144,10 +149,19 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                         _adapter.RetryTemplate.Execute(
                             context =>
                            {
-                               var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
-                               deliveryAttempts?.IncrementAndGet();
-                               _adapter.SetAttributesIfNecessary(message, toSend);
-                               _adapter.SendMessage(message);
+                               try
+                               {
+                                   _logger.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
+                                   var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
+                                   deliveryAttempts?.IncrementAndGet();
+                                   _adapter.SetAttributesIfNecessary(message, toSend);
+                                   _adapter.SendMessage(message);
+                               }
+                               catch(Exception ex)
+                               {
+                                   _logger.LogError(ex, ex.Message, context);
+                                   throw;
+                               }
                            }, _adapter.RecoveryCallback);
                     }
                 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
@@ -28,11 +29,11 @@ namespace Steeltoe.Integration.Endpoint
 
         private volatile string _errorChannelName;
 
-        protected MessageProducerSupportEndpoint(IApplicationContext context)
+        protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger)
             : base(context)
         {
             Phase = int.MaxValue / 2;
-            _messagingTemplate = new MessagingTemplate(context);
+            _messagingTemplate = new MessagingTemplate(context, logger);
         }
 
         public virtual IMessageChannel OutputChannel

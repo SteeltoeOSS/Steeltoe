@@ -33,8 +33,9 @@ namespace Steeltoe.Stream.Binder
         protected AbstractMessageChannelBinder(
             IApplicationContext context,
             string[] headersToEmbed,
-            IProvisioningProvider provisioningProvider)
-        : this(context, headersToEmbed, provisioningProvider, null, null)
+            IProvisioningProvider provisioningProvider, 
+            ILogger logger)
+        : this(context, headersToEmbed, provisioningProvider, null, null, logger)
         {
         }
 
@@ -43,8 +44,9 @@ namespace Steeltoe.Stream.Binder
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
-            IMessageSourceCustomizer sourceCustomizer)
-            : base(context)
+            IMessageSourceCustomizer sourceCustomizer, 
+            ILogger logger)
+            : base(context, logger)
         {
             _headersToEmbed = headersToEmbed ?? (new string[0]);
             _provisioningProvider = provisioningProvider;
@@ -190,12 +192,12 @@ namespace Steeltoe.Stream.Binder
         {
         }
 
-        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
+        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, ILogger logger)
         {
-            return RegisterErrorInfrastructure(destination, group, consumerOptions, false);
+            return RegisterErrorInfrastructure(destination, group, consumerOptions, false, logger);
         }
 
-        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, bool polled)
+        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, bool polled, ILogger logger)
         {
             var errorMessageStrategy = GetErrorMessageStrategy();
 
@@ -213,7 +215,7 @@ namespace Steeltoe.Stream.Binder
             }
             else
             {
-                errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName);
+                errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName, logger);
                 ApplicationContext.Register(errorChannelName, errorChannel);
             }
 

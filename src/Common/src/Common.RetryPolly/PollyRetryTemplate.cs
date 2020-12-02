@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Steeltoe.Common.Util;
@@ -24,19 +25,21 @@ namespace Steeltoe.Common.Retry
         private readonly int _backOffInitialInterval;
         private readonly int _backOffMaxInterval;
         private readonly double _backOffMultiplier;
+        private readonly ILogger _logger;
 
-        public PollyRetryTemplate(int maxAttempts, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier)
-            : this(new Dictionary<Type, bool>(), maxAttempts, true, backOffInitialInterval, backOffMaxInterval, backOffMultiplier)
+        public PollyRetryTemplate(int maxAttempts, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger)
+            : this(new Dictionary<Type, bool>(), maxAttempts, true, backOffInitialInterval, backOffMaxInterval, backOffMultiplier, logger)
         {
         }
 
-        public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier)
+        public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger)
         {
             _retryableExceptions = new BinaryExceptionClassifier(retryableExceptions, defaultRetryable);
             _maxAttempts = maxAttempts;
             _backOffInitialInterval = backOffInitialInterval;
             _backOffMaxInterval = backOffMaxInterval;
             _backOffMultiplier = backOffMultiplier;
+            _logger = logger;
         }
 
         public override T Execute<T>(Func<IRetryContext, T> retryCallback)
@@ -46,13 +49,13 @@ namespace Steeltoe.Common.Retry
 
         public override T Execute<T>(Func<IRetryContext, T> retryCallback, Func<IRetryContext, T> recoveryCallback)
         {
-            var recovCallback = new FuncRecoveryCallback<T>(recoveryCallback);
+            var recovCallback = new FuncRecoveryCallback<T>(recoveryCallback, _logger);
             return Execute<T>(retryCallback, recovCallback);
         }
 
         public override void Execute(Action<IRetryContext> retryCallback, Action<IRetryContext> recoveryCallback)
         {
-            var recovCallback = new ActionRecoveryCallback(recoveryCallback);
+            var recovCallback = new ActionRecoveryCallback(recoveryCallback, _logger);
             Execute(retryCallback, recovCallback);
         }
 
@@ -74,6 +77,7 @@ namespace Steeltoe.Common.Retry
                 (ctx) =>
                 {
                     var callbackResult = retryCallback(retryContext);
+                 //   if(retryContext.RetryCount > 0 )
                     if (recoveryCallback != null)
                     {
                         var recovered = (bool?)retryContext.GetAttribute(RECOVERED);
@@ -156,7 +160,8 @@ namespace Steeltoe.Common.Retry
                             return result;
                         }, (ex, context) =>
                         {
-                            throw ex.Exception;
+                            _logger.LogError(ex.Exception, $"Context: {context}");
+                            // throw ex.Exception; throwing here doesn't allow the fall back to work. 
                         });
 
             return fallbackPolicy.Wrap(retryPolicy);
@@ -221,19 +226,23 @@ namespace Steeltoe.Common.Retry
         private class FuncRecoveryCallback<T> : IRecoveryCallback<T>
         {
             private readonly Func<IRetryContext, T> _func;
+            private readonly ILogger _logger;
 
-            public FuncRecoveryCallback(Func<IRetryContext, T> func)
+            public FuncRecoveryCallback(Func<IRetryContext, T> func, ILogger logger)
             {
                 _func = func;
+                _logger = logger;
             }
 
             public T Recover(IRetryContext context)
             {
+                _logger.LogTrace($"FuncRecovery Context: {context}");
                 return _func(context);
             }
 
             object IRecoveryCallback.Recover(IRetryContext context)
             {
+                _logger.LogTrace($"FuncRecovery Context: {context}");
                 return _func(context);
             }
         }
@@ -241,14 +250,17 @@ namespace Steeltoe.Common.Retry
         private class ActionRecoveryCallback : IRecoveryCallback
         {
             private readonly Action<IRetryContext> _action;
+            private readonly ILogger _logger;
 
-            public ActionRecoveryCallback(Action<IRetryContext> action)
+            public ActionRecoveryCallback(Action<IRetryContext> action, ILogger logger)
             {
                 _action = action;
+                _logger = logger;
             }
 
             public object Recover(IRetryContext context)
             {
+                _logger.LogTrace($"ActionRecovery Context: {context}");
                 _action(context);
                 return null;
             }

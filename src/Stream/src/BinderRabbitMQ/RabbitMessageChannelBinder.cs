@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
@@ -35,6 +36,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using IntegrationChannel = Steeltoe.Integration.Channel;
 using MessagingSupport = Steeltoe.Messaging.Support;
+using SteeltoeConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {
@@ -45,18 +47,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
         private static readonly Regex _interceptorNeededPattern = new Regex("(payload|#root|#this)");
 
-        public RabbitMessageChannelBinder(IApplicationContext context, Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
-            : this(context, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
+            : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
-        : this(context, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
+        : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
-            : base(context, new string[0], provisioningProvider, containerCustomizer, sourceCustomizer)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
+            : base(context, new string[0], provisioningProvider, containerCustomizer, sourceCustomizer, logger)
         {
             if (connectionFactory == null)
             {
@@ -68,11 +70,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 throw new ArgumentNullException(nameof(rabbitOptions));
             }
 
+            _logger = logger;
             ConnectionFactory = connectionFactory;
             RabbitConnectionOptions = rabbitOptions;
             BinderOptions = binderOptions;
             BindingsOptions = bindingsOptions;
         }
+
+        protected ILogger _logger;
 
         public Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory ConnectionFactory { get; }
 
@@ -239,20 +244,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //  var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
             var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
             var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory);
-            listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.Value;
-            listenerContainer.IsChannelTransacted = properties.Transacted.Value;
-            listenerContainer.DefaultRequeueRejected = properties.RequeueRejected.Value;
+            listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.AUTO);
+            listenerContainer.IsChannelTransacted = properties.Transacted.GetValueOrDefault();
+            listenerContainer.DefaultRequeueRejected = properties.RequeueRejected ?? true;
             int concurrency = consumerOptions.Concurrency;
             concurrency = concurrency > 0 ? concurrency : 1;
             listenerContainer.ConsumersPerQueue = concurrency;
-            listenerContainer.PrefetchCount = properties.Prefetch.Value;
-            listenerContainer.RecoveryInterval = properties.RecoveryInterval.Value;
+            listenerContainer.PrefetchCount = properties.Prefetch ?? listenerContainer.PrefetchCount;
+            listenerContainer.RecoveryInterval = properties.RecoveryInterval ?? listenerContainer.RecoveryInterval;
             var queueNames = destination.Split(',', StringSplitOptions.RemoveEmptyEntries).Select((s) => s.Trim());
             listenerContainer.SetQueueNames(queueNames.ToArray());
             listenerContainer.SetAfterReceivePostProcessors(DecompressingPostProcessor);
             listenerContainer.MessageHeadersConverter = _inboundMessagePropertiesConverter;
-            listenerContainer.Exclusive = properties.Exclusive.Value;
-            listenerContainer.MissingQueuesFatal = properties.MissingQueuesFatal.Value;
+            listenerContainer.Exclusive = properties.Exclusive ?? listenerContainer.Exclusive;
+            listenerContainer.MissingQueuesFatal = properties.MissingQueuesFatal ?? listenerContainer.MissingQueuesFatal;
             if (properties.FailedDeclarationRetryInterval != null)
             {
                 listenerContainer.FailedDeclarationRetryInterval = properties.FailedDeclarationRetryInterval.Value;
@@ -274,14 +279,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
 
             listenerContainer.Initialize();
-            var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer);
+            var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer, _logger);
             adapter.BindSourceMessage = true;
             adapter.ServiceName = "inbound." + destination;
 
             // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
             // mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
             // adapter.setHeaderMapper(mapper);
-            var errorInfrastructure = RegisterErrorInfrastructure(consumerDestination, group, consumerOptions);
+            var errorInfrastructure = RegisterErrorInfrastructure(consumerDestination, group, consumerOptions, _logger);
             if (consumerOptions.MaxAttempts > 1)
             {
                 adapter.RetryTemplate = BuildRetryTemplate(consumerOptions);
@@ -307,7 +312,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var source = new RabbitMessageSource(ApplicationContext, ConnectionFactory, destination.Name);
             source.RawMessageHeader = true;
             MessageSourceCustomizer?.Configure(source, destination.Name, group);
-            return new PolledConsumerResources(source, RegisterErrorInfrastructure(destination, group, consumerProperties, true));
+            return new PolledConsumerResources(source, RegisterErrorInfrastructure(destination, group, consumerProperties, true, _logger));
         }
 
         protected override void PostProcessPollableSource(DefaultPollableMessageSource bindingTarget)
@@ -452,7 +457,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             if (RabbitConnectionOptions != null && RabbitConnectionOptions.Template.Retry.Enabled)
             {
                 var retry = RabbitConnectionOptions.Template.Retry;
-                var retryTemplate = new PollyRetryTemplate(retry.MaxAttempts, (int)retry.InitialInterval.TotalMilliseconds, (int)retry.MaxInterval.TotalMilliseconds, retry.Multiplier);
+                var retryTemplate = new PollyRetryTemplate(retry.MaxAttempts, (int)retry.InitialInterval.TotalMilliseconds, (int)retry.MaxInterval.TotalMilliseconds, retry.Multiplier, _logger);
                 rabbitTemplate.RetryTemplate = retryTemplate;
             }
 

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
@@ -22,20 +23,23 @@ namespace Steeltoe.Stream.Binder
         where B : AbstractTestBinder<T>
         where T : AbstractBinder<IMessageChannel>
     {
+        public ILogger Logger { get; }
+     
         protected virtual ISmartMessageConverter MessageConverter { get; set; }
 
         protected virtual double TimeoutMultiplier { get; set; } = 1.0D;
 
         protected virtual ITestOutputHelper Output { get; set; }
-
+        
         protected virtual ServiceCollection Services { get; set; }
 
         protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
 
-        public AbstractBinderTests(ITestOutputHelper output)
+        public AbstractBinderTests(ITestOutputHelper output, ILogger logger)
         {
             MessageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             Output = output;
+            Logger = logger;
             Services = new ServiceCollection();
             ConfigBuilder = new ConfigurationBuilder();
         }
@@ -93,7 +97,7 @@ namespace Steeltoe.Stream.Binder
         protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)
         {
             var messageConverterConfigurer = CreateConverterConfigurer(channelName, bindingProperties);
-            var channel = new DirectChannel();
+            var channel = new DirectChannel(Logger);
             channel.ServiceName = channelName;
             if (inputChannel)
             {

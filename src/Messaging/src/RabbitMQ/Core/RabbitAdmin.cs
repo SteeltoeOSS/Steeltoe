@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private int _initializing = 0;
 
         [ActivatorUtilitiesConstructor]
-        public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger)
         {
             if (connectionFactory == null)
             {
@@ -54,12 +54,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             DoInitialize();
         }
 
-        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
+        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger)
             : this(null, connectionFactory, logger)
         {
         }
 
-        public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
+        public RabbitAdmin(RabbitTemplate template, ILogger logger)
         {
             if (template == null)
             {
@@ -353,6 +353,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     RetryTemplate.Execute(
                         c =>
                         {
+                            _logger.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
                             Initialize();
                         });
                 }
@@ -743,7 +744,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 if (RetryTemplate == null && !RetryDisabled)
                 {
-                    RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER);
+                    RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER, _logger);
                 }
 
                 if (ConnectionFactory is CachingConnectionFactory && ((CachingConnectionFactory)ConnectionFactory).CacheMode == CachingMode.CONNECTION)

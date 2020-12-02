@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -43,14 +44,14 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext)
-            : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger logger)
+            : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
         {
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger logger)
         {
-            Admin = new RabbitAdmin(connectionFactory);
+            Admin = new RabbitAdmin(connectionFactory, logger);
 
             // AutoDeclareContext.refresh();
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
@@ -208,7 +209,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
 
             string baseQueueName;
-            if (consumerProperties.QueueNameGroupOnly.Value)
+            if (consumerProperties.QueueNameGroupOnly.GetValueOrDefault())
             {
                 baseQueueName = anonymous ? anonQueueNameGenerator.GenerateName() : group;
             }
@@ -221,7 +222,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             var prefix = consumerProperties.Prefix;
             var exchangeName = ApplyPrefix(prefix, name);
             var exchange = BuildExchange(consumerProperties, exchangeName);
-            if (consumerProperties.DeclareExchange.Value)
+            if (consumerProperties.DeclareExchange.GetValueOrDefault())
             {
                 DeclareExchange(exchangeName, exchange);
             }
@@ -254,7 +255,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
 
             RabbitConfig.IBinding binding = null;
-            if (consumerProperties.BindQueue.Value)
+            if (consumerProperties.BindQueue.GetValueOrDefault())
             {
                 DeclareQueue(queueName, queue);
                 List<string> routingKeys = BindingRoutingKeys(consumerProperties);
@@ -446,10 +447,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 }
 
                 var arguments = new Dictionary<string, object>();
-                foreach (var entry in properties.DlqBindingArguments)
-                {
-                    arguments.Add(entry.Key, entry.Value);
-                }
+
+                properties.DlqBindingArguments?.ToList().
+                    ForEach(entry => arguments.Add(entry.Key, entry.Value));
 
                 var dlRoutingKey = properties.DeadLetterRoutingKey == null ? routingKey : properties.DeadLetterRoutingKey;
                 var dlBindingName = dlq.QueueName + "." + dlxName + "." + dlRoutingKey + ".binding";
@@ -564,10 +564,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             var maxLengthBytes = isDlq ? properties.DlqMaxLengthBytes : properties.MaxLengthBytes;
             var maxPriority = isDlq ? properties.DlqMaxPriority : properties.MaxPriority;
             var ttl = isDlq ? properties.DlqTtl : properties.Ttl;
-            var lazy = isDlq ? properties.DlqLazy.Value : properties.Lazy.Value;
+            var lazy = isDlq ? properties.DlqLazy : properties.Lazy;
             var overflow = isDlq ? properties.DlqOverflowBehavior : properties.OverflowBehavior;
             var quorum = isDlq ? properties.DlqQuorum : properties.Quorum;
-            var singleActive = isDlq ? properties.DlqSingleActiveConsumer.Value : properties.SingleActiveConsumer.Value;
+            var singleActive = isDlq ? properties.DlqSingleActiveConsumer : properties.SingleActiveConsumer;
 
             if (expires != null)
             {
@@ -594,7 +594,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 args.Add("x-message-ttl", ttl.Value);
             }
 
-            if (lazy)
+            if (lazy.GetValueOrDefault())
             {
                 args.Add("x-queue-mode", "lazy");
             }
@@ -618,7 +618,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 }
             }
 
-            if (singleActive)
+            if (singleActive.GetValueOrDefault())
             {
                 args.Add("x-single-active-consumer", true);
             }
@@ -629,13 +629,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             try
             {
                 var builder = new RabbitConfig.ExchangeBuilder(exchangeName, properties.ExchangeType);
-                builder.Durable(properties.ExchangeDurable.Value);
-                if (properties.ExchangeAutoDelete.Value)
+                builder.Durable(properties.ExchangeDurable.GetValueOrDefault());
+                if (properties.ExchangeAutoDelete.GetValueOrDefault())
                 {
                     builder.AutoDelete();
                 }
 
-                if (properties.DelayedExchange.Value)
+                if (properties.DelayedExchange.GetValueOrDefault())
                 {
                     builder.Delayed();
                 }

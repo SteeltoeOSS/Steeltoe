@@ -1,10 +1,12 @@
 ﻿using EasyNetQ.Management.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
+using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Rabbit.Inbound;
@@ -45,24 +47,28 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static string BIG_EXCEPTION_MESSAGE = new string('x', 10_000);
         private int maxStackTraceSize;
 
-        public RabbitBinderTests(ITestOutputHelper output) : base(output)
+        public RabbitBinderTests(ITestOutputHelper output)
+            : base(output, new XunitLogger(output))
         {
         }
 
         public void Dispose()
         {
-            Cleanup(GetBinder());
+         //   Cleanup(GetBinder());
         }
-      
 
         protected override ConsumerOptions CreateConsumerOptions()
         {
-            return new ExtendedConsumerOptions<RabbitConsumerOptions>(new RabbitConsumerOptions());
+            var consumerOptions = new RabbitConsumerOptions();
+            consumerOptions.PostProcess();
+            return new ExtendedConsumerOptions<RabbitConsumerOptions>(consumerOptions);
         }
 
         protected override ProducerOptions CreateProducerOptions()
         {
-            return new ExtendedProducerOptions<RabbitProducerOptions>(new RabbitProducerOptions());
+            var producerOptions = new RabbitProducerOptions();
+            producerOptions.PostProcess();
+            return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
         }
 
         protected override RabbitTestBinder GetBinder()
@@ -73,11 +79,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 //  options.PublisherConfirms(ConfirmType.SIMPLE);
                 options.PublisherReturns = true;
                 _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions());
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), Logger);
             }
 
             return _testBinder;
         }
+
+        //protected ILogger Logger => new XunitLogger(Output);
 
         //protected RabbitTestBinder GetBinder(RabbitConsumerOptions consumerOptions)
         //{
@@ -152,12 +160,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private class TestMessageHandler : IMessageHandler
         {
-            public string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-
             public Action<IMessage> OnHandleMessage { get; set; }
+            public string ServiceName { get => "TestMessageHandler"; set => throw new NotImplementedException(); }
 
             public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
-         
         }
 
         private void Cleanup(RabbitTestBinder binder)
