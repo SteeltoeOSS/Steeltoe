@@ -26,21 +26,7 @@ namespace Steeltoe.Connector.MySql.EFCore
         ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533
         /// </remarks>
         public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, object mySqlOptionsAction = null)
-        {
-            if (optionsBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(optionsBuilder));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var connection = GetConnection(config);
-
-            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
-        }
+            => UseMySql(optionsBuilder, config, serverVersion: null, mySqlOptionsAction);
 
         /// <summary>
         /// Configure Entity Framework Core to use a MySQL database
@@ -80,26 +66,7 @@ namespace Steeltoe.Connector.MySql.EFCore
         ///   Pass in a ServerVersion to avoid the extra DB Connection - see https://github.com/PomeloFoundation/Pomelo.EntityFrameworkCore.MySql/issues/1088#issuecomment-726091533
         /// </remarks>
         public static DbContextOptionsBuilder UseMySql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object mySqlOptionsAction = null)
-        {
-            if (optionsBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(optionsBuilder));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                throw new ArgumentException(nameof(serviceName));
-            }
-
-            var connection = GetConnection(config, serviceName);
-
-            return DoUseMySql(optionsBuilder, connection, mySqlOptionsAction);
-        }
+            => UseMySql(optionsBuilder, config, serviceName, null, mySqlOptionsAction);
 
         /// <summary>
         /// Configure Entity Framework Core to use a MySQL database identified by a named service binding
