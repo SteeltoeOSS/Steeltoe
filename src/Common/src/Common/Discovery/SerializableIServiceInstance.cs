@@ -10,6 +10,14 @@ namespace Steeltoe.Common.Discovery
     [Serializable]
     public class SerializableIServiceInstance : IServiceInstance
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SerializableIServiceInstance"/> class.
+        /// For use with JsonSerializer
+        /// </summary>
+        public SerializableIServiceInstance()
+        {
+        }
+
         public SerializableIServiceInstance(IServiceInstance instance)
         {
             ServiceId = instance.ServiceId;
