@@ -78,6 +78,6 @@
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCoreVersion>5.0.0-rc.2.20475.17</AspNetCoreVersion>
+    <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
   </PropertyGroup>
 </Project>
