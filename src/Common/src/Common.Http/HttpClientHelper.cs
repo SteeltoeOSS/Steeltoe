@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -22,7 +21,7 @@ namespace Steeltoe.Common.Http
 {
     public static class HttpClientHelper
     {
-        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
