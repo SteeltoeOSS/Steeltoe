@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test
 {
-    public class DiscoveryServiceCollectionExtensionsTest
+    public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         [Fact]
         public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
@@ -359,7 +359,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
         {
             // Arrange
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             // Act
             services.AddServiceDiscovery();
@@ -750,6 +750,12 @@ namespace Steeltoe.Discovery.Client.Test
             var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
             Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
             Assert.Equal("notdefault", options.Value.Namespace);
+        }
+
+        public void Dispose()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
         internal class TestClientHandlerProvider : IHttpClientHandlerProvider

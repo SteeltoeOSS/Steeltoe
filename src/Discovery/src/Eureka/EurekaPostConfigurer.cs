@@ -28,8 +28,21 @@ namespace Steeltoe.Discovery.Eureka
         internal const string ZONE = "zone";
         internal const string UNKNOWN_ZONE = "unknown";
 
+        /// <summary>
+        /// Update <see cref="EurekaClientOptions"/> with information from the runtime environment
+        /// </summary>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s)</param>
+        /// <param name="clientOptions">Eureka client configuration (for interacting with the Eureka Server)</param>
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
         {
+            if ((Platform.IsContainerized || Platform.IsCloudHosted) &&
+                si == null &&
+                clientOptions.EurekaServerServiceUrls.Equals(EurekaClientConfig.Default_ServerServiceUrl))
+            {
+                throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.Default_ServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+            }
+
             if (clientOptions == null || si == null)
             {
                 return;
@@ -48,6 +61,12 @@ namespace Steeltoe.Discovery.Eureka
             clientOptions.ClientSecret = si.ClientSecret;
         }
 
+        /// <summary>
+        /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment
+        /// </summary>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="options">Eureka instance information (for identifying the application)</param>
+        /// <param name="instanceInfo">Information about this application instance</param>
         public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
         {
             var defaultIdEnding = ":" + EurekaInstanceOptions.Default_Appname + ":" + EurekaInstanceOptions.Default_NonSecurePort;
@@ -109,6 +128,13 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
+        /// <summary>
+        /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment
+        /// </summary>
+        /// <param name="config">Application Configuration</param>
+        /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s)</param>
+        /// <param name="instOptions">Eureka instance information (for identifying the application)</param>
+        /// <param name="appInfo">Information about this application instance</param>
         public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions, IApplicationInstanceInfo appInfo)
         {
             if (instOptions == null)
