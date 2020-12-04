@@ -3,9 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+#if NET5_0
+using MySqlConnector;
+#else
 using MySql.Data.MySqlClient;
+#endif
 using Steeltoe.CloudFoundry.Connector.EFCore.Test;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -91,6 +96,30 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
+#if NET5_0
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+#endif
+
+            var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+            Assert.NotNull(service);
+            var con = service.Database.GetDbConnection();
+            Assert.NotNull(con);
+            Assert.NotNull(con as MySqlConnection);
+        }
+
+#if NET5_0
+        // Run a MySQL server with Docker to match creds below with this command
+        // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
+        [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
+        public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
+
+            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
@@ -99,6 +128,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Assert.NotNull(con);
             Assert.NotNull(con as MySqlConnection);
         }
+#endif
 
         [Fact]
         public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
@@ -150,7 +180,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act
+#if NET5_0
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
+#endif
 
             // Assert
             var built = services.BuildServiceProvider();
@@ -183,7 +217,11 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act and Assert
+#if NET5_0
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+#else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+#endif
 
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodDbContext>();

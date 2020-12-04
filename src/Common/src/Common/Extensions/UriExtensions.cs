@@ -56,7 +56,7 @@ namespace Steeltoe.Common.Extensions
                 if (!string.IsNullOrEmpty(pair))
                 {
                     var kvp = pair.Split('=');
-                    result.Add(kvp[0], WebUtility.UrlDecode(kvp[1]));
+                    result.Add(WebUtility.UrlDecode(kvp[0]), WebUtility.UrlDecode(kvp[1]));
                 }
             }
 

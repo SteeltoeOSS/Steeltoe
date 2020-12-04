@@ -19,13 +19,24 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
-        public static string[] MySqlEntityTypeNames { get; internal set; } = new string[] { "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions" };
+        public static string[] MySqlEntityTypeNames { get; internal set; } = new string[]
+            {
+                "MySQL.Data.EntityFrameworkCore.Extensions.MySQLDbContextOptionsExtensions",
+                "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsExtensions",
+                "Microsoft.EntityFrameworkCore.MySQLDbContextOptionsExtensions",
+                "Microsoft.EntityFrameworkCore.MySqlDbContextOptionsBuilderExtensions"
+            };
 
         /// <summary>
-        /// Gets the type used to configure EntityFramework Core with MySql
+        /// Gets the type used to configure EntityFramework Core with MySQL
         /// </summary>
         /// <exception cref="ConnectorException">When type is not found</exception>
         public static Type MySqlDbContextOptionsType => ConnectorHelpers.FindTypeOrThrow(MySqlEntityAssemblies, MySqlEntityTypeNames, "DbContextOptionsBuilder", "a MySql EntityFramework Core assembly");
+
+        /// <summary>
+        /// Gets the ServerVersion base type used to identify MySQL Server versions (introduced in v5.0)
+        /// </summary>
+        public static Type MySqlVersionType => ConnectorHelpers.FindType(new[] { "Pomelo.EntityFrameworkCore.MySql" }, new[] { "Microsoft.EntityFrameworkCore.ServerVersion" });
 
         /// <summary>
         /// Gets a list of supported PostgreSQL Entity Framework Core Assemblies
@@ -35,7 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore
         /// </summary>
-        public static string[] PostgreSqlEntityTypeNames { get; internal set; } = new string[] { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions" };
+        public static string[] PostgreSqlEntityTypeNames { get; internal set; } = new string[] { "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsExtensions", "Microsoft.EntityFrameworkCore.NpgsqlDbContextOptionsBuilderExtensions" };
 
         /// <summary>
         /// Gets the type used to configure EntityFramework Core with PostgreSQL

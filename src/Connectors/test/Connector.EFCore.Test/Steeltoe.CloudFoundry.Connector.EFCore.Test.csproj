@@ -21,15 +21,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="$(EFCoreTestVersion)" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreTestVersion)" />
-
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreTestVersion)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(NpgsqlEFCoreVersion)" />
-    <PackageReference Include="Oracle.EntityFrameworkCore" Version="2.19.0-beta4" />
 
     <!--<PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlV6)" />-->
     <!--<PackageReference Include="MySql.Data.EntityFrameworkCore" Version="$(MySqlV8)" />-->
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(PomeloEFCoreVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net5.0'">
+    <!--Oracle doesn't work with EF Core 5.0 yet-->
+    <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(OracleEFCoreVersion)" />
   </ItemGroup>
 </Project>
