@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Newtonsoft.Json;
+using Steeltoe.Management.EndpointWeb.Test;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
-namespace Steeltoe.Management.EndpointWeb.Test
+namespace Steeltoe.Management.EndpointWeb.Handler.Test
 {
     public class ActuatorHandlerTest
     {
@@ -37,14 +38,26 @@ namespace Steeltoe.Management.EndpointWeb.Test
         [Fact]
         public async void CloudFoundry_ReturnsExpected()
         {
+            // arrange
             using var server = new TestServer(_defaultSettings);
             var client = server.HttpClient;
 
+            // act on standard port
             var result = await client.GetAsync("http://localhost/management", "GET");
 
             Assert.NotNull(result);
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Contains("self", result.Content);
+            Assert.Contains("http://localhost/management", result.Content);
+
+            // act again with a non-standard port
+            result = await client.GetAsync("http://localhost:5555/management", "GET");
+
+            Assert.NotNull(result);
+            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+            Assert.Contains("self", result.Content);
+            Assert.Contains("http://localhost:5555/management", result.Content);
+
         }
 
         [Fact]

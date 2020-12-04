@@ -55,6 +55,26 @@ namespace Steeltoe.Management.Endpoint.Handler
             return false;
         }
 
+        protected internal string GetRequestUri(HttpRequestBase request)
+        {
+            var scheme = request.IsSecureConnection ? "https" : "http";
+            var headerScheme = request.Headers.Get("X-Forwarded-Proto");
+
+            if (headerScheme != null)
+            {
+                scheme = headerScheme;
+            }
+
+            if ((scheme == "http" && request.Url.Port == 80) || (scheme == "https" && request.Url.Port == 443))
+            {
+                return $"{scheme}://{request.Url.Host}{request.Path}";
+            }
+            else
+            {
+                return $"{scheme}://{request.Url.Host}:{request.Url.Port}{request.Path}";
+            }
+        }
+
         protected virtual string Serialize<T>(T result)
         {
             try

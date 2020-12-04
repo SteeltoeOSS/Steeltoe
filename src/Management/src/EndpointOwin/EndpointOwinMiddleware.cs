@@ -87,6 +87,25 @@ namespace Steeltoe.Management.EndpointOwin
             return _endpoint.RequestVerbAndPathMatch(httpMethod, requestPath, _allowedMethods, _mgmtOptions, _exactRequestPathMatching);
         }
 
+        protected internal string GetRequestUri(IOwinRequest request)
+        {
+            var scheme = request.Scheme;
+
+            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
+            {
+                scheme = headerScheme.First();
+            }
+
+            if ((scheme == "http" && request.LocalPort == 80) || (scheme == "https" && request.LocalPort == 443))
+            {
+                return $"{scheme}://{request.Uri.Host}{request.PathBase}{request.Path}";
+            }
+            else
+            {
+                return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+            }
+        }
+
         protected virtual string Serialize<T>(T result)
         {
             try

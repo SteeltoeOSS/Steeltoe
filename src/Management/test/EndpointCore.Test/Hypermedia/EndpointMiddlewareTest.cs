@@ -50,8 +50,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
         }
 
-        [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        [Theory]
+        [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
+        [InlineData("http://somehost:443", "https://somehost", "https")]
+        [InlineData("http://somehost:80", "http://somehost", "http")]
+        [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
+        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -59,7 +63,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/actuator");
+            client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
+            var result = await client.GetAsync($"{requestUriString}/actuator");
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
@@ -68,9 +73,9 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 #pragma warning restore CS0618 // Type or member is obsolete
             Assert.NotNull(links);
             Assert.True(links._links.ContainsKey("self"));
-            Assert.Equal("http://localhost/actuator", links._links["self"].href);
+            Assert.Equal($"{calculatedHost}/actuator", links._links["self"].href);
             Assert.True(links._links.ContainsKey("info"));
-            Assert.Equal("http://localhost/actuator/info", links._links["info"].href);
+            Assert.Equal($"{calculatedHost}/actuator/info", links._links["info"].href);
         }
 
         [Fact]
