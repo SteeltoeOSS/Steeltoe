@@ -161,7 +161,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
 
-            // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
