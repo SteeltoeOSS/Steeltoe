@@ -233,7 +233,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
         {
             // try to pull some values out of server config to override defaults, but only if not using NetUtils
             // if NetUtils are configured, the user probably wants to define their own behavior
-            if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls)
+            if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
             {
                 // prefer https
                 var configAddress = addresses.FirstOrDefault(u => u.Scheme.Equals("https"));
