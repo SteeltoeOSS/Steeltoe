@@ -714,6 +714,30 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
+        public void AddDiscoveryClient_WithConsul_PreferPortOverUrl()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" },
+                { "Consul:Discovery:Port", "8080" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+            var reg = provider.GetService<IConsulRegistration>();
+
+            Assert.NotNull(reg);
+            Assert.NotEqual("myapp", reg.Host);
+            Assert.Equal(8080, reg.Port);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
         public void AddServiceDiscovery_WithMultipleClientTypes_NotAllowed()
         {
             var serviceCollection = new ServiceCollection();
