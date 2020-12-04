@@ -14,7 +14,7 @@ namespace Steeltoe.Discovery.Client.SimpleClients
         /// <inheritdoc/>
         public void ApplyServices(IServiceCollection services)
         {
-            services.AddSingleton<IDiscoveryClient>((services) => new NoOpDiscoveryClient(services.GetService<ILogger<NoOpDiscoveryClient>>()));
+            services.AddSingleton<IDiscoveryClient>((services) => new NoOpDiscoveryClient(services.GetRequiredService<IConfiguration>(), services.GetService<ILogger<NoOpDiscoveryClient>>()));
         }
 
         public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
