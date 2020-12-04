@@ -37,18 +37,5 @@ namespace Steeltoe.Management.Endpoint.Handler
                 context.Response.Write(Serialize(result));
             }
         }
-
-        protected internal string GetRequestUri(HttpRequestBase request)
-        {
-            var scheme = request.IsSecureConnection ? "https" : "http";
-            var headerScheme = request.Headers.Get("X-Forwarded-Proto");
-
-            if (headerScheme != null)
-            {
-                scheme = headerScheme;
-            }
-
-            return scheme + "://" + request.Url.Host + request.Path.ToString();
-        }
     }
 }

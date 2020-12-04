@@ -45,18 +45,6 @@ namespace Steeltoe.Management.EndpointOwin.CloudFoundry
             }
         }
 
-        protected internal string GetRequestUri(IOwinRequest request)
-        {
-            var scheme = request.Scheme;
-
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
-            {
-                scheme = headerScheme.First(); // .ToString()
-            }
-
-            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
-        }
-
         private bool IsCloudFoundryRequest(IOwinContext context)
         {
             var methodMatch = context.Request.Method == "GET";

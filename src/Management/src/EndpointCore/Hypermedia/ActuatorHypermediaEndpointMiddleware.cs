@@ -4,14 +4,11 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
-using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
@@ -60,7 +57,16 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 scheme = headerScheme.ToString();
             }
 
-            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+            // request.Host automatically includes or excludes the port based on whether it is standard for the scheme
+            // ... except when we manually change the scheme to match the X-Forwarded-Proto
+            if (scheme == "https" && request.Host.Port == 443)
+            {
+                return $"{scheme}://{request.Host.Host}{request.PathBase}{request.Path}";
+            }
+            else
+            {
+                return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+            }
         }
     }
 }
