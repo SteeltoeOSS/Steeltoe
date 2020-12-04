@@ -57,7 +57,6 @@ namespace Steeltoe.Management.EndpointWeb.Handler.Test
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             Assert.Contains("self", result.Content);
             Assert.Contains("http://localhost:5555/management", result.Content);
-
         }
 
         [Fact]
