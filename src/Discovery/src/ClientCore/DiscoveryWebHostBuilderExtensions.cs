@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector;
+using Steeltoe.Discovery.Client.SimpleClients;
 using System;
 using System.Reflection;
 

@@ -17,6 +17,12 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class EurekaPostConfigurerTest
     {
+        public EurekaPostConfigurerTest()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        }
+
         [Fact]
         public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()
         {
@@ -242,6 +248,18 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(2, map.Count);
             Assert.Equal("bar", map["foo"]);
             Assert.Equal("foo", map["bar"]);
+        }
+
+        [Fact]
+        public void UpdateConfigurationComplainsAboutDefaultWhenWontWork()
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
+
+            // act & assert
+            var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, null, new EurekaClientOptions()));
+            Assert.Contains(EurekaClientConfig.Default_ServerServiceUrl, exception.Message);
+            Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
         }
 
         [Fact]

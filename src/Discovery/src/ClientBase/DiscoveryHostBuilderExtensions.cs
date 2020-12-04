@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Connector;
+using Steeltoe.Discovery.Client.SimpleClients;
 using System;
 using System.Reflection;
 
