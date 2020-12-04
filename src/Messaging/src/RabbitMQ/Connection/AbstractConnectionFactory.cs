@@ -204,23 +204,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public virtual void SetAddresses(string addresses)
         {
-            if (!string.IsNullOrEmpty(addresses))
+            var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
+            if (endpoints.Length > 0)
             {
-                var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
-                if (endpoints.Length > 0)
+                Addresses = endpoints.ToList();
+                if (PublisherConnectionFactory != null)
                 {
-                    Addresses = endpoints.ToList();
-                    if (PublisherConnectionFactory != null)
-                    {
-                        AbstractPublisherConnectionFactory.SetAddresses(addresses);
-                    }
-
-                    return;
+                    AbstractPublisherConnectionFactory.SetAddresses(addresses);
                 }
             }
-
-            _logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
-            Addresses = null;
         }
 
         public abstract IConnection CreateConnection();

@@ -60,7 +60,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             var parsed = ParsedAddresses;
             if (parsed.Count == 0)
             {
-                return Host + ":" + Port;
+                return null;
             }
 
             var addressStrings = new List<string>();
