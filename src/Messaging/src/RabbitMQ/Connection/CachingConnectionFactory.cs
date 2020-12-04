@@ -551,7 +551,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             else
             {
-                _logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
+                _logger?.LogInformation("No addresses found, will be using the host+port properties for connections");
                 Addresses = null;
             }
 
