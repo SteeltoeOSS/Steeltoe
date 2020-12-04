@@ -35,7 +35,7 @@ namespace Steeltoe.Discovery.ClientBase.Test
 
             // assert
             VerifyLogEntered(logger, LogLevel.Warning, "Found configuration values for TestClient, try adding a NuGet reference that enables TestClient to work with Steeltoe Discovery");
-            foreach (var c in new List<string> { "Consul", "Eureka", "Kubernetes"})
+            foreach (var c in new List<string> { "Consul", "Eureka", "Kubernetes" })
             {
                 VerifyLogEntered(logger, LogLevel.Warning, $"Found configuration values for {c}, try adding a NuGet reference to Steeltoe.Discovery.{c}");
             }
