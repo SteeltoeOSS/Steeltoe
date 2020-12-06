@@ -48,12 +48,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddDbMigrationsActuator().Build();
             var managementEndpoint = host.Services.GetServices<DbMigrationsEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<DbMigrationsStartupFilter>(filter);
         }
 
         [Fact]
@@ -79,12 +76,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddEnvActuator().Build();
             var managementEndpoint = host.Services.GetServices<EnvEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<EnvStartupFilter>(filter);
         }
 
         [Fact]
@@ -110,12 +104,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddHealthActuator().Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
         }
 
         [Fact]
@@ -127,12 +118,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddHealthActuator(new Type[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
         }
 
         [Fact]
@@ -144,12 +132,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new Type[] { typeof(DownContributor) }).Build();
             var managementEndpoint = host.Services.GetServices<HealthEndpointCore>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
         }
 
         [Fact]
@@ -202,12 +187,9 @@ namespace Steeltoe.Management.Endpoint.Test
                 // Act
                 var host = hostBuilder.AddHeapDumpActuator().Build();
                 var managementEndpoint = host.Services.GetServices<HeapDumpEndpoint>();
-                var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
                 // Assert
                 Assert.Single(managementEndpoint);
-                Assert.NotNull(filter);
-                Assert.IsType<HeapDumpStartupFilter>(filter);
             }
         }
 
@@ -237,12 +219,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddHypermediaActuator().Build();
             var managementEndpoint = host.Services.GetServices<ActuatorEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<HypermediaStartupFilter>(filter);
         }
 
         [Fact]
@@ -268,12 +247,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddInfoActuator().Build();
             var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<InfoStartupFilter>(filter);
         }
 
         [Fact]
@@ -285,12 +261,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddInfoActuator(new IInfoContributor[] { new AppSettingsInfoContributor(new ConfigurationBuilder().Build()) }).Build();
             var managementEndpoint = host.Services.GetServices<InfoEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<InfoStartupFilter>(filter);
         }
 
         [Fact]
@@ -316,12 +289,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddLoggersActuator().Build();
             var managementEndpoint = host.Services.GetServices<LoggersEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<LoggersStartupFilter>(filter);
         }
 
         [Fact]
@@ -376,12 +346,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddMappingsActuator().Build();
             var managementEndpoint = host.Services.GetServices<IRouteMappings>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<MappingsStartupFilter>(filter);
         }
 
         [Fact]
@@ -407,12 +374,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddMetricsActuator().Build();
             var managementEndpoint = host.Services.GetServices<MetricsEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<MetricsStartupFilter>(filter);
         }
 
         [Fact]
@@ -438,12 +402,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddRefreshActuator().Build();
             var managementEndpoint = host.Services.GetServices<RefreshEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<RefreshStartupFilter>(filter);
         }
 
         [Fact]
@@ -471,12 +432,9 @@ namespace Steeltoe.Management.Endpoint.Test
                 // Act
                 var host = hostBuilder.AddThreadDumpActuator().Build();
                 var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
-                var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
                 // Assert
                 Assert.Single(managementEndpoint);
-                Assert.NotNull(filter);
-                Assert.IsType<ThreadDumpStartupFilter>(filter);
             }
         }
 
@@ -506,12 +464,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddTraceActuator().Build();
             var managementEndpoint = host.Services.GetServices<HttpTraceEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<TraceStartupFilter>(filter);
         }
 
         [Fact]
@@ -537,12 +492,9 @@ namespace Steeltoe.Management.Endpoint.Test
             // Act
             var host = hostBuilder.AddCloudFoundryActuator().Build();
             var managementEndpoint = host.Services.GetServices<CloudFoundryEndpoint>();
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             // Assert
             Assert.Single(managementEndpoint);
-            Assert.NotNull(filter);
-            Assert.IsType<CloudFoundryActuatorStartupFilter>(filter);
         }
 
         [Fact]

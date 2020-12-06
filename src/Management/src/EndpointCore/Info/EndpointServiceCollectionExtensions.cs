@@ -59,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Info
             services.TryAddSingleton<IInfoOptions>(options);
             services.RegisterEndpointOptions(options);
             AddContributors(services, contributors);
-            services.TryAddSingleton<InfoEndpoint>();
+            services.AddActuatorEndpointEntry<InfoEndpoint>();
         }
 
         private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)

@@ -119,8 +119,6 @@ namespace Steeltoe.Management.CloudFoundry.Test
             var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
             var managementOptions = host.Services.GetServices<IManagementOptions>();
 
-            var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
-
             // Assert
             Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
@@ -141,9 +139,6 @@ namespace Steeltoe.Management.CloudFoundry.Test
             {
                 Assert.Empty(host.Services.GetServices<HeapDumpEndpoint>());
             }
-
-            Assert.NotNull(filter);
-            Assert.IsType<CloudFoundryActuatorsStartupFilter>(filter);
         }
 
         [Fact]

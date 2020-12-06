@@ -75,7 +75,7 @@ namespace Steeltoe.Management.Endpoint.Health
             AddHealthContributors(services, contributors);
 
             services.TryAddSingleton(aggregator);
-            services.TryAddScoped<HealthEndpointCore>();
+            services.AddActuatorEndpointEntry<HealthEndpointCore>();
             services.TryAddSingleton<ApplicationAvailability>();
         }
 

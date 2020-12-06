@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                     return opts;
                 });
 
-            services.TryAddSingleton<ActuatorEndpoint>();
+            services.AddActuatorEndpointEntry<ActuatorEndpoint>();
         }
 
         public static void AddActuatorManagementOptions(this IServiceCollection services, IConfiguration config = null)

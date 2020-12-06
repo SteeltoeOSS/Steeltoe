@@ -38,7 +38,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddDbMigrationsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, DbMigrationsStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -52,7 +52,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddEnvActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, EnvStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -66,7 +66,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration, contributors);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -97,7 +97,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration, aggregator, contributors);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -111,7 +111,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHeapDumpActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HeapDumpStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -125,7 +125,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHypermediaActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HypermediaStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -139,7 +139,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddInfoActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, InfoStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -154,7 +154,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddInfoActuator(context.Configuration, contributors);
-                    collection.AddTransient<IStartupFilter, InfoStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -169,7 +169,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddLoggersActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, LoggersStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -183,7 +183,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddMappingsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, MappingsStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -197,7 +197,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddMetricsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, MetricsStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -211,7 +211,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddRefreshActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, RefreshStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -226,7 +226,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, ThreadDumpStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -241,7 +241,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, TraceStartupFilter>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -255,7 +255,8 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddCloudFoundryActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, CloudFoundryActuatorStartupFilter>();
+                    collection.AddActuatorEndpointEntry<CloudFoundryEndpoint>();
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -266,7 +267,7 @@ namespace Steeltoe.Management.Endpoint
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddAllActuators(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
+                    collection.AddActuatorStartupFilter(configureEndpoints);
                 });
         }
     }

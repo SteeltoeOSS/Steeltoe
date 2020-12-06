@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.AddOpenTelemetry();
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
-            services.TryAddSingleton<MetricsEndpoint>();
+            services.AddActuatorEndpointEntry<MetricsEndpoint>();
         }
 
         public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
@@ -96,16 +96,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             if (observerOptions.AspNetCoreHosting)
             {
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            }
-
-            if (observerOptions.HttpClientCore)
-            {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-            }
-
-            if (observerOptions.HttpClientDesktop)
-            {
-                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             }
 
             if (observerOptions.GCEvents)

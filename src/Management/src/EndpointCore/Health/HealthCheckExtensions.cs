@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
@@ -33,12 +32,9 @@ namespace Steeltoe.Management.Endpoint.Health
             try
             {
                 var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
-                var status = res.Status.ToHealthStatus();
-                healthCheckResult.Status = status; // Only used for aggregate doesn't get reported
+                healthCheckResult.Status = res.Status.ToHealthStatus();
                 healthCheckResult.Description = res.Description;
-                healthCheckResult.Details = new Dictionary<string, object>(res.Data);
-                healthCheckResult.Details.Add("status", status.ToString());
-                healthCheckResult.Details.Add("description", res.Description);
+                healthCheckResult.Details = res.Data?.ToDictionary(i => i.Key, i => i.Value);
 
                 if (res.Exception != null && !string.IsNullOrEmpty(res.Exception.Message))
                 {

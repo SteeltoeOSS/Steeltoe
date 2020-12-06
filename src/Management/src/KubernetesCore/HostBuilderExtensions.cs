@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Kubernetes
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddKubernetesActuators();
-                    collection.AddSingleton<IStartupFilter>(new KubernetesActuatorsStartupFilter(mediaTypeVersion));
+                    collection.AddActuatorStartupFilter();
                 });
         }
 
@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Kubernetes
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddKubernetesActuators();
-                    collection.AddSingleton<IStartupFilter>(new KubernetesActuatorsStartupFilter(mediaTypeVersion));
+                    collection.AddActuatorStartupFilter();
                 });
         }
     }

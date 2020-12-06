@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
             var options = new LoggersEndpointOptions(config);
             services.TryAddSingleton<ILoggersOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<LoggersEndpoint>();
+            services.AddActuatorEndpointEntry<LoggersEndpoint>();
         }
     }
 }

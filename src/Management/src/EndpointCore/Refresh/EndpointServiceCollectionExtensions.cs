@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             var options = new RefreshEndpointOptions(config);
             services.TryAddSingleton<IRefreshOptions>(options);
             services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<RefreshEndpoint>();
+            services.AddActuatorEndpointEntry<RefreshEndpoint>();
         }
     }
 }

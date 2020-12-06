@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -13,6 +12,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Internal;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -21,6 +21,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -57,53 +58,59 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="conventionBuilder">A convention builder that applies a convention to the whole collection. </param>
         /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
         /// <exception cref="InvalidOperationException">When T is not found in service container</exception>
+        /// <remarks>
+        /// Internally this method now calls MapAllActuators().
+        /// During a refactor, things changed. Now endpoints are mapped depending what has been registered in <see cref="IServiceCollection"/>
+        /// </remarks>
+#pragma warning disable S2326 // Unused type parameters should be removed
         public static IEndpointConventionBuilder Map<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder = null)
+#pragma warning restore S2326 // Unused type parameters should be removed
         where TEndpoint : IEndpoint
         {
-            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
+            // this function is retained to keep binary compatibilty
+            // since MapAllActuators() now maps whatever has been registered in IServiceCollection we can only rely on that.
+            // Since this method may be used by a lot of clients, we don't mark it deprecated yet since that will generate a lot of warnings.
+            return endpoints.MapAllActuators();
         }
 
-        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
+        /// <summary>
+        /// Maps all actutators that have been registered in <see cref="IServiceCollection"/>
+        /// </summary>
+        /// <param name="endpoints">The endpoint builder</param>
+        /// <param name="version">Media Version</param>
+        /// <returns>Endpoint convention builder</returns>
+        [Obsolete("Use overload that doesn't take MediaTypeVersion")]
+        [ExcludeFromCodeCoverage] // retained for binary compatibility
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version) => endpoints.MapAllActuators();
+
+        /// <summary>
+        /// Maps all actutators that have been registered in <see cref="IServiceCollection"/>
+        /// </summary>
+        /// <param name="endpoints">The endpoint builder</param>
+        /// <returns>Endpoint convention builder</returns>
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
         {
+            var endpointTracking = endpoints.ServiceProvider.GetService<EndpointTracking>();
             var conventionBuilder = new EndpointCollectionConventionBuilder();
-            endpoints.Map<ActuatorEndpoint>(conventionBuilder);
 
-            if (Platform.IsWindows)
+            foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointEntry>())
             {
-                if (version == MediaTypeVersion.V2)
+                // depending on how the client is using this library, there may be duplicate EndpointEntry instances registered
+                // we use the name to identify duplicates so that we avoid duplicate endpoints
+                if (!endpointTracking.Mapped.Contains(endpointEntry.Name))
                 {
-                    endpoints.Map<ThreadDumpEndpoint_v2>(conventionBuilder);
-                }
-                else
-                {
-                    endpoints.Map<ThreadDumpEndpoint>(conventionBuilder);
+                    endpointEntry.Setup(endpoints, conventionBuilder);
+                    endpointTracking.Mapped.Add(endpointEntry.Name);
                 }
             }
-
-            if (Platform.IsWindows || Platform.IsLinux)
-            {
-                endpoints.Map<HeapDumpEndpoint>(conventionBuilder);
-            }
-
-            endpoints.Map<EnvEndpoint>(conventionBuilder);
-            endpoints.Map<RefreshEndpoint>(conventionBuilder);
-            endpoints.Map<InfoEndpoint>(conventionBuilder);
-            endpoints.Map<HealthEndpoint>(conventionBuilder);
-            endpoints.Map<LoggersEndpoint>(conventionBuilder);
-            if (version == MediaTypeVersion.V2)
-            {
-                endpoints.Map<HttpTraceEndpoint>(conventionBuilder);
-            }
-            else
-            {
-                endpoints.Map<TraceEndpoint>(conventionBuilder);
-            }
-
-            endpoints.Map<MappingsEndpoint>(conventionBuilder);
-            endpoints.Map<MetricsEndpoint>(conventionBuilder);
-            endpoints.Map<PrometheusScraperEndpoint>(conventionBuilder);
 
             return conventionBuilder;
+        }
+
+        internal static IEndpointConventionBuilder MapInternal<TEndpoint>(this IEndpointRouteBuilder endpoints, EndpointCollectionConventionBuilder conventionBuilder = null)
+            where TEndpoint : IEndpoint
+        {
+            return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
         }
 
         internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)

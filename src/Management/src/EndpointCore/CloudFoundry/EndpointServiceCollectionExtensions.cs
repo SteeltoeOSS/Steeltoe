@@ -38,6 +38,8 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
                 return new CloudFoundryEndpoint(options, mgmtOptions);
             });
+
+            services.AddActuatorEndpointEntry<CloudFoundryEndpoint>();
         }
     }
 }

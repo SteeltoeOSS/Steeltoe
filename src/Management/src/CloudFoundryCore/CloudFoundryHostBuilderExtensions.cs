@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 
 namespace Steeltoe.Management.CloudFoundry
@@ -64,7 +65,9 @@ namespace Steeltoe.Management.CloudFoundry
         private static void ConfigureServices(IServiceCollection collection, IConfiguration configuration, MediaTypeVersion mediaTypeVersion, Action<CorsPolicyBuilder> buildCorsPolicy)
         {
             collection.AddCloudFoundryActuators(configuration, mediaTypeVersion, buildCorsPolicy);
-            collection.AddSingleton<IStartupFilter>(new CloudFoundryActuatorsStartupFilter(mediaTypeVersion));
+            collection.AddActuatorEndpointEntry<CloudFoundryEndpoint>();
+            collection.AddActuatorStartupFilter();
+            collection.AddTransient<IStartupFilter, CloudFoundryActuatorsStartupFilter>();
         }
     }
 }

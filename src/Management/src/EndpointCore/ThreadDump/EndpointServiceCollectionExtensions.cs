@@ -39,7 +39,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
             var options = new ThreadDumpEndpointOptions(config);
             if (version == MediaTypeVersion.V1)
             {
-                services.TryAddSingleton<ThreadDumpEndpoint>();
+                services.AddActuatorEndpointEntry<ThreadDumpEndpoint>();
             }
             else
             {
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                     options.Id = "threaddump";
                 }
 
-                services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+                services.AddActuatorEndpointEntry<ThreadDumpEndpoint_v2>();
             }
 
             services.TryAddSingleton<IThreadDumpOptions>(options);

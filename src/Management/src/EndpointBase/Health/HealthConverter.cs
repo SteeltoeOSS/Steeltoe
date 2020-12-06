@@ -30,6 +30,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 {
                     writer.WritePropertyName("details");
                     writer.WriteStartObject();
+
                     foreach (var detail in health.Details)
                     {
                         writer.WritePropertyName(detail.Key);
