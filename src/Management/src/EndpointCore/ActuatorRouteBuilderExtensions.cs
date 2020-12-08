@@ -4,8 +4,8 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
@@ -13,6 +13,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.HeapDump;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
+using Steeltoe.Management.Endpoint.Internal;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Mappings;
 using Steeltoe.Management.Endpoint.Metrics;
@@ -21,6 +22,7 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -63,45 +65,30 @@ namespace Steeltoe.Management.Endpoint
             return MapActuatorEndpoint(endpoints, typeof(TEndpoint), conventionBuilder);
         }
 
+        /// <summary>
+        /// Maps all actutators that have been registered in <see cref="IServiceCollection"/>
+        /// </summary>
+        /// <param name="endpoints">The endpoint builder</param>
+        /// <param name="version">Media Version</param>
+        /// <returns>Endpoint convention builder</returns>
+#pragma warning disable IDE0060 // Remove unused parameter
         public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
+#pragma warning restore IDE0060 // Remove unused parameter
         {
             var conventionBuilder = new EndpointCollectionConventionBuilder();
-            endpoints.Map<ActuatorEndpoint>(conventionBuilder);
 
-            if (Platform.IsWindows)
+            foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
             {
-                if (version == MediaTypeVersion.V2)
-                {
-                    endpoints.Map<ThreadDumpEndpoint_v2>(conventionBuilder);
-                }
-                else
-                {
-                    endpoints.Map<ThreadDumpEndpoint>(conventionBuilder);
-                }
-            }
+                // Some actuators only work on some platforms. i.e. Windows and Linux
+                // Some actuators have different implemenation depending on the MediaTypeVersion
 
-            if (Platform.IsWindows || Platform.IsLinux)
-            {
-                endpoints.Map<HeapDumpEndpoint>(conventionBuilder);
-            }
+                // Previously those checks where performed here and when adding things to the IServiceCollection
+                // Now all that logic is handled in the IServiceCollection setup; no need to keep code in two different places in sync
 
-            endpoints.Map<EnvEndpoint>(conventionBuilder);
-            endpoints.Map<RefreshEndpoint>(conventionBuilder);
-            endpoints.Map<InfoEndpoint>(conventionBuilder);
-            endpoints.Map<HealthEndpoint>(conventionBuilder);
-            endpoints.Map<LoggersEndpoint>(conventionBuilder);
-            if (version == MediaTypeVersion.V2)
-            {
-                endpoints.Map<HttpTraceEndpoint>(conventionBuilder);
+                // This function just takes what has been registered, and sets up the endpoints
+                // This keeps this method flexible; new actuators that are added later should automatically become available
+                endpointEntry.Setup(endpoints, conventionBuilder);
             }
-            else
-            {
-                endpoints.Map<TraceEndpoint>(conventionBuilder);
-            }
-
-            endpoints.Map<MappingsEndpoint>(conventionBuilder);
-            endpoints.Map<MetricsEndpoint>(conventionBuilder);
-            endpoints.Map<PrometheusScraperEndpoint>(conventionBuilder);
 
             return conventionBuilder;
         }
@@ -128,12 +115,18 @@ namespace Steeltoe.Management.Endpoint
 
                 var fullPath = options.GetContextPath(mgmtOptions);
 
-                var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware(middleware, mgmtOptions)
-                    .Build();
-                var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
+                var pattern = RoutePatternFactory.Parse(fullPath);
 
-                builder.AddConventionBuilder(endpoints.MapMethods(fullPath, allowedVerbs, pipeline));
+                // only add middleware if the route hasn't already been mapped
+                if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ((RouteEndpoint)ep).RoutePattern.RawText == pattern.RawText)))
+                {
+                    var pipeline = endpoints.CreateApplicationBuilder()
+                        .UseMiddleware(middleware, mgmtOptions)
+                        .Build();
+                    var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
+
+                    builder.AddConventionBuilder(endpoints.MapMethods(fullPath, allowedVerbs, pipeline));
+                }
             }
 
             return builder;

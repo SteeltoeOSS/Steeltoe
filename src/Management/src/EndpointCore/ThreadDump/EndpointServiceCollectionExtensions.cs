@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
@@ -35,25 +36,37 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.AddActuatorManagementOptions(config);
-            var options = new ThreadDumpEndpointOptions(config);
-            if (version == MediaTypeVersion.V1)
+            if (IsThreadDumpSupported())
             {
-                services.TryAddSingleton<ThreadDumpEndpoint>();
-            }
-            else
-            {
-                if (options.Id == "dump")
+                services.AddActuatorManagementOptions(config);
+                var options = new ThreadDumpEndpointOptions(config);
+                if (version == MediaTypeVersion.V1)
                 {
-                    options.Id = "threaddump";
+                    services.TryAddSingleton<ThreadDumpEndpoint>();
+                    services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
+                }
+                else
+                {
+                    if (options.Id == "dump")
+                    {
+                        options.Id = "threaddump";
+                    }
+
+                    services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+                    services.AddActuatorEndpointMapping<ThreadDumpEndpoint_v2>();
                 }
 
-                services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+                services.TryAddSingleton<IThreadDumpOptions>(options);
+                services.RegisterEndpointOptions(options);
+                services.TryAddSingleton<IThreadDumper, ThreadDumper>();
             }
+        }
 
-            services.TryAddSingleton<IThreadDumpOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<IThreadDumper, ThreadDumper>();
+        private static bool IsThreadDumpSupported()
+        {
+            return
+                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
+                RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         }
     }
 }
