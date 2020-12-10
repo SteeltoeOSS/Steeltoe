@@ -738,10 +738,10 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddServiceDiscovery_WithMultipleClientTypes_NotAllowed()
+        public void AddServiceDiscovery_WithMultipleConfiguredClients_NotAllowed()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "consul:discovery:cachettl", "1" }, { "eureka:client:cachettl", "1" } }).Build());
 
             // act
             var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
@@ -750,7 +750,41 @@ namespace Steeltoe.Discovery.Client.Test
                     builder.UseEureka();
                 }));
 
-            Assert.Contains("Multiple IDiscoveryClient implementations have been configured", exception.Message);
+            Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        }
+
+        [Fact]
+        public void AddServiceDiscovery_WithMultipleNotConfiguredClients_NotAllowed()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+
+            // act
+            var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
+            {
+                builder.UseConsul();
+                builder.UseEureka();
+            }));
+
+            Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        }
+
+        [Fact]
+        public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "eureka:client:cachettl", "1" } }).Build());
+
+            // act
+            var provider = serviceCollection.AddServiceDiscovery(builder =>
+            {
+                builder.UseConsul();
+                builder.UseEureka();
+            }).BuildServiceProvider();
+
+            // assert
+            var service = provider.GetService<IDiscoveryClient>();
+            Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
         }
 
         [Fact]
