@@ -54,11 +54,25 @@ namespace Steeltoe.Common.Hosting
             var urls = new List<string>();
 
             var portStr = Environment.GetEnvironmentVariable("PORT") ?? Environment.GetEnvironmentVariable("SERVER_PORT");
+            var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
             if (!string.IsNullOrWhiteSpace(portStr))
             {
                 if (int.TryParse(portStr, out var port))
                 {
                     urls.Add($"http://*:{port}");
+                }
+                else if (portStr.Contains(";"))
+                {
+                    if (!string.IsNullOrEmpty(aspnetUrls))
+                    {
+                        urls.AddRange(aspnetUrls.Split(';'));
+                    }
+                    else
+                    {
+                        var ports = portStr.Split(';');
+                        urls.Add($"http://*:{ports[0]}");
+                        urls.Add($"https://*:{ports[1]}");
+                    }
                 }
             }
             else
