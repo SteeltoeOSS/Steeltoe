@@ -47,7 +47,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 }
             };
             var json = Serialize(health);
-            Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}", json);
+            Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"details\":{\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}}", json);
         }
 
         private string Serialize(HealthCheckResult result)

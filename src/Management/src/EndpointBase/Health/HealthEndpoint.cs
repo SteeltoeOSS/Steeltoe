@@ -13,6 +13,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
+    // Note: this is not used by EndpointCore (ASP.NET Core apps) -- see also HealthEndpointCore.cs
     public class HealthEndpoint : AbstractEndpoint<HealthCheckResult, ISecurityContext>
     {
         private readonly IHealthAggregator _aggregator;
@@ -22,11 +23,6 @@ namespace Steeltoe.Management.Endpoint.Health
         public HealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
            : base(options)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
             if (contributors == null)
             {
                 throw new ArgumentNullException(nameof(contributors));
@@ -37,18 +33,9 @@ namespace Steeltoe.Management.Endpoint.Health
             _logger = logger;
         }
 
-        public new IHealthOptions Options
-        {
-            get
-            {
-                return options as IHealthOptions;
-            }
-        }
+        public new IHealthOptions Options => options as IHealthOptions;
 
-        public override HealthCheckResult Invoke(ISecurityContext securityContext)
-        {
-            return BuildHealth(_aggregator, _contributors, securityContext);
-        }
+        public override HealthCheckResult Invoke(ISecurityContext securityContext) => BuildHealth(_aggregator, _contributors, securityContext);
 
         public int GetStatusCode(HealthCheckResult health)
         {
