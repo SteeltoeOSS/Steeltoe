@@ -5,6 +5,7 @@
 using Newtonsoft.Json;
 using Steeltoe.Common.HealthChecks;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -33,10 +34,17 @@ namespace Steeltoe.Management.Endpoint.Health
                     writer.WriteValue(health.Description);
                 }
 
-                foreach (var detail in health.Details)
+                if (health.Details.Any())
                 {
-                    writer.WritePropertyName(detail.Key);
-                    serializer.Serialize(writer, detail.Value);
+                    writer.WritePropertyName("details");
+                    writer.WriteStartObject();
+                    foreach (var detail in health.Details)
+                    {
+                        writer.WritePropertyName(detail.Key);
+                        serializer.Serialize(writer, detail.Value);
+                    }
+
+                    writer.WriteEndObject();
                 }
             }
 
