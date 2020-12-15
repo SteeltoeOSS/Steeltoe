@@ -1,9 +1,12 @@
-﻿using System;
+﻿
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {
@@ -12,15 +15,17 @@ namespace Steeltoe.Stream.Binder.Rabbit
     {
         private TcpListener _listener = null;
         private volatile bool _run = true;
+        private readonly ILogger logger;
 
-        public RabbitProxy()
+        public RabbitProxy(ILogger logger)
         {
+            _listener = new TcpListener(IPAddress.Loopback, 0);
+            _listener.Start();
+            this.logger = logger;
         }
 
         public void Start()
         {
-            _listener = new TcpListener(IPAddress.Loopback, 0);
-            _listener.Start();
             var listenerThread = new Thread(new ParameterizedThreadStart(StartListener));
             listenerThread.Start();
         }
@@ -42,16 +47,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 while (_run)
                 {
-                    Console.WriteLine("Waiting for a connection...");
+                    logger.LogInformation("Waiting for a connection...");
                     TcpClient client = _listener.AcceptTcpClient();
-                    Console.WriteLine("Connected!");
+                    logger.LogInformation("Connected to client!");
                     Thread t = new Thread(new ParameterizedThreadStart(HandleConnection));
                     t.Start(client);
                 }
             }
             catch (SocketException e)
             {
-                Console.WriteLine("SocketException: {0}", e);
+                logger.LogInformation("SocketException: {0}", e);
                 _listener.Stop();
             }
         }
@@ -61,18 +66,55 @@ namespace Steeltoe.Stream.Binder.Rabbit
             TcpClient client = (TcpClient)obj;
             var stream = client.GetStream();
 
-            byte[] bytes = new byte[256];
+            var rabbitClient = new TcpClient();
+            rabbitClient.Connect("localhost", 5672);
+            var rabbitStream = rabbitClient.GetStream();
+
+            byte[] bytes = new byte[1];
+            var serverBytes = new byte[1];
             try
             {
-                while (stream.Read(bytes, 0, bytes.Length) != 0)
+                int totalServerBytes = 0;
+                int totalClientBytes = 0;
+
+                var t = Task.Run(() =>
                 {
-                    stream.Write(bytes, 0, bytes.Length);
+                    while (rabbitStream.CanRead)
+                    {
+                        try
+                        {
+                            var serverBytesRead = rabbitStream.Read(serverBytes, 0, serverBytes.Length);
+                            totalServerBytes += serverBytesRead;
+
+                            if (serverBytesRead != 0 && stream.CanWrite)
+                            {
+                                stream.Write(serverBytes, 0, serverBytes.Length);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            logger?.LogInformation(ex.Message + ex.StackTrace);
+                        }
+                    }
+                });
+
+                while (stream.CanRead)
+                {
+                    var clientBytesRead = stream.Read(bytes, 0, bytes.Length);
+                    totalClientBytes += clientBytesRead;
+                    if (clientBytesRead != 0 && rabbitStream.CanWrite)
+                    {
+                        rabbitStream.Write(bytes, 0, bytes.Length);
+                    }
                 }
+
+                t.Wait();
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: {0}", e.ToString());
+                logger.LogInformation("Exception: {0}", e.ToString());
                 client.Close();
+                rabbitClient.Close();
             }
         }
     }

@@ -26,10 +26,15 @@ namespace Steeltoe.Stream.TestBinder
     {
         private readonly ILogger _logger;
 
-        public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger logger)
+        public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger<TestChannelBinder> logger)
             : base(context, new string[] { }, provisioningProvider, logger)
         {
             _logger = logger;
+            _logger.LogInformation("info");
+            _logger.LogDebug("debug");
+            _logger.LogWarning("warning");
+            _logger.LogTrace("trace");
+            _logger.LogCritical("critical");
         }
 
         public IMessage LastError { get; private set; }

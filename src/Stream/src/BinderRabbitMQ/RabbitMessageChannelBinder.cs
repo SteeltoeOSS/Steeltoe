@@ -391,34 +391,34 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private void CheckConnectionFactoryIsErrorCapable()
         {
-            // if (!(ConnectionFactory is CachingConnectionFactory))
-            // {
-            //    logger.warn(
-            //            "Unknown connection factory type, cannot determine error capabilities: "
-            //                    + ConnectionFactory.GetType());
-            // }
-            // else
-            // {
-            //    CachingConnectionFactory ccf = (CachingConnectionFactory)ConnectionFactory;
-            //    if (!ccf.IsPublisherConfirms && !ccf.IsPublisherReturns)
-            //    {
-            //        logger.warn(
-            //                "Producer error channel is enabled, but the connection factory is not configured for "
-            //                        + "returns or confirms; the error channel will receive no messages");
-            //    }
-            //    else if (!ccf.IsPublisherConfirms)
-            //    {
-            //        logger.info(
-            //                "Producer error channel is enabled, but the connection factory is only configured to "
-            //                        + "handle returned messages; negative acks will not be reported");
-            //    }
-            //    else if (!ccf.IsPublisherReturns)
-            //    {
-            //        logger.info(
-            //                "Producer error channel is enabled, but the connection factory is only configured to "
-            //                        + "handle negatively acked messages; returned messages will not be reported");
-            //    }
-            // }
+            if (!(ConnectionFactory is CachingConnectionFactory))
+            {
+                _logger.LogWarning(
+                        "Unknown connection factory type, cannot determine error capabilities: "
+                                + ConnectionFactory.GetType());
+            }
+            else
+            {
+                CachingConnectionFactory ccf = (CachingConnectionFactory)ConnectionFactory;
+                if (!ccf.IsPublisherConfirms && !ccf.IsPublisherReturns)
+                {
+                    _logger.LogWarning(
+                            "Producer error channel is enabled, but the connection factory is not configured for "
+                                    + "returns or confirms; the error channel will receive no messages");
+                }
+                else if (!ccf.IsPublisherConfirms)
+                {
+                    _logger.LogInformation(
+                            "Producer error channel is enabled, but the connection factory is only configured to "
+                                    + "handle returned messages; negative acks will not be reported");
+                }
+                else if (!ccf.IsPublisherReturns)
+                {
+                    _logger.LogInformation(
+                            "Producer error channel is enabled, but the connection factory is only configured to "
+                                    + "handle negatively acked messages; returned messages will not be reported");
+                }
+            }
         }
 
         private IExpression BuildPartitionRoutingExpression(string expressionRoot, bool rootIsExpression)
@@ -567,14 +567,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public void HandleMessage(IMessage message)
             {
                 // Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
-                var errorMessage = message as MessagingSupport.ErrorMessage;
+                //var errorMessage = message as MessagingSupport.ErrorMessage;
+                var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
                 if (errorMessage == null)
                 {
                     // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
                     return;
                 }
 
-                var cause = errorMessage.Payload as Exception;
+                var cause = message.Payload as Exception;
                 if (!ShouldRepublish(cause))
                 {
                     // logger.debug("Skipping republish of: " + message);
@@ -608,7 +609,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     accessor.DeliveryMode = _properties.RepublishDeliveryMode.Value;
                 }
 
-                _template.Send(_exchange, _routingKey != null ? _routingKey : accessor.ConsumerQueue, message);
+                _template.Send(_exchange, _routingKey != null ? _routingKey : accessor.ConsumerQueue, errorMessage);
             }
 
             private bool ShouldRepublish(Exception exception)

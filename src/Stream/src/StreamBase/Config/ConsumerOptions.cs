@@ -166,7 +166,6 @@ namespace Steeltoe.Stream.Config
             {
                 AutoStartup = (@default != null) ? @default.AutoStartup : AutoStartup_Default;
             }
-            
         }
     }
 }

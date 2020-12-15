@@ -7,7 +7,7 @@
     <AssemblyName>Steeltoe.Messaging.RabbitMQ</AssemblyName>
     <PackageId>Steeltoe.Messaging.RabbitMQ</PackageId>
     <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
-    <!--<RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>-->
+    <RunAnalyzersDuringLiveAnalysis>false</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />

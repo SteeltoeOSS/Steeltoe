@@ -50,7 +50,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             _logger = logger;
             ApplicationContext = applicationContext;
             ConnectionFactory = connectionFactory;
-            RabbitTemplate = new RabbitTemplate(connectionFactory);
+            RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
             DoInitialize();
         }
 
@@ -353,7 +353,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     RetryTemplate.Execute(
                         c =>
                         {
-                            _logger.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
+                            _logger?.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
                             Initialize();
                         });
                 }

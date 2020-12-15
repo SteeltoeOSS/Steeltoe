@@ -160,7 +160,7 @@ namespace Steeltoe.Common.Retry
                             return result;
                         }, (ex, context) =>
                         {
-                            _logger.LogError(ex.Exception, $"Context: {context}");
+                            _logger?.LogError(ex.Exception, $"Context: {context}");
                             // throw ex.Exception; throwing here doesn't allow the fall back to work. 
                         });
 
