@@ -15,13 +15,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
     {
         private TcpListener _listener = null;
         private volatile bool _run = true;
-        private readonly ILogger logger;
+        private readonly ILogger<RabbitProxy> _logger;
 
-        public RabbitProxy(ILogger logger)
+        public RabbitProxy(ILogger<RabbitProxy> logger)
         {
             _listener = new TcpListener(IPAddress.Loopback, 0);
             _listener.Start();
-            this.logger = logger;
+            _logger = logger;
         }
 
         public void Start()
@@ -47,16 +47,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 while (_run)
                 {
-                    logger.LogInformation("Waiting for a connection...");
+                    _logger.LogInformation("Waiting for a connection...");
                     TcpClient client = _listener.AcceptTcpClient();
-                    logger.LogInformation("Connected to client!");
+                    _logger.LogInformation("Connected to client!");
                     Thread t = new Thread(new ParameterizedThreadStart(HandleConnection));
                     t.Start(client);
                 }
             }
             catch (SocketException e)
             {
-                logger.LogInformation("SocketException: {0}", e);
+                _logger.LogInformation("SocketException: {0}", e);
                 _listener.Stop();
             }
         }
@@ -93,7 +93,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                         }
                         catch (Exception ex)
                         {
-                            logger?.LogInformation(ex.Message + ex.StackTrace);
+                            _logger?.LogInformation(ex.Message + ex.StackTrace);
                         }
                     }
                 });
@@ -112,7 +112,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
             catch (Exception e)
             {
-                logger.LogInformation("Exception: {0}", e.ToString());
+                _logger.LogInformation("Exception: {0}", e.ToString());
                 client.Close();
                 rabbitClient.Close();
             }

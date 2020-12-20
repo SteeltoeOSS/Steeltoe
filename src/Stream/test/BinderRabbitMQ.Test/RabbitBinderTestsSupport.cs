@@ -48,7 +48,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private int maxStackTraceSize;
 
         public RabbitBinderTests(ITestOutputHelper output)
-            : base(output, new XunitLogger(output))
+            : base(output, new XunitLoggerFactory(output))
         {
         }
 
@@ -79,7 +79,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 //  options.PublisherConfirms(ConfirmType.SIMPLE);
                 options.PublisherReturns = true;
                 _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), Logger);
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory.CreateLogger<RabbitTestBinder>());
             }
 
             return _testBinder;

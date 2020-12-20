@@ -1,7 +1,6 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
-
 namespace Steeltoe.Stream.Binder
 {
     /// <summary>
@@ -15,7 +14,12 @@ namespace Steeltoe.Stream.Binder
     ///  A binder that supports pollable message sources.
     /// </summary>
     /// <typeparam name="H">the polled consumer handler type</typeparam>
-    public interface IPollableConsumerBinder<H> : IBinder<IPollableSource<H>>, IPollableConsumerBinder
+    public interface IPollableConsumerBinder<H, C> //: IBinder<IPollableSource<H>>, IPollableConsumerBinder
+        where C : Config.IConsumerOptions
     {
+        IBinding BindPollableConsumer(string name, string group, IPollableSource<H> inboundBindTarget, C consumerOptions)
+        {
+            throw new System.NotSupportedException();
+        }
     }
 }

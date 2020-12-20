@@ -22,11 +22,9 @@ namespace Steeltoe.Stream.Binder
     {
         protected static ExpressionParser expressionParser = new ExpressionParser();
 
-        protected PartitionCapableBinderTests(ITestOutputHelper output, ILogger logger)
-            : base(output, logger)
+        protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
+            : base(output, loggerFactory)
         {
-
-            //oducerOptions.PartitionKeyExpression = ??
         }
 
         [Fact]

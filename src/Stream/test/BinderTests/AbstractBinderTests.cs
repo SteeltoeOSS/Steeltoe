@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Binder
         where B : AbstractTestBinder<T>
         where T : AbstractBinder<IMessageChannel>
     {
-        public ILogger Logger { get; }
+        public ILoggerFactory LoggerFactory { get; }
      
         protected virtual ISmartMessageConverter MessageConverter { get; set; }
 
@@ -35,30 +35,25 @@ namespace Steeltoe.Stream.Binder
 
         protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
 
-        public AbstractBinderTests(ITestOutputHelper output, ILogger logger)
+        public AbstractBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
         {
             MessageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
-            Output = output;
-            Logger = logger;
+            LoggerFactory = loggerFactory;
             Services = new ServiceCollection();
             ConfigBuilder = new ConfigurationBuilder();
         }
 
-        public void Cleanup()
-        {
-            //if(this .TestClean)
-        }
 
         protected BindingOptions CreateConsumerBindingOptions(ConsumerOptions consumerOptions)
         {
-            var bindingOptions = new BindingOptions();
+            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() }; 
             bindingOptions.Consumer = consumerOptions;
             return bindingOptions;
         }
 
         protected BindingOptions CreateProducerBindingOptions(ProducerOptions producerOptions)
         {
-            var bindingOptions = new BindingOptions();
+            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
             bindingOptions.Producer = producerOptions;
             return bindingOptions;
         }
@@ -83,7 +78,6 @@ namespace Steeltoe.Stream.Binder
             long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var receive = channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
             long elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
-            Output.WriteLine("receive() took " + (elapsed / 1000) + " seconds");
             return receive;
         }
 
@@ -97,7 +91,7 @@ namespace Steeltoe.Stream.Binder
         protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)
         {
             var messageConverterConfigurer = CreateConverterConfigurer(channelName, bindingProperties);
-            var channel = new DirectChannel(Logger);
+            var channel = new DirectChannel(LoggerFactory.CreateLogger<DirectChannel>());
             channel.ServiceName = channelName;
             if (inputChannel)
             {

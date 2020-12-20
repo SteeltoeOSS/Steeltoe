@@ -47,7 +47,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //var serviceProvider = serviceCollection.BuildServiceProvider();
             //var applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
             //binder.setApplicationContext do we need this?
-            
+
             PollableConsumerBinder = binder;
             _rabbitAdmin = new RabbitAdmin(connectionFactory, logger);
 
@@ -64,6 +64,33 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             CaptureConsumerResources(name, group, consumerOptions);
             return BindConsumer(name, group, inboundBindTarget, consumerOptions);
+        }
+
+        public override IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
+        {
+            var properties = producerOptions as ExtendedProducerOptions<RabbitProducerOptions>;
+            _queues.Add(properties.Extension.Prefix + name + ".default");
+            _exchanges.Add(properties.Extension.Prefix + name);
+
+            if (properties.RequiredGroups != null)
+            {
+                foreach (var group in properties.RequiredGroups)
+                {
+                    if (properties.Extension.QueueNameGroupOnly == true)
+                    {
+                        _queues.Add(properties.Extension.Prefix + group);
+                    }
+                    else
+                    {
+                        _queues.Add(properties.Extension.Prefix + name + "." + group);
+                    }
+                }
+            }
+
+            _prefixes.Add(properties.Extension.Prefix);
+            DeadLetters(properties.Extension);
+
+            return base.BindProducer(name, outboundTarget, properties);
         }
 
         public override void Cleanup()

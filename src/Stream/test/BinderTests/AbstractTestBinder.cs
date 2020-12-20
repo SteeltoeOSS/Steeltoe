@@ -56,13 +56,13 @@ namespace Steeltoe.Stream.Binder
             return this.BindConsumer(name, group, (object)inboundTarget, consumerOptions);
         }
 
-        public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+        public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
         {
             _queues.Add(name);
             return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
-        public IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
+        public virtual IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
             return this.BindProducer(name, (object)outboundTarget, producerOptions);
         }
