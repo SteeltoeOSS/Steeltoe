@@ -34,9 +34,9 @@ namespace Steeltoe.Common.Expression
 
         object GetValue(IEvaluationContext context, Type desiredResultType);
 
-        object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType);
-
         T GetValue<T>(IEvaluationContext context);
+
+        object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType);
 
         T GetValue<T>(IEvaluationContext context, object rootObject);
 
@@ -54,10 +54,10 @@ namespace Steeltoe.Common.Expression
 
         bool IsWritable(IEvaluationContext context, object rootObject);
 
-        bool SetValue(object rootObject, object value);
+        void SetValue(object rootObject, object value);
 
-        bool SetValue(IEvaluationContext context, object value);
+        void SetValue(IEvaluationContext context, object value);
 
-        bool SetValue(IEvaluationContext context, object rootObject, object value);
+        void SetValue(IEvaluationContext context, object rootObject, object value);
     }
 }
