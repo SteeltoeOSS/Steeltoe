@@ -8,12 +8,12 @@ using System;
 
 namespace Steeltoe.Stream.Binder
 {
-    public class AbstractPollableConsumerTestBinder<C> : AbstractTestBinder<C>, IPollableConsumerBinder<IMessageHandler, IConsumerOptions>
+    public class AbstractPollableConsumerTestBinder<C> : AbstractTestBinder<C>, IPollableConsumerBinder<IMessageHandler>
         where C : AbstractBinder<IMessageChannel>
     {
-       private IPollableConsumerBinder<IMessageHandler, IConsumerOptions> _binder;
+       private IPollableConsumerBinder<IMessageHandler> _binder;
 
-        public IPollableConsumerBinder<IMessageHandler, IConsumerOptions> PollableConsumerBinder
+       public IPollableConsumerBinder<IMessageHandler> PollableConsumerBinder
         {
             get => _binder;
             set
@@ -23,15 +23,16 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        public IBinding BindPollableConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
+
+        public IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
         {
-            return _binder.BindPollableConsumer(name, group, inboundTarget, consumerOptions);
+            return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
-        //public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
+        {
+            throw new NotImplementedException();
+        }
 
         public override void Cleanup()
         {

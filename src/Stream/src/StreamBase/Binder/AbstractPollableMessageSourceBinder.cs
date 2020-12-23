@@ -15,7 +15,7 @@ using System;
 
 namespace Steeltoe.Stream.Binder
 {
-    public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChannelBinder, IPollableConsumerBinder<IMessageHandler, IConsumerOptions>
+    public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChannelBinder, IPollableConsumerBinder<IMessageHandler>
     {
         protected AbstractPollableMessageSourceBinder(
             IApplicationContext context,

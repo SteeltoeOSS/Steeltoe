@@ -76,7 +76,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             if (_testBinder == null)
             {
                 var options = new RabbitOptions();
-                //  options.PublisherConfirms(ConfirmType.SIMPLE);
                 options.PublisherReturns = true;
                 _cachingConnectionFactory = GetResource();
                 _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory.CreateLogger<RabbitTestBinder>());
@@ -139,7 +138,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private Exception BigCause(Exception innerException = null)
         {
-         //   Exception innerException = null;
             try
             {
                 var capturedException = innerException ?? new Exception(BIG_EXCEPTION_MESSAGE);
@@ -211,19 +209,5 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        //public class TestPartitionSelectorClass : IPartitionSelectorStrategy
-        //{
-        //    public TestPartitionSelectorClass(string serviceName)
-        //    {
-        //        ServiceName = serviceName;
-        //    }
-
-        //    public string ServiceName { get; set; }
-
-        //    public int SelectPartition(object key, int partitionCount)
-        //    {
-        //        return (int)key;
-        //    }
-        //}
     }
 }

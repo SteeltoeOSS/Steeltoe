@@ -14,12 +14,12 @@ namespace Steeltoe.Stream.Binder
     ///  A binder that supports pollable message sources.
     /// </summary>
     /// <typeparam name="H">the polled consumer handler type</typeparam>
-    public interface IPollableConsumerBinder<H, C> //: IBinder<IPollableSource<H>>, IPollableConsumerBinder
-        where C : Config.IConsumerOptions
+    public interface IPollableConsumerBinder<H> : IBinder<IPollableSource<H>>, IPollableConsumerBinder
+      //  where C : Config.IConsumerOptions
     {
-        IBinding BindPollableConsumer(string name, string group, IPollableSource<H> inboundBindTarget, C consumerOptions)
-        {
-            throw new System.NotSupportedException();
-        }
+        //IBinding BindPollableConsumer(string name, string group, IPollableSource<H> inboundBindTarget, C consumerOptions)
+        //{
+        //    throw new System.NotSupportedException();
+        //}
     }
 }

@@ -58,16 +58,6 @@ namespace Steeltoe.Stream.Binder
             return bindingOptions;
         }
 
-        [Fact]
-        public void TestClean()
-        {
-            var binder = GetBinder();
-            var foo0ProducerBinding = binder.BindProducer(
-                string.Format("foo{0}", GetDestinationNameDelimiter()),
-                CreateBindableChannel("output", new BindingOptions()),
-                CreateProducerOptions());
-        }
-
         protected IMessage Receive(IPollableChannel channel)
         {
             return Receive(channel, 1);

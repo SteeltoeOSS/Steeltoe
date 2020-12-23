@@ -334,7 +334,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected override IMessageHandler GetErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+            var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
             if (properties.RepublishToDlq.Value)
             {
                 return new RepublishToDlqErrorMessageHandler(this, properties);

@@ -851,7 +851,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Thread.Sleep(100);
             }
 
-            Assert.InRange(n, 0, 101);
+            Assert.InRange(n, 0, 99);
 
             template.ConvertAndSend(string.Empty, TEST_PREFIX + "dlqtest2.default", "bar");
 
@@ -868,7 +868,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Thread.Sleep(100);
             }
 
-            Assert.InRange(n, 0, 101);
+            Assert.InRange(n, 0, 99);
             consumerBinding.Unbind();
 
             var provider = GetPropertyValue<RabbitExchangeQueueProvisioner>(binder.Binder, "ProvisioningProvider");
@@ -965,6 +965,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             properties.MaxAttempts = 1; // disable retry
             properties.Partitioned = true;
             properties.InstanceIndex = 0;
+
             DirectChannel input0 = CreateBindableChannel("input", CreateConsumerBindingOptions(properties));
             input0.ComponentName = "test.input0DLQ";
             var input0Binding = binder.BindConsumer("partDLQ.0", "dlqPartGrp", input0, properties);
@@ -1342,6 +1343,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         /*
          * Test late binding due to broker down; queues with and without DLQs, and partitioned
          * queues.
+         * Appears a bit flaky. 
          */
         [Fact]
         public void TestLateBinding()
@@ -1411,7 +1413,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
 
-            var message = moduleInputChannel.Receive(10000);
+            var message = moduleInputChannel.Receive(20000);
             Assert.NotNull(message);
             Assert.NotNull(message.Payload);
 
@@ -1959,7 +1961,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             outputBinding.Unbind();
         }
 
-        //TODO: Replace wuth extension method
+        //TODO: Replace with extension method
         private void RegisterGlobalErrorChannel(RabbitTestBinder binder)
         {
             var appcontext = binder.ApplicationContext;

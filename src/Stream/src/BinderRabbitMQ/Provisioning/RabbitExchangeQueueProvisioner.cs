@@ -159,7 +159,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
         {
-            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+            var consumerProperties = // Options.GetRabbitConsumerOptions(options.BindingName);
+                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
             IConsumerDestination consumerDestination;
             if (!options.Multiplex)
             {
@@ -288,7 +289,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             bool partitioned,
             RabbitConfig.Queue queue)
         {
-            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+            var consumerProperties = // Options.GetRabbitConsumerOptions(options.BindingName);
+                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
             if (partitioned)
             {
                 return PartitionedBinding(name, exchange, queue, routingKey, consumerProperties, options.InstanceIndex);
