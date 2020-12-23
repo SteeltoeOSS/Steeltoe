@@ -5,7 +5,8 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Spring.Standard;
+using Steeltoe.Common.Expression.Spring.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;
@@ -20,7 +21,7 @@ namespace Steeltoe.Integration.Util
 
         private IIntegrationServices _integrationServices;
 
-        public IExpressionParser ExpressionParser { get; } = new ExpressionParser();
+        public IExpressionParser ExpressionParser { get; } = new SpelExpressionParser();
 
         public IEvaluationContext EvaluationContext
         {
@@ -98,7 +99,7 @@ namespace Steeltoe.Integration.Util
                     _evaluationContext = new StandardEvaluationContext(ApplicationContext);
                 }
 
-                _evaluationContext.TypeConverter = TypeConverter;
+                ((StandardEvaluationContext)_evaluationContext).TypeConverter = TypeConverter;
 
                 if (ApplicationContext != null)
                 {

@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Integr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.IntegrationBase.Test", "test\IntegrationBase.Test\Steeltoe.Integration.IntegrationBase.Test.csproj", "{83B7E465-0260-4458-8879-96B0ADEA6E10}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{DE561582-6F09-472A-8411-442805BF39A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,10 @@ Global
 		{83B7E465-0260-4458-8879-96B0ADEA6E10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83B7E465-0260-4458-8879-96B0ADEA6E10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83B7E465-0260-4458-8879-96B0ADEA6E10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE561582-6F09-472A-8411-442805BF39A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE561582-6F09-472A-8411-442805BF39A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE561582-6F09-472A-8411-442805BF39A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE561582-6F09-472A-8411-442805BF39A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{7D16B604-FFBA-4D4C-98F9-D9E46491B7CE} = {AF894201-0549-40D4-AB9B-CB6D19B0253D}
 		{7D073E38-DF3D-4287-ADE8-9964DA4EDD2F} = {1BF773E7-B4C5-49AC-9F32-70D3EC12BFBD}
 		{83B7E465-0260-4458-8879-96B0ADEA6E10} = {9C78B34F-4297-4220-8E41-F684C7023ED7}
+		{DE561582-6F09-472A-8411-442805BF39A9} = {AF894201-0549-40D4-AB9B-CB6D19B0253D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A79E6A0-CD6A-4D73-8E54-7037118D6660}

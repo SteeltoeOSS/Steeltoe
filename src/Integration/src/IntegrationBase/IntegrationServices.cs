@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Spring.Standard;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Channel;
@@ -54,7 +54,7 @@ namespace Steeltoe.Integration
             {
                 if (_expressionParser == null)
                 {
-                    _expressionParser = _context?.GetService<IExpressionParser>() ?? new ExpressionParser();
+                    _expressionParser = _context?.GetService<IExpressionParser>() ?? new SpelExpressionParser();
                 }
 
                 return _expressionParser;

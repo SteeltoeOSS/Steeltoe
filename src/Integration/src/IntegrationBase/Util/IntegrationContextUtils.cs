@@ -4,7 +4,7 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Spring.Standard;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Util
@@ -41,7 +41,7 @@ namespace Steeltoe.Integration.Util
 
         public static IExpressionParser GetExpressionParser(IApplicationContext context)
         {
-            var result = context.GetService<IExpressionParser>() ?? new ExpressionParser();
+            var result = context.GetService<IExpressionParser>() ?? new SpelExpressionParser();
 
             return result;
         }

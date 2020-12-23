@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.Core;
 

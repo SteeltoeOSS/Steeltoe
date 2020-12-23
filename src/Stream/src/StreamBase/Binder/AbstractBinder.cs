@@ -5,7 +5,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Spring.Standard;
+using Steeltoe.Common.Expression.Spring.Support;
 using Steeltoe.Common.Retry;
 using Steeltoe.Stream.Config;
 using System;
@@ -75,7 +76,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_evaluationContext == null)
                 {
-                    _evaluationContext = new SimpleEvaluationContext(_context);
+                    _evaluationContext = _context.GetService<IEvaluationContext>();  // TODO: This is not right!
                 }
 
                 return _evaluationContext;
@@ -93,7 +94,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_expressionParser == null)
                 {
-                    _expressionParser = new ExpressionParser();
+                    _expressionParser = new SpelExpressionParser();
                 }
 
                 return _expressionParser;
