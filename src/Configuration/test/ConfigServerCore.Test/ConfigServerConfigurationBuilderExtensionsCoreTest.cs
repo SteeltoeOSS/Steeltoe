@@ -33,7 +33,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-#if NETCOREAPP3_1
+#if NETCOREAPP3_1 || NET5_0
             IHostEnvironment env = null;
 #else
             IHostingEnvironment env = null;

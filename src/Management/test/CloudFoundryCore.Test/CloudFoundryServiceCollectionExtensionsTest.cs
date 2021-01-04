@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
-#if !NETCOREAPP3_1
+#if !NETCOREAPP3_1 && !NET5_0
 using Microsoft.AspNetCore.Builder.Internal;
 #endif
 using Microsoft.AspNetCore.Cors.Infrastructure;

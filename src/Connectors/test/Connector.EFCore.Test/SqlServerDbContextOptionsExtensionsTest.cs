@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+#if !NET461 && !NETCOREAPP2_1
+using Microsoft.Data.SqlClient;
+#endif
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,7 +12,9 @@ using Steeltoe.CloudFoundry.Connector.EFCore.Test;
 using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+#if NET461 || NETCOREAPP2_1
 using System.Data.SqlClient;
+#endif
 using Xunit;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore.Test
