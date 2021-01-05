@@ -54,7 +54,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public void Dispose()
         {
-         //   Cleanup(GetBinder());
+            Output.WriteLine("running dispose ...");
+            if (_testBinder != null)
+            {
+                Cleanup(_testBinder);
+            }
+
+            if (_cachingConnectionFactory != null)
+            {
+                _cachingConnectionFactory.ResetConnection();
+                _cachingConnectionFactory.Destroy();
+                _cachingConnectionFactory = null;
+            }
+
+            _testBinder = null;
+            Thread.Sleep(5000);
         }
 
         protected override ConsumerOptions CreateConsumerOptions()
@@ -166,8 +180,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private void Cleanup(RabbitTestBinder binder)
         {
-            binder.CoreBinder.ConnectionFactory.Destroy();
             binder.Cleanup();
+            binder.CoreBinder.ConnectionFactory.Destroy();
             _cachingConnectionFactory = null;
         }
 

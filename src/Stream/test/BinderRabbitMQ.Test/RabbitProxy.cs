@@ -41,7 +41,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             _listener.Stop();
         }
 
-        private void StartListener(Object obj)
+        private void StartListener(object obj)
         {
             try
             {

@@ -24,13 +24,13 @@ namespace Steeltoe.Stream.Binder
         where T : AbstractBinder<IMessageChannel>
     {
         public ILoggerFactory LoggerFactory { get; }
-     
+
         protected virtual ISmartMessageConverter MessageConverter { get; set; }
 
         protected virtual double TimeoutMultiplier { get; set; } = 1.0D;
 
         protected virtual ITestOutputHelper Output { get; set; }
-        
+
         protected virtual ServiceCollection Services { get; set; }
 
         protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
@@ -39,6 +39,7 @@ namespace Steeltoe.Stream.Binder
         {
             MessageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             LoggerFactory = loggerFactory;
+            Output = output;
             Services = new ServiceCollection();
             ConfigBuilder = new ConfigurationBuilder();
         }

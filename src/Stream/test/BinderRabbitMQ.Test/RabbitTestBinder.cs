@@ -25,6 +25,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private static IApplicationContext _applicationContext;
 
+        private readonly ILogger _logger;
+
         public static IApplicationContext GetApplicationContext()
         {
             if (_applicationContext == null)
@@ -47,20 +49,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //var serviceProvider = serviceCollection.BuildServiceProvider();
             //var applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
             //binder.setApplicationContext do we need this?
-
+            _logger = logger;
             PollableConsumerBinder = binder;
             _rabbitAdmin = new RabbitAdmin(connectionFactory, logger);
 
         }
 
-        public IBinding BindConsumer(string name, string group, IMessageChannel moduleInputChannel, ExtendedConsumerOptions<RabbitConsumerOptions> consumerOptions)
+        public override IBinding BindConsumer(string name, string group, IMessageChannel moduleInputChannel, IConsumerOptions consumerOptions)
         {
             CaptureConsumerResources(name, group, consumerOptions);
 
             return base.BindConsumer(name, group, moduleInputChannel, consumerOptions);
         }
 
-        public IBinding BindPollableConsumer(string name, string group, IPollableSource<IMessageHandler> inboundBindTarget, ExtendedConsumerOptions<RabbitConsumerOptions> consumerOptions)
+        public IBinding BindPollableConsumer(string name, string group, IPollableSource<IMessageHandler> inboundBindTarget, IConsumerOptions consumerOptions)
         {
             CaptureConsumerResources(name, group, consumerOptions);
             return BindConsumer(name, group, inboundBindTarget, consumerOptions);
@@ -97,6 +99,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             foreach (var q in _queues)
             {
+                _logger.LogInformation("Deleting queue " + q);
                 _rabbitAdmin.DeleteQueue(q);
                 _rabbitAdmin.DeleteQueue(q + ".dlq");
 
@@ -110,6 +113,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             foreach (var exchange in _exchanges)
             {
+                _logger.LogInformation("Deleting exch " + exchange);
                 _rabbitAdmin.DeleteExchange(exchange);
             }
 
@@ -118,12 +122,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _rabbitAdmin.DeleteExchange(prefix + "DLX");
             }
 
-            //this.applicationContext.close();
+            _applicationContext = null;
+
         }
 
-        private void CaptureConsumerResources(string name, string group, ExtendedConsumerOptions<RabbitConsumerOptions> consumerOptions)
+        private void CaptureConsumerResources(string name, string group, IConsumerOptions options)
         {
             string [] names = null;
+            var consumerOptions = options as ExtendedConsumerOptions<RabbitConsumerOptions>;
             if (group != null)
             {
                 if (consumerOptions.Extension.QueueNameGroupOnly.GetValueOrDefault())

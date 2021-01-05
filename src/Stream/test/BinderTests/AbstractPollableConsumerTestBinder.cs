@@ -23,8 +23,7 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-
-        public IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
+       public IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
         {
             return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }

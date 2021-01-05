@@ -50,7 +50,7 @@ namespace Steeltoe.Stream.Binder
 
         public string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
+        public virtual IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
         {
             CheckChannelIsConfigured(inboundTarget, consumerOptions);
             return this.BindConsumer(name, group, (object)inboundTarget, consumerOptions);
