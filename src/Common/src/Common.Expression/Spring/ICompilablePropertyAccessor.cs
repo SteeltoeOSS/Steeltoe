@@ -14,6 +14,7 @@ namespace Steeltoe.Common.Expression.Spring
 
         Type GetPropertyType();
 
-        // TODO: void GenerateCode(string propertyName, MethodVisitor mv, CodeFlow cf);
+        // TODO: Add this when we support code generation
+        // void GenerateCode(string propertyName, MethodVisitor mv, CodeFlow cf);
     }
 }

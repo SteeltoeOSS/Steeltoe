@@ -130,6 +130,7 @@ namespace Steeltoe.Common.Expression.Spring
         public static bool IsIntegerForNumericOp(object number)
         {
             // TODO: Could be more here
+            // TODO: Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
             return number is int || number is short || number is byte;
         }
 
@@ -391,7 +392,7 @@ namespace Steeltoe.Common.Expression.Spring
                 return false;
             }
 
-            // TODO: Add support for Unsigned versions???
+            // TODO: Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
             if (descriptor.Length == 1)
             {
                 return "DFIJ".Contains(descriptor);

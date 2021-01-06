@@ -53,7 +53,7 @@ namespace Steeltoe.Common.Expression.Spring.Ast
                 // return new TypedValue(leftBigInteger.divide(rightBigInteger));
                 // }
 
-                // TODO: ulong, ushort, byte, uint ????
+                // TODO: Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
                 else if (leftOperand is long || rightOperand is long)
                 {
                     var leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
@@ -74,7 +74,7 @@ namespace Steeltoe.Common.Expression.Spring.Ast
                     var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
 
                     // Unknown Number subtypes -> best guess is double division
-                    // TODO: ulong, ushort, byte, uint ????
+                    // TODO: Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
                     return new TypedValue(leftVal / rightVal);
                 }
             }
