@@ -76,7 +76,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_evaluationContext == null)
                 {
-                    _evaluationContext = _context.GetService<IEvaluationContext>();  // TODO: This is not right!
+                    _evaluationContext = _context.GetService<IEvaluationContext>();  // This is not right, change when expressions integrated!
                 }
 
                 return _evaluationContext;
