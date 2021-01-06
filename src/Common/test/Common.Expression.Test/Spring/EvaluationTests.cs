@@ -16,6 +16,8 @@ namespace Steeltoe.Common.Expression.Spring
 {
     public class EvaluationTests : AbstractExpressionTests
     {
+        private static readonly bool DEBUG = false;
+
         [Fact]
         public void TestCreateListsOnAttemptToIndexNull01()
         {
@@ -1335,7 +1337,11 @@ namespace Steeltoe.Common.Expression.Spring
             var ex = Assert.Throws<SpelEvaluationException>(() =>
             {
                 var e = parser.ParseExpression(expressionstring);
-                SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
+                if (DEBUG)
+                {
+                    SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
+                }
+
                 e.GetValue(eContext);
             });
             Assert.Equal(messageCode, ex.MessageCode);

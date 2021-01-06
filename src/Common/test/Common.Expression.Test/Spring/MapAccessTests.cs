@@ -77,7 +77,7 @@ namespace Steeltoe.Common.Expression.Spring
             Assert.Equal("value", expr.GetValue(map));
         }
 
-        [Fact]
+        [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
 
         public void TestGetValuePerformance()
         {

@@ -25,7 +25,7 @@ namespace Steeltoe.Common.Expression.Spring
             _output = output;
         }
 
-        [Fact]
+        [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
         public void TestPerformanceOfPropertyAccess()
         {
             long starttime = 0;
@@ -78,7 +78,7 @@ namespace Steeltoe.Common.Expression.Spring
             }
         }
 
-        [Fact]
+        [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
         public void TestPerformanceOfMethodAccess()
         {
             long starttime = 0;

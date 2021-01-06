@@ -282,7 +282,10 @@ namespace Steeltoe.Common.Expression.Spring
             var ex = Assert.Throws<SpelParseException>(() =>
             {
                 var expr = parser.ParseExpression(expression);
-                SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
+                if (DEBUG)
+                {
+                    SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
+                }
             });
             Assert.Equal(expectedMessage, ex.MessageCode);
             if (otherProperties != null && otherProperties.Length != 0)
