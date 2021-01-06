@@ -70,6 +70,7 @@
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
+    <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
