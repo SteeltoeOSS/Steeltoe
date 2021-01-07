@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Expression.Spring.Standard
             Configuration = configuration;
         }
 
-        private static readonly Regex VALID_QUALIFIED_ID_PATTERN = new Regex("[\\p{L}\\p{N}_$]+");
+        private static readonly Regex VALID_QUALIFIED_ID_PATTERN = new Regex("[\\p{L}\\p{N}_$]+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
         internal SpelParserOptions Configuration { get; }
 
