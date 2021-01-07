@@ -38,6 +38,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _applicationContext;
         }
 
+        public void ResetApplicationContext()
+        {
+            _applicationContext = null;
+            GetApplicationContext();
+        }
+
         public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILogger logger)
             : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), logger)), logger)
         {

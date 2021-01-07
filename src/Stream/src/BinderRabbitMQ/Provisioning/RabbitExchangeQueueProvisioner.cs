@@ -69,7 +69,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private RabbitAdmin Admin { get; }
 
-        private bool _notOurAdminException;
+        private bool _notOurAdminException = true; //Should be set by onApplicationEvent
         private CachingConnectionFactory cf;
 
         private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }

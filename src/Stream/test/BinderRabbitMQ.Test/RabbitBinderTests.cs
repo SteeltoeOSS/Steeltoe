@@ -1403,7 +1403,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         //    //noDlqConsumerProperties.Extension.DurableSubscription = true;
         //    //var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
-            
+
         //    proxy.Start();
 
         //    moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
@@ -1468,7 +1468,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         //    GetResource().Destroy();
         //}
-     
+
 
         //[Fact]
         //public void TestProxy()
@@ -1491,58 +1491,48 @@ namespace Steeltoe.Stream.Binder.Rabbit
         //    conn.Close();
         //}
 
-        //[Fact] //TODO: cleanup 
-        //public void TestBadUserDeclarationsFatal()
-        //{
-        //    var binder = GetBinder();
-        //    var context = binder.ApplicationContext;
-        //    context.Register("testBadUserDeclarationsFatal", new Queue("testBadUserDeclarationsFatal", false));
-        //    context.Register("binder", binder);
+        [Fact]
+        public async void TestBadUserDeclarationsFatal()
+        {
+            var binder = GetBinder();
+            var context = binder.ApplicationContext;
+            context.Register("testBadUserDeclarationsFatal", new Queue("testBadUserDeclarationsFatal", false));
+            context.Register("binder", binder);
 
-        //    var channelBinder = binder.Binder;
-        //    var provisioner = GetPropertyValue<RabbitExchangeQueueProvisioner>(channelBinder, "ProvisioningProvider");
+            var channelBinder = binder.Binder;
+            var provisioner = GetPropertyValue<RabbitExchangeQueueProvisioner>(channelBinder, "ProvisioningProvider");
 
-        //    //        bf.initializeBean(provisioner, "provisioner");
-        //    //        bf.registerSingleton("provisioner", provisioner);
-        //    context.Register("provisioner", provisioner);
+            context.Register("provisioner", provisioner);
 
-        //    //context.addApplicationListener(provisioner);
+            var admin = new RabbitAdmin(GetResource(), LoggerFactory.CreateLogger<RabbitAdmin>());
+            admin.DeclareQueue(new Queue("testBadUserDeclarationsFatal"));
 
-        //    var admin = new RabbitAdmin(GetResource(), LoggerFactory.CreateLogger<RabbitAdmin>());
-        //    admin.DeclareQueue(new Queue("testBadUserDeclarationsFatal"));
+            // reset the connection and configure the "user" admin to auto declare queues...
+            GetResource().ResetConnection();
 
-        //    // reset the connection and configure the "user" admin to auto declare queues...
-        //    GetResource().ResetConnection();
+            context.Register("rabbitAdmin", admin);
 
-        //    context.Register("rabbitAdmin", admin);
-        //    //   admin
-        //    //        admin.afterPropertiesSet(); ?? 
-        //    //        // the mis-configured queue should be fatal
+            // the mis-configured queue should be fatal
 
-        //    IBinding binding = null;
-        //    try
-        //    {
-        //        binding = binder.BindConsumer("input", "baddecls", this.CreateBindableChannel("input", GetDefaultBindingOptions()), CreateConsumerOptions());
-        //        throw new Exception("Expected exception");
-        //    }
-        //    catch (BinderException e)
-        //    {
-        //        //  Assert.IsType>
-        //        Console.WriteLine(e);
-        //    }
+            IBinding binding = null;
+            try
+            {
+                await Assert.ThrowsAsync<BinderException>(() =>
+                {
+                    binding = binder.BindConsumer("input", "baddecls", this.CreateBindableChannel("input", GetDefaultBindingOptions()), CreateConsumerOptions());
+                    throw new Exception("Expected exception");
+                });
+            }
+            finally
+            {
+                admin.DeleteQueue("testBadUserDeclarationsFatal");
+                if (binding != null)
+                {
+                   await binding.Unbind();
+                }
+            }
+        }
 
-        //    finally
-        //    {
-
-        //        admin.DeleteQueue("testBadUserDeclarationsFatal");
-        //        if (binding != null)
-        //        {
-        //            binding.Unbind();
-        //        }
-
-        //       
-        //    }
-        //}
         // TODO: Pending EL
         //[Fact]
         //public void TestRoutingKeyExpression()
