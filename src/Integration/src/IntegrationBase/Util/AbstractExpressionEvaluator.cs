@@ -4,9 +4,9 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
-using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.Spring.Standard;
-using Steeltoe.Common.Expression.Spring.Support;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;

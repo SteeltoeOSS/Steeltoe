@@ -5,8 +5,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
-using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.Spring.Standard;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Channel;

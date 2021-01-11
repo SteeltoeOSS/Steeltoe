@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
-using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Handler.Attributes.Support;
