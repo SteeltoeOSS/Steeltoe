@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class StringLiteral : Literal
     {

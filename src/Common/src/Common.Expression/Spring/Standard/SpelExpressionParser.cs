@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Common;
+using Steeltoe.Common.Expression.Internal.Spring.Common;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.Standard
+namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
     public class SpelExpressionParser : TemplateAwareExpressionParser
     {

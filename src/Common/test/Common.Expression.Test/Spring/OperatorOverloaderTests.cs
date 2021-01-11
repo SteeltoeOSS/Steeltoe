@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class OperatorOverloaderTests : AbstractExpressionTests
     {

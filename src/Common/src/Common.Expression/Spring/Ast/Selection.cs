@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class Selection : SpelNode
     {

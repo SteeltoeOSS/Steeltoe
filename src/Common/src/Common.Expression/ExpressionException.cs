@@ -5,7 +5,7 @@
 using System;
 using System.Text;
 
-namespace Steeltoe.Common.Expression
+namespace Steeltoe.Common.Expression.Internal
 {
     public class ExpressionException : Exception
     {

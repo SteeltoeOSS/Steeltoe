@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression
+namespace Steeltoe.Common.Expression.Internal
 {
     public class ValueExpression<V> : IExpression
     {

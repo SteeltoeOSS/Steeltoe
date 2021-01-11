@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Standard;
-using Steeltoe.Common.Expression.Spring.Support;
-using Steeltoe.Common.Expression.Spring.TestResources;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class EvaluationTests : AbstractExpressionTests
     {
@@ -189,7 +189,7 @@ namespace Steeltoe.Common.Expression.Spring
             Evaluate("Name", "Nikola Tesla", typeof(string), false);
 
             // not writable because (1) name is private (2) there is no setter, only a getter
-            EvaluateAndCheckError("madeup", SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, 0, "madeup", "Steeltoe.Common.Expression.Spring.TestResources.Inventor");
+            EvaluateAndCheckError("madeup", SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, 0, "madeup", "Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor");
         }
 
         [Fact]
@@ -383,7 +383,7 @@ namespace Steeltoe.Common.Expression.Spring
         [Fact]
         public void CtorCallWithRootReferenceThroughParameter()
         {
-            Evaluate("new Steeltoe.Common.Expression.Spring.TestResources.PlaceOfBirth(Inventions[0].ToString()).City", "Telephone repeater", typeof(string));
+            Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.PlaceOfBirth(Inventions[0].ToString()).City", "Telephone repeater", typeof(string));
         }
 
         [Fact]
@@ -407,13 +407,13 @@ namespace Steeltoe.Common.Expression.Spring
         [Fact]
         public void TestIndexerError()
         {
-            EvaluateAndCheckError("new Steeltoe.Common.Expression.Spring.TestResources.Inventor().Inventions[1]", SpelMessage.CANNOT_INDEX_INTO_NULL_VALUE);
+            EvaluateAndCheckError("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor().Inventions[1]", SpelMessage.CANNOT_INDEX_INTO_NULL_VALUE);
         }
 
         [Fact]
         public void TestStaticRef02()
         {
-            Evaluate("T(Steeltoe.Common.Expression.Spring.TestResources.Color).Green.RGB!=0", "True", typeof(bool));
+            Evaluate("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.Color).Green.RGB!=0", "True", typeof(bool));
         }
 
         // variables and functions

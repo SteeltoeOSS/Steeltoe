@@ -5,7 +5,7 @@
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Common.Expression.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class DataBindingPropertyAccessor : ReflectivePropertyAccessor
     {

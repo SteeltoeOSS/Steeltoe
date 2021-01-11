@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class CodeFlow
     {

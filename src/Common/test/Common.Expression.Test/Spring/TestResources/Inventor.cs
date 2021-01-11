@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Spring.TestResources
+namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 {
     public class Inventor
     {

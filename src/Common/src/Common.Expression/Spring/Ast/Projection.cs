@@ -7,7 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class Projection : SpelNode
     {

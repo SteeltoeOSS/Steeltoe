@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression
+namespace Steeltoe.Common.Expression.Internal
 {
     /// <summary>
     /// An expression capable of evaluating itself against context objects.

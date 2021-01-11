@@ -5,7 +5,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression
+namespace Steeltoe.Common.Expression.Internal
 {
     /// <summary>
     /// Expressions are executed in an evaluation context. It is in this context that

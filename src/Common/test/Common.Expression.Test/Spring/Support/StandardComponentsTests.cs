@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class StandardComponentsTests
     {

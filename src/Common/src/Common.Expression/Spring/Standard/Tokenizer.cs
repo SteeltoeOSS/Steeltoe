@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.Standard
+namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
     internal class Tokenizer
     {

@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Standard;
-using Steeltoe.Common.Expression.Spring.Support;
-using Steeltoe.Common.Expression.Spring.TestResources;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class SpelDocumentationTests : AbstractExpressionTests
     {
@@ -339,11 +339,11 @@ namespace Steeltoe.Common.Expression.Spring
         {
             var societyContext = new StandardEvaluationContext();
             societyContext.SetRootObject(new IEEE());
-            var einstein = parser.ParseExpression("new Steeltoe.Common.Expression.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')").GetValue<Inventor>();
+            var einstein = parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')").GetValue<Inventor>();
             Assert.Equal("Albert Einstein", einstein.Name);
 
             // create new inventor instance within add method of List
-            parser.ParseExpression("Members2.Add(new Steeltoe.Common.Expression.Spring.TestResources.Inventor('Albert Einstein', 'German'))").GetValue(societyContext);
+            parser.ParseExpression("Members2.Add(new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein', 'German'))").GetValue(societyContext);
         }
 
         // 7.5.8

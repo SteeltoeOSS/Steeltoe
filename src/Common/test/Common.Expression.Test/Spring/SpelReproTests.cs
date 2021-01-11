@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Spring.Standard;
-using Steeltoe.Common.Expression.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using System;
 using System.Collections;
@@ -13,7 +13,7 @@ using System.Reflection;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class SpelReproTests : AbstractExpressionTests
     {
@@ -84,10 +84,10 @@ namespace Steeltoe.Common.Expression.Spring
 
             // Expression expr = new SpelExpressionParser().ParseRaw("T(java.util.Map$Entry)");
             // Assert.Equal(typeof(), expr.GetValue(context)).isEqualTo(typeof(Map.Entry));
-            var expr = new SpelExpressionParser().ParseRaw("T(Steeltoe.Common.Expression.Spring.SpelReproTests$Outer$Inner).Run()");
+            var expr = new SpelExpressionParser().ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner).Run()");
             Assert.Equal(12, expr.GetValue(context));
 
-            expr = new SpelExpressionParser().ParseRaw("new Steeltoe.Common.Expression.Spring.SpelReproTests$Outer$Inner().Run2()");
+            expr = new SpelExpressionParser().ParseRaw("new Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner().Run2()");
             Assert.Equal(13, expr.GetValue(context));
         }
 
@@ -696,9 +696,9 @@ namespace Steeltoe.Common.Expression.Spring
         {
             var context = new StandardEvaluationContext();
             var parser = new SpelExpressionParser();
-            var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Spring.TestResources.le.div.mod.reserved.Reserver).CONST");
+            var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).CONST");
             var value = expression.GetValue(context);
-            Assert.Equal(value, Steeltoe.Common.Expression.Spring.TestResources.le.div.mod.reserved.Reserver.CONST);
+            Assert.Equal(value, Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver.CONST);
         }
 
         [Fact]
@@ -1280,7 +1280,7 @@ namespace Steeltoe.Common.Expression.Spring
             var sec = new StandardEvaluationContext();
             sec.AddPropertyAccessor(new MapAccessor());
             var exp = new SpelExpressionParser().ParseExpression(
-                    "T(Steeltoe.Common.Expression.Spring.SpelReproTests$MapWithConstant).X");
+                    "T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
             Assert.Equal(1, exp.GetValue(sec));
         }
 
@@ -1333,7 +1333,7 @@ namespace Steeltoe.Common.Expression.Spring
         //    var sec = new StandardEvaluationContext();
         //    sec.SetVariable("iterable", new ArrayList());
         //    var parser = new SpelExpressionParser();
-        //    var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Spring.SpelReproTests.FooLists).NewArrayList(#iterable)");
+        //    var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests.FooLists).NewArrayList(#iterable)");
         //    Assert.True(expression.GetValue(sec) is ArrayList);
         // }
 
@@ -1350,7 +1350,7 @@ namespace Steeltoe.Common.Expression.Spring
         public void SPR12808()
         {
             var parser = new SpelExpressionParser();
-            var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Spring.SpelReproTests$DistanceEnforcer).From(#no)");
+            var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$DistanceEnforcer).From(#no)");
             var sec = new StandardEvaluationContext();
             sec.SetVariable("no", 1);
             Assert.StartsWith("Integer", expression.GetValue(sec).ToString());

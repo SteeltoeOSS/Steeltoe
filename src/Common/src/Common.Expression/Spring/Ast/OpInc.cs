@@ -4,7 +4,7 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class OpInc : Operator
     {

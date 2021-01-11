@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public abstract class Literal : SpelNode
     {
