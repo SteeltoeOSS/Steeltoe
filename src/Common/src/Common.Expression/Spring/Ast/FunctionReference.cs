@@ -139,7 +139,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 var result = method.Invoke(method.GetType(), functionArgs);
                 compilable = !argumentConversionOccurred;
-                return new TypedValue(result, result == null ? method.ReturnType : result.GetType());
+                return new TypedValue(result, result?.GetType() ?? method.ReturnType);
             }
             catch (Exception ex)
             {
