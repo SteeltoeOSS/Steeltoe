@@ -9,7 +9,7 @@
     <EFCoreVersion>2.0.0</EFCoreVersion>
     <HttpVersion>4.3.4</HttpVersion>
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
-    <HttpClientVersion>4.3.3</HttpClientVersion>
+    <HttpClientVersion>4.3.4</HttpClientVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
@@ -33,7 +33,7 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>3.0.0-preview.1</CoverletVersion>
+    <CoverletVersion>3.0.0</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
@@ -56,7 +56,7 @@
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
-    <SonarAnalyzerVersion>8.0.0.9566</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>8.16.0.25740</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
 

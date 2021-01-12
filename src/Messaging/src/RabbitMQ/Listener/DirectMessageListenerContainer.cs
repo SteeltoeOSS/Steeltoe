@@ -856,7 +856,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                         _consumersByQueue.TryGetValue(queue, out consumers);
                     }
 
-                    if (consumers != null && consumers.Count > newCount)
+                    if (consumers.Count > newCount)
                     {
                         var delta = consumers.Count - newCount;
                         for (var i = 0; i < delta; i++)

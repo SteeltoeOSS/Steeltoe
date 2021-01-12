@@ -19,7 +19,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is Guid ? (Guid)value : Guid.Parse(value.ToString());
+            return value is Guid guidValue ? guidValue : Guid.Parse(value.ToString());
         }
 
         public static long? GetTimestamp(IMessage message)
@@ -30,7 +30,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is long ? (long)value : long.Parse(value.ToString());
+            return value is long longValue ? longValue : long.Parse(value.ToString());
         }
 
         public static MimeType GetContentType(IMessage message)
@@ -41,7 +41,7 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is MimeType ? (MimeType)value : MimeType.ToMimeType(value.ToString());
+            return value is MimeType mimeValue ? mimeValue : MimeType.ToMimeType(value.ToString());
         }
 
         public static long? GetExpirationDate(IMessage message)
@@ -52,40 +52,25 @@ namespace Steeltoe.Integration
                 return null;
             }
 
-            return value is long ? (long)value : long.Parse(value.ToString());
+            return value is long longValue ? longValue : long.Parse(value.ToString());
         }
 
         public static int? GetSequenceNumber(IMessage message)
         {
             message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, out var value);
-            if (value == null)
-            {
-                return null;
-            }
-
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return value != null ? int.Parse(value.ToString()) : null;
         }
 
         public static int? GetSequenceSize(IMessage message)
         {
             message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, out var value);
-            if (value == null)
-            {
-                return null;
-            }
-
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return value != null ? int.Parse(value.ToString()) : null;
         }
 
         public static int? GetPriority(IMessage message)
         {
             message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.PRIORITY, out var value);
-            if (value == null)
-            {
-                return null;
-            }
-
-            return value != null ? int.Parse(value.ToString()) : 0;
+            return value != null ? int.Parse(value.ToString()) : null;
         }
 
         public static IAcknowledgmentCallback GetAcknowledgmentCallback(IMessage message)

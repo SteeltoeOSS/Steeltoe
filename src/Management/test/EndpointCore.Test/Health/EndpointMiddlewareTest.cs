@@ -119,6 +119,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.True(health.ContainsKey("status"));
             Assert.True(health.ContainsKey("details"));
             Assert.Contains("diskSpace", health["details"].ToString());
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("details"), "Health should contain key: details");
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -140,8 +143,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
-            Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("details"));
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("details"), "Health should contain key: details");
             Assert.Contains("diskSpace", health["details"].ToString());
         }
 
