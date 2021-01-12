@@ -4,9 +4,8 @@
 
 using Microsoft.Extensions.Caching.Distributed;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Discovery
@@ -18,7 +17,7 @@ namespace Steeltoe.Common.Discovery
             string serviceId,
             IDistributedCache distributedCache = null,
             DistributedCacheEntryOptions cacheOptions = null,
-            string serviceInstancesKeyPrefix = "ServiceInstances-")
+            string serviceInstancesKeyPrefix = "ServiceInstances:")
         {
             // if distributed cache was provided, just make the call back to the provider
             if (distributedCache != null)
@@ -47,18 +46,10 @@ namespace Steeltoe.Common.Discovery
             return inst.ToList();
         }
 
-        private static byte[] SerializeForCache(object data)
-        {
-            using var stream = new MemoryStream();
-            new BinaryFormatter().Serialize(stream, data);
-            return stream.ToArray();
-        }
+        private static byte[] SerializeForCache(object data) => JsonSerializer.SerializeToUtf8Bytes(data);
 
         private static T DeserializeFromCache<T>(byte[] data)
             where T : class
-        {
-            using var stream = new MemoryStream(data);
-            return new BinaryFormatter().Deserialize(stream) as T;
-        }
+                => JsonSerializer.Deserialize<T>(data);
     }
 }
