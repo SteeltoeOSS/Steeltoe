@@ -5,7 +5,7 @@
 using Steeltoe.Common.Converter;
 using System;
 
-namespace Steeltoe.Common.Expression
+namespace Steeltoe.Common.Expression.Internal
 {
     /// <summary>
     /// A type converter can convert values between different types encountered during expression
