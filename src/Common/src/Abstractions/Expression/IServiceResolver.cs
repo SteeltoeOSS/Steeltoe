@@ -10,6 +10,6 @@ namespace Steeltoe.Common.Expression.Internal
 {
     public interface IServiceResolver
     {
-        object Resolve(IEvaluationContext context, string beanName);
+        object Resolve(IEvaluationContext context, string serviceName);
     }
 }
