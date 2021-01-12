@@ -34,7 +34,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(StartPosition, SpelMessage.FUNCTION_NOT_DEFINED, _name);
             }
 
-            if (!(value.Value is MethodInfo))
+            if (value.Value is not MethodInfo)
             {
                 // Possibly a static Java method registered as a function
                 throw new SpelEvaluationException(SpelMessage.FUNCTION_REFERENCE_CANNOT_BE_INVOKED, _name, value.GetType());
