@@ -56,7 +56,9 @@ namespace Steeltoe.Management.Exporter.Tracing
                 var client = new HttpClient(
                     new HttpClientHandler()
                     {
+#pragma warning disable S4830 // Server certificates should be verified during SSL/TLS connections
                         ServerCertificateCustomValidationCallback = (mesg, cert, chain, errors) => { return true; }
+#pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
                     });
                 return new ZipkinTraceExporter(censusOpts, tracing.ExportComponent, client);
             }

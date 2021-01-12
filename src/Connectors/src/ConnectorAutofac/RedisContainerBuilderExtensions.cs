@@ -85,7 +85,7 @@ namespace Steeltoe.CloudFoundry.ConnectorAutofac
                 : config.GetSingletonServiceInfo<RedisServiceInfo>();
 
             var redisConfig = new RedisCacheConnectorOptions(config);
-            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
             container.Register(c => new RedisHealthContributor(factory, redisImplementation, c.ResolveOptional<ILogger<RedisHealthContributor>>())).As<IHealthContributor>();
             return container.Register(c => factory.Create(null)).As(redisInterface, redisImplementation);
         }
