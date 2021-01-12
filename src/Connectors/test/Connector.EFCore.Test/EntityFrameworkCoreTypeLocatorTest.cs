@@ -74,10 +74,10 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
             Assert.NotNull(type);
         }
 
-#if NETCOREAPP3_1
-        [Fact]
-#else
+#if NET5_0
         [Fact(Skip = "Revisit when Oracle has support for EF Core 5.0")]
+#else
+        [Fact]
 #endif
         public void Options_Found_In_OracleEF_Assembly()
         {

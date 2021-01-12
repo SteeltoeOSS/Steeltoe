@@ -21,7 +21,6 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private const int UNPROCESSABLE_ENTITY = 422;
         private const int PAYLOAD_TOO_LARGE = 413;
         private const int TOO_MANY_REQUESTS = 429;
-        private static HttpClient _httpClient;
 
         private readonly ILogger<CloudFoundryForwarderExporter> _logger;
         private readonly ICloudFoundryMetricWriter _metricFormatWriter;
@@ -29,6 +28,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
         private readonly CloudFoundryForwarderOptions _options;
         private readonly IStats _stats;
         private readonly IViewManager _viewManager;
+        private HttpClient _httpClient;
         private Thread _workerThread;
         private bool _shutdown = false;
 
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             _options = options;
             _stats = stats;
             _viewManager = stats.ViewManager;
-            _httpClient ??= GetHttpClient();
+            _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.TimeoutSeconds * 1000);
             _logger = logger;
             if (options.MicrometerMetricWriter)
             {
@@ -232,11 +232,6 @@ namespace Steeltoe.Management.Exporter.Metrics.CloudFoundryForwarder
             }
 
             return new StringContent(string.Empty, Encoding.UTF8, "application/json");
-        }
-
-        protected internal HttpClient GetHttpClient()
-        {
-            return HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.TimeoutSeconds * 1000);
         }
 
         protected internal void ResetMetrics()

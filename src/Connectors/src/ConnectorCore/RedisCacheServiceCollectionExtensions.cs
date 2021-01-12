@@ -216,7 +216,7 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
             var initializer = RedisTypeLocator.StackExchangeInitializer;
 
             var redisConfig = new RedisCacheConnectorOptions(config);
-            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer ?? null);
+            var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
             services.Add(new ServiceDescriptor(redisInterface, factory.Create, contextLifetime));
             services.Add(new ServiceDescriptor(redisImplementation, factory.Create, contextLifetime));
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
