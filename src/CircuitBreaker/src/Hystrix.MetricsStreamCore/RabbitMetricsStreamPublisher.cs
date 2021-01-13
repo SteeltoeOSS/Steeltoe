@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             if (sslOption != null && sslOption.Enabled)
             {
                 logger?.LogInformation("Hystrix Metrics using TLS");
-                sslOption.Version = SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12;
+                sslOption.Version = SslProtocols.Tls12 | SslProtocols.Tls13;
                 if (!this.options.Validate_Certificates)
                 {
                     logger?.LogInformation("Hystrix Metrics disabling certificate validation");

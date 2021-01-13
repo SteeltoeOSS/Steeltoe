@@ -68,7 +68,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
                         // TODO: don't disable this warning! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
+#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
                         content = formatter.Deserialize(stream);
+#pragma warning restore S5773 // Types allowed to be deserialized should be restricted
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
                     }
                     catch (Exception e)
