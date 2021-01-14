@@ -54,6 +54,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
             services.TryAddSingleton<MetricsEndpoint>();
+            services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
 
         public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
@@ -89,6 +90,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.AddOpenTelemetry();
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
             services.TryAddSingleton<PrometheusScraperEndpoint>();
+            services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
         }
 
         private static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)

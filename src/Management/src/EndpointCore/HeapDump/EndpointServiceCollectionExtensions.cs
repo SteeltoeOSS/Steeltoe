@@ -55,6 +55,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 }
 
                 services.TryAddSingleton<HeapDumpEndpoint>();
+                services.AddActuatorEndpointMapping<HeapDumpEndpoint>();
             }
         }
     }
