@@ -567,8 +567,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public void HandleMessage(IMessage message)
             {
                 // Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
-                //var errorMessage = message as MessagingSupport.ErrorMessage;
-                var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
+                var errorMessage = message as MessagingSupport.ErrorMessage;
+             //  var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
                 if (errorMessage == null)
                 {
                     // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
@@ -639,7 +639,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public string CreateConsumerTag(string queue)
             {
-                return _prefix + "#" + _index.IncrementAndGet();
+                return _prefix + "#" + _index.GetAndIncrement();
             }
         }
 

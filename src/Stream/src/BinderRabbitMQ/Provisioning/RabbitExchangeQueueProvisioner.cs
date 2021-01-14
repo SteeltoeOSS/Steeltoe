@@ -28,6 +28,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
     {
         private const string GROUP_INDEX_DELIMITER = ".";
         private readonly IApplicationContext _autoDeclareContext;
+        private readonly ILogger _logger;
 
         private class GivenNamingStrategy : INamingStrategy
         {
@@ -44,18 +45,19 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
             : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
         {
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
         {
-            Admin = new RabbitAdmin(connectionFactory, logger);
+            Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
 
             // AutoDeclareContext.refresh();
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
             _autoDeclareContext = applicationContext;//  new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            _logger = logger;
             Admin.ApplicationContext = _autoDeclareContext;
             Admin.Initialize();
             Customizers = customizers;
@@ -494,7 +496,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                // this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
+                 _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
             }
             catch (Exception e)
             {
@@ -504,7 +506,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     throw;
                 }
 
-                // this.logger.debug("Declaration of queue: " + queue.QueueName + " deferred", e);
+                _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred", e);
             }
 
             AddToAutoDeclareContext(beanName, queue);
@@ -704,7 +706,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                // this.logger.debug("Declaration of binding: " + rootName + ".binding deferred - connection not available");
+               _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available");
             }
             catch (Exception e)
             {
@@ -714,7 +716,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     throw;
                 }
 
-                // this.logger.debug("Declaration of binding: " + rootName + ".binding deferred", e);
+                _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred", e);
             }
 
             AddToAutoDeclareContext(rootName + ".binding", binding);

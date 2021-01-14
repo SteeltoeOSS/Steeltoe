@@ -31,13 +31,13 @@ namespace Steeltoe.Integration.Rabbit.Support
             if (inputMessage is IMessage)
             {
                 var imessage = (IMessage)inputMessage;
-                imessage.Headers.ToList().ForEach(header =>
-                {
-                    if (!headers.ContainsKey(header.Key))
-                    {
-                        headers.Add(header.Key, header.Value);
-                    }
-                });
+                //imessage.Headers.ToList().ForEach(header =>
+                //{
+                //    if (!headers.ContainsKey(header.Key))
+                //    {
+                //        headers.Add(header.Key, header.Value);
+                //    }
+                //});
 
                 return new ErrorMessage(exception, headers, (IMessage)inputMessage);
             }

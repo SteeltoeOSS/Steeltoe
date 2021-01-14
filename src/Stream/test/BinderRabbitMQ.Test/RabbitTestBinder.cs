@@ -44,12 +44,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             GetApplicationContext();
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILogger logger)
-            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), logger)), logger)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILoggerFactory loggerFactory)
+            : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
         {
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger logger)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger<RabbitTestBinder> logger)
         {
             //var serviceCollection = new ServiceCollection();
             //var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -57,7 +57,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //binder.setApplicationContext do we need this?
             _logger = logger;
             PollableConsumerBinder = binder;
-            _rabbitAdmin = new RabbitAdmin(connectionFactory, logger);
+            _rabbitAdmin = new RabbitAdmin(GetApplicationContext(), connectionFactory, logger);
 
         }
 

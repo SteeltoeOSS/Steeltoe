@@ -21,7 +21,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             _listener = new TcpListener(IPAddress.Loopback, 0);
             _listener.Start();
-            _logger = logger;
+            _logger = new LoggerFactory().CreateLogger<RabbitProxy>();
         }
 
         public void Start()

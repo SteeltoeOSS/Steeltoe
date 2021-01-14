@@ -55,20 +55,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void Dispose()
         {
             Output.WriteLine("running dispose ...");
-            if (_testBinder != null)
-            {
-                Cleanup(_testBinder);
-            }
-
-            if (_cachingConnectionFactory != null)
-            {
-                _cachingConnectionFactory.ResetConnection();
-                _cachingConnectionFactory.Destroy();
-                _cachingConnectionFactory = null;
-            }
-
-            _testBinder = null;
-            Thread.Sleep(5000);
+            Cleanup();
         }
 
         protected override ConsumerOptions CreateConsumerOptions()
@@ -92,7 +79,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var options = new RabbitOptions();
                 options.PublisherReturns = true;
                 _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory.CreateLogger<RabbitTestBinder>());
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
             }
 
             return _testBinder;
@@ -177,7 +164,22 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
         }
+        private void Cleanup()
+        {
+            if (_testBinder != null)
+            {
+                Cleanup(_testBinder);
+            }
 
+            if (_cachingConnectionFactory != null)
+            {
+                _cachingConnectionFactory.ResetConnection();
+                _cachingConnectionFactory.Destroy();
+                _cachingConnectionFactory = null;
+            }
+
+            _testBinder = null;
+        }
         private void Cleanup(RabbitTestBinder binder)
         {
             binder.Cleanup();

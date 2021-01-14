@@ -15,6 +15,7 @@ using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder.Rabbit.Config;
@@ -85,7 +86,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             consumerBinding.Unbind();
         }
 
-        [Fact]
+        [Fact] // TODO: SPEL
         public void TestProducerErrorChannel()
         {
             var ccf = GetResource();
@@ -141,8 +142,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal(312, exception.ReplyCode);
             Assert.Equal("NO_ROUTE", exception.ReplyText);
 
-        //    var endpoint = GetPropertyValue<RabbitOutboundEndpoint>(producerBinding, "lifecycle");
-          //  Assert.Equal("#root", GetPropertyValue<string>(endpoint, "confirmCorrelationExpression.expression"));
+            // SPEL
+            //    var endpoint = GetPropertyValue<RabbitOutboundEndpoint>(producerBinding, "lifecycle");
+            //  Assert.Equal("#root", GetPropertyValue<string>(endpoint, "confirmCorrelationExpression.expression"));
 
 
             //        class WrapperAccessor extends AmqpOutboundEndpoint
@@ -175,7 +177,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             //producerBinding.Unbind();
         }
 
-        [Fact]
+        [Fact] // TODO: SPEL
         public void TestProducerAckChannel()
         {
             var binder = GetBinder();
@@ -280,32 +282,32 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(endpoint.IsRunning);
         }
 
-        //[Fact]
-        //public void TestMultiplexOnPartitionedConsumerWithMultipleDestinations()
-        //{
-        //    var consumerProperties = CreateConsumerOptions();
-        //    var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-        //    var port = proxy.Port;
-        //    var ccf = new CachingConnectionFactory("localhost", port);
+        [Fact]
+        public void TestMultiplexOnPartitionedConsumerWithMultipleDestinations()
+        {
+            var consumerProperties = CreateConsumerOptions();
+            var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+            var port = proxy.Port;
+            var ccf = new CachingConnectionFactory("localhost", port);
 
-        //    var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, new RabbitBindingsOptions(), GetBinder().ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, new RabbitBindingsOptions(), GetBinder().ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
-        //    consumerProperties.Multiplex = true;
-        //    consumerProperties.Partitioned = true;
-        //    consumerProperties.InstanceIndexList = new int[] { 1, 2, 3 }.ToList();
+            consumerProperties.Multiplex = true;
+            consumerProperties.Partitioned = true;
+            consumerProperties.InstanceIndexList = new int[] { 1, 2, 3 }.ToList();
 
-        //    var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
+            var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
 
-        //    proxy.Stop();
-        //    Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
+            proxy.Stop();
+            Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
 
-        //}
+        }
 
         [Fact]
         public async void TestConsumerPropertiesWithUserInfrastructureNoBind()
         {
             var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
-            var admin = new RabbitAdmin(GetResource(), logger);
+            var admin = new RabbitAdmin(RabbitTestBinder.GetApplicationContext(), GetResource(), logger);
             var queue = new Queue("propsUser1.infra");
             admin.DeclareQueue(queue);
 
@@ -343,8 +345,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var foo = JsonConvert.DeserializeObject<List<ExpandoObject>>(jsonResult, new ExpandoObjectConverter());
 
             Assert.Single(foo);
-
-           
         }
 
         [Fact]
@@ -366,8 +366,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             consumerBinding.Unbind();
             Assert.False(container.IsRunning);
-
-           
         }
 
         [Fact]
@@ -392,7 +390,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
-        public void TestConsumerPropertiesWithUserInfrastructureCustomExchangeAndRK()
+        public async Task TestConsumerPropertiesWithUserInfrastructureCustomExchangeAndRK()
         {
             var binder = GetBinder();
             var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
@@ -409,44 +407,45 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
 
             Assert.True(container.IsRunning);
-            consumerBinding.Unbind();
+            await consumerBinding.Unbind();
 
             Assert.False(container.IsRunning);
             Assert.Equal(group, container.GetQueueNames()[0]);
 
+            var client = new Client();
+            var bindings = await client.GetBindingsBySource("/", "propsUser2");
+            int n = 0;
+            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            {
+                Thread.Sleep(100);
+                bindings = await client.GetBindingsBySource("/", "propsUser2");
+            }
 
-            //Client client = new Client("http://guest:guest@localhost:15672/api/");
-            //List<BindingInfo> bindings = client.getBindingsBySource("/", "propsUser2");
-            //int n = 0;
-            //while (n++ < 100 && bindings == null || bindings.size() < 1)
-            //{
-            //    Thread.sleep(100);
-            //    bindings = client.getBindingsBySource("/", "propsUser2");
-            //}
-            //assertThat(bindings.size()).isEqualTo(2);
-            //assertThat(bindings.get(0).getSource()).isEqualTo("propsUser2");
-            //assertThat(bindings.get(0).getDestination()).isEqualTo(group);
-            //assertThat(bindings.get(0).getRoutingKey()).isIn("foo", "bar");
-            //assertThat(bindings.get(1).getSource()).isEqualTo("propsUser2");
-            //assertThat(bindings.get(1).getDestination()).isEqualTo(group);
-            //assertThat(bindings.get(1).getRoutingKey()).isIn("foo", "bar");
-            //assertThat(bindings.get(1).getRoutingKey()).isNotEqualTo(bindings.get(0).getRoutingKey());
+            Assert.Equal(2, bindings.Count());
 
-            //ExchangeInfo exchange = client.getExchange("/", "propsUser2");
-            //while (n++ < 100 && exchange == null)
-            //{
-            //    Thread.sleep(100);
-            //    exchange = client.getExchange("/", "propsUser2");
-            //}
-            //assertThat(exchange.getType()).isEqualTo("direct");
-            //assertThat(exchange.isDurable()).isEqualTo(true);
-            //assertThat(exchange.isAutoDelete()).isEqualTo(false);
+            Assert.Equal("propsUser2", bindings.ElementAt(0).Source);
+            Assert.Equal(group, bindings.ElementAt(0).Destination);
+            Assert.Contains(bindings.ElementAt(0).RoutingKey, new List<string>() { "foo", "bar" });
 
-           
+            Assert.Equal("propsUser2", bindings.ElementAt(1).Source);
+            Assert.Equal(group, bindings.ElementAt(1).Destination);
+            Assert.Contains(bindings.ElementAt(1).RoutingKey, new List<string>() { "foo", "bar" });
+            Assert.NotEqual(bindings.ElementAt(1).RoutingKey, bindings.ElementAt(0).RoutingKey);
+
+            var exchange = await client.GetExchange("/", "propsUser2");
+            while (n++ < 100 && exchange == null)
+            {
+                Thread.Sleep(100);
+                exchange = await client.GetExchange("/", "propsUser2");
+            }
+
+            Assert.Equal("direct", exchange.Type);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
         }
 
         [Fact]
-        public void TestConsumerPropertiesWithUserInfrastructureCustomQueueArgs()
+        public async Task TestConsumerPropertiesWithUserInfrastructureCustomQueueArgs()
         {
             var binder = GetBinder();
             var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
@@ -488,94 +487,104 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             Assert.True(container.IsRunning);
 
-            //Client client = new Client("http://guest:guest@localhost:15672/api");
-            //List<BindingInfo> bindings = client.getBindingsBySource("/", "propsUser3");
-            //int n = 0;
-            //while (n++ < 100 && bindings == null || bindings.size() < 1)
-            //{
-            //    Thread.sleep(100);
-            //    bindings = client.getBindingsBySource("/", "propsUser3");
-            //}
-            //assertThat(bindings.size()).isEqualTo(1);
-            //assertThat(bindings.get(0).getSource()).isEqualTo("propsUser3");
-            //assertThat(bindings.get(0).getDestination()).isEqualTo("propsUser3.infra");
-            //assertThat(bindings.get(0).getRoutingKey()).isEqualTo("foo");
+            var client = new Client();
+            var bindings = await client.GetBindingsBySource("/", "propsUser3");
 
-            //bindings = client.getBindingsBySource("/", "customDLX");
-            //n = 0;
-            //while (n++ < 100 && bindings == null || bindings.size() < 1)
-            //{
-            //    Thread.sleep(100);
-            //    bindings = client.getBindingsBySource("/", "customDLX");
-            //}
-            ////		assertThat(bindings.size()).isEqualTo(1);
-            //assertThat(bindings.get(0).getSource()).isEqualTo("customDLX");
-            //assertThat(bindings.get(0).getDestination()).isEqualTo("customDLQ");
-            //assertThat(bindings.get(0).getRoutingKey()).isEqualTo("customDLRK");
+            int n = 0;
+            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            {
+                Thread.Sleep(100);
+                bindings = await client.GetBindingsBySource("/", "propsUser3");
+            }
 
-            //ExchangeInfo exchange = client.getExchange("/", "propsUser3");
-            //n = 0;
-            //while (n++ < 100 && exchange == null)
-            //{
-            //    Thread.sleep(100);
-            //    exchange = client.getExchange("/", "propsUser3");
-            //}
-            //assertThat(exchange.getType()).isEqualTo("direct");
-            //assertThat(exchange.isDurable()).isEqualTo(false);
-            //assertThat(exchange.isAutoDelete()).isEqualTo(true);
+            Assert.Single(bindings);
+            Assert.Equal("propsUser3", bindings.ElementAt(0).Source);
+            Assert.Equal("propsUser3.infra", bindings.ElementAt(0).Destination);
+            Assert.Equal("foo", bindings.ElementAt(0).RoutingKey);
 
-            //exchange = client.getExchange("/", "customDLX");
-            //n = 0;
-            //while (n++ < 100 && exchange == null)
-            //{
-            //    Thread.sleep(100);
-            //    exchange = client.getExchange("/", "customDLX");
-            //}
-            //assertThat(exchange.getType()).isEqualTo("topic");
-            //assertThat(exchange.isDurable()).isEqualTo(true);
-            //assertThat(exchange.isAutoDelete()).isEqualTo(false);
+            bindings = await client.GetBindingsBySource("/", "customDLX");
+            n = 0;
+            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            {
+                Thread.Sleep(100);
+                bindings = await client.GetBindingsBySource("/", "customDLX");
+            }
 
-            //QueueInfo queue = client.getQueue("/", "propsUser3.infra");
-            //n = 0;
-            //while (n++ < 100 && queue == null || queue.getConsumerCount() == 0)
-            //{
-            //    Thread.sleep(100);
-            //    queue = client.getQueue("/", "propsUser3.infra");
-            //}
-            //assertThat(queue).isNotNull();
-            //Map<String, Object> args = queue.getArguments();
-            //assertThat(args.get("x-expires")).isEqualTo(30_000);
-            //assertThat(args.get("x-max-length")).isEqualTo(10_000);
-            //assertThat(args.get("x-max-length-bytes")).isEqualTo(100_000);
-            //assertThat(args.get("x-overflow")).isEqualTo("drop-head");
-            //assertThat(args.get("x-max-priority")).isEqualTo(10);
-            //assertThat(args.get("x-message-ttl")).isEqualTo(2_000);
-            //assertThat(args.get("x-dead-letter-exchange")).isEqualTo("customDLX");
-            //assertThat(args.get("x-dead-letter-routing-key")).isEqualTo("customDLRK");
-            //assertThat(args.get("x-queue-mode")).isEqualTo("lazy");
-            //assertThat(queue.getExclusiveConsumerTag()).isEqualTo("testConsumerTag#0");
+            Assert.Equal("customDLX", bindings.ElementAt(0).Source);
+            Assert.Equal("customDLQ", bindings.ElementAt(0).Destination);
+            Assert.Equal("customDLRK", bindings.ElementAt(0).RoutingKey);
 
-            //queue = client.getQueue("/", "customDLQ");
+            var exchange = await client.GetExchange("/", "propsUser3");
+            n = 0;
+            while (n++ < 100 && exchange == null)
+            {
+                Thread.Sleep(100);
+                exchange = await client.GetExchange("/", "propsUser3");
+            }
 
-            //n = 0;
-            //while (n++ < 100 && queue == null)
-            //{
-            //    Thread.sleep(100);
-            //    queue = client.getQueue("/", "customDLQ");
-            //}
-            //assertThat(queue).isNotNull();
-            //args = queue.getArguments();
-            //assertThat(args.get("x-expires")).isEqualTo(60_000);
-            //assertThat(args.get("x-max-length")).isEqualTo(20_000);
-            //assertThat(args.get("x-max-length-bytes")).isEqualTo(40_000);
-            //assertThat(args.get("x-overflow")).isEqualTo("reject-publish");
-            //assertThat(args.get("x-max-priority")).isEqualTo(8);
-            //assertThat(args.get("x-message-ttl")).isEqualTo(1_000);
-            //assertThat(args.get("x-dead-letter-exchange")).isEqualTo("propsUser3");
-            //assertThat(args.get("x-dead-letter-routing-key")).isEqualTo("propsUser3");
-            //assertThat(args.get("x-queue-mode")).isEqualTo("lazy");
+            Assert.Equal("direct", exchange.Type);
+            Assert.False(exchange.Durable);
+            Assert.True(exchange.AutoDelete);
 
-            consumerBinding.Unbind();
+            exchange = await client.GetExchange("/", "customDLX");
+            n = 0;
+            while (n++ < 100 && exchange == null)
+            {
+                Thread.Sleep(100);
+                exchange = await client.GetExchange("/", "customDLX");
+            }
+
+            Assert.Equal("topic", exchange.Type);
+            Assert.True(exchange.Durable);
+            Assert.False(exchange.AutoDelete);
+
+            var queue = await client.GetQueue("/", "propsUser3.infra");
+            n = 0;
+            while (n++ < 100 && queue == null || queue.Consumers == 0)
+            {
+                Thread.Sleep(100);
+                queue = await client.GetQueue("/", "propsUser3.infra");
+            }
+
+            Assert.NotNull(queue); 
+
+            Assert.Equal("30000", queue.Arguments["x-expires"]);
+            Assert.Equal("10000", queue.Arguments["x-max-length"]);
+            Assert.Equal("100000", queue.Arguments["x-max-length-bytes"]);
+            Assert.Equal("drop-head", queue.Arguments["x-overflow"]);
+            Assert.Equal("10", queue.Arguments["x-max-priority"]);
+
+            Assert.Equal("2000", queue.Arguments["x-message-ttl"]);
+            Assert.Equal("customDLX", queue.Arguments["x-dead-letter-exchange"]);
+            Assert.Equal("customDLRK", queue.Arguments["x-dead-letter-routing-key"]);
+
+            Assert.Equal("lazy", queue.Arguments["x-queue-mode"]);
+            Assert.Equal("testConsumerTag#0", queue.ExclusiveConsumerTag);
+
+            queue = await client.GetQueue("/", "customDLQ");
+
+            n = 0;
+            while (n++ < 100 && queue == null)
+            {
+                Thread.Sleep(100);
+                queue = await client.GetQueue("/", "customDLQ");
+            
+            }
+            Assert.NotNull(queue);
+
+            Assert.Equal("60000", queue.Arguments["x-expires"]);
+            Assert.Equal("20000", queue.Arguments["x-max-length"]);
+            Assert.Equal("40000", queue.Arguments["x-max-length-bytes"]);
+            Assert.Equal("reject-publish", queue.Arguments["x-overflow"]);
+            Assert.Equal("8", queue.Arguments["x-max-priority"]);
+
+            Assert.Equal("1000", queue.Arguments["x-message-ttl"]);
+            Assert.Equal("propsUser3", queue.Arguments["x-dead-letter-exchange"]);
+            Assert.Equal("propsUser3", queue.Arguments["x-dead-letter-routing-key"]);
+
+            Assert.Equal("lazy", queue.Arguments["x-queue-mode"]);
+
+            await consumerBinding.Unbind();
             Assert.False(container.IsRunning);
             
         }
@@ -607,53 +616,40 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(container.IsRunning);
             Assert.Equal("propsHeader." + group, container.GetQueueNames()[0]);
 
-            //Client client = new Client("http://guest:guest@localhost:15672/api/");
-            var client = new ManagementClient("http://localhost", "guest", "guest");
-            var vhost = client.GetVhost("/");
-            var exchange = client.GetExchange("propsHeader", vhost);
-            //     var exchange = await client.CreateExchangeAsync(new ExchangeInfo(""))
-            var bindings = await client.GetBindingsWithSourceAsync(exchange);
-            //List<BindingInfo> bindings = client.getBindingsBySource("/", "propsHeader");
+            var client = new Client();
+            var bindings = await client.GetBindingsBySource("/", "propsHeader");
 
             int n = 0;
             while (n++ < 100 && (bindings == null || bindings.Count() < 1))
             {
                 Thread.Sleep(100);
-                bindings = await client.GetBindingsWithSourceAsync(exchange);
+                bindings = await client.GetBindingsBySource("/", "propsHeader");
             }
 
             Assert.Single(bindings);
             var binding = bindings.First();
             Assert.Equal("propsHeader", binding.Source);
             Assert.Equal("propsHeader." + group, binding.Destination);
-            //            Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
-            //          Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
-            //assertThat(bindings.get(0).getArguments()).hasEntrySatisfying("x-match", v->assertThat(v).isEqualTo("any"));
+            Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
+            Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
 
-            //assertThat(bindings.get(0).getArguments()).hasEntrySatisfying("foo", v->assertThat(v).isEqualTo("bar"));
-
-            //bindings = client.getBindingsBySource("/", "propsHeader.dlx");
-            exchange = client.GetExchange("propsHeader.dlx", vhost);
-            bindings = await client.GetBindingsWithSourceAsync(exchange);
+            bindings = await client.GetBindingsBySource("/", "propsHeader.dlx");
             n = 0;
             while (n++ < 100 && (bindings == null || bindings.Count() < 1))
             {
                 Thread.Sleep(100);
-                bindings = await client.GetBindingsWithSourceAsync(exchange);
+                bindings = await client.GetBindingsBySource("/", "propsHeader.dlx");
             }
 
             Assert.Single(bindings);
             binding = bindings.First();
             Assert.Equal("propsHeader.dlx", binding.Source);
             Assert.Equal("propsHeader." + group + ".dlq", binding.Destination);
-            //assertThat(bindings.get(0).getArguments()).hasEntrySatisfying("x-match", v->assertThat(v).isEqualTo("any"));
-            //        Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
-            //assertThat(bindings.get(0).getArguments()).hasEntrySatisfying("foo", v->assertThat(v).isEqualTo("bar"));
-            //      Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
-           
+            Assert.Contains(binding.Arguments, (arg) => arg.Key == "x-match" && arg.Value == "any");
+            Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
         }
 
-        [Fact]
+        [Fact] // TODO: SPEL
         public void TestProducerProperties()
         {
             var binder = GetBinder();
@@ -761,8 +757,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             consumerBinding.Unbind();
             Assert.NotNull(admin.GetQueueProperties(TEST_PREFIX + "durabletest.0.tgroup.dlq"));
-
-           
         }
 
         [Fact]
@@ -794,7 +788,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             consumerBinding.Unbind();
             Assert.Null(admin.GetQueueProperties(TEST_PREFIX + "nondurabletest.0.dlq"));
 
-           
         }
 
         [Fact]
@@ -866,11 +859,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default"));
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.dlq.binding"));
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.dlq"));
-
-           
         }
 
-        [Fact]
+        [Fact] // TODO
         public async void TestAutoBindDLQManualAcks()
         {
             var binder = GetBinder();
@@ -884,7 +875,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             DirectChannel moduleInputChannel = CreateBindableChannel("input", bindingProperties);
             moduleInputChannel.ComponentName = "dlqTestManual";
-            var client = new ManagementClient("http://localhost", "guest", "guest");
+
+            var client = new Client();
             var vhost = client.GetVhost("/");
 
             moduleInputChannel.Subscribe(new TestMessageHandler()
@@ -1030,24 +1022,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-1", received.MessageProperties.RoutingKey); ????
-            // Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+
+            Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-1", received.Headers.ReceivedRoutingKey());
+      //      Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
 
             output.Send(Message.Create(0));
             received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //assertThat(received.getMessageProperties().getReceivedRoutingKey())
-            //        .isEqualTo("bindertest.partDLQ.0.dlqPartGrp-0");
-            //assertThat(received.getMessageProperties().getHeaders())
-            //        .doesNotContainKey(BinderHeaders.PARTITION_HEADER);
-            // Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+            Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
+           // Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
 
             input0Binding.Unbind();
             input1Binding.Unbind();
             defaultConsumerBinding1.Unbind();
             defaultConsumerBinding2.Unbind();
             outputBinding.Unbind();
-           
         }
 
         [Fact]
@@ -1339,157 +1328,135 @@ namespace Steeltoe.Stream.Binder.Rabbit
          * queues.
          * Not working ...
          */
-        //[Fact]
-        //public void TestLateBinding()
-        //{
-        //    var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+        [Fact]
+        public void TestLateBinding()
+        {
+            var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
 
-        //    CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
+            CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
 
-        //    var context = RabbitTestBinder.GetApplicationContext();
-        //    var provisioner = new RabbitExchangeQueueProvisioner(cf, new RabbitBindingsOptions(), context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-        //    var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, new RabbitBindingsOptions(), provisioner);
-        //    RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
-        //    _testBinder = binder;
+            var context = RabbitTestBinder.GetApplicationContext();
+            var provisioner = new RabbitExchangeQueueProvisioner(cf, new RabbitBindingsOptions(), context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, new RabbitBindingsOptions(), provisioner);
+            RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
+            _testBinder = binder;
 
-        //    var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-        //    producerProperties.Extension.Prefix = "latebinder.";
-        //    producerProperties.Extension.AutoBindDlq = true;
-        //    producerProperties.Extension.Transacted = true;
+            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            producerProperties.Extension.Prefix = "latebinder.";
+            producerProperties.Extension.AutoBindDlq = true;
+            producerProperties.Extension.Transacted = true;
 
-        //    var moduleOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        //    var late0ProducerBinding = binder.BindProducer("late.0", moduleOutputChannel, producerProperties); 
+            var moduleOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            var late0ProducerBinding = binder.BindProducer("late.0", moduleOutputChannel, producerProperties);
 
-        //    QueueChannel moduleInputChannel = new QueueChannel();
-        //    var rabbitConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-        //    rabbitConsumerProperties.Extension.Prefix = "latebinder.";
-        //    var late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, rabbitConsumerProperties); 
-        //    producerProperties.PartitionKeyExpression = "payload.equals('0') ? 0 : 1";
-        //    producerProperties.PartitionSelectorExpression = "hashCode()";
-        //    producerProperties.PartitionCount = 2;
+            QueueChannel moduleInputChannel = new QueueChannel();
+            var rabbitConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerProperties.Extension.Prefix = "latebinder.";
+            var late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, rabbitConsumerProperties);
+            producerProperties.PartitionKeyExpression = "payload.equals('0') ? 0 : 1";
+            producerProperties.PartitionSelectorExpression = "hashCode()";
+            producerProperties.PartitionCount = 2;
 
-        //    //var partOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        //    //var partlate0ProducerBinding = binder.BindProducer("partlate.0", partOutputChannel, producerProperties);
+            var partOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            var partlate0ProducerBinding = binder.BindProducer("partlate.0", partOutputChannel, producerProperties);
 
-        //    //var partInputChannel0 = new QueueChannel();
-        //    //var partInputChannel1 = new QueueChannel();
+            var partInputChannel0 = new QueueChannel();
+            var partInputChannel1 = new QueueChannel();
 
-        //    //var partLateConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-        //    //partLateConsumerProperties.Extension.Prefix = "latebinder.";
-        //    //partLateConsumerProperties.Partitioned = true;
-        //    //partLateConsumerProperties.InstanceIndex = 0;
+            var partLateConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            partLateConsumerProperties.Extension.Prefix = "latebinder.";
+            partLateConsumerProperties.Partitioned = true;
+            partLateConsumerProperties.InstanceIndex = 0;
 
-        //    //var partlate0Consumer0Binding = binder.BindConsumer("partlate.0", "test", partInputChannel0, partLateConsumerProperties);
-        //    //partLateConsumerProperties.InstanceIndex = 1;
-        //    //var partlate0Consumer1Binding = binder.BindConsumer("partlate.0", "test", partInputChannel1, partLateConsumerProperties);
+            var partlate0Consumer0Binding = binder.BindConsumer("partlate.0", "test", partInputChannel0, partLateConsumerProperties);
+            partLateConsumerProperties.InstanceIndex = 1;
+            var partlate0Consumer1Binding = binder.BindConsumer("partlate.0", "test", partInputChannel1, partLateConsumerProperties);
 
-        //    //var noDlqProducerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-        //    //noDlqProducerProperties.Extension.Prefix = "latebinder.";
-        //    //var noDLQOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
-        //    //var noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDLQOutputChannel, noDlqProducerProperties);
+            var noDlqProducerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            noDlqProducerProperties.Extension.Prefix = "latebinder.";
+            var noDLQOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
+            var noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDLQOutputChannel, noDlqProducerProperties);
 
-        //    //var noDLQInputChannel = new QueueChannel();
-        //    //var noDlqConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-        //    //noDlqConsumerProperties.Extension.Prefix = "latebinder.";
-        //    //var noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDLQInputChannel, noDlqConsumerProperties);
+            var noDLQInputChannel = new QueueChannel();
+            var noDlqConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            noDlqConsumerProperties.Extension.Prefix = "latebinder.";
+            var noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDLQInputChannel, noDlqConsumerProperties);
 
-        //    //var outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
-        //    //var pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
-        //    //var pubSubInputChannel = new QueueChannel();
-        //    //noDlqConsumerProperties.Extension.DurableSubscription = false;
-        //    //var nonDurableConsumerBinding = binder.BindConsumer("latePubSub", "lategroup", pubSubInputChannel, noDlqConsumerProperties);
+            var outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
+            var pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
+            var pubSubInputChannel = new QueueChannel();
+            noDlqConsumerProperties.Extension.DurableSubscription = false;
+            var nonDurableConsumerBinding = binder.BindConsumer("latePubSub", "lategroup", pubSubInputChannel, noDlqConsumerProperties);
 
-        //    //var durablePubSubInputChannel = new QueueChannel();
-        //    //noDlqConsumerProperties.Extension.DurableSubscription = true;
-        //    //var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
-
-
-        //    proxy.Start();
-
-        //    moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
-        //            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-        //            .Build());
-
-        //    var message = moduleInputChannel.Receive(20000);
-        //    Assert.NotNull(message);
-        //    Assert.NotNull(message.Payload);
-
-        //    //noDLQOutputChannel.Send(MessageBuilder.WithPayload("bar")
-        //    //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-        //    //        .Build());
-
-        //    //message = noDLQInputChannel.Receive(10000);
-        //    //Assert.NotNull(message);
-        //    //Assert.Equal("bar".GetBytes(), message.Payload);
-
-        //    //outputChannel.Send(MessageBuilder.WithPayload("baz")
-        //    //            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-        //    //            .Build());
-        //    //message = pubSubInputChannel.Receive(10000);
-        //    //Assert.NotNull(message);
-        //    //Assert.Equal("baz".GetBytes(), message.Payload);
-        //    //message = durablePubSubInputChannel.Receive(10000);
-        //    //Assert.NotNull(message);
-        //    //Assert.Equal("baz".GetBytes(), message.Payload);
-
-        //    // TODO: SPEL
-
-        //    //partOutputChannel.Send(MessageBuilder.WithPayload("0")
-        //    //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-        //    //        .Build());
-        //    //partOutputChannel.Send(MessageBuilder.WithPayload("1")
-        //    //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-        //    //        .Build());
-
-        //    //message = partInputChannel0.Receive(10000);
-        //    //Assert.NotNull(message);
-
-        //    //Assert.Equal("0".GetBytes(), message.Payload);
-        //    //message = partInputChannel1.Receive(10000);
-        //    //Assert.NotNull(message);
-        //    //Assert.Equal("1".GetBytes(), message.Payload);
-
-        //    // late0ProducerBinding.Unbind();
-        //    //  late0ConsumerBinding.Unbind();
-        //    //partlate0ProducerBinding.Unbind();
-        //    //partlate0Consumer0Binding.Unbind();
-        //    //partlate0Consumer1Binding.Unbind();
-        //    //noDlqProducerBinding.Unbind();
-        //    //noDlqConsumerBinding.Unbind();
-        //    //pubSubProducerBinding.Unbind();
-        //    //nonDurableConsumerBinding.Unbind();
-        //    //durableConsumerBinding.Unbind();
+            var durablePubSubInputChannel = new QueueChannel();
+            noDlqConsumerProperties.Extension.DurableSubscription = true;
+            var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
 
-        //    //    binder.Cleanup();
+            proxy.Start();
 
-        //    proxy.Stop();
-        //    cf.Destroy();
+            moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
+                    .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+                    .Build());
 
-        //    GetResource().Destroy();
-        //}
+            var message = moduleInputChannel.Receive(20000);
+            Assert.NotNull(message);
+            Assert.NotNull(message.Payload);
+
+            noDLQOutputChannel.Send(MessageBuilder.WithPayload("bar")
+                    .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+                    .Build());
+
+            message = noDLQInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("bar".GetBytes(), message.Payload);
+
+            outputChannel.Send(MessageBuilder.WithPayload("baz")
+                        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+                        .Build());
+            message = pubSubInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("baz".GetBytes(), message.Payload);
+            message = durablePubSubInputChannel.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("baz".GetBytes(), message.Payload);
+
+            // TODO: SPEL
+
+            //partOutputChannel.Send(MessageBuilder.WithPayload("0")
+            //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            //        .Build());
+            //partOutputChannel.Send(MessageBuilder.WithPayload("1")
+            //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            //        .Build());
+
+            //message = partInputChannel0.Receive(10000);
+            //Assert.NotNull(message);
+
+            //Assert.Equal("0".GetBytes(), message.Payload);
+            //message = partInputChannel1.Receive(10000);
+            //Assert.NotNull(message);
+            //Assert.Equal("1".GetBytes(), message.Payload);
+
+            // late0ProducerBinding.Unbind();
+            //  late0ConsumerBinding.Unbind();
+            //partlate0ProducerBinding.Unbind();
+            //partlate0Consumer0Binding.Unbind();
+            //partlate0Consumer1Binding.Unbind();
+            //noDlqProducerBinding.Unbind();
+            //noDlqConsumerBinding.Unbind();
+            //pubSubProducerBinding.Unbind();
+            //nonDurableConsumerBinding.Unbind();
+            //durableConsumerBinding.Unbind();
 
 
-        //[Fact]
-        //public void TestProxy()
-        //{
-        //    var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+            Cleanup();
 
-        //    var connectionFactory = new RabbitMQ.Client.ConnectionFactory
-        //    {
-        //        AutomaticRecoveryEnabled = false,
-        //        HostName = "127.0.0.1",
-        //        Port = proxy.Port
-        //    };
+            proxy.Stop();
+            cf.Destroy();
 
-        //    proxy.Start();
-        //    var c = connectionFactory.CreateConnection("testingConnection");
-        //    var cachingConnectionFactory = new CachingConnectionFactory("127.0.0.1", proxy.Port);
-        //    Assert.NotNull(c);
-        //    Assert.NotNull(cachingConnectionFactory);
-        //    var conn = cachingConnectionFactory.CreateConnection();
-        //    conn.Close();
-        //}
+            GetResource().Destroy();
+        }
 
         [Fact]
         public async void TestBadUserDeclarationsFatal()
