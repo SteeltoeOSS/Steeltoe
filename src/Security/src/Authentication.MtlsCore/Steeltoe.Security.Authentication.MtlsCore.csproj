@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.Authentication.Mtls</RootNamespace>
     <Description>ASP.NET Core middleware that enables an application to support certificate authentication.</Description>
     <PackageTags>aspnetcore;authentication;security;x509;certificate;mtls</PackageTags>

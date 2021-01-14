@@ -117,7 +117,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("details"));
+            Assert.Contains("diskSpace", health["details"].ToString());
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("details"), "Health should contain key: details");
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -139,8 +143,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
-            Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("status"), "Health should contain key: status");
+            Assert.True(health.ContainsKey("details"), "Health should contain key: details");
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -159,11 +164,11 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
 
-            // { "status":"UP","diskSpace":{ "total":499581448192,"free":407577710592,"threshold":10485760,"status":"UP"} }
             var health = JsonSerializer.Deserialize<Dictionary<string, object>>(json);
             Assert.NotNull(health);
             Assert.True(health.ContainsKey("status"));
-            Assert.True(health.ContainsKey("diskSpace"));
+            Assert.True(health.ContainsKey("details"));
+            Assert.Contains("diskSpace", health["details"].ToString());
         }
 
         [Fact]
@@ -254,6 +259,20 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 var unknownJson = await unknownResult.Content.ReadAsStringAsync();
                 Assert.NotNull(unknownJson);
                 Assert.Contains("\"status\":\"UP\"", unknownJson);
+            }
+
+            builder = new WebHostBuilder()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(new Dictionary<string, string>(appSettings) { ["HealthCheckType"] = "down", ["management:endpoints:UseStatusCodeFromResponse"] = "false" }));
+
+            using (var server = new TestServer(builder))
+            {
+                var client = server.CreateClient();
+                var downResult = await client.GetAsync("http://localhost/cloudfoundryapplication/health");
+                Assert.Equal(HttpStatusCode.OK, downResult.StatusCode);
+                var downJson = await downResult.Content.ReadAsStringAsync();
+                Assert.NotNull(downJson);
+                Assert.Contains("\"status\":\"DOWN\"", downJson);
             }
         }
 

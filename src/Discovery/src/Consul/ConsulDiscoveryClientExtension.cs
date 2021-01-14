@@ -42,13 +42,10 @@ namespace Steeltoe.Discovery.Consul
         {
             var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
             services.Configure<ConsulOptions>(consulSection);
+            services.PostConfigure<ConsulOptions>(options => ConsulPostConfigurer.ValidateConsulOptions(options));
             var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
             services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
-            services.PostConfigure<ConsulDiscoveryOptions>(options =>
-            {
-                options.NetUtils = new InetUtils(netOptions);
-                options.ApplyNetUtils();
-            });
+            services.PostConfigure<ConsulDiscoveryOptions>(options => ConsulPostConfigurer.UpdateDiscoveryOptions(config, options, netOptions));
             services.TryAddSingleton(serviceProvider =>
             {
                 var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();

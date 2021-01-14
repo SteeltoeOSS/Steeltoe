@@ -1,11 +1,11 @@
-# Steeltoe Open Source Software
+# Steeltoe .NET Open Source Software
 
 [![Build Status](https://dev.azure.com/SteeltoeOSS/Steeltoe/_apis/build/status/SteeltoeOSS.steeltoe?branchName=master)](https://dev.azure.com/SteeltoeOSS/Steeltoe/_build/latest?definitionId=4&branchName=master)
 
 * [Introduction](#introduction)
 * [Project Management](#project-management)
 * [Project Repositories](#project-repositories)
-* [Roadmaps](#roadmaps)
+* [Roadmaps and Releases](#roadmaps-and-releases)
 * [Release Types](#release-types)
 * [Getting Started](#getting-started)
 * [Getting the Code](#getting-the-code)
@@ -51,7 +51,7 @@ Steeltoe is fully open source and is found under the SteeltoeOSS organization on
 
 ### Steeltoe Core Components
 
-These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) repository:
+These are located in the [Steeltoe](https://github.com/SteeltoeOSS/Steeltoe) repository:
 
 * Configuration - configuration providers which extend the reach of [.NET Configuration](https://github.com/dotnet/extensions/tree/master/src/Configuration) services
 * Common - Common packages to other Steeltoe components
@@ -65,19 +65,28 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/steeltoe) rep
 #### Other Repositories
 
 * [Samples](https://github.com/SteeltoeOSS/Samples) - Our collection of Sample applications used as a reference for Steeltoe .NET Application development
-* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [steeltoe.io/docs](steeltoe.io/docs) site
-* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the steeltoe.io (Blazor) website
-* [Initializr](https://github.com/SteeltoeOSS/initializr) - The [Steeltoe Initializr](https://start.steeltoe.io) source code
+* [Documentation](https://github.com/SteeltoeOSS/Documentation) - Markdown versions of our documentation on the [docs.steeltoe.io](https://docs.steeltoe.io) site
+* [MainSite](https://github.com/SteeltoeOSS/MainSite) - All of the [Steeltoe.io](https://steeltoe.io) website
+* [Initializr](https://start.steeltoe.io)
+   * [InitializrWeb](https://github.com/SteeltoeOSS/InitializrWeb) - The Initializr Web UI source code
+   * [InitializrApi](https://github.com/SteeltoeOSS/InitializrApi) - The Initializr Api source code
+   * [InitializrConfig](https://github.com/SteeltoeOSS/InitializrConfig) - The Initializr configuration and template data
+   * [InitializrConfigServer](https://github.com/SteeltoeOSS/InitializrConfigServer) - The Initializr Configuration Server
 * [Tooling](https://github.com/SteeltoeOSS/Tooling) - Steeltoe SDK and Tooling
 * [Dockerfiles](https://github.com/SteeltoeOSS/Dockerfiles) - Our collection of docker files we have on dockerhub
+* [Schema](https://github.com/SteeltoeOSS/Schema) - The schema build for Steeltoe components
 * [eShopOnContainers](https://github.com/SteeltoeOSS/eShopOnContainers) - Sample reference microservice and container based application with added Steeltoe capabilities (Forked and updated from dotnet-architecture org)
 
 
-## Roadmaps
-
-* [3.1.0](roadmaps/3.1.0.md) - In Progress (expected by end of 2020)
-* [3.0.0](roadmaps/3.0.0.md) - Released (8/2020)
-* [2.5.0](roadmaps/2.5.0.md) - In Progress (expected 9/2020)
+## Roadmaps and Releases
+* [3.2.0](https://github.com/SteeltoeOSS/Steeltoe/milestone/20) - In Planning
+* [3.1.0](https://github.com/SteeltoeOSS/Steeltoe/milestone/14) - In Progress (expected by end of 2020)
+* [3.0.0](https://github.com/SteeltoeOSS/Steeltoe/releases/tag/3.0.0) - Released (8/2020)
+   * [3.0.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/3.0.1) - Released (10/2020)
+   * [3.0.2](https://github.com/SteeltoeOSS/Steeltoe/milestone/21) - In Progress
+* [2.5.0](roadmaps/2.5.0.md) - Released (10/2020)
+   * [2.5.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.5.1) - Released (10/2020)
+   * [2.5.2](https://github.com/SteeltoeOSS/Steeltoe/milestone/22) - In Progress
 * [2.4.0](roadmaps/2.4.0.md) - Released (11/2019)
    * [2.4.1](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.1) - Released (1/2020)
    * [2.4.2](https://github.com/SteeltoeOSS/steeltoe/releases/tag/2.4.2) - Released (2/2020)

@@ -35,6 +35,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
             services.TryAddSingleton<IDbMigrationsOptions>(options);
             services.RegisterEndpointOptions(options);
             services.TryAddSingleton<DbMigrationsEndpoint>();
+            services.AddActuatorEndpointMapping<DbMigrationsEndpoint>();
         }
     }
 }

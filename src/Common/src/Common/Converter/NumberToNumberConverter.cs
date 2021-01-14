@@ -105,6 +105,17 @@ namespace Steeltoe.Common.Converter
                 (typeof(ushort), typeof(decimal)),
                 (typeof(byte), typeof(decimal)),
                 (typeof(sbyte), typeof(decimal)),
+
+                (typeof(int), typeof(byte)),
+                (typeof(float), typeof(byte)),
+                (typeof(uint), typeof(byte)),
+                (typeof(ulong), typeof(byte)),
+                (typeof(long), typeof(byte)),
+                (typeof(double), typeof(byte)),
+                (typeof(short), typeof(byte)),
+                (typeof(ushort), typeof(byte)),
+                (typeof(decimal), typeof(byte)),
+                (typeof(sbyte), typeof(byte)),
             };
         }
     }

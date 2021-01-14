@@ -346,6 +346,43 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             Assert.True(context.TraceOptions.IsSampled());
         }
 
+        [Fact]
+        public void ParentSpanContinuedFromContext()
+        {
+            var opts = GetOptions();
+            var tracing = new OpenTelemetryTracing(opts, null);
+            var obs = new AspNetCoreHostingObserver(opts, tracing);
+            var request = GetHttpRequestMessage("GET", "/foo");
+            request.Request.Headers.Add(B3Constants.XB3TraceId, new StringValues(TRACE_ID_BASE16));
+            request.Request.Headers.Add(B3Constants.XB3SpanId, new StringValues(SPAN_ID_BASE16));
+            request.Request.Headers.Add(B3Constants.XB3Sampled, new StringValues("1"));
+
+            obs.ProcessEvent(AspNetCoreHostingObserver.HOSTING_START_EVENT, new { HttpContext = request });
+
+            var span = GetCurrentSpan(tracing.Tracer);
+            Assert.NotNull(span);
+
+            var contextSpan = obs.Active;
+            Assert.NotNull(contextSpan);
+
+            Assert.Equal(span, contextSpan);
+            Assert.Equal("http:/foo", span.ToSpanData().Name);
+
+            Assert.False(span.HasEnded());
+
+            var spanData = span.ToSpanData();
+            var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
+
+            Assert.Equal(SPAN_ID_BASE16, spanData.ParentSpanId.ToHexString());
+            Assert.Equal(TRACE_ID_BASE16, spanData.Context.TraceId.ToHexString());
+            Assert.Equal(SpanKind.Server, spanData.Kind);
+            Assert.Equal("http://localhost:5555/foo", attributes[SpanAttributeConstants.HttpUrlKey]);
+            Assert.Equal(HttpMethod.Get.ToString(), attributes[SpanAttributeConstants.HttpMethodKey]);
+            Assert.Equal("localhost:5555", attributes[SpanAttributeConstants.HttpHostKey]);
+            Assert.Equal("/foo", attributes[SpanAttributeConstants.HttpPathKey]);
+            Assert.Equal("Header", attributes["http.request.TEST"]);
+        }
+
         private HttpContext GetHttpRequestMessage()
         {
             return GetHttpRequestMessage("GET", "/");

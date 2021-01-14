@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Converter;
-using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using System;
 
 namespace Steeltoe.Integration.Util

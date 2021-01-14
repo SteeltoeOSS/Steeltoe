@@ -1,4 +1,3 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28803.452
@@ -51,6 +50,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_shared", "_shared", "{DC1B
 		..\.gitignore = ..\.gitignore
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
 		..\codecov.yml = ..\codecov.yml
+		..\coverlet.runsettings = ..\coverlet.runsettings
 		..\nuget.config = ..\nuget.config
 		..\sharedproject.props = ..\sharedproject.props
 		..\sharedtest.props = ..\sharedtest.props
@@ -302,6 +302,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.ClientBase.Test", "Discovery\test\ClientBase.Test\Steeltoe.Discovery.ClientBase.Test.csproj", "{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.RabbitMQ", "Stream\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj", "{D00E5CE7-3EF2-4E56-9A86-078022644262}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{F2824B88-98BE-4061-B3BA-107CC553906D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression.Test", "Common\test\Common.Expression.Test\Steeltoe.Common.Expression.Test.csproj", "{B00091A9-7BDC-4E75-9118-A5920ACF1394}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -789,6 +792,14 @@ Global
 		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D00E5CE7-3EF2-4E56-9A86-078022644262}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2824B88-98BE-4061-B3BA-107CC553906D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2824B88-98BE-4061-B3BA-107CC553906D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2824B88-98BE-4061-B3BA-107CC553906D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2824B88-98BE-4061-B3BA-107CC553906D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B00091A9-7BDC-4E75-9118-A5920ACF1394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B00091A9-7BDC-4E75-9118-A5920ACF1394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B00091A9-7BDC-4E75-9118-A5920ACF1394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B00091A9-7BDC-4E75-9118-A5920ACF1394}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -915,6 +926,8 @@ Global
 		{E2BE4A3F-1C35-41ED-99D1-7630B5369942} = {31BAEBB1-696E-44A1-B1EF-0D150E6D2559}
 		{C5DDEE8C-E3EF-49BC-AEEE-B35271FC512A} = {31BAEBB1-696E-44A1-B1EF-0D150E6D2559}
 		{D00E5CE7-3EF2-4E56-9A86-078022644262} = {4F1EA720-AA18-4955-A854-016B26F6CED1}
+		{F2824B88-98BE-4061-B3BA-107CC553906D} = {59874241-E276-4035-B31D-14924889A1C9}
+		{B00091A9-7BDC-4E75-9118-A5920ACF1394} = {59874241-E276-4035-B31D-14924889A1C9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

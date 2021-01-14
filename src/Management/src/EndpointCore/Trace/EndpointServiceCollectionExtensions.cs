@@ -57,6 +57,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                     services.TryAddSingleton<ITraceOptions>(options);
                     services.RegisterEndpointOptions(options);
                     services.TryAddSingleton<TraceEndpoint>();
+                    services.AddActuatorEndpointMapping<TraceEndpoint>();
                     break;
                 default:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
@@ -64,6 +65,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                     services.TryAddSingleton<ITraceOptions>(options2);
                     services.RegisterEndpointOptions(options2);
                     services.TryAddSingleton(p => new HttpTraceEndpoint(options2, p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+                    services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                     break;
             }
         }

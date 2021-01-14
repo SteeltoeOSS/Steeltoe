@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
 using System;
 

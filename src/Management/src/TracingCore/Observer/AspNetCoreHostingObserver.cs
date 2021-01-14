@@ -122,7 +122,7 @@ namespace Steeltoe.Management.Tracing.Observer
             var spanName = ExtractSpanName(context);
 
             TelemetrySpan span;
-            if (!traceContext.IsValid)
+            if (traceContext.IsValid)
             {
                 Logger?.LogDebug("HandleStartEvent: Found parent span {parent}", traceContext.ToString());
                 Tracer.StartActiveSpan(spanName, traceContext, SpanKind.Server, out span);

@@ -74,7 +74,11 @@ namespace Steeltoe.Connector.EFCore.Test
             Assert.NotNull(type);
         }
 
+#if NETCOREAPP3_1
         [Fact]
+#else
+        [Fact(Skip = "Revisit when Oracle has support for EF Core 5.0")]
+#endif
         public void Options_Found_In_OracleEF_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package

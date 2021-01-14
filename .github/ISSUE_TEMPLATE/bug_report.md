@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: bug
+labels: Type/bug
 assignees: ''
 
 ---
@@ -19,10 +19,10 @@ Steps to reproduce the behavior:
 A clear and concise description of what you expected to happen.
 
 ## Environment (please complete the following information):
+ - Steeltoe Version [e.g. 2.3.0]
  - Platform: [e.g. Cloud Foundry, Azure, etc.) 
  - OS: [e.g. Windows, Linux, Mac OSX]
  - .NET Version [e.g. .NET Core 2.1.0, .NET Framework 4.7.1, etc.] 
- - Steeltoe Version [e.g. 2.3.0]
  - Any other library versions to note
 
 ## Screenshots

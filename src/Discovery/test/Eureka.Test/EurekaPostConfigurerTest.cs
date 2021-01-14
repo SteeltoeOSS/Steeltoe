@@ -17,6 +17,12 @@ namespace Steeltoe.Discovery.Eureka.Test
 {
     public class EurekaPostConfigurerTest
     {
+        public EurekaPostConfigurerTest()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        }
+
         [Fact]
         public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()
         {
@@ -242,6 +248,18 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal(2, map.Count);
             Assert.Equal("bar", map["foo"]);
             Assert.Equal("foo", map["bar"]);
+        }
+
+        [Fact]
+        public void UpdateConfigurationComplainsAboutDefaultWhenWontWork()
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
+
+            // act & assert
+            var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, null, new EurekaClientOptions()));
+            Assert.Contains(EurekaClientConfig.Default_ServerServiceUrl, exception.Message);
+            Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
         }
 
         [Fact]
@@ -867,6 +885,20 @@ namespace Steeltoe.Discovery.Eureka.Test
             Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CF_APP_GUID]);
             Assert.Equal("1", map[EurekaPostConfigurer.CF_INSTANCE_INDEX]);
             Assert.Equal(EurekaPostConfigurer.UNKNOWN_ZONE, map[EurekaPostConfigurer.ZONE]);
+        }
+
+        [Fact]
+        public void UpdateConfigurationFindsUrls()
+        {
+            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>() { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+            var instOpts = new EurekaInstanceOptions();
+            var appInfo = new ApplicationInstanceInfo(config);
+
+            EurekaPostConfigurer.UpdateConfiguration(config, instOpts, appInfo);
+
+            Assert.Equal("myapp", instOpts.HostName);
+            Assert.Equal(1234, instOpts.SecurePort);
+            Assert.Equal(1233, instOpts.Port);
         }
     }
 }

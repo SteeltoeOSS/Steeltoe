@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -84,6 +85,24 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             Assert.NotNull(levels);
             Assert.True(levels.All(x => x == LogLevel.Trace));
+        }
+
+        [Fact]
+        public void AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
+        {
+            // arrange
+            var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+            var services = new ServiceCollection();
+            var provider = services
+                .AddSingleton<IConfiguration>(configuration)
+                .AddSingleton<ConsoleLoggerProvider>()
+                .AddLogging(builder =>
+                {
+                    builder.AddDynamicSerilog(true);
+                })
+                .BuildServiceProvider();
+
+            Assert.Contains(services, d => d.ImplementationType == typeof(ConsoleLoggerProvider));
         }
 
         [Fact]

@@ -4,7 +4,7 @@
     <Description>
       Steeltoe Stream Test Binder
       **PLEASE NOTE** This package is experimental and is not production-ready.  </Description>
-      <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.TestBinder</RootNamespace>
     <AssemblyName>Steeltoe.Stream.TestBinder</AssemblyName>
     <PackageId>Steeltoe.Stream.TestBinder</PackageId>
@@ -18,7 +18,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />

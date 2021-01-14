@@ -125,12 +125,7 @@ namespace Steeltoe.Common.Converter
                 if (type.IsGenericType)
                 {
                     var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IList<>) == defn)
-                    {
-                        return true;
-                    }
-
-                    if (typeof(IEnumerator<>) == defn)
+                    if (typeof(IList<>) == defn || typeof(IEnumerator<>) == defn || typeof(ICollection<>) == defn)
                     {
                         return true;
                     }
@@ -217,12 +212,7 @@ namespace Steeltoe.Common.Converter
                 if (type.IsGenericType)
                 {
                     var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IList<>) == defn)
-                    {
-                        return (IList)Activator.CreateInstance(MakeGenericListType(type));
-                    }
-
-                    if (typeof(IEnumerable<>) == defn)
+                    if (typeof(IList<>) == defn || typeof(IEnumerable<>) == defn || typeof(ICollection<>) == defn)
                     {
                         return (IList)Activator.CreateInstance(MakeGenericListType(type));
                     }
@@ -314,7 +304,12 @@ namespace Steeltoe.Common.Converter
             try
             {
                 var method = clazz.GetMethod(methodName, args);
-                return method.IsStatic ? method : null;
+                if (method != null)
+                {
+                    return method.IsStatic ? method : null;
+                }
+
+                return null;
             }
             catch (Exception)
             {

@@ -46,8 +46,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
         }
 
-        [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        [Theory]
+        [InlineData("http://somehost:1234", "https://somehost:1234", "https")]
+        [InlineData("http://somehost:443", "https://somehost", "https")]
+        [InlineData("http://somehost:80", "http://somehost", "http")]
+        [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
+        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -55,12 +59,13 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var links = await client.GetFromJsonAsync<Links>("http://localhost/actuator");
+            client.DefaultRequestHeaders.Add("X-Forwarded-Proto", xForwarded);
+            var links = await client.GetFromJsonAsync<Links>($"{requestUriString}/actuator");
             Assert.NotNull(links);
             Assert.True(links._links.ContainsKey("self"));
-            Assert.Equal("http://localhost/actuator", links._links["self"].Href);
+            Assert.Equal($"{calculatedHost}/actuator", links._links["self"].Href);
             Assert.True(links._links.ContainsKey("info"));
-            Assert.Equal("http://localhost/actuator/info", links._links["info"].Href);
+            Assert.Equal($"{calculatedHost}/actuator/info", links._links["info"].Href);
         }
 
         [Fact]
@@ -80,6 +85,28 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
 
             // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}", json);
+        }
+
+        [Fact]
+        public async void HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
+        {
+            var settings = new Dictionary<string, string>(appSettings);
+            appSettings.Add("Management:Endpoints:Path", "/");
+
+            // arrange a server and client
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+
+            // send the request
+            var result = await client.GetAsync("http://localhost/");
+            var json = await result.Content.ReadAsStringAsync();
+
+            // assert
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}", json);
         }
 
         [Fact]

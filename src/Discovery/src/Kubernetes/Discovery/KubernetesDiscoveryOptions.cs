@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         /// <summary>
         /// Gets or sets a value indicating whether service discovery by Kubernetes API is enabled
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets a value representing the service name of the local instance

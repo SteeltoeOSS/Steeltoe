@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;

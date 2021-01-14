@@ -29,7 +29,7 @@ using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test
 {
-    public class DiscoveryServiceCollectionExtensionsTest
+    public class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         [Fact]
         public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
@@ -131,7 +131,7 @@ namespace Steeltoe.Discovery.Client.Test
             var services = new ServiceCollection().AddSingleton<IConfiguration>(config);
 
             // Act
-            services.AddServiceDiscovery();
+            services.AddDiscoveryClient();
             var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
 
             // assert
@@ -359,7 +359,7 @@ namespace Steeltoe.Discovery.Client.Test
         public void AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
         {
             // Arrange
-            IServiceCollection services = new ServiceCollection();
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             // Act
             services.AddServiceDiscovery();
@@ -660,10 +660,88 @@ namespace Steeltoe.Discovery.Client.Test
         }
 
         [Fact]
-        public void AddServiceDiscovery_WithMultipleClientTypes_NotAllowed()
+        public void AddDiscoveryClient_WithConsulUrlConfiguration_AddsDiscoveryClient()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" }
+            };
+
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+            services.AddDiscoveryClient(config);
+            var provider = services.BuildServiceProvider();
+
+            Assert.NotNull(provider.GetService<IDiscoveryClient>());
+            Assert.NotNull(provider.GetService<IConsulClient>());
+            Assert.NotNull(provider.GetService<IScheduler>());
+            Assert.NotNull(provider.GetService<IConsulServiceRegistry>());
+            var reg = provider.GetService<IConsulRegistration>();
+            Assert.NotNull(reg);
+            Assert.Equal("myapp", reg.Host);
+            Assert.Equal(1234, reg.Port);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsul_UrlBypassWorks()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" },
+                { "Consul:Discovery:UseAspNetCoreUrls", "false" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+            var reg = provider.GetService<IConsulRegistration>();
+
+            Assert.NotNull(reg);
+            Assert.NotEqual("myapp", reg.Host);
+            Assert.Equal(0, reg.Port);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddDiscoveryClient_WithConsul_PreferPortOverUrl()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>
+            {
+                { "spring:application:name", "myName" },
+                { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" },
+                { "consul:discovery:register", "false" },
+                { "consul:discovery:deregister", "false" },
+                { "Consul:Discovery:Port", "8080" }
+            };
+            var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+            var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+            var reg = provider.GetService<IConsulRegistration>();
+
+            Assert.NotNull(reg);
+            Assert.NotEqual("myapp", reg.Host);
+            Assert.Equal(8080, reg.Port);
+            Assert.NotNull(provider.GetService<IConsulServiceRegistrar>());
+            Assert.NotNull(provider.GetService<IHealthContributor>());
+        }
+
+        [Fact]
+        public void AddServiceDiscovery_WithMultipleConfiguredClients_NotAllowed()
         {
             var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "consul:discovery:cachettl", "1" }, { "eureka:client:cachettl", "1" } }).Build());
 
             // act
             var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
@@ -672,7 +750,41 @@ namespace Steeltoe.Discovery.Client.Test
                     builder.UseEureka();
                 }));
 
-            Assert.Contains("Multiple IDiscoveryClient implementations have been configured", exception.Message);
+            Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        }
+
+        [Fact]
+        public void AddServiceDiscovery_WithMultipleNotConfiguredClients_NotAllowed()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+
+            // act
+            var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
+            {
+                builder.UseConsul();
+                builder.UseEureka();
+            }));
+
+            Assert.Contains("Multiple IDiscoveryClient implementations have been registered", exception.Message);
+        }
+
+        [Fact]
+        public void AddServiceDiscovery_WithMultipleClients_PicksConfigured()
+        {
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "eureka:client:cachettl", "1" } }).Build());
+
+            // act
+            var provider = serviceCollection.AddServiceDiscovery(builder =>
+            {
+                builder.UseConsul();
+                builder.UseEureka();
+            }).BuildServiceProvider();
+
+            // assert
+            var service = provider.GetService<IDiscoveryClient>();
+            Assert.True(service.GetType().IsAssignableFrom(typeof(EurekaDiscoveryClient)));
         }
 
         [Fact]
@@ -696,6 +808,12 @@ namespace Steeltoe.Discovery.Client.Test
             var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
             Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
             Assert.Equal("notdefault", options.Value.Namespace);
+        }
+
+        public void Dispose()
+        {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
         internal class TestClientHandlerProvider : IHttpClientHandlerProvider

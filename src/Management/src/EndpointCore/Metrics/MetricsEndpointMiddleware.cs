@@ -83,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return GetMetricName(request, _endpoint.Path);
             }
 
-            var path = $"{_mgmtOptions.Path}/{_endpoint.Id}";
+            var path = $"{_mgmtOptions.Path}/{_endpoint.Id}".Replace("//", "/");
             var metricName = GetMetricName(request, path);
 
             return metricName;

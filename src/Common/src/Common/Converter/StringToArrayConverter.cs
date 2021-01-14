@@ -44,6 +44,14 @@ namespace Steeltoe.Common.Converter
                 throw new InvalidOperationException("No target element type");
             }
 
+            // Handle string, not delimited, to char[]
+            if (fields.Length == 1 &&
+                sourceString[sourceString.Length - 1] != _delimit[0] &&
+                targetElementType == typeof(char))
+            {
+                return sourceString.ToCharArray();
+            }
+
             var target = Array.CreateInstance(targetElementType, fields.Length);
             for (var i = 0; i < fields.Length; i++)
             {

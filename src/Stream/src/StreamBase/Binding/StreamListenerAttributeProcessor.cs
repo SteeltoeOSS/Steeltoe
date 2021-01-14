@@ -5,7 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;

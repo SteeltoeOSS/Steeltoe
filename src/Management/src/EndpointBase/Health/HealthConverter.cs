@@ -26,10 +26,17 @@ namespace Steeltoe.Management.Endpoint.Health
                     writer.WriteString("description", health.Description);
                 }
 
-                foreach (var detail in health.Details)
+                if (health.Details != null && health.Details.Count > 0)
                 {
-                    writer.WritePropertyName(detail.Key);
-                    JsonSerializer.Serialize(writer, detail.Value, options);
+                    writer.WritePropertyName("details");
+                    writer.WriteStartObject();
+                    foreach (var detail in health.Details)
+                    {
+                        writer.WritePropertyName(detail.Key);
+                        JsonSerializer.Serialize(writer, detail.Value, options);
+                    }
+
+                    writer.WriteEndObject();
                 }
             }
 

@@ -281,17 +281,12 @@ namespace Steeltoe.Common.Reflection
         /// Try to make sure all assemblies with the given attribute have been loaded into the current AppDomain
         /// </summary>
         /// <typeparam name="T">Assembly Attribute Type</typeparam>
+        /// <remarks>This method depends on assemblies existing as separate files on disk and will not work for applications published with /p:PublishSingleFile=true</remarks>
         private static void TryLoadAssembliesWithAttribute<T>()
             where T : AssemblyContainsTypeAttribute
         {
             var runtimeAssemblies = Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll");
-            var paths = new List<string>(runtimeAssemblies)
-            {
-                Assembly.GetExecutingAssembly().Location,
-                typeof(T).Assembly.Location
-            };
-
-            using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(paths));
+            using var loadContext = new MetadataLoadContext(new PathAssemblyResolver(AllRelevantPaths(runtimeAssemblies, typeof(T))));
             var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
             var assemblypaths = Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory).Where(f => f.EndsWith("dll", StringComparison.InvariantCultureIgnoreCase));
             foreach (var assembly in assemblypaths)
@@ -315,6 +310,37 @@ namespace Steeltoe.Common.Reflection
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Build a list of file paths that are relevant to this task
+        /// </summary>
+        /// <param name="runtimeAssemblies">Paths to dotnet runtime files</param>
+        /// <param name="attributeType">The assembly attribute being searched for</param>
+        /// <returns>A list of paths to the runtime, assembly and requested assembly type</returns>
+        private static List<string> AllRelevantPaths(string[] runtimeAssemblies, Type attributeType)
+        {
+            var toReturn = new List<string>(runtimeAssemblies);
+            var executingAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            var typeAssemblyLocation = attributeType.Assembly.Location;
+            if (string.IsNullOrEmpty(executingAssemblyLocation) || string.IsNullOrEmpty(typeAssemblyLocation))
+            {
+                var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                if (baseDirectory.EndsWith("\\"))
+                {
+                    baseDirectory = baseDirectory.Substring(0, baseDirectory.Length - 1);
+                }
+
+                toReturn.Add(baseDirectory);
+                Console.WriteLine("File path path information for the assembly containing {0} is missing. Some Steeltoe functionality may not work with PublishSingleFile=true", attributeType.Name);
+            }
+            else
+            {
+                toReturn.Add(executingAssemblyLocation);
+                toReturn.Add(attributeType.Assembly.Location);
+            }
+
+            return toReturn;
         }
     }
 }

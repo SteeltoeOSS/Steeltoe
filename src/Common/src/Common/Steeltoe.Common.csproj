@@ -14,8 +14,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(DiagnosticSourceVersion)" />
+    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
     <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemReflectionVersion)" />
+    <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>

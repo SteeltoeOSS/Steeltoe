@@ -9,9 +9,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{CC77ED1F-B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{473B575D-8871-4E77-9212-C2BBA20D702E}"
 	ProjectSection(SolutionItems) = preProject
+		..\..\.editorconfig = ..\..\.editorconfig
+		..\..\.gitattributes = ..\..\.gitattributes
+		..\..\.gitignore = ..\..\.gitignore
+		..\..\azure-pipelines.yml = ..\..\azure-pipelines.yml
+		..\..\codecov.yml = ..\..\codecov.yml
+		..\..\coverlet.runsettings = ..\..\coverlet.runsettings
+		..\..\DeterministicBuild.targets = ..\..\DeterministicBuild.targets
+		..\..\Directory.Build.targets = ..\..\Directory.Build.targets
 		..\..\nuget.config = ..\..\nuget.config
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
+		..\..\Steeltoe.ruleset = ..\..\Steeltoe.ruleset
 		..\..\stylecop.json = ..\..\stylecop.json
 		..\..\targetframework.props = ..\..\targetframework.props
 		..\..\versions.props = ..\..\versions.props
@@ -54,6 +63,14 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Abstractions", "..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj", "{2145B666-B3CE-4430-9DD2-760C594FD2A4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dependencies", "dependencies", "{B33E8EE0-3CDD-4B38-957B-BC0C7B000721}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Kubernetes", "src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj", "{FF11B7CE-85E4-49A3-823A-55BC6A291915}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Kubernetes.Test", "test\Common.Kubernetes.Test\Steeltoe.Common.Kubernetes.Test.csproj", "{39CBC27D-108F-4BD9-A88E-5B1D3635CE30}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "src\Common.Expression\Steeltoe.Common.Expression.csproj", "{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression.Test", "test\Common.Expression.Test\Steeltoe.Common.Expression.Test.csproj", "{C9006490-F0A8-4166-B003-DF4B73258154}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -121,6 +138,22 @@ Global
 		{2145B666-B3CE-4430-9DD2-760C594FD2A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2145B666-B3CE-4430-9DD2-760C594FD2A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2145B666-B3CE-4430-9DD2-760C594FD2A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF11B7CE-85E4-49A3-823A-55BC6A291915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF11B7CE-85E4-49A3-823A-55BC6A291915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF11B7CE-85E4-49A3-823A-55BC6A291915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF11B7CE-85E4-49A3-823A-55BC6A291915}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39CBC27D-108F-4BD9-A88E-5B1D3635CE30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39CBC27D-108F-4BD9-A88E-5B1D3635CE30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39CBC27D-108F-4BD9-A88E-5B1D3635CE30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39CBC27D-108F-4BD9-A88E-5B1D3635CE30}.Release|Any CPU.Build.0 = Release|Any CPU
+		{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9006490-F0A8-4166-B003-DF4B73258154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9006490-F0A8-4166-B003-DF4B73258154}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9006490-F0A8-4166-B003-DF4B73258154}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9006490-F0A8-4166-B003-DF4B73258154}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -141,6 +174,10 @@ Global
 		{99A35CC1-53F8-4C0F-93E7-BA058172188A} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
 		{039376CF-2573-4D86-A0B3-7532AAC3D19A} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 		{2145B666-B3CE-4430-9DD2-760C594FD2A4} = {B33E8EE0-3CDD-4B38-957B-BC0C7B000721}
+		{FF11B7CE-85E4-49A3-823A-55BC6A291915} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+		{39CBC27D-108F-4BD9-A88E-5B1D3635CE30} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
+		{956FAAA7-AC7E-4AAA-B8F6-CBFDC776867F} = {D9798FDE-76F4-4848-8AE0-95249C0101F0}
+		{C9006490-F0A8-4166-B003-DF4B73258154} = {CC77ED1F-BC03-4B9D-A07A-186C9A13042B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4A85F9DA-2C2D-48E9-A28C-9B35C473C150}

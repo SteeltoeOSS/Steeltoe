@@ -4,10 +4,12 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health
@@ -45,7 +47,11 @@ namespace Steeltoe.Management.Endpoint.Health
         protected internal string DoRequest(HttpContext context)
         {
             var result = _endpoint.Invoke(new CoreSecurityContext(context));
-            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            if (_mgmtOptions.UseStatusCodeFromResponse)
+            {
+                context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            }
+
             return Serialize(result);
         }
     }

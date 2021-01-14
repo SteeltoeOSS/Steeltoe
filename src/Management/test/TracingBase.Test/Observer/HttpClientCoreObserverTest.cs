@@ -71,7 +71,11 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request });
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
+#if NETCOREAPP3_1
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
+#else
+            Assert.DoesNotContain(request.Options, o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY);
+#endif
         }
 
         [Fact]
@@ -86,12 +90,20 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request });
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
+#if NETCOREAPP3_1
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out var context));
+#else
+            Assert.DoesNotContain(request.Options, o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY);
+#endif
 
             obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, new { Request = request, Exception = new Exception() });
             span = GetCurrentSpan(tracing.Tracer);
             Assert.Null(span);
+#if NETCOREAPP3_1
             Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out context));
+#else
+            Assert.DoesNotContain(request.Options, o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY);
+#endif
         }
 
         [Fact]
@@ -105,8 +117,13 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
+#if NETCOREAPP3_1
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
             var contextSpan = context as TelemetrySpan;
+#else
+            var contextSpan = request.Options.FirstOrDefault(o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY).Value;
+            Assert.NotNull(contextSpan);
+#endif
             Assert.Equal(span, contextSpan);
             Assert.Equal("httpclient:/", span.ToSpanData().Name);
 
@@ -116,7 +133,11 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var response = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded());
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
+#if NETCOREAPP3_1
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out context));
+#else
+            Assert.DoesNotContain(request.Options, o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY);
+#endif
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
@@ -143,9 +164,13 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
+#if NETCOREAPP3_1
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
-
             var contextSpan = context as TelemetrySpan;
+#else
+            var contextSpan = request.Options.FirstOrDefault(o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY).Value;
+            Assert.NotNull(contextSpan);
+#endif
             Assert.NotNull(contextSpan);
             Assert.Equal(span, contextSpan);
             Assert.Equal("httpclient:/", span.ToSpanData().Name);
@@ -153,7 +178,11 @@ namespace Steeltoe.Management.Tracing.Observer.Test
             var response = GetHttpResponseMessage(HttpStatusCode.OK);
             obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, new { Request = request, Response = response, RequestTaskStatus = TaskStatus.RanToCompletion });
             Assert.True(span.HasEnded());
-            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object ctx));
+#if NETCOREAPP3_1
+            Assert.False(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out context));
+#else
+            Assert.DoesNotContain(request.Options, o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY);
+#endif
 
             var spanData = span.ToSpanData();
             var attributes = spanData.Attributes.ToDictionary(kv => kv.Key, kv => kv.Value);
@@ -178,8 +207,13 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
             var span = GetCurrentSpan(tracing.Tracer);
             Assert.NotNull(span);
+#if NETCOREAPP3_1
             Assert.True(request.Properties.TryGetValue(HttpClientCoreObserver.SPANCONTEXT_KEY, out object context));
             var contextSpan = context as TelemetrySpan;
+#else
+            var contextSpan = request.Options.FirstOrDefault(o => o.Key == HttpClientCoreObserver.SPANCONTEXT_KEY).Value;
+            Assert.NotNull(contextSpan);
+#endif
 
             Assert.NotNull(contextSpan);
             Assert.Equal(span, contextSpan);

@@ -177,14 +177,23 @@ namespace Steeltoe.Discovery.Client
 
             builderAction?.Invoke(builder);
 
+            if (builder.Extensions.Count > 1)
+            {
+                var config = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
+                var configured = builder.Extensions.Where(ext => ext.IsConfigured(config, GetSingletonDiscoveryServiceInfo(config)));
+                if (!configured.Any() || configured.Count() > 1)
+                {
+                    throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been registered and 0 or more than 1 have been configured! This is not supported, please only use a single client type.");
+                }
+                else
+                {
+                    builder.Extensions = configured.ToList();
+                }
+            }
+
             foreach (var ext in builder.Extensions)
             {
                 ext.ApplyServices(serviceCollection);
-            }
-
-            if (serviceCollection.Count(descriptor => descriptor.ServiceType.IsAssignableFrom(typeof(IDiscoveryClient))) > 1)
-            {
-                throw new AmbiguousMatchException("Multiple IDiscoveryClient implementations have been configured! This is not supported, please only use a single client type.");
             }
         }
 

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -47,7 +49,16 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 scheme = headerScheme.ToString();
             }
 
-            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+            // request.Host automatically includes or excludes the port based on whether it is standard for the scheme
+            // ... except when we manually change the scheme to match the X-Forwarded-Proto
+            if (scheme == "https" && request.Host.Port == 443)
+            {
+                return $"{scheme}://{request.Host.Host}{request.PathBase}{request.Path}";
+            }
+            else
+            {
+                return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
+            }
         }
 
         private static string HandleRequest(IEndpoint<Links, string> endpoint, string requestUri, ILogger logger)

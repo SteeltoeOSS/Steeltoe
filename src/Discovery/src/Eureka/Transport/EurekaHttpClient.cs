@@ -209,7 +209,15 @@ namespace Steeltoe.Discovery.Eureka.Transport
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogInformation(e, "Response could not be deserialized");
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                        if (response.IsSuccessStatusCode && string.IsNullOrEmpty(responseBody))
+                        {
+                            // request was successful but body was empty. This is OK, we don't need a response body
+                        }
+                        else
+                        {
+                            _logger?.LogError(e, "Failed to read heartbeat response. Response code: {responseCode}, Body: {responseBody}", response.StatusCode, responseBody);
+                        }
                     }
 
                     InstanceInfo infoResp = null;
@@ -721,7 +729,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
         protected internal static string MakeServiceUrl(string serviceUrl)
         {
             var url = new Uri(serviceUrl).ToString();
-            if (url[^1] != '/')
+            if (!url.EndsWith("/"))
             {
                 url += '/';
             }
