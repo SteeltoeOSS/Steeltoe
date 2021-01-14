@@ -113,8 +113,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 if (_httpHandler is null)
                 {
-                    // default HttpClient timeout is 100 seconds
-                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, 100);
+                    const int DefaultHttpClientTimeoutMillis = 100000;
+                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, DefaultHttpClientTimeoutMillis);
                 }
                 else
                 {
