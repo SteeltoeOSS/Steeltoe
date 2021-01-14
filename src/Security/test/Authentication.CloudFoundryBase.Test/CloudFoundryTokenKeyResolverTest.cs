@@ -119,5 +119,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             client.GetAsync("http://localhost/");
             Assert.NotNull(handler.LastRequest);
         }
+
+        [Fact]
+        public void HttpClient_HasAtLeast_Default100secondsTimeout()
+        {
+            var resolver = new CloudFoundryTokenKeyResolver("https://foo.bar", null, false);
+            var client = resolver.GetHttpClient();
+
+            Assert.True(client.Timeout >= TimeSpan.FromSeconds(100));
+        }
     }
 }
