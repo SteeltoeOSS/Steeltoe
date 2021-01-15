@@ -147,7 +147,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                             PushCharToken(TokenKind.RCURLY);
                             break;
                         case '@':
-                            PushCharToken(TokenKind.BEAN_REF);
+                            PushCharToken(TokenKind.SERVICE_REF);
                             break;
                         case '^':
                             if (IsTwoCharToken(TokenKind.SELECT_FIRST))
@@ -193,7 +193,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                             }
                             else
                             {
-                                PushCharToken(TokenKind.FACTORY_BEAN_REF);
+                                PushCharToken(TokenKind.FACTORY_SERVICE_REF);
                             }
 
                             break;

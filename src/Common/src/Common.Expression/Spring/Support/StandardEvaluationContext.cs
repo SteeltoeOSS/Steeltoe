@@ -274,8 +274,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             var accessors = _propertyAccessors;
             if (accessors == null)
             {
-                accessors = new List<IPropertyAccessor>(5);
-                accessors.Add(new ReflectivePropertyAccessor());
+                accessors = new List<IPropertyAccessor>(5)
+                {
+                    new ReflectivePropertyAccessor()
+                };
                 _propertyAccessors = accessors;
             }
 
@@ -287,8 +289,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             var resolvers = _constructorResolvers;
             if (resolvers == null)
             {
-                resolvers = new List<IConstructorResolver>(1);
-                resolvers.Add(new ReflectiveConstructorResolver());
+                resolvers = new List<IConstructorResolver>(1)
+                {
+                    new ReflectiveConstructorResolver()
+                };
                 _constructorResolvers = resolvers;
             }
 

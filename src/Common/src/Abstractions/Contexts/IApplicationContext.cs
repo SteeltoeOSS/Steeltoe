@@ -3,16 +3,22 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Expression.Internal.Contexts;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Common.Contexts
 {
-    public interface IApplicationContext
+    public interface IApplicationContext : IDisposable
     {
         IConfiguration Configuration { get; }
 
         IServiceProvider ServiceProvider { get; }
+
+        IServiceExpressionResolver ServiceExpressionResolver { get; set; }
+
+        object GetService(string name);
 
         object GetService(string name, Type serviceType);
 
@@ -24,6 +30,8 @@ namespace Steeltoe.Common.Contexts
 
         IEnumerable<T> GetServices<T>();
 
+        bool ContainsService(string name);
+
         bool ContainsService(string name, Type serviceType);
 
         bool ContainsService<T>(string name);
@@ -31,5 +39,7 @@ namespace Steeltoe.Common.Contexts
         void Register(string name, object instance);
 
         object Deregister(string name);
+
+        string ResolveEmbeddedValue(string value);
     }
 }
