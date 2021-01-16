@@ -100,6 +100,8 @@ namespace Steeltoe.Management.Endpoint
                 throw new ArgumentNullException(nameof(endpoints));
             }
 
+            ConnectEndpointOptionsWithManagementOptions(endpoints);
+
             var (middleware, optionsType) = LookupMiddleware(typeEndpoint);
             var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
             var mgmtOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
@@ -130,6 +132,30 @@ namespace Steeltoe.Management.Endpoint
             }
 
             return builder;
+        }
+
+        private static void ConnectEndpointOptionsWithManagementOptions(IEndpointRouteBuilder endpoints)
+        {
+            var serviceProvider = endpoints.ServiceProvider;
+            var managementOptions = serviceProvider.GetServices<IManagementOptions>();
+
+            foreach (var endpointOption in serviceProvider.GetServices<IEndpointOptions>())
+            {
+                foreach (var managementOption in managementOptions)
+                {
+                    // hypermedia endpoint is not exposed when running cloudfoundry
+                    if (managementOption is CloudFoundryManagementOptions &&
+                        endpointOption is HypermediaEndpointOptions)
+                    {
+                        continue;
+                    }
+
+                    if (!managementOption.EndpointOptions.Contains(endpointOption))
+                    {
+                        managementOption.EndpointOptions.Add(endpointOption);
+                    }
+                }
+            }
         }
     }
 

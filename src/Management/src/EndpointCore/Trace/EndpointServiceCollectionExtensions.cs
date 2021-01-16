@@ -48,23 +48,18 @@ namespace Steeltoe.Management.Endpoint.Trace
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
             services.AddActuatorManagementOptions(config);
+            services.AddTraceActuatorServices(config, version);
+
             switch (version)
             {
                 case MediaTypeVersion.V1:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
                     services.TryAddSingleton<ITraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-                    var options = new TraceEndpointOptions(config);
-                    services.TryAddSingleton<ITraceOptions>(options);
-                    services.RegisterEndpointOptions(options);
-                    services.TryAddSingleton<TraceEndpoint>();
                     services.AddActuatorEndpointMapping<TraceEndpoint>();
                     break;
                 default:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
-                    var options2 = new HttpTraceEndpointOptions(config);
-                    services.TryAddSingleton<ITraceOptions>(options2);
-                    services.RegisterEndpointOptions(options2);
-                    services.TryAddSingleton(p => new HttpTraceEndpoint(options2, p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+                    services.TryAddSingleton(p => new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
                     services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                     break;
             }

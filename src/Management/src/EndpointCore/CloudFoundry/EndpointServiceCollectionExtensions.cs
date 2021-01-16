@@ -4,9 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -25,20 +23,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
-            services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().First());
-
-            services.TryAddSingleton<ICloudFoundryOptions>(new CloudFoundryEndpointOptions(config));
-
-            services.TryAddSingleton(provider =>
-            {
-                var options = provider.GetService<ICloudFoundryOptions>();
-                var mgmtOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
-                mgmtOptions.EndpointOptions.Add(options);
-
-                return new CloudFoundryEndpoint(options, mgmtOptions);
-            });
-
+            services.AddCloudFoundryActuatorServices(config);
             services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
         }
     }
