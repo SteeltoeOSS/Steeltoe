@@ -84,7 +84,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var json = await result.Content.ReadAsStringAsync();
 
             // assert
-            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false}}}", json);
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false},\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false}}}", json);
         }
 
         [Fact]
@@ -106,7 +106,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var json = await result.Content.ReadAsStringAsync();
 
             // assert
-            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/\",\"templated\":false}}}", json);
+            Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/\",\"templated\":false},\"info\":{\"href\":\"http://localhost/info\",\"templated\":false}}}", json);
         }
 
         [Fact]

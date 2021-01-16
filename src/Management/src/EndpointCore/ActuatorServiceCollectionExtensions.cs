@@ -18,19 +18,18 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
 namespace Steeltoe.Management.Endpoint
 {
     public static class ActuatorServiceCollectionExtensions
     {
+        [Obsolete("No longer in use. Retained for binary compatibility")]
+        [ExcludeFromCodeCoverage]
         public static void RegisterEndpointOptions(this IServiceCollection services, IEndpointOptions options)
         {
-            var mgmtOptions = services.BuildServiceProvider().GetServices<IManagementOptions>();
-            foreach (var mgmtOption in mgmtOptions)
-            {
-                mgmtOption.EndpointOptions.Add(options);
-            }
+            // the code that was running here is now handled in ActuatorRouteBuilderExtensions
         }
 
         public static void AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2)

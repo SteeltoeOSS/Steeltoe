@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 
@@ -31,10 +30,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations
             }
 
             services.AddActuatorManagementOptions(config);
-            var options = new DbMigrationsEndpointOptions(config);
-            services.TryAddSingleton<IDbMigrationsOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<DbMigrationsEndpoint>();
+            services.AddDbMigrationsActuatorServices(config);
             services.AddActuatorEndpointMapping<DbMigrationsEndpoint>();
         }
     }

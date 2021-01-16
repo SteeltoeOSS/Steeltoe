@@ -44,10 +44,7 @@ namespace Steeltoe.Management.Endpoint.Env
             });
 
             services.AddActuatorManagementOptions(config);
-            var options = new EnvEndpointOptions(config);
-            services.TryAddSingleton<IEnvOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<EnvEndpoint>();
+            services.AddEnvActuatorServices(config);
             services.AddActuatorEndpointMapping<EnvEndpoint>();
         }
     }

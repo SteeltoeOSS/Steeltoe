@@ -68,10 +68,8 @@ namespace Steeltoe.Management.Endpoint.Health
             }
 
             services.AddActuatorManagementOptions(config);
+            services.AddHealthActuatorServices(config);
 
-            var options = new HealthEndpointOptions(config);
-            services.TryAddSingleton<IHealthOptions>(options);
-            services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
 
             services.TryAddSingleton(aggregator);

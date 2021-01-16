@@ -39,10 +39,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
 
             services.AddActuatorManagementOptions(config);
-
-            var options = new MetricsEndpointOptions(config);
-            services.TryAddSingleton<IMetricsEndpointOptions>(options);
-            services.RegisterEndpointOptions(options);
+            services.AddMetricsActuatorServices(config);
 
             var observerOptions = new MetricsObserverOptions(config);
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
@@ -53,7 +50,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             services.AddOpenTelemetry();
 
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
-            services.TryAddSingleton<MetricsEndpoint>();
             services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
 
@@ -81,15 +77,12 @@ namespace Steeltoe.Management.Endpoint.Metrics
             var observerOptions = new MetricsObserverOptions(config);
             services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-            var options = new PrometheusEndpointOptions(config);
-            services.TryAddSingleton<IPrometheusEndpointOptions>(options);
-            services.RegisterEndpointOptions(options);
+            services.AddPrometheusActuatorServices(config);
 
             AddMetricsObservers(services, observerOptions);
             services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
             services.AddOpenTelemetry();
             services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
-            services.TryAddSingleton<PrometheusScraperEndpoint>();
             services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
         }
 
