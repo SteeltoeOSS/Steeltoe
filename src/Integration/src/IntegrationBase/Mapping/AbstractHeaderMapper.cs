@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using System;
@@ -16,6 +17,7 @@ namespace Steeltoe.Integration.Mapping
         public const string NON_STANDARD_HEADER_NAME_PATTERN = "NON_STANDARD_HEADERS";
 
         private readonly List<string> _transient_header_names = new List<string>() { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
+        private readonly ILogger _logger;
 
         public string StandardHeaderPrefix { get; set; }
 
@@ -187,9 +189,9 @@ namespace Steeltoe.Integration.Mapping
                 PopulateStandardHeaders(headers, subset, target);
                 PopulateUserDefinedHeaders(subset, target);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log
+                _logger?.LogError(ex, ex.Message);
             }
         }
 
@@ -209,9 +211,9 @@ namespace Steeltoe.Integration.Mapping
                             PopulateUserDefinedHeader(key, value, target);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // Log
+                        _logger?.LogError(ex, ex.Message);
                     }
                 }
             }

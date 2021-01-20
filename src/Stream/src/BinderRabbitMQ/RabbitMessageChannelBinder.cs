@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
@@ -31,6 +32,7 @@ using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -45,7 +47,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly SimplePassthroughMessageConverter _passThoughConverter = new SimplePassthroughMessageConverter();
         private static readonly IMessageHeadersConverter _inboundMessagePropertiesConverter = new DefaultBinderMessagePropertiesConverter();
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
-        private static readonly Regex _interceptorNeededPattern = new Regex("(payload|#root|#this)");
+        private static readonly Regex _interceptorNeededPattern = new Regex("(Payload|#root|#this)");
 
         public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
@@ -151,7 +153,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     if (expressionInterceptorNeeded)
                     {
-                        endpoint.SetRoutingKeyExpressionString("headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']");
+                        endpoint.SetRoutingKeyExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']");
                     }
                     else
                     {
@@ -169,7 +171,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     if (expressionInterceptorNeeded)
                     {
-                        endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression("headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true);
+                        endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true);
                     }
                     else
                     {
@@ -182,7 +184,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 if (expressionInterceptorNeeded)
                 {
-                    endpoint.SetDelayExpressionString("headers['" + RabbitExpressionEvaluatingInterceptor.DELAY_HEADER + "']");
+                    endpoint.SetDelayExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.DELAY_HEADER + "']");
                 }
                 else
                 {
@@ -190,14 +192,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             }
 
-            // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.outboundMapper();
-            // List<String> headerPatterns = new ArrayList<>(
-            //        extendedProperties.getHeaderPatterns().length + 1);
-            // headerPatterns.add("!" + BinderHeaders.PARTITION_HEADER);
-            // headerPatterns.addAll(Arrays.asList(extendedProperties.getHeaderPatterns()));
-            // mapper.setRequestHeaderNames(
-            //        headerPatterns.toArray(new String[headerPatterns.size()]));
-            // endpoint.setHeaderMapper(mapper);
+            var mapper = DefaultRabbitHeaderMapper.OutboundMapper;
+            var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3);
+            headerPatterns.Add("!" + BinderHeaders.PARTITION_HEADER);
+            headerPatterns.Add("!" + IntegrationMessageHeaderAccessor.SOURCE_DATA);
+            headerPatterns.Add("!" + IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
+            headerPatterns.AddRange(extendedProperties.HeaderPatterns);
+
+            mapper.SetRequestHeaderNames(headerPatterns.ToArray());
+            endpoint.HeaderMapper = mapper;
+            
             endpoint.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
             if (errorChannel != null)
             {
@@ -221,13 +225,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
             endpoint.Initialize();
             return endpoint;
         }
-
-        protected void PostProcessOutputChannel(IMessageChannel outputChannel, RabbitProducerOptions extendedProperties)
+         protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
         {
-            if (ExpressionInterceptorNeeded(extendedProperties))
+            var extendedProperties = producerOptions as ExtendedProducerOptions<RabbitProducerOptions>;
+            var rabbitProducerOptions = extendedProperties.Extension;
+            if (ExpressionInterceptorNeeded(rabbitProducerOptions))
             {
-                var rkExpression = ExpressionParser.ParseExpression(extendedProperties.RoutingKeyExpression);
-                var delayExpression = ExpressionParser.ParseExpression(extendedProperties.DelayExpression);
+                IExpression rkExpression = null, delayExpression = null;
+                if (rabbitProducerOptions.RoutingKeyExpression != null)
+                {
+                    rkExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.RoutingKeyExpression);
+                }
+                if (rabbitProducerOptions.DelayExpression != null)
+                {
+                    delayExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.DelayExpression);
+                }
                 ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0, new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression, EvaluationContext));
             }
         }
@@ -424,9 +436,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private IExpression BuildPartitionRoutingExpression(string expressionRoot, bool rootIsExpression)
         {
             var partitionRoutingExpression = rootIsExpression
-                    ? expressionRoot + " + '-' + headers['" + BinderHeaders.PARTITION_HEADER
+                    ? expressionRoot + " + '-' + Headers['" + BinderHeaders.PARTITION_HEADER
                             + "']"
-                    : "'" + expressionRoot + "-' + headers['" + BinderHeaders.PARTITION_HEADER
+                    : "'" + expressionRoot + "-' + Headers['" + BinderHeaders.PARTITION_HEADER
                             + "']";
             return ExpressionParser.ParseExpression(partitionRoutingExpression);
         }
@@ -567,8 +579,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public void HandleMessage(IMessage message)
             {
                 // Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
-                var errorMessage = message as MessagingSupport.ErrorMessage;
-             //  var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
+             //   var errorMessage = message as MessagingSupport.ErrorMessage;
+             
+                //TODO: needed for error DLQ handling
+               var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
                 if (errorMessage == null)
                 {
                     // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
@@ -583,7 +597,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
 
                 var stackTraceAsString = cause.StackTrace;
-                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+                var accessor = RabbitHeaderAccessor.GetMutableAccessor(errorMessage);
                 if (_maxStackTraceLength < 0)
                 {
                     var result = RabbitUtils.GetMaxFrame(_binder.ConnectionFactory);

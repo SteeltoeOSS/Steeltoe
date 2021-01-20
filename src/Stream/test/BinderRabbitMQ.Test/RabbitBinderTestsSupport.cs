@@ -1,39 +1,19 @@
-﻿using EasyNetQ.Management.Client;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Steeltoe.Common.Contexts;
+﻿using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
-using Steeltoe.Common.Services;
-using Steeltoe.Common.Util;
-using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using Steeltoe.Messaging.RabbitMQ.Retry;
-using Steeltoe.Messaging.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Stream.Binder.Rabbit.Config;
-using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Config;
-using Steeltoe.Stream.Converter;
 using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -57,7 +37,34 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Output.WriteLine("running dispose ...");
             Cleanup();
         }
+        public Spy SpyOn(string queue)
+        {
+            var template = new RabbitTemplate(GetResource());
+            template.SetAfterReceivePostProcessors(new DelegatingDecompressingPostProcessor());
+            return new Spy
+            {
+                Receive = (expectNull) =>
+                {
+                    if (expectNull)
+                    {
+                        Thread.Sleep(50);
+                        return template.ReceiveAndConvert<object>(new RabbitConsumerOptions().Prefix + queue);
+                    }
 
+                    object bar = null;
+                    int n = 0;
+
+                    while (n++ < 100 && bar == null)
+                    {
+                        bar = template.ReceiveAndConvert<object>(new RabbitConsumerOptions().Prefix + queue);
+                        Thread.Sleep(100);
+                    }
+
+                    Assert.True(n < 100, "Message did not arrive in RabbitMQ");
+                    return bar;
+                }
+            };
+        }
         protected override ConsumerOptions CreateConsumerOptions()
         {
             var consumerOptions = new RabbitConsumerOptions();
@@ -186,6 +193,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binder.CoreBinder.ConnectionFactory.Destroy();
             _cachingConnectionFactory = null;
         }
+     
 
         private CachingConnectionFactory GetResource(bool management=false)
         {
@@ -204,6 +212,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _cachingConnectionFactory;
         }
 
+        public class WrapperAccessor : RabbitOutboundEndpoint
+        {
+            public WrapperAccessor(IApplicationContext context, RabbitTemplate template)
+                : base(context, template)
+            {
+            }
+
+            public CorrelationData GetWrapper(IMessage message)
+            {
+                // var constructor = typeof(CorrelationDataWrapper).GetConstructor(typeof(string), typeof(object), typeof(Message));
+                return Activator.CreateInstance(typeof(CorrelationDataWrapper), null, message, message) as CorrelationData;
+            }
+        }
 
         public class TestPartitionSupport : IPartitionKeyExtractorStrategy, IPartitionSelectorStrategy
         {

@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private int _initializing = 0;
 
         [ActivatorUtilitiesConstructor]
-        public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger)
+        public RabbitAdmin(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, ILogger logger = null)
         {
             if (connectionFactory == null)
             {
@@ -54,12 +54,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             DoInitialize();
         }
 
-        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger)
+        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger= null)
             : this(null, connectionFactory, logger)
         {
         }
 
-        public RabbitAdmin(RabbitTemplate template, ILogger logger)
+        public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
         {
             if (template == null)
             {

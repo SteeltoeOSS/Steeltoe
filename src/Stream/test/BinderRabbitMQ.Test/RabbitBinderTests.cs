@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Rabbit.Inbound;
@@ -17,6 +18,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Retry;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
@@ -28,6 +30,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
@@ -86,7 +89,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             consumerBinding.Unbind();
         }
 
-        [Fact] // TODO: SPEL
+        [Fact]
         public void TestProducerErrorChannel()
         {
             var ccf = GetResource();
@@ -126,7 +129,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             globalEc.Subscribe(new TestMessageHandler()
             {
-
                 OnHandleMessage = (message) =>
                 {
                     latch.Signal();
@@ -142,42 +144,30 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal(312, exception.ReplyCode);
             Assert.Equal("NO_ROUTE", exception.ReplyText);
 
-            // SPEL
-            //    var endpoint = GetPropertyValue<RabbitOutboundEndpoint>(producerBinding, "lifecycle");
-            //  Assert.Equal("#root", GetPropertyValue<string>(endpoint, "confirmCorrelationExpression.expression"));
+            var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
+            Assert.NotNull(endpoint);
+            var expression = GetPropertyValue<SpelExpression>(endpoint, "ConfirmCorrelationExpression");
+            Assert.NotNull(expression);
+            Assert.Equal("#root", GetPropertyValue<string>(expression, "ExpressionString"));
+            var template = new RabbitTemplate(null);
+            var accessor = new WrapperAccessor(null, template);
+            var correlationData = accessor.GetWrapper(message);
 
+            latch.Reset(2);
+            endpoint.Confirm(correlationData, false, "Mock Nack");
 
-            //        class WrapperAccessor extends AmqpOutboundEndpoint
-            //        {
+            Assert.IsAssignableFrom<ErrorMessage>(errorMessage.Value);
 
-            //            WrapperAccessor(AmqpTemplate amqpTemplate) {
-            //				super(amqpTemplate);
-            //    }
+            Assert.IsAssignableFrom<NackedRabbitMessageException>(errorMessage.Value.Payload);
+            var nack = errorMessage.Value.Payload as NackedRabbitMessageException;
 
-            //    CorrelationDataWrapper getWrapper()
-            //    {
-            //        Constructor<CorrelationDataWrapper> constructor = CorrelationDataWrapper.class
-            //						.getDeclaredConstructor(String.class, Object.class,
-            //								Message.class);
-            //				ReflectionUtils.makeAccessible(constructor);
-            //				return constructor.newInstance(null, message, message);
-            //			}
-
-            //		}
-            //		endpoint.confirm(new WrapperAccessor(mock(AmqpTemplate.class)).getWrapper(),
-            //				false, "Mock NACK");
-            //assertThat(errorMessage.get()).isInstanceOf(ErrorMessage.class);
-            //assertThat(errorMessage.get().getPayload())
-            //        .isInstanceOf(NackedAmqpMessageException.class);
-            //NackedAmqpMessageException nack = (NackedAmqpMessageException)errorMessage.get()
-            //        .getPayload();
-            //assertThat(nack.getNackReason()).isEqualTo("Mock NACK");
-            //assertThat(nack.getCorrelationData()).isEqualTo(message);
-            //assertThat(nack.getFailedMessage()).isEqualTo(message);
-            //producerBinding.Unbind();
+            Assert.Equal("Mock Nack", nack.NackReason);
+            Assert.Equal(message, nack.CorrelationData);
+            Assert.Equal(message, nack.FailedMessage);
+            producerBinding.Unbind();
         }
 
-        [Fact] // TODO: SPEL
+        [Fact] 
         public void TestProducerAckChannel()
         {
             var binder = GetBinder();
@@ -208,7 +198,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                             });
             moduleOutputChannel.Send(message);
             Assert.True(confirmLatch.Wait(TimeSpan.FromSeconds(10000)));
-            //       Assert.Equal(messageBytes, confirm.Value.Payload); TODO: SPEL
+            Assert.Equal(messageBytes, confirm.Value.Payload);
             producerBinding.Unbind();
         }
 
@@ -398,9 +388,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             properties.Extension.BindingRoutingKey = "foo,bar";
             properties.Extension.BindingRoutingKeyDelimiter = ",";
             properties.Extension.QueueNameGroupOnly = true;
-            // properties.Extension.DelayedExchange = true; // requires delayed message
-            // exchange plugin; tested locally
 
+            // properties.Extension.DelayedExchange = true; // requires delayed message
+
+            // exchange plugin; tested locally
             var group = "infra";
             var consumerBinding = binder.BindConsumer("propsUser2", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
             var endpoint = ExtractEndpoint(consumerBinding);
@@ -540,7 +531,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var queue = await client.GetQueue("/", "propsUser3.infra");
             n = 0;
-            while (n++ < 100 && queue == null || queue.Consumers == 0)
+            while (n++ < 100 && (queue == null || queue.Consumers == 0))
             {
                 Thread.Sleep(100);
                 queue = await client.GetQueue("/", "propsUser3.infra");
@@ -568,8 +559,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 Thread.Sleep(100);
                 queue = await client.GetQueue("/", "customDLQ");
-            
             }
+
             Assert.NotNull(queue);
 
             Assert.Equal("60000", queue.Arguments["x-expires"]);
@@ -586,7 +577,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             await consumerBinding.Unbind();
             Assert.False(container.IsRunning);
-            
         }
 
         [Fact]
@@ -649,7 +639,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Contains(binding.Arguments, (arg) => arg.Key == "foo" && arg.Value == "bar");
         }
 
-        [Fact] // TODO: SPEL
+        [Fact]
         public void TestProducerProperties()
         {
             var binder = GetBinder();
@@ -660,10 +650,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
             Assert.Equal(MessageDeliveryMode.PERSISTENT, endpoint.DefaultDeliveryMode);
 
-
-            //List <?> requestHeaders = TestUtils.getPropertyValue(endpoint,
-            //        "headerMapper.requestHeaderMatcher.matchers", List.class);
-            //assertThat(requestHeaders).hasSize(4);
+            var mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
+            Assert.NotNull(mapper);
+            Assert.NotNull(mapper.RequestHeaderMatcher);
+            var matchers = GetPropertyValue<List<Integration.Mapping.AbstractHeaderMapper<IMessageHeaders>.IHeaderMatcher>>(mapper.RequestHeaderMatcher, "Matchers");
+            Assert.NotNull(matchers);
+            Assert.Equal(4, matchers.Count());
 
             producerBinding.Unbind();
             Assert.False(endpoint.IsRunning);
@@ -679,11 +671,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             producerProperties.Extension.Prefix = "foo.";
             producerProperties.Extension.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
             producerProperties.Extension.HeaderPatterns = new string[] { "foo" }.ToList();
-            producerProperties.PartitionKeyExpression = "'foo'"; //(spelExpressionParser.parseExpression = "'foo'");
-            producerProperties.PartitionSelectorExpression = "0";// spelExpressionParser.parseExpression("0"));
+            producerProperties.PartitionKeyExpression = "'foo'"; 
+            producerProperties.PartitionSelectorExpression = "0";
             producerProperties.PartitionCount = 1;
             producerProperties.Extension.Transacted = true;
-            producerProperties.Extension.DelayExpression = "42"; // (spelExpressionParser.parseExpression = "42");
+            producerProperties.Extension.DelayExpression = "42";
             producerProperties.RequiredGroups = new string[] { "prodPropsRequired" }.ToList();
 
             var producerBindingProperties = CreateProducerBindingOptions(producerProperties);
@@ -694,7 +686,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
             Assert.Same(GetResource(), endpoint.Template.ConnectionFactory);
 
-            Assert.Equal("'props.0-' + headers['" + BinderHeaders.PARTITION_HEADER + "']", endpoint.RoutingKeyExpression.ExpressionString);
+            Assert.Equal("'props.0-' + Headers['" + BinderHeaders.PARTITION_HEADER + "']", endpoint.RoutingKeyExpression.ExpressionString);
             Assert.Equal("42", endpoint.DelayExpression.ExpressionString);
             Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, endpoint.DefaultDeliveryMode);
             Assert.True(endpoint.Template.IsChannelTransacted);
@@ -933,8 +925,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default"));
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default.dlq.binding"));
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqTestManual.default.dlq"));
-
-           
         }
 
         [Fact]
@@ -1007,6 +997,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             });
             var message = MessageBuilder.WithPayload(1).Build();
+            var h = message.Headers;
             output.Send(message);
             Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
 
@@ -1024,13 +1015,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(received);
 
             Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-1", received.Headers.ReceivedRoutingKey());
-      //      Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
 
             output.Send(Message.Create(0));
             received = template.Receive(streamDLQName);
             Assert.NotNull(received);
             Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
-           // Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
 
             input0Binding.Unbind();
             input1Binding.Unbind();
@@ -1060,7 +1051,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             properties.Extension.Prefix = "bindertest.";
             properties.Extension.AutoBindDlq = true;
             properties.RequiredGroups = new string[] { "dlqPartGrp" }.ToList();
-            //this.applicationContext.registerBean("pkExtractor", PartitionTestSupport.class, ()-> new PartitionTestSupport());
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             properties.PartitionKeyExtractorName = "pkExtractor";
             properties.PartitionSelectorName = "pkExtractor";
@@ -1127,27 +1117,24 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //assertThat(received.getMessageProperties().getReceivedRoutingKey())
-            //    .isEqualTo("bindertest.partDLQ.1.dlqPartGrp-1");
-            //assertThat(received.getMessageProperties().getHeaders())
-            //    .doesNotContainKey(BinderHeaders.PARTITION_HEADER);
-            //assertThat(received.getMessageProperties().getReceivedDeliveryMode())
-            //    .isEqualTo(MessageDeliveryMode.PERSISTENT);
+            Assert.Equal("bindertest.partDLQ.1.dlqPartGrp-1", received.Headers.ReceivedRoutingKey());
+            Assert.Equal(MessageDeliveryMode.PERSISTENT, received.Headers.ReceivedDeliveryMode());
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
 
             output.Send(Message.Create(0));
             received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //    assertThat(received.getMessageProperties().getReceivedRoutingKey())
-            //    .isEqualTo("bindertest.partDLQ.1.dlqPartGrp-0");
-            //assertThat(received.getMessageProperties().getHeaders())
-            //    .doesNotContainKey(BinderHeaders.PARTITION_HEADER);
+
+            Assert.Equal("bindertest.partDLQ.1.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
+
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
 
             input0Binding.Unbind();
             input1Binding.Unbind();
             defaultConsumerBinding1.Unbind();
             defaultConsumerBinding2.Unbind();
             outputBinding.Unbind();
-           
+
         }
 
         [Fact]
@@ -1178,7 +1165,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                         throw new ImmediateAcknowledgeException("testDontRepublish");
                     }
 
-                    throw exception;
+                    ExceptionDispatchInfo.Capture(exception).Throw();
                 }
             });
 
@@ -1189,30 +1176,27 @@ namespace Steeltoe.Stream.Binder.Rabbit
             template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest.foo", "foo");
 
             template.ReceiveTimeout = 10_000;
-            //  Thread.Sleep(1000000);
+
             var deadLetter = template.Receive(TEST_PREFIX + "foo.dlqpubtest.foo.dlq");
             Assert.NotNull(deadLetter);
-            //Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
-            //Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
-            ////    assertThat(((LongString) deadLetter.getMessageProperties().getHeaders()
-            ////            .get(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE)).length())
-            ////        .isEqualTo(this.maxStackTraceSize);
+            Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
+            Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
+            Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length);
 
-            //template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest2.foo", "bar");
+            template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest2.foo", "bar");
 
-            //deadLetter = template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq");
-            //Assert.NotNull(deadLetter);
-            ////    assertThat(new String(deadLetter.getBody())).isEqualTo("bar");
-            ////    assertThat(deadLetter.getMessageProperties().getHeaders())
-            ////        .containsKey(("x-exception-stacktrace"));
+            deadLetter = template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq");
+            Assert.NotNull(deadLetter);
 
-            //dontRepublish.GetAndSet(true);
-            //template.ConvertAndSend("", TEST_PREFIX + "foo.dlqpubtest2.foo", "baz");
-            //template.ReceiveTimeout = 500;
-            //Assert.Null(template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq"));
+            Assert.Equal("bar", ((byte[])deadLetter.Payload).GetString());
+            Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
+
+            dontRepublish.GetAndSet(true);
+            template.ConvertAndSend(string.Empty, TEST_PREFIX + "foo.dlqpubtest2.foo", "baz");
+            template.ReceiveTimeout = 500;
+            Assert.Null(template.Receive(TEST_PREFIX + "foo.dlqpubtest2.foo.dlq"));
 
             consumerBinding.Unbind();
-           
         }
 
         [Fact]
@@ -1312,27 +1296,23 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(received);
 
             Assert.Equal("foo".GetBytes(), received.Payload);
-            //Object header = received.getMessageProperties().getHeader(IntegrationMessageHeaderAccessor.SOURCE_DATA);
-            //assertThat(header).isNull();
-            //header = received.getMessageProperties().getHeader(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
-            //assertThat(header).isNull();
+            Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.SOURCE_DATA]);
+            Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT]);
 
             producerBinding.Unbind();
             consumerBinding.Unbind();
             admin.DeleteQueue("propagate");
-           
         }
 
         /*
          * Test late binding due to broker down; queues with and without DLQs, and partitioned
          * queues.
-         * Not working ...
          */
         [Fact]
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-
+           // proxy.Start(); Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
             CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
 
             var context = RabbitTestBinder.GetApplicationContext();
@@ -1353,8 +1333,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
             rabbitConsumerProperties.Extension.Prefix = "latebinder.";
             var late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, rabbitConsumerProperties);
-            producerProperties.PartitionKeyExpression = "payload.equals('0') ? 0 : 1";
-            producerProperties.PartitionSelectorExpression = "hashCode()";
+            producerProperties.PartitionKeyExpression = "Payload.Equals('0') ? 0 : 1";
+            producerProperties.PartitionSelectorExpression = "GetHashCode()";
             producerProperties.PartitionCount = 2;
 
             var partOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
@@ -1392,7 +1372,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             noDlqConsumerProperties.Extension.DurableSubscription = true;
             var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
-
             proxy.Start();
 
             moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
@@ -1423,31 +1402,31 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             // TODO: SPEL
 
-            //partOutputChannel.Send(MessageBuilder.WithPayload("0")
-            //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-            //        .Build());
-            //partOutputChannel.Send(MessageBuilder.WithPayload("1")
-            //        .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-            //        .Build());
+            partOutputChannel.Send(MessageBuilder.WithPayload("0")
+                    .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+                    .Build());
+            partOutputChannel.Send(MessageBuilder.WithPayload("1")
+                    .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+                    .Build());
 
-            //message = partInputChannel0.Receive(10000);
-            //Assert.NotNull(message);
+            message = partInputChannel0.Receive(10000);
+            Assert.NotNull(message);
 
-            //Assert.Equal("0".GetBytes(), message.Payload);
-            //message = partInputChannel1.Receive(10000);
-            //Assert.NotNull(message);
-            //Assert.Equal("1".GetBytes(), message.Payload);
+            Assert.Equal("0".GetBytes(), message.Payload);
+            message = partInputChannel1.Receive(10000);
+            Assert.NotNull(message);
+            Assert.Equal("1".GetBytes(), message.Payload);
 
-            // late0ProducerBinding.Unbind();
-            //  late0ConsumerBinding.Unbind();
-            //partlate0ProducerBinding.Unbind();
-            //partlate0Consumer0Binding.Unbind();
-            //partlate0Consumer1Binding.Unbind();
-            //noDlqProducerBinding.Unbind();
-            //noDlqConsumerBinding.Unbind();
-            //pubSubProducerBinding.Unbind();
-            //nonDurableConsumerBinding.Unbind();
-            //durableConsumerBinding.Unbind();
+            late0ProducerBinding.Unbind();
+            late0ConsumerBinding.Unbind();
+            partlate0ProducerBinding.Unbind();
+            partlate0Consumer0Binding.Unbind();
+            partlate0Consumer1Binding.Unbind();
+            noDlqProducerBinding.Unbind();
+            noDlqConsumerBinding.Unbind();
+            pubSubProducerBinding.Unbind();
+            nonDurableConsumerBinding.Unbind();
+            durableConsumerBinding.Unbind();
 
 
             Cleanup();
@@ -1500,87 +1479,87 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        // TODO: Pending EL
-        //[Fact]
-        //public void TestRoutingKeyExpression()
-        //{
-        //    var binder = GetBinder();
-        //    var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-        //    producerProperties.Extension.RoutingKeyExpression = "payload.field";
+        [Fact]
+        public void TestRoutingKeyExpression()
+        {
+            var binder = GetBinder();
+            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            producerProperties.Extension.RoutingKeyExpression = "Payload.field";
 
-        //    var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        //    output.ComponentName = "rkeProducer";
-        //    var producerBinding = binder.BindProducer("rke", output, producerProperties);
+            var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            output.ComponentName = "rkeProducer";
+            var producerBinding = binder.BindProducer("rke", output, producerProperties);
 
-        //    RabbitAdmin admin = new RabbitAdmin(GetResource());
-        //    Queue queue = new AnonymousQueue();
-        //    TopicExchange exchange = new TopicExchange("rke");
-        //    var binding = BindingBuilder.Bind(queue).To(exchange).With("rkeTest");
-        //    admin.DeclareQueue(queue);
-        //    admin.DeclareBinding(binding);
+            RabbitAdmin admin = new RabbitAdmin(GetResource());
+            Queue queue = new AnonymousQueue();
+            TopicExchange exchange = new TopicExchange("rke");
+            var binding = BindingBuilder.Bind(queue).To(exchange).With("rkeTest");
+            admin.DeclareQueue(queue);
+            admin.DeclareBinding(binding);
 
-        //    output.AddInterceptor(new TestChannelInterceptor()
-        //    {
-        //        PresendHandler = (message, channel) =>
-        //        {
-        //            Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
-        //            return message;
-        //        }
-        //    });
+            output.AddInterceptor(new TestChannelInterceptor()
+            {
+                PresendHandler = (message, channel) =>
+                {
+                    Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
+                    return message;
+                }
+            });
 
-        //    output.Send(Message.Create(new Poco("rkeTest")));
+            output.Send(Message.Create(new Poco("rkeTest")));
 
-        //    //    var out = spyOn(queue.getName()).receive(false);
-        //    //assertThat(out).isInstanceOf(byte[].class);
-        //    //assertThat(new String((byte[]) out, StandardCharsets.UTF_8))
-        //    //        .isEqualTo("{\"field\":\"rkeTest\"}");
+            var bytes = SpyOn(queue.QueueName).Receive(false);
 
-        //    producerBinding.Unbind();
-        //}
+            Assert.IsType<byte[]>(bytes);
 
-        //// TODO: Pending EL
-        //[Fact]
-        //public void TestRoutingKeyExpressionPartitionedAndDelay()
-        //{
-        //    var binder = GetBinder();
-        //    var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-        //    producerProperties.Extension.RoutingKeyExpression = "#root.getPayload().field";
-        //    // requires delayed message exchange plugin; tested locally
-        //    // producerProperties.Extension.DelayedExchange = true;
-        //    producerProperties.Extension.DelayExpression = "1000";
-        //    producerProperties.PartitionKeyExpression = "0";
+            Assert.Equal("{\"field\":\"rkeTest\"}", ((byte[])bytes).GetString());
 
-        //    DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
-        //    output.ComponentName = "rkeProducer";
-        //    var producerBinding = binder.BindProducer("rkep", output, producerProperties);
+            producerBinding.Unbind();
+        }
 
-        //    var admin = new RabbitAdmin(GetResource());
-        //    Queue queue = new AnonymousQueue();
-        //    TopicExchange exchange = new TopicExchange("rkep");
-        //    var binding = BindingBuilder.Bind(queue).To(exchange).With("rkepTest-0");
-        //    admin.DeclareQueue(queue);
-        //    admin.DeclareBinding(binding);
+        [Fact]
+        public void TestRoutingKeyExpressionPartitionedAndDelay()
+        {
+            var binder = GetBinder();
+            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            producerProperties.Extension.RoutingKeyExpression = "#root.get_Payload().field";
 
-        //    output.AddInterceptor(new TestChannelInterceptor()
-        //    {
-        //        PresendHandler = (message, channel) =>
-        //            {
-        //                Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
+            // requires delayed message exchange plugin; tested locally
+            // producerProperties.Extension.DelayedExchange = true;
+            producerProperties.Extension.DelayExpression = "1000";
+            producerProperties.PartitionKeyExpression = "0";
 
-        //                Assert.Equal(1000, message.Headers[RabbitExpressionEvaluatingInterceptor.DELAY_HEADER]);
-        //                return message;
-        //            }
-        //    });
+            DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+            output.ComponentName = "rkeProducer";
+            var producerBinding = binder.BindProducer("rkep", output, producerProperties);
 
-        //    output.Send(Message.Create(new Poco("rkepTest")));
+            var admin = new RabbitAdmin(GetResource());
+            Queue queue = new AnonymousQueue();
+            TopicExchange exchange = new TopicExchange("rkep");
+            var binding = BindingBuilder.Bind(queue).To(exchange).With("rkepTest-0");
+            admin.DeclareQueue(queue);
+            admin.DeclareBinding(binding);
 
-        //    //    var out = spyOn(queue.getName()).receive(false);
-        //    //assertThat(out).isInstanceOf(byte[].class);
-        //    //assertThat(new String((byte[]) out, StandardCharsets.UTF_8))
-        //    //        .isEqualTo("{\"field\":\"rkepTest\"}");
+            output.AddInterceptor(new TestChannelInterceptor()
+            {
+                PresendHandler = (message, channel) =>
+                    {
+                        Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
 
-        //    producerBinding.Unbind();
-        //}
+                        Assert.Equal(1000, message.Headers[RabbitExpressionEvaluatingInterceptor.DELAY_HEADER]);
+                        return message;
+                    }
+            });
+
+            output.Send(Message.Create(new Poco("rkepTest")));
+
+            var bytes = SpyOn(queue.QueueName).Receive(false);
+
+            Assert.IsType<byte[]>(bytes);
+
+            Assert.Equal("{\"field\":\"rkepTest\"}", ((byte[])bytes).GetString());
+            producerBinding.Unbind();
+        }
 
         [Fact]
         public void TestPolledConsumer()
@@ -1776,7 +1755,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var logger = new XunitLogger(Output);
             var binder = GetBinder();
 
-            // Setup binder configuration to mimic autoconfig
             RegisterGlobalErrorChannel(binder);
 
             var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
@@ -1855,7 +1833,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 OnHandleMessage = (message) =>
                 {
                     boundErrorChannelMessage.GetAndSet(message);
-                    var stackTrace = new Exception().StackTrace.ToString();
+                    var stackTrace = new System.Diagnostics.StackTrace().ToString();
                     hasRecovererInCallStack.GetAndSet(stackTrace.Contains("ErrorMessageSendingRecoverer"));
                 }
             });
@@ -1884,30 +1862,22 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //assertThat(
-            //        received.getMessageProperties().getHeaders().get("x-original-routingKey"))
-            //    .isEqualTo("partPubDLQ.0-1");
-            //assertThat(received.getMessageProperties().getHeaders())
-            //    .doesNotContainKey(BinderHeaders.PARTITION_HEADER);
-            //assertThat(received.getMessageProperties().getReceivedDeliveryMode())
-            //    .isEqualTo(MessageDeliveryMode.NON_PERSISTENT);
+            Assert.Equal("partPubDLQ.0-1", received.Headers["x-original-routingKey"]);
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
+            Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, received.Headers.ReceivedDeliveryMode().Value);
 
             output.Send(Message.Create(0));
             received = template.Receive(streamDLQName);
             Assert.NotNull(received);
-            //    assertThat(
-            //        received.getMessageProperties().getHeaders().get("x-original-routingKey"))
-            //    .isEqualTo("partPubDLQ.0-0");
-            //assertThat(received.getMessageProperties().getHeaders())
-            //    .doesNotContainKey(BinderHeaders.PARTITION_HEADER);
+            Assert.Equal("partPubDLQ.0-0", received.Headers["x-original-routingKey"]);
+            Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
 
             //// verify we got a message on the dedicated error channel and the global (via
             //// bridge)
-            ///
             Thread.Sleep(2000);
-            // Assert.NotNull(boundErrorChannelMessage.Value);
+            Assert.NotNull(boundErrorChannelMessage.Value);
 
-            //Assert.Equal(withRetry, hasRecovererInCallStack.Value);
+            Assert.Equal(withRetry, hasRecovererInCallStack.Value);
             Assert.NotNull(globalErrorChannelMessage.Value);
 
             input0Binding.Unbind();
@@ -1915,10 +1885,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             defaultConsumerBinding1.Unbind();
             defaultConsumerBinding2.Unbind();
             outputBinding.Unbind();
-           
         }
 
-        //TODO: Replace with extension method
         private void RegisterGlobalErrorChannel(RabbitTestBinder binder)
         {
             var appcontext = binder.ApplicationContext;

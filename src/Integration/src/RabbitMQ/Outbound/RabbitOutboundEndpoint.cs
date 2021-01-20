@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -132,10 +133,9 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             var converter = Template.MessageConverter;
 
-            // org.springframework.amqp.core.Message amqpMessage = MappingUtils.mapMessage(requestMessage, converter,
-            //        getHeaderMapper(), getDefaultDeliveryMode(), isHeadersMappedLast());
-            AddDelayProperty(requestMessage);
-            Template.Send(exchangeName, routingKey, requestMessage, correlationData);
+            var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+            AddDelayProperty(message);
+            Template.Send(exchangeName, routingKey, message, correlationData);
         }
 
         private IMessageBuilder SendAndReceive(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
@@ -144,7 +144,8 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
             // org.springframework.amqp.core.Message amqpMessage = MappingUtils.mapMessage(requestMessage, converter,
             //        getHeaderMapper(), getDefaultDeliveryMode(), isHeadersMappedLast());
-            AddDelayProperty(requestMessage);
+            var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+            AddDelayProperty(message);
 
             var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, requestMessage, correlationData);
 

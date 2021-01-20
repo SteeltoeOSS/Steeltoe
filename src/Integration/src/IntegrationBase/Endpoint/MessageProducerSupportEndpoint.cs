@@ -29,7 +29,7 @@ namespace Steeltoe.Integration.Endpoint
 
         private volatile string _errorChannelName;
 
-        protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger)
+        protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)
             : base(context)
         {
             Phase = int.MaxValue / 2;
@@ -201,7 +201,7 @@ namespace Steeltoe.Integration.Endpoint
             var channel = ErrorChannel;
             if (channel != null)
             {
-                _messagingTemplate.Send(channel, BuildErrorMessage(message, exception));
+                _messagingTemplate.Send(channel, BuildErrorMessage(message, exception)); 
                 return true;
             }
 

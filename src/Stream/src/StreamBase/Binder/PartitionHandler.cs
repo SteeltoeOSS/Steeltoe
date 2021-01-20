@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
@@ -17,18 +18,19 @@ namespace Steeltoe.Stream.Binder
         internal readonly IPartitionSelectorStrategy _partitionSelectorStrategy;
 
         private readonly IProducerOptions _producerOptions;
-        private readonly IApplicationContext _applicationContext;
 
         private IExpressionParser _expressionParser;
         private IEvaluationContext _evaluationContext;
 
         public PartitionHandler(
-                IApplicationContext applicationContext,
+                IExpressionParser expressionParser,
+                IEvaluationContext evaluationContext,
                 IProducerOptions options,
                 IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy,
                 IPartitionSelectorStrategy partitionSelectorStrategy)
         {
-            _applicationContext = applicationContext;
+            _expressionParser = expressionParser;
+            _evaluationContext = evaluationContext;
             _producerOptions = options;
             _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
             _partitionSelectorStrategy = partitionSelectorStrategy;
@@ -37,51 +39,15 @@ namespace Steeltoe.Stream.Binder
 
         public int PartitionCount { get; set; }
 
-        public IExpressionParser ExpressionParser
-        {
-            get
-            {
-                if (_expressionParser == null)
-                {
-                    _expressionParser = IntegrationContextUtils.GetExpressionParser(_applicationContext);
-                }
-
-                return _expressionParser;
-            }
-
-            set
-            {
-                _expressionParser = value;
-            }
-        }
-
-        public IEvaluationContext EvaluationContext
-        {
-            get
-            {
-                if (_evaluationContext == null)
-                {
-                    _evaluationContext = IntegrationContextUtils.GetEvaluationContext(_applicationContext);
-                }
-
-                return _evaluationContext;
-            }
-
-            set
-            {
-                _evaluationContext = value;
-            }
-        }
-
         public int DeterminePartition(IMessage message)
         {
             var key = ExtractKey(message);
 
             int partition;
-            if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && ExpressionParser != null)
+            if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
             {
-                var expr = ExpressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
-                partition = expr.GetValue<int>(EvaluationContext, key);
+                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
+                partition = expr.GetValue<int>(_evaluationContext ?? new StandardEvaluationContext(), key);
             }
             else
             {
@@ -95,10 +61,10 @@ namespace Steeltoe.Stream.Binder
         private object ExtractKey(IMessage message)
         {
             var key = InvokeKeyExtractor(message);
-            if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && ExpressionParser != null)
+            if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && _expressionParser != null)
             {
-                var expr = ExpressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
-                key = expr.GetValue(EvaluationContext, message);
+                var expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
+                key = expr.GetValue(_evaluationContext ?? new StandardEvaluationContext(), message);
             }
 
             if (key == null)

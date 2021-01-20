@@ -10,16 +10,42 @@ namespace Steeltoe.Integration.Util
 {
     public class BeanFactoryTypeConverter : ITypeConverter
     {
+        public BeanFactoryTypeConverter()
+        {
+            ConversionService = DefaultConversionService.Singleton;
+        }
+
+        public BeanFactoryTypeConverter(IConversionService conversionService)
+        {
+            ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
+        }
+
         public IConversionService ConversionService { get; set; }
 
         public bool CanConvert(Type source, Type target)
         {
-            throw new NotImplementedException();
+            return ConversionService.CanConvert(source, target);
+
+            //else if( !typeof(string).IsAssignableFrom(source) && !typeof(string).IsAssignableFrom(target))
+            //{
+            //    return false;
+            //}
+            //else if ( !typeof(string).IsAssignableFrom(source))
+            //{
+            //    return this.de // no SimpleTypeConverter ....
+            //}
         }
 
         public object ConvertValue(object value, Type source, Type target)
         {
-            throw new NotImplementedException();
+            if(CanConvert(source, target))
+            {
+                return ConversionService.Convert(value, source, target);
+            }
+            else
+            {
+                throw new NotImplementedException("Cannot be converted by default service");
+            }
         }
     }
 }

@@ -78,7 +78,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_evaluationContext == null)
                 {
-                    _evaluationContext = _context.GetService<IEvaluationContext>();  // This is not right, change when expressions integrated!
+                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext(); // TODO: This isn't right, fix when integrating SPEL
                 }
 
                 return _evaluationContext;

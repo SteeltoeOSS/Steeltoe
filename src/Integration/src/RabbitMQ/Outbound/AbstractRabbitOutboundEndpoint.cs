@@ -4,6 +4,7 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Handler;
@@ -46,7 +47,8 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
         public ExpressionEvaluatingMessageProcessor<string> ExchangeNameGenerator { get; set; }
 
-        // public AmqpHeaderMapper headerMapper = DefaultAmqpHeaderMapper.outboundMapper();
+        public IRabbitHeaderMapper HeaderMapper { get; set; } = DefaultRabbitHeaderMapper.OutboundMapper;
+
         public IExpression ConfirmCorrelationExpression { get; set; }
 
         public ExpressionEvaluatingMessageProcessor<object> CorrelationDataGenerator { get; set; }
@@ -277,19 +279,6 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             if (RoutingKeyGenerator != null)
             {
                 key = RoutingKeyGenerator.ProcessMessage(requestMessage);
-            }
-
-            // TODO: SPEL implementation
-
-            var partitionLookup = "headers['scst_partition']";
-
-            if (key.Contains(partitionLookup))
-            {
-                var value = requestMessage.Headers["scst_partition"].ToString();
-                var prefix = new Regex("\'([^+]+)\'");
-                var foo = prefix.Match(key);
-                var prefixValue = prefix.Match(key).Groups[1].Value;
-                return prefixValue + value;
             }
 
             return key;

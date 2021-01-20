@@ -3,7 +3,7 @@
     public class Poco
     {
 
-        private string _field;
+        public string field;
 
         public Poco()
         {
@@ -11,7 +11,7 @@
 
         public Poco(string field)
         {
-            _field = field;
+            this.field = field;
         }
     }
 }

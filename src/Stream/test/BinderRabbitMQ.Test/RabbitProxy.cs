@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {
-    // Stub for tests that dont depend on broker 
     public class RabbitProxy
     {
         private TcpListener _listener = null;

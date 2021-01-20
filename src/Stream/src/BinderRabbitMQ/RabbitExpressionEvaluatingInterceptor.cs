@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
@@ -18,7 +18,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public int Order => 0;
 
-        private IExpressionParser Parser { get; } = new ExpressionParser();
+        private IExpressionParser Parser { get; } = new SpelExpressionParser();
 
         private IExpression RoutingKeyExpression { get; }
 

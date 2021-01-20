@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Integration.Mapping;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Steeltoe.Integration.Rabbit.Support
@@ -25,7 +27,7 @@ namespace Steeltoe.Integration.Rabbit.Support
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CONTENT_TYPE);
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CORRELATION_ID);
 
-            // STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELAY);
+            STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELAY);
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELIVERY_MODE);
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELIVERY_TAG);
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.EXPIRATION);
@@ -73,12 +75,42 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         protected override void PopulateStandardHeaders(IDictionary<string, object> headers, IMessageHeaders target)
         {
-            throw new NotImplementedException();
+            headers
+                .Where(header => STANDARD_HEADER_NAMES.Contains(header.Key) && !string.IsNullOrEmpty(header.Value?.ToString()))
+                .ToList()
+                .ForEach(header => target.Add(header.Key, header.Value));
         }
 
         protected override void PopulateUserDefinedHeader(string headerName, object headerValue, IMessageHeaders target)
         {
-            throw new NotImplementedException();
+            if (!target.ContainsKey(headerName)
+             && !RabbitMessageHeaders.CONTENT_TYPE.Equals(headerName)
+             && !headerName.StartsWith("json")) // JsonHeaders.PREFIX
+            {
+                target.Add(headerName, headerValue);
+            }
+        }
+
+        public static string[] InboundRequestHeaders { get; } = new string[] { "*" };
+
+        public static string[] InboundReplyHeaders { get; } = SafeOutboundHeaders;
+
+        public static string[] SafeOutboundHeaders { get; } = new string[] { "!x-*", "*" };
+
+        public static string[] OutboundRequestHeaders { get; } = SafeOutboundHeaders;
+
+        public static string[] OutboundReplyHeaders { get; } = new string[] { "*" };
+
+        public static DefaultRabbitHeaderMapper InboundMapper { get; } = new DefaultRabbitHeaderMapper(InboundRequestHeaders, InboundReplyHeaders);
+
+        public static DefaultRabbitHeaderMapper OutboundMapper { get; } = new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders);
+
+        private void CopyIfExists(Dictionary<string,object> headers, IMessageHeaders target, string Key)
+        {
+            if(headers.ContainsKey(Key) && headers[Key] != null)
+            {
+                target.Add(Key, headers[Key]);
+            }
         }
     }
 }

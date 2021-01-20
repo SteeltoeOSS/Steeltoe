@@ -27,12 +27,12 @@ namespace Steeltoe.Common.Retry
         private readonly double _backOffMultiplier;
         private readonly ILogger _logger;
 
-        public PollyRetryTemplate(int maxAttempts, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger)
+        public PollyRetryTemplate(int maxAttempts, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger = null)
             : this(new Dictionary<Type, bool>(), maxAttempts, true, backOffInitialInterval, backOffMaxInterval, backOffMultiplier, logger)
         {
         }
 
-        public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger)
+        public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger = null)
         {
             _retryableExceptions = new BinaryExceptionClassifier(retryableExceptions, defaultRetryable);
             _maxAttempts = maxAttempts;
@@ -236,13 +236,13 @@ namespace Steeltoe.Common.Retry
 
             public T Recover(IRetryContext context)
             {
-                _logger.LogTrace($"FuncRecovery Context: {context}");
+                _logger?.LogTrace($"FuncRecovery Context: {context}");
                 return _func(context);
             }
 
             object IRecoveryCallback.Recover(IRetryContext context)
             {
-                _logger.LogTrace($"FuncRecovery Context: {context}");
+                _logger?.LogTrace($"FuncRecovery Context: {context}");
                 return _func(context);
             }
         }

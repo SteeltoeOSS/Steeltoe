@@ -10,6 +10,11 @@
 
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
+  <ItemGroup>
+    <Compile Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
+    <None Remove="FakesAssemblies\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -22,11 +27,16 @@
     <ProjectReference Include="..\..\src\BinderRabbitMQ\Steeltoe.Stream.Binder.RabbitMQ.csproj" />
     <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
     <PackageReference Include="EasyNetQ.Management.Client" Version="1.3.0" />
+    <PackageReference Include="Microsoft.QualityTools.Testing.Fakes" Version="16.7.4-beta.20330.2" />
     <PackageReference Include="Moq" Version="$(MoqVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
   </ItemGroup>
 
 </Project>

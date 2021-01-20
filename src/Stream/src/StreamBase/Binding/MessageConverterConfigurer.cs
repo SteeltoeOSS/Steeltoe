@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
@@ -24,6 +25,8 @@ namespace Steeltoe.Stream.Binding
         private readonly IMessageConverterFactory _messageConverterFactory;
         private readonly IEnumerable<IPartitionKeyExtractorStrategy> _extractors;
         private readonly IEnumerable<IPartitionSelectorStrategy> _seledctors;
+        //private readonly IExpressionParser _expressionParser;
+        //private readonly IEvaluationContext _evaluationContext;
         private readonly IApplicationContext _applicationContext;
 
         private BindingServiceOptions Options
@@ -41,6 +44,7 @@ namespace Steeltoe.Stream.Binding
             IEnumerable<IPartitionKeyExtractorStrategy> extractors,
             IEnumerable<IPartitionSelectorStrategy> selectors)
         {
+
             _applicationContext = applicationContext;
             _optionsMonitor = optionsMonitor;
             _messageConverterFactory = messageConverterFactory;
@@ -85,7 +89,8 @@ namespace Steeltoe.Stream.Binding
             {
                 messageChannel.AddInterceptor(
                     new PartitioningInterceptor(
-                        _applicationContext,
+                        new SpelExpressionParser(),
+                        null, 
                         bindingOptions,
                         GetPartitionKeyExtractorStrategy(producerOptions),
                         GetPartitionSelectorStrategy(producerOptions)));
@@ -350,11 +355,17 @@ namespace Steeltoe.Stream.Binding
         internal readonly PartitionHandler _partitionHandler;
         internal readonly IMessageBuilderFactory _messageBuilderFactory = new MutableIntegrationMessageBuilderFactory();
 
-        public PartitioningInterceptor(IApplicationContext applicationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
+        private readonly IExpressionParser _expressionParser;
+        private readonly IEvaluationContext _evaluationContext;
+
+        public PartitioningInterceptor(IExpressionParser expressionParser, IEvaluationContext evaluationContext, IBindingOptions bindingOptions, IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
         {
             _bindingOptions = bindingOptions;
+            _expressionParser = expressionParser;
+            _evaluationContext = evaluationContext;
             _partitionHandler = new PartitionHandler(
-                    applicationContext,
+                    expressionParser,
+                    evaluationContext,
                     _bindingOptions.Producer,
                     partitionKeyExtractorStrategy,
                     partitionSelectorStrategy);

@@ -1,26 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Expression.CSharp;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
-using Steeltoe.Integration.Rabbit.Inbound;
-using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using Steeltoe.Stream.Config;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
+
 namespace Steeltoe.Stream.Binder
 {
     public abstract class PartitionCapableBinderTests<B, T> : AbstractBinderTests<B, T>
-        //where B : AbstractBinder<IMessageChannel>
         where B : AbstractTestBinder<T>
         where T : AbstractBinder<IMessageChannel>
     {
-        protected static ExpressionParser expressionParser = new ExpressionParser();
+        protected static IExpressionParser expressionParser = new SpelExpressionParser();
 
         protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
             : base(output, loggerFactory)
@@ -28,7 +25,7 @@ namespace Steeltoe.Stream.Binder
         }
 
         [Fact]
-        public void testAnonymousGroup()
+        public void TestAnonymousGroup()
         {
             B binder = GetBinder();
             var producerBindingOptions = CreateProducerBindingOptions(CreateProducerOptions());

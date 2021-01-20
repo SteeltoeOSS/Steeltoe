@@ -3,14 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
+using System.Collections;
 
 namespace Steeltoe.Messaging
 {
     /// <summary>
     /// The headers for a message
     /// </summary>
-    public interface IMessageHeaders : IDictionary<string, object>
+#pragma warning disable S3444 // Interfaces should not simply inherit from base interfaces with colliding members
+    public interface IMessageHeaders : IDictionary, System.Collections.Generic.IDictionary<string, object>
+#pragma warning restore S3444 // Interfaces should not simply inherit from base interfaces with colliding members
     {
         /// <summary>
         /// Gets a header value given its key

@@ -6,6 +6,7 @@ using Steeltoe.Common.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Messaging
 {
@@ -131,17 +132,17 @@ namespace Steeltoe.Messaging
 
         public virtual void Add(string key, object value)
         {
-            throw new InvalidOperationException();
+            headers.Add(key, value);
         }
 
         public virtual void Add(KeyValuePair<string, object> item)
         {
-            throw new InvalidOperationException();
+            headers.Add(item);
         }
 
         public virtual void Clear()
         {
-            throw new InvalidOperationException();
+            headers.Clear();
         }
 
         public virtual bool Contains(KeyValuePair<string, object> item)
@@ -156,12 +157,12 @@ namespace Steeltoe.Messaging
 
         public virtual bool Remove(string key)
         {
-            throw new InvalidOperationException();
+            return headers.Remove(key);
         }
 
         public virtual bool Remove(KeyValuePair<string, object> item)
         {
-            throw new InvalidOperationException();
+            return headers.Remove(item);
         }
 
         public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()
@@ -267,9 +268,48 @@ namespace Steeltoe.Messaging
             }
         }
 
+        void IDictionary.Add(object key, object value) => Add((string)key, value);
+
+        bool IDictionary.Contains(object key)
+        {
+            return headers.ContainsKey((string)key);
+        }
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return headers.GetEnumerator() as IDictionaryEnumerator;
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            headers.Remove((string)key);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            var collection = new KeyValuePair<string, object>[array.Length];
+            headers.CopyTo(collection, index);
+            collection.CopyTo(array, 0);
+        }
+
         protected internal virtual IDictionary<string, object> RawHeaders
         {
             get { return headers; }
         }
+
+        bool IDictionary.IsFixedSize => false;
+
+#pragma warning disable S2365 // Properties should not make collection or array copies
+        ICollection IDictionary.Keys => headers.Keys.ToList();
+
+        ICollection IDictionary.Values => headers.Values.ToList();
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => throw new NotImplementedException();
+
+        object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
+
+#pragma warning restore S2365 // Properties should not make collection or array copies
     }
 }

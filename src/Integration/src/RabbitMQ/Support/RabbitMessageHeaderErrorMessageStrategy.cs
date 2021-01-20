@@ -29,21 +29,12 @@ namespace Steeltoe.Integration.Rabbit.Support
             }
 
             if (inputMessage is IMessage)
-            {
-                var imessage = (IMessage)inputMessage;
-                //imessage.Headers.ToList().ForEach(header =>
-                //{
-                //    if (!headers.ContainsKey(header.Key))
-                //    {
-                //        headers.Add(header.Key, header.Value);
-                //    }
-                //});
-
-                return new ErrorMessage(exception, headers, (IMessage)inputMessage);
+            { 
+                return new ErrorMessage(exception.InnerException, headers, (IMessage)inputMessage);
             }
             else
             {
-                return new ErrorMessage(exception, headers);
+                return new ErrorMessage(exception.InnerException, headers);
             }
         }
     }

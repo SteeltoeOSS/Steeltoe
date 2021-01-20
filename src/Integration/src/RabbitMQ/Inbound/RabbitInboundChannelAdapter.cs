@@ -30,7 +30,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
         private readonly ILogger _logger;
 
-        public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger)
+        public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger = null)
             : base(context, logger)
         {
             if (listenerContainer == null)

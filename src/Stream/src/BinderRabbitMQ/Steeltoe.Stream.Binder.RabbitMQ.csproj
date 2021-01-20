@@ -10,6 +10,7 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Integration\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
