@@ -145,7 +145,9 @@ namespace Steeltoe.Discovery.Eureka
 
             if (certOptions is object && existingHandler is null)
             {
+#pragma warning disable 618
                 services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
+#pragma warning restore 618
             }
         }
 
