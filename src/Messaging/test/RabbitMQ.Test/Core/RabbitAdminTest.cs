@@ -199,7 +199,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 new Config.Queue("q3", false, false, true));
             serviceCollection.AddSingleton(qs);
             var bs = new Declarables(
-                "qs",
+                "bs",
                 new Binding("b1", "q2", DestinationType.QUEUE, "e2", "k2", null),
                 new Binding("b2", "q3", DestinationType.QUEUE, "e3", "k3", null));
             serviceCollection.AddSingleton(bs);

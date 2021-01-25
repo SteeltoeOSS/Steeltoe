@@ -58,8 +58,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             POWER = new TokenKind(40, "POWER", "^");
             ELVIS = new TokenKind(41, "ELVIS", "?:");
             SAFE_NAVI = new TokenKind(42, "SAFE_NAVI", "?.");
-            BEAN_REF = new TokenKind(43, "BEAN_REF", "@");
-            FACTORY_BEAN_REF = new TokenKind(44, "FACTORY_BEAN_REF", "&");
+            SERVICE_REF = new TokenKind(43, "SERVICE_REF", "@");
+            FACTORY_SERVICE_REF = new TokenKind(44, "FACTORY_SERVICE_REF", "&");
             SYMBOLIC_OR = new TokenKind(45, "SYMBOLIC_OR", "||");
             SYMBOLIC_AND = new TokenKind(46, "SYMBOLIC_AND", "&&");
             INC = new TokenKind(47, "INC", "++");
@@ -111,8 +111,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         public static readonly TokenKind POWER;
         public static readonly TokenKind ELVIS;
         public static readonly TokenKind SAFE_NAVI;
-        public static readonly TokenKind BEAN_REF;
-        public static readonly TokenKind FACTORY_BEAN_REF;
+        public static readonly TokenKind SERVICE_REF;
+        public static readonly TokenKind FACTORY_SERVICE_REF;
         public static readonly TokenKind SYMBOLIC_OR;
         public static readonly TokenKind SYMBOLIC_AND;
         public static readonly TokenKind INC;

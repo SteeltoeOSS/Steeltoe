@@ -20,6 +20,7 @@ namespace Steeltoe.Common.Configuration
     {
         private const string PREFIX = "${";
         private const string SUFFIX = "}";
+        private const string SIMPLE_PREFIX = "{";
         private const string SEPARATOR = "?";
 
         /// <summary>
@@ -71,9 +72,14 @@ namespace Steeltoe.Common.Configuration
                 return property;
             }
 
+            var startIndex = property.IndexOf(PREFIX);
+            if (startIndex == -1)
+            {
+                return property;
+            }
+
             var result = new StringBuilder(property);
 
-            var startIndex = property.IndexOf(PREFIX);
             while (startIndex != -1)
             {
                 var endIndex = FindEndIndex(result, startIndex);
@@ -167,7 +173,7 @@ namespace Steeltoe.Common.Configuration
                         return index;
                     }
                 }
-                else if (SubstringMatch(property, index, PREFIX))
+                else if (SubstringMatch(property, index, SIMPLE_PREFIX))
                 {
                     withinNestedPlaceholder++;
                     index += PREFIX.Length;
@@ -183,10 +189,14 @@ namespace Steeltoe.Common.Configuration
 
         private static bool SubstringMatch(StringBuilder str, int index, string substring)
         {
-            for (var j = 0; j < substring.Length; j++)
+            if (index + substring.Length > str.Length)
             {
-                var i = index + j;
-                if (i >= str.Length || str[i] != substring[j])
+                return false;
+            }
+
+            for (var i = 0; i < substring.Length; i++)
+            {
+                if (str[index + i] != substring[i])
                 {
                     return false;
                 }

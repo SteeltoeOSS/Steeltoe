@@ -343,7 +343,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             catch (SpelEvaluationException see)
             {
-                Assert.Equal(SpelMessage.NO_BEAN_RESOLVER_REGISTERED, see.MessageCode);
+                Assert.Equal(SpelMessage.NO_SERVICE_RESOLVER_REGISTERED, see.MessageCode);
                 Assert.Equal("foo", see.Inserts[0]);
             }
 
@@ -365,7 +365,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             catch (SpelEvaluationException see)
             {
-                Assert.Equal(SpelMessage.EXCEPTION_DURING_BEAN_RESOLUTION, see.MessageCode);
+                Assert.Equal(SpelMessage.EXCEPTION_DURING_SERVICE_RESOLUTION, see.MessageCode);
                 Assert.Equal("goo", see.Inserts[0]);
                 Assert.True(see.InnerException is AccessException);
                 Assert.StartsWith("DONT", see.InnerException.Message);
@@ -383,7 +383,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
             catch (SpelParseException spe)
             {
-                Assert.Equal(SpelMessage.INVALID_BEAN_REFERENCE, spe.MessageCode);
+                Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, spe.MessageCode);
             }
         }
 
@@ -1404,11 +1404,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal("foo factory", expr.GetValue(context));
 
             var ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseRaw("&@foo"));
-            Assert.Equal(SpelMessage.INVALID_BEAN_REFERENCE, ex.MessageCode);
+            Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, ex.MessageCode);
             Assert.Equal(0, ex.Position);
 
             ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseRaw("@&foo"));
-            Assert.Equal(SpelMessage.INVALID_BEAN_REFERENCE, ex.MessageCode);
+            Assert.Equal(SpelMessage.INVALID_SERVICE_REFERENCE, ex.MessageCode);
             Assert.Equal(0, ex.Position);
         }
 
