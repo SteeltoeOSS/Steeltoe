@@ -51,8 +51,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(options);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-                CloudFoundryOAuthConfigurer.Configure(info, options);
+                var oAuthServiceInfo = securitySection.Get<OAuthServiceInfo>();
+
+                CloudFoundryOAuthConfigurer.Configure(info, options, oAuthServiceInfo);
             });
+
             return builder;
         }
 
@@ -218,8 +221,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(cloudFoundryOptions);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-                CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
+                var oAuthServiceInfo = securitySection.Get<OAuthServiceInfo>();
+
+                CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions, oAuthServiceInfo);
             });
+
             return builder;
         }
 
