@@ -40,5 +40,22 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.NotNull(jwtOpts.TokenValidationParameters);
             Assert.Equal(opts.SaveToken, jwtOpts.SaveToken);
         }
+
+        [Fact]
+        public void Configure_WithOAuthServiceInfo_ReturnsExpected()
+        {
+            var authDomain = "http://this-auth-server-domain";
+            var oauthInfo = new OAuthServiceInfo() { AuthDomain = authDomain };
+            var opts = new CloudFoundryJwtBearerOptions();
+            var jwtOpts = new JwtBearerOptions();
+
+            CloudFoundryJwtBearerConfigurer.Configure(null, jwtOpts, opts, oauthInfo);
+            Assert.Equal(authDomain + CloudFoundryDefaults.JwtTokenUri, opts.JwtKeyUrl);
+            Assert.True(opts.ValidateCertificates);
+            Assert.Equal(opts.ClaimsIssuer, jwtOpts.ClaimsIssuer);
+            Assert.Null(jwtOpts.BackchannelHttpHandler);
+            Assert.NotNull(jwtOpts.TokenValidationParameters);
+            Assert.Equal(opts.SaveToken, jwtOpts.SaveToken);
+        }
     }
 }
