@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 
@@ -31,10 +30,7 @@ namespace Steeltoe.Management.Endpoint.Refresh
             }
 
             services.AddActuatorManagementOptions(config);
-            var options = new RefreshEndpointOptions(config);
-            services.TryAddSingleton<IRefreshOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<RefreshEndpoint>();
+            services.AddRefreshActuatorServices(config);
             services.AddActuatorEndpointMapping<RefreshEndpoint>();
         }
     }

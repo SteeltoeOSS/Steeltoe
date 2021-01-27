@@ -122,6 +122,11 @@ namespace Steeltoe.Common.Contexts
                 Register(((IServiceNameAware)found).ServiceName, found);
             }
 
+            if (found != null)
+            {
+                Register(((IServiceNameAware)found).ServiceName, found);
+            }
+
             return found;
         }
 

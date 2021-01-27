@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 using System.Runtime.InteropServices;
@@ -36,37 +35,17 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(config));
             }
 
-            if (IsThreadDumpSupported())
+            services.AddActuatorManagementOptions(config);
+            services.AddThreadDumpActuatorServices(config, version);
+
+            if (version == MediaTypeVersion.V1)
             {
-                services.AddActuatorManagementOptions(config);
-                var options = new ThreadDumpEndpointOptions(config);
-                if (version == MediaTypeVersion.V1)
-                {
-                    services.TryAddSingleton<ThreadDumpEndpoint>();
-                    services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
-                }
-                else
-                {
-                    if (options.Id == "dump")
-                    {
-                        options.Id = "threaddump";
-                    }
-
-                    services.TryAddSingleton<ThreadDumpEndpoint_v2>();
-                    services.AddActuatorEndpointMapping<ThreadDumpEndpoint_v2>();
-                }
-
-                services.TryAddSingleton<IThreadDumpOptions>(options);
-                services.RegisterEndpointOptions(options);
-                services.TryAddSingleton<IThreadDumper, ThreadDumper>();
+                services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
             }
-        }
-
-        private static bool IsThreadDumpSupported()
-        {
-            return
-                RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
-                RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            else
+            {
+                services.AddActuatorEndpointMapping<ThreadDumpEndpoint_v2>();
+            }
         }
     }
 }
