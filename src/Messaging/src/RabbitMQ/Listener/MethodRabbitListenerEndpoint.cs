@@ -128,20 +128,26 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private string ResolveSendTo(string value)
         {
-            // TODO: Expression support will change this code
             if (ApplicationContext != null)
             {
-                value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);
-                if (ConfigUtils.IsExpression(value))
+                var resolvedValue = ExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
+                var result = Resolver.Evaluate(resolvedValue, ExpressionContext);
+                if (result is string)
                 {
-                    var serviceName = ConfigUtils.ExtractExpressionString(value);
-                    var queue = ApplicationContext.GetService<IQueue>(serviceName);
-                    if (queue != null)
-                    {
-                        value = queue.QueueName;
-                    }
+                    return (string)result;
                 }
             }
+
+        //value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);
+        //if (ConfigUtils.IsExpression(value))
+        //{
+        //    var serviceName = ConfigUtils.ExtractExpressionString(value);
+        //    var queue = ApplicationContext.GetService<IQueue>(serviceName);
+        //    if (queue != null)
+        //    {
+        //        value = queue.QueueName;
+        //    }
+        //}
 
             return value;
         }

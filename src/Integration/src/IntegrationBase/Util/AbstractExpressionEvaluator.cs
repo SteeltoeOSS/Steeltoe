@@ -72,7 +72,7 @@ namespace Steeltoe.Integration.Util
             }
         }
 
-        public ITypeConverter TypeConverter { get; set; } = new BeanFactoryTypeConverter();
+        public ITypeConverter TypeConverter { get; set; } = new ServiceFactoryTypeConverter();
 
         public IApplicationContext ApplicationContext { get; }
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
@@ -16,6 +17,7 @@ using Steeltoe.Messaging.RabbitMQ.Host;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Linq;
+using static Steeltoe.Common.Contexts.AbstractApplicationContext;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
@@ -49,6 +51,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
                 return template;
             });
+
             services.AddSingleton<IRabbitTemplate>((p) =>
             {
                 return p.GetServices<RabbitTemplate>().SingleOrDefault((t) => t.ServiceName == serviceName);
@@ -104,6 +107,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, IQueue queue)
         {
+            services.AddNameAndTypeToApplicationContext(queue.ServiceName, typeof(IQueue));
             return services.AddSingleton(queue);
         }
 
@@ -119,6 +123,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitQueue(this IServiceCollection services, string queueName, Action<IServiceProvider, Queue> configure = null)
         {
+            services.AddNameAndTypeToApplicationContext(queueName, typeof(IQueue));
             services.AddSingleton<IQueue>(p =>
             {
                 var queue = new Queue(queueName);
@@ -206,6 +211,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection AddRabbitBinding(this IServiceCollection services, IBinding binding)
         {
+            services.AddNameAndTypeToApplicationContext(binding.ServiceName, typeof(IBinding));
             services.AddSingleton<IBinding>(binding);
             return services;
         }
@@ -216,7 +222,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             {
                 throw new ArgumentException(nameof(bindingName));
             }
-
+            services.AddNameAndTypeToApplicationContext(bindingName, typeof(IBinding));
             services.AddSingleton<IBinding>(p =>
             {
                 var binding = BindingBuilder.Create(bindingName, bindingType);
@@ -268,7 +274,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             services.AddOptions();
             services.AddHostedService<RabbitHostService>();
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
-            services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
+            services.TryAddSingleton<IApplicationContext>((p) =>
+            {
+                var context = new GenericApplicationContext(p.GetRequiredService<IServiceProvider>(), p.GetService<IConfiguration>(), p.GetServices<NameToTypeMapping>());
+                context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+                return context;
+            });
 
             return services;
         }
@@ -649,6 +660,49 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             });
 
             return services;
+        }
+
+        public static IServiceCollection AddRabbitListenerErrorHandler<H>(this IServiceCollection services, string serviceName, Func<IServiceProvider, H> factory)
+            where H : IRabbitListenerErrorHandler
+        {
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                throw new ArgumentException(serviceName);
+            }
+
+            services.AddNameAndTypeToApplicationContext(serviceName, typeof(IRabbitListenerErrorHandler));
+            services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
+            {
+                var result = factory(p);
+                result.ServiceName = serviceName;
+                return result;
+            });
+
+            return services;
+        }
+
+        public static IServiceCollection AddRabbitListenerErrorHandler<H>(this IServiceCollection services, string serviceName)
+            where H : IRabbitListenerErrorHandler
+        {
+            if (string.IsNullOrEmpty(serviceName))
+            {
+                throw new ArgumentException(serviceName);
+            }
+
+            services.AddNameAndTypeToApplicationContext(serviceName, typeof(IRabbitListenerErrorHandler));
+            services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
+            {
+                var instance = (H)ActivatorUtilities.CreateInstance(p, typeof(H));
+                instance.ServiceName = serviceName;
+                return instance;
+            });
+
+            return services;
+        }
+
+        private static void AddNameAndTypeToApplicationContext(this IServiceCollection services, string name, Type type)
+        {
+            services.AddSingleton(new NameToTypeMapping(name, type));
         }
     }
 }

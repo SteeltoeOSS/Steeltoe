@@ -5,11 +5,11 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Messaging.RabbitMQ.Expressions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
 using System.Collections.Generic;
@@ -21,15 +21,35 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
     {
         protected readonly ILogger _logger;
         protected readonly ILoggerFactory _loggerFactory;
+        private IApplicationContext _applicationContext;
 
         protected AbstractRabbitListenerEndpoint(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
         {
             ApplicationContext = applicationContext;
             _loggerFactory = loggerFactory;
             _logger = loggerFactory?.CreateLogger(this.GetType());
+            if (applicationContext != null)
+            {
+                Resolver = applicationContext.ServiceExpressionResolver;
+                ExpressionContext = new ServiceExpressionContext(applicationContext);
+                ServiceResolver = new ServiceFactoryResolver(applicationContext);
+            }
         }
 
-        public IApplicationContext ApplicationContext { get; set; }
+        public IApplicationContext ApplicationContext
+        {
+            get => _applicationContext;
+            set
+            {
+                _applicationContext = value;
+                if (_applicationContext != null)
+                {
+                    Resolver = _applicationContext.ServiceExpressionResolver;
+                    ExpressionContext = new ServiceExpressionContext(_applicationContext);
+                    ServiceResolver = new ServiceFactoryResolver(_applicationContext);
+                }
+            }
+        }
 
         public string Id { get; set; }
 

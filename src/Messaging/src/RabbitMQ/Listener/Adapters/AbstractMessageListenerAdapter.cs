@@ -6,12 +6,15 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
+using Steeltoe.Common.Expression.Internal.Spring.Common;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using Steeltoe.Messaging.RabbitMQ.Expressions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Steeltoe.Messaging.RabbitMQ.Support;
@@ -25,7 +28,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
     public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListener
     {
         protected readonly ILogger _logger;
+
         private const string DEFAULT_ENCODING = "UTF-8";
+
+        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
 
         protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
         {
@@ -60,7 +67,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         public virtual bool IsManualAck => ContainerAckMode == AcknowledgeMode.MANUAL;
 
-        public virtual IEvaluationContext EvalContext { get; set; }
+        public virtual StandardEvaluationContext EvalContext { get; set; } = new StandardEvaluationContext();
 
         public virtual IMessageHeadersConverter MessagePropertiesConverter { get; set; } = new DefaultMessageHeadersConverter();
 
@@ -70,17 +77,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         public virtual void SetResponseAddress(string defaultReplyTo)
         {
-            // TODO: Java has Expression support?
-            ResponseAddress = new Address(defaultReplyTo);
+            if (defaultReplyTo.StartsWith(PARSER_CONTEXT.ExpressionPrefix))
+            {
+                ResponseExpression = PARSER.ParseExpression(defaultReplyTo, PARSER_CONTEXT);
+            }
+            else
+            {
+                ResponseAddress = new Address(defaultReplyTo);
+            }
         }
 
         public void SetServiceResolver(IServiceResolver serviceResolver)
         {
-            throw new NotImplementedException();
-
-            // EvalContext.setBeanResolver(ServiceResolver);
-            // EvalContext.setTypeConverter(new StandardTypeConverter());
-            // EvalContext.addPropertyAccessor(new MapAccessor());
+            EvalContext.ServiceResolver = serviceResolver;
+            EvalContext.TypeConverter = new StandardTypeConverter();
+            EvalContext.AddPropertyAccessor(new DictionaryAccessor());
         }
 
         public virtual void SetBeforeSendReplyPostProcessors(params IMessagePostProcessor[] beforeSendReplyPostProcessors)
@@ -253,12 +264,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 {
                     return new Address(request.Headers.ReplyTo());
                 }
-
-                // TODO: When expressions work
-                // else if (ResponseExpression != null)
-                // {
-                //    replyTo = EvaluateReplyTo(request, source, result.ReturnValue, ResponseExpression);
-                // }
+                else if (ResponseExpression != null)
+                {
+                    replyTo = EvaluateReplyTo(request, source, result.ReturnValue, ResponseExpression);
+                }
                 else if (ResponseAddress == null)
                 {
                     throw new RabbitException(
@@ -368,8 +377,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             if (value is string)
             {
-                // TODO: Workaround for missing expression evaluation... remove this when expressions works
-                value = PropertyPlaceholderHelper.ResolvePlaceholders((string)value, ApplicationContext.Configuration);
                 replyTo = new Address((string)value);
             }
             else
