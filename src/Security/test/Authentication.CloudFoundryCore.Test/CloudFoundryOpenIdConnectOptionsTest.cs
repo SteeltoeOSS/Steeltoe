@@ -35,15 +35,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         [Theory]
         [MemberData(nameof(SetEndpointsData))]
-        public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedUrl = DEFAULT_OAUTH_SERVICE_URL)
+        public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedUrl)
         {
-            var expectedDomain = "http://not-the-original-domain";
-
             var options = new CloudFoundryOpenIdConnectOptions();
 
-            options.SetEndpoints(expectedDomain);
+            options.SetEndpoints(newDomain);
 
-            Assert.Equal(expectedDomain, options.Authority);
+            Assert.Equal(expectedUrl, options.Authority);
         }
 
         public static TheoryData<string, string> SetEndpointsData()
@@ -52,9 +50,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var newDomain = "http://not-the-original-domain";
 
             data.Add(newDomain, newDomain);
-            data.Add(string.Empty, default);
-            data.Add("   ", default);
-            data.Add(default, default);
+            data.Add(string.Empty, DEFAULT_OAUTH_SERVICE_URL);
+            data.Add("   ", DEFAULT_OAUTH_SERVICE_URL);
+            data.Add(default, DEFAULT_OAUTH_SERVICE_URL);
 
             return data;
         }

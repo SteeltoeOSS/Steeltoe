@@ -34,10 +34,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public void SetEndpoints(string authDomain)
         {
-            if (!string.IsNullOrWhiteSpace(authDomain))
-            {
-                JwtKeyUrl = authDomain + CloudFoundryDefaults.JwtTokenUri;
-            }
+            JwtKeyUrl = (!string.IsNullOrWhiteSpace(authDomain)) ?
+                authDomain + CloudFoundryDefaults.JwtTokenUri : JwtKeyUrl;
         }
     }
 }

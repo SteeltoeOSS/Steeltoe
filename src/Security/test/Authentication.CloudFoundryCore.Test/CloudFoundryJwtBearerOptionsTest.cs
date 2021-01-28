@@ -23,7 +23,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         [Theory]
         [MemberData(nameof(SetEndpointsData))]
-        public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedUrl = DEFAULT_JWT_TOKEN_URL)
+        public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedUrl)
         {
             var options = new CloudFoundryJwtBearerOptions();
 
@@ -38,9 +38,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var newDomain = "http://not-the-original-domain";
 
             data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
-            data.Add(string.Empty, default);
-            data.Add("   ", default);
-            data.Add(default, default);
+            data.Add(string.Empty, DEFAULT_JWT_TOKEN_URL);
+            data.Add("   ", DEFAULT_JWT_TOKEN_URL);
+            data.Add(default, DEFAULT_JWT_TOKEN_URL);
 
             return data;
         }

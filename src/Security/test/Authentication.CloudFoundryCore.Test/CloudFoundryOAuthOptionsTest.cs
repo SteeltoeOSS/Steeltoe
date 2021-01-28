@@ -41,19 +41,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [MemberData(nameof(SetEndpointsData))]
         public void SetEndpoints_WithNewDomain_ReturnsExpected(
             string newDomain,
-            string expectedAccessTokenUrl = DEFAULT_ACCESSTOKEN_URL,
-            string expectedAuthorizationUrl = DEFAULT_AUTHORIZATION_URL,
-            string expectedCheckTokenUrl = DEFAULT_CHECKTOKEN_URL,
-            string expectedUserInfoUrl = DEFAULT_USERINFO_URL)
+            string expectedAccessTokenUrl,
+            string expectedAuthorizationUrl,
+            string expectedCheckTokenUrl,
+            string expectedUserInfoUrl)
         {
             var options = new CloudFoundryOAuthOptions();
 
             options.SetEndpoints(newDomain);
 
-            Assert.Equal(expectedAccessTokenUrl, options.TokenEndpoint);
-            Assert.Equal(expectedAuthorizationUrl, options.AuthorizationEndpoint);
-            Assert.Equal(expectedCheckTokenUrl, options.TokenInfoUrl);
-            Assert.Equal(expectedUserInfoUrl, options.UserInformationEndpoint);
+            Assert.Equal(expectedAccessTokenUrl ?? DEFAULT_ACCESSTOKEN_URL, options.TokenEndpoint);
+            Assert.Equal(expectedAuthorizationUrl ?? DEFAULT_AUTHORIZATION_URL, options.AuthorizationEndpoint);
+            Assert.Equal(expectedCheckTokenUrl ?? DEFAULT_CHECKTOKEN_URL, options.TokenInfoUrl);
+            Assert.Equal(expectedUserInfoUrl ?? DEFAULT_USERINFO_URL, options.UserInformationEndpoint);
         }
 
         public static TheoryData<string, string, string, string, string> SetEndpointsData()
