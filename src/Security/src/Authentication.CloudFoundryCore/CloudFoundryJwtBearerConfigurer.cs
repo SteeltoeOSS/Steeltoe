@@ -3,30 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Steeltoe.CloudFoundry.Connector.Services;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryJwtBearerConfigurer
     {
-        internal static void Configure(
-            SsoServiceInfo si,
-            JwtBearerOptions jwtOptions,
-            CloudFoundryJwtBearerOptions options,
-            OAuthServiceInfo oAuthServiceInfo = null)
+        internal static void Configure(SsoServiceInfo si, JwtBearerOptions jwtOptions, CloudFoundryJwtBearerOptions options)
         {
-            if (jwtOptions is null || options is null)
+            if (jwtOptions == null || options == null)
             {
                 return;
             }
 
-            if (si is not null)
+            if (si != null)
             {
                 options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenUri;
-            }
-            else if (oAuthServiceInfo is not null)
-            {
-                options.JwtKeyUrl = oAuthServiceInfo.AuthDomain + CloudFoundryDefaults.JwtTokenUri;
             }
 
             jwtOptions.ClaimsIssuer = options.ClaimsIssuer;

@@ -34,6 +34,8 @@ namespace Steeltoe.CloudFoundry.Connector.OAuth
             section.Bind(this);
         }
 
+        public string AuthDomain { get { return OAuthServiceUrl; } set { OAuthServiceUrl = value; } }
+
         public string OAuthServiceUrl { get; set; } = OAuthConnectorDefaults.Default_OAuthServiceUrl;
 
         public string ClientId { get; set; } = OAuthConnectorDefaults.Default_ClientId;

@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.CloudFoundry.Connector.Services;
-using System;
 using System.Linq;
 using Xunit;
 
@@ -51,31 +50,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(authURL + CloudFoundryDefaults.AccessTokenUri, opts.TokenEndpoint);
             Assert.Equal(authURL + CloudFoundryDefaults.UserInfoUri, opts.UserInformationEndpoint);
             Assert.Equal(authURL + CloudFoundryDefaults.CheckTokenUri, opts.TokenInfoUrl);
-            Assert.True(opts.ValidateCertificates);
-            Assert.Equal(6, opts.ClaimActions.Count());
-            Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, opts.SignInScheme);
-            Assert.True(opts.SaveTokens);
-            Assert.Null(opts.BackchannelHttpHandler);
-        }
-
-        [Fact]
-        public void Configure_WithOAuthServiceInfo_ReturnsExpected()
-        {
-            var authDomain = "http://this-auth-server-domain";
-            var clientId = Guid.NewGuid().ToString();
-            var clientSecret = Guid.NewGuid().ToString();
-            var opts = new CloudFoundryOAuthOptions();
-            var oauthInfo = new OAuthServiceInfo() { AuthDomain = authDomain, ClientId = clientId, ClientSecret = clientSecret };
-            CloudFoundryOAuthConfigurer.Configure(null, opts, oauthInfo);
-
-            Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
-            Assert.Equal(clientId, opts.ClientId);
-            Assert.Equal(clientSecret, opts.ClientSecret);
-            Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);
-            Assert.Equal(authDomain + CloudFoundryDefaults.AuthorizationUri, opts.AuthorizationEndpoint);
-            Assert.Equal(authDomain + CloudFoundryDefaults.AccessTokenUri, opts.TokenEndpoint);
-            Assert.Equal(authDomain + CloudFoundryDefaults.UserInfoUri, opts.UserInformationEndpoint);
-            Assert.Equal(authDomain + CloudFoundryDefaults.CheckTokenUri, opts.TokenInfoUrl);
             Assert.True(opts.ValidateCertificates);
             Assert.Equal(6, opts.ClaimActions.Count());
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, opts.SignInScheme);
