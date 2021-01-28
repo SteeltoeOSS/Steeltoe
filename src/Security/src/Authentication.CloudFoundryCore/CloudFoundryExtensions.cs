@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CloudFoundry.Connector;
+using Steeltoe.CloudFoundry.Connector.OAuth;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -51,6 +52,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(options);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+
+                info ??= GetSsoServiceInfoFromConfig(displayName, securitySection);
+
                 CloudFoundryOAuthConfigurer.Configure(info, options);
             });
             return builder;
@@ -131,6 +135,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(cloudFoundryOptions);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+
+                info ??= GetSsoServiceInfoFromConfig(displayName, securitySection);
+
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
             });
             return builder;
@@ -175,6 +182,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(cloudFoundryOptions);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+
+                info ??= GetSsoServiceInfoFromConfig(displayName, securitySection);
+
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
 
                 configurer(options, config);
@@ -218,6 +228,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 securitySection.Bind(cloudFoundryOptions);
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+
+                info ??= GetSsoServiceInfoFromConfig(displayName, securitySection);
+
                 CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
             });
             return builder;
@@ -260,6 +273,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 configurer(jwtoptions, config);
             });
             return builder;
+        }
+
+        private static SsoServiceInfo GetSsoServiceInfoFromConfig(string applicationId, IConfigurationSection configurationSection)
+        {
+            var oAuthOptions = configurationSection.Get<OAuthConnectorOptions>();
+
+            return oAuthOptions is not null ?
+                new SsoServiceInfo(
+                    id: applicationId,
+                    clientId: oAuthOptions.ClientId,
+                    clientSecret: oAuthOptions.ClientSecret,
+                    domain: oAuthOptions.AuthDomain) : null;
         }
     }
 }
