@@ -31,5 +31,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             get { return Validate_Certificates; }
             set { Validate_Certificates = value; }
         }
+
+        public void SetEndpoints(string authDomain)
+        {
+            if (!string.IsNullOrWhiteSpace(authDomain))
+            {
+                JwtKeyUrl = authDomain + CloudFoundryDefaults.JwtTokenUri;
+            }
+        }
     }
 }

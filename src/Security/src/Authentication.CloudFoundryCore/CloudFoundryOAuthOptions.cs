@@ -56,6 +56,17 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         }
 
+        public void SetEndpoints(string authDomain)
+        {
+            if (!string.IsNullOrWhiteSpace(authDomain))
+            {
+                AuthorizationEndpoint = authDomain + CloudFoundryDefaults.AuthorizationUri;
+                TokenEndpoint = authDomain + CloudFoundryDefaults.AccessTokenUri;
+                UserInformationEndpoint = authDomain + CloudFoundryDefaults.UserInfoUri;
+                TokenInfoUrl = authDomain + CloudFoundryDefaults.CheckTokenUri;
+            }
+        }
+
         internal AuthServerOptions BaseOptions()
         {
             return new AuthServerOptions

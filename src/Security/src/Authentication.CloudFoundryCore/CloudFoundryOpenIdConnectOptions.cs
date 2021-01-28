@@ -41,6 +41,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// </summary>
         public bool ValidateCertificates { get; set; } = true;
 
+        public void SetEndpoints(string authDomain)
+        {
+            Authority = (!string.IsNullOrWhiteSpace(authDomain)) ? authDomain : Authority;
+        }
+
         internal AuthServerOptions BaseOptions(string updatedClientId)
         {
             return new AuthServerOptions

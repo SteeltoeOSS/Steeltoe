@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryCore.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
         where TStartup : class

@@ -2,8 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.﻿
 
-using Steeltoe.Security.Authentication.CloudFoundry;
-using Steeltoe.Security.Authentication.CloudFoundry.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.CloudFoundryCore.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryOAuthBuilderTest
     {
