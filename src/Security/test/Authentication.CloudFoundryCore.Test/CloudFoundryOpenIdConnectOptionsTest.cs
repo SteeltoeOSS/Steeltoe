@@ -13,6 +13,19 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     {
         private const string DEFAULT_OAUTH_SERVICE_URL = "https://" + CloudFoundryDefaults.OAuthServiceUrl;
 
+        public static TheoryData<string, string> SetEndpointsData()
+        {
+            var data = new TheoryData<string, string>();
+            var newDomain = "http://not-the-original-domain";
+
+            data.Add(newDomain, newDomain);
+            data.Add(string.Empty, DEFAULT_OAUTH_SERVICE_URL);
+            data.Add("   ", DEFAULT_OAUTH_SERVICE_URL);
+            data.Add(default, DEFAULT_OAUTH_SERVICE_URL);
+
+            return data;
+        }
+
         [Fact]
         public void DefaultConstructor_SetsDefaultOptions()
         {
@@ -42,19 +55,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             options.SetEndpoints(newDomain);
 
             Assert.Equal(expectedUrl, options.Authority);
-        }
-
-        public static TheoryData<string, string> SetEndpointsData()
-        {
-            var data = new TheoryData<string, string>();
-            var newDomain = "http://not-the-original-domain";
-
-            data.Add(newDomain, newDomain);
-            data.Add(string.Empty, DEFAULT_OAUTH_SERVICE_URL);
-            data.Add("   ", DEFAULT_OAUTH_SERVICE_URL);
-            data.Add(default, DEFAULT_OAUTH_SERVICE_URL);
-
-            return data;
         }
     }
 }

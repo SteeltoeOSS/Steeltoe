@@ -18,6 +18,23 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         private const string DEFAULT_CHECKTOKEN_URL = DEFAULT_OAUTH_URL + CloudFoundryDefaults.CheckTokenUri;
         private const string DEFAULT_USERINFO_URL = DEFAULT_OAUTH_URL + CloudFoundryDefaults.UserInfoUri;
 
+        public static TheoryData<string, string, string, string, string> SetEndpointsData()
+        {
+            var data = new TheoryData<string, string, string, string, string>();
+            var newDomain = "http://not-the-original-domain";
+            var newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
+            var newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
+            var newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
+            var newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
+
+            data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
+            data.Add(string.Empty, default, default, default, default);
+            data.Add("   ", default, default, default, default);
+            data.Add(default, default, default, default, default);
+
+            return data;
+        }
+
         [Fact]
         public void DefaultConstructor_SetsupDefaultOptions()
         {
@@ -54,23 +71,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(expectedAuthorizationUrl ?? DEFAULT_AUTHORIZATION_URL, options.AuthorizationEndpoint);
             Assert.Equal(expectedCheckTokenUrl ?? DEFAULT_CHECKTOKEN_URL, options.TokenInfoUrl);
             Assert.Equal(expectedUserInfoUrl ?? DEFAULT_USERINFO_URL, options.UserInformationEndpoint);
-        }
-
-        public static TheoryData<string, string, string, string, string> SetEndpointsData()
-        {
-            var data = new TheoryData<string, string, string, string, string>();
-            var newDomain = "http://not-the-original-domain";
-            var newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
-            var newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
-            var newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
-            var newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
-
-            data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
-            data.Add(string.Empty, default, default, default, default);
-            data.Add("   ", default, default, default, default);
-            data.Add(default, default, default, default, default);
-
-            return data;
         }
     }
 }
