@@ -10,13 +10,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
     {
         public CloudFoundryJwtBearerOptions()
         {
-            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
-            JwtKeyUrl = authURL + CloudFoundryDefaults.JwtTokenUri;
             SaveToken = true;
             TokenValidationParameters.ValidateAudience = false;
             TokenValidationParameters.ValidateIssuer = true;
             TokenValidationParameters.ValidateLifetime = true;
+
+            SetEndpoints("http://" + CloudFoundryDefaults.OAuthServiceUrl);
         }
 
         public string JwtKeyUrl { get; set; }

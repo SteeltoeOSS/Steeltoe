@@ -35,15 +35,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public CloudFoundryOAuthOptions()
         {
-            var authURL = "http://" + CloudFoundryDefaults.OAuthServiceUrl;
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             ClientId = CloudFoundryDefaults.ClientId;
             ClientSecret = CloudFoundryDefaults.ClientSecret;
             CallbackPath = new PathString(CloudFoundryDefaults.CallbackPath);
-            AuthorizationEndpoint = authURL + CloudFoundryDefaults.AuthorizationUri;
-            TokenEndpoint = authURL + CloudFoundryDefaults.AccessTokenUri;
-            UserInformationEndpoint = authURL + CloudFoundryDefaults.UserInfoUri;
-            TokenInfoUrl = authURL + CloudFoundryDefaults.CheckTokenUri;
             SaveTokens = true;
 
             ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "user_id");
@@ -54,6 +49,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             ClaimActions.MapScopes();
 
             SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+            SetEndpoints("http://" + CloudFoundryDefaults.OAuthServiceUrl);
         }
 
         public void SetEndpoints(string authDomain)

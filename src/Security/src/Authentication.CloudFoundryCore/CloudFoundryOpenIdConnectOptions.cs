@@ -16,7 +16,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public CloudFoundryOpenIdConnectOptions()
         {
             AuthenticationMethod = OpenIdConnectRedirectBehavior.RedirectGet;
-            Authority = "https://" + CloudFoundryDefaults.OAuthServiceUrl;
             CallbackPath = new PathString(CloudFoundryDefaults.CallbackPath);
             ClaimsIssuer = CloudFoundryDefaults.AuthenticationScheme;
             ClientId = CloudFoundryDefaults.ClientId;
@@ -29,6 +28,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             TokenValidationParameters.ValidateAudience = true;
             TokenValidationParameters.ValidateIssuer = true;
             TokenValidationParameters.ValidateLifetime = true;
+
+            SetEndpoints("https://" + CloudFoundryDefaults.OAuthServiceUrl);
         }
 
         /// <summary>
