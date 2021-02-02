@@ -27,10 +27,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
             var newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
 
-            data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
             data.Add(string.Empty, default, default, default, default);
             data.Add("   ", default, default, default, default);
             data.Add(default, default, default, default, default);
+            data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
 
             return data;
         }

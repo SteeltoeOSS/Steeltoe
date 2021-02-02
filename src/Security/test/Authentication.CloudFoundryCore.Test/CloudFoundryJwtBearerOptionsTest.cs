@@ -16,10 +16,10 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var data = new TheoryData<string, string>();
             var newDomain = "http://not-the-original-domain";
 
-            data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
             data.Add(string.Empty, DEFAULT_JWT_TOKEN_URL);
             data.Add("   ", DEFAULT_JWT_TOKEN_URL);
             data.Add(default, DEFAULT_JWT_TOKEN_URL);
+            data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
 
             return data;
         }
