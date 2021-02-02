@@ -130,7 +130,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
-                cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
@@ -175,7 +174,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var cloudFoundryOptions = new CloudFoundryOpenIdConnectOptions();
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
-                cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOpenIdConnectConfigurer.Configure(info, options, cloudFoundryOptions);
