@@ -56,7 +56,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseStartup<TStartup>();
 
-            return new TestServer(webHostBuilder);
+            return new TestServer(webHostBuilder); 
         }
 #endif
     }
