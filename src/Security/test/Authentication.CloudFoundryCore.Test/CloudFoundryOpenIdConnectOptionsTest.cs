@@ -11,28 +11,13 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryOpenIdConnectOptionsTest
     {
-        private const string DEFAULT_OAUTH_SERVICE_URL = "https://" + CloudFoundryDefaults.OAuthServiceUrl;
-
-        public static TheoryData<string, string> SetEndpointsData()
-        {
-            var data = new TheoryData<string, string>();
-            var newDomain = "http://not-the-original-domain";
-
-            data.Add(newDomain, newDomain);
-            data.Add(string.Empty, DEFAULT_OAUTH_SERVICE_URL);
-            data.Add("   ", DEFAULT_OAUTH_SERVICE_URL);
-            data.Add(default, DEFAULT_OAUTH_SERVICE_URL);
-
-            return data;
-        }
-
         [Fact]
         public void DefaultConstructor_SetsDefaultOptions()
         {
             var opts = new CloudFoundryOpenIdConnectOptions();
 
             Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
-            Assert.Equal(DEFAULT_OAUTH_SERVICE_URL, opts.Authority);
+            Assert.Equal("https://" + CloudFoundryDefaults.OAuthServiceUrl, opts.Authority);
             Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
             Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
             Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);
@@ -44,17 +29,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 #endif
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, opts.SignInScheme);
             Assert.False(opts.SaveTokens);
-        }
-
-        [Theory]
-        [MemberData(nameof(SetEndpointsData))]
-        public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedUrl)
-        {
-            var options = new CloudFoundryOpenIdConnectOptions();
-
-            options.SetEndpoints(newDomain);
-
-            Assert.Equal(expectedUrl, options.Authority);
         }
     }
 }
