@@ -6,18 +6,19 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
     public class CloudFoundryActuatorsStartupFilter : IStartupFilter
     {
-        private MediaTypeVersion MediaTypeVersion { get; }
+        public CloudFoundryActuatorsStartupFilter()
+        {
+        }
 
+        [Obsolete("MediaTypeVersion parameter is not used")]
         public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
         {
-            MediaTypeVersion = mediaTypeVersion;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -26,14 +27,11 @@ namespace Steeltoe.Management.CloudFoundry
             {
                 app.UseCors("SteeltoeManagement");
                 app.UseCloudFoundrySecurity();
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<CloudFoundryEndpoint>();
-                    endpoints.MapAllActuators(MediaTypeVersion);
-                });
 
-                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
+                next(app);
+
+                app.UseEndpoints(endpoints => endpoints.MapAllActuators());
+                AllActuatorsStartupFilter.InitializeAvailability(app.ApplicationServices);
             };
         }
     }

@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class RefreshStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
