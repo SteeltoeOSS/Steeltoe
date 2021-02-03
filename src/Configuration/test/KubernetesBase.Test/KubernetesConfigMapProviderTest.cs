@@ -93,6 +93,27 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         }
 
         [Fact]
+        public void KubernetesConfigMapProvider_SeesDoubleUnderscore()
+        {
+            // arrange
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            mockHttpMessageHandler
+                .Expect(HttpMethod.Get, "*")
+                .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{\"several__layers__deep__TestKey\":\"TestValue\"}}\n"));
+
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
+            var provider = new KubernetesConfigMapProvider(client, settings);
+
+            // act
+            provider.Load();
+
+            // assert
+            Assert.True(provider.TryGet("several:layers:deep:TestKey", out var testValue));
+            Assert.Equal("TestValue", testValue);
+        }
+
+        [Fact]
         public async Task KubernetesConfigMapProvider_ReloadsDictionaryOnInterval()
         {
             // arrange

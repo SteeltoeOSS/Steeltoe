@@ -65,6 +65,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
         }
 
+        private static string NormalizeKey(string key) => key.Replace("__", ":");
+
         private void EnableReloading()
         {
             if (Settings.ReloadSettings.ConfigMaps && !Polling)
@@ -119,7 +121,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 foreach (var data in item?.Data)
                 {
-                    configMapContents[data.Key] = data.Value;
+                    configMapContents[NormalizeKey(data.Key)] = data.Value;
                 }
             }
 
