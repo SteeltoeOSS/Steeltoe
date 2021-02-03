@@ -73,6 +73,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
         }
 
+        private static string NormalizeKey(string key) => key.Replace("__", ":");
+
         private void EnableReloading()
         {
             if (Settings.ReloadSettings.Secrets)
@@ -131,7 +133,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 foreach (var data in item.Data)
                 {
-                    secretContents[data.Key] = Encoding.UTF8.GetString(data.Value);
+                    secretContents[NormalizeKey(data.Key)] = Encoding.UTF8.GetString(data.Value);
                 }
             }
 
