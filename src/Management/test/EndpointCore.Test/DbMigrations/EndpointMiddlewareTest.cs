@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -43,14 +44,13 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             configurationBuilder.AddInMemoryCollection(AppSettings);
             var mgmtOptions = new ActuatorManagementOptions();
             mgmtOptions.EndpointOptions.Add(opts);
-            var efContext = new MockDbContext();
-            var container = Substitute.For<IServiceProvider>();
-            container.GetService(typeof(MockDbContext)).Returns(efContext);
+            var container = new ServiceCollection();
+            container.AddScoped<MockDbContext>();
             var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[] { "pending" });
             helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
-            var ep = new DbMigrationsEndpoint(opts, container, helper);
+            var ep = new DbMigrationsEndpoint(opts, container.BuildServiceProvider(), helper);
 
             var middle = new DbMigrationsEndpointMiddleware(null, ep, mgmtOptions);
 
