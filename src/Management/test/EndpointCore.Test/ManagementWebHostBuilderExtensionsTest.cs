@@ -661,7 +661,6 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-
         private readonly IWebHostBuilder _testServerWithRouting = new WebHostBuilder().UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
         private readonly IWebHostBuilder _testServerWithSecureRouting =
             new WebHostBuilder().UseTestServer()
