@@ -69,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, object>>>("http://localhost/management/infomanagement", GetSerializerOptions());
             Assert.NotNull(dict);
 
-            Assert.Equal(5, dict.Count);
+            Assert.Equal(6, dict.Count);
             Assert.True(dict.ContainsKey("application"));
             Assert.True(dict.ContainsKey("NET"));
             Assert.True(dict.ContainsKey("git"));

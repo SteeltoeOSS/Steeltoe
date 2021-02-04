@@ -45,7 +45,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
             // Require base path to be supplied directly, in the config, or in the app instance info
             BasePath ??= GetBasePath(config) ?? appInfo?.Uris?.FirstOrDefault() ?? throw new NullReferenceException($"Please set {PREFIX}:BasePath in order to register with Spring Boot Admin");
-            ApplicationName ??= appInfo.ApplicationName;
+            ApplicationName ??= appInfo.ApplicationNameInContext(SteeltoeComponent.Management);
         }
 
         private string GetBasePath(IConfiguration config)

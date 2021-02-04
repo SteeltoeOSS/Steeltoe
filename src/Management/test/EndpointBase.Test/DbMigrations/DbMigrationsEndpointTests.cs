@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Steeltoe.Management.Endpoint.Test;
@@ -39,9 +40,8 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         [Fact]
         public void Invoke_WhenExistingDatabase_ReturnsExpected()
         {
-            var context = new MockDbContext();
-            var container = Substitute.For<IServiceProvider>();
-            container.GetService(typeof(MockDbContext)).Returns(context);
+            var container = new ServiceCollection();
+            container.AddScoped<MockDbContext>();
             var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[] { "pending" });
@@ -49,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             var options = new DbMigrationsEndpointOptions();
             var logger = GetLogger<DbMigrationsEndpoint>();
 
-            var sut = new DbMigrationsEndpoint(options, container, helper, logger);
+            var sut = new DbMigrationsEndpoint(options, container.BuildServiceProvider(), helper, logger);
             var result = sut.Invoke();
 
             var contextName = nameof(MockDbContext);
@@ -61,9 +61,8 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         [Fact]
         public void Invoke_NonExistingDatabase_ReturnsExpected()
         {
-            var context = new MockDbContext();
-            var container = Substitute.For<IServiceProvider>();
-            container.GetService(typeof(MockDbContext)).Returns(context);
+            var container = new ServiceCollection();
+            container.AddScoped<MockDbContext>();
             var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             helper.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
@@ -71,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             var options = new DbMigrationsEndpointOptions();
             var logger = GetLogger<DbMigrationsEndpoint>();
 
-            var sut = new DbMigrationsEndpoint(options, container, helper, logger);
+            var sut = new DbMigrationsEndpoint(options, container.BuildServiceProvider(), helper, logger);
             var result = sut.Invoke();
 
             var contextName = nameof(MockDbContext);
@@ -83,13 +82,13 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         [Fact]
         public void Invoke_NonContainerRegistered_ReturnsExpected()
         {
-            var container = Substitute.For<IServiceProvider>();
+            var container = new ServiceCollection();
             var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             var options = new DbMigrationsEndpointOptions();
             var logger = GetLogger<DbMigrationsEndpoint>();
 
-            var sut = new DbMigrationsEndpoint(options, container, helper, logger);
+            var sut = new DbMigrationsEndpoint(options, container.BuildServiceProvider(), helper, logger);
             var result = sut.Invoke();
 
             result.Should().BeEmpty();
