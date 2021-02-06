@@ -54,13 +54,10 @@ namespace Steeltoe.Management.Endpoint.Info
             }
 
             services.AddActuatorManagementOptions(config);
-
-            var options = new InfoEndpointOptions(config);
-            services.TryAddSingleton<IInfoOptions>(options);
-            services.RegisterEndpointOptions(options);
-            AddContributors(services, contributors);
-            services.TryAddSingleton<InfoEndpoint>();
+            services.AddInfoActuatorServices(config);
             services.AddActuatorEndpointMapping<InfoEndpoint>();
+
+            AddContributors(services, contributors);
         }
 
         private static void AddContributors(IServiceCollection services, params IInfoContributor[] contributors)
