@@ -26,6 +26,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private readonly string TEST_PREFIX = "bindertest.";
         private static string BIG_EXCEPTION_MESSAGE = new string('x', 10_000);
         private int maxStackTraceSize;
+        private RabbitBindingsOptions BindingsOptions;
 
         public RabbitBinderTests(ITestOutputHelper output)
             : base(output, new XunitLoggerFactory(output))
@@ -67,16 +68,51 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
         protected override ConsumerOptions CreateConsumerOptions()
         {
-            var consumerOptions = new RabbitConsumerOptions();
-            consumerOptions.PostProcess();
-            return new ExtendedConsumerOptions<RabbitConsumerOptions>(consumerOptions);
+
+            throw new NotImplementedException();
+            //var consumerOptions = new RabbitConsumerOptions();
+            //consumerOptions.PostProcess();
+            //return new ExtendedConsumerOptions<RabbitConsumerOptions>(consumerOptions);
         }
 
         protected override ProducerOptions CreateProducerOptions()
         {
-            var producerOptions = new RabbitProducerOptions();
-            producerOptions.PostProcess();
-            return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
+            throw new NotImplementedException();
+            //var producerOptions = new RabbitProducerOptions();
+            //producerOptions.PostProcess();
+
+            //return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
+        }
+
+        protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
+        {
+            rabbitConsumerOptions = rabbitConsumerOptions ?? new RabbitConsumerOptions();
+            rabbitConsumerOptions.PostProcess();
+
+            bindingOptions = bindingOptions ?? new RabbitBindingOptions();
+            bindingOptions.Consumer = rabbitConsumerOptions;
+            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
+
+            var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
+            consumerOptions.PostProcess(bindingName);
+            return consumerOptions;
+        }
+
+        protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
+        {
+            var rabbitProducerOptions = new RabbitProducerOptions();
+            rabbitProducerOptions.PostProcess();
+
+
+            bindingOptions = bindingOptions ?? new RabbitBindingOptions();
+
+            bindingOptions.Producer = rabbitProducerOptions;
+            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
+
+            //return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
+            var producerOptions = new ProducerOptions() { BindingName = bindingName };
+            producerOptions.PostProcess(bindingName);
+            return producerOptions;
         }
 
         protected override RabbitTestBinder GetBinder()
@@ -87,6 +123,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 options.PublisherReturns = true;
                 _cachingConnectionFactory = GetResource();
                 _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
+            }
+
+            return _testBinder;
+        }
+
+        public RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions)
+        {
+            if (_testBinder == null)
+            {
+                var options = new RabbitOptions();
+                options.PublisherReturns = true;
+                _cachingConnectionFactory = GetResource();
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
             }
 
             return _testBinder;
@@ -191,6 +240,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             binder.Cleanup();
             binder.CoreBinder.ConnectionFactory.Destroy();
+            BindingsOptions = null;
             _cachingConnectionFactory = null;
         }
      

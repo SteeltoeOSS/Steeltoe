@@ -47,19 +47,23 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void TestSendAndReceiveBad()
         {
             var ccf = GetResource();
-            var binder = GetBinder();
+            var bindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(bindingsOptions);
 
-            var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions()) ;
+            var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
             var moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
-            var producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, CreateProducerOptions());
+            var producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, GetProducerOptions("output", bindingsOptions));
 
             var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "_lifecycle");
 
             Assert.True(endpoint.HeadersMappedLast);
             Assert.Contains("Passthrough", endpoint.Template.MessageConverter.GetType().Name);
 
-            var consumerProps = (ExtendedConsumerOptions<RabbitConsumerOptions>)CreateConsumerOptions();
-            consumerProps.Extension.ContainerType = ContainerType.DIRECT;
+            var consumerProps = GetConsumerOptions("input", bindingsOptions);
+            var rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
+
+            rabbitConsumerOptions.ContainerType = ContainerType.DIRECT;
+            //  consumerProps.Extension.ContainerType = ContainerType.DIRECT;
 
             var consumerBinding = binder.BindConsumer("bad.0", "test", moduleInputChannel, consumerProps);
 
@@ -96,13 +100,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
             ccf.IsPublisherConfirms = true;
             ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
             ccf.ResetConnection();
-            var binder = GetBinder();
+            var bindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(bindingsOptions);
+
 
             // Setup binder configuration to mimic autoconfig
             RegisterGlobalErrorChannel(binder);
 
             var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
-            var producerOptions = CreateProducerOptions();
+            var producerOptions = GetProducerOptions("output", bindingsOptions); //CreateProducerOptions();
             producerOptions.ErrorChannelEnabled = true;
 
             var producerBinding = binder.BindProducer("ec.0", moduleOutputChannel, producerOptions);
@@ -167,19 +173,24 @@ namespace Steeltoe.Stream.Binder.Rabbit
             producerBinding.Unbind();
         }
 
-        [Fact] 
+        [Fact]
         public void TestProducerAckChannel()
         {
-            var binder = GetBinder();
+            var bindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(bindingsOptions);
             var ccf = GetResource();
             ccf.IsPublisherReturns = true;
             ccf.PublisherConfirmType = ConfirmType.CORRELATED;
             ccf.ResetConnection();
 
             var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
-            var producerProps = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var producerProps = GetProducerOptions("output", bindingsOptions);
+            //CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
             producerProps.ErrorChannelEnabled = true;
-            producerProps.Extension.ConfirmAckChannel = "acksChannel";
+
+            var rabbitProducerOptions = bindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.ConfirmAckChannel = "acksChannel";
+            //producerProps.Extension.ConfirmAckChannel = "acksChannel";
 
             var producerBinding = binder.BindProducer("acks.0", moduleOutputChannel, producerProps);
             var messageBytes = "acksMessage".GetBytes();
@@ -201,23 +212,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal(messageBytes, confirm.Value.Payload);
             producerBinding.Unbind();
         }
-
         [Fact]
         public void TestConsumerProperties()
         {
-            var consumerOptions = new RabbitConsumerOptions();
-            consumerOptions.RequeueRejected = true;
-            consumerOptions.Transacted = true;
-            consumerOptions.Exclusive = true;
-            consumerOptions.MissingQueuesFatal = true;
-            consumerOptions.FailedDeclarationRetryInterval = 1500L;
-            consumerOptions.QueueDeclarationRetries = 23;
+            var rabbitConsumerOptions = new RabbitConsumerOptions();
+            rabbitConsumerOptions.RequeueRejected = true;
+            rabbitConsumerOptions.Transacted = true;
+            rabbitConsumerOptions.Exclusive = true;
+            rabbitConsumerOptions.MissingQueuesFatal = true;
+            rabbitConsumerOptions.FailedDeclarationRetryInterval = 1500L;
+            rabbitConsumerOptions.QueueDeclarationRetries = 23;
 
-            var binder = GetBinder();
+            var bindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(bindingsOptions);
 
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension = consumerOptions;
-            consumerOptions.PostProcess();
+            var properties = GetConsumerOptions("input", bindingsOptions, rabbitConsumerOptions);
 
             var consumerBinding = binder.BindConsumer("props.0", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
@@ -226,7 +235,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
             Assert.NotNull(container);
             Assert.Equal(AcknowledgeMode.AUTO, container.AcknowledgeMode);
-            Assert.StartsWith(properties.Extension.Prefix, container.GetQueueNames()[0]);
+            Assert.StartsWith(rabbitConsumerOptions.Prefix, container.GetQueueNames()[0]);
             Assert.True(container.Exclusive);
             Assert.True(container.IsChannelTransacted);
             Assert.True(container.Exclusive);
@@ -244,19 +253,23 @@ namespace Steeltoe.Stream.Binder.Rabbit
             consumerBinding.Unbind();
             Assert.False(endpoint.IsRunning);
 
-            properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.AcknowledgeMode = AcknowledgeMode.NONE;
+            bindingsOptions.Bindings.Remove("input");
+
+            properties = GetConsumerOptions("input", bindingsOptions);
+            rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.NONE;
             properties.BackOffInitialInterval = 2000;
             properties.BackOffMaxInterval = 20000;
             properties.BackOffMultiplier = 5.0;
             properties.Concurrency = 2;
             properties.MaxAttempts = 23;
-            properties.Extension.MaxConcurrency = 3;
-            properties.Extension.Prefix = "foo.";
-            properties.Extension.Prefetch = 20;
-            properties.Extension.HeaderPatterns = new string[] { "foo" }.ToList();
-            properties.Extension.BatchSize = 10;
-            var quorum = properties.Extension.Quorum;
+
+            rabbitConsumerOptions.MaxConcurrency = 3;
+            rabbitConsumerOptions.Prefix = "foo.";
+            rabbitConsumerOptions.Prefetch = 20;
+            rabbitConsumerOptions.HeaderPatterns = new string[] { "foo" }.ToList();
+            rabbitConsumerOptions.BatchSize = 10;
+            var quorum = rabbitConsumerOptions.Quorum;
             quorum.Enabled = true;
             quorum.DeliveryLimit = 10;
             quorum.InitialQuorumSize = 1;
@@ -275,12 +288,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestMultiplexOnPartitionedConsumerWithMultipleDestinations()
         {
-            var consumerProperties = CreateConsumerOptions();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
             var port = proxy.Port;
             var ccf = new CachingConnectionFactory("localhost", port);
 
-            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, new RabbitBindingsOptions(), GetBinder().ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
             consumerProperties.Multiplex = true;
             consumerProperties.Partitioned = true;
@@ -305,10 +319,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             admin.DeclareExchange(exchange);
             admin.DeclareBinding(BindingBuilder.Bind(queue).To(exchange).With("foo"));
 
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.DeclareExchange = false;
-            properties.Extension.BindQueue = false;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumerOptions.DeclareExchange = false;
+            rabbitConsumerOptions.BindQueue = false;
 
             var consumerBinding = binder.BindConsumer("propsUser1", "infra", CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
 
@@ -340,10 +356,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAnonWithBuiltInExchange()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.DeclareExchange = false;
-            properties.Extension.QueueNameGroupOnly = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumeroptions.DeclareExchange = false;
+            rabbitConsumeroptions.QueueNameGroupOnly = true;
 
             var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
             var endpoint = ExtractEndpoint(consumerBinding);
@@ -361,11 +379,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAnonWithBuiltInExchangeCustomPrefix()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.DeclareExchange = false;
-            properties.Extension.QueueNameGroupOnly = true;
-            properties.Extension.AnonymousGroupPrefix = "customPrefix.";
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumeroptions.DeclareExchange = false;
+            rabbitConsumeroptions.QueueNameGroupOnly = true;
+            rabbitConsumeroptions.AnonymousGroupPrefix = "customPrefix.";
 
             var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
             var endpoint = ExtractEndpoint(consumerBinding);
@@ -382,12 +402,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public async Task TestConsumerPropertiesWithUserInfrastructureCustomExchangeAndRK()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.ExchangeType = ExchangeType.DIRECT;
-            properties.Extension.BindingRoutingKey = "foo,bar";
-            properties.Extension.BindingRoutingKeyDelimiter = ",";
-            properties.Extension.QueueNameGroupOnly = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+
+            rabbitConsumeroptions.ExchangeType = ExchangeType.DIRECT;
+            rabbitConsumeroptions.BindingRoutingKey = "foo,bar";
+            rabbitConsumeroptions.BindingRoutingKeyDelimiter = ",";
+            rabbitConsumeroptions.QueueNameGroupOnly = true;
 
             // properties.Extension.DelayedExchange = true; // requires delayed message
 
@@ -435,12 +458,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(exchange.AutoDelete);
         }
 
+
         [Fact]
         public async Task TestConsumerPropertiesWithUserInfrastructureCustomQueueArgs()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            var extProps = properties.Extension;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var extProps = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
             extProps.ExchangeType = ExchangeType.DIRECT;
             extProps.ExchangeDurable = false;
@@ -537,7 +562,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 queue = await client.GetQueue("/", "propsUser3.infra");
             }
 
-            Assert.NotNull(queue); 
+            Assert.NotNull(queue);
 
             Assert.Equal("30000", queue.Arguments["x-expires"]);
             Assert.Equal("10000", queue.Arguments["x-max-length"]);
@@ -582,18 +607,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public async void TestConsumerPropertiesWithHeaderExchanges()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.ExchangeType = ExchangeType.HEADERS;
-            properties.Extension.AutoBindDlq = true;
-            properties.Extension.DeadLetterExchange = ExchangeType.HEADERS;
-            properties.Extension.DeadLetterExchange = "propsHeader.dlx";
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumeroptions.ExchangeType = ExchangeType.HEADERS;
+            rabbitConsumeroptions.AutoBindDlq = true;
+            rabbitConsumeroptions.DeadLetterExchange = ExchangeType.HEADERS;
+            rabbitConsumeroptions.DeadLetterExchange = "propsHeader.dlx";
 
             var queueBindingArguments = new Dictionary<string, string>();
             queueBindingArguments.Add("x-match", "any");
             queueBindingArguments.Add("foo", "bar");
-            properties.Extension.QueueBindingArguments = queueBindingArguments;
-            properties.Extension.DlqBindingArguments = queueBindingArguments;
+            rabbitConsumeroptions.QueueBindingArguments = queueBindingArguments;
+            rabbitConsumeroptions.DlqBindingArguments = queueBindingArguments;
 
             var group = "bindingArgs";
             var consumerBinding = binder.BindConsumer("propsHeader", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
@@ -642,10 +669,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestProducerProperties()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var bindingOptions = GetDefaultBindingOptions();
 
-            var producerBinding = binder.BindProducer("props.0", CreateBindableChannel("input", bindingOptions), CreateProducerOptions());
+            var producerOptions = GetProducerOptions("input", rabbitBindingsOptions);
+            var producerBinding = binder.BindProducer("props.0", CreateBindableChannel("input", bindingOptions), producerOptions);
 
             var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
             Assert.Equal(MessageDeliveryMode.PERSISTENT, endpoint.DefaultDeliveryMode);
@@ -662,20 +691,22 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             Assert.False(endpoint.Template.IsChannelTransacted);
 
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            rabbitBindingsOptions.Bindings.Remove("input");
+            var producerProperties = GetProducerOptions("input", rabbitBindingsOptions); // CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var producerRabbitOptions = rabbitBindingsOptions.GetRabbitProducerOptions("input");
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             binder.ApplicationContext.Register("pkSelector", new TestPartitionSupport("pkSelector"));
 
             producerProperties.PartitionKeyExtractorName = "pkExtractor";
             producerProperties.PartitionSelectorName = "pkSelector";
-            producerProperties.Extension.Prefix = "foo.";
-            producerProperties.Extension.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
-            producerProperties.Extension.HeaderPatterns = new string[] { "foo" }.ToList();
-            producerProperties.PartitionKeyExpression = "'foo'"; 
+            producerRabbitOptions.Prefix = "foo.";
+            producerRabbitOptions.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            producerRabbitOptions.HeaderPatterns = new string[] { "foo" }.ToList();
+            producerProperties.PartitionKeyExpression = "'foo'";
             producerProperties.PartitionSelectorExpression = "0";
             producerProperties.PartitionCount = 1;
-            producerProperties.Extension.Transacted = true;
-            producerProperties.Extension.DelayExpression = "42";
+            producerRabbitOptions.Transacted = true;
+            producerRabbitOptions.DelayExpression = "42";
             producerProperties.RequiredGroups = new string[] { "prodPropsRequired" }.ToList();
 
             var producerBindingProperties = CreateProducerBindingOptions(producerProperties);
@@ -708,13 +739,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
             var admin = new RabbitAdmin(GetResource(), logger);
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-            var binder = GetBinder();
 
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = TEST_PREFIX;
-            consumerProperties.Extension.AutoBindDlq = true;
-            consumerProperties.Extension.DurableSubscription = true;
+            //  var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = TEST_PREFIX;
+            rabbitConsumerOptions.AutoBindDlq = true;
+            rabbitConsumerOptions.DurableSubscription = true;
             consumerProperties.MaxAttempts = 1; // disable retry
             var moduleInputChannel = CreateBindableChannel("input", CreateConsumerBindingOptions(consumerProperties));
             moduleInputChannel.ComponentName = "durableTest";
@@ -757,11 +791,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
             var admin = new RabbitAdmin(GetResource(), logger);
 
-            var binder = GetBinder();
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = TEST_PREFIX;
-            consumerProperties.Extension.AutoBindDlq = true;
-            consumerProperties.Extension.DurableSubscription = false;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            //   var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = TEST_PREFIX;
+            rabbitConsumerOptions.AutoBindDlq = true;
+            rabbitConsumerOptions.DurableSubscription = false;
             consumerProperties.MaxAttempts = 1; // disable retry
             var bindingProperties = CreateConsumerBindingOptions(
                     consumerProperties);
@@ -785,12 +822,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAutoBindDLQ()
         {
-            var binder = GetBinder();
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = TEST_PREFIX;
-            consumerProperties.Extension.AutoBindDlq = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            // var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = TEST_PREFIX;
+            rabbitConsumerOptions.AutoBindDlq = true;
             consumerProperties.MaxAttempts = 1; // disable retry
-            consumerProperties.Extension.DurableSubscription = true;
+            rabbitConsumerOptions.DurableSubscription = true;
             var bindingProperties = CreateConsumerBindingOptions(consumerProperties);
             DirectChannel moduleInputChannel = CreateBindableChannel("input", bindingProperties);
             moduleInputChannel.ComponentName = "dlqTest";
@@ -856,13 +896,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact] // TODO
         public async void TestAutoBindDLQManualAcks()
         {
-            var binder = GetBinder();
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = TEST_PREFIX;
-            consumerProperties.Extension.AutoBindDlq = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            //  var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = TEST_PREFIX;
+            rabbitConsumerOptions.AutoBindDlq = true;
             consumerProperties.MaxAttempts = 2;
-            consumerProperties.Extension.DurableSubscription = true;
-            consumerProperties.Extension.AcknowledgeMode = AcknowledgeMode.MANUAL;
+            rabbitConsumerOptions.DurableSubscription = true;
+            rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.MANUAL;
             var bindingProperties = CreateConsumerBindingOptions(consumerProperties);
 
             DirectChannel moduleInputChannel = CreateBindableChannel("input", bindingProperties);
@@ -928,35 +971,54 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
+        public void TestOptions()
+        {
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var producer = GetProducerOptions("test", rabbitBindingsOptions);
+
+            var rabbitprod = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+            rabbitprod.Prefix = "rets";
+            var rabbitprod2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+
+            Assert.Equal(rabbitprod.Prefix, rabbitprod2.Prefix);
+
+
+        }
+        [Fact]
         public void TestAutoBindDLQPartionedConsumerFirst()
         {
-            var binder = GetBinder();
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.Prefix = "bindertest.";
-            properties.Extension.AutoBindDlq = true;
-            properties.MaxAttempts = 1; // disable retry
-            properties.Partitioned = true;
-            properties.InstanceIndex = 0;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumerOptions.Prefix = "bindertest.";
+            rabbitConsumerOptions.AutoBindDlq = true;
+            consumerProperties.MaxAttempts = 1; // disable retry
+            consumerProperties.Partitioned = true;
+            consumerProperties.InstanceIndex = 0;
 
-            DirectChannel input0 = CreateBindableChannel("input", CreateConsumerBindingOptions(properties));
+            DirectChannel input0 = CreateBindableChannel("input", CreateConsumerBindingOptions(consumerProperties));
             input0.ComponentName = "test.input0DLQ";
-            var input0Binding = binder.BindConsumer("partDLQ.0", "dlqPartGrp", input0, properties);
-            var defaultConsumerBinding1 = binder.BindConsumer("partDLQ.0", "default", new QueueChannel(), properties);
-            properties.InstanceIndex = 1;
+            var input0Binding = binder.BindConsumer("partDLQ.0", "dlqPartGrp", input0, consumerProperties);
+            var defaultConsumerBinding1 = binder.BindConsumer("partDLQ.0", "default", new QueueChannel(), consumerProperties);
+            consumerProperties.InstanceIndex = 1;
 
-            DirectChannel input1 = CreateBindableChannel("input1", CreateConsumerBindingOptions(properties));
+            DirectChannel input1 = CreateBindableChannel("input1", CreateConsumerBindingOptions(consumerProperties));
             input1.ComponentName = "test.input1DLQ";
-            var input1Binding = binder.BindConsumer("partDLQ.0", "dlqPartGrp", input1, properties);
+            var input1Binding = binder.BindConsumer("partDLQ.0", "dlqPartGrp", input1, consumerProperties);
 
-            var defaultConsumerBinding2 = binder.BindConsumer("partDLQ.0", "default", new QueueChannel(), properties);
+            var defaultConsumerBinding2 = binder.BindConsumer("partDLQ.0", "default", new QueueChannel(), consumerProperties);
 
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.Prefix = "bindertest.";
+            //   var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.Prefix = "bindertest.";
 
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             binder.ApplicationContext.Register("pkSelector", new TestPartitionSupport("pkSelector"));
 
-            producerProperties.Extension.AutoBindDlq = true;
+            rabbitProducerOptions.AutoBindDlq = true;
             producerProperties.PartitionKeyExtractorName = "pkExtractor";
             producerProperties.PartitionSelectorName = "pkSelector";
             producerProperties.PartitionCount = 2;
@@ -1045,11 +1107,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAutoBindDLQPartitionedProducerFirst()
         {
-            var binder = GetBinder();
-            var properties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-
-            properties.Extension.Prefix = "bindertest.";
-            properties.Extension.AutoBindDlq = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            // var properties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var properties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.Prefix = "bindertest.";
+            rabbitProducerOptions.AutoBindDlq = true;
             properties.RequiredGroups = new string[] { "dlqPartGrp" }.ToList();
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             properties.PartitionKeyExtractorName = "pkExtractor";
@@ -1059,9 +1125,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             output.ComponentName = "test.output";
             var outputBinding = binder.BindProducer("partDLQ.1", output, properties);
 
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = "bindertest.";
-            consumerProperties.Extension.AutoBindDlq = true;
+            // var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = "bindertest.";
+            rabbitConsumerOptions.AutoBindDlq = true;
             consumerProperties.MaxAttempts = 1; // disable retry
             consumerProperties.Partitioned = true;
             consumerProperties.InstanceIndex = 0;
@@ -1143,13 +1209,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             this.maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
             Assert.True(this.maxStackTraceSize > 0);
 
-            var binder = GetBinder();
-            var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            consumerProperties.Extension.Prefix = TEST_PREFIX;
-            consumerProperties.Extension.AutoBindDlq = true;
-            consumerProperties.Extension.RepublishToDlq = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            //  var consumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = TEST_PREFIX;
+            rabbitConsumerOptions.AutoBindDlq = true;
+            rabbitConsumerOptions.RepublishToDlq = true;
             consumerProperties.MaxAttempts = 1; // disable retry
-            consumerProperties.Extension.DurableSubscription = true;
+            rabbitConsumerOptions.DurableSubscription = true;
             DirectChannel moduleInputChannel = CreateBindableChannel("input", CreateConsumerBindingOptions(consumerProperties));
             moduleInputChannel.ComponentName = "dlqPubTest";
             var exception = BigCause();
@@ -1202,15 +1271,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestBatchingAndCompression()
         {
-            var binder = GetBinder();
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension
-                        .DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
-            producerProperties.Extension.BatchingEnabled = true;
-            producerProperties.Extension.BatchSize = 2;
-            producerProperties.Extension.BatchBufferLimit = 100000;
-            producerProperties.Extension.BatchTimeout = 30000;
-            producerProperties.Extension.Compress = true;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+
+            rabbitProducerOptions
+                                 .DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            rabbitProducerOptions.BatchingEnabled = true;
+            rabbitProducerOptions.BatchSize = 2;
+            rabbitProducerOptions.BatchBufferLimit = 100000;
+            rabbitProducerOptions.BatchTimeout = 30000;
+            rabbitProducerOptions.Compress = true;
             producerProperties.RequiredGroups = new string[] { "default" }.ToList();
 
             DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
@@ -1245,7 +1317,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             QueueChannel input = new QueueChannel();
             input.ComponentName = "batchingConsumer";
-            var consumerBinding = binder.BindConsumer("batching.0", "test", input, CreateConsumerOptions());
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            var consumerBinding = binder.BindConsumer("batching.0", "test", input, consumerProperties);
 
             output.Send(fooMessage);
             output.Send(barMessage);
@@ -1261,15 +1335,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             producerBinding.Unbind();
             consumerBinding.Unbind();
-           
+
         }
 
         [Fact]
         public void TestInternalHeadersNotPropagated()
         {
-            RabbitTestBinder binder = GetBinder();
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+
+            rabbitProducerOptions.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
 
             DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             output.ComponentName = "propagate.out";
@@ -1277,7 +1354,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             QueueChannel input = new QueueChannel();
             input.ComponentName = "propagate.in";
-            var consumerProperties = CreateConsumerOptions();
+
+
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
             var consumerBinding = binder.BindConsumer("propagate.0", "propagate", input, consumerProperties);
 
             var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
@@ -1307,32 +1386,41 @@ namespace Steeltoe.Stream.Binder.Rabbit
         /*
          * Test late binding due to broker down; queues with and without DLQs, and partitioned
          * queues.
+         * Runs about 40 mins
          */
         [Fact]
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-           // proxy.Start(); Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
+            // proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
             CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
 
             var context = RabbitTestBinder.GetApplicationContext();
-            var provisioner = new RabbitExchangeQueueProvisioner(cf, new RabbitBindingsOptions(), context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, new RabbitBindingsOptions(), provisioner);
+
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var provisioner = new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, rabbitBindingsOptions, provisioner);
             RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
+            //  binder.BindingsOptions = rabbitBindingsOptions;
             _testBinder = binder;
 
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.Prefix = "latebinder.";
-            producerProperties.Extension.AutoBindDlq = true;
-            producerProperties.Extension.Transacted = true;
+
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            //   var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            rabbitProducerOptions.Prefix = "latebinder.";
+            rabbitProducerOptions.AutoBindDlq = true;
+            rabbitProducerOptions.Transacted = true;
 
             var moduleOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             var late0ProducerBinding = binder.BindProducer("late.0", moduleOutputChannel, producerProperties);
 
             QueueChannel moduleInputChannel = new QueueChannel();
-            var rabbitConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            rabbitConsumerProperties.Extension.Prefix = "latebinder.";
-            var late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, rabbitConsumerProperties);
+            // var rabbitConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+            rabbitConsumerOptions.Prefix = "latebinder.";
+            var late0ConsumerBinding = binder.BindConsumer("late.0", "test", moduleInputChannel, consumerOptions);
             producerProperties.PartitionKeyExpression = "Payload.Equals('0') ? 0 : 1";
             producerProperties.PartitionSelectorExpression = "GetHashCode()";
             producerProperties.PartitionCount = 2;
@@ -1343,8 +1431,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var partInputChannel0 = new QueueChannel();
             var partInputChannel1 = new QueueChannel();
 
-            var partLateConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            partLateConsumerProperties.Extension.Prefix = "latebinder.";
+            var partLateConsumerProperties = GetConsumerOptions("partLate", rabbitBindingsOptions); // rabbitConsumerOptions;// CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var partLateRabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("partLate");
+            partLateRabbitConsumerOptions.Prefix = "latebinder.";
             partLateConsumerProperties.Partitioned = true;
             partLateConsumerProperties.InstanceIndex = 0;
 
@@ -1352,24 +1441,26 @@ namespace Steeltoe.Stream.Binder.Rabbit
             partLateConsumerProperties.InstanceIndex = 1;
             var partlate0Consumer1Binding = binder.BindConsumer("partlate.0", "test", partInputChannel1, partLateConsumerProperties);
 
-            var noDlqProducerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            noDlqProducerProperties.Extension.Prefix = "latebinder.";
+            var noDlqProducerProperties = GetProducerOptions("noDlq", rabbitBindingsOptions); //CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var noDlqRabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("noDlq");
+            noDlqRabbitProducerOptions.Prefix = "latebinder.";
             var noDLQOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
             var noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDLQOutputChannel, noDlqProducerProperties);
 
             var noDLQInputChannel = new QueueChannel();
-            var noDlqConsumerProperties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            noDlqConsumerProperties.Extension.Prefix = "latebinder.";
+            var noDlqConsumerProperties = GetConsumerOptions("noDlqConsumer", rabbitBindingsOptions);//CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var noDlqRabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("noDlqConsumer");
+            noDlqRabbitConsumerOptions.Prefix = "latebinder.";
             var noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDLQInputChannel, noDlqConsumerProperties);
 
             var outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
             var pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
             var pubSubInputChannel = new QueueChannel();
-            noDlqConsumerProperties.Extension.DurableSubscription = false;
+            noDlqRabbitConsumerOptions.DurableSubscription = false;
             var nonDurableConsumerBinding = binder.BindConsumer("latePubSub", "lategroup", pubSubInputChannel, noDlqConsumerProperties);
 
             var durablePubSubInputChannel = new QueueChannel();
-            noDlqConsumerProperties.Extension.DurableSubscription = true;
+            noDlqRabbitConsumerOptions.DurableSubscription = true;
             var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
             proxy.Start();
@@ -1440,7 +1531,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public async void TestBadUserDeclarationsFatal()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var context = binder.ApplicationContext;
             context.Register("testBadUserDeclarationsFatal", new Queue("testBadUserDeclarationsFatal", false));
             context.Register("binder", binder);
@@ -1465,7 +1557,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 await Assert.ThrowsAsync<BinderException>(() =>
                 {
-                    binding = binder.BindConsumer("input", "baddecls", this.CreateBindableChannel("input", GetDefaultBindingOptions()), CreateConsumerOptions());
+                    var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
+                    binding = binder.BindConsumer("input", "baddecls", this.CreateBindableChannel("input", GetDefaultBindingOptions()), consumerOptions);
                     throw new Exception("Expected exception");
                 });
             }
@@ -1474,17 +1567,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 admin.DeleteQueue("testBadUserDeclarationsFatal");
                 if (binding != null)
                 {
-                   await binding.Unbind();
+                    await binding.Unbind();
                 }
             }
         }
-
         [Fact]
         public void TestRoutingKeyExpression()
         {
-            var binder = GetBinder();
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.RoutingKeyExpression = "Payload.field";
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions); // CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.RoutingKeyExpression = "Payload.field";
 
             var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             output.ComponentName = "rkeProducer";
@@ -1520,13 +1614,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestRoutingKeyExpressionPartitionedAndDelay()
         {
-            var binder = GetBinder();
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.RoutingKeyExpression = "#root.get_Payload().field";
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);//  as ExtendedProducerOptions<RabbitProducerOptions>;
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.RoutingKeyExpression = "#root.get_Payload().field";
 
             // requires delayed message exchange plugin; tested locally
             // producerProperties.Extension.DelayedExchange = true;
-            producerProperties.Extension.DelayExpression = "1000";
+            rabbitProducerOptions.DelayExpression = "1000";
             producerProperties.PartitionKeyExpression = "0";
 
             DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
@@ -1564,10 +1660,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestPolledConsumer()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var binding = binder.BindPollableConsumer("pollable", "group", inboundBindTarget, CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>);
+
+            var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
+            var binding = binder.BindPollableConsumer("pollable", "group", inboundBindTarget, consumerOptions);// CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>);
             var template = new RabbitTemplate(GetResource());
             template.ConvertAndSend("pollable.group", "testPollable");
 
@@ -1598,10 +1697,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestPolledConsumerRequeue()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            //var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
             var binding = binder.BindPollableConsumer("pollableRequeue", "group", inboundBindTarget, properties);
             var template = new RabbitTemplate(GetResource());
             template.ConvertAndSend("pollableRequeue.group", "testPollable");
@@ -1641,13 +1743,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestPolledConsumerWithDlq()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            //var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerProperties = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             properties.MaxAttempts = 2;
             properties.BackOffInitialInterval = 0;
-            properties.Extension.AutoBindDlq = true;
+            rabbitConsumerProperties.AutoBindDlq = true;
             var binding = binder.BindPollableConsumer("pollableDlq", "group", inboundBindTarget, properties);
             var template = new RabbitTemplate(GetResource());
             template.ConvertAndSend("pollableDlq.group", "testPollable");
@@ -1675,17 +1780,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(deadLetter);
             binding.Unbind();
         }
-
         [Fact]
         public void TestPolledConsumerWithDlqNoRetry()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions); //CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             properties.MaxAttempts = 1;
             // properties.Extension.RequeueRejected = true; // loops, correctly
-            properties.Extension.AutoBindDlq = true;
+            rabbitConsumerOptions.AutoBindDlq = true;
             var binding = binder.BindPollableConsumer("pollableDlqNoRetry", "group", inboundBindTarget, properties);
             RabbitTemplate template = new RabbitTemplate(GetResource());
 
@@ -1708,7 +1814,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
             catch (MessageHandlingException e)
             {
-               Assert.Equal("test DLQ", e.Message);
+                Assert.Equal("test DLQ", e.Message);
             }
 
             var deadLetter = template.Receive("pollableDlqNoRetry.group.dlq", 10_000);
@@ -1719,14 +1825,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestPolledConsumerWithDlqRePub()
         {
-            var binder = GetBinder();
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions); //CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             properties.MaxAttempts = 2;
             properties.BackOffInitialInterval = 0;
-            properties.Extension.AutoBindDlq = true;
-            properties.Extension.RepublishToDlq = true;
+            rabbitConsumerOptions.AutoBindDlq = true;
+            rabbitConsumerOptions.RepublishToDlq = true;
             var binding = binder.BindPollableConsumer("pollableDlqRePub", "group", inboundBindTarget, properties);
             RabbitTemplate template = new RabbitTemplate(GetResource());
             template.ConvertAndSend("pollableDlqRePub.group", "testPollable");
@@ -1753,32 +1861,38 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
         {
             var logger = new XunitLogger(Output);
-            var binder = GetBinder();
+
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
+            var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
             RegisterGlobalErrorChannel(binder);
 
-            var properties = CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
-            properties.Extension.Prefix = "bindertest.";
-            properties.Extension.AutoBindDlq = true;
-            properties.Extension.RepublishToDlq = true;
-            properties.Extension.RepublishDeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
-            properties.MaxAttempts = withRetry ? 2 : 1;
-            properties.Partitioned = true;
-            properties.InstanceIndex = 0;
-            var input0 = CreateBindableChannel("input", CreateConsumerBindingOptions(properties));
+            //  var properties = GetConsumerOptions("input", rabbitBindingsOptions); //CreateConsumerOptions() as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            rabbitConsumerOptions.Prefix = "bindertest.";
+            rabbitConsumerOptions.AutoBindDlq = true;
+            rabbitConsumerOptions.RepublishToDlq = true;
+            rabbitConsumerOptions.RepublishDeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            consumerProperties.MaxAttempts = withRetry ? 2 : 1;
+            consumerProperties.Partitioned = true;
+            consumerProperties.InstanceIndex = 0;
+            var input0 = CreateBindableChannel("input", CreateConsumerBindingOptions(consumerProperties));
             input0.ComponentName = "test.input0DLQ";
-            var input0Binding = binder.BindConsumer("partPubDLQ.0", "dlqPartGrp", input0, properties);
-            var defaultConsumerBinding1 = binder.BindConsumer("partPubDLQ.0", "default", new QueueChannel(LoggerFactory.CreateLogger<QueueChannel>()), properties);
-            properties.InstanceIndex = 1;
+            var input0Binding = binder.BindConsumer("partPubDLQ.0", "dlqPartGrp", input0, consumerProperties);
+            var defaultConsumerBinding1 = binder.BindConsumer("partPubDLQ.0", "default", new QueueChannel(LoggerFactory.CreateLogger<QueueChannel>()), consumerProperties);
+            consumerProperties.InstanceIndex = 1;
 
-            var input1 = CreateBindableChannel("input1", CreateConsumerBindingOptions(properties));
+            var input1 = CreateBindableChannel("input1", CreateConsumerBindingOptions(consumerProperties));
             input1.ComponentName = "test.input1DLQ";
-            var input1Binding = binder.BindConsumer("partPubDLQ.0", "dlqPartGrp", input1, properties);
-            var defaultConsumerBinding2 = binder.BindConsumer("partPubDLQ.0", "default", new QueueChannel(), properties);
+            var input1Binding = binder.BindConsumer("partPubDLQ.0", "dlqPartGrp", input1, consumerProperties);
+            var defaultConsumerBinding2 = binder.BindConsumer("partPubDLQ.0", "default", new QueueChannel(), consumerProperties);
 
-            var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
-            producerProperties.Extension.Prefix = "bindertest.";
-            producerProperties.Extension.AutoBindDlq = true;
+            // var producerProperties = CreateProducerOptions() as ExtendedProducerOptions<RabbitProducerOptions>;
+            var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
+            var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.Prefix = "bindertest.";
+            rabbitProducerOptions.AutoBindDlq = true;
 
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             binder.ApplicationContext.Register("pkSelector", new TestPartitionSupport("pkSelector"));

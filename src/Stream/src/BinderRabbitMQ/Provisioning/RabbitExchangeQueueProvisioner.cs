@@ -56,18 +56,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
             // AutoDeclareContext.refresh();
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            _autoDeclareContext = applicationContext;//  new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+            _autoDeclareContext = applicationContext;
             _logger = logger;
             Admin.ApplicationContext = _autoDeclareContext;
             Admin.Initialize();
             Customizers = customizers;
             Options = bindingsOptions;
         }
-
-        //public RabbitExchangeQueueProvisioner(CachingConnectionFactory cf): this(cf, )
-        //{
-        //    this.cf = cf;
-        //}
 
         private RabbitAdmin Admin { get; }
 
@@ -90,8 +85,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public IProducerDestination ProvisionProducerDestination(string name, IProducerOptions options)
         {
-            var producerProperties =/* Options.GetRabbitProducerOptions(options.BindingName);*/
-                ((ExtendedProducerOptions<RabbitProducerOptions>) options).Extension;
+            var producerProperties = Options.GetRabbitProducerOptions(options.BindingName);
 
             var exchangeName = ApplyPrefix(producerProperties.Prefix, name);
             var exchange = BuildExchange(producerProperties, exchangeName);
@@ -161,8 +155,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
         {
-            var consumerProperties = // Options.GetRabbitConsumerOptions(options.BindingName);
-                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
+            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
             IConsumerDestination consumerDestination;
             if (!options.Multiplex)
             {
@@ -202,8 +195,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private IConsumerDestination DoProvisionConsumerDestination(string name, string group, IConsumerOptions options)
         {
-            var consumerProperties = /*Options.GetRabbitConsumerOptions(options.BindingName);*/
-                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
+            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
             var anonymous = string.IsNullOrEmpty(group);
             Base64UrlNamingStrategy anonQueueNameGenerator = null;
             if (anonymous)
@@ -291,8 +283,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             bool partitioned,
             RabbitConfig.Queue queue)
         {
-            var consumerProperties = // Options.GetRabbitConsumerOptions(options.BindingName);
-                ((ExtendedConsumerOptions<RabbitConsumerOptions>)options).Extension;
+            var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
             if (partitioned)
             {
                 return PartitionedBinding(name, exchange, queue, routingKey, consumerProperties, options.InstanceIndex);
@@ -666,7 +657,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                // this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available");
+                _logger?.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available");
             }
             catch (Exception e)
             {
@@ -676,13 +667,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     throw;
                 }
 
-                // this.logger.debug("Declaration of exchange: " + exchange.ExchangeName + " deferred",  e);
+                _logger.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred",  e);
             }
 
             AddToAutoDeclareContext(rootName + ".exchange", exchange);
         }
 
-        private void AddToAutoDeclareContext(String name, Object bean)
+        private void AddToAutoDeclareContext(string name, object bean)
         {
             lock (_autoDeclareContext) {
                 if (!_autoDeclareContext.ContainsService(name, bean.GetType()))
@@ -750,6 +741,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         // {
         //    this.notOurAdminException = true; // our admin doesn't have an event publisher
         // }
+
         private class RabbitProducerDestination : IProducerDestination
         {
             public RabbitConfig.IExchange Exchange { get; }

@@ -44,10 +44,9 @@ namespace Steeltoe.Stream.Binder
             ConfigBuilder = new ConfigurationBuilder();
         }
 
-
         protected BindingOptions CreateConsumerBindingOptions(ConsumerOptions consumerOptions)
         {
-            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() }; 
+            var bindingOptions = new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
             bindingOptions.Consumer = consumerOptions;
             return bindingOptions;
         }
@@ -109,26 +108,17 @@ namespace Steeltoe.Stream.Binder
 
         private MessageConverterConfigurer CreateConverterConfigurer(string channelName, BindingOptions bindingProperties)
         {
-             var bindingServiceProperties = new BindingServiceOptions();
-             bindingServiceProperties.Bindings.Add(channelName, bindingProperties);
-            // var serviceCollection = new ServiceCollection();
-
-            //var configuration = new ConfigurationBuilder().Build();
-            //var applicationContext = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configuration);
-            //applicationContext.refresh();
-            //  bindingServiceProperties.con
-            //     bindingServiceProperties.setConversionService(new DefaultConversionService());
-            // bindingServiceProperties.afterPropertiesSet();
+            var bindingServiceProperties = new BindingServiceOptions();
+            bindingServiceProperties.Bindings.Add(channelName, bindingProperties);
             var applicationContext = GetBinder().ApplicationContext;
 
             var extractors = applicationContext.GetServices<IPartitionKeyExtractorStrategy>();
             var selectors = applicationContext.GetServices<IPartitionSelectorStrategy>();
             var bindingServiceOptionsMonitor = new BindingServiceOptionsMonitor(bindingServiceProperties);
-            
+
             MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
-            // messageConverterConfigurer.setBeanFactory(applicationContext.getBeanFactory());
+
             return messageConverterConfigurer;
-            
         }
 
         private class BindingServiceOptionsMonitor : IOptionsMonitor<BindingServiceOptions>

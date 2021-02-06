@@ -49,17 +49,17 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
         private static readonly Regex _interceptorNeededPattern = new Regex("(Payload|#root|#this)");
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
         : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
             : base(context, new string[0], provisioningProvider, containerCustomizer, sourceCustomizer, logger)
         {
             if (connectionFactory == null)
@@ -134,8 +134,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 throw new InvalidOperationException("The RabbitMQ binder does not support embedded headers since RabbitMQ supports headers natively");
             }
 
-            //var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
-            var extendedProperties = ((ExtendedProducerOptions<RabbitProducerOptions>)producerProperties).Extension;
+            var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
             var prefix = extendedProperties.Prefix;
             var exchangeName = producerDestination.Name;
             var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
@@ -225,10 +224,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             endpoint.Initialize();
             return endpoint;
         }
+
          protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
         {
-            var extendedProperties = producerOptions as ExtendedProducerOptions<RabbitProducerOptions>;
-            var rabbitProducerOptions = extendedProperties.Extension;
+            var rabbitProducerOptions =  BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
             if (ExpressionInterceptorNeeded(rabbitProducerOptions))
             {
                 IExpression rkExpression = null, delayExpression = null;
@@ -253,8 +252,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var destination = consumerDestination.Name;
 
-            //  var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
-            var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
+            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+            //var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
             var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory);
             listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.AUTO);
             listenerContainer.IsChannelTransacted = properties.Transacted.GetValueOrDefault();
@@ -346,7 +345,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected override IMessageHandler GetErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
+            var properties = //((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
+                BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
             if (properties.RepublishToDlq.Value)
             {
                 return new RepublishToDlqErrorMessageHandler(this, properties);
@@ -578,11 +578,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message)
             {
-                // Message amqpMessage = StaticMessageHeaderAccessor.getSourceData(message);
-             //   var errorMessage = message as MessagingSupport.ErrorMessage;
-             
-                //TODO: needed for error DLQ handling
-               var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
+                var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
                 if (errorMessage == null)
                 {
                     // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);

@@ -18,12 +18,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
 {
     public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessageChannelBinder>
     {
-
+        private static IApplicationContext _applicationContext;
         private readonly RabbitAdmin _rabbitAdmin;
-
         private readonly HashSet<string> _prefixes = new HashSet<string>();
 
-        private static IApplicationContext _applicationContext;
+        public RabbitBindingsOptions BindingsOptions { get; }
 
         private readonly ILogger _logger;
 
@@ -47,9 +46,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILoggerFactory loggerFactory)
             : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
         {
+            BindingsOptions = bindingsOptions;
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger<RabbitTestBinder> logger)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder,  ILogger<RabbitTestBinder> logger)
         {
             //var serviceCollection = new ServiceCollection();
             //var serviceProvider = serviceCollection.BuildServiceProvider();
@@ -58,6 +58,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             _logger = logger;
             PollableConsumerBinder = binder;
             _rabbitAdmin = new RabbitAdmin(GetApplicationContext(), connectionFactory, logger);
+            BindingsOptions = binder.BindingsOptions;
 
         }
 
@@ -76,29 +77,31 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public override IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-            var properties = producerOptions as ExtendedProducerOptions<RabbitProducerOptions>;
-            _queues.Add(properties.Extension.Prefix + name + ".default");
-            _exchanges.Add(properties.Extension.Prefix + name);
+          //   var properties = (producerOptions as ExtendedProducerOptions<RabbitProducerOptions>).Extension;
+            var properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
 
-            if (properties.RequiredGroups != null)
+            _queues.Add(properties.Prefix + name + ".default");
+            _exchanges.Add(properties.Prefix + name);
+
+            if (producerOptions.RequiredGroups != null)
             {
-                foreach (var group in properties.RequiredGroups)
+                foreach (var group in producerOptions.RequiredGroups)
                 {
-                    if (properties.Extension.QueueNameGroupOnly == true)
+                    if (properties.QueueNameGroupOnly == true)
                     {
-                        _queues.Add(properties.Extension.Prefix + group);
+                        _queues.Add(properties.Prefix + group);
                     }
                     else
                     {
-                        _queues.Add(properties.Extension.Prefix + name + "." + group);
+                        _queues.Add(properties.Prefix + name + "." + group);
                     }
                 }
             }
 
-            _prefixes.Add(properties.Extension.Prefix);
-            DeadLetters(properties.Extension);
+            _prefixes.Add(properties.Prefix);
+            DeadLetters(properties);
 
-            return base.BindProducer(name, outboundTarget, properties);
+            return base.BindProducer(name, outboundTarget, producerOptions);
         }
 
         public override void Cleanup()
@@ -135,26 +138,27 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private void CaptureConsumerResources(string name, string group, IConsumerOptions options)
         {
             string [] names = null;
-            var consumerOptions = options as ExtendedConsumerOptions<RabbitConsumerOptions>;
+            var consumerOptions = //options as ExtendedConsumerOptions<RabbitConsumerOptions>;
+                BindingsOptions.GetRabbitConsumerOptions(options.BindingName);
             if (group != null)
             {
-                if (consumerOptions.Extension.QueueNameGroupOnly.GetValueOrDefault())
+                if (consumerOptions.QueueNameGroupOnly.GetValueOrDefault())
                 {
-                    _queues.Add(consumerOptions.Extension.Prefix + group);
+                    _queues.Add(consumerOptions.Prefix + group);
                 }
                 else
                 {
-                    if (consumerOptions.Multiplex.GetValueOrDefault())
+                    if (options.Multiplex)
                     {
                         names = name.Split(',');
                         foreach (var nayme in names)
                         {
-                            _queues.Add(consumerOptions.Extension.Prefix + nayme.Trim() + "." + group);
+                            _queues.Add(consumerOptions.Prefix + nayme.Trim() + "." + group);
                         }
                     }
                     else
                     {
-                        _queues.Add(consumerOptions.Extension.Prefix + name + "." + group);
+                        _queues.Add(consumerOptions.Prefix + name + "." + group);
                     }
                 }
             }
@@ -163,16 +167,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 foreach (var nayme in names)
                 {
-                    _exchanges.Add(consumerOptions.Extension.Prefix + nayme.Trim());
+                    _exchanges.Add(consumerOptions.Prefix + nayme.Trim());
                 }
             }
             else
             {
-                _exchanges.Add(consumerOptions.Extension.Prefix + name.Trim());
+                _exchanges.Add(consumerOptions.Prefix + name.Trim());
             }
 
-            _prefixes.Add(consumerOptions.Extension.Prefix);
-            DeadLetters(consumerOptions.Extension);
+            _prefixes.Add(consumerOptions.Prefix);
+            DeadLetters(consumerOptions);
         }
 
         private void DeadLetters(RabbitCommonOptions properties)

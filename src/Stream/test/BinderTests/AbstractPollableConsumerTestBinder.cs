@@ -28,12 +28,12 @@ namespace Steeltoe.Stream.Binder
             return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
-        public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
+       public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
         {
             throw new NotImplementedException();
         }
 
-        public override void Cleanup()
+       public override void Cleanup()
         {
             throw new NotImplementedException();
         }
