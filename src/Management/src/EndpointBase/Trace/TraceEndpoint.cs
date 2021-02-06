@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>
+    public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
     {
         private readonly ILogger<TraceEndpoint> _logger;
         private readonly ITraceRepository _traceRepo;

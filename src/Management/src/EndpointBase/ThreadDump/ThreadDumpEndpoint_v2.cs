@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
-    public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>
+    public class ThreadDumpEndpoint_v2 : AbstractEndpoint<ThreadDumpResult>, IThreadDumpEndpointV2
     {
         private readonly ILogger<ThreadDumpEndpoint_v2> _logger;
         private readonly IThreadDumper _threadDumper;

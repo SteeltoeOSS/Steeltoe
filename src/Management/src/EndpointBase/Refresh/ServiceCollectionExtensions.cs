@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IRefreshOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<RefreshEndpoint>();
+            services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
 
             return services;
         }

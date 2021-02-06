@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IActuatorHypermediaOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<ActuatorEndpoint>();
+            services.TryAddSingleton<IActuatorEndpoint>(provider => provider.GetRequiredService<ActuatorEndpoint>());
 
             return services;
         }

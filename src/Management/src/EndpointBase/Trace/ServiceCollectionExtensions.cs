@@ -41,6 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     var options = new TraceEndpointOptions(configuration);
                     services.TryAddSingleton<ITraceOptions>(options);
                     services.TryAddSingleton<TraceEndpoint>();
+                    services.TryAddSingleton<ITraceEndpoint>(provider => provider.GetRequiredService<TraceEndpoint>());
                     services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
                     break;
                 default:

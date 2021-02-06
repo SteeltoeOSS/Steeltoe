@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Refresh
 {
-    public class RefreshEndpoint : AbstractEndpoint<IList<string>>
+    public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
     {
         private readonly ILogger<RefreshEndpoint> _logger;
         private readonly IConfiguration _configuration;

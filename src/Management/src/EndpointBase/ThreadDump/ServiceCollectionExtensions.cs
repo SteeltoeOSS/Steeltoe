@@ -39,6 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (version == MediaTypeVersion.V1)
             {
                 services.TryAddSingleton<ThreadDumpEndpoint>();
+                services.TryAddSingleton<IThreadDumpEndpoint>(provider => provider.GetRequiredService<ThreadDumpEndpoint>());
             }
             else
             {
@@ -48,6 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 }
 
                 services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+                services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpoint_v2>());
             }
 
             services.TryAddSingleton<IThreadDumpOptions>(options);

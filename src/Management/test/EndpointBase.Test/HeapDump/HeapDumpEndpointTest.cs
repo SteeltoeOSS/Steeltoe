@@ -2,17 +2,27 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using System;
 using System.IO;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test
 {
     public class HeapDumpEndpointTest : BaseTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public HeapDumpEndpointTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Constructor_ThrowsIfNullRepo()
         {
@@ -24,33 +34,47 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (Platform.IsWindows)
             {
-                var loggerFactory = TestHelpers.GetLoggerFactory();
-                var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
-                var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-
-                var dumper = new WindowsHeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
-                var ep = new HeapDumpEndpoint(new HeapDumpEndpointOptions(), dumper, logger2);
-
-                var result = ep.Invoke();
-                Assert.NotNull(result);
-                Assert.True(File.Exists(result));
-                File.Delete(result);
-            }
-            else if (Platform.IsLinux)
-            {
-                if (typeof(object).Assembly.GetType("System.Index") != null)
+                using (var tc = new TestContext(_output))
                 {
-                    var loggerFactory = TestHelpers.GetLoggerFactory();
-                    var logger1 = loggerFactory.CreateLogger<LinuxHeapDumper>();
-                    var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+                    tc.AdditionalServices = (services, configuration) =>
+                    {
+                        services.AddHeapDumpActuatorServices(configuration);
+                        services.AddSingleton<IHeapDumper>(sp =>
+                        {
+                            return new WindowsHeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<WindowsHeapDumper>>());
+                        });
+                    };
 
-                    var dumper = new LinuxHeapDumper(new HeapDumpEndpointOptions(), logger: logger1);
-                    var ep = new HeapDumpEndpoint(new HeapDumpEndpointOptions(), dumper, logger2);
+                    var ep = tc.GetService<IHeapDumpEndpoint>();
 
                     var result = ep.Invoke();
                     Assert.NotNull(result);
                     Assert.True(File.Exists(result));
                     File.Delete(result);
+                }
+            }
+            else if (Platform.IsLinux)
+            {
+                if (typeof(object).Assembly.GetType("System.Index") != null)
+                {
+                    using (var tc = new TestContext(_output))
+                    {
+                        tc.AdditionalServices = (services, configuration) =>
+                        {
+                            services.AddHeapDumpActuatorServices(configuration);
+                            services.AddSingleton<IHeapDumper>(sp =>
+                            {
+                                return new LinuxHeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<LinuxHeapDumper>>());
+                            });
+                        };
+
+                        var ep = tc.GetService<IHeapDumpEndpoint>();
+
+                        var result = ep.Invoke();
+                        Assert.NotNull(result);
+                        Assert.True(File.Exists(result));
+                        File.Delete(result);
+                    }
                 }
             }
         }

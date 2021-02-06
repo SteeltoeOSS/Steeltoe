@@ -8,7 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
-    public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>
+    public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFoundryEndpoint
     {
         private readonly ILogger<CloudFoundryEndpoint> _logger;
         private readonly IManagementOptions _mgmtOption;
