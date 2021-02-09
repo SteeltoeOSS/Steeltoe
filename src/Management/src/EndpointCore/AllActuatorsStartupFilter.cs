@@ -4,9 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Availability;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.Management.Endpoint
@@ -20,21 +18,6 @@ namespace Steeltoe.Management.Endpoint
 
         private readonly Action<IEndpointConventionBuilder> _configureConventions;
 
-        public static void InitializeAvailability(IServiceProvider serviceProvider)
-        {
-            var availability = serviceProvider.GetService<ApplicationAvailability>();
-            if (availability != null)
-            {
-                var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
-                lifetime.ApplicationStarted.Register(() =>
-                {
-                    availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
-                    availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
-                });
-                lifetime.ApplicationStopping.Register(() => availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
-            }
-        }
-
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
@@ -47,7 +30,7 @@ namespace Steeltoe.Management.Endpoint
                     _configureConventions?.Invoke(builder);
                 });
 
-                InitializeAvailability(app.ApplicationServices);
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }

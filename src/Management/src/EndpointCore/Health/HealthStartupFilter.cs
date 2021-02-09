@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Health
     public class HealthStartupFilter : IStartupFilter
     {
         public static void InitializeAvailability(IServiceProvider serviceProvider)
-            => AllActuatorsStartupFilter.InitializeAvailability(serviceProvider);
+            => serviceProvider.InitializeAvailability();
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {

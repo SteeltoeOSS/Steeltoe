@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Kubernetes
                 {
                     endpoints.MapAllActuators();
                 });
-                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }

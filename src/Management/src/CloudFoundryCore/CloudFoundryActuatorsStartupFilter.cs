@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Health;
 using System;
 
 namespace Steeltoe.Management.CloudFoundry
@@ -31,7 +32,7 @@ namespace Steeltoe.Management.CloudFoundry
                 next(app);
 
                 app.UseEndpoints(endpoints => endpoints.MapAllActuators());
-                AllActuatorsStartupFilter.InitializeAvailability(app.ApplicationServices);
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }
