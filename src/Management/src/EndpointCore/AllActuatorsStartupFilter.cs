@@ -3,7 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 
@@ -22,6 +26,16 @@ namespace Steeltoe.Management.Endpoint
         {
             return app =>
             {
+                if (app.ApplicationServices.GetService<ICorsService>() != null)
+                {
+                    app.UseCors("SteeltoeManagement");
+                }
+
+                if (Platform.IsCloudFoundry)
+                {
+                    app.UseCloudFoundrySecurity();
+                }
+
                 next(app);
 
                 app.UseEndpoints(endpoints =>

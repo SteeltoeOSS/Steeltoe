@@ -11,6 +11,7 @@ using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class CloudFoundryActuatorsStartupFilter : IStartupFilter
     {
         public CloudFoundryActuatorsStartupFilter()
