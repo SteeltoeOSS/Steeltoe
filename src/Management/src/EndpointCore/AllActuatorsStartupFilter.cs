@@ -30,7 +30,7 @@ namespace Steeltoe.Management.Endpoint
                     _configureConventions?.Invoke(builder);
                 });
 
-                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }

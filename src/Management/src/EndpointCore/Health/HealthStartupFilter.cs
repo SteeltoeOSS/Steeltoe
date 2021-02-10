@@ -4,26 +4,15 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Availability;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class HealthStartupFilter : IStartupFilter
     {
         public static void InitializeAvailability(IServiceProvider serviceProvider)
-        {
-            var lifetime = serviceProvider.GetService<IHostApplicationLifetime>();
-            var availability = serviceProvider.GetService<ApplicationAvailability>();
-            lifetime.ApplicationStarted.Register(() =>
-            {
-                availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
-                availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
-            });
-            lifetime.ApplicationStopping.Register(() => availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
-        }
+            => serviceProvider.InitializeAvailability();
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
