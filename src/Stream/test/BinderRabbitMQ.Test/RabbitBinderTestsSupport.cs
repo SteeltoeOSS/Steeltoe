@@ -3,6 +3,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
 using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Outbound;
+using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -12,6 +13,7 @@ using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Config;
 using System;
+using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Xunit;
@@ -38,6 +40,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Output.WriteLine("running dispose ...");
             Cleanup();
         }
+
         public Spy SpyOn(string queue)
         {
             var template = new RabbitTemplate(GetResource());
@@ -66,23 +69,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             };
         }
-        protected override ConsumerOptions CreateConsumerOptions()
-        {
-
-            throw new NotImplementedException();
-            //var consumerOptions = new RabbitConsumerOptions();
-            //consumerOptions.PostProcess();
-            //return new ExtendedConsumerOptions<RabbitConsumerOptions>(consumerOptions);
-        }
-
-        protected override ProducerOptions CreateProducerOptions()
-        {
-            throw new NotImplementedException();
-            //var producerOptions = new RabbitProducerOptions();
-            //producerOptions.PostProcess();
-
-            //return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
-        }
 
         protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
         {
@@ -103,13 +89,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitProducerOptions = new RabbitProducerOptions();
             rabbitProducerOptions.PostProcess();
 
-
             bindingOptions = bindingOptions ?? new RabbitBindingOptions();
 
             bindingOptions.Producer = rabbitProducerOptions;
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
 
-            //return new ExtendedProducerOptions<RabbitProducerOptions>(producerOptions);
             var producerOptions = new ProducerOptions() { BindingName = bindingName };
             producerOptions.PostProcess(bindingName);
             return producerOptions;
@@ -141,27 +125,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _testBinder;
         }
 
-        //protected ILogger Logger => new XunitLogger(Output);
-
-        //protected RabbitTestBinder GetBinder(RabbitConsumerOptions consumerOptions)
-        //{
-        //    if (_testBinder == null)
-        //    {
-        //        var options = new RabbitOptions();
-        //        //  options.PublisherConfirms(ConfirmType.SIMPLE);
-        //        options.PublisherReturns = true;
-        //        _cachingConnectionFactory = GetResource();
-        //        var bindingsOptions = new RabbitBindingsOptions();
-        //        var consumerBindingOptions = new RabbitBindingOptions();
-        //        consumerBindingOptions.Consumer = consumerOptions;
-
-        //      //  bindingsOptions.Bindings.Add(string.Empty, consumerBindingOptions);
-        //        _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), bindingsOptions);
-        //    }
-
-        //    return _testBinder;
-        //}
-
         private DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
         {
             DirectMessageListenerContainer container;
@@ -186,6 +149,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private void VerifyFooRequestProducer(ILifecycle endpoint)
         {
+            var headerMapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
+            // var requestHeaderMatcher = GetPropertyValue<Steeltoe.Integration.Mapping.IHeaderMatcher>(headerMapper, "RequestHeaderMatcher");
+            //var matchers = GetPropertyValue<List<IHeaderMatcher>>(requestHeaderMatcher, "Matchers");
+
+            var requestHeaderMatcher = headerMapper.RequestHeaderMatcher;
             //         var requestMatchers =  TestUtils.getPropertyValue(endpoint,
             //                  "headerMapper.requestHeaderMatcher.matchers", List.class);
             //assertThat(requestMatchers).hasSize(4);

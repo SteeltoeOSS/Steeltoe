@@ -37,6 +37,7 @@ namespace Steeltoe.Integration.Channel
             ApplicationContext = context;
             Logger = logger;
             ServiceName = name ?? GetType().Name + "@" + GetHashCode();
+            Interceptors = new ChannelInterceptorList(logger);
         }
 
         public IApplicationContext ApplicationContext { get; }
@@ -139,7 +140,7 @@ namespace Steeltoe.Integration.Channel
             return new ValueTask<bool>(DoSend(message, cancellationToken));
         }
 
-        internal ChannelInterceptorList Interceptors { get; set; } = new ChannelInterceptorList();
+        internal ChannelInterceptorList Interceptors { get; set; }
 
         protected ILogger Logger { get; }
 
@@ -252,10 +253,12 @@ namespace Steeltoe.Integration.Channel
         internal class ChannelInterceptorList
         {
             private readonly object _lock = new object();
+            private readonly ILogger _logger;
             private IChannelInterceptor[] _interceptors = new IChannelInterceptor[0];
 
-            public ChannelInterceptorList()
+            public ChannelInterceptorList(ILogger logger)
             {
+                _logger = logger;
             }
 
             public bool Set(IList<IChannelInterceptor> interceptors)
@@ -380,9 +383,9 @@ namespace Steeltoe.Integration.Channel
                     {
                         interceptor.AfterSendCompletion(message, channel, sent, ex);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        // Log
+                        _logger?.LogError(e, e.Message);
                     }
                 }
             }

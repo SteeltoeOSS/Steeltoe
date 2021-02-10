@@ -16,11 +16,13 @@ using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
+using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Retry;
@@ -345,15 +347,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected override IMessageHandler GetErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
-            var properties = //((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
-                BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
             if (properties.RepublishToDlq.Value)
             {
-                return new RepublishToDlqErrorMessageHandler(this, properties);
+                return new RepublishToDlqErrorMessageHandler(this, properties, _logger);
             }
             else if (consumerOptions.MaxAttempts > 1)
             {
-                return new RejectingErrorMessageHandler();
+                return new RejectingErrorMessageHandler(_logger);
             }
 
             return base.GetErrorMessageHandler(destination, group, consumerOptions);
@@ -369,7 +370,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var superHandler = base.GetErrorMessageHandler(destination, group, consumerOptions);
             var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
-            return new DefaultPolledConsumerErrorMessageHandler(superHandler, properties);
+            return new DefaultPolledConsumerErrorMessageHandler(superHandler, properties, _logger);
         }
 
         protected override string GetErrorsBaseName(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
@@ -480,11 +481,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             private readonly IMessageHandler _superHandler;
             private readonly RabbitConsumerOptions _properties;
+            private readonly ILogger _logger;
 
-            public DefaultPolledConsumerErrorMessageHandler(IMessageHandler superHandler, RabbitConsumerOptions properties)
+            public DefaultPolledConsumerErrorMessageHandler(IMessageHandler superHandler, RabbitConsumerOptions properties, ILogger logger)
             {
                 _superHandler = superHandler;
                 _properties = properties;
+                _logger = logger;
                 ServiceName = GetType() + "@" + GetHashCode();
             }
 
@@ -496,7 +499,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                    // logger.error("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                     _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                 }
                 else if (amqpMessage == null)
                 {
@@ -530,10 +533,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private class RejectingErrorMessageHandler : IMessageHandler
         {
             private readonly RejectAndDontRequeueRecoverer _recoverer = new RejectAndDontRequeueRecoverer();
+            private readonly ILogger _logger;
 
-            public RejectingErrorMessageHandler()
+            public RejectingErrorMessageHandler(ILogger logger)
             {
                 ServiceName = GetType() + "@" + GetHashCode();
+                _logger = logger;
             }
 
             public string ServiceName { get; set; }
@@ -544,7 +549,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                    // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
+                    _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
                     throw new ListenerExecutionFailedException("Unexpected error message " + message.ToString(), new RabbitRejectAndDontRequeueException(string.Empty), null);
                 }
 
@@ -560,9 +565,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             private readonly string _routingKey;
             private readonly int _frameMaxHeaderoom;
             private readonly RabbitConsumerOptions _properties;
+            private readonly ILogger _logger;
             private int _maxStackTraceLength = -1;
 
-            public RepublishToDlqErrorMessageHandler(RabbitMessageChannelBinder binder, RabbitConsumerOptions properties)
+            public RepublishToDlqErrorMessageHandler(RabbitMessageChannelBinder binder, RabbitConsumerOptions properties, ILogger logger)
             {
                 _binder = binder;
                 _template = new RabbitTemplate(_binder.ConnectionFactory);
@@ -571,6 +577,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _routingKey = properties.DeadLetterRoutingKey;
                 _frameMaxHeaderoom = properties.FrameMaxHeadroom.Value;
                 _properties = properties;
+                _logger = logger;
                 ServiceName = GetType() + "@" + GetHashCode();
             }
 
@@ -581,14 +588,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
                 if (errorMessage == null)
                 {
-                    // logger.error("Expected an ErrorMessage, not a " + message.getClass().toString() + " for: " + message);
+                    _logger.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
                     return;
                 }
 
                 var cause = message.Payload as Exception;
                 if (!ShouldRepublish(cause))
                 {
-                    // logger.debug("Skipping republish of: " + message);
+                    _logger.LogDebug("Skipping republish of: " + message);
                     return;
                 }
 
@@ -607,7 +614,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
 
-                    // logger.warn("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+                    _logger.LogWarning("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
                 }
 
                 accessor.SetHeader(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, stackTraceAsString);
@@ -620,6 +627,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
 
                 _template.Send(_exchange, _routingKey != null ? _routingKey : accessor.ConsumerQueue, errorMessage);
+
+                if (_properties.AcknowledgeMode == AcknowledgeMode.MANUAL)
+                {
+                    var deliveryTag = errorMessage.Headers.DeliveryTag().GetValueOrDefault();
+                    var channel = errorMessage.Headers[RabbitMessageHeaders.CHANNEL] as IModel;
+                    channel.BasicAck(deliveryTag, false);
+                }
             }
 
             private bool ShouldRepublish(Exception exception)

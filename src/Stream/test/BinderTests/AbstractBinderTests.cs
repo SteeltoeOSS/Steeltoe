@@ -102,10 +102,6 @@ namespace Steeltoe.Stream.Binder
 
         protected abstract B GetBinder();
 
-        protected abstract ConsumerOptions CreateConsumerOptions();
-
-        protected abstract ProducerOptions CreateProducerOptions();
-
         private MessageConverterConfigurer CreateConverterConfigurer(string channelName, BindingOptions bindingProperties)
         {
             var bindingServiceProperties = new BindingServiceOptions();

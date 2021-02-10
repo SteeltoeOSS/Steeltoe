@@ -6,6 +6,7 @@ using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
+using Steeltoe.Stream.Config;
 using System;
 using System.Text;
 using Xunit;
@@ -28,16 +29,20 @@ namespace Steeltoe.Stream.Binder
         public void TestAnonymousGroup()
         {
             B binder = GetBinder();
-            var producerBindingOptions = CreateProducerBindingOptions(CreateProducerOptions());
+            var producerOptions = new ProducerOptions();
+            producerOptions.PostProcess("");
+            var consumerOptions = new ConsumerOptions();
+            consumerOptions.PostProcess("");
+            var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
             var output = CreateBindableChannel("output", producerBindingOptions);
 
             var producerBinding = binder.BindProducer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), output, producerBindingOptions.Producer);
 
             QueueChannel input1 = new QueueChannel();
-            var binding1 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input1, CreateConsumerOptions());
+            var binding1 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input1, consumerOptions);
 
             QueueChannel input2 = new QueueChannel();
-            var binding2 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input2, CreateConsumerOptions());
+            var binding2 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input2, consumerOptions);
 
             var testPayload1 = "foo-" + Guid.NewGuid().ToString();
             output.Send(MessageBuilder.WithPayload(testPayload1)
@@ -62,7 +67,7 @@ namespace Steeltoe.Stream.Binder
 
             binding2 = binder.BindConsumer(
                     string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null,
-                    input2, CreateConsumerOptions());
+                    input2, consumerOptions);
             var testPayload3 = "foo-" + Guid.NewGuid().ToString();
             output.Send(MessageBuilder.WithPayload(testPayload3)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)

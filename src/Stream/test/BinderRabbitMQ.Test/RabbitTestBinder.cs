@@ -49,17 +49,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             BindingsOptions = bindingsOptions;
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder,  ILogger<RabbitTestBinder> logger)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger<RabbitTestBinder> logger)
         {
-            //var serviceCollection = new ServiceCollection();
-            //var serviceProvider = serviceCollection.BuildServiceProvider();
-            //var applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
-            //binder.setApplicationContext do we need this?
             _logger = logger;
             PollableConsumerBinder = binder;
             _rabbitAdmin = new RabbitAdmin(GetApplicationContext(), connectionFactory, logger);
             BindingsOptions = binder.BindingsOptions;
-
         }
 
         public override IBinding BindConsumer(string name, string group, IMessageChannel moduleInputChannel, IConsumerOptions consumerOptions)
@@ -77,7 +72,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public override IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-          //   var properties = (producerOptions as ExtendedProducerOptions<RabbitProducerOptions>).Extension;
             var properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
 
             _queues.Add(properties.Prefix + name + ".default");

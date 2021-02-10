@@ -15,6 +15,7 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Core;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
@@ -231,14 +232,11 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                     payload = _adapter.MessageConverter.FromMessage(message, null);
                 }
 
-                // Dictionary<string, object> headers = _adapter.HeaderMapper.toHeadersFromRequest(message.getMessageProperties());
                 var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 if (IsManualAck)
                 {
+                    accessor.SetHeader(RabbitMessageHeaders.DELIVERY_TAG, message.Headers.DeliveryTag());
                     accessor.SetHeader(RabbitMessageHeaders.CHANNEL, channel);
-
-                    // headers[AmqpHeaders.DELIVERY_TAG] = message.Headers.DeliveryTag();
-                    // headers[AmqpHeaders.CHANNEL] = channel;
                 }
 
                 if (_adapter.RetryTemplate != null)
