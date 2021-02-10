@@ -34,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         {
             _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _mgmtOptions.Path);
 
-            bool isEndpointExposed = _mgmtOptions == null ? true : _options.IsExposed(_mgmtOptions);
+            var isEndpointExposed = _mgmtOptions == null || _options.IsExposed(_mgmtOptions);
 
             if (Platform.IsCloudFoundry
                 && isEndpointExposed
@@ -42,6 +42,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
             {
                 if (string.IsNullOrEmpty(_options.ApplicationId))
                 {
+                    _logger?.LogCritical("The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
                     await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.APPLICATION_ID_MISSING_MESSAGE)).ConfigureAwait(false);
                     return;
                 }

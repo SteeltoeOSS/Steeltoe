@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
@@ -235,13 +235,14 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="configureEndpoints">Customize endpoint behavior. Useful for tailoring auth requirements</param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+        /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
         /// <remarks>Does not add platform specific features (like for Cloud Foundry or Kubernetes)</remarks>
-        public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+        public static IHostBuilder AddAllActuators(this IHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
             => hostBuilder
                 .AddDynamicLogging()
                 .ConfigureServices((context, collection) =>
                 {
-                    collection.AddAllActuators(context.Configuration, mediaTypeVersion);
+                    collection.AddAllActuators(context.Configuration, mediaTypeVersion, buildCorsPolicy);
                     ActivateActuatorEndpoints(collection, configureEndpoints);
                 });
 
