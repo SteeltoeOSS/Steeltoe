@@ -1,14 +1,14 @@
 trigger:
   branches:
     include:
-    - master
+    - main
   paths:
     exclude:
     - README.md
     - project-docs/*
     - roadmaps/*
 pr:
-- master
+- main
 
 jobs:
 - job: Steeltoe_CI
