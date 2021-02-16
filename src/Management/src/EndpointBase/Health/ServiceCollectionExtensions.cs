@@ -36,8 +36,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new HealthEndpointOptions(configuration);
             services.TryAddSingleton<IHealthOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-            services.TryAddSingleton<HealthEndpoint>();
-            services.TryAddSingleton<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpoint>());
+            services.TryAddScoped<HealthEndpoint>();
+            services.TryAddScoped<IHealthEndpoint>(provider => provider.GetRequiredService<HealthEndpoint>());
 
             return services;
         }

@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class TraceStartupFilter : IStartupFilter
     {
         private MediaTypeVersion MediaTypeVersion { get; set; }
