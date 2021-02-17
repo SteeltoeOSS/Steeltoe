@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
-    public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
     {
         private static readonly List<string> Levels = new List<string>()
         {
@@ -29,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private readonly ILogger<LoggersEndpoint> _logger;
         private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
-        public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
+        public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
             : base(options)
         {
             _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;

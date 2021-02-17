@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
-    public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>
+    public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoEndpoint
     {
         private readonly IList<IInfoContributor> _contributors;
         private readonly ILogger<InfoEndpoint> _logger;

@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IMetricsEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<MetricsEndpoint>();
+            services.TryAddSingleton<IMetricsEndpoint>(provider => provider.GetRequiredService<MetricsEndpoint>());
 
             return services;
         }
@@ -63,6 +64,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IPrometheusEndpointOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<PrometheusScraperEndpoint>();
+            services.TryAddSingleton<IPrometheusScraperEndpoint>(provider => provider.GetRequiredService<PrometheusScraperEndpoint>());
 
             return services;
         }

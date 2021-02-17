@@ -2,21 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
 {
     public class HealthEndpointTest : BaseTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public HealthEndpointTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Constructor_ThrowsOptionsNull()
         {
@@ -28,129 +38,190 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Invoke_NoContributors_ReturnsExpectedHealth()
         {
-            var opts = new HealthEndpointOptions();
-            var contributors = new List<IHealthContributor>();
-            var agg = new DefaultHealthAggregator();
-            var ep = new HealthEndpoint(opts, agg, contributors, GetLogger<HealthEndpoint>());
+            using (var tc = new TestContext(_output))
+            {
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton(new List<IHealthContributor>());
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
 
-            var health = ep.Invoke(null);
-            Assert.NotNull(health);
-            Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                var health = ep.Invoke(null);
+                Assert.NotNull(health);
+                Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+            }
         }
 
         [Fact]
         public void Invoke_CallsAllContributors()
         {
-            var opts = new HealthEndpointOptions();
-            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
-
-            var info = ep.Invoke(null);
-
-            foreach (var contrib in contributors)
+            using (var tc = new TestContext(_output))
             {
-                var tc = (TestContrib)contrib;
-                Assert.True(tc.Called);
+                var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
+
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
+
+                var ep = tc.GetService<IHealthEndpoint>();
+                var info = ep.Invoke(null);
+
+                foreach (var contrib in contributors)
+                {
+                    var tcc = (TestContrib)contrib;
+                    Assert.True(tcc.Called);
+                }
             }
         }
 
         [Fact]
         public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
         {
-            var opts = new HealthEndpointOptions();
-            var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2", true), new TestContrib("h3") };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contributors);
-
-            var info = ep.Invoke(null);
-
-            foreach (var contrib in contributors)
+            using (var tc = new TestContext(_output))
             {
-                var tc = (TestContrib)contrib;
-                if (tc.Throws)
-                {
-                    Assert.False(tc.Called);
-                }
-                else
-                {
-                    Assert.True(tc.Called);
-                }
-            }
+                var contributors = new List<IHealthContributor>() { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
 
-            Assert.Equal(HealthStatus.UP, info.Status);
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
+
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                var info = ep.Invoke(null);
+
+                foreach (var contrib in contributors)
+                {
+                    var tcc = (TestContrib)contrib;
+                    if (tcc.Throws)
+                    {
+                        Assert.False(tcc.Called);
+                    }
+                    else
+                    {
+                        Assert.True(tcc.Called);
+                    }
+                }
+
+                Assert.Equal(HealthStatus.UP, info.Status);
+            }
         }
 
         [Fact]
         public void GetStatusCode_ReturnsExpected()
         {
-            var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
+            using (var tc = new TestContext(_output))
+            {
+                var contributors = new List<IHealthContributor>() { new DiskSpaceContributor() };
 
-            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
-            Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
-            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
-            Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
+
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
+                Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
+                Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
+                Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+            }
         }
 
         [Fact]
         public void InvokeWithLivenessGroupReturnsGroupResults()
         {
-            // arrange
-            var opts = new HealthEndpointOptions();
-            var appAvailability = new ApplicationAvailability();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
-            appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
+            using (var tc = new TestContext(_output))
+            {
+                var appAvailability = new ApplicationAvailability();
+                var contributors = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
 
-            // act
-            var result = ep.Invoke(context);
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
 
-            // assert
-            Assert.Equal(HealthStatus.UP, result.Status);
-            Assert.True(result.Details.Keys.Count == 1);
-            Assert.True(result.Groups.Count() == 2);
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                var context = Substitute.For<ISecurityContext>();
+                context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
+                appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
+
+                var result = ep.Invoke(context);
+
+                Assert.Equal(HealthStatus.UP, result.Status);
+                Assert.True(result.Details.Keys.Count == 1);
+                Assert.True(result.Groups.Count() == 2);
+            }
         }
 
         [Fact]
         public void InvokeWithReadinessGroupReturnsGroupResults()
         {
-            // arrange
-            var opts = new HealthEndpointOptions();
-            var appAvailability = new ApplicationAvailability();
-            var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
-            appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+            using (var tc = new TestContext(_output))
+            {
+                var appAvailability = new ApplicationAvailability();
+                var contributors = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
 
-            // act
-            var result = ep.Invoke(context);
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
 
-            // assert
-            Assert.Equal(HealthStatus.UP, result.Status);
-            Assert.True(result.Details.Keys.Count == 1);
-            Assert.True(result.Groups.Count() == 2);
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                var context = Substitute.For<ISecurityContext>();
+                context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
+                appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+
+                var result = ep.Invoke(context);
+
+                Assert.Equal(HealthStatus.UP, result.Status);
+                Assert.True(result.Details.Keys.Count == 1);
+                Assert.True(result.Groups.Count() == 2);
+            }
         }
 
         [Fact]
         public void InvokeWithInvalidGroupReturnsAllContributors()
         {
-            // arrange
-            var opts = new HealthEndpointOptions();
-            var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
-            var ep = new HealthEndpoint(opts, new DefaultHealthAggregator(), contribs);
-            var context = Substitute.For<ISecurityContext>();
-            context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
+            using (var tc = new TestContext(_output))
+            {
+                var appAvailability = new ApplicationAvailability();
+                var contributors = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
 
-            // act
-            var result = ep.Invoke(context);
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
+                    services.AddSingleton<IHealthAggregator>(new DefaultHealthAggregator());
+                    services.AddHealthActuatorServices(configuration);
+                };
 
-            // assert
-            Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
-            Assert.True(result.Details.Keys.Count == 4);
-            Assert.True(result.Groups.Count() == 2);
+                var ep = tc.GetService<IHealthEndpoint>();
+
+                var context = Substitute.For<ISecurityContext>();
+                context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
+
+                var result = ep.Invoke(context);
+
+                Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+                Assert.True(result.Details.Keys.Count == 4);
+                Assert.True(result.Groups.Count() == 2);
+            }
         }
     }
 }

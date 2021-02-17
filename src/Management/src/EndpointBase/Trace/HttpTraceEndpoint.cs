@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
-    public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>
+    public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>, IHttpTraceEndpoint
     {
         private readonly ILogger<HttpTraceEndpoint> _logger;
         private readonly IHttpTraceRepository _traceRepo;
