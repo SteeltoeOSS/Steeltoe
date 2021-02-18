@@ -45,8 +45,7 @@ using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Stream.Binder.Rabbit
 {
-    [CollectionDefinition("BinderTests", DisableParallelization = true)]
-    [Collection("BinderTests")]
+    [Trait("Category", "Integration")]
     public partial class RabbitBinderTests
     {
         [Fact]
