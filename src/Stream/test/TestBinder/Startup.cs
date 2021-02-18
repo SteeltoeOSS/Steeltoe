@@ -32,12 +32,7 @@ namespace Steeltoe.Stream.TestBinder
             services.AddSingleton<InputDestination>();
             services.AddSingleton<OutputDestination>();
             services.AddSingleton<TestChannelBinder>();
-            services.AddSingleton<IBinder>((p) => {
-               // var logger = p.GetRequiredService<ILogger<TestChannelBinder>>();
-              //  var loggerf = p.GetRequiredService<ILoggerFactory>();
-                return p.GetRequiredService<TestChannelBinder>();
-
-                });
+            services.AddSingleton<IBinder>((p) => p.GetRequiredService<TestChannelBinder>());
         }
     }
 }

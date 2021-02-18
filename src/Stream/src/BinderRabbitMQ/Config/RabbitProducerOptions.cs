@@ -11,7 +11,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
     {
         public RabbitProducerOptions()
         {
-       //     PostProcess();
         }
 
         public bool? Compress { get; set; }
@@ -24,14 +23,14 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public int? BatchTimeout { get; set; }
 
-        //Do we need this?
+        // Do we need this?
         public bool? DurableSubscription { get; set; }
 
         public bool? Exclusive { get; set; }
 
         public long? FailedDeclarationRetryInterval { get; set; }
-        // end 
 
+        // end
         public bool? Transacted { get; set; }
 
         public MessageDeliveryMode? DeliveryMode { get; set; }

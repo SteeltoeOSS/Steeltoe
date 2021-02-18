@@ -32,16 +32,16 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private class GivenNamingStrategy : INamingStrategy
         {
-            private readonly Func<string> strategy;
+            private readonly Func<string> _strategy;
 
             public GivenNamingStrategy(Func<string> strategy)
             {
-                this.strategy = strategy;
+                _strategy = strategy;
             }
 
             public string GenerateName()
             {
-                return strategy();
+                return _strategy();
             }
         }
 
@@ -66,8 +66,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private RabbitAdmin Admin { get; }
 
-        private bool _notOurAdminException = true; //Should be set by onApplicationEvent
-        private CachingConnectionFactory cf;
+        private bool _notOurAdminException = true; // Should be set by onApplicationEvent
 
         private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
 
@@ -186,6 +185,22 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
 
             return consumerDestination;
+        }
+
+        public void CleanAutoDeclareContext(IConsumerDestination destination, IConsumerOptions consumerProperties)
+        {
+            lock (_autoDeclareContext)
+            {
+                destination.Name.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(name =>
+                {
+                    name = name.Trim();
+                    RemoveSingleton(name + ".binding");
+                    RemoveSingleton(name);
+                    var dlq = name + ".dlq";
+                    RemoveSingleton(dlq + ".binding");
+                    RemoveSingleton(dlq);
+                });
+            }
         }
 
         protected virtual string GetGroupedName(string name, string group)
@@ -487,7 +502,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                 _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
+                _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
             }
             catch (Exception e)
             {
@@ -667,7 +682,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     throw;
                 }
 
-                _logger.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred",  e);
+                _logger.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred", e);
             }
 
             AddToAutoDeclareContext(rootName + ".exchange", exchange);
@@ -675,7 +690,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private void AddToAutoDeclareContext(string name, object bean)
         {
-            lock (_autoDeclareContext) {
+            lock (_autoDeclareContext)
+            {
                 if (!_autoDeclareContext.ContainsService(name, bean.GetType()))
                 {
                     _autoDeclareContext.Register(name, bean);
@@ -697,7 +713,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-               _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available");
+                _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available");
             }
             catch (Exception e)
             {
@@ -713,22 +729,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             AddToAutoDeclareContext(rootName + ".binding", binding);
         }
 
-        public void CleanAutoDeclareContext(IConsumerDestination destination, IConsumerOptions consumerProperties)
-        {
-            lock (_autoDeclareContext)
-            {
-                destination.Name.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList().ForEach(name =>
-                {
-                    name = name.Trim();
-                    RemoveSingleton(name + ".binding");
-                    RemoveSingleton(name);
-                    var dlq = name + ".dlq";
-                    RemoveSingleton(dlq + ".binding");
-                    RemoveSingleton(dlq);
-                });
-            }
-        }
-
         private void RemoveSingleton(string name)
         {
             if (_autoDeclareContext.ContainsService(name))
@@ -741,7 +741,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         // {
         //    this.notOurAdminException = true; // our admin doesn't have an event publisher
         // }
-
         private class RabbitProducerDestination : IProducerDestination
         {
             public RabbitConfig.IExchange Exchange { get; }

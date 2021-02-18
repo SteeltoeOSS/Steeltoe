@@ -79,6 +79,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             RabbitConnectionOptions = rabbitOptions;
             BinderOptions = binderOptions;
             BindingsOptions = bindingsOptions;
+            ServiceName = "rabbitBinder";
         }
 
         protected ILogger _logger;
@@ -202,7 +203,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             mapper.SetRequestHeaderNames(headerPatterns.ToArray());
             endpoint.HeaderMapper = mapper;
-            
+
             endpoint.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
             if (errorChannel != null)
             {
@@ -227,9 +228,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return endpoint;
         }
 
-         protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
+        protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
         {
-            var rabbitProducerOptions =  BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
+            var rabbitProducerOptions = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
             if (ExpressionInterceptorNeeded(rabbitProducerOptions))
             {
                 IExpression rkExpression = null, delayExpression = null;
@@ -237,10 +238,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     rkExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.RoutingKeyExpression);
                 }
+
                 if (rabbitProducerOptions.DelayExpression != null)
                 {
                     delayExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.DelayExpression);
                 }
+
                 ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0, new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression, EvaluationContext));
             }
         }
@@ -255,7 +258,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var destination = consumerDestination.Name;
 
             var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
-            //var properties = ((ExtendedConsumerOptions<RabbitConsumerOptions>)consumerOptions).Extension;
             var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory);
             listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.AUTO);
             listenerContainer.IsChannelTransacted = properties.Transacted.GetValueOrDefault();
@@ -499,7 +501,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var errorMessage = message as MessagingSupport.ErrorMessage;
                 if (errorMessage == null)
                 {
-                     _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
+                    _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                 }
                 else if (amqpMessage == null)
                 {

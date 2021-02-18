@@ -9,6 +9,6 @@ namespace Steeltoe.Stream.Binding
 {
     public interface IMessageChannelAndSourceConfigurer : IMessageChannelConfigurer
     {
-        void ConfigurePolledMessageSource(IPollableMessageSource binding,  string name);
+        void ConfigurePolledMessageSource(IPollableMessageSource binding, string name);
     }
 }

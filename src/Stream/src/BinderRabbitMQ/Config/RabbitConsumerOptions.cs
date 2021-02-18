@@ -14,7 +14,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         public RabbitConsumerOptions()
             : base()
         {
-        //    PostProcess();
         }
 
         public bool? Transacted { get; set; }

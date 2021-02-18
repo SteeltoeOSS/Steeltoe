@@ -26,19 +26,19 @@ namespace Steeltoe.Integration.Util
         {
             return ConversionService.CanConvert(source, target);
 
-            //else if( !typeof(string).IsAssignableFrom(source) && !typeof(string).IsAssignableFrom(target))
-            //{
+            // else if( !typeof(string).IsAssignableFrom(source) && !typeof(string).IsAssignableFrom(target))
+            // {
             //    return false;
-            //}
-            //else if ( !typeof(string).IsAssignableFrom(source))
-            //{
+            // }
+            // else if ( !typeof(string).IsAssignableFrom(source))
+            // {
             //    return this.de // no SimpleTypeConverter ....
-            //}
+            // }
         }
 
         public object ConvertValue(object value, Type source, Type target)
         {
-            if(CanConvert(source, target))
+            if (CanConvert(source, target))
             {
                 return ConversionService.Convert(value, source, target);
             }

@@ -77,7 +77,7 @@ namespace Steeltoe.Common.Retry
                 (ctx) =>
                 {
                     var callbackResult = retryCallback(retryContext);
-                 //   if(retryContext.RetryCount > 0 )
+
                     if (recoveryCallback != null)
                     {
                         var recovered = (bool?)retryContext.GetAttribute(RECOVERED);
@@ -161,7 +161,8 @@ namespace Steeltoe.Common.Retry
                         }, (ex, context) =>
                         {
                             _logger?.LogError(ex.Exception, $"Context: {context}");
-                            // throw ex.Exception; throwing here doesn't allow the fall back to work. 
+
+                            // throw ex.Exception; throwing here doesn't allow the fall back to work.
                         });
 
             return fallbackPolicy.Wrap(retryPolicy);

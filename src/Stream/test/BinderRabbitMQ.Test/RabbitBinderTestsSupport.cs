@@ -1,4 +1,8 @@
-﻿using Steeltoe.Common.Contexts;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
 using Steeltoe.Integration.Rabbit.Inbound;
@@ -23,12 +27,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
 {
     public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
     {
+        private const string TEST_PREFIX = "bindertest.";
+        private static string _bigExceptionMessage = new string('x', 10_000);
+
         private RabbitTestBinder _testBinder;
         private CachingConnectionFactory _cachingConnectionFactory;
-        private readonly string TEST_PREFIX = "bindertest.";
-        private static string BIG_EXCEPTION_MESSAGE = new string('x', 10_000);
+
         private int maxStackTraceSize;
-        private RabbitBindingsOptions BindingsOptions;
 
         public RabbitBinderTests(ITestOutputHelper output)
             : base(output, new XunitLoggerFactory(output))
@@ -68,6 +73,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     return bar;
                 }
             };
+        }
+
+        public RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions)
+        {
+            if (_testBinder == null)
+            {
+                var options = new RabbitOptions();
+                options.PublisherReturns = true;
+                _cachingConnectionFactory = GetResource();
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
+            }
+
+            return _testBinder;
         }
 
         protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
@@ -112,19 +130,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return _testBinder;
         }
 
-        public RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions)
-        {
-            if (_testBinder == null)
-            {
-                var options = new RabbitOptions();
-                options.PublisherReturns = true;
-                _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
-            }
-
-            return _testBinder;
-        }
-
         private DirectMessageListenerContainer VerifyContainer(RabbitInboundChannelAdapter endpoint)
         {
             DirectMessageListenerContainer container;
@@ -147,25 +152,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return container;
         }
 
-        private void VerifyFooRequestProducer(ILifecycle endpoint)
-        {
-            var headerMapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
-            // var requestHeaderMatcher = GetPropertyValue<Steeltoe.Integration.Mapping.IHeaderMatcher>(headerMapper, "RequestHeaderMatcher");
-            //var matchers = GetPropertyValue<List<IHeaderMatcher>>(requestHeaderMatcher, "Matchers");
-
-            var requestHeaderMatcher = headerMapper.RequestHeaderMatcher;
-            //         var requestMatchers =  TestUtils.getPropertyValue(endpoint,
-            //                  "headerMapper.requestHeaderMatcher.matchers", List.class);
-            //assertThat(requestMatchers).hasSize(4);
-            //      assertThat(TestUtils.getPropertyValue(requestMatchers.get(3), "pattern"))
-            //		.isEqualTo("foo");
-        }
-
         private Exception BigCause(Exception innerException = null)
         {
             try
             {
-                var capturedException = innerException ?? new Exception(BIG_EXCEPTION_MESSAGE);
+                var capturedException = innerException ?? new Exception(_bigExceptionMessage);
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }
             catch (Exception ex)
@@ -184,10 +175,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private class TestMessageHandler : IMessageHandler
         {
             public Action<IMessage> OnHandleMessage { get; set; }
+
             public string ServiceName { get => "TestMessageHandler"; set => throw new NotImplementedException(); }
 
             public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
         }
+
         private void Cleanup()
         {
             if (_testBinder != null)
@@ -204,27 +197,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             _testBinder = null;
         }
+
         private void Cleanup(RabbitTestBinder binder)
         {
             binder.Cleanup();
             binder.CoreBinder.ConnectionFactory.Destroy();
-            BindingsOptions = null;
             _cachingConnectionFactory = null;
         }
-     
 
-        private CachingConnectionFactory GetResource(bool management=false)
+        private CachingConnectionFactory GetResource()
         {
             if (_cachingConnectionFactory == null)
             {
-
                 _cachingConnectionFactory = new CachingConnectionFactory("localhost");
-                _cachingConnectionFactory.CreateConnection().Close(); // why?
-
-                if (management)
-                {
-                    // var socket = SocketFactory
-                }
+                _cachingConnectionFactory.CreateConnection().Close();
             }
 
             return _cachingConnectionFactory;
@@ -263,6 +249,5 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 return (int)key;
             }
         }
-
     }
 }

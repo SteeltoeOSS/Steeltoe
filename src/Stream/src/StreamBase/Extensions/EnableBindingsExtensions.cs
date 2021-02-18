@@ -3,16 +3,41 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Messaging;
+using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Messaging;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Steeltoe.Stream.Extensions
 {
-    public static class EnableBindingsExtenstions
+    public static class EnableBindingsExtensions
     {
+        public static IServiceCollection AddEnableBinding<T>(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            var type = typeof(T);
+            var attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr.GetType() == typeof(EnableBindingAttribute));
+
+            if (attr != null)
+            {
+                var enableBindingAttribute = (EnableBindingAttribute)attr;
+                services.AddStreamBindings(enableBindingAttribute.Bindings);
+                services.AddStreamListeners(type);
+                services.TryAddSingleton(type);
+            }
+
+            return services;
+        }
+
         public static IServiceCollection AddProcessorStreamBinding(this IServiceCollection services)
         {
             if (services == null)

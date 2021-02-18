@@ -31,7 +31,7 @@ namespace Steeltoe.Stream.Binder
             {
                 try
                 {
-                    //value.Initialize();
+                    // value.Initialize();
                 }
                 catch (Exception)
                 {

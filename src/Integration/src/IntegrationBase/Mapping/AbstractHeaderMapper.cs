@@ -17,7 +17,6 @@ namespace Steeltoe.Integration.Mapping
         public const string NON_STANDARD_HEADER_NAME_PATTERN = "NON_STANDARD_HEADERS";
 
         private readonly List<string> _transient_header_names = new List<string>() { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
-        private readonly ILogger _logger;
 
         public string StandardHeaderPrefix { get; set; }
 
@@ -34,6 +33,7 @@ namespace Steeltoe.Integration.Mapping
             StandardHeaderPrefix = standardHeaderPrefix;
             RequestHeaderNames = requestHeaderNames;
             ReplyHeaderNames = replyHeaderNames;
+
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
             RequestHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, RequestHeaderNames);
             ReplyHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, ReplyHeaderNames);
@@ -177,7 +177,7 @@ namespace Steeltoe.Integration.Mapping
             try
             {
                 var subset = new Dictionary<string, object>();
-                foreach (var entry in headers)
+                foreach (var entry in (IDictionary<string, object>)headers)
                 {
                     var headerName = entry.Key;
                     if (ShouldMapHeader(headerName, headerMatcher))
@@ -191,7 +191,7 @@ namespace Steeltoe.Integration.Mapping
             }
             catch (Exception ex)
             {
-                _logger?.LogError(ex, ex.Message);
+                // _logger?.LogError(ex, ex.Message);
             }
         }
 
@@ -213,7 +213,7 @@ namespace Steeltoe.Integration.Mapping
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogError(ex, ex.Message);
+                       // _logger?.LogError(ex, ex.Message);
                     }
                 }
             }

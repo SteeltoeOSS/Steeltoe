@@ -85,7 +85,7 @@ namespace Steeltoe.Integration.Rabbit.Support
         {
             if (!target.ContainsKey(headerName)
              && !RabbitMessageHeaders.CONTENT_TYPE.Equals(headerName)
-             && !headerName.StartsWith("json")) // JsonHeaders.PREFIX
+             && !headerName.StartsWith("json"))
             {
                 target.Add(headerName, headerValue);
             }
@@ -105,12 +105,12 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public static DefaultRabbitHeaderMapper OutboundMapper { get; } = new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders);
 
-        private void CopyIfExists(Dictionary<string,object> headers, IMessageHeaders target, string Key)
-        {
-            if(headers.ContainsKey(Key) && headers[Key] != null)
-            {
-                target.Add(Key, headers[Key]);
-            }
-        }
+        // private void CopyIfExists(Dictionary<string,object> headers, IMessageHeaders target, string Key)
+        // {
+        //    if(headers.ContainsKey(Key) && headers[Key] != null)
+        //    {
+        //        target.Add(Key, headers[Key]);
+        //    }
+        // }
     }
 }

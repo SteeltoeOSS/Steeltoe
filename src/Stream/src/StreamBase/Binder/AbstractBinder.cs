@@ -29,6 +29,11 @@ namespace Steeltoe.Stream.Binder
             _logger = logger;
         }
 
+        public virtual IApplicationContext ApplicationContext
+        {
+            get { return _context; }
+        }
+
         public static string ApplyPrefix(string prefix, string name)
         {
             return prefix + name;
@@ -106,12 +111,6 @@ namespace Steeltoe.Stream.Binder
             {
                 _expressionParser = value;
             }
-        }
-
-        //TODO: Made public for tests - figure out another way
-        public virtual IApplicationContext ApplicationContext
-        {
-            get { return _context; }
         }
 
         protected virtual string GroupedName(string name, string group)

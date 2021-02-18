@@ -5,4 +5,3 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Stream.Binder.RabbitMQ.Test")]
-

@@ -24,6 +24,28 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             this.output = output;
         }
 
+        public static class AssertOptionEquals
+        {
+            public class OptionEqualsException : EqualException
+            {
+                public OptionEqualsException(string expected, string actual, string optionName)
+                    : base(expected, actual)
+                {
+                    UserMessage = optionName;
+                }
+
+                public override string Message => UserMessage + " " + base.Message;
+            }
+
+            public static void Equal(string expected, string actual, string optionName)
+            {
+                if (!expected.Equals(actual, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new OptionEqualsException(expected, actual, optionName);
+                }
+            }
+        }
+
         [Fact]
         public void InitializeAll_FromDefaultValues()
         {
@@ -105,7 +127,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:republishToDlq", "false" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:singleActiveConsumer", "true" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:transacted", "true" },
-       //         { "spring:cloud:stream:rabbit:bindings:input:consumer:txSize", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:input:consumer:txSize", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:ttl", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:quorum:deliveryLimit", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:quorum:enabled", "true" },
@@ -152,26 +175,32 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:output:producer:exclusive", "false" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:expires", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:failedDeclarationRetryInterval", "1000" },
-                //{ "spring:cloud:stream:rabbit:bindings:output:producer:frameMaxHeadroom", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:frameMaxHeadroom", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:headerPatterns:0", "headerPatterns0" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:headerPatterns:1", "headerPatterns1" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:lazy", "true" },
-               // { "spring:cloud:stream:rabbit:bindings:output:producer:maxConcurrency", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:maxConcurrency", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxLength", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxLengthBytes", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxPriority", "1000" },
-                //{ "spring:cloud:stream:rabbit:bindings:output:producer:missingQueuesFatal", "true" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:missingQueuesFatal", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:overflowBehavior", "overflowBehavior" },
-                //{ "spring:cloud:stream:rabbit:bindings:output:producer:prefetch", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:prefetch", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:prefix", "prefix" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueBindingArguments:foo", "bar" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueBindingArguments:bar", "foo" },
-                //{ "spring:cloud:stream:rabbit:bindings:output:producer:queueDeclarationRetries", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:queueDeclarationRetries", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueNameGroupOnly", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:routingKeyExpression", "routingKeyExpression" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:singleActiveConsumer", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:transacted", "true" },
-           //     { "spring:cloud:stream:rabbit:bindings:output:producer:txSize", "1000" },
+
+                // { "spring:cloud:stream:rabbit:bindings:output:producer:txSize", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:ttl", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:quorum:deliveryLimit", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:quorum:enabled", "true" },
@@ -208,13 +237,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             Assert.NotNull(outputBinding);
             Assert.NotSame(options.Default.Producer, outputBinding);
 
-            // TODO: Verify all property values are set properly
-
-
             var inputBindingsKey = "bindings:input:consumer";
             foreach (var tuple in GetOptionsConfigPairs(config, inputBinding, inputBindingsKey))
             {
-                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, inputBindingsKey+":"+tuple.Item1);
+                AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, inputBindingsKey + ":" + tuple.Item1);
             }
 
             var outputBindingsKey = "bindings:output:producer";
@@ -222,21 +248,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             {
                 AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, outputBindingsKey + ":" + tuple.Item1);
             }
-            //// Dictionary type propery
-            //Assert.NotNull(outputBinding.QueueBindingArguments);
-            //Assert.Equal("bar", outputBinding.QueueBindingArguments["foo"]);
-            //Assert.Equal("foo", outputBinding.QueueBindingArguments["bar"]);
-
-            //// List type property
-            //Assert.NotNull(outputBinding.HeaderPatterns);
-            //Assert.Equal("headerPatterns0", outputBinding.HeaderPatterns[0]);
-            //Assert.Equal("headerPatterns1", outputBinding.HeaderPatterns[1]);
-
-            // Enum type property
-            //Assert.Equal(RabbitCore.MessageDeliveryMode.NON_PERSISTENT, outputBinding.DeliveryMode);
         }
 
-        private IEnumerable<Tuple<string, string, string>> GetOptionsConfigPairs(IConfigurationSection config, object optionsObject,  string inputBindingsKey)
+        private IEnumerable<Tuple<string, string, string>> GetOptionsConfigPairs(IConfigurationSection config, object optionsObject, string inputBindingsKey)
         {
             var inputBindingSection = config.GetSection(inputBindingsKey);
             var children = inputBindingSection.GetChildren();
@@ -284,29 +298,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 }
 
                 // Assert.True(child.Value.Equals(value.ToString(), StringComparison.OrdinalIgnoreCase), $"{child.Key} expected to be {child.Value} type {child.Value.GetType().Name} but was {value} {value.GetType().Name}");
-
-            }
-        }
-    }
-
-    public static class AssertOptionEquals
-    {
-        public class OptionEqualsException : EqualException
-        {
-            public OptionEqualsException(string expected, string actual, string optionName)
-                : base(expected, actual)
-            {
-                UserMessage = optionName;
-            }
-
-            public override string Message => UserMessage + " " + base.Message;
-        }
-
-        public static void Equal(string expected, string actual, string optionName)
-        {
-            if (!expected.Equals(actual, StringComparison.OrdinalIgnoreCase))
-            {
-               throw new OptionEqualsException(expected, actual, optionName);
             }
         }
     }

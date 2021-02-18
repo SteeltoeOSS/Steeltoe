@@ -65,8 +65,10 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
         public bool BindSourceMessage { get; set; }
 
-        //Todo: Do we need this? 
-        // private volatile RabbitHeaderMapper HeaderMapper = DefaultAmqpHeaderMapper.inboundMapper();
+        /* Todo: Do we need this?
+           private volatile RabbitHeaderMapper HeaderMapper = DefaultAmqpHeaderMapper.inboundMapper();
+        */
+
         private AbstractMessageListenerContainer MessageListenerContainer { get; }
 
         protected override Task DoStart()
@@ -158,7 +160,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                                    _adapter.SetAttributesIfNecessary(message, toSend);
                                    _adapter.SendMessage(message);
                                }
-                               catch(Exception ex)
+                               catch (Exception ex)
                                {
                                    _logger.LogError(ex, ex.Message, context);
                                    throw;

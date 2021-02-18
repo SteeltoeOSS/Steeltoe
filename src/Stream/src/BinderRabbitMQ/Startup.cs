@@ -29,7 +29,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public IConfiguration Configuration { get; }
 
         public bool ConfigureServicesInvoked { get; set; } = false;
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
@@ -43,15 +43,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             services.AddSingleton<RabbitMessageChannelBinder>();
             services.AddSingleton<IBinder>((p) =>
             {
-                var logger = p.GetRequiredService<ILogger<Steeltoe.Stream.Binder.Rabbit.RabbitMessageChannelBinder>>();
-                var connectionFactory = p.GetRequiredService<Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory>();
+                var logger = p.GetRequiredService<ILogger<RabbitMessageChannelBinder>>();
+                var connectionFactory = p.GetRequiredService<IConnectionFactory>();
                 var rabbitOptions = p.GetRequiredService<RabbitOptions>();
                 var rabbitBinderOptions = p.GetRequiredService<RabbitBinderOptions>();
                 var exchangeprov = p.GetRequiredService<RabbitExchangeQueueProvisioner>();
-                //  var loggerf = p.GetRequiredService<ILoggerFactory>();
-               
                 return p.GetRequiredService<RabbitMessageChannelBinder>();
-
             });
         }
     }

@@ -29,7 +29,7 @@ namespace Steeltoe.Integration.Rabbit.Support
             }
 
             if (inputMessage is IMessage)
-            { 
+            {
                 return new ErrorMessage(exception.InnerException, headers, (IMessage)inputMessage);
             }
             else

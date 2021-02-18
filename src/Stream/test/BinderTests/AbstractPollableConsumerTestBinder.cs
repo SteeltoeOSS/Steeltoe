@@ -11,9 +11,9 @@ namespace Steeltoe.Stream.Binder
     public class AbstractPollableConsumerTestBinder<C> : AbstractTestBinder<C>, IPollableConsumerBinder<IMessageHandler>
         where C : AbstractBinder<IMessageChannel>
     {
-       private IPollableConsumerBinder<IMessageHandler> _binder;
+        private IPollableConsumerBinder<IMessageHandler> _binder;
 
-       public IPollableConsumerBinder<IMessageHandler> PollableConsumerBinder
+        public IPollableConsumerBinder<IMessageHandler> PollableConsumerBinder
         {
             get => _binder;
             set
@@ -23,17 +23,17 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-       public IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
+        public IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
         {
             return _binder.BindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
-       public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
+        public IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
         {
             throw new NotImplementedException();
         }
 
-       public override void Cleanup()
+        public override void Cleanup()
         {
             throw new NotImplementedException();
         }

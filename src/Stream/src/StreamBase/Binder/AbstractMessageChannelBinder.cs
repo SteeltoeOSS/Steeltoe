@@ -33,7 +33,7 @@ namespace Steeltoe.Stream.Binder
         protected AbstractMessageChannelBinder(
             IApplicationContext context,
             string[] headersToEmbed,
-            IProvisioningProvider provisioningProvider, 
+            IProvisioningProvider provisioningProvider,
             ILogger logger)
         : this(context, headersToEmbed, provisioningProvider, null, null, logger)
         {
@@ -44,7 +44,7 @@ namespace Steeltoe.Stream.Binder
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
-            IMessageSourceCustomizer sourceCustomizer, 
+            IMessageSourceCustomizer sourceCustomizer,
             ILogger logger)
             : base(context, logger)
         {

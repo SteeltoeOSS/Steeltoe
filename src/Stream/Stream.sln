@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{BA9A9A06-930F-4AEA-8291-CE2994C9C804}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "steeltoe-stream-samples", "..\..\..\steeltoe-stream-samples\steeltoe-stream-samples.csproj", "{D55A8173-390A-4F21-9D17-A6511817CBBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +152,10 @@ Global
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D55A8173-390A-4F21-9D17-A6511817CBBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D55A8173-390A-4F21-9D17-A6511817CBBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D55A8173-390A-4F21-9D17-A6511817CBBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D55A8173-390A-4F21-9D17-A6511817CBBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,8 @@
-﻿using EasyNetQ.Management.Client;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using EasyNetQ.Management.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -688,7 +692,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(endpoint.Template.IsChannelTransacted);
 
             rabbitBindingsOptions.Bindings.Remove("input");
-            var producerProperties = GetProducerOptions("input", rabbitBindingsOptions); 
+            var producerProperties = GetProducerOptions("input", rabbitBindingsOptions);
             var producerRabbitOptions = rabbitBindingsOptions.GetRabbitProducerOptions("input");
             binder.ApplicationContext.Register("pkExtractor", new TestPartitionSupport("pkExtractor"));
             binder.ApplicationContext.Register("pkSelector", new TestPartitionSupport("pkSelector"));
@@ -734,7 +738,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal(42, received.Headers[RabbitMessageHeaders.RECEIVED_DELAY]);
             producerBinding.Unbind();
             Assert.False(endpoint.IsRunning);
-
         }
 
         [Fact]
@@ -817,7 +820,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             consumerBinding.Unbind();
             Assert.Null(admin.GetQueueProperties(TEST_PREFIX + "nondurabletest.0.dlq"));
-
         }
 
         [Fact]
@@ -894,7 +896,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.False(context.ContainsService(TEST_PREFIX + "dlqtest.default.dlq"));
         }
 
-        [Fact] 
+        [Fact]
         public async void TestAutoBindDLQManualAcks()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
@@ -916,7 +918,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {
-                //Wait until unacked state is reflected in the admin
+                // Wait until unacked state is reflected in the admin
                 OnHandleMessage = (message) =>
                 {
                     var info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
@@ -950,7 +952,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             Assert.InRange(n, 1, 100);
 
-
             n = 0;
             var info = client.GetQueue(TEST_PREFIX + "dlqTestManual.default", vhost);
             while (n++ < 100 && info.MessagesUnacknowledged > 0L)
@@ -983,8 +984,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitprod2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
 
             Assert.Equal(rabbitprod.Prefix, rabbitprod2.Prefix);
-
-
         }
 
         [Fact]
@@ -1163,6 +1162,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     {
                         throw new Exception("dlq");
                     }
+
                     latch1.Signal();
                 }
             });
@@ -1199,7 +1199,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             defaultConsumerBinding1.Unbind();
             defaultConsumerBinding2.Unbind();
             outputBinding.Unbind();
-
         }
 
         [Fact]
@@ -1298,14 +1297,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             output.Send(barMessage);
 
             var obj = SpyOn("batching.0.default").Receive(false);
-            Assert.IsType(typeof(byte[]), obj);
+            Assert.IsType<byte[]>(obj);
             Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", ((byte[])obj).GetString());
 
-            //TODO: Fix Logger ...
+            // TODO: Inject and check log output ...
             //    ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
-            //verify(logger).trace(captor.capture());
-            //    assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
-
+            // verify(logger).trace(captor.capture());
+            // assertThat(captor.getValue().toString()).contains(("Compressed 14 to "));
             QueueChannel input = new QueueChannel();
             input.ComponentName = "batchingConsumer";
             var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
@@ -1326,7 +1324,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             producerBinding.Unbind();
             consumerBinding.Unbind();
-
         }
 
         [Fact]
@@ -1382,7 +1379,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-            // proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
+
+             proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
             CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
 
             var context = RabbitTestBinder.GetApplicationContext();
@@ -1392,7 +1390,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, rabbitBindingsOptions, provisioner);
             RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
             _testBinder = binder;
-
 
             var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
             var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
@@ -1418,7 +1415,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var partInputChannel0 = new QueueChannel();
             var partInputChannel1 = new QueueChannel();
 
-            var partLateConsumerProperties = GetConsumerOptions("partLate", rabbitBindingsOptions); 
+            var partLateConsumerProperties = GetConsumerOptions("partLate", rabbitBindingsOptions);
             var partLateRabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("partLate");
             partLateRabbitConsumerOptions.Prefix = "latebinder.";
             partLateConsumerProperties.Partitioned = true;
@@ -1504,7 +1501,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             nonDurableConsumerBinding.Unbind();
             durableConsumerBinding.Unbind();
 
-
             Cleanup();
 
             proxy.Stop();
@@ -1536,7 +1532,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             context.Register("rabbitAdmin", admin);
 
             // the mis-configured queue should be fatal
-
             IBinding binding = null;
             try
             {
@@ -1689,7 +1684,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
 
             var properties = GetConsumerOptions("input", rabbitBindingsOptions);
- 
+
             var binding = binder.BindPollableConsumer("pollableRequeue", "group", inboundBindTarget, properties);
             var template = new RabbitTemplate(GetResource());
             template.ConvertAndSend("pollableRequeue.group", "testPollable");
@@ -1765,6 +1760,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(deadLetter);
             binding.Unbind();
         }
+
         [Fact]
         public void TestPolledConsumerWithDlqNoRetry()
         {
@@ -1772,7 +1768,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = GetConsumerOptions("input", rabbitBindingsOptions); 
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
             var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             properties.MaxAttempts = 1;
             rabbitConsumerOptions.AutoBindDlq = true;
@@ -1813,7 +1809,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var binder = GetBinder(rabbitBindingsOptions);
             var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
             var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
-            var properties = GetConsumerOptions("input", rabbitBindingsOptions); 
+            var properties = GetConsumerOptions("input", rabbitBindingsOptions);
             var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
             properties.MaxAttempts = 2;
             properties.BackOffInitialInterval = 0;

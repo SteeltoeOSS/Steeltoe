@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Lifecycle;
@@ -30,9 +34,9 @@ namespace Steeltoe.Stream.Binder
         {
             B binder = GetBinder();
             var producerOptions = new ProducerOptions();
-            producerOptions.PostProcess("");
+            producerOptions.PostProcess(string.Empty);
             var consumerOptions = new ConsumerOptions();
-            consumerOptions.PostProcess("");
+            consumerOptions.PostProcess(string.Empty);
             var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
             var output = CreateBindableChannel("output", producerBindingOptions);
 
@@ -55,7 +59,7 @@ namespace Steeltoe.Stream.Binder
 
             Message<byte[]> receivedMessage2 = (Message<byte[]>)Receive(input2);
             Assert.NotNull(receivedMessage2);
-            Assert.Equal( testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
+            Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
             binding2.Unbind();
 
@@ -65,9 +69,7 @@ namespace Steeltoe.Stream.Binder
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
 
-            binding2 = binder.BindConsumer(
-                    string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null,
-                    input2, consumerOptions);
+            binding2 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input2, consumerOptions);
             var testPayload3 = "foo-" + Guid.NewGuid().ToString();
             output.Send(MessageBuilder.WithPayload(testPayload3)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
@@ -75,7 +77,7 @@ namespace Steeltoe.Stream.Binder
 
             receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
-            Assert.Equal( testPayload2, Encoding.UTF8.GetString(receivedMessage1.Payload));
+            Assert.Equal(testPayload2, Encoding.UTF8.GetString(receivedMessage1.Payload));
             receivedMessage1 = (Message<byte[]>)Receive(input1);
             Assert.NotNull(receivedMessage1);
             Assert.NotNull(receivedMessage1.Payload);

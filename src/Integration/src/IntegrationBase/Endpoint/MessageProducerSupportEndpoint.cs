@@ -201,7 +201,7 @@ namespace Steeltoe.Integration.Endpoint
             var channel = ErrorChannel;
             if (channel != null)
             {
-                _messagingTemplate.Send(channel, BuildErrorMessage(message, exception)); 
+                _messagingTemplate.Send(channel, BuildErrorMessage(message, exception));
                 return true;
             }
 

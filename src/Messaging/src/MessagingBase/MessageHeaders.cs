@@ -195,6 +195,44 @@ namespace Steeltoe.Messaging
             return ((IEnumerable)headers).GetEnumerator();
         }
 
+        void IDictionary.Add(object key, object value) => Add((string)key, value);
+
+        bool IDictionary.Contains(object key)
+        {
+            return headers.ContainsKey((string)key);
+        }
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return headers.GetEnumerator() as IDictionaryEnumerator;
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            headers.Remove((string)key);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            var collection = new KeyValuePair<string, object>[array.Length];
+            headers.CopyTo(collection, index);
+            collection.CopyTo(array, 0);
+        }
+
+        bool IDictionary.IsFixedSize => false;
+
+#pragma warning disable S2365 // Properties should not make collection or array copies
+        ICollection IDictionary.Keys => headers.Keys.ToList();
+
+        ICollection IDictionary.Values => headers.Values.ToList();
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => throw new NotImplementedException();
+
+        object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
+
+#pragma warning restore S2365 // Properties should not make collection or array copies
         internal bool ContentsEqual(IDictionary<string, object> other)
         {
             if (other == null)
@@ -268,48 +306,9 @@ namespace Steeltoe.Messaging
             }
         }
 
-        void IDictionary.Add(object key, object value) => Add((string)key, value);
-
-        bool IDictionary.Contains(object key)
-        {
-            return headers.ContainsKey((string)key);
-        }
-
-        IDictionaryEnumerator IDictionary.GetEnumerator()
-        {
-            return headers.GetEnumerator() as IDictionaryEnumerator;
-        }
-
-        void IDictionary.Remove(object key)
-        {
-            headers.Remove((string)key);
-        }
-
-        void ICollection.CopyTo(Array array, int index)
-        {
-            var collection = new KeyValuePair<string, object>[array.Length];
-            headers.CopyTo(collection, index);
-            collection.CopyTo(array, 0);
-        }
-
         protected internal virtual IDictionary<string, object> RawHeaders
         {
             get { return headers; }
         }
-
-        bool IDictionary.IsFixedSize => false;
-
-#pragma warning disable S2365 // Properties should not make collection or array copies
-        ICollection IDictionary.Keys => headers.Keys.ToList();
-
-        ICollection IDictionary.Values => headers.Values.ToList();
-
-        bool ICollection.IsSynchronized => false;
-
-        object ICollection.SyncRoot => throw new NotImplementedException();
-
-        object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
-
-#pragma warning restore S2365 // Properties should not make collection or array copies
     }
 }

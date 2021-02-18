@@ -73,6 +73,7 @@ namespace Steeltoe.Common.Contexts
         {
             return ContainsService(name, typeof(T));
         }
+
         public object GetService(string name)
         {
             _instances.TryGetValue(name, out var instance);

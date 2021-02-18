@@ -18,7 +18,7 @@ namespace Steeltoe.Stream.Config
 
         public string Group { get; set; }
 
-        public string ContentType { get; set; } 
+        public string ContentType { get; set; }
 
         public string Binder { get; set; }
 

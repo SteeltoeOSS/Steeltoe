@@ -1,4 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -126,14 +130,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
 
             _applicationContext = null;
-
         }
 
         private void CaptureConsumerResources(string name, string group, IConsumerOptions options)
         {
-            string [] names = null;
-            var consumerOptions = //options as ExtendedConsumerOptions<RabbitConsumerOptions>;
-                BindingsOptions.GetRabbitConsumerOptions(options.BindingName);
+            string[] names = null;
+            var consumerOptions = BindingsOptions.GetRabbitConsumerOptions(options.BindingName);
             if (group != null)
             {
                 if (consumerOptions.QueueNameGroupOnly.GetValueOrDefault())
@@ -185,6 +187,5 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _queues.Add(properties.DeadLetterQueueName);
             }
         }
-
     }
 }

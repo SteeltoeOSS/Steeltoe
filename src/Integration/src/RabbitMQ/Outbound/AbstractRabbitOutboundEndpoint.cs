@@ -203,6 +203,18 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             EndpointInit();
         }
 
+        Task ILifecycle.Start()
+        {
+            // TODO: Fix implementation
+            return Task.CompletedTask;
+        }
+
+        Task ILifecycle.Stop()
+        {
+            // TODO: Fix implementation
+            return Task.CompletedTask;
+        }
+
         protected virtual void DoStart()
         {
         }
@@ -467,20 +479,6 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             {
                 DelayGenerator = new ExpressionEvaluatingMessageProcessor<int>(context, DelayExpression);
             }
-        }
-
-        Task ILifecycle.Start()
-        {
-            // throw new NotImplementedException();
-            // TODO: Fix implementation
-            return Task.CompletedTask;
-        }
-
-        Task ILifecycle.Stop()
-        {
-            // throw new NotImplementedException();
-            // TODO: Fix implementation
-            return Task.CompletedTask;
         }
 
         protected class CorrelationDataWrapper : CorrelationData
