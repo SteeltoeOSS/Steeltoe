@@ -71,11 +71,6 @@ namespace Steeltoe.Stream.StreamsHost
                   var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
 
                   services.AddOptions();
-                  services.AddLogging((b) =>
-                  {
-                      b.AddDebug();
-                      b.SetMinimumLevel(LogLevel.Trace);
-                  });
 
                   services.AddSingleton<IConfiguration>(configuration);
                   services.AddSingleton<IApplicationContext, GenericApplicationContext>();
