@@ -30,7 +30,7 @@ namespace Steeltoe.Stream.Binder
                 IPartitionSelectorStrategy partitionSelectorStrategy)
         {
             _expressionParser = expressionParser;
-            _evaluationContext = evaluationContext;
+            _evaluationContext = evaluationContext ?? new StandardEvaluationContext();
             _producerOptions = options;
             _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
             _partitionSelectorStrategy = partitionSelectorStrategy;
@@ -47,7 +47,7 @@ namespace Steeltoe.Stream.Binder
             if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
             {
                 var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
-                partition = expr.GetValue<int>(_evaluationContext ?? new StandardEvaluationContext(), key);
+                partition = expr.GetValue<int>(_evaluationContext, key);
             }
             else
             {

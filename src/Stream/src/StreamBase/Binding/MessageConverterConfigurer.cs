@@ -24,7 +24,7 @@ namespace Steeltoe.Stream.Binding
         private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
         private readonly IMessageConverterFactory _messageConverterFactory;
         private readonly IEnumerable<IPartitionKeyExtractorStrategy> _extractors;
-        private readonly IEnumerable<IPartitionSelectorStrategy> _seledctors;
+        private readonly IEnumerable<IPartitionSelectorStrategy> _selectors;
 
         // private readonly IExpressionParser _expressionParser;
         // private readonly IEvaluationContext _evaluationContext;
@@ -49,7 +49,7 @@ namespace Steeltoe.Stream.Binding
             _optionsMonitor = optionsMonitor;
             _messageConverterFactory = messageConverterFactory;
             _extractors = extractors;
-            _seledctors = selectors;
+            _selectors = selectors;
         }
 
         public void ConfigureInputChannel(IMessageChannel messageChannel, string channelName)
@@ -146,7 +146,7 @@ namespace Steeltoe.Stream.Binding
             IPartitionSelectorStrategy strategy = null;
             if (!string.IsNullOrEmpty(options.PartitionSelectorName))
             {
-                strategy = _seledctors.FirstOrDefault((s) => s.ServiceName == options.PartitionSelectorName);
+                strategy = _selectors.FirstOrDefault((s) => s.ServiceName == options.PartitionSelectorName);
                 if (strategy == null)
                 {
                     throw new InvalidOperationException("IPartitionSelectorStrategy bean with the name '" + options.PartitionSelectorName + "' can not be found.");
@@ -154,14 +154,14 @@ namespace Steeltoe.Stream.Binding
             }
             else
             {
-                if (_seledctors.Count() > 1)
+                if (_selectors.Count() > 1)
                 {
                     throw new InvalidOperationException("Multiple `IPartitionSelectorStrategy` found from service container.");
                 }
 
-                if (_seledctors.Count() == 1)
+                if (_selectors.Count() == 1)
                 {
-                    strategy = _seledctors.Single();
+                    strategy = _selectors.Single();
                 }
                 else
                 {
