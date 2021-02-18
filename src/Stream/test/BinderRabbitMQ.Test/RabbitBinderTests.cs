@@ -1380,7 +1380,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
 
-             proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
+            proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
             CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
 
             var context = RabbitTestBinder.GetApplicationContext();

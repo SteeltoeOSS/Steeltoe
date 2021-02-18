@@ -54,7 +54,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             DoInitialize();
         }
 
-        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger= null)
+        public RabbitAdmin(Connection.IConnectionFactory connectionFactory, ILogger logger = null)
             : this(null, connectionFactory, logger)
         {
         }

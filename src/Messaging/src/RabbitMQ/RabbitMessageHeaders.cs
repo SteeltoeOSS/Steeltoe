@@ -38,7 +38,6 @@ namespace Steeltoe.Messaging.RabbitMQ
         public const string FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID = MessageHeaders.INTERNAL + "FinalRetryForMessageWithNoID";
 
         // Used in RabbitMQ Integration code
-
         public const string PUBLISH_CONFIRM_CORRELATION = PREFIX + "_publishConfirmCorrelation";
         public const string PUBLISH_CONFIRM = PREFIX + "publishConfirm";
         public const string PUBLISH_CONFIRM_NACK_CAUSE = PREFIX + "publishConfirmNackCause";

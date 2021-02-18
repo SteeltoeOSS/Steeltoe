@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Steeltoe.Messaging.Core.Test
 {
@@ -82,7 +83,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("home", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
         }
 
@@ -93,7 +94,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("somewhere", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
         }
 
@@ -133,7 +134,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("home", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
 
             Assert.NotNull(postProcessor.Message);
@@ -147,7 +148,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("somewhere", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
 
             Assert.NotNull(postProcessor.Message);
@@ -214,7 +215,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("home", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
         }
 
@@ -225,7 +226,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("somewhere", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
         }
 
@@ -265,7 +266,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("home", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
 
             Assert.NotNull(postProcessor.Message);
@@ -279,7 +280,7 @@ namespace Steeltoe.Messaging.Core.Test
 
             Assert.Equal("somewhere", template.Destination);
             Assert.NotNull(template.Message);
-            Assert.Equal(2, template.Message.Headers.Count);
+            Assert.Equal(2, ((HeadersDictionary)template.Message.Headers).Count);
             Assert.Equal("payload", template.Message.Payload);
 
             Assert.NotNull(postProcessor.Message);
