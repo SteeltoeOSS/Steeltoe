@@ -142,12 +142,10 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             var converter = Template.MessageConverter;
 
-            // org.springframework.amqp.core.Message amqpMessage = MappingUtils.mapMessage(requestMessage, converter,
-            //        getHeaderMapper(), getDefaultDeliveryMode(), isHeadersMappedLast());
             var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
             AddDelayProperty(message);
 
-            var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, requestMessage, correlationData);
+            var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, message, correlationData);
 
             if (amqpReplyMessage == null)
             {

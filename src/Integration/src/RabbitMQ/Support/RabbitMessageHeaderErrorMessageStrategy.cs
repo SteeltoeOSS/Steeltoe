@@ -30,11 +30,13 @@ namespace Steeltoe.Integration.Rabbit.Support
 
             if (inputMessage is IMessage)
             {
-                return new ErrorMessage(exception.InnerException, headers, (IMessage)inputMessage);
+                //return new ErrorMessage(exception.InnerException, headers, (IMessage)inputMessage);
+                return new ErrorMessage(exception, headers, (IMessage)inputMessage);
             }
             else
             {
-                return new ErrorMessage(exception.InnerException, headers);
+                //return new ErrorMessage(exception.InnerException, headers);
+                return new ErrorMessage(exception, headers);
             }
         }
     }

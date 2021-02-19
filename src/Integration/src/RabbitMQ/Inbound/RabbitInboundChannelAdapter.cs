@@ -154,7 +154,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                            {
                                try
                                {
-                                   _logger.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
+                                   _logger?.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
                                    var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
                                    deliveryAttempts?.IncrementAndGet();
                                    _adapter.SetAttributesIfNecessary(message, toSend);
@@ -162,7 +162,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
                                }
                                catch (Exception ex)
                                {
-                                   _logger.LogError(ex, ex.Message, context);
+                                   _logger?.LogError(ex, ex.Message, context);
                                    throw;
                                }
                            }, _adapter.RecoveryCallback);
