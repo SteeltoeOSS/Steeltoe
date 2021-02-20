@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IEnvOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<EnvEndpoint>();
+            services.TryAddSingleton<IEnvEndpoint>(provider => provider.GetRequiredService<EnvEndpoint>());
 
             return services;
         }

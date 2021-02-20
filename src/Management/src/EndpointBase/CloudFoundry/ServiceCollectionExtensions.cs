@@ -47,6 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 return new CloudFoundryEndpoint(options, mgmtOptions);
             });
+            services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());
 
             return services;
         }

@@ -3,15 +3,25 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using System;
 using System.Collections.Generic;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Refresh.Test
 {
     public class RefreshEndpointTest : BaseTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public RefreshEndpointTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Constructor_ThrowsIfNulls()
         {
@@ -27,7 +37,6 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         [Fact]
         public void DoInvoke_ReturnsExpected()
         {
-            var opts = new RefreshEndpointOptions();
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:enabled"] = "false",
@@ -37,16 +46,25 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
                 ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
                 ["management:endpoints:cloudfoundry:enabled"] = "true"
             };
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
 
-            var ep = new RefreshEndpoint(opts, config);
-            var result = ep.DoInvoke(config);
-            Assert.NotNull(result);
+            using (var tc = new TestContext(_output))
+            {
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddRefreshActuatorServices(configuration);
+                };
+                tc.AdditionalConfiguration = configuration =>
+                {
+                    configuration.AddInMemoryCollection(appsettings);
+                };
 
-            Assert.Contains("management:endpoints:loggers:enabled", result);
-            Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
+                var ep = tc.GetService<IRefreshEndpoint>();
+                var result = ep.Invoke();
+                Assert.NotNull(result);
+
+                Assert.Contains("management:endpoints:loggers:enabled", result);
+                Assert.Contains("management:endpoints:cloudfoundry:enabled", result);
+            }
         }
     }
 }

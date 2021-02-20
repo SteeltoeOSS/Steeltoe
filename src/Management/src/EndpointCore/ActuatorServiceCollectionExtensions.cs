@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.DbMigrations;
 using Steeltoe.Management.Endpoint.Env;
 using Steeltoe.Management.Endpoint.Health;
@@ -32,7 +34,10 @@ namespace Steeltoe.Management.Endpoint
             // the code that was running here is now handled in ActuatorRouteBuilderExtensions
         }
 
-        public static void AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2)
+        public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
+            => services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
+
+        public static void AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         {
             if (services == null)
             {
@@ -43,6 +48,12 @@ namespace Steeltoe.Management.Endpoint
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
+            }
+
+            services.AddSteeltoeCors(buildCorsPolicy);
+            if (Platform.IsCloudFoundry)
+            {
+                services.AddCloudFoundryActuator(config);
             }
 
             services.AddHypermediaActuator(config);
@@ -67,5 +78,27 @@ namespace Steeltoe.Management.Endpoint
             services.AddPrometheusActuator(config);
             services.AddRefreshActuator(config);
         }
+
+        private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+            => services.AddCors(setup =>
+                {
+                    setup.AddPolicy("SteeltoeManagement", (policy) =>
+                    {
+                        policy.WithMethods("GET", "POST");
+                        if (Platform.IsCloudFoundry)
+                        {
+                            policy.WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type");
+                        }
+
+                        if (buildCorsPolicy != null)
+                        {
+                            buildCorsPolicy(policy);
+                        }
+                        else
+                        {
+                            policy.AllowAnyOrigin();
+                        }
+                    });
+                });
     }
 }

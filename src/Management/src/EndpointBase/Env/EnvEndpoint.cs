@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Env
 {
-    public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>
+    public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
     {
         private readonly ILogger<EnvEndpoint> _logger;
         private readonly IConfiguration _configuration;

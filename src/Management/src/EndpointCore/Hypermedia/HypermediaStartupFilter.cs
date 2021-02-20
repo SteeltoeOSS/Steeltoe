@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class HypermediaStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)

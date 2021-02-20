@@ -7,7 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
-    public class HeapDumpEndpoint : AbstractEndpoint<string>
+    public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
     {
         private readonly ILogger<HeapDumpEndpoint> _logger;
         private readonly IHeapDumper _heapDumper;

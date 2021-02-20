@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>
+    public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
     {
         private readonly SteeltoeExporter _exporter;
         private readonly ILogger<MetricsEndpoint> _logger;

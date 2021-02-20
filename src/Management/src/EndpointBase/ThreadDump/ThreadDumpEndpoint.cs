@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
-    public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>
+    public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDumpEndpoint
     {
         private readonly ILogger<ThreadDumpEndpoint> _logger;
         private readonly IThreadDumper _threadDumper;
