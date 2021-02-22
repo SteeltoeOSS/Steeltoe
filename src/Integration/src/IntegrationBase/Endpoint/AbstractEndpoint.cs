@@ -19,6 +19,7 @@ namespace Steeltoe.Integration.Endpoint
         protected AbstractEndpoint(IApplicationContext context)
         {
             ApplicationContext = context;
+            ServiceName = GetType().FullName + "." + Guid.NewGuid();
         }
 
         public IIntegrationServices IntegrationServices

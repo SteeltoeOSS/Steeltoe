@@ -4,7 +4,10 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
+using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Handler
@@ -13,22 +16,11 @@ namespace Steeltoe.Integration.Handler
     {
         private readonly IMessageProcessor _processor;
 
-        // TODO:
+        public ServiceActivatingHandler(IApplicationContext context, object instance, MethodInfo method)
+        : this(context, (IMessageProcessor)new MethodInvokingMessageProcessor<object>(context, instance, method))
+        {
+        }
 
-        // public ServiceActivatingHandler(object instance)
-        // : this(new MethodInvokingMessageProcessor(instance, typeof(ServiceActivatorAttribute)))
-        // {
-        // }
-
-        // public ServiceActivatingHandler(object instance, MethodInfo method)
-        // : this(new MethodInvokingMessageProcessor(instance, method))
-        // {
-        // }
-
-        // public ServiceActivatingHandler(object instance, string methodName)
-        // : this(new MethodInvokingMessageProcessor(instance, methodName))
-        // {
-        // }
         public ServiceActivatingHandler(IApplicationContext context, IMessageProcessor processor)
             : base(context)
         {

@@ -138,17 +138,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 }
             }
 
-        //value = PropertyPlaceholderHelper.ResolvePlaceholders(value, ApplicationContext.Configuration);
-        //if (ConfigUtils.IsExpression(value))
-        //{
-        //    var serviceName = ConfigUtils.ExtractExpressionString(value);
-        //    var queue = ApplicationContext.GetService<IQueue>(serviceName);
-        //    if (queue != null)
-        //    {
-        //        value = queue.QueueName;
-        //    }
-        //}
-
             return value;
         }
     }

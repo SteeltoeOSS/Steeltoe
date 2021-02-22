@@ -41,7 +41,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             if (!StopInvoked)
             {
-                throw new InvalidOperationException("Stop should have been invoked before destroy on " + this);
+                Stop().Wait();
             }
 
             DestroyInvoked = true;

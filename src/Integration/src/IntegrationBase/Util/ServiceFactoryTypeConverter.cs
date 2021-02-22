@@ -47,7 +47,6 @@ namespace Steeltoe.Integration.Util
             }
 
             return ConversionService.Convert(value, sourceType, targetType);
-
         }
     }
 }

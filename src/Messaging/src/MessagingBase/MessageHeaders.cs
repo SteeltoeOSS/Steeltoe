@@ -134,6 +134,11 @@ namespace Steeltoe.Messaging
             throw new InvalidOperationException();
         }
 
+        public virtual void Add(object key, object value)
+        {
+            throw new InvalidOperationException();
+        }
+
         public virtual void Add(KeyValuePair<string, object> item)
         {
             throw new InvalidOperationException();
@@ -149,9 +154,30 @@ namespace Steeltoe.Messaging
             return headers.Contains(item);
         }
 
+        public virtual bool Contains(object key)
+        {
+            var asString = key as string;
+            if (asString != null)
+            {
+                return TryGetValue(asString, out var _);
+            }
+
+            return false;
+        }
+
         public virtual void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
             headers.CopyTo(array, arrayIndex);
+        }
+
+        public virtual void CopyTo(Array array, int index)
+        {
+            throw new InvalidOperationException();
+        }
+
+        public virtual void Remove(object key)
+        {
+            throw new InvalidOperationException();
         }
 
         public virtual bool Remove(string key)
@@ -179,6 +205,24 @@ namespace Steeltoe.Messaging
 
         public virtual object this[string key] { get => Get<object>(key); set => throw new InvalidOperationException(); }
 
+        public virtual object this[object key]
+        {
+            get
+            {
+                if (key is string asString)
+                {
+                    return Get<object>(asString);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         public virtual T Get<T>(string key)
         {
             if (TryGetValue(key, out var val))
@@ -187,6 +231,21 @@ namespace Steeltoe.Messaging
             }
 
             return default;
+        }
+
+        public virtual bool IsSynchronized => false;
+
+        public virtual object SyncRoot => throw new InvalidOperationException();
+
+        public virtual bool IsFixedSize => true;
+
+        ICollection IDictionary.Keys => (ICollection)Keys;
+
+        ICollection IDictionary.Values => (ICollection)Values;
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return (IDictionaryEnumerator)headers.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()

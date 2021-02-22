@@ -209,11 +209,19 @@ namespace Steeltoe.Common.Contexts
 
         public void Register(string name, object instance)
         {
-            _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+            if (!string.IsNullOrEmpty(name))
+            {
+                _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+            }
         }
 
         public object Deregister(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
             _instances.TryRemove(name, out var instance);
 
             if (instance is IDisposable disposable)

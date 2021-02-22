@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,14 +15,13 @@ namespace Steeltoe.Common.Lifecycle
     public class DefaultLifecycleProcessor : ILifecycleProcessor
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
-        private readonly List<ILifecycle> _lifecyclesServices;
         private readonly ILogger _logger;
+        private readonly IApplicationContext _context;
+        private List<ILifecycle> _lifecyclesServices;
 
-        public DefaultLifecycleProcessor(IEnumerable<ILifecycle> lifecyclesServices, IEnumerable<ISmartLifecycle> smartLifecyclesServices, ILogger logger = null)
+        public DefaultLifecycleProcessor(IApplicationContext context, ILogger logger = null)
         {
-            var lifecycles = lifecyclesServices.ToList();
-            lifecycles.AddRange(smartLifecyclesServices);
-            _lifecyclesServices = lifecycles;
+            _context = context;
             _logger = logger;
         }
 
@@ -31,6 +31,7 @@ namespace Steeltoe.Common.Lifecycle
 
         public async Task Start()
         {
+            BuildServicesList();
             await StartServices(false);
             IsRunning = true;
         }
@@ -43,6 +44,7 @@ namespace Steeltoe.Common.Lifecycle
 
         public async Task OnRefresh()
         {
+            BuildServicesList();
             await StartServices(true);
             IsRunning = true;
         }
@@ -115,6 +117,25 @@ namespace Steeltoe.Common.Lifecycle
                 {
                     await phases[key].Stop();
                 }
+            }
+        }
+
+        private void BuildServicesList()
+        {
+            if (_lifecyclesServices == null)
+            {
+                var lifeCycles = _context.GetServices<ILifecycle>().ToList();
+                var smartCycles = _context.GetServices<ISmartLifecycle>();
+
+                foreach (var smart in smartCycles)
+                {
+                    if (!lifeCycles.Contains(smart))
+                    {
+                        lifeCycles.Add(smart);
+                    }
+                }
+
+                _lifecyclesServices = lifeCycles;
             }
         }
 

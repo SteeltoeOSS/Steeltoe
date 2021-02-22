@@ -21,7 +21,7 @@ namespace Steeltoe.Integration.Util
 
         private IIntegrationServices _integrationServices;
 
-        public IExpressionParser ExpressionParser { get; } = new SpelExpressionParser();
+        public static IExpressionParser ExpressionParser { get; } = new SpelExpressionParser();
 
         public IEvaluationContext EvaluationContext
         {

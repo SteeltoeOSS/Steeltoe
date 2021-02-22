@@ -48,8 +48,8 @@ namespace Steeltoe.Integration.Transformer
         protected override object DoTransform(IMessage message)
         {
             var headers = message.Headers;
-            bool removeHeaders = false;
-            Type targetClass = ObtainResolvableTypeFromHeadersIfAny(headers);
+            var removeHeaders = false;
+            var targetClass = ObtainResolvableTypeFromHeadersIfAny(headers);
             if (targetClass == null)
             {
                 targetClass = TargetType;
