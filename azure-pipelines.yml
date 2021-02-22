@@ -34,7 +34,7 @@ jobs:
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame --no-build -c $(buildConfiguration) -v diag -f netcoreapp3.1 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
+      arguments: '--blame --no-build -c $(buildConfiguration) -v n -f netcoreapp3.1 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
 - job: Steeltoe_CI
   dependsOn:
   - Quick_Response

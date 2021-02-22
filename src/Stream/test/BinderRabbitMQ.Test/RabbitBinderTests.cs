@@ -1375,7 +1375,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
          * Runs about 40 mins
          */
         [Fact]
-        
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
