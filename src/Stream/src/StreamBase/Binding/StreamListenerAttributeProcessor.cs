@@ -56,6 +56,7 @@ namespace Steeltoe.Stream.Binding
             }
         }
 
+        // TODO: Change to Initalize
         public void AfterSingletonsInstantiated()
         {
             if (_streamListenerMethods.Count <= 0)
