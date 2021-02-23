@@ -29,8 +29,7 @@ namespace Steeltoe.Stream.Binder
         {
         }
 
-        // [Fact]
-        public void TestAnonymousGroup()
+        public void TestAnonymousGroupBase()
         {
             B binder = GetBinder();
             var producerOptions = new ProducerOptions();

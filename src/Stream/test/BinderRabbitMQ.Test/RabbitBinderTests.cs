@@ -1837,6 +1837,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binding.Unbind();
         }
 
+        [Fact]
+        public void TestAnonymousGroup()
+        {
+            TestAnonymousGroupBase();
+        }
+
         private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
         {
             var logger = new XunitLogger(Output);
