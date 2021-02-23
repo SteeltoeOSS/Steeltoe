@@ -53,8 +53,9 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                 }
             }
 
-            var serilogOptions = new SerilogOptions(builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>());
-            loggerConfiguration ??= new LoggerConfiguration().WriteTo.Console();
+            var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
+            var serilogOptions = new SerilogOptions(configuration);
+            loggerConfiguration ??= new LoggerConfiguration().ReadFrom.Configuration(configuration).WriteTo.Console();
 
             // Add a level switch that controls the "Default" level at the root
             var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);
