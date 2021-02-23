@@ -29,7 +29,7 @@ namespace Steeltoe.Stream.Binder
         {
         }
 
-        [Fact]
+        // [Fact]
         public void TestAnonymousGroup()
         {
             B binder = GetBinder();
