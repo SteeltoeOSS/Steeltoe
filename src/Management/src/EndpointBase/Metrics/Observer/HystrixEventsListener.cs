@@ -54,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (eventSource.Name == EventSourceName)
             {
-                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
+                SafelyEnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
             }
         }
     }

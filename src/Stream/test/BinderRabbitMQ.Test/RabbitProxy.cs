@@ -40,7 +40,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void Stop()
         {
             _run = false;
-            _listener.Stop();
+            Task.Run(() => _listener.Stop()); // Sometimes hangs on linux
         }
 
         private void StartListener(object obj)
