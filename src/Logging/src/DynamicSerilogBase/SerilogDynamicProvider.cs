@@ -68,11 +68,10 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             _loggerSwitches.GetOrAdd("Default", loggingLevelSwitch);
 
             // Add a global logger that will be the root of all other added loggers
-            _globalLogger = logger ?? new Serilog.LoggerConfiguration()
-                .MinimumLevel.ControlledBy(loggingLevelSwitch)
-                .ReadFrom.Configuration(configuration)
-                .AddConsoleIfNoSinksFound() // Add a console in case one is not configured
-                .CreateLogger();
+            _globalLogger = logger ??
+                SerilogConfigurationExtensions.GetDefaultSerilogConfiguration(configuration)
+                    .MinimumLevel.ControlledBy(loggingLevelSwitch)
+                    .CreateLogger();
         }
 
         public ILogger CreateLogger(string categoryName)

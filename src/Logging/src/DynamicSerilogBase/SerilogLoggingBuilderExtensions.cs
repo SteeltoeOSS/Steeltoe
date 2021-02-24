@@ -23,10 +23,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// <param name="builder">The <see cref="ILoggingBuilder"/> for configuring the LoggerFactory</param>
         /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
         /// <returns>The configured <see cref="ILoggingBuilder"/></returns>
-        public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole = false)
-        {
-            return builder.AddDynamicSerilog(null, false, preserveDefaultConsole);
-        }
+        public static ILoggingBuilder AddDynamicSerilog(this ILoggingBuilder builder, bool preserveDefaultConsole = false) => builder.AddDynamicSerilog(null, false, preserveDefaultConsole);
 
         /// <summary>
         /// Add Serilog, wrapped in a <see cref="IDynamicLoggerProvider"/> that supports
@@ -55,8 +52,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
 
             var configuration = builder.Services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             var serilogOptions = new SerilogOptions(configuration);
-            loggerConfiguration ??= new LoggerConfiguration().ReadFrom.Configuration(configuration);
-            loggerConfiguration.AddConsoleIfNoSinksFound();
+            loggerConfiguration ??= SerilogConfigurationExtensions.GetDefaultSerilogConfiguration(configuration);
 
             // Add a level switch that controls the "Default" level at the root
             var levelSwitch = new LoggingLevelSwitch(serilogOptions.MinimumLevel.Default);

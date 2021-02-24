@@ -80,10 +80,33 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var aggregatedSinks = loggerSinksField.GetValue(logger);
             var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
             var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
+            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.SystemConsole.ConsoleSink");
+        }
+
+        [Fact]
+        public void AddDynamicSerilog_ReadsConfig_AlwaysIncludesConsole()
+        {
+            // arrange
+            var appSettings = new Dictionary<string, string> { { "Serilog:WriteTo:0:Name", "Debug" } };
+
+            // act
+            var host = new WebHostBuilder()
+                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings))
+                .UseStartup<Startup>()
+                .AddDynamicSerilog()
+                .Build();
+
+            // assert
+            var logger = (Logger)host.Services.GetService(typeof(Logger));
+            var loggerSinksField = logger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+            var aggregatedSinks = loggerSinksField.GetValue(logger);
+            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
 
             // note: there could be two here without the logic in SerilogConfigurationExtensions.AddConsoleIfNoSinksFound
-            Assert.Single(sinks);
-            Assert.Equal("Serilog.Sinks.SystemConsole.ConsoleSink", sinks.First().GetType().FullName);
+            Assert.Equal(2, sinks.Count());
+            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.SystemConsole.ConsoleSink");
+            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.Debug.DebugSink");
         }
     }
 }

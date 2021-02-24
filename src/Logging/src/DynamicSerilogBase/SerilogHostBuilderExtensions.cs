@@ -27,7 +27,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             return hostBuilder
                 .ConfigureLogging((hostContext, logBuilder) =>
                 {
-                    var loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration);
+                    var loggerConfiguration = SerilogConfigurationExtensions.GetDefaultSerilogConfiguration(hostContext.Configuration);
                     if (configureLogger is object)
                     {
                         configureLogger(hostContext, loggerConfiguration);
