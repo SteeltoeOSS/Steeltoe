@@ -32,10 +32,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
                     {
                         configureLogger(hostContext, loggerConfiguration);
                     }
-                    else
-                    {
-                        loggerConfiguration.WriteTo.Console();
-                    }
 
                     logBuilder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger, preserveDefaultConsole);
                 });
