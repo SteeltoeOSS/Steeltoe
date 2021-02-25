@@ -71,6 +71,11 @@ jobs:
         skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker" --blame-hang --blame-hang-timeout 4m'
         package: false
         integrationTests: false
+      Windows_StreamBinder_net5:
+        imageName: windows-latest
+        skipFilter: '-f net5.0 --filter "FullyQualifiedName=Steeltoe.Stream.Binder.Rabbit.RabbitBinderTests.TestLateBinding" '
+        package: false
+        integrationTests: true
       Windows_Hystrix:
         imageName: windows-latest
         skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker"'
