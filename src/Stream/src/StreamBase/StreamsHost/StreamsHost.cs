@@ -96,22 +96,40 @@ namespace Steeltoe.Stream.StreamsHost
         }
 
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
-            => _hostBuilder.ConfigureAppConfiguration(configureDelegate);
+        {
+            _hostBuilder.ConfigureAppConfiguration(configureDelegate);
+            return this;
+        }
 
         public IHostBuilder ConfigureContainer<TContainerBuilder>(Action<HostBuilderContext, TContainerBuilder> configureDelegate)
-            => _hostBuilder.ConfigureContainer(configureDelegate);
+        {
+            _hostBuilder.ConfigureContainer(configureDelegate);
+            return this;
+        }
 
         public IHostBuilder ConfigureHostConfiguration(Action<IConfigurationBuilder> configureDelegate)
-            => _hostBuilder.ConfigureHostConfiguration(configureDelegate);
+        {
+            _hostBuilder.ConfigureHostConfiguration(configureDelegate);
+            return this;
+        }
 
         public IHostBuilder ConfigureServices(Action<HostBuilderContext, IServiceCollection> configureDelegate)
-            => _hostBuilder.ConfigureServices(configureDelegate);
+        {
+            _hostBuilder.ConfigureServices(configureDelegate);
+            return this;
+        }
 
         public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(IServiceProviderFactory<TContainerBuilder> factory)
-            => _hostBuilder.UseServiceProviderFactory(factory);
+        {
+            _hostBuilder.UseServiceProviderFactory(factory);
+            return this;
+        }
 
         public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
-            => _hostBuilder.UseServiceProviderFactory(factory);
+        {
+            _hostBuilder.UseServiceProviderFactory(factory);
+            return this;
+        }
     }
 
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly

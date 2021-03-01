@@ -30,7 +30,11 @@ namespace Steeltoe.Stream.Extensions
             if (attr != null)
             {
                 var enableBindingAttribute = (EnableBindingAttribute)attr;
-                services.AddStreamBindings(enableBindingAttribute.Bindings);
+                var filtered = enableBindingAttribute.Bindings.Where(b => b.Name != nameof(ISource) && b.Name != nameof(ISink) && b.Name != nameof(IProcessor)).ToArray(); // These are added by default
+                if (filtered.Length > 0)
+                {
+                    services.AddStreamBindings(filtered);
+                }
                 services.AddStreamListeners(type);
                 services.TryAddSingleton(type);
             }
