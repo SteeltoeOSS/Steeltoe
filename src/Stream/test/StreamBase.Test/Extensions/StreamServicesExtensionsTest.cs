@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;

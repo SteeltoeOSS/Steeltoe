@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;

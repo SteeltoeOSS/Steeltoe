@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.StreamsHost;
 
 namespace Steeltoe.Stream.Extensions

@@ -14,6 +14,7 @@ using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
+using Steeltoe.Integration.Extensions;
 
 namespace Steeltoe.Stream.Extensions
 {

@@ -5,15 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Stream.Binder;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

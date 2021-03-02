@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Extensions;
