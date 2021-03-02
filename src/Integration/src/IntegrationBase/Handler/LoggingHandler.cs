@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Handler
 {

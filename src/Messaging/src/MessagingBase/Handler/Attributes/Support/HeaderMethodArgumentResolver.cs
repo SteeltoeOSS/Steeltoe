@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Support;
 using System;
@@ -12,8 +13,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 {
     public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentResolver
     {
-        public HeaderMethodArgumentResolver(IConversionService conversionService)
-            : base(conversionService)
+        public HeaderMethodArgumentResolver(IConversionService conversionService, IApplicationContext context = null)
+            : base(conversionService, context)
         {
         }
 

@@ -9,13 +9,13 @@ namespace Steeltoe.Integration.Attributes
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class ServiceActivatorAttribute : Attribute
     {
+        public ServiceActivatorAttribute()
+        {
+        }
+
         public ServiceActivatorAttribute(string inputChannel)
         {
             InputChannel = inputChannel;
-        }
-
-        public ServiceActivatorAttribute()
-        {
         }
 
         public ServiceActivatorAttribute(string inputChannel, string outputChannel)
@@ -28,46 +28,46 @@ namespace Steeltoe.Integration.Attributes
         {
             InputChannel = inputChannel;
             OutputChannel = outputChannel;
-            RequiresReply = requiresReply;
+            RequiresReply = requiresReply.ToString();
         }
 
         public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout)
         {
             InputChannel = inputChannel;
             OutputChannel = outputChannel;
-            RequiresReply = requiresReply;
-            SendTimeout = sendTimeout;
+            RequiresReply = requiresReply.ToString();
+            SendTimeout = sendTimeout.ToString();
         }
 
         public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout, bool autoStartup)
         {
             InputChannel = inputChannel;
             OutputChannel = outputChannel;
-            RequiresReply = requiresReply;
-            SendTimeout = sendTimeout;
-            AutoStartup = autoStartup;
+            RequiresReply = requiresReply.ToString();
+            SendTimeout = sendTimeout.ToString();
+            AutoStartup = autoStartup.ToString();
         }
 
         public ServiceActivatorAttribute(string inputChannel, string outputChannel, bool requiresReply, int sendTimeout, bool autoStartup, int phase)
         {
             InputChannel = inputChannel;
             OutputChannel = outputChannel;
-            RequiresReply = requiresReply;
-            SendTimeout = sendTimeout;
-            AutoStartup = autoStartup;
-            Phase = phase;
+            RequiresReply = requiresReply.ToString();
+            SendTimeout = sendTimeout.ToString();
+            AutoStartup = autoStartup.ToString();
+            Phase = phase.ToString();
         }
 
         public string InputChannel { get; set; } = string.Empty;
 
         public string OutputChannel { get; set; } = string.Empty;
 
-        public bool RequiresReply { get; set; } = false;
+        public string RequiresReply { get; set; } = string.Empty;
 
-        public int SendTimeout { get; set; } = -1;
+        public string SendTimeout { get; set; } = string.Empty;
 
-        public bool AutoStartup { get; set; } = true;
+        public string AutoStartup { get; set; } = string.Empty;
 
-        public int Phase { get; set; } = int.MaxValue / 2;
+        public string Phase { get; set; } = string.Empty;
     }
 }

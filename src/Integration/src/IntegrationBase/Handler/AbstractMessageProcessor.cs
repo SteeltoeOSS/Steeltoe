@@ -3,13 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Handler
 {
-    public abstract class AbstractMessageProcessor<T> : AbstractExpressionEvaluator
+    public abstract class AbstractMessageProcessor<T> : AbstractExpressionEvaluator, IMessageProcessor<T>
     {
         protected AbstractMessageProcessor(IApplicationContext context)
             : base(context)
@@ -17,5 +16,10 @@ namespace Steeltoe.Integration.Handler
         }
 
         public abstract T ProcessMessage(IMessage message);
+
+        object IMessageProcessor.ProcessMessage(IMessage message)
+        {
+            return this.ProcessMessage(message);
+        }
     }
 }

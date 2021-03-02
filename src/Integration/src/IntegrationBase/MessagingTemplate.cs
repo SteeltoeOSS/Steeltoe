@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Integration

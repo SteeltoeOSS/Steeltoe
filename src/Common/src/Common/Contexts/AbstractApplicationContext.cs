@@ -20,10 +20,17 @@ namespace Steeltoe.Common.Contexts
     {
         private readonly ConcurrentDictionary<string, object> _instances = new ConcurrentDictionary<string, object>();
 
-        protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration)
+        protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
         {
             ServiceProvider = serviceProvider;
             Configuration = configuration;
+            if (nameToTypeMappings != null)
+            {
+                foreach (var seed in nameToTypeMappings)
+                {
+                    Register(seed.Name, seed.Type);
+                }
+        }
         }
 
         public IConfiguration Configuration { get; private set; }
@@ -35,6 +42,11 @@ namespace Steeltoe.Common.Contexts
         public bool ContainsService(string name)
         {
             _instances.TryGetValue(name, out var instance);
+            if (instance is Type type)
+            {
+                instance = ResolveNamedService(name, type);
+            }
+
             return instance != null;
         }
 
@@ -42,6 +54,11 @@ namespace Steeltoe.Common.Contexts
         {
             if (_instances.TryGetValue(name, out var instance))
             {
+                if (instance is Type type)
+                {
+                    instance = ResolveNamedService(name, type);
+                }
+
                 return serviceType.IsInstanceOfType(instance);
             }
 
@@ -50,16 +67,7 @@ namespace Steeltoe.Common.Contexts
                 return false;
             }
 
-            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault<object>((service) =>
-            {
-                if (service is IServiceNameAware nameAware)
-                {
-                    return nameAware.ServiceName == name;
-                }
-
-                return false;
-            });
-
+            var found = FindNamedService(name, serviceType);
             if (found != null)
             {
                 Register(((IServiceNameAware)found).ServiceName, found);
@@ -77,14 +85,29 @@ namespace Steeltoe.Common.Contexts
         public object GetService(string name)
         {
             _instances.TryGetValue(name, out var instance);
+            if (instance is Type type)
+            {
+                instance = ResolveNamedService(name, type);
+            }
+
             return instance;
         }
 
         public object GetService(string name, Type serviceType)
         {
-            if (_instances.TryGetValue(name, out var instance) && serviceType.IsInstanceOfType(instance))
+            if (_instances.TryGetValue(name, out var instance))
             {
-                return instance;
+                if (instance is Type type)
+                {
+                    instance = ResolveNamedService(name, type);
+                }
+
+                if (serviceType.IsInstanceOfType(instance))
+                {
+                    return instance;
+                }
+
+                return null;
             }
 
             if (!typeof(IServiceNameAware).IsAssignableFrom(serviceType))
@@ -92,15 +115,12 @@ namespace Steeltoe.Common.Contexts
                 return null;
             }
 
-            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault<object>((service) =>
-            {
-                if (service is IServiceNameAware nameAware)
-                {
-                    return nameAware.ServiceName == name;
-                }
+            var found = FindNamedService(name, serviceType);
 
-                return false;
-            });
+            if (found != null)
+            {
+                Register(((IServiceNameAware)found).ServiceName, found);
+            }
 
             if (found != null)
             {
@@ -137,6 +157,31 @@ namespace Steeltoe.Common.Contexts
             return found;
         }
 
+        public IEnumerable<object> GetServices(Type serviceType)
+        {
+            var services = new List<object>();
+            var found = ServiceProvider.GetServices(serviceType);
+            foreach (var service in found)
+            {
+                if (service is IServiceNameAware aware)
+                {
+                    Register(aware.ServiceName, service);
+                }
+                else
+                {
+                    services.Add(service);
+                }
+            }
+
+            var results = _instances.Values.Where(instance => serviceType.IsInstanceOfType(instance));
+            foreach (var result in results)
+            {
+                services.Add(result);
+            }
+
+            return services;
+        }
+
         public IEnumerable<T> GetServices<T>()
         {
             var services = new List<T>();
@@ -164,11 +209,19 @@ namespace Steeltoe.Common.Contexts
 
         public void Register(string name, object instance)
         {
-            _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+            if (!string.IsNullOrEmpty(name))
+            {
+                _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+            }
         }
 
         public object Deregister(string name)
         {
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
             _instances.TryRemove(name, out var instance);
 
             if (instance is IDisposable disposable)
@@ -196,6 +249,45 @@ namespace Steeltoe.Common.Contexts
             Configuration = null;
             ServiceProvider = null;
             ServiceExpressionResolver = null;
+        }
+
+        private object ResolveNamedService(string name, Type serviceType)
+        {
+            var instance = FindNamedService(name, serviceType);
+            if (instance != null)
+            {
+                Register(name, instance);
+            }
+
+            return instance;
+        }
+
+        private object FindNamedService(string name, Type serviceType)
+        {
+            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault<object>((service) =>
+            {
+                if (service is IServiceNameAware nameAware)
+                {
+                    return nameAware.ServiceName == name;
+                }
+
+                return false;
+            });
+
+            return found;
+        }
+
+        public class NameToTypeMapping
+        {
+            public NameToTypeMapping(string name, Type type)
+            {
+                Name = name;
+                Type = type;
+            }
+
+            public string Name { get; }
+
+            public Type Type { get; }
         }
     }
 }

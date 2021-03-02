@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Moq;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -195,8 +196,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             queue2.ServiceName = "queue2";
 
             var queues = new List<IQueue>() { queue1, queue2 };
-            var excep = await Assert.ThrowsAsync<InvalidOperationException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
-            Assert.Contains("Unable to resolve expression", excep.Message);
+            var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
         }
 
         public class Config

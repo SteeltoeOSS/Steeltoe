@@ -41,5 +41,13 @@ namespace Steeltoe.Messaging
         /// Gets the error channel the message is for
         /// </summary>
         object ErrorChannel { get; }
+
+        new ICollection<string> Keys { get; }
+
+        new ICollection<object> Values { get; }
+
+        new int Count { get; }
+
+        new IEnumerator<KeyValuePair<string, object>> GetEnumerator();
     }
 }

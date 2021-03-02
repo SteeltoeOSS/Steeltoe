@@ -4,13 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Common.Contexts
 {
     public class GenericApplicationContext : AbstractApplicationContext
     {
-        public GenericApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration)
-            : base(serviceProvider, configuration)
+        public GenericApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings = null)
+            : base(serviceProvider, configuration, nameToTypeMappings)
         {
         }
     }

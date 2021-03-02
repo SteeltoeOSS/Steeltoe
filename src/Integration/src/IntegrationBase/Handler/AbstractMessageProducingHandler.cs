@@ -90,18 +90,18 @@ namespace Steeltoe.Integration.Handler
             UpdateNotPropagatedHeaders(headers, true);
         }
 
+        public virtual int SendTimeout
+        {
+            get { return _messagingTemplate.SendTimeout; }
+            set { _messagingTemplate.SendTimeout = value; }
+        }
+
         protected virtual bool ShouldCopyRequestHeaders
         {
             get
             {
                 return true;
             }
-        }
-
-        protected virtual int SendTimeout
-        {
-            get { return _messagingTemplate.SendTimeout; }
-            set { _messagingTemplate.SendTimeout = value; }
         }
 
         protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
