@@ -18,12 +18,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="EntityFramework" Version="$(EF6Version)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(AspNetCoreVersion)" />
+    <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <!--<PackageReference Include="MySql.Data.Entity" Version="$(MySqlV6)" />-->
-    <!-- Oracle changed the name + namespaces for v8. Old is above, new is below -->
-    <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
+    <!-- with netcoreapp3.1/net5.0 returns "Warning NU1701 Package restored using '.NETFramework,Version=...' instead of the project target framework. This package may not be fully compatible with your project." -->
+    <PackageReference Include="Oracle.ManagedDataAccess.EntityFramework" Version="19.7.0" />
   </ItemGroup>
 </Project>

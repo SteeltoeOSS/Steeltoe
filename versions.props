@@ -21,8 +21,7 @@
 
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
-    <MySqlV6>6.10.7</MySqlV6>
-    <MySqlV8>8.0.14</MySqlV8>
+    <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
     <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
@@ -31,7 +30,7 @@
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
     <ConsulVersion>0.7.2.6</ConsulVersion>
-    <CoverletVersion>3.0.0</CoverletVersion>
+    <CoverletVersion>3.0.3</CoverletVersion>
     <HdrHistogramVersion>2.0.0</HdrHistogramVersion>
     <HttpExtensionsVersion>2.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
@@ -41,7 +40,7 @@
     <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
-    <TestSdkVersion>16.7.1</TestSdkVersion>
+    <TestSdkVersion>16.9.1</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <XunitStudioVersion>2.4.3</XunitStudioVersion>
@@ -53,7 +52,7 @@
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
-    <SonarAnalyzerVersion>8.16.0.25740</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>8.19.0.28253</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
@@ -76,6 +75,7 @@
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
     <EF6Version>6.3.0</EF6Version>
+    <MySqlEFCoreVersion>3.1.10</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
@@ -87,7 +87,9 @@
     <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
     <EFCoreTestVersion>5.0.0</EFCoreTestVersion>
     <EF6Version>6.4.0</EF6Version>
+    <MySqlEFCoreVersion>5.0.0</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
+    <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
     <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
     <ExtensionsVersion>5.0.0</ExtensionsVersion>
   </PropertyGroup>
