@@ -261,10 +261,10 @@ namespace Steeltoe.Messaging
             return headers.ContainsKey((string)key);
         }
 
-        IDictionaryEnumerator IDictionary.GetEnumerator()
-        {
-            return headers.GetEnumerator() as IDictionaryEnumerator;
-        }
+        //IDictionaryEnumerator IDictionary.GetEnumerator()
+        //{
+        //    return headers.GetEnumerator() as IDictionaryEnumerator;
+        //}
 
         void IDictionary.Remove(object key)
         {
@@ -281,9 +281,9 @@ namespace Steeltoe.Messaging
         bool IDictionary.IsFixedSize => false;
 
 #pragma warning disable S2365 // Properties should not make collection or array copies
-        ICollection IDictionary.Keys => headers.Keys.ToList();
+   //     ICollection IDictionary.Keys => headers.Keys.ToList();
 
-        ICollection IDictionary.Values => headers.Values.ToList();
+//        ICollection IDictionary.Values => headers.Values.ToList();
 
         bool ICollection.IsSynchronized => false;
 

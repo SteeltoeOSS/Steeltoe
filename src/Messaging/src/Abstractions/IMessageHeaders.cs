@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Steeltoe.Messaging
 {
@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging
     /// The headers for a message
     /// </summary>
 #pragma warning disable S3444 // Interfaces should not simply inherit from base interfaces with colliding members
-    public interface IMessageHeaders : IDictionary, System.Collections.Generic.IDictionary<string, object>
+    public interface IMessageHeaders : IDictionary, IDictionary<string, object>
 #pragma warning restore S3444 // Interfaces should not simply inherit from base interfaces with colliding members
     {
         /// <summary>
