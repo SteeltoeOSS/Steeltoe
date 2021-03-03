@@ -4,6 +4,7 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Loggers;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.EndpointOwin.Loggers;
@@ -47,6 +48,7 @@ namespace Steeltoe.Management.EndpointOwinAutofac.Actuators.Test
             Assert.True(container.IsRegistered<ILoggersOptions>(), "Loggers options are registered");
             Assert.True(container.IsRegistered<LoggersEndpoint>(), "Loggers endpoint is registered");
             Assert.True(container.IsRegistered<LoggersEndpointOwinMiddleware>(), "Loggers endpoint middleware is registered");
+            Assert.NotNull(container.Resolve<IDynamicLoggerProvider>());
         }
     }
 }

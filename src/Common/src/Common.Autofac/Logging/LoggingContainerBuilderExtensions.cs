@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options.Autofac;
 using System;
 
 namespace Steeltoe.Common.Logging.Autofac
@@ -25,6 +26,7 @@ namespace Steeltoe.Common.Logging.Autofac
                 throw new ArgumentNullException(nameof(configuration));
             }
 
+            container.RegisterOptions();
             container.RegisterType<LoggerFactory>().As<ILoggerFactory>().SingleInstance();
             container.RegisterGeneric(typeof(Logger<>)).As(typeof(ILogger<>)).SingleInstance();
             container.RegisterInstance(new DefaultLoggerLevelConfigureOptions(LogLevel.Information)).As<IConfigureOptions<LoggerFilterOptions>>().SingleInstance();
