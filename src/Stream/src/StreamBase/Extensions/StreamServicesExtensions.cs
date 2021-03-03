@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -14,7 +15,6 @@ using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
-using Steeltoe.Integration.Extensions;
 
 namespace Steeltoe.Stream.Extensions
 {

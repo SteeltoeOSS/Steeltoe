@@ -35,6 +35,7 @@ namespace Steeltoe.Stream.Extensions
                 {
                     services.AddStreamBindings(filtered);
                 }
+
                 services.AddStreamListeners(type);
                 services.TryAddSingleton(type);
             }
