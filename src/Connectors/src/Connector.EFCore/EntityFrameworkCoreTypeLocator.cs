@@ -14,7 +14,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore
         /// <summary>
         /// Gets a list of supported MySQL Entity Framework Core Assemblies
         /// </summary>
-        public static string[] MySqlEntityAssemblies { get; internal set; } = new string[] { "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
+        public static string[] MySqlEntityAssemblies { get; internal set; } = new string[] { "MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore", "Pomelo.EntityFrameworkCore.MySql" };
 
         /// <summary>
         /// Gets a list of supported fully-qualifed names for compatible DbContextOptionsExtentions used to configure EntityFrameworkCore

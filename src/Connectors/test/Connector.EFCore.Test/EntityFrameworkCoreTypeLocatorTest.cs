@@ -20,12 +20,13 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
             Assert.NotNull(type);
         }
 
-        [Fact(Skip = "Change NuGet reference to see this test pass")]
-        public void Options_Found_In_Oracle_Assembly()
+#if NETCOREAPP3_1
+        [Fact]
+        public void Options_Found_In_MySql_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
             var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.Data.EntityFrameworkCore" };
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new string[] { "MySql.EntityFrameworkCore" };
 
             // act
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
@@ -34,7 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
-
+#else
         [Fact]
         public void Options_Found_In_Pomelo_Assembly()
         {
@@ -49,6 +50,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
             Assert.NotNull(type);
             EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
         }
+#endif
 
         [Fact]
         public void Property_Can_Locate_PostgreSqlDbContextOptionsType()
@@ -74,11 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
             Assert.NotNull(type);
         }
 
-#if NET5_0
-        [Fact(Skip = "Revisit when Oracle has support for EF Core 5.0")]
-#else
         [Fact]
-#endif
         public void Options_Found_In_OracleEF_Assembly()
         {
             // arrange ~ narrow the assembly list to one specific nuget package
