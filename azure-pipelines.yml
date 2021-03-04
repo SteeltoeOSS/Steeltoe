@@ -15,7 +15,7 @@ jobs:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('2.5.3-ci{0}', variables['Build.BuildId'])]
+    PackageVersion: $[format('2.5.4-ci{0}', variables['Build.BuildId'])]
     disable.coverage.autogenerate: 'true'
   strategy:
     matrix:
