@@ -10,9 +10,7 @@ namespace Steeltoe.Messaging
     /// <summary>
     /// The headers for a message
     /// </summary>
-#pragma warning disable S3444 // Interfaces should not simply inherit from base interfaces with colliding members
     public interface IMessageHeaders : IDictionary, IDictionary<string, object>
-#pragma warning restore S3444 // Interfaces should not simply inherit from base interfaces with colliding members
     {
         /// <summary>
         /// Gets a header value given its key

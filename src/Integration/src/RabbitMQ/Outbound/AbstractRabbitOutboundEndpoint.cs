@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.Internal;
@@ -29,10 +30,13 @@ namespace Steeltoe.Integration.Rabbit.Outbound
     {
         private readonly object _lock = new object();
         private readonly string _no_id = Guid.Empty.ToString();
+        private readonly ILogger _logger;
 
-        protected AbstractRabbitOutboundEndpoint(IApplicationContext context)
+        protected AbstractRabbitOutboundEndpoint(IApplicationContext context, ILogger logger)
             : base(context)
         {
+            _logger = logger;
+            HeaderMapper = DefaultRabbitHeaderMapper.GetOutboundMapper(_logger);
         }
 
         public string ExchangeName { get; set; }
@@ -47,7 +51,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
         public ExpressionEvaluatingMessageProcessor<string> ExchangeNameGenerator { get; set; }
 
-        public IRabbitHeaderMapper HeaderMapper { get; set; } = DefaultRabbitHeaderMapper.OutboundMapper;
+        public IRabbitHeaderMapper HeaderMapper { get; set; }
 
         public IExpression ConfirmCorrelationExpression { get; set; }
 
@@ -91,7 +95,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             if (string.IsNullOrEmpty(exchangeNameExpression))
             {
-                throw new ArgumentException(nameof(exchangeNameExpression));
+                throw new ArgumentNullException(nameof(exchangeNameExpression));
             }
 
             ExchangeNameExpression = IntegrationServices.ExpressionParser.ParseExpression(exchangeNameExpression);
@@ -101,7 +105,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             if (string.IsNullOrEmpty(routingKeyExpression))
             {
-                throw new ArgumentException(nameof(routingKeyExpression));
+                throw new ArgumentNullException(nameof(routingKeyExpression));
             }
 
             RoutingKeyExpression = IntegrationServices.ExpressionParser.ParseExpression(routingKeyExpression);
@@ -111,7 +115,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             if (string.IsNullOrEmpty(confirmCorrelationExpression))
             {
-                throw new ArgumentException(nameof(confirmCorrelationExpression));
+                throw new ArgumentNullException(nameof(confirmCorrelationExpression));
             }
 
             ConfirmCorrelationExpression = IntegrationServices.ExpressionParser.ParseExpression(confirmCorrelationExpression);
@@ -157,7 +161,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
                         }
                         catch (Exception e)
                         {
-                            // logger.error("Failed to eagerly establish the connection.", e);
+                             _logger?.LogError("Failed to eagerly establish the connection.", e);
                         }
                     }
 
@@ -197,7 +201,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             ConfigureExchangeNameGenerator(ApplicationContext);
             ConfigureRoutingKeyGenerator(ApplicationContext);
-            ConfigureCorrelationDataGenerator(ApplicationContext);
+            ConfigureCorrelationDataGenerator();
             ConfigureDelayGenerator(ApplicationContext);
 
             EndpointInit();
@@ -267,7 +271,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
                 }
                 else
                 {
-                    // this.logger.debug("'confirmCorrelationExpression' resolved to 'null'; no publisher confirm will be sent to the ack or nack channel");
+                    _logger?.LogDebug("'confirmCorrelationExpression' resolved to 'null'; no publisher confirm will be sent to the ack or nack channel");
                 }
             }
 
@@ -300,7 +304,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             if (DelayGenerator != null)
             {
-                RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 accessor.Delay = DelayGenerator.ProcessMessage(message);
             }
         }
@@ -346,10 +350,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             var wrapper = (CorrelationDataWrapper)correlationData;
             if (correlationData == null)
             {
-                // if (logger.isDebugEnabled())
-                // {
-                //    logger.debug("No correlation data provided for ack: " + ack + " cause:" + cause);
-                // }
+                _logger.LogDebug("No correlation data provided for ack: " + ack + " cause:" + cause);
                 return;
             }
 
@@ -366,12 +367,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             }
             else
             {
-                // if (logger.isInfoEnabled())
-                // {
-                //    logger.info("Nowhere to send publisher confirm "
-                //            + (ack ? "ack" : "nack") + " for "
-                //            + userCorrelationData);
-                // }
+                _logger.LogInformation("Nowhere to send publisher confirm " + (ack ? "ack" : "nack") + " for " + userCorrelationData);
             }
         }
 
@@ -379,8 +375,10 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         {
             if (ErrorMessageStrategy == null || ack)
             {
-                var headers = new Dictionary<string, object>();
-                headers.Add(RabbitMessageHeaders.PUBLISH_CONFIRM, ack);
+                var headers = new Dictionary<string, object>
+                {
+                    { RabbitMessageHeaders.PUBLISH_CONFIRM, ack }
+                };
                 if (!ack && !string.IsNullOrEmpty(cause))
                 {
                     headers.Add(RabbitMessageHeaders.PUBLISH_CONFIRM_NACK_CAUSE, cause);
@@ -400,7 +398,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         private IMessageBuilder PrepareMessageBuilder(object replyObject)
         {
             var factory = IntegrationServices.MessageBuilderFactory;
-            return (replyObject is IMessage) ? factory.FromMessage((IMessage)replyObject) : factory.WithPayload(replyObject);
+            return (replyObject is IMessage message) ? factory.FromMessage(message) : factory.WithPayload(replyObject);
         }
 
         private void CheckUnconfirmed(CancellationToken cancellationToken)
@@ -451,7 +449,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             }
         }
 
-        private void ConfigureCorrelationDataGenerator(IApplicationContext context)
+        private void ConfigureCorrelationDataGenerator()
         {
             if (ConfirmCorrelationExpression != null)
             {
@@ -498,9 +496,9 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             {
                 get
                 {
-                    if (UserData is CorrelationData)
+                    if (UserData is CorrelationData data)
                     {
-                        return ((CorrelationData)UserData).FutureSource;
+                        return data.FutureSource;
                     }
                     else
                     {
@@ -513,9 +511,9 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             {
                 get
                 {
-                    if (UserData is CorrelationData)
+                    if (UserData is CorrelationData data)
                     {
-                        return ((CorrelationData)UserData).ReturnedMessage;
+                        return data.ReturnedMessage;
                     }
 
                     return base.ReturnedMessage;
@@ -523,9 +521,9 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
                 set
                 {
-                    if (UserData is CorrelationData)
+                    if (UserData is CorrelationData data)
                     {
-                        ((CorrelationData)UserData).ReturnedMessage = value;
+                        data.ReturnedMessage = value;
                     }
 
                     base.ReturnedMessage = value;

@@ -27,9 +27,9 @@ namespace Steeltoe.Integration.Handler
 
         public Task Start()
         {
-            if (_target is ILifecycle)
+            if (_target is ILifecycle lifeCycle)
             {
-                return ((ILifecycle)_target).Start();
+                return lifeCycle.Start();
             }
 
             return Task.CompletedTask;
@@ -37,15 +37,15 @@ namespace Steeltoe.Integration.Handler
 
         public Task Stop()
         {
-            if (_target is ILifecycle)
+            if (_target is ILifecycle lifeCycle)
             {
-                return ((ILifecycle)_target).Stop();
+                return lifeCycle.Stop();
             }
 
             return Task.CompletedTask;
         }
 
-        public bool IsRunning => !(_target is ILifecycle) || ((ILifecycle)_target).IsRunning;
+        public bool IsRunning => _target is not ILifecycle lifecycle || lifecycle.IsRunning;
 
         public override void Initialize()
         {

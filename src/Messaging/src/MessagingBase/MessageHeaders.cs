@@ -34,8 +34,8 @@ namespace Steeltoe.Messaging
         public const string KEY_TYPE_ID = "__KeyTypeId__";
 
         public static readonly string ID_VALUE_NONE = string.Empty;
-        protected readonly IDictionary<string, object> headers;
 
+        protected readonly IDictionary<string, object> headers;
         private static readonly IIDGenerator _defaultIdGenerator = new DefaultIdGenerator();
         private static volatile IIDGenerator _idGenerator;
 
@@ -104,10 +104,10 @@ namespace Steeltoe.Messaging
             }
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return this == other ||
-                    (other is MessageHeaders && ContentsEqual(((MessageHeaders)other).headers));
+            return this == obj ||
+                    (obj is MessageHeaders messageHeaders && ContentsEqual(messageHeaders.headers));
         }
 
         public override int GetHashCode()
@@ -157,8 +157,7 @@ namespace Steeltoe.Messaging
 
         public virtual bool Contains(object key)
         {
-            var asString = key as string;
-            if (asString != null)
+            if (key is string asString)
             {
                 return TryGetValue(asString, out var _);
             }
@@ -315,8 +314,7 @@ namespace Steeltoe.Messaging
         {
             get
             {
-                var generator = _idGenerator;
-                return generator != null ? generator : _defaultIdGenerator;
+                return _idGenerator ?? _defaultIdGenerator;
             }
 
             set

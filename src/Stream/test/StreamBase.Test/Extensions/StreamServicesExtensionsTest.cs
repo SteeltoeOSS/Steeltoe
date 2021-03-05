@@ -45,7 +45,7 @@ namespace Steeltoe.Stream.Extensions
             var config = new ConfigurationBuilder().Build();
             container.AddSingleton<IConfiguration>(config);
             container.AddCoreServices();
-            container.AddIntegrationServices(config);
+            container.AddIntegrationServices();
             container.AddBinderServices(config);
             container.AddStreamCoreServices(config);
             var serviceProvider = container.BuildServiceProvider();

@@ -49,7 +49,7 @@ namespace Steeltoe.Stream
             container.AddSingleton<IApplicationContext, GenericApplicationContext>();
             container.AddStreamConfiguration(configuration);
             container.AddCoreServices();
-            container.AddIntegrationServices(configuration);
+            container.AddIntegrationServices();
             container.AddStreamCoreServices(configuration);
             if (serachDirectories == null || serachDirectories.Count == 0)
             {

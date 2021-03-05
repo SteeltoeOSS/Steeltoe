@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
@@ -18,8 +19,8 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 {
     public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCallback, IReturnCallback
     {
-        public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate)
-            : base(context)
+        public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
+            : base(context, logger)
         {
             if (rabbitTemplate == null)
             {

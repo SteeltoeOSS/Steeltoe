@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Services;
@@ -21,8 +22,8 @@ namespace Steeltoe.Integration.Config
     {
         private readonly List<IServiceActivatorMethod> _serviceActivatorMethods;
 
-        public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods)
-            : base(applicationContext)
+        public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods, ILogger<ServiceActivatorAttributeProcessor> logger)
+            : base(applicationContext, logger)
         {
             MessageHandlerProperties.AddRange(new List<string>() { "OutputChannel", "RequiresReply" });
             _serviceActivatorMethods = methods.ToList();
@@ -38,39 +39,24 @@ namespace Steeltoe.Integration.Config
             foreach (var method in _serviceActivatorMethods)
             {
                 var service = CreateTargetService(method.ImplementationType);
-                if (service != null)
+                if (service == null)
                 {
-                    var attributes = method.Method.GetCustomAttributes().ToList();
-                    var serviceName = GetServiceName(service);
-                    var result = PostProcess(service, serviceName, method.Method, attributes);
-                    if (result is AbstractEndpoint)
-                    {
-                        var endpoint = (AbstractEndpoint)result;
-                        var autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
-                        if (!string.IsNullOrEmpty(autoStartup))
-                        {
-                            autoStartup = ApplicationContext?.ResolveEmbeddedValue(autoStartup);
-                            if (!string.IsNullOrEmpty(autoStartup))
-                            {
-                                endpoint.IsAutoStartup = bool.Parse(autoStartup);
-                            }
-                        }
-
-                        var phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
-                        if (!string.IsNullOrEmpty(phase))
-                        {
-                            phase = ApplicationContext?.ResolveEmbeddedValue(phase);
-                            if (!string.IsNullOrEmpty(phase))
-                            {
-                                endpoint.Phase = int.Parse(phase);
-                            }
-                        }
-
-                        var endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
-                        endpoint.ServiceName = endpointName;
-                        ApplicationContext?.Register(endpointName, endpoint);
-                    }
+                    continue;
                 }
+
+                var attributes = method.Method.GetCustomAttributes().ToList();
+                var serviceName = GetServiceName(service);
+                var result = PostProcess(service, serviceName, method.Method, attributes);
+
+                var endpoint = GetEndpoint(attributes, result);
+                if (endpoint == null)
+                {
+                    continue;
+                }
+
+                var endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
+                endpoint.ServiceName = endpointName;
+                ApplicationContext?.Register(endpointName, endpoint);
             }
         }
 
@@ -129,7 +115,7 @@ namespace Steeltoe.Integration.Config
             return name;
         }
 
-        private string GetServiceName(object service)
+        private static string GetServiceName(object service)
         {
             if (service is IServiceNameAware aware)
             {
@@ -137,6 +123,36 @@ namespace Steeltoe.Integration.Config
             }
 
             return service.GetType().FullName;
+        }
+
+        private AbstractEndpoint GetEndpoint(List<Attribute> attributes, object result)
+        {
+            var endpoint = result as AbstractEndpoint;
+
+            if (endpoint != null)
+            {
+                var autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
+                if (!string.IsNullOrEmpty(autoStartup))
+                {
+                    autoStartup = ApplicationContext?.ResolveEmbeddedValue(autoStartup);
+                    if (!string.IsNullOrEmpty(autoStartup))
+                    {
+                        endpoint.IsAutoStartup = bool.Parse(autoStartup);
+                    }
+                }
+
+                var phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
+                if (!string.IsNullOrEmpty(phase))
+                {
+                    phase = ApplicationContext?.ResolveEmbeddedValue(phase);
+                    if (!string.IsNullOrEmpty(phase))
+                    {
+                        endpoint.Phase = int.Parse(phase);
+                    }
+                }
+            }
+
+            return endpoint;
         }
 
         private object CreateTargetService(Type implementation)

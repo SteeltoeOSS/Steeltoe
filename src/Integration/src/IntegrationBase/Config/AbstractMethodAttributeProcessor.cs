@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
@@ -23,6 +24,7 @@ namespace Steeltoe.Integration.Config
     {
         protected const string SEND_TIMEOUT_PROPERTY = "SendTimeout";
         protected const string INPUT_CHANNEL_PROPERTY = "InputChannel";
+        private readonly ILogger _logger;
 
         protected virtual List<string> MessageHandlerProperties { get; } = new List<string>();
 
@@ -36,7 +38,7 @@ namespace Steeltoe.Integration.Config
 
         protected virtual string InputChannelProperty { get; } = INPUT_CHANNEL_PROPERTY;
 
-        protected AbstractMethodAttributeProcessor(IApplicationContext applicatonContext)
+        protected AbstractMethodAttributeProcessor(IApplicationContext applicatonContext, ILogger logger)
         {
             if (applicatonContext == null)
             {
@@ -44,6 +46,7 @@ namespace Steeltoe.Integration.Config
             }
 
             ApplicationContext = applicatonContext;
+            _logger = logger;
             MessageHandlerProperties.Add(SEND_TIMEOUT_PROPERTY);
             ConversionService = ApplicationContext.GetService<IConversionService>();
             if (ConversionService == null)
@@ -57,35 +60,14 @@ namespace Steeltoe.Integration.Config
 
         public object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes)
         {
-            object sourceHandler = null;
-            if (ServiceAnnotationAware() && method.GetCustomAttribute<ServiceAttribute>() != null)
+            GetSourceHandlerFromContext(method, out var sourceHandler, out var skipEndpointCreation);
+
+            if (skipEndpointCreation)
             {
-                if (!ApplicationContext.ContainsService(ResolveTargetServiceName(method)))
-                {
-                    // this.logger.debug("Skipping endpoint creation; perhaps due to some '@Conditional' annotation.");
-                    return null;
-                }
-                else
-                {
-                    sourceHandler = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
-                }
+                return null;
             }
 
-            var handler = CreateHandler(service, method, attributes);
-
-            if (handler is AbstractMessageProducingHandler)
-            {
-                var sendTimeout = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "SendTimeout");
-                if (sendTimeout != null)
-                {
-                    var resolvedValue = ApplicationContext.ResolveEmbeddedValue(sendTimeout);
-                    if (resolvedValue != null)
-                    {
-                        var value = int.Parse(resolvedValue);
-                        ((AbstractMessageProducingHandler)handler).SendTimeout = value;
-                    }
-                }
-            }
+            var handler = GetHandler(service, method, attributes);
 
             if (handler != sourceHandler)
             {
@@ -225,9 +207,9 @@ namespace Steeltoe.Integration.Config
                 return default;
             }
 
-            if (targetObject is H)
+            if (targetObject is H h)
             {
-                return (H)targetObject;
+                return h;
             }
 
             return default;
@@ -255,5 +237,47 @@ namespace Steeltoe.Integration.Config
         }
 
         protected abstract IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes);
+
+        private IMessageHandler GetHandler(object service, MethodInfo method, List<Attribute> attributes)
+        {
+            var handler = CreateHandler(service, method, attributes);
+
+            if (handler is AbstractMessageProducingHandler)
+            {
+                var sendTimeout = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "SendTimeout");
+                if (sendTimeout != null)
+                {
+                    var resolvedValue = ApplicationContext.ResolveEmbeddedValue(sendTimeout);
+                    if (resolvedValue != null)
+                    {
+                        var value = int.Parse(resolvedValue);
+                        if (handler is AbstractMessageProducingHandler abstractHandler)
+                        {
+                            abstractHandler.SendTimeout = value;
+                        }
+                    }
+                }
+            }
+
+            return handler;
+        }
+
+        private void GetSourceHandlerFromContext(MethodInfo method, out object sourceHandler, out bool skipEndpointCreation)
+        {
+            skipEndpointCreation = false;
+            sourceHandler = null;
+            if (ServiceAnnotationAware() && method.GetCustomAttribute<ServiceAttribute>() != null)
+            {
+                if (!ApplicationContext.ContainsService(ResolveTargetServiceName(method)))
+                {
+                    _logger?.LogDebug("Skipping endpoint creation; perhaps due to some '[Conditional]' attribute.");
+                    skipEndpointCreation = true;
+                }
+                else
+                {
+                    sourceHandler = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
+                }
+            }
+        }
     }
 }

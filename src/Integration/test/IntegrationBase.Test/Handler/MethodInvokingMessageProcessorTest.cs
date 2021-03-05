@@ -386,7 +386,7 @@ namespace Steeltoe.Integration.Handler
                 context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
             });
 
-            serviceCollection.AddIntegrationServices(config);
+            serviceCollection.AddIntegrationServices();
             serviceCollection.AddQueueChannel("out");
 
             return serviceCollection;

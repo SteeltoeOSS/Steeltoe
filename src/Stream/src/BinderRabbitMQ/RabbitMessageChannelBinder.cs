@@ -62,7 +62,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
-            : base(context, new string[0], provisioningProvider, containerCustomizer, sourceCustomizer, logger)
+            : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
         {
             if (connectionFactory == null)
             {
@@ -126,11 +126,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return BindingsOptions.GetRabbitProducerOptions(channelName);
         }
 
-        // public string GetDefaultsPrefix()
-        // {
-        //    return this.extendedBindingProperties.getDefaultsPrefix();
-        // }
-        protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination producerDestination, IProducerOptions producerProperties, IMessageChannel errorChannel)
+        protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {
             if (producerProperties.HeaderMode == HeaderMode.EmbeddedHeaders)
             {
@@ -139,47 +135,21 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
             var prefix = extendedProperties.Prefix;
-            var exchangeName = producerDestination.Name;
-            var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
-            var endpoint = new RabbitOutboundEndpoint(ApplicationContext, BuildRabbitTemplate(extendedProperties, errorChannel != null));
-            endpoint.ExchangeName = producerDestination.Name;
+            var exchangeName = destination.Name;
+            var destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
+            var endpoint = new RabbitOutboundEndpoint(ApplicationContext, BuildRabbitTemplate(extendedProperties, errorChannel != null), _logger)
+            {
+                ExchangeName = exchangeName
+            };
             var expressionInterceptorNeeded = ExpressionInterceptorNeeded(extendedProperties);
             var routingKeyExpression = extendedProperties.RoutingKeyExpression;
             if (!producerProperties.IsPartitioned)
             {
-                if (routingKeyExpression == null)
-                {
-                    endpoint.RoutingKey = destination;
-                }
-                else
-                {
-                    if (expressionInterceptorNeeded)
-                    {
-                        endpoint.SetRoutingKeyExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']");
-                    }
-                    else
-                    {
-                        endpoint.RoutingKeyExpression = ExpressionParser.ParseExpression(routingKeyExpression);
-                    }
-                }
+                UpdateRoutingKeyExpressionForNonPartitioned(endpoint, destinationName, expressionInterceptorNeeded, routingKeyExpression);
             }
             else
             {
-                if (routingKeyExpression == null)
-                {
-                    endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(destination, false);
-                }
-                else
-                {
-                    if (expressionInterceptorNeeded)
-                    {
-                        endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true);
-                    }
-                    else
-                    {
-                        endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(routingKeyExpression, true);
-                    }
-                }
+                UpdateRoutingKeyExpressionForPartitioned(destinationName, endpoint, expressionInterceptorNeeded, routingKeyExpression);
             }
 
             if (extendedProperties.DelayExpression != null)
@@ -194,11 +164,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             }
 
-            var mapper = DefaultRabbitHeaderMapper.OutboundMapper;
-            var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3);
-            headerPatterns.Add("!" + BinderHeaders.PARTITION_HEADER);
-            headerPatterns.Add("!" + IntegrationMessageHeaderAccessor.SOURCE_DATA);
-            headerPatterns.Add("!" + IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT);
+            var mapper = DefaultRabbitHeaderMapper.GetOutboundMapper(_logger);
+            var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3)
+            {
+                "!" + BinderHeaders.PARTITION_HEADER,
+                "!" + IntegrationMessageHeaderAccessor.SOURCE_DATA,
+                "!" + IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT
+            };
             headerPatterns.AddRange(extendedProperties.HeaderPatterns);
 
             mapper.SetRequestHeaderNames(headerPatterns.ToArray());
@@ -213,9 +185,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 var ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel) ? extendedProperties.ConfirmAckChannel : IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
                 if (!ackChannelBeanName.Equals(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME) && !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
                 {
-                    // GenericApplicationContext context = (GenericApplicationContext)getApplicationContext();
-                    var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
-                    ApplicationContext.Register(ackChannelBeanName, ackChannel);
+                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
+                     ApplicationContext.Register(ackChannelBeanName, ackChannel);
                 }
 
                 endpoint.ConfirmAckChannelName = ackChannelBeanName;
@@ -248,26 +219,28 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        protected override IMessageProducer CreateConsumerEndpoint(IConsumerDestination consumerDestination, string group, IConsumerOptions consumerOptions)
+        protected override IMessageProducer CreateConsumerEndpoint(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
         {
             if (consumerOptions.HeaderMode == HeaderMode.EmbeddedHeaders)
             {
                 throw new InvalidOperationException("The RabbitMQ binder does not support embedded headers since RabbitMQ supports headers natively");
             }
 
-            var destination = consumerDestination.Name;
+            var destinationName = destination.Name;
 
             var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
-            var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory);
-            listenerContainer.AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.AUTO);
-            listenerContainer.IsChannelTransacted = properties.Transacted.GetValueOrDefault();
-            listenerContainer.DefaultRequeueRejected = properties.RequeueRejected ?? true;
-            int concurrency = consumerOptions.Concurrency;
+            var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory)
+            {
+                AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.AUTO),
+                IsChannelTransacted = properties.Transacted.GetValueOrDefault(),
+                DefaultRequeueRejected = properties.RequeueRejected ?? true
+            };
+            var concurrency = consumerOptions.Concurrency;
             concurrency = concurrency > 0 ? concurrency : 1;
             listenerContainer.ConsumersPerQueue = concurrency;
             listenerContainer.PrefetchCount = properties.Prefetch ?? listenerContainer.PrefetchCount;
             listenerContainer.RecoveryInterval = properties.RecoveryInterval ?? listenerContainer.RecoveryInterval;
-            var queueNames = destination.Split(',', StringSplitOptions.RemoveEmptyEntries).Select((s) => s.Trim());
+            var queueNames = destinationName.Split(',', StringSplitOptions.RemoveEmptyEntries).Select((s) => s.Trim());
             listenerContainer.SetQueueNames(queueNames.ToArray());
             listenerContainer.SetAfterReceivePostProcessors(DecompressingPostProcessor);
             listenerContainer.MessageHeadersConverter = _inboundMessagePropertiesConverter;
@@ -287,21 +260,23 @@ namespace Steeltoe.Stream.Binder.Rabbit
             // {
             //    listenerContainer.setApplicationEventPublisher(getApplicationContext());
             // }
-            ListenerContainerCustomizer?.Configure(listenerContainer, consumerDestination.Name, group);
+            ListenerContainerCustomizer?.Configure(listenerContainer, destination.Name, group);
             if (!string.IsNullOrEmpty(properties.ConsumerTagPrefix))
             {
                 listenerContainer.ConsumerTagStrategy = new RabbitBinderConsumerTagStrategy(properties.ConsumerTagPrefix);
             }
 
             listenerContainer.Initialize();
-            var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer, _logger);
-            adapter.BindSourceMessage = true;
-            adapter.ServiceName = "inbound." + destination;
+            var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer, _logger)
+            {
+                BindSourceMessage = true,
+                ServiceName = "inbound." + destinationName
+            };
 
             // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
             // mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
             // adapter.setHeaderMapper(mapper);
-            var errorInfrastructure = RegisterErrorInfrastructure(consumerDestination, group, consumerOptions, _logger);
+            var errorInfrastructure = RegisterErrorInfrastructure(destination, group, consumerOptions, _logger);
             if (consumerOptions.MaxAttempts > 1)
             {
                 adapter.RetryTemplate = BuildRetryTemplate(consumerOptions);
@@ -317,17 +292,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return adapter;
         }
 
-        protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerProperties)
+        protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
         {
-            if (consumerProperties.Multiplex)
+            if (consumerOptions.Multiplex)
             {
                 throw new InvalidOperationException("The Polled MessageSource does not currently support muiltiple queues");
             }
 
-            var source = new RabbitMessageSource(ApplicationContext, ConnectionFactory, destination.Name);
-            source.RawMessageHeader = true;
+            var source = new RabbitMessageSource(ApplicationContext, ConnectionFactory, destination.Name)
+            {
+                RawMessageHeader = true
+            };
             MessageSourceCustomizer?.Configure(source, destination.Name, group);
-            return new PolledConsumerResources(source, RegisterErrorInfrastructure(destination, group, consumerProperties, true, _logger));
+            return new PolledConsumerResources(source, RegisterErrorInfrastructure(destination, group, consumerOptions, true, _logger));
         }
 
         protected override void PostProcessPollableSource(DefaultPollableMessageSource bindingTarget)
@@ -362,16 +339,16 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return base.GetErrorMessageHandler(destination, group, consumerOptions);
         }
 
-        protected override IMessageHandler GetPolledConsumerErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
+        protected override IMessageHandler GetPolledConsumerErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerProperties)
         {
-            var handler = GetErrorMessageHandler(destination, group, consumerOptions);
+            var handler = GetErrorMessageHandler(destination, group, consumerProperties);
             if (handler != null)
             {
                 return handler;
             }
 
-            var superHandler = base.GetErrorMessageHandler(destination, group, consumerOptions);
-            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+            var superHandler = base.GetErrorMessageHandler(destination, group, consumerProperties);
+            var properties = BindingsOptions.GetRabbitConsumerOptions(consumerProperties.BindingName);
             return new DefaultPolledConsumerErrorMessageHandler(superHandler, properties, _logger);
         }
 
@@ -385,7 +362,14 @@ namespace Steeltoe.Stream.Binder.Rabbit
             ProvisioningProvider.CleanAutoDeclareContext(destination, consumerOptions);
         }
 
-        private string GetDeadLetterExchangeName(RabbitCommonOptions properties)
+        private static bool ExpressionInterceptorNeeded(RabbitProducerOptions extendedProperties)
+        {
+            var rkExpression = extendedProperties.RoutingKeyExpression;
+            var delayExpression = extendedProperties.DelayExpression;
+            return (rkExpression != null && _interceptorNeededPattern.IsMatch(rkExpression)) || (delayExpression != null && _interceptorNeededPattern.IsMatch(delayExpression));
+        }
+
+        private static string GetDeadLetterExchangeName(RabbitCommonOptions properties)
         {
             if (properties.DeadLetterExchange == null)
             {
@@ -397,16 +381,47 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
         }
 
-        private bool ExpressionInterceptorNeeded(RabbitProducerOptions extendedProperties)
+        private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpoint, bool expressionInterceptorNeeded, string routingKeyExpression)
         {
-            var rkExpression = extendedProperties.RoutingKeyExpression;
-            var delayExpression = extendedProperties.DelayExpression;
-            return (rkExpression != null && _interceptorNeededPattern.IsMatch(rkExpression)) || (delayExpression != null && _interceptorNeededPattern.IsMatch(delayExpression));
+            if (routingKeyExpression == null)
+            {
+                endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(destinationName, false);
+            }
+            else
+            {
+                if (expressionInterceptorNeeded)
+                {
+                    endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']", true);
+                }
+                else
+                {
+                    endpoint.RoutingKeyExpression = BuildPartitionRoutingExpression(routingKeyExpression, true);
+                }
+            }
+        }
+
+        private void UpdateRoutingKeyExpressionForNonPartitioned(RabbitOutboundEndpoint endpoint, string destinationName, bool expressionInterceptorNeeded, string routingKeyExpression)
+        {
+            if (routingKeyExpression == null)
+            {
+                endpoint.RoutingKey = destinationName;
+            }
+            else
+            {
+                if (expressionInterceptorNeeded)
+                {
+                    endpoint.SetRoutingKeyExpressionString("Headers['" + RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER + "']");
+                }
+                else
+                {
+                    endpoint.RoutingKeyExpression = ExpressionParser.ParseExpression(routingKeyExpression);
+                }
+            }
         }
 
         private void CheckConnectionFactoryIsErrorCapable()
         {
-            if (!(ConnectionFactory is CachingConnectionFactory))
+            if (ConnectionFactory is not CachingConnectionFactory factory)
             {
                 _logger.LogWarning(
                         "Unknown connection factory type, cannot determine error capabilities: "
@@ -414,7 +429,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
             else
             {
-                CachingConnectionFactory ccf = (CachingConnectionFactory)ConnectionFactory;
+                var ccf = factory;
                 if (!ccf.IsPublisherConfirms && !ccf.IsPublisherReturns)
                 {
                     _logger.LogWarning(
@@ -498,8 +513,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public void HandleMessage(IMessage message)
             {
                 var amqpMessage = message.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE);
-                var errorMessage = message as MessagingSupport.ErrorMessage;
-                if (errorMessage == null)
+                if (message is not MessagingSupport.ErrorMessage errorMessage)
                 {
                     _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
                 }
@@ -512,8 +526,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
                 else
                 {
-                    var payload = errorMessage.Payload as MessagingException;
-                    if (payload != null)
+                    if (errorMessage.Payload is MessagingException payload)
                     {
                         var ack = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(payload.FailedMessage);
                         if (ack != null)
@@ -547,9 +560,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message)
             {
-                // message.Headers.Get<>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
-                var errorMessage = message as MessagingSupport.ErrorMessage;
-                if (errorMessage == null)
+                if (message is not MessagingSupport.ErrorMessage errorMessage)
                 {
                     _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
                     throw new ListenerExecutionFailedException("Unexpected error message " + message.ToString(), new RabbitRejectAndDontRequeueException(string.Empty), null);
@@ -573,9 +584,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public RepublishToDlqErrorMessageHandler(RabbitMessageChannelBinder binder, RabbitConsumerOptions properties, ILogger logger)
             {
                 _binder = binder;
-                _template = new RabbitTemplate(_binder.ConnectionFactory);
-                _template.UsePublisherConnection = true;
-                _exchange = _binder.GetDeadLetterExchangeName(properties);
+                _template = new RabbitTemplate(_binder.ConnectionFactory)
+                {
+                    UsePublisherConnection = true
+                };
+                _exchange = RabbitMessageChannelBinder.GetDeadLetterExchangeName(properties);
                 _routingKey = properties.DeadLetterRoutingKey;
                 _frameMaxHeaderoom = properties.FrameMaxHeadroom.Value;
                 _properties = properties;
@@ -587,8 +600,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             public void HandleMessage(IMessage message)
             {
-                var errorMessage = message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] as IMessage;
-                if (errorMessage == null)
+                if (message.Headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] is not IMessage errorMessage)
                 {
                     _logger.LogError("Expected an ErrorMessage, not a " + message.GetType().ToString() + " for: " + message);
                     return;
@@ -628,7 +640,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     accessor.DeliveryMode = _properties.RepublishDeliveryMode.Value;
                 }
 
-                _template.Send(_exchange, _routingKey != null ? _routingKey : accessor.ConsumerQueue, errorMessage);
+                _template.Send(_exchange, _routingKey ?? accessor.ConsumerQueue, errorMessage);
 
                 if (_properties.AcknowledgeMode == AcknowledgeMode.MANUAL)
                 {
@@ -638,7 +650,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 }
             }
 
-            private bool ShouldRepublish(Exception exception)
+            private static bool ShouldRepublish(Exception exception)
             {
                 var cause = exception;
                 while (cause != null && !(cause is RabbitRejectAndDontRequeueException) && !(cause is ImmediateAcknowledgeException))
@@ -654,7 +666,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             private readonly string _prefix;
 
-            private AtomicInteger _index = new AtomicInteger();
+            private readonly AtomicInteger _index = new AtomicInteger();
 
             public RabbitBinderConsumerTagStrategy(string prefix)
             {
@@ -697,9 +709,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             protected override IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint)
             {
-                if (payload is byte[])
+                if (payload is byte[] payloadBytes)
                 {
-                    return Message.Create((byte[])payload, messageProperties);
+                    return Message.Create(payloadBytes, messageProperties);
                 }
                 else
                 {

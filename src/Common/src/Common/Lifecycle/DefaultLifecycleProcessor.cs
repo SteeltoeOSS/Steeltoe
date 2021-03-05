@@ -49,17 +49,13 @@ namespace Steeltoe.Common.Lifecycle
             IsRunning = true;
         }
 
-        public async Task OnClose()
-        {
-            await StopServices();
-            IsRunning = false;
-        }
+        public async Task OnClose() => await Stop();
 
         public void Dispose() => OnClose().Wait();
 
         internal static int GetPhase(ILifecycle bean)
         {
-            return bean is IPhased ? ((IPhased)bean).Phase : 0;
+            return bean is IPhased phased ? phased.Phase : 0;
         }
 
         private async Task StartServices(bool autoStartupOnly)
@@ -67,13 +63,13 @@ namespace Steeltoe.Common.Lifecycle
             var phases = new Dictionary<int, LifecycleGroup>();
             foreach (var service in _lifecyclesServices)
             {
-                if (!autoStartupOnly || (service is ISmartLifecycle && ((ISmartLifecycle)service).IsAutoStartup))
+                if (!autoStartupOnly || (service is ISmartLifecycle lifecycle && lifecycle.IsAutoStartup))
                 {
                     var phase = GetPhase(service);
                     phases.TryGetValue(phase, out var group);
                     if (group == null)
                     {
-                        group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, autoStartupOnly, _logger);
+                        group = new LifecycleGroup(TimeoutPerShutdownPhase, autoStartupOnly, _logger);
                         phases.Add(phase, group);
                     }
 
@@ -101,7 +97,7 @@ namespace Steeltoe.Common.Lifecycle
                 phases.TryGetValue(phase, out var group);
                 if (group == null)
                 {
-                    group = new LifecycleGroup(phase, TimeoutPerShutdownPhase, false, _logger);
+                    group = new LifecycleGroup(TimeoutPerShutdownPhase, false, _logger);
                     phases.Add(phase, group);
                 }
 
@@ -160,8 +156,6 @@ namespace Steeltoe.Common.Lifecycle
 
         private class LifecycleGroup
         {
-            private readonly int _phase;
-
             private readonly int _timeout;
 
             private readonly bool _autoStartupOnly;
@@ -170,11 +164,8 @@ namespace Steeltoe.Common.Lifecycle
 
             private readonly ILogger _logger;
 
-            private int _smartMemberCount;
-
-            public LifecycleGroup(int phase, int timeout, bool autoStartupOnly, ILogger logger = null)
+            public LifecycleGroup(int timeout, bool autoStartupOnly, ILogger logger = null)
             {
-                _phase = phase;
                 _timeout = timeout;
                 _autoStartupOnly = autoStartupOnly;
                 _logger = logger;
@@ -183,10 +174,6 @@ namespace Steeltoe.Common.Lifecycle
             public void Add(ILifecycle bean)
             {
                 _members.Add(new LifecycleGroupMember(bean));
-                if (bean is ISmartLifecycle)
-                {
-                    _smartMemberCount++;
-                }
             }
 
             public async Task Start()
@@ -242,7 +229,7 @@ namespace Steeltoe.Common.Lifecycle
 
             private async Task DoStart(ILifecycle bean)
             {
-                if (bean != null && bean != this && !bean.IsRunning && (!_autoStartupOnly || !(bean is ISmartLifecycle) || ((ISmartLifecycle)bean).IsAutoStartup))
+                if (bean != null && bean != this && !bean.IsRunning && (!_autoStartupOnly || bean is not ISmartLifecycle lifecycle || lifecycle.IsAutoStartup))
                 {
                     try
                     {

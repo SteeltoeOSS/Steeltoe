@@ -49,8 +49,8 @@ namespace Steeltoe.Integration.Rabbit.Support
             STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.SPRING_REPLY_TO_STACK);
         }
 
-        protected DefaultRabbitHeaderMapper(string[] requestHeaderNames, string[] replyHeaderNames)
-            : base(RabbitMessageHeaders.PREFIX, STANDARD_HEADER_NAMES, STANDARD_HEADER_NAMES)
+        protected DefaultRabbitHeaderMapper(string[] requestHeaderNames, string[] replyHeaderNames, ILogger logger)
+            : base(RabbitMessageHeaders.PREFIX, STANDARD_HEADER_NAMES, STANDARD_HEADER_NAMES, logger)
         {
             if (requestHeaderNames != null)
             {
@@ -63,9 +63,9 @@ namespace Steeltoe.Integration.Rabbit.Support
             }
         }
 
-        protected override IDictionary<string, object> ExtractStandardHeaders(IMessageHeaders amqpHeaders)
+        protected override IDictionary<string, object> ExtractStandardHeaders(IMessageHeaders source)
         {
-            return null;
+            return new Dictionary<string, object>();
         }
 
         protected override IDictionary<string, object> ExtractUserDefinedHeaders(IMessageHeaders source)
@@ -101,16 +101,8 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public static string[] OutboundReplyHeaders { get; } = new string[] { "*" };
 
-        public static DefaultRabbitHeaderMapper InboundMapper { get; } = new DefaultRabbitHeaderMapper(InboundRequestHeaders, InboundReplyHeaders);
+        public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new DefaultRabbitHeaderMapper(InboundRequestHeaders, InboundReplyHeaders, logger);
 
-        public static DefaultRabbitHeaderMapper OutboundMapper { get; } = new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders);
-
-        // private void CopyIfExists(Dictionary<string,object> headers, IMessageHeaders target, string Key)
-        // {
-        //    if(headers.ContainsKey(Key) && headers[Key] != null)
-        //    {
-        //        target.Add(Key, headers[Key]);
-        //    }
-        // }
+        public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders, logger);
     }
 }

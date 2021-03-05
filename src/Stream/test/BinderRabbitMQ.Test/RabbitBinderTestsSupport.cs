@@ -27,13 +27,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
 {
     public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
     {
+#pragma warning disable IDE1006 // Naming Styles
         private const string TEST_PREFIX = "bindertest.";
-        private static string _bigExceptionMessage = new string('x', 10_000);
+#pragma warning restore IDE1006 // Naming Styles
+        private static readonly string _bigExceptionMessage = new string('x', 10_000);
 
         private RabbitTestBinder _testBinder;
         private CachingConnectionFactory _cachingConnectionFactory;
 
-        private int maxStackTraceSize;
+        private int _maxStackTraceSize;
 
         public RabbitBinderTests(ITestOutputHelper output)
             : base(output, new XunitLoggerFactory(output))
@@ -42,6 +44,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             Output.WriteLine("running dispose ...");
             Cleanup();
         }
@@ -61,7 +64,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     }
 
                     object bar = null;
-                    int n = 0;
+                    var n = 0;
 
                     while (n++ < 100 && bar == null)
                     {
@@ -79,8 +82,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             if (_testBinder == null)
             {
-                var options = new RabbitOptions();
-                options.PublisherReturns = true;
+                var options = new RabbitOptions
+                {
+                    PublisherReturns = true
+                };
                 _cachingConnectionFactory = GetResource();
                 _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
             }
@@ -90,10 +95,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
         {
-            rabbitConsumerOptions = rabbitConsumerOptions ?? new RabbitConsumerOptions();
+            rabbitConsumerOptions ??= new RabbitConsumerOptions();
             rabbitConsumerOptions.PostProcess();
 
-            bindingOptions = bindingOptions ?? new RabbitBindingOptions();
+            bindingOptions ??= new RabbitBindingOptions();
             bindingOptions.Consumer = rabbitConsumerOptions;
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
 
@@ -107,7 +112,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var rabbitProducerOptions = new RabbitProducerOptions();
             rabbitProducerOptions.PostProcess();
 
-            bindingOptions = bindingOptions ?? new RabbitBindingOptions();
+            bindingOptions ??= new RabbitBindingOptions();
 
             bindingOptions.Producer = rabbitProducerOptions;
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
@@ -121,8 +126,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             if (_testBinder == null)
             {
-                var options = new RabbitOptions();
-                options.PublisherReturns = true;
+                var options = new RabbitOptions
+                {
+                    PublisherReturns = true
+                };
                 _cachingConnectionFactory = GetResource();
                 _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
             }
@@ -161,7 +168,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
             catch (Exception ex)
             {
-                if (ex.StackTrace != null && ex.StackTrace.Length > this.maxStackTraceSize)
+                if (ex.StackTrace != null && ex.StackTrace.Length > _maxStackTraceSize)
                 {
                     return ex;
                 }
@@ -219,7 +226,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public class WrapperAccessor : RabbitOutboundEndpoint
         {
             public WrapperAccessor(IApplicationContext context, RabbitTemplate template)
-                : base(context, template)
+                : base(context, template, null)
             {
             }
 

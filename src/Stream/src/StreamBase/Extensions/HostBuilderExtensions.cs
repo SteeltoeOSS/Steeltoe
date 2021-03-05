@@ -24,7 +24,7 @@ namespace Steeltoe.Stream.Extensions
 
                 services.AddStreamConfiguration(configuration);
                 services.AddCoreServices();
-                services.AddIntegrationServices(configuration);
+                services.AddIntegrationServices();
                 services.AddStreamCoreServices(configuration);
 
                 services.AddBinderServices(configuration);

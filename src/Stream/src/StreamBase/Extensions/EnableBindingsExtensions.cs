@@ -185,7 +185,7 @@ namespace Steeltoe.Stream.Extensions
                 services.AddSingleton(bindableTargetType, (p) =>
                 {
                     var impl = p.GetRequiredService(binding);
-                    var result = bindable.FactoryMethod.Invoke(impl, new object[0]);
+                    var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
                     return result;
                 });
 
@@ -195,7 +195,7 @@ namespace Steeltoe.Stream.Extensions
                     services.AddSingleton(typeof(IMessageChannel), (p) =>
                     {
                         var impl = p.GetRequiredService(binding);
-                        var result = bindable.FactoryMethod.Invoke(impl, new object[0]);
+                        var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
                         return result;
                     });
                 }

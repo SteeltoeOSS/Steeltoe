@@ -300,9 +300,9 @@ namespace Steeltoe.Common.Test.Lifecycle
 
         private static int GetPhase(ILifecycle lifecycle)
         {
-            if (lifecycle is ISmartLifecycle)
+            if (lifecycle is ISmartLifecycle lifecycle1)
             {
-                return ((ISmartLifecycle)lifecycle).Phase;
+                return lifecycle1.Phase;
             }
 
             return 0;
@@ -310,8 +310,8 @@ namespace Steeltoe.Common.Test.Lifecycle
 
         private class TestLifecycleBean : ILifecycle
         {
-            private readonly ConcurrentQueue<ILifecycle> startedBeans;
-            private readonly ConcurrentQueue<ILifecycle> stoppedBeans;
+            private readonly ConcurrentQueue<ILifecycle> _startedBeans;
+            private readonly ConcurrentQueue<ILifecycle> _stoppedBeans;
 
             public static TestLifecycleBean ForStartupTests(ConcurrentQueue<ILifecycle> startedBeans)
             {
@@ -325,17 +325,17 @@ namespace Steeltoe.Common.Test.Lifecycle
 
             public TestLifecycleBean(ConcurrentQueue<ILifecycle> startedBeans, ConcurrentQueue<ILifecycle> stoppedBeans)
             {
-                this.startedBeans = startedBeans;
-                this.stoppedBeans = stoppedBeans;
+                _startedBeans = startedBeans;
+                _stoppedBeans = stoppedBeans;
             }
 
             public bool IsRunning { get; private set; }
 
             public Task Start()
             {
-                if (startedBeans != null)
+                if (_startedBeans != null)
                 {
-                    startedBeans.Enqueue(this);
+                    _startedBeans.Enqueue(this);
                 }
 
                 IsRunning = true;
@@ -344,9 +344,9 @@ namespace Steeltoe.Common.Test.Lifecycle
 
             public Task Stop()
             {
-                if (stoppedBeans != null)
+                if (_stoppedBeans != null)
                 {
-                    stoppedBeans.Enqueue(this);
+                    _stoppedBeans.Enqueue(this);
                 }
 
                 IsRunning = false;
@@ -356,7 +356,7 @@ namespace Steeltoe.Common.Test.Lifecycle
 
         private class TestSmartLifecycleBean : TestLifecycleBean, ISmartLifecycle
         {
-            private readonly int shutdownDelay;
+            private readonly int _shutdownDelay;
 
             public bool IsAutoStartup { get; set; } = true;
 
@@ -375,7 +375,7 @@ namespace Steeltoe.Common.Test.Lifecycle
             public async Task Stop(Action callback)
             {
                 await Stop();
-                var delay = shutdownDelay;
+                var delay = _shutdownDelay;
                 await Task.Delay(delay);
                 callback();
             }
@@ -384,7 +384,7 @@ namespace Steeltoe.Common.Test.Lifecycle
                 : base(startedBeans, stoppedBeans)
             {
                 Phase = phase;
-                this.shutdownDelay = shutdownDelay;
+                _shutdownDelay = shutdownDelay;
             }
         }
     }

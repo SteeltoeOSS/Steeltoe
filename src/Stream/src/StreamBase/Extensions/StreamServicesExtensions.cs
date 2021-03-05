@@ -99,7 +99,7 @@ namespace Steeltoe.Stream.Extensions
 
             services.AddCoreServices();
 
-            services.AddIntegrationServices(configuration);
+            services.AddIntegrationServices();
 
             services.AddBinderServices(configuration);
 

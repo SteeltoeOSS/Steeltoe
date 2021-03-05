@@ -27,11 +27,15 @@ namespace Steeltoe.Integration.Rabbit.Outbound
             var context = new GenericApplicationContext(services, config);
 
             var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
-            var ampqTemplate = new TestRabbitTemplate();
-            ampqTemplate.ConnectionFactory = connectionFactory.Object;
-            var endpoint = new RabbitOutboundEndpoint(context, ampqTemplate);
-            endpoint.ExchangeName = "foo";
-            endpoint.RoutingKey = "bar";
+            var ampqTemplate = new TestRabbitTemplate
+            {
+                ConnectionFactory = connectionFactory.Object
+            };
+            var endpoint = new RabbitOutboundEndpoint(context, ampqTemplate, null)
+            {
+                ExchangeName = "foo",
+                RoutingKey = "bar"
+            };
             endpoint.SetDelay(42);
             endpoint.Initialize();
 

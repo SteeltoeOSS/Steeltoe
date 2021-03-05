@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Extensions
             container.AddOptions();
             container.AddLogging((b) => b.AddConsole());
             var config = new ConfigurationBuilder().Build();
-            container.AddIntegrationServices(config);
+            container.AddIntegrationServices();
             var serviceProvider = container.BuildServiceProvider();
 
             Assert.NotNull(serviceProvider.GetService<DefaultDatatypeChannelMessageConverter>());

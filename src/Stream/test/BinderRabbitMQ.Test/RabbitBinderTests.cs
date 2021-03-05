@@ -1203,8 +1203,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAutoBindDLQwithRepublish()
         {
-            this.maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
-            Assert.True(this.maxStackTraceSize > 0);
+            this._maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
+            Assert.True(this._maxStackTraceSize > 0);
 
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(rabbitBindingsOptions);
@@ -1220,7 +1220,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "dlqPubTest";
             var exception = BigCause();
 
-            Assert.True(exception.StackTrace.Length > this.maxStackTraceSize);
+            Assert.True(exception.StackTrace.Length > this._maxStackTraceSize);
             var dontRepublish = new AtomicBoolean();
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {

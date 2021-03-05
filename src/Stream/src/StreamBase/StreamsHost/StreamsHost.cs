@@ -17,9 +17,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.StreamsHost
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class StreamsHost : IHost
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+    public sealed class StreamsHost : IHost
     {
         public static IHostBuilder CreateDefaultBuilder<T>() => new StreamsHostBuilder<T>(Host.CreateDefaultBuilder());
 
@@ -32,7 +30,7 @@ namespace Steeltoe.Stream.StreamsHost
 
         public IServiceProvider Services => _host.Services;
 
-        public IHost _host;
+        private readonly IHost _host;
 
         public void Dispose()
         {
@@ -45,7 +43,7 @@ namespace Steeltoe.Stream.StreamsHost
             lifecycleProcessor.OnRefresh();
             var processor = _host.Services.GetRequiredService<StreamListenerAttributeProcessor>();
             processor.AfterSingletonsInstantiated();
-            return _host.StartAsync();
+            return _host.StartAsync(cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken = default)
@@ -54,7 +52,7 @@ namespace Steeltoe.Stream.StreamsHost
             lifecycleProcessor.Stop();
 
             // Stop that thing
-            return _host.StopAsync();
+            return _host.StopAsync(cancellationToken);
         }
     }
 
@@ -75,7 +73,7 @@ namespace Steeltoe.Stream.StreamsHost
 
                   services.AddStreamConfiguration(configuration);
                   services.AddCoreServices();
-                  services.AddIntegrationServices(configuration);
+                  services.AddIntegrationServices();
                   services.AddStreamCoreServices(configuration);
 
                   services.AddBinderServices(configuration);
@@ -129,7 +127,4 @@ namespace Steeltoe.Stream.StreamsHost
             return this;
         }
     }
-
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-
 }

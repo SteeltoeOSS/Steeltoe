@@ -25,10 +25,10 @@ namespace Steeltoe.Integration.Handler
     {
         private readonly object _targetObject;
         private readonly MethodInfo _method;
+        private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
+        private readonly IInvocableHandlerMethod _invocableHandlerMethod;
         private IConversionService _conversionService;
         private bool _isRunning = false;
-        private IMessageHandlerMethodFactory _messageHandlerMethodFactory;
-        private IInvocableHandlerMethod _invocableHandlerMethod;
 
         public MethodInvokingMessageProcessor(IApplicationContext context, object targetObject, MethodInfo method)
             : base(context)
@@ -85,7 +85,9 @@ namespace Steeltoe.Integration.Handler
             try
             {
                 var result = _invocableHandlerMethod.Invoke(message);
+#pragma warning disable S2219 // Runtime type checking should be simplified
                 if (result != null && typeof(T).IsAssignableFrom(result.GetType()))
+#pragma warning restore S2219 // Runtime type checking should be simplified
                 {
                     return (T)ConversionService.Convert(result, result?.GetType(), typeof(T));
                 }
@@ -98,6 +100,21 @@ namespace Steeltoe.Integration.Handler
             {
                 throw new MessageHandlingException(message, e);
             }
+        }
+
+        private static MethodInfo FindAnnotatedMethod(object target, Type attribute)
+        {
+            var results = AttributeUtils.FindMethodsWithAttribute(
+                target.GetType(),
+                attribute,
+                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            if (results.Count != 1)
+            {
+                throw new InvalidOperationException("Multiple methods with attribute: " + attribute.ToString() + " exist on type: " + target.GetType());
+            }
+
+            return results[0];
         }
 
         private IMessageHandlerMethodFactory ConfigureMessageHandlerFactory()
@@ -140,21 +157,6 @@ namespace Steeltoe.Integration.Handler
             factory.CustomArgumentResolvers = customArgumentResolvers;
             factory.Initialize();
             return factory;
-        }
-
-        private MethodInfo FindAnnotatedMethod(object target, Type attribute)
-        {
-            var results = AttributeUtils.FindMethodsWithAttribute(
-                target.GetType(),
-                attribute,
-                BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-
-            if (results.Count != 1)
-            {
-                throw new InvalidOperationException("Multiple methods with attribute: " + attribute.ToString() + " exist on type: " + target.GetType());
-            }
-
-            return results[0];
         }
     }
 }

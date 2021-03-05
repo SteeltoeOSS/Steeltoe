@@ -68,19 +68,19 @@ namespace Steeltoe.Integration.Extensions
         {
             if (string.IsNullOrEmpty(channelName))
             {
-                throw new ArgumentException(nameof(channelName));
+                throw new ArgumentNullException(nameof(channelName));
             }
 
             services.RegisterService(channelName, typeof(IMessageChannel));
             services.AddSingleton<IMessageChannel>((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
-                var chan = new QueueChannel(context);
-                chan.ServiceName = channelName;
-                if (configure != null)
+                var chan = new QueueChannel(context)
                 {
-                    configure(p, chan);
-                }
+                    ServiceName = channelName
+                };
+
+                configure?.Invoke(p, chan);
 
                 return chan;
             });
@@ -104,19 +104,19 @@ namespace Steeltoe.Integration.Extensions
         {
             if (string.IsNullOrEmpty(channelName))
             {
-                throw new ArgumentException(nameof(channelName));
+                throw new ArgumentNullException(nameof(channelName));
             }
 
             services.RegisterService(channelName, typeof(IMessageChannel));
             services.AddSingleton<IMessageChannel>((p) =>
             {
                 var context = p.GetService<IApplicationContext>();
-                var chan = new DirectChannel(context);
-                chan.ServiceName = channelName;
-                if (configure != null)
+                var chan = new DirectChannel(context)
                 {
-                    configure(p, chan);
-                }
+                    ServiceName = channelName
+                };
+
+                configure?.Invoke(p, chan);
 
                 return chan;
             });
@@ -144,7 +144,7 @@ namespace Steeltoe.Integration.Extensions
             return services;
         }
 
-        public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddIntegrationServices(this IServiceCollection services)
         {
             services.AddSingleton<IIntegrationServices, IntegrationServices>();
             services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
@@ -210,9 +210,7 @@ namespace Steeltoe.Integration.Extensions
         private static T GetRequiredChannel<T>(IApplicationContext context, string name)
             where T : class
         {
-            var result = context.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.ServiceName == name) as T;
-
-            if (result == null)
+            if (context.GetServices<IMessageChannel>().FirstOrDefault((chan) => chan.ServiceName == name) is not T result)
             {
                 throw new InvalidOperationException("Unable to resolve channel:" + name);
             }
