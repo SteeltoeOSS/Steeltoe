@@ -58,7 +58,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         {
             if (!Transacted.HasValue)
             {
-                Transacted = defaultOptions != null ? defaultOptions.Transacted : false;
+                Transacted = defaultOptions?.Transacted ?? false;
             }
 
             if (!AcknowledgeMode.HasValue)
