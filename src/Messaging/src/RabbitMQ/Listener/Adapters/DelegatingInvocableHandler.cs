@@ -54,10 +54,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             var result = handler.Invoke(message, providedArgs);
             if (!message.Headers.TryGetValue(RabbitMessageHeaders.REPLY_TO, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
             {
-                return new InvocationResult(result, replyTo, handler.Method.ReturnType, handler.Bean, handler.Method);
+                return new InvocationResult(result, replyTo, handler.Method.ReturnType, handler.Handler, handler.Method);
             }
 
-            return new InvocationResult(result, null, handler.Method.ReturnType, handler.Bean, handler.Method);
+            return new InvocationResult(result, null, handler.Method.ReturnType, handler.Handler, handler.Method);
         }
 
         public string GetMethodNameFor(object payload)
@@ -86,7 +86,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             if (handler != null)
             {
                 _handlerSendTo.TryGetValue(handler, out var sendto);
-                return new InvocationResult(result, sendto, handler.Method.ReturnType, handler.Bean, handler.Method);
+                return new InvocationResult(result, sendto, handler.Method.ReturnType, handler.Handler, handler.Method);
             }
 
             return null;

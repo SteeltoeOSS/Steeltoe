@@ -283,9 +283,9 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
             if (oldHandlerMethod != null && !oldHandlerMethod.Equals(newHandlerMethod))
             {
-                throw new InvalidOperationException("Ambiguous mapping found. Cannot map '" + newHandlerMethod.Bean +
+                throw new InvalidOperationException("Ambiguous mapping found. Cannot map '" + newHandlerMethod.Handler +
                         "' bean method \n" + newHandlerMethod + "\nto " + mapping + ": There is already '" +
-                        oldHandlerMethod.Bean + "' bean method\n" + oldHandlerMethod + " mapped.");
+                        oldHandlerMethod.Handler + "' bean method\n" + oldHandlerMethod + " mapped.");
             }
 
             _handlerMethods[mapping] = newHandlerMethod;
@@ -421,7 +421,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
         protected virtual InvocableHandlerMethod GetExceptionHandlerMethod(HandlerMethod handlerMethod, Exception exception)
         {
-            var beanType = handlerMethod.BeanType;
+            var beanType = handlerMethod.HandlerType;
             _exceptionHandlerCache.TryGetValue(beanType, out var resolver);
             if (resolver == null)
             {
@@ -432,7 +432,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
             var method = resolver.ResolveMethod(exception);
             if (method != null)
             {
-                return new InvocableHandlerMethod(handlerMethod.Bean, method);
+                return new InvocableHandlerMethod(handlerMethod.Handler, method);
             }
 
             return null;
