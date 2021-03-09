@@ -94,9 +94,9 @@ namespace Steeltoe.Integration.Dispatcher
                             .FromMessage(message)
                             .PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize)
                             .Build();
-                    if (message is IMessageDecorator)
+                    if (message is IMessageDecorator decorator)
                     {
-                        messageToSend = ((IMessageDecorator)message).DecorateMessage(messageToSend);
+                        messageToSend = decorator.DecorateMessage(messageToSend);
                     }
                 }
 
@@ -147,7 +147,7 @@ namespace Steeltoe.Integration.Dispatcher
                         return;
                     }
 
-                    if (e is MessagingException && ((MessagingException)e).FailedMessage == null)
+                    if (e is MessagingException exception && exception.FailedMessage == null)
                     {
                         throw new MessagingException(message, "Failed to handle Message", e);
                     }

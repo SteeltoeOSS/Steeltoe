@@ -29,7 +29,7 @@ namespace Steeltoe.Integration.Handler
 
         public override string ComponentType => "service-activator";
 
-        public virtual bool IsRunning => !(_processor is ILifecycle) || ((ILifecycle)_processor).IsRunning;
+        public virtual bool IsRunning => _processor is not ILifecycle lifecycle || lifecycle.IsRunning;
 
         public override void Initialize()
         {
@@ -38,9 +38,9 @@ namespace Steeltoe.Integration.Handler
 
         public virtual Task Start()
         {
-            if (_processor is ILifecycle)
+            if (_processor is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_processor).Start();
+                return lifecycle.Start();
             }
 
             return Task.CompletedTask;
@@ -48,9 +48,9 @@ namespace Steeltoe.Integration.Handler
 
         public virtual Task Stop()
         {
-            if (_processor is ILifecycle)
+            if (_processor is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_processor).Stop();
+                return lifecycle.Stop();
             }
 
             return Task.CompletedTask;
@@ -62,9 +62,9 @@ namespace Steeltoe.Integration.Handler
                     + (ComponentName == null ? string.Empty : " (" + ComponentName + ")");
         }
 
-        protected override object HandleRequestMessage(IMessage message)
+        protected override object HandleRequestMessage(IMessage requestMessage)
         {
-            return _processor.ProcessMessage(message);
+            return _processor.ProcessMessage(requestMessage);
         }
     }
 }

@@ -17,12 +17,7 @@ namespace Steeltoe.Integration.Handler
         public ReplyProducingMessageHandlerWrapper(IApplicationContext context, IMessageHandler target)
             : base(context)
         {
-            if (target == null)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-
-            _target = target;
+            _target = target ?? throw new ArgumentNullException(nameof(target));
         }
 
         public Task Start()

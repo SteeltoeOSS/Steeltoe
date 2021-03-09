@@ -175,15 +175,7 @@ namespace Steeltoe.Integration.Mapping
 
         protected abstract void PopulateUserDefinedHeader(string headerName, object headerValue, T target);
 
-        private static bool IsMessageChannel(object headerValue)
-        {
-            if (headerValue is IMessageChannel)
-            {
-                return true;
-            }
-
-            return false;
-        }
+        private static bool IsMessageChannel(object headerValue) => headerValue is IMessageChannel;
 
         private void FromHeaders(IMessageHeaders headers, T target, IHeaderMatcher headerMatcher)
         {

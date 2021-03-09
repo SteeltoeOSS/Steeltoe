@@ -42,7 +42,7 @@ namespace Steeltoe.Stream.StreamsHost
             var lifecycleProcessor = _host.Services.GetRequiredService<ILifecycleProcessor>();
             lifecycleProcessor.OnRefresh();
             var processor = _host.Services.GetRequiredService<StreamListenerAttributeProcessor>();
-            processor.AfterSingletonsInstantiated();
+            processor.Initialize();
             return _host.StartAsync(cancellationToken);
         }
 

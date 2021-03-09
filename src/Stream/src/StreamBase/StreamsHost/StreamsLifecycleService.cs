@@ -37,7 +37,7 @@ namespace Steeltoe.Stream.StreamsHost
             await lifecycleProcessor.OnRefresh();
             var attributeProcessor = _applicationContext.GetService<StreamListenerAttributeProcessor>();
 
-            attributeProcessor.AfterSingletonsInstantiated();
+            attributeProcessor.Initialize();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

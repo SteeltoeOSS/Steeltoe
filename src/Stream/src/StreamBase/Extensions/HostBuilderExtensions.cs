@@ -15,9 +15,10 @@ namespace Steeltoe.Stream.Extensions
     {
         public static IHostBuilder AddStreamsServices<T>(this IHostBuilder builder)
         {
-            return builder.ConfigureServices(services =>
+            return builder.ConfigureServices((context, services) =>
             {
-                var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
+                var configuration = context.Configuration;
+
                 services.AddOptions();
 
                 services.AddSingleton<IApplicationContext, GenericApplicationContext>();

@@ -16,7 +16,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
     public class RabbitProxy
     {
         private readonly ILogger<RabbitProxy> _logger;
-        private TcpListener _listener = null;
+        private readonly TcpListener _listener = null;
         private volatile bool _run = true;
 
         public RabbitProxy(ILogger<RabbitProxy> logger)

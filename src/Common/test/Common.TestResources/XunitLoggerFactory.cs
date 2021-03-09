@@ -6,9 +6,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder.Rabbit
+namespace Steeltoe.Common
 {
-    internal class XunitLoggerFactory : ILoggerFactory
+    public sealed class XunitLoggerFactory : ILoggerFactory
     {
         private readonly ITestOutputHelper _output;
         private readonly ILoggerFactory _factory;
@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+
         }
     }
 }

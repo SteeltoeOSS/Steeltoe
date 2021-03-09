@@ -6,9 +6,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Stream.Binder.Rabbit
+namespace Steeltoe.Common
 {
-    internal class XunitLogger : ILogger
+    public class XunitLogger : ILogger
     {
         private readonly ITestOutputHelper _output;
         private readonly ILoggerFactory _factory;

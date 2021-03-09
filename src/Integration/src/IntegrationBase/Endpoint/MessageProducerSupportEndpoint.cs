@@ -148,7 +148,7 @@ namespace Steeltoe.Integration.Endpoint
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("'errorMessageStrategy' cannot be null");
+                    throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
                 }
 
                 _errorMessageStrategy = value;

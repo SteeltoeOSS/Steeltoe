@@ -2,16 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Castle.Core.Internal;
 using Microsoft.Extensions.Configuration;
-using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using RabbitCore = Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
@@ -296,8 +292,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 {
                     yield return new Tuple<string, string, string>(inputBindingsKey + ":" + child.Key, value?.ToString(), child.Value);
                 }
-
-                // Assert.True(child.Value.Equals(value.ToString(), StringComparison.OrdinalIgnoreCase), $"{child.Key} expected to be {child.Value} type {child.Value.GetType().Name} but was {value} {value.GetType().Name}");
             }
         }
     }

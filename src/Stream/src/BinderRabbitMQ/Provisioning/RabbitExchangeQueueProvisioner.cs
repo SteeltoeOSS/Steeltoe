@@ -45,16 +45,15 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
-            : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+            : this(connectionFactory, new List<IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
         {
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers, BinderConfig.RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<IDeclarableCustomizer> customizers, RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
         {
             Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
 
-            // AutoDeclareContext.refresh();
             var serviceProvider = new ServiceCollection().BuildServiceProvider();
             _autoDeclareContext = applicationContext;
             _logger = logger;
@@ -68,9 +67,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private bool _notOurAdminException = true; // Should be set by onApplicationEvent
 
-        private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
+        private List<IDeclarableCustomizer> Customizers { get; }
 
-        private BinderConfig.RabbitBindingsOptions Options { get; }
+        private RabbitBindingsOptions Options { get; }
 
         public static string ConstructDLQName(string name)
         {
@@ -102,9 +101,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     AutoBindDLQ(baseQueueName, baseQueueName, producerProperties);
                     if (producerProperties.BindQueue.Value)
                     {
-                        var queue = new RabbitConfig.Queue(baseQueueName, true, false, false, GetQueueArgs(baseQueueName, producerProperties, false));
+                        var queue = new Queue(baseQueueName, true, false, false, GetQueueArgs(baseQueueName, producerProperties, false));
                         DeclareQueue(baseQueueName, queue);
-                        List<string> routingKeys = BindingRoutingKeys(producerProperties);
+                        var routingKeys = BindingRoutingKeys(producerProperties);
                         if (routingKeys == null || routingKeys.Count == 0)
                         {
                             binding = NotPartitionedBinding(exchange, queue, null, producerProperties);
@@ -128,7 +127,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                         AutoBindDLQ(baseQueueName, baseQueueName + partitionSuffix, producerProperties);
                         if (producerProperties.BindQueue.Value)
                         {
-                            var queue = new RabbitConfig.Queue(partitionQueueName, true, false, false, GetQueueArgs(partitionQueueName, producerProperties, false));
+                            var queue = new Queue(partitionQueueName, true, false, false, GetQueueArgs(partitionQueueName, producerProperties, false));
                             DeclareQueue(queue.QueueName, queue);
                             var prefix = producerProperties.Prefix;
                             var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
@@ -215,7 +214,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             Base64UrlNamingStrategy anonQueueNameGenerator = null;
             if (anonymous)
             {
-                anonQueueNameGenerator = new Base64UrlNamingStrategy(consumerProperties.AnonymousGroupPrefix == null ? string.Empty : consumerProperties.AnonymousGroupPrefix);
+                anonQueueNameGenerator = new Base64UrlNamingStrategy(consumerProperties.AnonymousGroupPrefix ?? string.Empty);
             }
 
             string baseQueueName;
@@ -240,7 +239,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             var queueName = ApplyPrefix(prefix, baseQueueName);
             var partitioned = !anonymous && options.IsPartitioned;
             var durable = !anonymous && consumerProperties.DurableSubscription.Value;
-            RabbitConfig.Queue queue;
+            Queue queue;
             if (anonymous)
             {
                 var anonQueueName = queueName;
@@ -256,11 +255,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
                 if (durable)
                 {
-                    queue = new RabbitConfig.Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false));
+                    queue = new Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false));
                 }
                 else
                 {
-                    queue = new RabbitConfig.Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
+                    queue = new Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
                 }
             }
 
@@ -294,9 +293,9 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             string name,
             string routingKey,
             IConsumerOptions options,
-            RabbitConfig.IExchange exchange,
+            IExchange exchange,
             bool partitioned,
-            RabbitConfig.Queue queue)
+            Queue queue)
         {
             var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
             if (partitioned)
@@ -311,10 +310,10 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
 
         private RabbitConfig.IBinding PartitionedBinding(
             string destination,
-            RabbitConfig.IExchange exchange,
-            RabbitConfig.Queue queue,
+            IExchange exchange,
+            Queue queue,
             string rk,
-            BinderConfig.RabbitCommonOptions extendedProperties,
+            RabbitCommonOptions extendedProperties,
             int index)
         {
             var bindingKey = rk;
@@ -330,39 +329,41 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 arguments.Add(entry.Key, entry.Value);
             }
 
-            if (exchange is RabbitConfig.TopicExchange)
+            switch (exchange)
             {
-                var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.TopicExchange)exchange).With(bindingKey);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else if (exchange is RabbitConfig.DirectExchange)
-            {
-                var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.DirectExchange)exchange).With(bindingKey);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else if (exchange is RabbitConfig.FanoutExchange)
-            {
-                throw new ProvisioningException("A fanout exchange is not appropriate for partitioned apps");
-            }
-            else if (exchange is RabbitConfig.HeadersExchange)
-            {
-                var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else
-            {
-                throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
+                case TopicExchange topic:
+                    {
+                        var binding = BindingBuilder.Bind(queue).To(topic).With(bindingKey);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                case DirectExchange direct:
+                    {
+                        var binding = BindingBuilder.Bind(queue).To(direct).With(bindingKey);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                case FanoutExchange:
+                    throw new ProvisioningException("A fanout exchange is not appropriate for partitioned apps");
+                case HeadersExchange:
+                    {
+                        var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                default:
+                    throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
             }
         }
 
         private RabbitConfig.IBinding NotPartitionedBinding(
-            RabbitConfig.IExchange exchange,
-            RabbitConfig.Queue queue,
+            IExchange exchange,
+            Queue queue,
             string rk,
-            BinderConfig.RabbitCommonOptions extendedProperties)
+            RabbitCommonOptions extendedProperties)
         {
             var routingKey = rk;
             if (routingKey == null)
@@ -376,37 +377,42 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 arguments.Add(entry.Key, entry.Value);
             }
 
-            if (exchange is RabbitConfig.TopicExchange)
+            switch (exchange)
             {
-                var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.TopicExchange)exchange).With(routingKey);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else if (exchange is RabbitConfig.DirectExchange)
-            {
-                var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.DirectExchange)exchange).With(routingKey);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else if (exchange is RabbitConfig.FanoutExchange)
-            {
-                var binding = RabbitConfig.BindingBuilder.Bind(queue).To((RabbitConfig.FanoutExchange)exchange);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else if (exchange is RabbitConfig.HeadersExchange)
-            {
-                var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
-                DeclareBinding(queue.QueueName, binding);
-                return binding;
-            }
-            else
-            {
-                throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
+                case TopicExchange topic:
+                    {
+                        var binding = BindingBuilder.Bind(queue).To(topic).With(routingKey);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                case DirectExchange direct:
+                    {
+                        var binding = BindingBuilder.Bind(queue).To(direct).With(routingKey);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                case FanoutExchange fanout:
+                    {
+                        var binding = BindingBuilder.Bind(queue).To(fanout);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                case HeadersExchange:
+                    {
+                        var binding = new RabbitConfig.Binding(queue.QueueName + "." + exchange.ExchangeName + ".binding", queue.QueueName, DestinationType.QUEUE, exchange.ExchangeName, string.Empty, arguments);
+                        DeclareBinding(queue.QueueName, binding);
+                        return binding;
+                    }
+
+                default:
+                    throw new ProvisioningException("Cannot bind to a " + exchange.Type + " exchange");
             }
         }
 
-        private List<string> BindingRoutingKeys(BinderConfig.RabbitCommonOptions extendedProperties)
+        private List<string> BindingRoutingKeys(RabbitCommonOptions extendedProperties)
         {
             /*
              * When the delimiter is null, we get a String[1] containing the original.
@@ -431,11 +437,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             return new List<string>(trimmed);
         }
 
-        private void AutoBindDLQ(string baseQueueName, string routingKey, BinderConfig.RabbitCommonOptions properties)
+        private void AutoBindDLQ(string baseQueueName, string routingKey, RabbitCommonOptions properties)
         {
             var autoBindDlq = properties.AutoBindDlq.Value;
 
-            // this.logger.debug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
+            _logger.LogDebug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
             if (autoBindDlq)
             {
                 string dlqName;
@@ -448,12 +454,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                     dlqName = properties.DeadLetterQueueName;
                 }
 
-                var dlq = new RabbitConfig.Queue(dlqName, true, false, false, GetQueueArgs(dlqName, properties, true));
+                var dlq = new Queue(dlqName, true, false, false, GetQueueArgs(dlqName, properties, true));
                 DeclareQueue(dlqName, dlq);
                 var dlxName = GetDeadLetterExchangeName(properties);
                 if (properties.DeclareDlx.Value)
                 {
-                    DeclareExchange(dlxName, new RabbitConfig.ExchangeBuilder(dlxName, properties.DeadLetterExchangeType).Durable(true).Build());
+                    DeclareExchange(dlxName, new ExchangeBuilder(dlxName, properties.DeadLetterExchangeType).Durable(true).Build());
                 }
 
                 var arguments = new Dictionary<string, object>();
@@ -461,11 +467,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
                 properties.DlqBindingArguments?.ToList().
                     ForEach(entry => arguments.Add(entry.Key, entry.Value));
 
-                var dlRoutingKey = properties.DeadLetterRoutingKey == null ? routingKey : properties.DeadLetterRoutingKey;
+                var dlRoutingKey = properties.DeadLetterRoutingKey ?? routingKey;
                 var dlBindingName = dlq.QueueName + "." + dlxName + "." + dlRoutingKey + ".binding";
                 var dlqBinding = new RabbitConfig.Binding(dlBindingName, dlq.QueueName, DestinationType.QUEUE, dlxName, dlRoutingKey, arguments);
                 DeclareBinding(dlqName, dlqBinding);
-                if (properties is BinderConfig.RabbitConsumerOptions && ((BinderConfig.RabbitConsumerOptions)properties).RepublishToDlq.Value)
+                if (properties is RabbitConsumerOptions options && options.RepublishToDlq.Value)
                 {
                     /*
                      * Also bind with the base queue name when republishToDlq is used, which does not know about partitioning
@@ -476,11 +482,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        private string GetDeadLetterExchangeName(BinderConfig.RabbitCommonOptions properties)
+        private string GetDeadLetterExchangeName(RabbitCommonOptions properties)
         {
             if (properties.DeadLetterExchange == null)
             {
-                return properties.Prefix + BinderConfig.RabbitCommonOptions.DEAD_LETTER_EXCHANGE;
+                return properties.Prefix + RabbitCommonOptions.DEAD_LETTER_EXCHANGE;
             }
             else
             {
@@ -488,12 +494,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        private void DeclareQueue(string beanName, RabbitConfig.Queue queueArg)
+        private void DeclareQueue(string beanName, Queue queueArg)
         {
             var queue = queueArg;
             foreach (var customizer in Customizers)
             {
-                queue = (RabbitConfig.Queue)customizer.Apply(queue);
+                queue = (Queue)customizer.Apply(queue);
             }
 
             try
@@ -502,13 +508,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available");
+                _logger.LogDebug("Declaration of queue: " + queue.QueueName + " deferred - connection not available " + e.Message);
             }
             catch (Exception e)
             {
-                if (this._notOurAdminException)
+                if (_notOurAdminException)
                 {
-                    this._notOurAdminException = false;
+                    _notOurAdminException = false;
                     throw;
                 }
 
@@ -518,7 +524,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             AddToAutoDeclareContext(beanName, queue);
         }
 
-        private Dictionary<string, object> GetQueueArgs(string queueName, BinderConfig.RabbitCommonOptions properties, bool isDlq)
+        private Dictionary<string, object> GetQueueArgs(string queueName, RabbitCommonOptions properties, bool isDlq)
         {
             var args = new Dictionary<string, object>();
             if (!isDlq)
@@ -567,7 +573,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             return args;
         }
 
-        private void AddAdditionalArgs(Dictionary<string, object> args, BinderConfig.RabbitCommonOptions properties, bool isDlq)
+        private void AddAdditionalArgs(Dictionary<string, object> args, RabbitCommonOptions properties, bool isDlq)
         {
             var expires = isDlq ? properties.DlqExpires : properties.Expires;
             var maxLength = isDlq ? properties.DlqMaxLength : properties.MaxLength;
@@ -634,11 +640,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        private RabbitConfig.IExchange BuildExchange(BinderConfig.RabbitCommonOptions properties, string exchangeName)
+        private IExchange BuildExchange(RabbitCommonOptions properties, string exchangeName)
         {
             try
             {
-                var builder = new RabbitConfig.ExchangeBuilder(exchangeName, properties.ExchangeType);
+                var builder = new ExchangeBuilder(exchangeName, properties.ExchangeType);
                 builder.Durable(properties.ExchangeDurable.GetValueOrDefault());
                 if (properties.ExchangeAutoDelete.GetValueOrDefault())
                 {
@@ -658,12 +664,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        private void DeclareExchange(string rootName, RabbitConfig.IExchange exchangeArg)
+        private void DeclareExchange(string rootName, IExchange exchangeArg)
         {
             var exchange = exchangeArg;
             foreach (var customizer in Customizers)
             {
-                exchange = (RabbitConfig.IExchange)customizer.Apply(exchange);
+                exchange = (IExchange)customizer.Apply(exchange);
             }
 
             try
@@ -672,13 +678,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                _logger?.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available");
+                _logger?.LogDebug("Declaration of exchange: " + exchange.ExchangeName + " deferred - connection not available; " + e.Message);
             }
             catch (Exception e)
             {
-                if (this._notOurAdminException)
+                if (_notOurAdminException)
                 {
-                    this._notOurAdminException = false;
+                    _notOurAdminException = false;
                     throw;
                 }
 
@@ -713,13 +719,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
             catch (RabbitConnectException e)
             {
-                _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available");
+                _logger.LogDebug("Declaration of binding: " + rootName + ".binding deferred - connection not available; " + e.Message);
             }
             catch (Exception e)
             {
-                if (this._notOurAdminException)
+                if (_notOurAdminException)
                 {
-                    this._notOurAdminException = false;
+                    _notOurAdminException = false;
                     throw;
                 }
 
@@ -743,13 +749,13 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         // }
         private class RabbitProducerDestination : IProducerDestination
         {
-            public RabbitConfig.IExchange Exchange { get; }
+            public IExchange Exchange { get; }
 
             public string Name => Exchange.ExchangeName;
 
             public RabbitConfig.IBinding Binding { get; }
 
-            public RabbitProducerDestination(RabbitConfig.IExchange exchange, RabbitConfig.IBinding binding)
+            public RabbitProducerDestination(IExchange exchange, RabbitConfig.IBinding binding)
             {
                 if (exchange == null)
                 {

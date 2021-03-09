@@ -54,10 +54,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestGetValue()
         {
-            var props1 = new Dictionary<string, string>();
-            props1.Add("key1", "value1");
-            props1.Add("key2", "value2");
-            props1.Add("key3", "value3");
+            var props1 = new Dictionary<string, string>
+            {
+                { "key1", "value1" },
+                { "key2", "value2" },
+                { "key3", "value3" }
+            };
 
             object bean = new TestBean("name1", new TestBean("name2", null, "Description 2", 15, props1), "description 1", 6, props1);
 
@@ -81,8 +83,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public void TestGetValuePerformance()
         {
-            var map = new Dictionary<string, string>();
-            map.Add("key", "value");
+            var map = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
             var context = new StandardEvaluationContext(map);
 
             var spelExpressionParser = new SpelExpressionParser();

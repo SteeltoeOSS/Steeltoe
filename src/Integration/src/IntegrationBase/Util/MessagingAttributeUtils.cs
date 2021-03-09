@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Util
     {
         public static bool HasValue(object value)
         {
-            return value != null && (!(value is string) || (!string.IsNullOrEmpty((string)value)))
+            return value != null && (value is not string strVal || !string.IsNullOrEmpty(strVal))
                 && (!value.GetType().IsArray || ((Array)value).Length > 0);
         }
 
@@ -37,7 +37,7 @@ namespace Steeltoe.Integration.Util
         public static string EndpointIdValue(MethodInfo method)
         {
             var endpointId = method.GetCustomAttribute<EndpointIdAttribute>();
-            return endpointId != null ? endpointId.Id : null;
+            return endpointId?.Id;
         }
 
         internal static object FindMessagePartAttribute(object[] attributes, bool payloads)

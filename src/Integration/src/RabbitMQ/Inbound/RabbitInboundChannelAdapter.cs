@@ -41,9 +41,9 @@ namespace Steeltoe.Integration.Rabbit.Inbound
 
             if (listenerContainer.MessageListener != null)
             {
-                throw new ArgumentException("The listenerContainer provided to an RabbitMQ inbound Channel Adapter " +
+                throw new ArgumentException("The listenerContainer provided to a RabbitMQ inbound Channel Adapter " +
                             "must not have a MessageListener configured since the adapter " +
-                            "configure its own listener implementation.");
+                            "configures its own listener implementation.");
             }
 
             _logger = logger;
@@ -64,10 +64,6 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         public IBatchingStrategy BatchingStrategy { get; set; } = new SimpleBatchingStrategy(0, 0, 0L);
 
         public bool BindSourceMessage { get; set; }
-
-        /* Todo: Do we need this?
-           private volatile RabbitHeaderMapper HeaderMapper = DefaultAmqpHeaderMapper.inboundMapper();
-        */
 
         private AbstractMessageListenerContainer MessageListenerContainer { get; }
 
@@ -106,8 +102,8 @@ namespace Steeltoe.Integration.Rabbit.Inbound
         // }
         private void SetAttributesIfNecessary(IMessage original, IMessage endMessage)
         {
-            bool needHolder = ErrorChannel != null && RetryTemplate == null;
-            bool needAttributes = needHolder || RetryTemplate != null;
+            var needHolder = ErrorChannel != null && RetryTemplate == null;
+            var needAttributes = needHolder || RetryTemplate != null;
             if (needHolder)
             {
                 _attributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);

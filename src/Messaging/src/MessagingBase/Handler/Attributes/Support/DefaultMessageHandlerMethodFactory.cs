@@ -88,8 +88,10 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         public virtual IInvocableHandlerMethod CreateInvocableHandlerMethod(object bean, MethodInfo method)
         {
-            var handlerMethod = new InvocableHandlerMethod(bean, method);
-            handlerMethod.MessageMethodArgumentResolvers = _argumentResolvers;
+            var handlerMethod = new InvocableHandlerMethod(bean, method)
+            {
+                MessageMethodArgumentResolvers = _argumentResolvers
+            };
             return handlerMethod;
         }
 
@@ -115,14 +117,15 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected List<IHandlerMethodArgumentResolver> InitArgumentResolvers()
         {
-            var resolvers = new List<IHandlerMethodArgumentResolver>();
+            var resolvers = new List<IHandlerMethodArgumentResolver>
+            {
+                // Annotation-based argument resolution
+                new HeaderMethodArgumentResolver(ConversionService, ApplicationContext),
+                new HeadersMethodArgumentResolver(),
 
-            // Annotation-based argument resolution
-            resolvers.Add(new HeaderMethodArgumentResolver(ConversionService, ApplicationContext));
-            resolvers.Add(new HeadersMethodArgumentResolver());
-
-            // Type-based argument resolution
-            resolvers.Add(new MessageMethodArgumentResolver(MessageConverter));
+                // Type-based argument resolution
+                new MessageMethodArgumentResolver(MessageConverter)
+            };
 
             if (CustomArgumentResolvers != null)
             {

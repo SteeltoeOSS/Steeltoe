@@ -21,7 +21,7 @@ namespace Steeltoe.Stream.TestBinder
         {
             InputDestination = inputDestination;
             OutputDestination = outputDestination;
-            this._context = context;
+            _context = context;
         }
 
         public InputDestination InputDestination { get; }

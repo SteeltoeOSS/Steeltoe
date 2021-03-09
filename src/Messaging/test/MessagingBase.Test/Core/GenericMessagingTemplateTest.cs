@@ -14,16 +14,16 @@ namespace Steeltoe.Messaging.Core.Test
 {
     public class GenericMessagingTemplateTest
     {
-        internal MessageChannelTemplate Template;
+        internal MessageChannelTemplate _template;
 
-        internal StubMessageChannel MessageChannel;
+        internal StubMessageChannel _messageChannel;
 
         public GenericMessagingTemplateTest()
         {
-            MessageChannel = new StubMessageChannel();
-            Template = new MessageChannelTemplate
+            _messageChannel = new StubMessageChannel();
+            _template = new MessageChannelTemplate
             {
-                DefaultSendDestination = MessageChannel,
+                DefaultSendDestination = _messageChannel,
                 DestinationResolver = new TestDestinationResolver(this)
             };
         }
@@ -45,7 +45,7 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
-            Template.Send(channel, message);
+            _template.Send(channel, message);
 
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
             Assert.NotNull(sent);
@@ -70,7 +70,7 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
-            await Template.SendAsync(channel, message);
+            await _template.SendAsync(channel, message);
 
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
             Assert.NotNull(sent);
@@ -96,7 +96,7 @@ namespace Steeltoe.Messaging.Core.Test
             };
             var message = Message.Create<string>("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
-            await Template.SendAsync(channel, message);
+            await _template.SendAsync(channel, message);
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
             Assert.NotNull(sent);
             Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
@@ -121,7 +121,7 @@ namespace Steeltoe.Messaging.Core.Test
             };
             var message = Message.Create<string>("request", accessor.MessageHeaders);
             accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
-            Template.Send(channel, message);
+            _template.Send(channel, message);
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
             Assert.NotNull(sent);
             Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
@@ -134,7 +134,7 @@ namespace Steeltoe.Messaging.Core.Test
             var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
             channel.Subscribe(new SendAndReceiveTestHandler());
 
-            var actual = Template.ConvertSendAndReceive<string>(channel, "request");
+            var actual = _template.ConvertSendAndReceive<string>(channel, "request");
             Assert.Equal("response", actual);
         }
 
@@ -144,7 +144,7 @@ namespace Steeltoe.Messaging.Core.Test
             var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
             channel.Subscribe(new SendAndReceiveTestHandler());
 
-            var actual = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
+            var actual = await _template.ConvertSendAndReceiveAsync<string>(channel, "request");
             Assert.Equal("response", actual);
         }
 
@@ -153,9 +153,9 @@ namespace Steeltoe.Messaging.Core.Test
         {
             var latch = new CountdownEvent(1);
 
-            Template.ReceiveTimeout = 1;
-            Template.SendTimeout = 30000;
-            Template.ThrowExceptionOnLateReply = true;
+            _template.ReceiveTimeout = 1;
+            _template.SendTimeout = 30000;
+            _template.ThrowExceptionOnLateReply = true;
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
@@ -164,10 +164,10 @@ namespace Steeltoe.Messaging.Core.Test
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
                 .Callback<IMessage, int>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
                 .Returns(true);
-            var result = Template.ConvertSendAndReceive<string>(channel, "request");
+            var result = _template.ConvertSendAndReceive<string>(channel, "request");
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
         }
@@ -177,21 +177,21 @@ namespace Steeltoe.Messaging.Core.Test
         {
             var latch = new CountdownEvent(1);
 
-            Template.ReceiveTimeout = 1;
-            Template.SendTimeout = 30000;
-            Template.ThrowExceptionOnLateReply = true;
+            _template.ReceiveTimeout = 1;
+            _template.SendTimeout = 30000;
+            _template.ThrowExceptionOnLateReply = true;
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
             var channel = chanMock.Object;
             chanMock.Setup(
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
-                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
                 .Returns(new ValueTask<bool>(true));
-            var result = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
+            var result = await _template.ConvertSendAndReceiveAsync<string>(channel, "request");
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
         }
@@ -200,9 +200,9 @@ namespace Steeltoe.Messaging.Core.Test
         public void SendAndReceiveVariableTimeout()
         {
             var latch = new CountdownEvent(1);
-            Template.ReceiveTimeout = 10000;
-            Template.SendTimeout = 20000;
-            Template.ThrowExceptionOnLateReply = true;
+            _template.ReceiveTimeout = 10000;
+            _template.SendTimeout = 20000;
+            _template.ThrowExceptionOnLateReply = true;
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
@@ -217,10 +217,10 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
-            var result = Template.SendAndReceive(channel, message);
+            var result = _template.SendAndReceive(channel, message);
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
         }
@@ -229,16 +229,16 @@ namespace Steeltoe.Messaging.Core.Test
         public async Task SendAndReceiveAsyncVariableTimeout()
         {
             var latch = new CountdownEvent(1);
-            Template.ReceiveTimeout = 10000;
-            Template.SendTimeout = 20000;
-            Template.ThrowExceptionOnLateReply = true;
+            _template.ReceiveTimeout = 10000;
+            _template.SendTimeout = 20000;
+            _template.ThrowExceptionOnLateReply = true;
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
             var channel = chanMock.Object;
             chanMock.Setup(
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
-                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
                 .Returns(new ValueTask<bool>(true));
 
             var message = MessageBuilder.WithPayload("request")
@@ -246,10 +246,10 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
                     .Build();
 
-            var result = await Template.SendAndReceiveAsync(channel, message);
+            var result = await _template.SendAndReceiveAsync(channel, message);
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
         }
@@ -258,11 +258,11 @@ namespace Steeltoe.Messaging.Core.Test
         public void SendAndReceiveVariableTimeoutCustomHeaders()
         {
             var latch = new CountdownEvent(1);
-            Template.ReceiveTimeout = 10000;
-            Template.SendTimeout = 20000;
-            Template.ThrowExceptionOnLateReply = true;
-            Template.SendTimeoutHeader = "sto";
-            Template.ReceiveTimeoutHeader = "rto";
+            _template.ReceiveTimeout = 10000;
+            _template.SendTimeout = 20000;
+            _template.ThrowExceptionOnLateReply = true;
+            _template.SendTimeoutHeader = "sto";
+            _template.ReceiveTimeoutHeader = "rto";
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
@@ -277,10 +277,10 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader("rto", 1)
                     .Build();
 
-            var result = Template.SendAndReceive(channel, message);
+            var result = _template.SendAndReceive(channel, message);
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
         }
@@ -289,18 +289,18 @@ namespace Steeltoe.Messaging.Core.Test
         public async Task SendAndReceiveAsyncVariableTimeoutCustomHeaders()
         {
             var latch = new CountdownEvent(1);
-            Template.ReceiveTimeout = 10000;
-            Template.SendTimeout = 20000;
-            Template.ThrowExceptionOnLateReply = true;
-            Template.SendTimeoutHeader = "sto";
-            Template.ReceiveTimeoutHeader = "rto";
+            _template.ReceiveTimeout = 10000;
+            _template.SendTimeout = 20000;
+            _template.ThrowExceptionOnLateReply = true;
+            _template.SendTimeoutHeader = "sto";
+            _template.ReceiveTimeoutHeader = "rto";
 
             var handler = new LateReplierMessageHandler(latch);
             var chanMock = new Mock<ISubscribableChannel>();
             var channel = chanMock.Object;
             chanMock.Setup(
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)))
-                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m)); })
+                .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
                 .Returns(new ValueTask<bool>(true));
 
             var message = MessageBuilder.WithPayload("request")
@@ -308,22 +308,22 @@ namespace Steeltoe.Messaging.Core.Test
                     .SetHeader("rto", 1)
                     .Build();
 
-            var result = await Template.SendAndReceiveAsync(channel, message);
+            var result = await _template.SendAndReceiveAsync(channel, message);
             Assert.Null(result);
             Assert.True(latch.Wait(10000));
-            Assert.Null(handler.Failure);
+            Assert.Null(handler._failure);
 
             chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => t.IsCancellationRequested == false)));
         }
 
         internal class LateReplierMessageHandler : IMessageHandler
         {
-            public CountdownEvent Latch;
-            public Exception Failure;
+            public CountdownEvent _latch;
+            public Exception _failure;
 
             public LateReplierMessageHandler(CountdownEvent latch)
             {
-                Latch = latch;
+                _latch = latch;
             }
 
             public string ServiceName { get; set; } = nameof(LateReplierMessageHandler);
@@ -335,7 +335,7 @@ namespace Steeltoe.Messaging.Core.Test
                     Thread.Sleep(1000);
                     var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
                     replyChannel.Send(Message.Create<string>("response"));
-                    Failure = new InvalidOperationException("Expected exception");
+                    _failure = new InvalidOperationException("Expected exception");
                 }
                 catch (MessageDeliveryException ex)
                 {
@@ -343,16 +343,16 @@ namespace Steeltoe.Messaging.Core.Test
                     var actual = ex.Message;
                     if (!expected.Equals(actual))
                     {
-                        Failure = new InvalidOperationException("Unexpected error: '" + actual + "'");
+                        _failure = new InvalidOperationException("Unexpected error: '" + actual + "'");
                     }
                 }
                 catch (Exception e)
                 {
-                    Failure = e;
+                    _failure = e;
                 }
                 finally
                 {
-                    Latch.Signal();
+                    _latch.Signal();
                 }
 
                 return;
@@ -373,16 +373,16 @@ namespace Steeltoe.Messaging.Core.Test
 
         internal class TestDestinationResolver : IDestinationResolver<IMessageChannel>
         {
-            private readonly GenericMessagingTemplateTest test;
+            private readonly GenericMessagingTemplateTest _test;
 
             public TestDestinationResolver(GenericMessagingTemplateTest test)
             {
-                this.test = test;
+                _test = test;
             }
 
             public IMessageChannel ResolveDestination(string name)
             {
-                return test.MessageChannel;
+                return _test._messageChannel;
             }
 
             object IDestinationResolver.ResolveDestination(string name)

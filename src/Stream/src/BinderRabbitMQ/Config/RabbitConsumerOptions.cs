@@ -58,7 +58,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
         {
             if (!Transacted.HasValue)
             {
-                Transacted = defaultOptions != null ? defaultOptions.Transacted : false;
+                Transacted = defaultOptions?.Transacted ?? false;
             }
 
             if (!AcknowledgeMode.HasValue)
@@ -123,17 +123,17 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (!QueueDeclarationRetries.HasValue)
             {
-                QueueDeclarationRetries = defaultOptions != null ? defaultOptions.QueueDeclarationRetries : null;
+                QueueDeclarationRetries = defaultOptions?.QueueDeclarationRetries;
             }
 
             if (!FailedDeclarationRetryInterval.HasValue)
             {
-                FailedDeclarationRetryInterval = defaultOptions != null ? defaultOptions.FailedDeclarationRetryInterval : null;
+                FailedDeclarationRetryInterval = defaultOptions?.FailedDeclarationRetryInterval;
             }
 
             if (ConsumerTagPrefix == null)
             {
-                ConsumerTagPrefix = defaultOptions != null ? defaultOptions.ConsumerTagPrefix : null;
+                ConsumerTagPrefix = defaultOptions?.ConsumerTagPrefix;
             }
 
             if (!FrameMaxHeadroom.HasValue)

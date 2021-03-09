@@ -15,37 +15,37 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 {
     public class MethodMessageHandlerTest
     {
-        private const string DESTINATION_HEADER = "destination";
+        private const string _destinationHeader = "destination";
 
-        private readonly TestMethodMessageHandler messageHandler;
+        private readonly TestMethodMessageHandler _messageHandler;
 
-        private readonly TestController testController;
+        private readonly TestController _testController;
 
         public MethodMessageHandlerTest()
         {
             var destinationPrefixes = new List<string>() { "/test" };
 
-            messageHandler = new TestMethodMessageHandler
+            _messageHandler = new TestMethodMessageHandler
             {
                 // this.messageHandler.setApplicationContext(new StaticApplicationContext());
                 DestinationPrefixes = destinationPrefixes
             };
 
             // this.messageHandler.afterPropertiesSet();
-            testController = new TestController();
-            messageHandler.RegisterHandler(testController);
+            _testController = new TestController();
+            _messageHandler.RegisterHandler(_testController);
         }
 
         [Fact]
         public void DuplicateMapping()
         {
-            Assert.Throws<InvalidOperationException>(() => messageHandler.RegisterHandler(new DuplicateMappingsController()));
+            Assert.Throws<InvalidOperationException>(() => _messageHandler.RegisterHandler(new DuplicateMappingsController()));
         }
 
         [Fact]
         public void RegisteredMappings()
         {
-            var handlerMethods = messageHandler.HandlerMethods;
+            var handlerMethods = _messageHandler.HandlerMethods;
 
             Assert.NotNull(handlerMethods);
             Assert.Equal(3, handlerMethods.Count);
@@ -54,56 +54,56 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         [Fact]
         public void PatternMatch()
         {
-            var method = testController.GetType().GetMethod("HandlerPathMatchWildcard");
-            messageHandler.RegisterHandlerMethodPublic(testController, method, "/handlerPathMatch*");
+            var method = _testController.GetType().GetMethod("HandlerPathMatchWildcard");
+            _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/handlerPathMatch*");
 
-            messageHandler.HandleMessage(ToDestination("/test/handlerPathMatchFoo"));
+            _messageHandler.HandleMessage(ToDestination("/test/handlerPathMatchFoo"));
 
-            Assert.Equal("PathMatchWildcard", testController.Method);
+            Assert.Equal("PathMatchWildcard", _testController.Method);
         }
 
         [Fact]
         public void BestMatch()
         {
-            var method = testController.GetType().GetMethod("BestMatch");
-            messageHandler.RegisterHandlerMethodPublic(testController, method, "/bestmatch/{foo}/path");
+            var method = _testController.GetType().GetMethod("BestMatch");
+            _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/bestmatch/{foo}/path");
 
-            method = testController.GetType().GetMethod("SecondBestMatch");
-            messageHandler.RegisterHandlerMethodPublic(testController, method, "/bestmatch/*/*");
+            method = _testController.GetType().GetMethod("SecondBestMatch");
+            _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/bestmatch/*/*");
 
-            messageHandler.HandleMessage(ToDestination("/test/bestmatch/bar/path"));
+            _messageHandler.HandleMessage(ToDestination("/test/bestmatch/bar/path"));
 
-            Assert.Equal("BestMatch", testController.Method);
+            Assert.Equal("BestMatch", _testController.Method);
         }
 
         [Fact]
         public void ArgumentResolution()
         {
-            messageHandler.HandleMessage(ToDestination("/test/HandlerArgumentResolver"));
+            _messageHandler.HandleMessage(ToDestination("/test/HandlerArgumentResolver"));
 
-            Assert.Equal("HandlerArgumentResolver", testController.Method);
-            Assert.NotNull(testController.Arguments["message"]);
+            Assert.Equal("HandlerArgumentResolver", _testController.Method);
+            Assert.NotNull(_testController.Arguments["message"]);
         }
 
         [Fact]
         public void HandleException()
         {
-            messageHandler.HandleMessage(ToDestination("/test/HandlerThrowsExc"));
+            _messageHandler.HandleMessage(ToDestination("/test/HandlerThrowsExc"));
 
-            Assert.Equal("InvalidOperationException", testController.Method);
-            Assert.NotNull(testController.Arguments["exception"]);
+            Assert.Equal("InvalidOperationException", _testController.Method);
+            Assert.NotNull(_testController.Arguments["exception"]);
         }
 
         private IMessage ToDestination(string destination)
         {
-            return MessageBuilder.WithPayload(new byte[0]).SetHeader(DESTINATION_HEADER, destination).Build();
+            return MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(_destinationHeader, destination).Build();
         }
 
         internal class TestController
         {
-            public readonly Dictionary<string, object> Arguments = new Dictionary<string, object>();
+            public Dictionary<string, object> Arguments { get; } = new Dictionary<string, object>();
 
-            public string Method;
+            public string Method { get; set; }
 
             public void HandlerPathMatchWildcard()
             {
@@ -151,7 +151,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         internal class TestMethodMessageHandler : AbstractMethodMessageHandler<string>
         {
-            private readonly IPathMatcher pathMatcher = new AntPathMatcher();
+            private readonly IPathMatcher _pathMatcher = new AntPathMatcher();
 
             public void RegisterHandler(object handler)
             {
@@ -204,7 +204,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             protected override ISet<string> GetDirectLookupDestinations(string mapping)
             {
                 ISet<string> result = new HashSet<string>();
-                if (!pathMatcher.IsPattern(mapping))
+                if (!_pathMatcher.IsPattern(mapping))
                 {
                     result.Add(mapping);
                 }
@@ -214,14 +214,14 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             protected override string GetDestination(IMessage message)
             {
-                return (string)message.Headers[DESTINATION_HEADER];
+                return (string)message.Headers[_destinationHeader];
             }
 
             protected override string GetMatchingMapping(string mapping, IMessage message)
             {
                 var destination = GetLookupDestination(GetDestination(message));
                 Assert.NotNull(destination);
-                return mapping.Equals(destination) || pathMatcher.Match(mapping, destination) ? mapping : null;
+                return mapping.Equals(destination) || _pathMatcher.Match(mapping, destination) ? mapping : null;
             }
 
             protected override IComparer<string> GetMappingComparer(IMessage message)
@@ -236,18 +236,18 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
             internal class MappingComparer : IComparer<string>
             {
-                private readonly IMessage message;
+                private readonly IMessage _message;
 
                 public MappingComparer(IMessage message)
                 {
-                    this.message = message;
+                    _message = message;
                 }
 
                 public int Compare(string info1, string info2)
                 {
                     var cond1 = new DestinationPatternsMessageCondition(info1);
                     var cond2 = new DestinationPatternsMessageCondition(info2);
-                    return cond1.CompareTo(cond2, message);
+                    return cond1.CompareTo(cond2, _message);
                 }
             }
         }

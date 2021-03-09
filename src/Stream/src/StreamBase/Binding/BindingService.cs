@@ -59,7 +59,7 @@ namespace Steeltoe.Stream.Binding
             }
             else
             {
-                var bindingTargets = bindingTarget == null ? new string[0] : bindingTarget.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var bindingTargets = bindingTarget == null ? Array.Empty<string>() : bindingTarget.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (var target in bindingTargets)
                 {
                     var binding = DoBindConsumer(inputChannel, name, binder, consumerOptions, target);
@@ -153,8 +153,6 @@ namespace Steeltoe.Stream.Binding
             {
                 // Log failure
             }
-
-            return;
         }
 
         public void UnbindConsumers(string inputName)
@@ -171,8 +169,6 @@ namespace Steeltoe.Stream.Binding
             {
                 // Log
             }
-
-            return;
         }
 
         protected IBinder GetBinder<T>(string channelName)
@@ -181,7 +177,7 @@ namespace Steeltoe.Stream.Binding
             return _binderFactory.GetBinder(configName, typeof(T));
         }
 
-        private void ValidateOptions(IProducerOptions producerOptions)
+        private static void ValidateOptions(IProducerOptions producerOptions)
         {
             if (producerOptions.PartitionCount <= 0)
             {
@@ -189,7 +185,7 @@ namespace Steeltoe.Stream.Binding
             }
         }
 
-        private void ValidateOptions(IConsumerOptions consumerOptions)
+        private static void ValidateOptions(IConsumerOptions consumerOptions)
         {
             if (consumerOptions.Concurrency <= 0)
             {

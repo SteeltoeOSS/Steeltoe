@@ -68,16 +68,21 @@ namespace Steeltoe.Stream.Binding
             var contentType = bindingOptions.ContentType;
             var consumerOptions = bindingOptions.Consumer;
             if ((consumerOptions == null || !consumerOptions.UseNativeDecoding)
-                    && binding is DefaultPollableMessageSource)
+                    && binding is DefaultPollableMessageSource source)
             {
-                ((DefaultPollableMessageSource)binding).AddInterceptor(
+                source.AddInterceptor(
                     new InboundContentTypeEnhancingInterceptor(contentType));
             }
         }
 
+        private static bool IsNativeEncodingNotSet(IProducerOptions producerOptions, IConsumerOptions consumerOptions, bool input)
+            => input
+            ? consumerOptions == null || !consumerOptions.UseNativeDecoding
+            : producerOptions == null || !producerOptions.UseNativeEncoding;
+
         private void ConfigureMessageChannel(IMessageChannel channel, string channelName, bool inbound)
         {
-            if (!(channel is Integration.Channel.AbstractMessageChannel messageChannel))
+            if (channel is not Integration.Channel.AbstractMessageChannel messageChannel)
             {
                 throw new ArgumentException(nameof(channel) + " not an AbstractMessageChannel");
             }
@@ -171,23 +176,8 @@ namespace Steeltoe.Stream.Binding
 
             return strategy;
         }
-
-        private bool IsNativeEncodingNotSet(IProducerOptions producerOptions, IConsumerOptions consumerOptions, bool input)
-        {
-            if (input)
-            {
-                return consumerOptions == null
-                        || !consumerOptions.UseNativeDecoding;
-            }
-            else
-            {
-                return producerOptions == null
-                        || !producerOptions.UseNativeEncoding;
-            }
-        }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class DefaultPartitionSelector : IPartitionSelectorStrategy
     {
         public string ServiceName { get; set; } = "DefaultPartitionSelector";
@@ -208,7 +198,7 @@ namespace Steeltoe.Stream.Binding
     {
         protected readonly MimeType _mimeType;
 
-        public AbstractContentTypeInterceptor(string contentType)
+        protected AbstractContentTypeInterceptor(string contentType)
         {
             _mimeType = MimeTypeUtils.ParseMimeType(contentType);
         }
@@ -319,13 +309,14 @@ namespace Steeltoe.Stream.Binding
             if (message.Headers.ContainsKey(BinderHeaders.BINDER_ORIGINAL_CONTENT_TYPE))
             {
                 var ct = message.Headers.Get<object>(BinderHeaders.BINDER_ORIGINAL_CONTENT_TYPE);
-                if (ct is string)
+                switch (ct)
                 {
-                    contentType = MimeType.ToMimeType((string)ct);
-                }
-                else if (ct is MimeType)
-                {
-                    contentType = (MimeType)ct;
+                    case string strval:
+                        contentType = MimeType.ToMimeType(strval);
+                        break;
+                    case MimeType mimeval:
+                        contentType = mimeval;
+                        break;
                 }
 
                 messageHeaders.RawHeaders.Remove(BinderHeaders.BINDER_ORIGINAL_CONTENT_TYPE);
@@ -339,9 +330,9 @@ namespace Steeltoe.Stream.Binding
             {
                 messageHeaders.RawHeaders.Add(MessageHeaders.CONTENT_TYPE, contentType);
             }
-            else if (message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var header) && header is string)
+            else if (message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var header) && header is string strheader)
             {
-                messageHeaders.RawHeaders[MessageHeaders.CONTENT_TYPE] = MimeType.ToMimeType((string)header);
+                messageHeaders.RawHeaders[MessageHeaders.CONTENT_TYPE] = MimeType.ToMimeType(strheader);
             }
 
             return message;
@@ -379,7 +370,7 @@ namespace Steeltoe.Stream.Binding
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            var objMessage = message is IMessage<object> ? (IMessage<object>)message : Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
+            var objMessage = message is IMessage<object> msg ? msg : Message.Create(message.Payload, message.Headers); // Primitives are not covariant with out T, so box the primitive ...
 
             if (!message.Headers.ContainsKey(BinderHeaders.PARTITION_OVERRIDE))
             {
@@ -397,6 +388,4 @@ namespace Steeltoe.Stream.Binding
             }
         }
     }
-
-#pragma warning restore SA1402 // File may only contain a single class
 }

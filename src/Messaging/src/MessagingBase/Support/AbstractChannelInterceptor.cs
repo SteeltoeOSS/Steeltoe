@@ -9,11 +9,11 @@ namespace Steeltoe.Messaging.Support
 {
     public abstract class AbstractChannelInterceptor : AbstractOrdered, IChannelInterceptor
     {
-        public AbstractChannelInterceptor()
+        protected AbstractChannelInterceptor()
         {
         }
 
-        public AbstractChannelInterceptor(int order)
+        protected AbstractChannelInterceptor(int order)
             : base(order)
         {
         }

@@ -6,6 +6,7 @@ using EasyNetQ.Management.Client;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Util;
@@ -216,13 +217,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestConsumerProperties()
         {
-            var rabbitConsumerOptions = new RabbitConsumerOptions();
-            rabbitConsumerOptions.RequeueRejected = true;
-            rabbitConsumerOptions.Transacted = true;
-            rabbitConsumerOptions.Exclusive = true;
-            rabbitConsumerOptions.MissingQueuesFatal = true;
-            rabbitConsumerOptions.FailedDeclarationRetryInterval = 1500L;
-            rabbitConsumerOptions.QueueDeclarationRetries = 23;
+            var rabbitConsumerOptions = new RabbitConsumerOptions
+            {
+                RequeueRejected = true,
+                Transacted = true,
+                Exclusive = true,
+                MissingQueuesFatal = true,
+                FailedDeclarationRetryInterval = 1500L,
+                QueueDeclarationRetries = 23
+            };
 
             var bindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(bindingsOptions);
@@ -615,9 +618,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             rabbitConsumeroptions.DeadLetterExchange = ExchangeType.HEADERS;
             rabbitConsumeroptions.DeadLetterExchange = "propsHeader.dlx";
 
-            var queueBindingArguments = new Dictionary<string, string>();
-            queueBindingArguments.Add("x-match", "any");
-            queueBindingArguments.Add("foo", "bar");
+            var queueBindingArguments = new Dictionary<string, string>
+            {
+                { "x-match", "any" },
+                { "foo", "bar" }
+            };
             rabbitConsumeroptions.QueueBindingArguments = queueBindingArguments;
             rabbitConsumeroptions.DlqBindingArguments = queueBindingArguments;
 
@@ -683,7 +688,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(mapper.RequestHeaderMatcher);
             var matchers = GetPropertyValue<List<Integration.Mapping.AbstractHeaderMapper<IMessageHeaders>.IHeaderMatcher>>(mapper.RequestHeaderMatcher, "Matchers");
             Assert.NotNull(matchers);
-            Assert.Equal(4, matchers.Count());
+            Assert.Equal(4, matchers.Count);
 
             producerBinding.Unbind();
             Assert.False(endpoint.IsRunning);
@@ -726,7 +731,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.NotNull(mapper.RequestHeaderMatcher);
             matchers = GetPropertyValue<List<Integration.Mapping.AbstractHeaderMapper<IMessageHeaders>.IHeaderMatcher>>(mapper.RequestHeaderMatcher, "Matchers");
             Assert.NotNull(matchers);
-            Assert.Equal(4, matchers.Count());
+            Assert.Equal(4, matchers.Count);
             Assert.Equal("foo", GetPropertyValue<string>(matchers[3], "Pattern"));
 
             var message = MessageBuilder.WithPayload("foo").Build();

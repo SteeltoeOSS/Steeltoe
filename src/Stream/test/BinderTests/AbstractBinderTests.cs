@@ -67,7 +67,7 @@ namespace Steeltoe.Stream.Binder
         {
             long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var receive = channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
-            long elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
+            var elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
             return receive;
         }
 
@@ -81,8 +81,10 @@ namespace Steeltoe.Stream.Binder
         protected DirectChannel CreateBindableChannel(string channelName, BindingOptions bindingProperties, bool inputChannel)
         {
             var messageConverterConfigurer = CreateConverterConfigurer(channelName, bindingProperties);
-            var channel = new DirectChannel(LoggerFactory.CreateLogger<DirectChannel>());
-            channel.ServiceName = channelName;
+            var channel = new DirectChannel(LoggerFactory.CreateLogger<DirectChannel>())
+            {
+                ServiceName = channelName
+            };
             if (inputChannel)
             {
                 messageConverterConfigurer.ConfigureInputChannel(channel, channelName);

@@ -46,7 +46,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
             var payload = outputMessage.Payload as byte[];
@@ -63,7 +63,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -81,7 +81,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
@@ -108,7 +108,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -126,7 +126,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -145,7 +145,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -168,7 +168,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -188,7 +188,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -211,7 +211,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -234,7 +234,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -258,7 +258,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -281,7 +281,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -304,7 +304,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -327,7 +327,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -346,7 +346,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
@@ -369,7 +369,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
@@ -388,7 +388,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, new MimeType("text")));
@@ -408,7 +408,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN));
@@ -431,7 +431,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -450,7 +450,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
@@ -470,7 +470,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -493,7 +493,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -511,7 +511,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -522,15 +522,17 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task PojoMessageToStringMessageServiceActivator()
         {
             _container.AddServiceActivators<PojoMessageToStringMessageServiceActivator>();
+
             var provider = _container.BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
             activatorProcessor.Initialize();
+
+            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -541,15 +543,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task ByteArrayMessageToStringJsonMessageServiceActivator()
         {
             _container.AddServiceActivators<ByteArrayMessageToStringJsonMessageServiceActivator>();
             var provider = _container.BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
             activatorProcessor.Initialize();
+
+            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -560,15 +563,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("{\"name\":\"bob\"}", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task ByteArrayMessageToStringMessageServiceActivator()
         {
             _container.AddServiceActivators<StringMessageToStringMessageServiceActivator>();
             var provider = _container.BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
             activatorProcessor.Initialize();
+
+            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -592,7 +596,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -616,7 +620,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -639,7 +643,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             DoSendReceive(provider, jsonPayload, typeof(MessagingException));
@@ -657,7 +661,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             DoSendReceive(provider, jsonPayload, typeof(MessageConversionException));
@@ -671,7 +675,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[{\"person\":{\"name\":\"jon\"},\"id\":123},{\"person\":{\"name\":\"jane\"},\"id\":456}]";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -699,7 +703,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -717,7 +721,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -735,7 +739,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -753,7 +757,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -773,7 +777,7 @@ namespace Steeltoe.Stream.Tck
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
@@ -787,15 +791,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task TestWithTypelessInputParameterAndServiceActivator()
         {
             _container.AddServiceActivators<TypelessPayloadConfigurationSA>();
             var provider = _container.BuildServiceProvider();
 
+            var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            streamProcessor.Initialize();
+
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
@@ -808,15 +813,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task TestWithTypelessMessageInputParameterAndServiceActivator()
         {
             _container.AddServiceActivators<TypelessMessageConfigurationSA>();
             var provider = _container.BuildServiceProvider();
 
+            var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            streamProcessor.Initialize();
+
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder

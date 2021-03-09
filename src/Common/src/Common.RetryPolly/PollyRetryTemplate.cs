@@ -63,9 +63,10 @@ namespace Steeltoe.Common.Retry
         {
             var policy = BuildPolicy<T>();
             var retryContext = new RetryContext();
-            var context = new Context();
-
-            context.Add(RETRYCONTEXT_KEY, retryContext);
+            var context = new Context
+            {
+                { RETRYCONTEXT_KEY, retryContext }
+            };
             RetrySynchronizationManager.Register(retryContext);
             if (recoveryCallback != null)
             {
@@ -104,9 +105,10 @@ namespace Steeltoe.Common.Retry
         {
             var policy = BuildPolicy<object>();
             var retryContext = new RetryContext();
-            var context = new Context();
-
-            context.Add(RETRYCONTEXT_KEY, retryContext);
+            var context = new Context
+            {
+                { RETRYCONTEXT_KEY, retryContext }
+            };
             RetrySynchronizationManager.Register(retryContext);
             if (recoveryCallback != null)
             {
@@ -144,9 +146,8 @@ namespace Steeltoe.Common.Retry
                         {
                             var retryContext = GetRetryContext(context);
                             retryContext.LastException = delegateResult.Exception;
-                            var callback = retryContext.GetAttribute(RECOVERY_CALLBACK_KEY) as IRecoveryCallback;
                             var result = default(T);
-                            if (callback != null)
+                            if (retryContext.GetAttribute(RECOVERY_CALLBACK_KEY) is IRecoveryCallback callback)
                             {
                                 result = (T)callback.Recover(retryContext);
                                 retryContext.SetAttribute(RECOVERED, true);
@@ -261,7 +262,7 @@ namespace Steeltoe.Common.Retry
 
             public object Recover(IRetryContext context)
             {
-                _logger.LogTrace($"ActionRecovery Context: {context}");
+                _logger?.LogTrace($"ActionRecovery Context: {context}");
                 _action(context);
                 return null;
             }

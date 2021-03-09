@@ -27,7 +27,7 @@ namespace Steeltoe.Stream.TestBinder
         private readonly ILogger _logger;
 
         public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger<TestChannelBinder> logger)
-            : base(context, new string[] { }, provisioningProvider, logger)
+            : base(context, Array.Empty<string>(), provisioningProvider, logger)
         {
             _logger = logger;
             _logger.LogInformation("info");

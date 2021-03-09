@@ -217,14 +217,13 @@ namespace Steeltoe.Messaging.Converter.Test
         [Fact]
         public void GetIMessageGenericType()
         {
-            var converter = new NewtonJsonMessageConverter();
-            Assert.Null(converter.GetIMessageGenericType(typeof(T1)));
-            Assert.Equal(typeof(MyBean), converter.GetIMessageGenericType(typeof(T2)));
-            Assert.Equal(typeof(MyBean), converter.GetIMessageGenericType(typeof(T3<MyBean>)));
-            Assert.Equal(typeof(MyBean), converter.GetIMessageGenericType(typeof(T4<MyBean>)));
-            Assert.Equal(typeof(MyBean), converter.GetIMessageGenericType(typeof(IMessage<MyBean>)));
-            Assert.Equal(typeof(MyBean), converter.GetIMessageGenericType(typeof(IMyInterface<MyBean>)));
-            Assert.Null(converter.GetIMessageGenericType(typeof(IMessage)));
+            Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T1)));
+            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T2)));
+            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T3<MyBean>)));
+            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T4<MyBean>)));
+            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage<MyBean>)));
+            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMyInterface<MyBean>)));
+            Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage)));
         }
 
         internal void HandleList(IList<long> payload)

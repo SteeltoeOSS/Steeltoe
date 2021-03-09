@@ -34,7 +34,7 @@ namespace Steeltoe.Integration.Channel
         protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
         {
             ApplicationContext = context;
-            Logger = logger;
+            this.logger = logger;
             ServiceName = name ?? GetType().Name + "@" + GetHashCode();
             Interceptors = new ChannelInterceptorList(logger);
         }
@@ -128,7 +128,7 @@ namespace Steeltoe.Integration.Channel
 
             if (message.Payload == null)
             {
-                throw new ArgumentNullException("Message payload is null!");
+                throw new ArgumentNullException(nameof(message), "Message payload is null!");
             }
 
             return DoSend(message, timeout);
@@ -141,7 +141,7 @@ namespace Steeltoe.Integration.Channel
 
         internal ChannelInterceptorList Interceptors { get; set; }
 
-        protected ILogger Logger { get; }
+        protected ILogger logger;
 
         protected virtual bool DoSend(IMessage message, int timeout)
         {
@@ -171,7 +171,7 @@ namespace Steeltoe.Integration.Channel
                     message = ConvertPayloadIfNecessary(message);
                 }
 
-                Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
+                logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
 
                 if (Interceptors.Count > 0)
                 {
@@ -185,7 +185,7 @@ namespace Steeltoe.Integration.Channel
 
                 sent = DoSendInternal(message, cancellationToken);
 
-                Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
+                logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
 
                 if (interceptorStack != null)
                 {
@@ -219,7 +219,7 @@ namespace Steeltoe.Integration.Channel
             // first pass checks if the payload type already matches any of the datatypes
             foreach (var datatype in DataTypes)
             {
-                if (datatype.IsAssignableFrom(message.Payload.GetType()))
+                if (datatype.IsInstanceOfType(message.Payload))
                 {
                     return message;
                 }
@@ -233,8 +233,8 @@ namespace Steeltoe.Integration.Channel
                     var converted = MessageConverter.FromMessage(message, datatype);
                     if (converted != null)
                     {
-                        return converted is IMessage
-                            ? (IMessage)converted
+                        return converted is IMessage msg
+                            ? msg
                             : IntegrationServices
                                 .MessageBuilderFactory
                                 .WithPayload(converted)
@@ -253,7 +253,7 @@ namespace Steeltoe.Integration.Channel
         {
             private readonly object _lock = new object();
             private readonly ILogger _logger;
-            private IChannelInterceptor[] _interceptors = new IChannelInterceptor[0];
+            private IChannelInterceptor[] _interceptors = Array.Empty<IChannelInterceptor>();
 
             public ChannelInterceptorList(ILogger logger)
             {
@@ -275,8 +275,10 @@ namespace Steeltoe.Integration.Channel
             {
                 lock (_lock)
                 {
-                    var interceptors = new List<IChannelInterceptor>(_interceptors);
-                    interceptors.Add(interceptor);
+                    var interceptors = new List<IChannelInterceptor>(_interceptors)
+                    {
+                        interceptor
+                    };
                     _interceptors = interceptors.ToArray();
                     Count = _interceptors.Length;
                     return true;
@@ -440,9 +442,9 @@ namespace Steeltoe.Integration.Channel
                     {
                         interceptor.AfterReceiveCompletion(message, channel, ex);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        // Log
+                        _logger?.LogError(e, e.Message);
                     }
                 }
             }

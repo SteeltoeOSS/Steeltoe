@@ -19,9 +19,10 @@ namespace Steeltoe.Stream.Binder
         private const string GROUP_INDEX_DELIMITER = ".";
 
         private readonly IApplicationContext _context;
+        private readonly ILogger _logger;
+
         private IEvaluationContext _evaluationContext;
         private IExpressionParser _expressionParser;
-        private ILogger _logger;
 
         protected AbstractBinder(IApplicationContext context, ILogger logger)
         {
@@ -83,7 +84,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_evaluationContext == null)
                 {
-                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext(); // TODO: This isn't right, fix when integrating SPEL
+                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
                 }
 
                 return _evaluationContext;
@@ -131,7 +132,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (exception[0] == '!')
                 {
-                    var type = Type.GetType(exception.Substring(1), true);
+                    var type = Type.GetType(exception[1..], true);
                     dict.Add(type, false);
                 }
                 else

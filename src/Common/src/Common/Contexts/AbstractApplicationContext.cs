@@ -30,7 +30,7 @@ namespace Steeltoe.Common.Contexts
                 {
                     Register(seed.Name, seed.Type);
                 }
-        }
+            }
         }
 
         public IConfiguration Configuration { get; private set; }

@@ -64,7 +64,7 @@ namespace Steeltoe.Integration.Channel
             Stack<IChannelInterceptor> interceptorStack = null;
             try
             {
-                Logger?.LogTrace("PreReceive on channel '" + this + "'");
+                logger?.LogTrace("PreReceive on channel '" + this + "'");
                 if (interceptorList.Count > 0)
                 {
                     interceptorStack = new Stack<IChannelInterceptor>();
@@ -79,11 +79,11 @@ namespace Steeltoe.Integration.Channel
 
                 if (message == null)
                 {
-                    Logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
+                    logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
                 }
                 else
                 {
-                    Logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
+                    logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
                 }
 
                 if (interceptorStack != null && message != null)

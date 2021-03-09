@@ -76,7 +76,7 @@ namespace Steeltoe.Messaging.Core
 
             set
             {
-                _sendTimeoutHeader = value ?? throw new ArgumentNullException("'sendTimeoutHeader' cannot be null");
+                _sendTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "SendTimeoutHeader cannot be null");
             }
         }
 
@@ -89,7 +89,7 @@ namespace Steeltoe.Messaging.Core
 
             set
             {
-                _receiveTimeoutHeader = value ?? throw new ArgumentNullException("'receiveTimeoutHeader' cannot be null");
+                _receiveTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "ReceiveTimeoutHeader cannot be null");
             }
         }
 
@@ -128,9 +128,9 @@ namespace Steeltoe.Messaging.Core
             return messageToSend;
         }
 
-        protected override void DoSend(IMessageChannel channel, IMessage message)
+        protected override void DoSend(IMessageChannel destination, IMessage message)
         {
-            DoSend(channel, message, GetSendTimeout(message));
+            DoSend(destination, message, GetSendTimeout(message));
         }
 
         protected void DoSend(IMessageChannel channel, IMessage message, int timeout)
@@ -149,9 +149,9 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
-        protected override Task DoSendAsync(IMessageChannel channel, IMessage message, CancellationToken cancellationToken)
+        protected override Task DoSendAsync(IMessageChannel destination, IMessage message, CancellationToken cancellationToken)
         {
-            return DoSendAsync(channel, message, GetSendTimeout(message), cancellationToken);
+            return DoSendAsync(destination, message, GetSendTimeout(message), cancellationToken);
         }
 
         protected Task DoSendAsync(IMessageChannel channel, IMessage message, int timeout, CancellationToken cancellationToken = default)
@@ -188,9 +188,9 @@ namespace Steeltoe.Messaging.Core
             }
         }
 
-        protected override IMessage DoReceive(IMessageChannel channel)
+        protected override IMessage DoReceive(IMessageChannel destination)
         {
-            return DoReceive(channel, ReceiveTimeout);
+            return DoReceive(destination, ReceiveTimeout);
         }
 
         protected IMessage DoReceive(IMessageChannel channel, int timeout)
@@ -215,9 +215,9 @@ namespace Steeltoe.Messaging.Core
             return message;
         }
 
-        protected override Task<IMessage> DoReceiveAsync(IMessageChannel channel, CancellationToken cancellationToken)
+        protected override Task<IMessage> DoReceiveAsync(IMessageChannel destination, CancellationToken cancellationToken)
         {
-            return DoReceiveAsync(channel, ReceiveTimeout, cancellationToken);
+            return DoReceiveAsync(destination, ReceiveTimeout, cancellationToken);
         }
 
         protected Task<IMessage> DoReceiveAsync(IMessageChannel channel, int timeout, CancellationToken cancellationToken = default)
@@ -260,14 +260,14 @@ namespace Steeltoe.Messaging.Core
             return message;
         }
 
-        protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel channel, IMessage requestMessage, CancellationToken cancellationToken = default)
+        protected override Task<IMessage> DoSendAndReceiveAsync(IMessageChannel destination, IMessage requestMessage, CancellationToken cancellationToken = default)
         {
-            if (channel == null)
+            if (destination == null)
             {
-                throw new ArgumentNullException(nameof(channel));
+                throw new ArgumentNullException(nameof(destination));
             }
 
-            return DoSendAndReceiveInternalAsync(channel, requestMessage, cancellationToken);
+            return DoSendAndReceiveInternalAsync(destination, requestMessage, cancellationToken);
         }
 
         protected async Task<IMessage> DoSendAndReceiveInternalAsync(IMessageChannel channel, IMessage requestMessage, CancellationToken cancellationToken = default)
@@ -306,11 +306,11 @@ namespace Steeltoe.Messaging.Core
             return replyMessage;
         }
 
-        protected override IMessage DoSendAndReceive(IMessageChannel channel, IMessage requestMessage)
+        protected override IMessage DoSendAndReceive(IMessageChannel destination, IMessage requestMessage)
         {
-            if (channel == null)
+            if (destination == null)
             {
-                throw new ArgumentNullException(nameof(channel));
+                throw new ArgumentNullException(nameof(destination));
             }
 
             var originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
@@ -327,7 +327,7 @@ namespace Steeltoe.Messaging.Core
 
             try
             {
-                DoSend(channel, requestMessage, sendTimeout);
+                DoSend(destination, requestMessage, sendTimeout);
             }
             catch (Exception)
             {
@@ -345,6 +345,22 @@ namespace Steeltoe.Messaging.Core
             }
 
             return replyMessage;
+        }
+
+        private static int? HeaderToInt(object headerValue)
+        {
+            if (headerValue is int intval)
+            {
+                return intval;
+            }
+            else if (headerValue is string strval)
+            {
+                return int.Parse(strval);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private int GetSendTimeout(IMessage requestMessage)
@@ -375,22 +391,6 @@ namespace Steeltoe.Messaging.Core
             return _receiveTimeout;
         }
 
-        private int? HeaderToInt(object headerValue)
-        {
-            if (headerValue is int)
-            {
-                return (int)headerValue;
-            }
-            else if (headerValue is string)
-            {
-                return int.Parse((string)headerValue);
-            }
-            else
-            {
-                return null;
-            }
-        }
-
         private class TemporaryReplyChannel : IPollableChannel
         {
             private readonly CountdownEvent _replyLatch = new CountdownEvent(1);
@@ -401,7 +401,7 @@ namespace Steeltoe.Messaging.Core
 
             public TemporaryReplyChannel(bool throwExceptionOnLateReply)
             {
-                this._throwExceptionOnLateReply = throwExceptionOnLateReply;
+                _throwExceptionOnLateReply = throwExceptionOnLateReply;
             }
 
             public bool SendFailed { get; set; }

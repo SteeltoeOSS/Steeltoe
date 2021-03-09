@@ -265,9 +265,9 @@ namespace Steeltoe.Integration.Handler
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<object>(context, service, typeof(ServiceActivatorAttribute));
             processor.ProcessMessage(MessageBuilder.WithPayload(123).Build());
-            Assert.NotNull(service.LastArg);
-            Assert.IsType<string>(service.LastArg);
-            Assert.Equal("123", service.LastArg);
+            Assert.NotNull(service._lastArg);
+            Assert.IsType<string>(service._lastArg);
+            Assert.Equal("123", service._lastArg);
         }
 
         [Fact]
@@ -360,8 +360,10 @@ namespace Steeltoe.Integration.Handler
         {
             var serviceCollection = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configBuilder.Build());
-            context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+            var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configBuilder.Build())
+            {
+                ServiceExpressionResolver = new StandardServiceExpressionResolver()
+            };
             return context;
         }
 
@@ -395,7 +397,9 @@ namespace Steeltoe.Integration.Handler
         public class Foo
         {
             [ServiceActivator]
+#pragma warning disable IDE0051 // Remove unused private members
             private string Service(string payload)
+#pragma warning restore IDE0051 // Remove unused private members
             {
                 return payload.ToUpper();
             }
@@ -424,17 +428,17 @@ namespace Steeltoe.Integration.Handler
 
         public class OverloadedMethodService
         {
-            public volatile object LastArg = null;
+            public volatile object _lastArg = null;
 
             public void Foo(bool b)
             {
-                LastArg = b;
+                _lastArg = b;
             }
 
             [ServiceActivator]
             public string Foo(string s)
             {
-                LastArg = s;
+                _lastArg = s;
                 return s;
             }
         }
@@ -639,7 +643,7 @@ namespace Steeltoe.Integration.Handler
 
             public override string ToString()
             {
-                return "Person: " + this.Name;
+                return "Person: " + Name;
             }
         }
     }

@@ -21,7 +21,6 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         [Fact]
         public void TestDelay()
         {
-            // TODO: Need a TestDelayExpression() when expressions are supported
             var config = new ConfigurationBuilder().Build();
             var services = new ServiceCollection().BuildServiceProvider();
             var context = new GenericApplicationContext(services, config);
@@ -36,7 +35,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
                 ExchangeName = "foo",
                 RoutingKey = "bar"
             };
-            endpoint.SetDelay(42);
+            endpoint.SetDelayExpressionString("42");
             endpoint.Initialize();
 
             endpoint.HandleMessage(Message.Create("foo"));
