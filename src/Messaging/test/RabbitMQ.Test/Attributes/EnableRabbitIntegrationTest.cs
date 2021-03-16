@@ -43,22 +43,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
     [Trait("Category", "Integration")]
     public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
-        private readonly ServiceProvider provider;
+        private readonly IApplicationContext context;
+        private readonly IServiceProvider provider;
         private readonly StartupFixture fixture;
 
         public EnableRabbitIntegrationTest(StartupFixture fix)
         {
             fixture = fix;
             provider = fixture.Provider;
+            context = provider.GetRequiredService<IApplicationContext>();
         }
 
         [Fact]
         public void AutoDeclare()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.rk", "foo");
             Assert.StartsWith("FOO", reply);
-            var myService = provider.GetService<MyService>();
+            var myService = context.GetService<MyService>();
             Assert.NotNull(myService);
             Assert.True(myService.ChannelBoundOk);
         }
@@ -66,7 +68,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void AutoSimpleDeclare()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.simple.declare", "foo");
             Assert.StartsWith("FOO", reply);
         }
@@ -74,11 +76,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void AutoSimpleDeclareAnonymousQueue()
         {
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("anonymousQueue575") as DirectMessageListenerContainer;
             Assert.Single(container.GetQueueNames());
 
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             Assert.Equal("viaAnonymous:foo", template.ConvertSendAndReceive<string>(container.GetQueueNames()[0], "foo"));
             var messageListener = container.MessageListener as MessagingMessageListenerAdapter;
             Assert.NotNull(messageListener.RetryTemplate);
@@ -99,7 +101,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task AutoStart()
         {
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("notStarted") as DirectMessageListenerContainer;
             Assert.NotNull(container);
             Assert.False(container.IsAutoStartup);
@@ -113,7 +115,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void AutoDeclareFanout()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("auto.exch.fanout", string.Empty, "foo");
             Assert.Equal("FOOFOO", reply);
         }
@@ -121,18 +123,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void AutoDeclareAnonWitAtts()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
             Assert.StartsWith("foo:", received);
             var queue = new Queue(received.Substring(4), true, true, true);
-            var admin = provider.GetRabbitAdmin();
+            var admin = context.GetRabbitAdmin();
             admin.DeclareQueue(queue);
         }
 
         [Fact]
         public void AutoDeclareAnon()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.rk", "foo");
             Assert.Equal("FOO", reply);
         }
@@ -140,11 +142,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleEndpoint()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = this.context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.simple", "foo");
             Assert.Equal("FOO", reply);
 
-            var context = provider.GetApplicationContext();
             var containers = context.GetService<IMessageListenerContainerCollection>("testGroup");
             Assert.Equal(2, containers.Containers.Count);
         }
@@ -152,11 +153,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task SimpleDirectEndpoint()
         {
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("direct") as DirectMessageListenerContainer;
             Assert.False(container.IsRunning);
             await container.Start();
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.simple.direct", "foo");
             Assert.StartsWith("FOOfoo", reply);
             Assert.Equal(2, container.ConsumersPerQueue);
@@ -165,10 +166,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleDirectEndpointWithConcurrency()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.simple.direct2", "foo");
             Assert.StartsWith("FOOfoo", reply);
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("directWithConcurrency") as DirectMessageListenerContainer;
             Assert.Equal(3, container.ConsumersPerQueue);
         }
@@ -176,7 +177,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleInheritanceMethod()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.inheritance", "foo");
             Assert.Equal("FOO", reply);
         }
@@ -184,7 +185,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleInheritanceClass()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.inheritance.class", "foo");
             Assert.Equal("FOOBAR", reply);
         }
@@ -192,10 +193,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void Commas()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = this.context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test,with,commas", "foo");
             Assert.Equal("FOOfoo", reply);
-            var context = provider.GetApplicationContext();
             var commaContainers = context.GetService<IMessageListenerContainerCollection>("commas");
             Assert.Single(commaContainers.Containers);
             var container = commaContainers.Containers[0] as DirectMessageListenerContainer;
@@ -215,7 +215,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 Field = "foo"
             };
-            var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
+            var template = context.GetRabbitTemplate("jsonRabbitTemplate");
             var reply = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", foo);
             Assert.Equal("FOO: foo handled by default handler", reply);
 
@@ -261,7 +261,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             Assert.Equal("BAR: barbar", reply6);
             var reply7 = template.ConvertSendAndReceive<string>("multi.exch.tx", "multi.rk.tx", baz);
             Assert.Equal("BAZ: bazbaz: multi.rk.tx", reply7);
-            var multiBean = provider.GetService<MultiListenerService>();
+            var multiBean = context.GetService<MultiListenerService>();
             Assert.NotNull(multiBean);
             Assert.IsType<MultiListenerService>(multiBean.Bean);
             Assert.NotNull(multiBean.Method);
@@ -273,7 +273,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void MultiListenerJson()
         {
-            var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
+            var template = context.GetRabbitTemplate("jsonRabbitTemplate");
             var bar = new Bar
             {
                 Field = "bar"
@@ -301,7 +301,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             template.ReceiveTimeout = 10000;
             reply = template.ReceiveAndConvert<string>("sendTo.replies.spel");
             Assert.Equal("BAR: barMultiListenerJsonService", reply);
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("multi") as DirectMessageListenerContainer;
             Assert.NotNull(container);
             var listener = container.MessageListener as MessagingMessageListenerAdapter;
@@ -313,7 +313,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void EndpointWithHeader()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var properties = new MessageHeaders(new Dictionary<string, object>() { { "prefix", "prefix-" } });
             var request = MessageTestUtils.CreateTextMessage("foo", properties);
             var reply = template.SendAndReceive("test.header", request);
@@ -326,7 +326,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void EndpointWithMessage()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var properties = new MessageHeaders(new Dictionary<string, object>() { { "prefix", "prefix-" } });
             var request = MessageTestUtils.CreateTextMessage("foo", properties);
             var reply = template.SendAndReceive("test.message", request);
@@ -336,8 +336,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void EndpointWithComplexReply()
         {
-            var template = provider.GetRabbitTemplate();
-            var context = provider.GetService<IApplicationContext>();
+            var template = this.context.GetRabbitTemplate();
+            var context = this.context.GetService<IApplicationContext>();
             var strategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy") as ConsumerTagStrategy;
             var properties = new MessageHeaders(new Dictionary<string, object>() { { "foo", "fooValue" } });
             var request = MessageTestUtils.CreateTextMessage("content", properties);
@@ -350,7 +350,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleEndpointWithSendTo()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.sendTo", "bar");
             template.ReceiveTimeout = 10000;
             var result = template.ReceiveAndConvert<string>("test.sendTo.reply");
@@ -361,7 +361,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleEndpointWithSendToSpel()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.sendTo.spel", "bar");
             template.ReceiveTimeout = 10000;
             var result = template.ReceiveAndConvert<string>("test.sendTo.reply.spel");
@@ -372,7 +372,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact(Skip = "SpEL")]
         public void SimpleEndpointWithSendToSpelRuntime()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.sendTo.runtimespel", "spel");
             template.ReceiveTimeout = 10000;
             var result = template.ReceiveAndConvert<string>("test.sendTo.reply.runtimespel");
@@ -383,7 +383,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact(Skip = "SpEL")]
         public void SimpleEndpointWithSendToSpelRuntimeMessagingMessage()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.sendTo.runtimespelsource", "spel");
             template.ReceiveTimeout = 10000;
             var result = template.ReceiveAndConvert<string>("test.sendTo.runtimespelsource.reply");
@@ -394,7 +394,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestInvalidPojoConversion()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             fixture.ErrorHandlerLatch.Reset();
             fixture.ErrorHandlerError.Value = null;
             template.ConvertAndSend("test.invalidPojo", "bar");
@@ -416,8 +416,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 Bar = "bar"
             };
-            var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
-            var service = provider.GetService<MyService>();
+            var template = context.GetRabbitTemplate("jsonRabbitTemplate");
+            var service = context.GetService<MyService>();
             service.Latch.Reset();
             service.Foos.Clear();
             template.ConvertAndSend("differentTypes", foo);
@@ -426,7 +426,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             Assert.IsType<Foo2>(service.Foos[0]);
             var foo2 = (Foo2)service.Foos[0];
             Assert.Equal("bar", foo2.Bar);
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("different") as DirectMessageListenerContainer;
             Assert.NotNull(container);
             Assert.Equal(1, container.ConsumersPerQueue);
@@ -439,8 +439,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
                 Bar = "bar"
             };
-            var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
-            var service = provider.GetService<MyService>();
+            var template = context.GetRabbitTemplate("jsonRabbitTemplate");
+            var service = context.GetService<MyService>();
             service.Latch.Reset();
             service.Foos.Clear();
             template.ConvertAndSend("differentTypes2", foo);
@@ -449,7 +449,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             Assert.IsType<Foo2>(service.Foos[0]);
             var foo2 = (Foo2)service.Foos[0];
             Assert.Equal("bar", foo2.Bar);
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("differentWithConcurrency") as DirectMessageListenerContainer;
             Assert.NotNull(container);
             Assert.Equal(3, container.ConsumersPerQueue);
@@ -458,16 +458,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestFanout()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.metaFanout", string.Empty, "foo");
-            var service = provider.GetService<FanoutListener>();
+            var service = context.GetService<FanoutListener>();
             Assert.True(service.Latch.Wait(TimeSpan.FromSeconds(10)));
         }
 
         [Fact]
         public void TestHeadersExchange()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "foo", new TestHeadersExchangeMpp1());
             Assert.Equal("FOO", reply);
             var reply1 = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "bar", new TestHeadersExchangeMpp2());
@@ -477,11 +477,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public async Task DeadLetterOnDefaultExchange()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("amqp656", "foo");
             var reply = template.ReceiveAndConvert<string>("amqp656dlq", 10000);
             Assert.Equal("foo", reply);
-            var admin = provider.GetRabbitAdmin();
+            var admin = context.GetRabbitAdmin();
 
             var client = new HttpClient();
             var authToken = Encoding.ASCII.GetBytes("guest:guest");
@@ -497,7 +497,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void ReturnExceptionWithRethrowAdapter()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ThrowReceivedExceptions = true;
             var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.return.exceptions", "foo"));
             Assert.Contains("return this", e.Message);
@@ -508,7 +508,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void ListenerErrorHandler()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.pojo.errors", "foo");
             Assert.Equal("BAR", reply);
         }
@@ -516,7 +516,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void ListenerErrorHandlerException()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ThrowReceivedExceptions = true;
             var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.pojo.errors2", "foo"));
             Assert.Contains("from error handler", e.Message);
@@ -528,7 +528,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestGenericReturnTypes()
         {
-            var template = provider.GetRabbitTemplate("jsonRabbitTemplate");
+            var template = context.GetRabbitTemplate("jsonRabbitTemplate");
             var returned = template.ConvertSendAndReceive<List<JsonObject>>("test.generic.list", new JsonObject("baz"));
             Assert.NotNull(returned[0]);
 
@@ -540,7 +540,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestManualContainer()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.manual.container", "foo");
             Assert.True(fixture.ManualContainerLatch.Wait(TimeSpan.FromSeconds(10)));
             Assert.NotNull(fixture.Message.Value);
@@ -551,7 +551,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestNoListenerYet()
         {
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             template.ConvertAndSend("test.no.listener.yet", "bar");
             Assert.True(fixture.NoListenerLatch.Wait(TimeSpan.FromSeconds(10)));
             Assert.NotNull(fixture.Message.Value);
@@ -565,7 +565,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("\"messaging\""))
                 .SetHeader(MessageHeaders.CONTENT_TYPE, "application/json")
                 .Build();
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             message = template.SendAndReceive("test.messaging.message", message);
             Assert.NotNull(message);
             var str = Encoding.UTF8.GetString((byte[])message.Payload);
@@ -579,7 +579,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("amqp"))
                 .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
                 .Build();
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             message = template.SendAndReceive("test.amqp.message", message);
             Assert.NotNull(message);
             var str = Encoding.UTF8.GetString((byte[])message.Payload);
@@ -591,7 +591,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         public void BytesToString()
         {
             var message = Message.Create(Encoding.UTF8.GetBytes("bytes"));
-            var template = provider.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var returned = template.SendAndReceive("test.bytes.to.string", message);
             Assert.NotNull(returned);
             Assert.IsType<byte[]>(returned.Payload);
@@ -602,7 +602,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void TestManualOverride()
         {
-            var registry = provider.GetRequiredService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
+            var registry = context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
             var container = registry.GetListenerContainer("manual.acks.1") as DirectMessageListenerContainer;
             Assert.Equal(AcknowledgeMode.MANUAL, container.AcknowledgeMode);
             var container2 = registry.GetListenerContainer("manual.acks.2") as DirectMessageListenerContainer;
@@ -904,29 +904,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     return result;
                 });
 
-                services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
+                services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
+                services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
+                services.AddRabbitListenerErrorHandler<ThrowANewExceptionErrorHandler>("throwANewException", p =>
                 {
-                    var result = new UpcaseAndRepeatListenerErrorHandler
-                    {
-                        ServiceName = "upcaseAndRepeatErrorHandler"
-                    };
-                    return result;
-                });
-                services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
-                {
-                    var result = new AlwaysBarListenerErrorHandler
-                    {
-                        ServiceName = "alwaysBARHandler"
-                    };
-                    return result;
-                });
-                services.AddSingleton<IRabbitListenerErrorHandler>((p) =>
-                {
-                    var result = new ThrowANewExceptionErrorHandler(ErrorHandlerChannel)
-                    {
-                        ServiceName = "throwANewException"
-                    };
-                    return result;
+                    return new ThrowANewExceptionErrorHandler(ErrorHandlerChannel);
                 });
                 return services;
             }
@@ -1232,7 +1214,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 return input.ToUpper();
             }
 
-            [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{MANUAL}")]
+            [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).MANUAL}")]
             public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
             {
                 channel.BasicAck(tag, false);

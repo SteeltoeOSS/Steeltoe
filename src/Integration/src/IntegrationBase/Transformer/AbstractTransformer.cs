@@ -6,8 +6,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Integration.Transformer
 {

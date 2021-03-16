@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging
     public interface IMessage<out T> : IMessage
     {
         /// <summary>
-        /// Gets the headers for the message
+        /// Gets the body of the message
         /// </summary>
         new T Payload { get; }
     }

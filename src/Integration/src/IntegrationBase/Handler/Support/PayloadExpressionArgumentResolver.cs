@@ -30,7 +30,7 @@ namespace Steeltoe.Integration.Handler.Support
 
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
-            _expressionCache.TryGetValue(parameter, out IExpression expression);
+            _expressionCache.TryGetValue(parameter, out var expression);
             if (expression == null)
             {
                 var ann = parameter.GetCustomAttribute<PayloadAttribute>();

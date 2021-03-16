@@ -77,6 +77,7 @@ namespace Steeltoe.Stream.Config
 
         public BindingServiceOptions()
         {
+            PostProcess();
         }
 
         internal BindingServiceOptions(IConfiguration config)

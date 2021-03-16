@@ -6,6 +6,7 @@ using Steeltoe.Common.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Messaging
 {
@@ -33,8 +34,8 @@ namespace Steeltoe.Messaging
         public const string KEY_TYPE_ID = "__KeyTypeId__";
 
         public static readonly string ID_VALUE_NONE = string.Empty;
-        protected readonly IDictionary<string, object> headers;
 
+        protected readonly IDictionary<string, object> headers;
         private static readonly IIDGenerator _defaultIdGenerator = new DefaultIdGenerator();
         private static volatile IIDGenerator _idGenerator;
 
@@ -103,10 +104,10 @@ namespace Steeltoe.Messaging
             }
         }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            return this == other ||
-                    (other is MessageHeaders && ContentsEqual(((MessageHeaders)other).headers));
+            return this == obj ||
+                    (obj is MessageHeaders messageHeaders && ContentsEqual(messageHeaders.headers));
         }
 
         public override int GetHashCode()
@@ -131,17 +132,22 @@ namespace Steeltoe.Messaging
 
         public virtual void Add(string key, object value)
         {
+            headers.Add(key, value);
+        }
+
+        public virtual void Add(object key, object value)
+        {
             throw new InvalidOperationException();
         }
 
         public virtual void Add(KeyValuePair<string, object> item)
         {
-            throw new InvalidOperationException();
+            headers.Add(item);
         }
 
         public virtual void Clear()
         {
-            throw new InvalidOperationException();
+            headers.Clear();
         }
 
         public virtual bool Contains(KeyValuePair<string, object> item)
@@ -149,19 +155,39 @@ namespace Steeltoe.Messaging
             return headers.Contains(item);
         }
 
+        public virtual bool Contains(object key)
+        {
+            if (key is string asString)
+            {
+                return TryGetValue(asString, out var _);
+            }
+
+            return false;
+        }
+
         public virtual void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
         {
             headers.CopyTo(array, arrayIndex);
         }
 
-        public virtual bool Remove(string key)
+        public virtual void CopyTo(Array array, int index)
         {
             throw new InvalidOperationException();
         }
 
-        public virtual bool Remove(KeyValuePair<string, object> item)
+        public virtual void Remove(object key)
         {
             throw new InvalidOperationException();
+        }
+
+        public virtual bool Remove(string key)
+        {
+            return headers.Remove(key);
+        }
+
+        public virtual bool Remove(KeyValuePair<string, object> item)
+        {
+            return headers.Remove(item);
         }
 
         public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()
@@ -179,6 +205,24 @@ namespace Steeltoe.Messaging
 
         public virtual object this[string key] { get => Get<object>(key); set => throw new InvalidOperationException(); }
 
+        public virtual object this[object key]
+        {
+            get
+            {
+                if (key is string asString)
+                {
+                    return Get<object>(asString);
+                }
+
+                return null;
+            }
+
+            set
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
         public virtual T Get<T>(string key)
         {
             if (TryGetValue(key, out var val))
@@ -189,10 +233,52 @@ namespace Steeltoe.Messaging
             return default;
         }
 
+        public virtual bool IsSynchronized => false;
+
+        public virtual object SyncRoot => throw new InvalidOperationException();
+
+        public virtual bool IsFixedSize => true;
+
+        ICollection IDictionary.Keys => (ICollection)Keys;
+
+        ICollection IDictionary.Values => (ICollection)Values;
+
+        IDictionaryEnumerator IDictionary.GetEnumerator()
+        {
+            return (IDictionaryEnumerator)headers.GetEnumerator();
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable)headers).GetEnumerator();
         }
+
+        void IDictionary.Add(object key, object value) => Add((string)key, value);
+
+        bool IDictionary.Contains(object key)
+        {
+            return headers.ContainsKey((string)key);
+        }
+
+        void IDictionary.Remove(object key)
+        {
+            headers.Remove((string)key);
+        }
+
+        void ICollection.CopyTo(Array array, int index)
+        {
+            var collection = new KeyValuePair<string, object>[array.Length];
+            headers.CopyTo(collection, index);
+            collection.CopyTo(array, 0);
+        }
+
+        bool IDictionary.IsFixedSize => false;
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => throw new NotImplementedException();
+
+        object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
 
         internal bool ContentsEqual(IDictionary<string, object> other)
         {
@@ -228,8 +314,7 @@ namespace Steeltoe.Messaging
         {
             get
             {
-                var generator = _idGenerator;
-                return generator != null ? generator : _defaultIdGenerator;
+                return _idGenerator ?? _defaultIdGenerator;
             }
 
             set

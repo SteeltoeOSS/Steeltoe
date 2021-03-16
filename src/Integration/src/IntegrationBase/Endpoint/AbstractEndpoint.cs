@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Services;
@@ -20,6 +19,7 @@ namespace Steeltoe.Integration.Endpoint
         protected AbstractEndpoint(IApplicationContext context)
         {
             ApplicationContext = context;
+            ServiceName = GetType().FullName + "." + Guid.NewGuid();
         }
 
         public IIntegrationServices IntegrationServices

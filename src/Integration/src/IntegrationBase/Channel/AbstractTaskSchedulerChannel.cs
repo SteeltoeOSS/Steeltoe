@@ -124,7 +124,7 @@ namespace Steeltoe.Integration.Channel
                 var messageHandler = _runnable.MessageHandler;
                 if (messageHandler == null)
                 {
-                    throw new ArgumentNullException("'messageHandler' must not be null");
+                    throw new InvalidOperationException("'messageHandler' must not be null");
                 }
 
                 var interceptorStack = new Queue<ITaskSchedulerChannelInterceptor>();
@@ -155,9 +155,9 @@ namespace Steeltoe.Integration.Channel
                         TriggerAfterMessageHandled(message, ex, interceptorStack);
                     }
 
-                    if (ex is MessagingException)
+                    if (ex is MessagingException exception)
                     {
-                        throw new MessagingExceptionWrapperException(message, (MessagingException)ex);
+                        throw new MessagingExceptionWrapperException(message, exception);
                     }
 
                     var description = "Failed to handle " + message + " to " + this + " in " + messageHandler;
@@ -218,7 +218,7 @@ namespace Steeltoe.Integration.Channel
                 var runnable = messageHandlingRunnable;
                 if (_channel.HasTaskSchedulerInterceptors)
                 {
-                    runnable = new MessageHandlingTask(_channel, messageHandlingRunnable, _channel.Logger);
+                    runnable = new MessageHandlingTask(_channel, messageHandlingRunnable, _channel.logger);
                 }
 
                 return runnable;

@@ -14,6 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ
         public const string CLUSTER_ID = RABBIT_PROPERTY + "clusterId";
         public const string CONTENT_ENCODING = RABBIT_PROPERTY + "contentEncoding";
         public const string CORRELATION_ID = RABBIT_PROPERTY + "correlationId";
+        public const string DELAY = RABBIT_PROPERTY + "delay";
         public const string DELIVERY_MODE = RABBIT_PROPERTY + "deliveryMode";
         public const string DELIVERY_TAG = RABBIT_PROPERTY + "deliveryTag";
         public const string EXPIRATION = RABBIT_PROPERTY + "expiration";
@@ -37,6 +38,7 @@ namespace Steeltoe.Messaging.RabbitMQ
         public const string FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID = MessageHeaders.INTERNAL + "FinalRetryForMessageWithNoID";
 
         // Used in RabbitMQ Integration code
+        public const string PUBLISH_CONFIRM_CORRELATION = PREFIX + "_publishConfirmCorrelation";
         public const string PUBLISH_CONFIRM = PREFIX + "publishConfirm";
         public const string PUBLISH_CONFIRM_NACK_CAUSE = PREFIX + "publishConfirmNackCause";
         public const string RETURN_REPLY_CODE = PREFIX + "returnReplyCode";

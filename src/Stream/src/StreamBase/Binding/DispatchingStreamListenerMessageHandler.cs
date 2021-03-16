@@ -123,8 +123,8 @@ namespace Steeltoe.Stream.Binding
                     throw new ArgumentException("cannot specify a condition and a return value at the same time");
                 }
 
-                this._condition = condition;
-                this._streamListenerMessageHandler = streamListenerMessageHandler;
+                _condition = condition;
+                _streamListenerMessageHandler = streamListenerMessageHandler;
             }
 
             public IExpression Condition

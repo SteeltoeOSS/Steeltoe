@@ -29,20 +29,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     [Trait("Category", "Integration")]
     public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixture>
     {
-        private readonly ServiceProvider provider;
-        private readonly FixedReplyStartupFixture fixture;
+        private readonly ServiceProvider _provider;
+        private readonly FixedReplyStartupFixture _fixture;
 
         public FixedReplyQueueDeadLetterTest(FixedReplyStartupFixture fix)
         {
-            fixture = fix;
-            provider = fixture.Provider;
+            _fixture = fix;
+            _provider = _fixture.Provider;
         }
 
         [Fact]
         public void Test()
         {
-            var template = provider.GetRabbitTemplate("fixedReplyQRabbitTemplate");
-            var deadListener = provider.GetService<DeadListener>();
+            var template = _provider.GetRabbitTemplate("fixedReplyQRabbitTemplate");
+            var deadListener = _provider.GetService<DeadListener>();
             Assert.Null(template.ConvertSendAndReceive<string>("foo"));
             Assert.True(deadListener.Latch.Wait(TimeSpan.FromSeconds(10)));
         }
@@ -150,14 +150,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public class FixedReplyStartupFixture : IDisposable
         {
-            private readonly IServiceCollection services;
+            private readonly IServiceCollection _services;
 
             public ServiceProvider Provider { get; set; }
 
             public FixedReplyStartupFixture()
             {
-                services = CreateContainer();
-                Provider = services.BuildServiceProvider();
+                _services = CreateContainer();
+                Provider = _services.BuildServiceProvider();
                 Provider.GetRequiredService<IHostedService>().StartAsync(default).Wait();
             }
 
@@ -331,6 +331,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             public void Dispose()
             {
+                GC.SuppressFinalize(this);
                 var admin = Provider.GetRabbitAdmin();
                 admin.DeleteQueue("all.args.1");
                 admin.DeleteQueue("all.args.2");

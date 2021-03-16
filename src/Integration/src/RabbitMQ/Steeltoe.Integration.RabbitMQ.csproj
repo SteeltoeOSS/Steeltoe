@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Description>Steeltoe Integration RabbitMQ</Description>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <RootNamespace>Steeltoe.Integration.RabbitMQ</RootNamespace>
+    <PackageTags>Integration, ASPNET Core, Spring, Spring Cloud, RabbitMQ</PackageTags>
+  </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
+    <ProjectReference Include="..\IntegrationBase\Steeltoe.Integration.IntegrationBase.csproj" />
+  </ItemGroup>
+</Project>

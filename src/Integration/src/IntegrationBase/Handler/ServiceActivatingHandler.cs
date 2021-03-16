@@ -4,8 +4,10 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Handler
@@ -14,22 +16,11 @@ namespace Steeltoe.Integration.Handler
     {
         private readonly IMessageProcessor _processor;
 
-        // TODO:
+        public ServiceActivatingHandler(IApplicationContext context, object instance, MethodInfo method)
+        : this(context, (IMessageProcessor)new MethodInvokingMessageProcessor<object>(context, instance, method))
+        {
+        }
 
-        // public ServiceActivatingHandler(object instance)
-        // : this(new MethodInvokingMessageProcessor(instance, typeof(ServiceActivatorAttribute)))
-        // {
-        // }
-
-        // public ServiceActivatingHandler(object instance, MethodInfo method)
-        // : this(new MethodInvokingMessageProcessor(instance, method))
-        // {
-        // }
-
-        // public ServiceActivatingHandler(object instance, string methodName)
-        // : this(new MethodInvokingMessageProcessor(instance, methodName))
-        // {
-        // }
         public ServiceActivatingHandler(IApplicationContext context, IMessageProcessor processor)
             : base(context)
         {
@@ -38,7 +29,7 @@ namespace Steeltoe.Integration.Handler
 
         public override string ComponentType => "service-activator";
 
-        public virtual bool IsRunning => !(_processor is ILifecycle) || ((ILifecycle)_processor).IsRunning;
+        public virtual bool IsRunning => _processor is not ILifecycle lifecycle || lifecycle.IsRunning;
 
         public override void Initialize()
         {
@@ -47,9 +38,9 @@ namespace Steeltoe.Integration.Handler
 
         public virtual Task Start()
         {
-            if (_processor is ILifecycle)
+            if (_processor is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_processor).Start();
+                return lifecycle.Start();
             }
 
             return Task.CompletedTask;
@@ -57,9 +48,9 @@ namespace Steeltoe.Integration.Handler
 
         public virtual Task Stop()
         {
-            if (_processor is ILifecycle)
+            if (_processor is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_processor).Stop();
+                return lifecycle.Stop();
             }
 
             return Task.CompletedTask;
@@ -71,9 +62,9 @@ namespace Steeltoe.Integration.Handler
                     + (ComponentName == null ? string.Empty : " (" + ComponentName + ")");
         }
 
-        protected override object HandleRequestMessage(IMessage message)
+        protected override object HandleRequestMessage(IMessage requestMessage)
         {
-            return _processor.ProcessMessage(message);
+            return _processor.ProcessMessage(requestMessage);
         }
     }
 }

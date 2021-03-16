@@ -30,21 +30,22 @@ namespace Steeltoe.Integration.Dispatcher
         {
             if (_executor != null)
             {
-                _factory.StartNew(() =>
-                {
-                    var task = CreateMessageHandlingTask(message, cancellationToken);
-                    try
+                _factory.StartNew(
+                    () =>
                     {
-                        task.Run();
-                    }
-                    catch (Exception e)
-                    {
-                        if (ErrorHandler != null)
+                        var task = CreateMessageHandlingTask(message, cancellationToken);
+                        try
                         {
-                            ErrorHandler.HandleError(e);
+                            task.Run();
                         }
-                    }
-                });
+                        catch (Exception e)
+                        {
+                            if (ErrorHandler != null)
+                            {
+                                ErrorHandler.HandleError(e);
+                            }
+                        }
+                    }, CancellationToken.None);
 
                 return true;
             }
@@ -67,7 +68,7 @@ namespace Steeltoe.Integration.Dispatcher
 
             var handlerIterator = GetHandlerEnumerator(message, handlers);
             List<Exception> exceptions = null;
-            var isLast = false;
+            bool isLast;
             var success = false;
             do
             {

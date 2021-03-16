@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
@@ -23,9 +24,17 @@ namespace Steeltoe.Stream.TestBinder
 {
     public class TestChannelBinder : AbstractPollableMessageSourceBinder
     {
-        public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider)
-            : base(context, new string[] { }, provisioningProvider)
+        private readonly ILogger _logger;
+
+        public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger<TestChannelBinder> logger)
+            : base(context, Array.Empty<string>(), provisioningProvider, logger)
         {
+            _logger = logger;
+            _logger.LogInformation("info");
+            _logger.LogDebug("debug");
+            _logger.LogWarning("warning");
+            _logger.LogTrace("trace");
+            _logger.LogCritical("critical");
         }
 
         public IMessage LastError { get; private set; }
@@ -49,10 +58,10 @@ namespace Steeltoe.Stream.TestBinder
             var siBinderInputChannel = ((SpringIntegrationConsumerDestination)destination).Channel;
 
             var messageListenerContainer = new TestMessageListeningContainer();
-            var endpoint = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer);
+            var endpoint = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer, _logger);
 
             var groupName = !string.IsNullOrEmpty(group) ? group : "anonymous";
-            var errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions);
+            var errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions, _logger);
             if (consumerOptions.MaxAttempts > 1)
             {
                 endpoint.RetryTemplate = BuildRetryTemplate(consumerOptions);
@@ -78,7 +87,7 @@ namespace Steeltoe.Stream.TestBinder
 
         protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
         {
-            return new PolledConsumerResources(MessageSourceDelegate, RegisterErrorInfrastructure(destination, group, consumerOptions));
+            return new PolledConsumerResources(MessageSourceDelegate, RegisterErrorInfrastructure(destination, group, consumerOptions, _logger));
         }
 
         public class ErrorMessageHandler : ILastSubscriberMessageHandler
@@ -132,8 +141,8 @@ namespace Steeltoe.Stream.TestBinder
             private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
             private readonly TestMessageListeningContainer _messageListenerContainer;
 
-            public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer)
-                : base(context)
+            public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer, ILogger logger)
+                : base(context, logger)
             {
                 _messageListenerContainer = messageListenerContainer;
             }

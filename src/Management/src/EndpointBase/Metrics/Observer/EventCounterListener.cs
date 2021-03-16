@@ -68,7 +68,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
             {
                 var refreshInterval = new Dictionary<string, string>() { { "EventCounterIntervalSec", "1" } };
-                EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);
+                try
+                {
+                    EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All, refreshInterval);
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex.Message, ex);
+                }
             }
         }
 

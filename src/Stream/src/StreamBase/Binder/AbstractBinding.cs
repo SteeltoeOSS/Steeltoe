@@ -17,7 +17,7 @@ namespace Steeltoe.Stream.Binder
         public virtual string BindingName => null;
 
         public virtual bool IsInput => throw new InvalidOperationException(
-                "Binding implementation `" + this.GetType().Name
+                "Binding implementation `" + GetType().Name
                         + "` must implement this operation before it is called");
 
         public virtual bool IsRunning => false;

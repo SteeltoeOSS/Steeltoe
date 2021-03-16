@@ -11,18 +11,18 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 {
     public class InvocableHandlerMethodTest
     {
-        private HandlerMethodArgumentResolverComposite resolvers;
-        private IMessage message;
+        private HandlerMethodArgumentResolverComposite _resolvers;
+        private IMessage _message;
 
         [Fact]
         public void ResolveArg()
         {
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
-            resolvers.AddResolver(new StubArgumentResolver(99));
-            resolvers.AddResolver(new StubArgumentResolver("value"));
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers.AddResolver(new StubArgumentResolver(99));
+            _resolvers.AddResolver(new StubArgumentResolver("value"));
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var value = Invoke(new Handler(), method);
 
@@ -37,11 +37,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         public void ResolveNoArgValue()
         {
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
-            resolvers.AddResolver(new StubArgumentResolver(typeof(int?)));
-            resolvers.AddResolver(new StubArgumentResolver(typeof(string)));
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(int?)));
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(string)));
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
 
             var value = Invoke(new Handler(), method);
@@ -56,9 +56,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var ex = Assert.Throws<MethodArgumentResolutionException>(() => Invoke(new Handler(), method));
             Assert.Contains("Could not resolve parameter [0]", ex.Message);
         }
@@ -68,8 +68,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
             var value = Invoke(new Handler(), method, 99, "value");
 
@@ -83,11 +83,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new StubArgumentResolver(1));
-            resolvers.AddResolver(new StubArgumentResolver("value1"));
+            _resolvers.AddResolver(new StubArgumentResolver(1));
+            _resolvers.AddResolver(new StubArgumentResolver("value1"));
             var value = Invoke(new Handler(), method, 2, "value2");
 
             Assert.Equal("2-value2", value);
@@ -98,10 +98,10 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new ExceptionRaisingArgumentResolver());
+            _resolvers.AddResolver(new ExceptionRaisingArgumentResolver());
             Assert.Throws<ArgumentException>(() => Invoke(new Handler(), method));
 
             // expected -  allow HandlerMethodArgumentResolver exceptions to propagate
@@ -112,11 +112,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
-            resolvers.AddResolver(new StubArgumentResolver("value"));
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
+            _resolvers.AddResolver(new StubArgumentResolver("value"));
             var ex = Assert.Throws<InvalidOperationException>(() => Invoke(new Handler(), method));
             Assert.IsType<ArgumentException>(ex.InnerException);
             Assert.Contains("Endpoint [", ex.Message);
@@ -131,8 +131,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler).GetMethod("HandleWithException");
 
             var runtimeException = new Exception("error");
@@ -148,22 +148,19 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handlerMethod = new InvocableHandlerMethod(handler, method)
             {
-                MessageMethodArgumentResolvers = resolvers
+                MessageMethodArgumentResolvers = _resolvers
             };
-            return handlerMethod.Invoke(message, providedArgs);
+            return handlerMethod.Invoke(_message, providedArgs);
         }
 
         private StubArgumentResolver GetStubResolver(int index)
         {
-            return (StubArgumentResolver)resolvers.Resolvers[index];
+            return (StubArgumentResolver)_resolvers.Resolvers[index];
         }
 
         internal class Handler
         {
-            public string Handle(int? intArg, string stringArg)
-            {
-                return (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
-            }
+            public string Handle(int? intArg, string stringArg) => (intArg.HasValue ? intArg.Value.ToString() : "null") + "-" + (stringArg ?? "null");
 
             public void Handle(double amount)
             {

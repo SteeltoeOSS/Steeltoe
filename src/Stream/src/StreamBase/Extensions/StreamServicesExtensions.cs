@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
@@ -98,7 +99,7 @@ namespace Steeltoe.Stream.Extensions
 
             services.AddCoreServices();
 
-            services.AddIntegrationServices(configuration);
+            services.AddIntegrationServices();
 
             services.AddBinderServices(configuration);
 

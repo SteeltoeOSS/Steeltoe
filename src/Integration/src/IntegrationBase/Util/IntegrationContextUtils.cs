@@ -19,6 +19,10 @@ namespace Steeltoe.Integration.Util
 
         public const string INTEGRATION_SIMPLE_EVALUATION_CONTEXT_BEAN_NAME = "integrationSimpleEvaluationContext";
 
+        public const string MESSAGE_HANDLER_FACTORY_BEAN_NAME = "integrationMessageHandlerMethodFactory";
+
+        public const string ARGUMENT_RESOLVER_MESSAGE_CONVERTER_BEAN_NAME = "integrationArgumentResolverMessageConverter";
+
         public static IMessageChannel GetErrorChannel(IApplicationContext context)
         {
             return context.GetService<IMessageChannel>(ERROR_CHANNEL_BEAN_NAME);

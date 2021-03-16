@@ -16,7 +16,7 @@ namespace Steeltoe.Stream.Binder
         public FinalRethrowingErrorMessageHandler(ILastSubscriberAwareChannel errorChannel, bool defaultErrorChannelPresent)
         {
             _errorChannel = errorChannel;
-            this._defaultErrorChannelPresent = defaultErrorChannelPresent;
+            _defaultErrorChannelPresent = defaultErrorChannelPresent;
             ServiceName = GetType().Name + "@" + GetHashCode();
         }
 

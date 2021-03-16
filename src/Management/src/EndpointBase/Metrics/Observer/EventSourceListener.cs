@@ -63,6 +63,18 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
         }
 
+        protected void SafelyEnableEvents(EventSource eventSource, EventLevel level, EventKeywords matchAnyKeyword)
+        {
+            try
+            {
+                EnableEvents(eventSource, level, matchAnyKeyword);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message, ex);
+            }
+        }
+
         private IDictionary<string, string> GetLabels(
             IEnumerable<object> payload,
             IList<string> names,

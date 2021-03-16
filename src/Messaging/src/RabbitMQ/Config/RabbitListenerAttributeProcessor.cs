@@ -7,13 +7,13 @@ using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Order;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using Steeltoe.Messaging.RabbitMQ.Expressions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System;
@@ -34,6 +34,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger _logger;
         private int _counter;
+        private IApplicationContext _applicationContext;
 
         public RabbitListenerAttributeProcessor(
             IApplicationContext applicationContext,
@@ -53,11 +54,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             _logger = _loggerFactory?.CreateLogger<RabbitListenerAttributeProcessor>();
         }
 
-        public IApplicationContext ApplicationContext { get; set; }
+        public IApplicationContext ApplicationContext
+        {
+            get => _applicationContext;
+            set
+            {
+                _applicationContext = value;
+                if (_applicationContext != null)
+                {
+                    Resolver = _applicationContext.ServiceExpressionResolver;
+                    ExpressionContext = new ServiceExpressionContext(_applicationContext);
+                }
+            }
+        }
 
         public int Order { get; } = AbstractOrdered.LOWEST_PRECEDENCE;
 
-        public IServiceExpressionResolver Resolver { get; set; } // = new StandardBeanExpressionResolver(_loggerFactory?.CreateLogger<StandardBeanExpressionResolver>());
+        public IServiceExpressionResolver Resolver { get; set; } = new StandardServiceExpressionResolver();
 
         public IServiceExpressionContext ExpressionContext { get; set; }
 
@@ -351,6 +364,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         private string[] ResolveQueues(RabbitListenerAttribute rabbitListener)
         {
+            // var allQueues = ApplicationContext.GetServices<IQueue>();
             var queues = rabbitListener.Queues;
 
             var result = new List<string>();
@@ -363,6 +377,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 }
             }
 
+            // var allBindings = ApplicationContext.GetServices<IBinding>();
             var bindings = rabbitListener.Bindings;
             if (bindings.Length > 0)
             {
@@ -443,59 +458,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private object ResolveExpression(string value, Type expectedType, string propertyName)
         {
             var resolvedValue = Resolve(value);
-
-            // TODO: This needs to handle #{} with beanreferences '@'
-            if (ConfigUtils.IsExpression(resolvedValue))
-            {
-                var expression = ConfigUtils.ExtractExpressionString(resolvedValue);
-
-                // could be prop placeholder inside #{ ${foo:bar?xyz} }
-                expression = Resolve(expression);
-                if (expectedType == typeof(string))
-                {
-                    return expression;
-                }
-                else if (expectedType == typeof(int))
-                {
-                    // We assume its an int literal: eg. #{100}
-                    if (int.TryParse(expression, out var result))
-                    {
-                        return result;
-                    }
-                }
-                else if (expectedType.IsEnum)
-                {
-                    var result = Enum.Parse(expectedType, expression, true);
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
-                else if (expectedType == typeof(bool) && bool.TryParse(expression, out bool result))
-                {
-                    return result;
-                }
-
-                // Handle #{@bean} and #{@bean}
-                if (ApplicationContext == null)
-                {
-                    throw new InvalidOperationException("Unable to resolve expressions, no ApplicationContext present");
-                }
-
-                // Strip @ if present
-                var servicename = ConfigUtils.ExtractServiceName(expression);
-
-                // use service name to lookup
-                var reference = ApplicationContext.GetService(servicename, expectedType);
-                if (reference != null)
-                {
-                    return reference;
-                }
-
-                throw new InvalidOperationException(string.Format("Unable to resolve expression {0} for RabbitListener property {1}", value, propertyName));
-            }
-
-            return resolvedValue;
+            return Resolver.Evaluate(resolvedValue, ExpressionContext);
         }
 
         private string Resolve(string value)

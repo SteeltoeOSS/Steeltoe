@@ -15,14 +15,17 @@ namespace Steeltoe.Stream.Extensions
     public static class StreamListenerExtensions
     {
         public static IServiceCollection AddStreamListeners<T>(this IServiceCollection services)
-            where T : class
+          where T : class
+            => services.AddStreamListeners(typeof(T));
+
+        public static IServiceCollection AddStreamListeners(this IServiceCollection services, Type type)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            var targetMethods = typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+            var targetMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
             var listenersAdded = false;
 
@@ -38,7 +41,7 @@ namespace Steeltoe.Stream.Extensions
 
             if (listenersAdded)
             {
-                services.TryAddSingleton<T>();
+                services.TryAddSingleton(type);
             }
 
             return services;

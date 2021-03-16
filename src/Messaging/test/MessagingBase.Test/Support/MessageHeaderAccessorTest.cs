@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using Xunit;
+using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 
 namespace Steeltoe.Messaging.Support.Test
 {
@@ -32,7 +33,7 @@ namespace Steeltoe.Messaging.Support.Test
             var accessor = new MessageHeaderAccessor(message);
             var actual = accessor.MessageHeaders;
 
-            Assert.Equal(3, actual.Count);
+            Assert.Equal(3, ((HeadersDictionary)actual).Count);
             Assert.Equal("bar", actual.Get<string>("foo"));
             Assert.Equal("baz", actual.Get<string>("bar"));
         }
@@ -53,7 +54,7 @@ namespace Steeltoe.Messaging.Support.Test
             accessor.SetHeader("foo", "BAR");
             var actual = accessor.MessageHeaders;
 
-            Assert.Equal(3, actual.Count);
+            Assert.Equal(3, ((HeadersDictionary)actual).Count);
             Assert.NotEqual(message.Headers.Id, actual.Id);
             Assert.Equal("BAR", actual.Get<string>("foo"));
             Assert.Equal("baz", actual.Get<string>("bar"));
@@ -93,7 +94,7 @@ namespace Steeltoe.Messaging.Support.Test
             accessor.RemoveHeaders("fo*");
 
             var actual = accessor.MessageHeaders;
-            Assert.Equal(2, actual.Count);
+            Assert.Equal(2, ((HeadersDictionary)actual).Count);
             Assert.Null(actual.Get<string>("foo"));
             Assert.Equal("baz", actual.Get<string>("bar"));
         }
@@ -116,7 +117,7 @@ namespace Steeltoe.Messaging.Support.Test
             accessor.CopyHeaders(map2);
 
             var actual = accessor.MessageHeaders;
-            Assert.Equal(3, actual.Count);
+            Assert.Equal(3, ((HeadersDictionary)actual).Count);
             Assert.Equal("BAR", actual.Get<string>("foo"));
             Assert.Equal("baz", actual.Get<string>("bar"));
         }
@@ -139,7 +140,7 @@ namespace Steeltoe.Messaging.Support.Test
             accessor.CopyHeadersIfAbsent(map2);
 
             var actual = accessor.MessageHeaders;
-            Assert.Equal(3, actual.Count);
+            Assert.Equal(3, ((HeadersDictionary)actual).Count);
             Assert.Equal("bar", actual.Get<string>("foo"));
             Assert.Equal("baz", actual.Get<string>("bar"));
         }
@@ -151,8 +152,8 @@ namespace Steeltoe.Messaging.Support.Test
             headers.CopyHeaders(null);
             headers.CopyHeadersIfAbsent(null);
 
-            Assert.Equal(1, headers.MessageHeaders.Count);
-            Assert.Contains("id", headers.MessageHeaders.Keys);
+            Assert.Equal(1, ((HeadersDictionary)headers.MessageHeaders).Count);
+            Assert.Contains("id", ((HeadersDictionary)headers.MessageHeaders).Keys);
         }
 
         [Fact]
