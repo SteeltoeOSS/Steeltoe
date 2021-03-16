@@ -63,62 +63,62 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (!AcknowledgeMode.HasValue)
             {
-                AcknowledgeMode = defaultOptions != null ? defaultOptions.AcknowledgeMode : RabbitCore.AcknowledgeMode.AUTO;
+                AcknowledgeMode = defaultOptions?.AcknowledgeMode ?? RabbitCore.AcknowledgeMode.AUTO;
             }
 
             if (!MaxConcurrency.HasValue)
             {
-                MaxConcurrency = defaultOptions != null ? defaultOptions.MaxConcurrency : 1;
+                MaxConcurrency = defaultOptions?.MaxConcurrency ?? 1;
             }
 
             if (!Prefetch.HasValue)
             {
-                Prefetch = defaultOptions != null ? defaultOptions.Prefetch : 1;
+                Prefetch = defaultOptions?.Prefetch ?? 1;
             }
 
             if (!BatchSize.HasValue)
             {
-                BatchSize = defaultOptions != null ? defaultOptions.BatchSize : 1;
+                BatchSize = defaultOptions?.BatchSize ?? 1;
             }
 
             if (!DurableSubscription.HasValue)
             {
-                DurableSubscription = defaultOptions != null ? defaultOptions.DurableSubscription : true;
+                DurableSubscription = defaultOptions?.DurableSubscription ?? true;
             }
 
             if (!RepublishToDlq.HasValue)
             {
-                RepublishToDlq = defaultOptions != null ? defaultOptions.RepublishToDlq : true;
+                RepublishToDlq = defaultOptions?.RepublishToDlq ?? true;
             }
 
             if (!RepublishDeliveryMode.HasValue)
             {
-                RepublishDeliveryMode = defaultOptions != null ? defaultOptions.RepublishDeliveryMode : RabbitCore.MessageDeliveryMode.PERSISTENT;
+                RepublishDeliveryMode = defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.PERSISTENT;
             }
 
             if (!RequeueRejected.HasValue)
             {
-                RequeueRejected = defaultOptions != null ? defaultOptions.RequeueRejected : false;
+                RequeueRejected = defaultOptions?.RequeueRejected ?? false;
             }
 
             if (HeaderPatterns == null)
             {
-                HeaderPatterns = defaultOptions != null ? defaultOptions.HeaderPatterns : new List<string>() { "*" };
+                HeaderPatterns = defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
             }
 
             if (!RecoveryInterval.HasValue)
             {
-                RecoveryInterval = defaultOptions != null ? defaultOptions.RecoveryInterval : 5000;
+                RecoveryInterval = defaultOptions?.RecoveryInterval ?? 5000;
             }
 
             if (!Exclusive.HasValue)
             {
-                Exclusive = defaultOptions != null ? defaultOptions.Exclusive : false;
+                Exclusive = defaultOptions?.Exclusive ?? false;
             }
 
             if (!MissingQueuesFatal.HasValue)
             {
-                MissingQueuesFatal = defaultOptions != null ? defaultOptions.MissingQueuesFatal : false;
+                MissingQueuesFatal = defaultOptions?.MissingQueuesFatal ?? false;
             }
 
             if (!QueueDeclarationRetries.HasValue)
@@ -138,12 +138,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (!FrameMaxHeadroom.HasValue)
             {
-                FrameMaxHeadroom = defaultOptions != null ? defaultOptions.FrameMaxHeadroom : 20_000;
+                FrameMaxHeadroom = defaultOptions?.FrameMaxHeadroom ?? 20_000;
             }
 
             if (AnonymousGroupPrefix == null)
             {
-                AnonymousGroupPrefix = defaultOptions != null ? defaultOptions.AnonymousGroupPrefix : "anonymous.";
+                AnonymousGroupPrefix = defaultOptions?.AnonymousGroupPrefix ?? "anonymous.";
             }
 
             base.PostProcess();

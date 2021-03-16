@@ -33,11 +33,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ConfigureServicesInvoked = true; // Testing
-            services.AddSingleton<IConnectionFactory>(p => new CachingConnectionFactory("localhost"));
             services.AddSingleton<RabbitExchangeQueueProvisioner>();
             services.AddSingleton<RabbitOptions>();
             services.AddSingleton<RabbitBinderOptions>();
+            services.AddSingleton<IConnectionFactory, CachingConnectionFactory>();
 
             services.AddSingleton<RabbitBindingsOptions>();
             services.AddSingleton<RabbitMessageChannelBinder>();

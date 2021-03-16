@@ -315,6 +315,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.Rabb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.BinderTests", "Stream\test\BinderTests\Steeltoe.Stream.BinderTests.csproj", "{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFCore", "..\..\steeltoe-stream-samples\EFCore\EFCore.csproj", "{1E733B0D-945F-4378-9FC0-497601E8EA4D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -825,6 +827,10 @@ Global
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E733B0D-945F-4378-9FC0-497601E8EA4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E733B0D-945F-4378-9FC0-497601E8EA4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E733B0D-945F-4378-9FC0-497601E8EA4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E733B0D-945F-4378-9FC0-497601E8EA4D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -5,9 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using System;
@@ -62,25 +60,7 @@ namespace Steeltoe.Stream.StreamsHost
 
         public StreamsHostBuilder(IHostBuilder hostBuilder)
         {
-            _hostBuilder = hostBuilder.ConfigureServices(services =>
-              {
-                  var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
-
-                  services.AddOptions();
-
-                  services.AddSingleton<IConfiguration>(configuration);
-                  services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-
-                  services.AddStreamConfiguration(configuration);
-                  services.AddCoreServices();
-                  services.AddIntegrationServices();
-                  services.AddStreamCoreServices(configuration);
-
-                  services.AddBinderServices(configuration);
-                  services.AddSourceStreamBinding();
-                  services.AddSinkStreamBinding();
-                  services.AddEnableBinding<T>();
-              });
+            _hostBuilder = hostBuilder.ConfigureServices(HostBuilderExtensions.ConfigureStreamsDelegate<T>());
         }
 
         public IDictionary<object, object> Properties => _hostBuilder.Properties;

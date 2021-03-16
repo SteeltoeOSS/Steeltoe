@@ -26,7 +26,7 @@ using RabbitConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 namespace Steeltoe.Integration.Rabbit.Inbound
 {
-    public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint // ,IOrderlyShutdownCapable
+    public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
     {
         private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
         private readonly ILogger _logger;
@@ -90,16 +90,6 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             }
         }
 
-        // public int beforeShutdown()
-        // {
-        //    this.stop();
-        //    return 0;
-        // }
-
-        // public int afterShutdown()
-        // {
-        //    return 0;
-        // }
         private void SetAttributesIfNecessary(IMessage original, IMessage endMessage)
         {
             var needHolder = ErrorChannel != null && RetryTemplate == null;

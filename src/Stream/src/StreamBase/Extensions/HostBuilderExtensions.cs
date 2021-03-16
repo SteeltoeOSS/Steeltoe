@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.StreamsHost;
+using System;
 
 namespace Steeltoe.Stream.Extensions
 {
@@ -15,7 +16,14 @@ namespace Steeltoe.Stream.Extensions
     {
         public static IHostBuilder AddStreamsServices<T>(this IHostBuilder builder)
         {
-            return builder.ConfigureServices((context, services) =>
+            return builder
+                .ConfigureServices(ConfigureStreamsDelegate<T>())
+                .ConfigureServices(services => services.AddHostedService<StreamsLifeCycleService>());
+        }
+
+        public static Action<HostBuilderContext, IServiceCollection> ConfigureStreamsDelegate<T>()
+        {
+            return (context, services) =>
             {
                 var configuration = context.Configuration;
 
@@ -31,10 +39,9 @@ namespace Steeltoe.Stream.Extensions
                 services.AddBinderServices(configuration);
                 services.AddSourceStreamBinding();
                 services.AddSinkStreamBinding();
-                services.AddHostedService<StreamsLifeCycleService>();
 
                 services.AddEnableBinding<T>();
-            });
+            };
         }
     }
 }
