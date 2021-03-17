@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
@@ -95,9 +94,9 @@ namespace Steeltoe.Integration.Dispatcher
                             .FromMessage(message)
                             .PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize)
                             .Build();
-                    if (message is IMessageDecorator)
+                    if (message is IMessageDecorator decorator)
                     {
-                        messageToSend = ((IMessageDecorator)message).DecorateMessage(messageToSend);
+                        messageToSend = decorator.DecorateMessage(messageToSend);
                     }
                 }
 
@@ -148,7 +147,7 @@ namespace Steeltoe.Integration.Dispatcher
                         return;
                     }
 
-                    if (e is MessagingException && ((MessagingException)e).FailedMessage == null)
+                    if (e is MessagingException exception && exception.FailedMessage == null)
                     {
                         throw new MessagingException(message, "Failed to handle Message", e);
                     }

@@ -14,35 +14,9 @@ namespace Steeltoe.Messaging.Core
     {
         public const string CONVERSION_HINT_HEADER = "conversionHint";
 
-        private D _defaultSendDestination;
+        public virtual D DefaultSendDestination { get; set; }
 
-        private IMessageConverter _converter = new SimpleMessageConverter();
-
-        public virtual D DefaultSendDestination
-        {
-            get
-            {
-                return _defaultSendDestination;
-            }
-
-            set
-            {
-                _defaultSendDestination = value;
-            }
-        }
-
-        public virtual IMessageConverter MessageConverter
-        {
-            get
-            {
-                return _converter;
-            }
-
-            set
-            {
-                _converter = value;
-            }
-        }
+        public virtual IMessageConverter MessageConverter { get; set; } = new SimpleMessageConverter();
 
         public virtual Task ConvertAndSendAsync(object payload, CancellationToken cancellationToken = default)
         {
@@ -132,15 +106,7 @@ namespace Steeltoe.Messaging.Core
 
         protected virtual D RequiredDefaultSendDestination
         {
-            get
-            {
-                if (_defaultSendDestination == null)
-                {
-                    throw new InvalidOperationException("No default destination configured");
-                }
-
-                return _defaultSendDestination;
-            }
+            get => DefaultSendDestination ?? throw new InvalidOperationException("No default destination configured");
         }
 
         protected virtual IMessage DoConvert(object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
@@ -152,9 +118,9 @@ namespace Steeltoe.Messaging.Core
             var headersToUse = ProcessHeadersToSend(headers);
             if (headersToUse != null)
             {
-                if (headersToUse is MessageHeaders)
+                if (headersToUse is MessageHeaders headers1)
                 {
-                    messageHeaders = (MessageHeaders)headersToUse;
+                    messageHeaders = headers1;
                 }
                 else
                 {
@@ -163,8 +129,8 @@ namespace Steeltoe.Messaging.Core
             }
 
             var converter = MessageConverter;
-            var message = converter is ISmartMessageConverter ?
-                     ((ISmartMessageConverter)converter).ToMessage(payload, messageHeaders, conversionHint) :
+            var message = converter is ISmartMessageConverter smartConverter ?
+                     smartConverter.ToMessage(payload, messageHeaders, conversionHint) :
                      converter.ToMessage(payload, messageHeaders);
             if (message == null)
             {
@@ -172,7 +138,7 @@ namespace Steeltoe.Messaging.Core
 
                 object contentType = null;
                 messageHeaders?.TryGetValue(MessageHeaders.CONTENT_TYPE, out contentType);
-                contentType = contentType ?? "unknown";
+                contentType ??= "unknown";
 
                 throw new MessageConversionException("Unable to convert payload with type='" + payloadType +
                         "', contentType='" + contentType + "', converter=[" + MessageConverter + "]");

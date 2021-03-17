@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
@@ -25,25 +26,27 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         public virtual List<IHandlerMethodArgumentResolver> CustomArgumentResolvers { get; set; }
 
-        public DefaultMessageHandlerMethodFactory()
-            : this(null, null, null)
+        public virtual IApplicationContext ApplicationContext { get; set; }
+
+        public DefaultMessageHandlerMethodFactory(IApplicationContext context = null)
+            : this(null, null, null, context)
         {
         }
 
-        public DefaultMessageHandlerMethodFactory(IConversionService conversionService)
-           : this(conversionService, null, null)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IApplicationContext context = null)
+           : this(conversionService, null, null, context)
         {
             ConversionService = conversionService;
         }
 
-        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter)
-            : this(conversionService, converter, null)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, IApplicationContext context = null)
+            : this(conversionService, converter, null, context)
         {
             ConversionService = conversionService;
             MessageConverter = converter;
         }
 
-        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers)
+        public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers, IApplicationContext context = null)
         {
             ConversionService = conversionService;
             MessageConverter = converter;
@@ -63,6 +66,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             {
                 _argumentResolvers.AddResolvers(InitArgumentResolvers());
             }
+
+            ApplicationContext = context;
         }
 
         public virtual void SetArgumentResolvers(List<IHandlerMethodArgumentResolver> argumentResolvers)
@@ -83,8 +88,10 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         public virtual IInvocableHandlerMethod CreateInvocableHandlerMethod(object bean, MethodInfo method)
         {
-            var handlerMethod = new InvocableHandlerMethod(bean, method);
-            handlerMethod.MessageMethodArgumentResolvers = _argumentResolvers;
+            var handlerMethod = new InvocableHandlerMethod(bean, method)
+            {
+                MessageMethodArgumentResolvers = _argumentResolvers
+            };
             return handlerMethod;
         }
 
@@ -110,14 +117,15 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected List<IHandlerMethodArgumentResolver> InitArgumentResolvers()
         {
-            var resolvers = new List<IHandlerMethodArgumentResolver>();
+            var resolvers = new List<IHandlerMethodArgumentResolver>
+            {
+                // Annotation-based argument resolution
+                new HeaderMethodArgumentResolver(ConversionService, ApplicationContext),
+                new HeadersMethodArgumentResolver(),
 
-            // Annotation-based argument resolution
-            resolvers.Add(new HeaderMethodArgumentResolver(ConversionService));
-            resolvers.Add(new HeadersMethodArgumentResolver());
-
-            // Type-based argument resolution
-            resolvers.Add(new MessageMethodArgumentResolver(MessageConverter));
+                // Type-based argument resolution
+                new MessageMethodArgumentResolver(MessageConverter)
+            };
 
             if (CustomArgumentResolvers != null)
             {

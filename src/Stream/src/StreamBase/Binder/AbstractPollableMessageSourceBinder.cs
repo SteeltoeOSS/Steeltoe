@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
@@ -19,8 +20,9 @@ namespace Steeltoe.Stream.Binder
         protected AbstractPollableMessageSourceBinder(
             IApplicationContext context,
             string[] headersToEmbed,
-            IProvisioningProvider provisioningProvider)
-        : this(context, headersToEmbed, provisioningProvider, null, null)
+            IProvisioningProvider provisioningProvider,
+            ILogger logger)
+        : this(context, headersToEmbed, provisioningProvider, null, null, logger)
         {
         }
 
@@ -29,8 +31,9 @@ namespace Steeltoe.Stream.Binder
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
-            IMessageSourceCustomizer sourceCustomizer)
-            : base(context, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer)
+            IMessageSourceCustomizer sourceCustomizer,
+            ILogger logger)
+            : base(context, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer, logger)
         {
         }
 

@@ -13,6 +13,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Messaging.Abstractions.csproj" />
   </ItemGroup>
 

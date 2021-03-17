@@ -50,7 +50,7 @@ namespace Steeltoe.Stream.Binder
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             SendAndValidate_ErrorConfigurationDefault(provider);
         }
@@ -66,7 +66,7 @@ namespace Steeltoe.Stream.Binder
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             SendAndValidate_ErrorConfigurationWithCustomErrorHandler(provider);
         }

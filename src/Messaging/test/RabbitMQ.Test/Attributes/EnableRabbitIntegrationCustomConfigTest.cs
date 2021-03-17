@@ -169,7 +169,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             public CustomStartupFixture()
             {
                 adminCf = new CachingConnectionFactory("localhost");
-                admin = new RabbitAdmin(adminCf);
+                admin = new RabbitAdmin(adminCf, null);
                 foreach (var q in Queues)
                 {
                     var queue = new Config.Queue(q);

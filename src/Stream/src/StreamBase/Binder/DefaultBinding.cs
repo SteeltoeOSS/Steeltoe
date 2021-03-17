@@ -95,9 +95,9 @@ namespace Steeltoe.Stream.Binder
 
         public override async Task Pause()
         {
-            if (_lifecycle is IPausable)
+            if (_lifecycle is IPausable pausable)
             {
-                await ((IPausable)_lifecycle).Pause();
+                await pausable.Pause();
                 _paused = true;
             }
             else
@@ -108,9 +108,9 @@ namespace Steeltoe.Stream.Binder
 
         public override async Task Resume()
         {
-            if (_lifecycle is IPausable)
+            if (_lifecycle is IPausable pausable)
             {
-                await ((IPausable)_lifecycle).Resume();
+                await pausable.Resume();
                 _paused = false;
             }
             else

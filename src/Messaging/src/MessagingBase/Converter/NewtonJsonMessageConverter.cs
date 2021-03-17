@@ -63,12 +63,7 @@ namespace Steeltoe.Messaging.Converter
             return true;
         }
 
-        protected internal bool IsIMessageGenericType(Type type)
-        {
-            return GetIMessageGenericType(type) != null;
-        }
-
-        protected internal Type GetIMessageGenericType(Type type)
+        protected internal static Type GetIMessageGenericType(Type type)
         {
             var typeFilter = new TypeFilter((t, c) =>
             {
@@ -100,7 +95,9 @@ namespace Steeltoe.Messaging.Converter
             return null;
         }
 
-        protected internal Type GetTargetType(Type targetClass, object conversionHint)
+        protected internal static bool IsIMessageGenericType(Type type) => GetIMessageGenericType(type) != null;
+
+        protected internal static Type GetTargetType(Type targetClass, object conversionHint)
         {
             if (conversionHint is ParameterInfo info)
             {
@@ -117,6 +114,16 @@ namespace Steeltoe.Messaging.Converter
             return targetClass;
         }
 
+        protected static Encoding GetJsonEncoding(MimeType contentType)
+        {
+            if (contentType != null && (contentType.Encoding != null))
+            {
+                return contentType.Encoding;
+            }
+
+            return EncodingUtils.Utf8;
+        }
+
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
         {
             var target = GetTargetType(targetClass, conversionHint);
@@ -130,9 +137,9 @@ namespace Steeltoe.Messaging.Converter
             try
             {
                 TextReader textReader = null;
-                if (payload is byte[])
+                if (payload is byte[] payloadBytes)
                 {
-                    var buffer = new MemoryStream((byte[])payload, false);
+                    var buffer = new MemoryStream(payloadBytes, false);
                     textReader = new StreamReader(buffer, true);
                 }
                 else
@@ -182,16 +189,6 @@ namespace Steeltoe.Messaging.Converter
         protected override bool Supports(Type clazz)
         {
             throw new InvalidOperationException();
-        }
-
-        protected Encoding GetJsonEncoding(MimeType contentType)
-        {
-            if (contentType != null && (contentType.Encoding != null))
-            {
-                return contentType.Encoding;
-            }
-
-            return EncodingUtils.Utf8;
         }
     }
 }

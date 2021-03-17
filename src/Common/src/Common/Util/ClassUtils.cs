@@ -125,6 +125,18 @@ namespace Steeltoe.Common.Util
             return results;
         }
 
+        public static object[][] GetParameterAttributes(MethodInfo method)
+        {
+            var parameters = method.GetParameters();
+            var paramsAttributes = new object[parameters.Length][];
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                paramsAttributes[i] = parameters[i].GetCustomAttributes(false);
+            }
+
+            return paramsAttributes;
+        }
+
         public static Type DetermineCommonAncestor(Type clazz1, Type clazz2)
         {
             if (clazz1 == null)

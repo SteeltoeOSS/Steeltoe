@@ -79,5 +79,10 @@ namespace Steeltoe.Common.Retry
                 }
             }
         }
+
+        public override string ToString()
+        {
+            return $"LastException: {LastException?.Message}, RetryCount: {RetryCount}, RetryParent: {Parent}";
+        }
     }
 }

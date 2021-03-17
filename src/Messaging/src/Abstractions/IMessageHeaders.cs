@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Steeltoe.Messaging
@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging
     /// <summary>
     /// The headers for a message
     /// </summary>
-    public interface IMessageHeaders : IDictionary<string, object>
+    public interface IMessageHeaders : IDictionary, IDictionary<string, object>
     {
         /// <summary>
         /// Gets a header value given its key
@@ -39,5 +39,13 @@ namespace Steeltoe.Messaging
         /// Gets the error channel the message is for
         /// </summary>
         object ErrorChannel { get; }
+
+        new ICollection<string> Keys { get; }
+
+        new ICollection<object> Values { get; }
+
+        new int Count { get; }
+
+        new IEnumerator<KeyValuePair<string, object>> GetEnumerator();
     }
 }

@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Contexts;
+using Steeltoe.Common.Expression.Internal.Spring.Common;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using Steeltoe.Messaging.RabbitMQ.Expressions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 using System.Collections.Concurrent;
@@ -18,6 +20,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class DelegatingInvocableHandler
     {
+        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
+
         private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new Dictionary<IInvocableHandlerMethod, IExpression>();
         private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ConcurrentDictionary<Type, IInvocableHandlerMethod>();
 
@@ -202,8 +207,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
             if (replyTo != null)
             {
-                // TODO: _handlerSendTo[handler] = PARSER.parseExpression(replyTo, PARSER_CONTEXT);
-                _handlerSendTo[handler] = new ValueExpression<string>(replyTo);
+                _handlerSendTo[handler] = PARSER.ParseExpression(replyTo, PARSER_CONTEXT);
             }
         }
 
@@ -228,7 +232,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         {
             if (Resolver != null)
             {
-                var resolvedValue = ServiceExpressionContext.ResolveEmbeddedValue(value);
+                var resolvedValue = ServiceExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
                 var newValue = Resolver.Evaluate(resolvedValue, ServiceExpressionContext);
                 if (!(newValue is string))
                 {

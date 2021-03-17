@@ -48,7 +48,8 @@ namespace Steeltoe.Integration.Channel
             var added = Dispatcher.AddHandler(handler);
             if (added)
             {
-                Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+                logger?.LogTrace("Channel '" + ServiceName + "' has " + handler.ServiceName + " subscriber(s).");
+                logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
             }
 
             return added;
@@ -59,7 +60,7 @@ namespace Steeltoe.Integration.Channel
             var removed = Dispatcher.RemoveHandler(handler);
             if (removed)
             {
-                Logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
+                logger?.LogInformation("Channel '" + ServiceName + "' has " + Dispatcher.HandlerCount + " subscriber(s).");
             }
 
             return removed;

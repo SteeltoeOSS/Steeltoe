@@ -10,6 +10,7 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Config;
+using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
@@ -28,24 +29,24 @@ namespace Steeltoe.Stream.Tck
 {
     public class ContentTypeTckTest : AbstractTest
     {
-        private IServiceCollection container;
+        private IServiceCollection _container;
 
         public ContentTypeTckTest()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
+            _container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
         }
 
         [Fact]
         public async Task StringToMapStreamListener()
         {
-            container.AddStreamListeners<StringToMapStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToMapStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
             var payload = outputMessage.Payload as byte[];
@@ -56,13 +57,13 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task StringToMapMessageStreamListener()
         {
-            container.AddStreamListeners<StringToMapMessageStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToMapMessageStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -74,13 +75,13 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task StringToMapMessageStreamListenerOriginalContentType()
         {
-            container.AddStreamListeners<StringToMapMessageStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToMapMessageStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var source = provider.GetService<InputDestination>();
             var target = provider.GetService<OutputDestination>();
@@ -100,14 +101,14 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task WithInternalPipeline()
         {
-            container.AddStreamListeners<InternalPipeLine>();
-            container.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<InternalPipeLine>();
+            _container.AddSingleton<IMessageChannel>((p) => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -119,13 +120,13 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task PojoToPojo()
         {
-            container.AddStreamListeners<PojoToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -138,13 +139,13 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task PojoToString()
         {
-            container.AddStreamListeners<PojoToStringStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToStringStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -158,16 +159,16 @@ namespace Steeltoe.Stream.Tck
         public async Task PojoToStringOutboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.output.contentType=text/plain");
-            container.AddStreamListeners<PojoToStringStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToStringStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -181,13 +182,13 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task PojoToByteArray()
         {
-            container.AddStreamListeners<PojoToByteArrayStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToByteArrayStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -201,16 +202,16 @@ namespace Steeltoe.Stream.Tck
         public async Task PojoToByteArrayOutboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.output.contentType=text/plain");
-            container.AddStreamListeners<PojoToByteArrayStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToByteArrayStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -224,16 +225,16 @@ namespace Steeltoe.Stream.Tck
         public async Task StringToPojoInboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=text/plain");
-            container.AddStreamListeners<StringToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -248,16 +249,16 @@ namespace Steeltoe.Stream.Tck
         public async Task TypelessToPojoInboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=text/plain");
-            container.AddStreamListeners<TypelessToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -272,15 +273,15 @@ namespace Steeltoe.Stream.Tck
         public async Task TypelessToPojoInboundContentTypeBindingJson()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=application/json");
-            container.AddStreamListeners<TypelessToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -295,15 +296,15 @@ namespace Steeltoe.Stream.Tck
         public async Task TypelessMessageToPojoInboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=text/plain");
-            container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -318,15 +319,15 @@ namespace Steeltoe.Stream.Tck
         public async Task TypelessMessageToPojoInboundContentTypeBindingJson()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=application/json");
-            container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -340,12 +341,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TypelessToPojoWithTextHeaderContentTypeBinding()
         {
-            container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
@@ -360,15 +361,15 @@ namespace Steeltoe.Stream.Tck
         public async Task TypelessToPojoOutboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.output.contentType=text/plain");
-            container.AddStreamListeners<TypelessToMessageStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessToMessageStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
@@ -382,12 +383,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task OutboundMessageWithTextContentTypeOnly()
         {
-            container.AddStreamListeners<TypelessToMessageTextOnlyContentTypeStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessToMessageTextOnlyContentTypeStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, new MimeType("text")));
@@ -402,12 +403,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task StringToPojoInboundContentTypeHeader()
         {
-            container.AddStreamListeners<StringToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN));
@@ -422,15 +423,15 @@ namespace Steeltoe.Stream.Tck
         public async Task ByteArrayToPojoInboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=text/plain");
-            container.AddStreamListeners<ByteArrayToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<ByteArrayToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -444,12 +445,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task ByteArrayToPojoInboundContentTypeHeader()
         {
-            container.AddStreamListeners<StringToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
@@ -464,12 +465,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task ByteArrayToByteArray()
         {
-            container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -483,16 +484,16 @@ namespace Steeltoe.Stream.Tck
         public async Task ByteArrayToByteArrayInboundOutboundContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.bindings.input.contentType=text/plain",
                 "spring.cloud.stream.bindings.output.contentType=text/plain");
-            container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -505,12 +506,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task PojoMessageToStringMessage()
         {
-            container.AddStreamListeners<PojoMessageToStringMessageStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoMessageToStringMessageStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -521,15 +522,17 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task PojoMessageToStringMessageServiceActivator()
         {
-            container.AddServiceActivators<PojoMessageToStringMessageServiceActivator>();
-            var provider = container.BuildServiceProvider();
+            _container.AddServiceActivators<PojoMessageToStringMessageServiceActivator>();
+
+            var provider = _container.BuildServiceProvider();
+
+            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            activatorProcessor.Initialize();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
-            activatorProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -540,15 +543,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task ByteArrayMessageToStringJsonMessageServiceActivator()
         {
-            container.AddServiceActivators<ByteArrayMessageToStringJsonMessageServiceActivator>();
-            var provider = container.BuildServiceProvider();
+            _container.AddServiceActivators<ByteArrayMessageToStringJsonMessageServiceActivator>();
+            var provider = _container.BuildServiceProvider();
+
+            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            activatorProcessor.Initialize();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
-            activatorProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -559,15 +563,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal("{\"name\":\"bob\"}", Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task ByteArrayMessageToStringMessageServiceActivator()
         {
-            container.AddServiceActivators<StringMessageToStringMessageServiceActivator>();
-            var provider = container.BuildServiceProvider();
+            _container.AddServiceActivators<StringMessageToStringMessageServiceActivator>();
+            var provider = _container.BuildServiceProvider();
+
+            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            activatorProcessor.Initialize();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
-            activatorProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -582,16 +587,16 @@ namespace Steeltoe.Stream.Tck
         public async Task OverrideMessageConverter_DefaultContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.default.contentType=application/x-java-object");
-            container.AddStreamListeners<StringToStringStreamListener>();
-            container.AddSingleton<IMessageConverter, AlwaysStringMessageConverter>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToStringStreamListener>();
+            _container.AddSingleton<IMessageConverter, AlwaysStringMessageConverter>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -606,16 +611,16 @@ namespace Steeltoe.Stream.Tck
         public async Task CustomMessageConverter_DefaultContentTypeBinding()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.default.contentType=foo/bar");
-            container.AddStreamListeners<StringToStringStreamListener>();
-            container.AddSingleton<IMessageConverter, FooBarMessageConverter>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToStringStreamListener>();
+            _container.AddSingleton<IMessageConverter, FooBarMessageConverter>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -630,15 +635,15 @@ namespace Steeltoe.Stream.Tck
         public async Task JsonToPojoWrongDefaultContentTypeProperty()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.default.contentType=text/plain");
-            container.AddStreamListeners<PojoToPojoStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<PojoToPojoStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             DoSendReceive(provider, jsonPayload, typeof(MessagingException));
@@ -648,15 +653,15 @@ namespace Steeltoe.Stream.Tck
         public async Task ToStringDefaultContentTypePropertyUnknownContentType()
         {
             var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(
+            _container = CreateStreamsContainerWithDefaultBindings(
                 searchDirectories,
                 "spring.cloud.stream.default.contentType=foo/bar");
-            container.AddStreamListeners<StringToStringStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<StringToStringStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             DoSendReceive(provider, jsonPayload, typeof(MessageConversionException));
@@ -665,12 +670,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task ToCollectionWithParameterizedType()
         {
-            container.AddStreamListeners<CollectionWithParameterizedTypesStreamListener>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<CollectionWithParameterizedTypesStreamListener>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[{\"person\":{\"name\":\"jon\"},\"id\":123},{\"person\":{\"name\":\"jane\"},\"id\":456}]";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -693,12 +698,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TestWithMapInputParameter()
         {
-            container.AddStreamListeners<MapInputConfiguration>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<MapInputConfiguration>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -711,12 +716,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TestWithMapPayloadParameter()
         {
-            container.AddStreamListeners<MapPayloadConfiguration>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<MapPayloadConfiguration>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -729,12 +734,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TestWithListInputParameter()
         {
-            container.AddStreamListeners<ListInputConfiguration>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<ListInputConfiguration>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -747,12 +752,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TestWithMessageHeadersInputParameter()
         {
-            container.AddStreamListeners<MessageHeadersInputConfiguration>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<MessageHeadersInputConfiguration>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "{\"name\":\"oleg\"}";
             var outputMessage = DoSendReceive(provider, jsonPayload);
@@ -767,12 +772,12 @@ namespace Steeltoe.Stream.Tck
         [Fact]
         public async Task TestWithTypelessInputParameterAndOctetStream()
         {
-            container.AddStreamListeners<TypelessPayloadConfiguration>();
-            var provider = container.BuildServiceProvider();
+            _container.AddStreamListeners<TypelessPayloadConfiguration>();
+            var provider = _container.BuildServiceProvider();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
@@ -786,15 +791,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task TestWithTypelessInputParameterAndServiceActivator()
         {
-            container.AddServiceActivators<TypelessPayloadConfigurationSA>();
-            var provider = container.BuildServiceProvider();
+            _container.AddServiceActivators<TypelessPayloadConfigurationSA>();
+            var provider = _container.BuildServiceProvider();
+
+            var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            streamProcessor.Initialize();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder
@@ -807,15 +813,16 @@ namespace Steeltoe.Stream.Tck
             Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
         }
 
-        [Fact(Skip = "Requires ServiceActivator impl")]
+        [Fact]
         public async Task TestWithTypelessMessageInputParameterAndServiceActivator()
         {
-            container.AddServiceActivators<TypelessMessageConfigurationSA>();
-            var provider = container.BuildServiceProvider();
+            _container.AddServiceActivators<TypelessMessageConfigurationSA>();
+            var provider = _container.BuildServiceProvider();
+
+            var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
+            streamProcessor.Initialize();
 
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
 
             var jsonPayload = "[\"foo\",\"bar\"]";
             var message = MessageBuilder

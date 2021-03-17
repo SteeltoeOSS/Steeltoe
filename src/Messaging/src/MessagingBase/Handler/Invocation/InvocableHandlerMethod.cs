@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 
@@ -9,13 +10,15 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
     {
-        private static readonly object[] EMPTY_ARGS = new object[0];
+        private static readonly object[] EMPTY_ARGS = Array.Empty<object>();
+        private readonly ILogger _logger;
 
         public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new HandlerMethodArgumentResolverComposite();
 
-        public InvocableHandlerMethod(HandlerMethod handlerMethod)
+        public InvocableHandlerMethod(HandlerMethod handlerMethod, ILogger logger = null)
         : base(handlerMethod)
         {
+            _logger = logger;
         }
 
         public InvocableHandlerMethod(object bean, MethodInfo method)
@@ -28,10 +31,13 @@ namespace Steeltoe.Messaging.Handler.Invocation
         {
         }
 
-        public virtual object Invoke(IMessage message, params object[] providedArgs)
+        public virtual object Invoke(IMessage requestMessage, params object[] args)
         {
-            var args = GetMethodArgumentValues(message, providedArgs);
-            return DoInvoke(args);
+            var argVals = GetMethodArgumentValues(requestMessage, args);
+
+            _logger?.LogTrace("Arguments: " + string.Join(", ", args));
+
+            return DoInvoke(argVals);
         }
 
         protected virtual object[] GetMethodArgumentValues(IMessage message, params object[] providedArgs)
@@ -48,7 +54,6 @@ namespace Steeltoe.Messaging.Handler.Invocation
             {
                 var parameter = parameters[i];
 
-                // parameter.initParameterNameDiscovery(this.parameterNameDiscoverer);
                 args[i] = FindProvidedArgument(parameter, providedArgs);
                 if (args[i] != null)
                 {
@@ -65,17 +70,15 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 {
                     args[i] = MessageMethodArgumentResolvers.ResolveArgument(parameter, message);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     // Leave stack trace for later, exception may actually be resolved and handled..
-                    // if (logger.isDebugEnabled())
-                    // {
-                    //    String error = ex.getMessage();
-                    //    if (error != null && !error.contains(parameter.getExecutable().toGenericString()))
-                    //    {
-                    //        logger.debug(formatArgumentError(parameter, error));
-                    //    }
-                    // }
+                    var error = ex.Message;
+                    if (error != null && !error.Contains(parameter.Name))
+                    {
+                        _logger?.LogDebug(ex, $"Error resolving parameter: {parameter.Name}, error: {error}");
+                    }
+
                     throw;
                 }
             }

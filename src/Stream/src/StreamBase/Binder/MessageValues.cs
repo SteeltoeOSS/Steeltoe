@@ -16,7 +16,7 @@ namespace Steeltoe.Stream.Binder
         {
             Payload = message.Payload;
             Headers = new Dictionary<string, object>();
-            foreach (var header in message.Headers)
+            foreach (var header in (IDictionary<string, object>)message.Headers)
             {
                 Headers.Add(header.Key, header.Value);
             }

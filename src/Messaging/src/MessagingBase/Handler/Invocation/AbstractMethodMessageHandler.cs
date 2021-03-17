@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Concurrent;
@@ -21,10 +22,12 @@ namespace Steeltoe.Messaging.Handler.Invocation
         private readonly Dictionary<T, HandlerMethod> _handlerMethods = new Dictionary<T, HandlerMethod>(64);
         private readonly Dictionary<string, List<T>> _destinationLookup = new Dictionary<string, List<T>>(64);
         private readonly ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver> _exceptionHandlerCache = new ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver>();
+        private readonly ILogger _logger;
 
-        protected AbstractMethodMessageHandler()
+        protected AbstractMethodMessageHandler(ILogger logger = null)
         {
             ServiceName = GetType().Name + "@" + GetHashCode();
+            _logger = logger;
         }
 
         public virtual string ServiceName { get; set; }
@@ -264,7 +267,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 var prefix = _destinationPrefixes[i];
                 if (destination.StartsWith(prefix))
                 {
-                    return destination.Substring(prefix.Length);
+                    return destination[prefix.Length..];
                 }
             }
 
@@ -292,15 +295,13 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
             foreach (var pattern in GetDirectLookupDestinations(mapping))
             {
-                if (!_destinationLookup.TryGetValue(pattern, out var list))
+                if (_destinationLookup.TryGetValue(pattern, out var list))
                 {
-                    list = new List<T>();
                     list.Add(mapping);
-                    _destinationLookup.Add(pattern, list);
                 }
                 else
                 {
-                    list.Add(mapping);
+                    _destinationLookup.Add(pattern, new List<T> { mapping });
                 }
             }
         }
@@ -357,9 +358,10 @@ namespace Steeltoe.Messaging.Handler.Invocation
         protected virtual void HandleMatch(T mapping, HandlerMethod handlerMethod, string lookupDestination, IMessage message)
         {
             handlerMethod = handlerMethod.CreateWithResolvedBean();
-            var invocable = new InvocableHandlerMethod(handlerMethod);
-
-            invocable.MessageMethodArgumentResolvers = MethodArgumentResolvers;
+            var invocable = new InvocableHandlerMethod(handlerMethod, _logger)
+            {
+                MessageMethodArgumentResolvers = MethodArgumentResolvers
+            };
             try
             {
                 var returnValue = invocable.Invoke(message);
@@ -371,8 +373,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
                 if (returnValue != null && MethodReturnValueHandlers.IsAsyncReturnValue(returnValue, returnType))
                 {
-                    var task = returnValue as Task;
-
+                    // TODO: Async; var task = returnValue as Task;
                     throw new NotImplementedException("Async still todo");
                 }
                 else
@@ -393,7 +394,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
             var invocable = GetExceptionHandlerMethod(handlerMethod, exception);
             if (invocable == null)
             {
-                // logger.error("Unhandled exception from message handler method", exception);
+                _logger?.LogError(exception, "Unhandled exception from message handler method");
                 return;
             }
 
@@ -413,9 +414,9 @@ namespace Steeltoe.Messaging.Handler.Invocation
 
                 MethodReturnValueHandlers.HandleReturnValue(returnValue, returnType, message);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // logger.error("Error while processing handler method exception", ex2);
+                _logger?.LogError(e, "Error while processing handler method exception");
             }
         }
 
@@ -482,9 +483,9 @@ namespace Steeltoe.Messaging.Handler.Invocation
                 _comparator = comparator;
             }
 
-            public int Compare(Match match1, Match match2)
+            public int Compare(Match x, Match y)
             {
-                return _comparator.Compare(match1.Mapping, match2.Mapping);
+                return _comparator.Compare(x.Mapping, y.Mapping);
             }
         }
     }

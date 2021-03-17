@@ -7,7 +7,10 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Impl;
+using Steeltoe.Common.Expression;
 using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
@@ -51,6 +54,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private const string DEFAULT_ROUTING_KEY = "";
         private const int DEFAULT_REPLY_TIMEOUT = 5000;
         private const int DEFAULT_CONSUME_TIMEOUT = 10000;
+
+        private static readonly SpelExpressionParser _parser = new SpelExpressionParser();
 
         private RabbitOptions _options;
         private int _activeTemplateCallbacks;
@@ -188,7 +193,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual IExpression MandatoryExpression { get; set; } = new ValueExpression<bool>(false);
 
-        public virtual string MandatoryExpressionString { get; set; }
+        public virtual string MandatoryExpressionString
+        {
+            get
+            {
+                return MandatoryExpression?.ToString();
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentException("MandatoryExpression' must not be null");
+                }
+
+                MandatoryExpression = _parser.ParseExpression(value);
+            }
+        }
 
         public virtual IExpression SendConnectionFactorySelectorExpression { get; set; }
 
@@ -196,7 +217,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual string CorrelationKey { get; set; }
 
-        public virtual IEvaluationContext EvaluationContext { get; set; } // TODO  = new StandardEvaluationContext();
+        public virtual IEvaluationContext EvaluationContext { get; set; } = new StandardEvaluationContext();
 
         public virtual IRetryOperation RetryTemplate { get; set; }
 
@@ -214,7 +235,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         public virtual IExpression UserIdExpression { get; set; }
 
-        public virtual string UserIdExpressionString { get; set; }
+        public virtual string UserIdExpressionString
+        {
+            get
+            {
+                return UserIdExpression?.ToString();
+            }
+
+            set
+            {
+                UserIdExpression = _parser.ParseExpression(value);
+            }
+        }
 
         public virtual string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
@@ -1851,7 +1883,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     true,
                     (int)templateOptions.Retry.InitialInterval.TotalMilliseconds,
                     (int)templateOptions.Retry.MaxInterval.TotalMilliseconds,
-                    templateOptions.Retry.Multiplier);
+                    templateOptions.Retry.Multiplier,
+                    _logger);
             }
 
             if (templateOptions.ReceiveTimeout.HasValue)

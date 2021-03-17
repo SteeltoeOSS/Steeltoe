@@ -25,8 +25,10 @@ namespace Steeltoe.Stream.Binding
 
         public override ISubscribableChannel CreateInput(string name)
         {
-            var chan = new DirectWithAttributesChannel(ApplicationContext);
-            chan.ServiceName = name;
+            var chan = new DirectWithAttributesChannel(ApplicationContext)
+            {
+                ServiceName = name
+            };
             chan.SetAttribute("type", "input");
             _messageChannelConfigurer.ConfigureInputChannel(chan, name);
 
@@ -39,8 +41,10 @@ namespace Steeltoe.Stream.Binding
 
         public override ISubscribableChannel CreateOutput(string name)
         {
-            var chan = new DirectWithAttributesChannel(ApplicationContext);
-            chan.ServiceName = name;
+            var chan = new DirectWithAttributesChannel(ApplicationContext)
+            {
+                ServiceName = name
+            };
             chan.SetAttribute("type", "output");
             _messageChannelConfigurer.ConfigureOutputChannel(chan, name);
 
@@ -53,8 +57,7 @@ namespace Steeltoe.Stream.Binding
 
         private void AddChannelInterceptors(IMessageChannel chan)
         {
-            var aware = chan as IChannelInterceptorAware;
-            if (aware != null)
+            if (chan is IChannelInterceptorAware aware)
             {
                 var interceptors = ApplicationContext.GetServices<IChannelInterceptor>();
                 foreach (var interceptor in interceptors)
