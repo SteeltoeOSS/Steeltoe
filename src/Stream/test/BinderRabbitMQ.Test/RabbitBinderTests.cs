@@ -296,7 +296,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
             var port = proxy.Port;
-            var ccf = new CachingConnectionFactory("localhost", port);
+            var clientConnectionFactory = new RabbitMQ.Client.ConnectionFactory
+            {
+                AutomaticRecoveryEnabled = false,
+                RequestedConnectionTimeout = 1000,
+                ContinuationTimeout = TimeSpan.FromMilliseconds(1000),
+                HandshakeContinuationTimeout = TimeSpan.FromMilliseconds(1000)
+            };
+
+            var ccf = new CachingConnectionFactory("127.0.0.1", proxy.Port, clientConnectionFactory, LoggerFactory);
 
             var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
@@ -1377,7 +1385,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
         /*
          * Test late binding due to broker down; queues with and without DLQs, and partitioned
          * queues.
-         * Runs about 40 mins
          */
         [Fact]
         [Trait("Category", "SkipOnLinux")]
@@ -1385,8 +1392,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
 
-            // proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
-            CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
+            var clientConnectionFactory = new RabbitMQ.Client.ConnectionFactory
+            {
+                AutomaticRecoveryEnabled = false,
+                RequestedConnectionTimeout = 1000,
+                ContinuationTimeout = TimeSpan.FromMilliseconds(1000),
+                HandshakeContinuationTimeout = TimeSpan.FromMilliseconds(1000)
+            };
+
+            CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, clientConnectionFactory, LoggerFactory);
 
             var context = RabbitTestBinder.GetApplicationContext();
 
@@ -1505,6 +1519,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             pubSubProducerBinding.Unbind();
             nonDurableConsumerBinding.Unbind();
             durableConsumerBinding.Unbind();
+
+            // Reset timeouts so cleanup happens
+            _testBinder.ResetConnectionFactoryTimeout();
 
             Cleanup();
 

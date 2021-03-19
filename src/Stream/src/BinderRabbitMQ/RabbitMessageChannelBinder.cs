@@ -84,7 +84,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         protected ILogger _logger;
 
-        public Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory ConnectionFactory { get; }
+        public SteeltoeConnectionFactory ConnectionFactory { get; }
 
         public RabbitOptions RabbitConnectionOptions { get; }
 
