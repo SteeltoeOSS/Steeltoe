@@ -318,7 +318,7 @@ namespace Steeltoe.Messaging.Handler
         {
             var methodParameters = Method.GetParameters();
             var paramTypes = new Type[methodParameters.Length + 1];
-            paramTypes[0] = Handler.GetType();
+            paramTypes[0] = Method.DeclaringType;
             for (var i = 0; i < methodParameters.Length; i++)
             {
                 paramTypes[i + 1] = methodParameters[i].ParameterType;

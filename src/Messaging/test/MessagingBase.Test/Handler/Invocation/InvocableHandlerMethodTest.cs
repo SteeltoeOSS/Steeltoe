@@ -157,8 +157,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
             Invoke(handler, method, 1.0d);
             Assert.Equal(1.0d, handler.DoubleValue);
@@ -169,8 +169,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
 
             Invoke(handler, method, 1.0d);
@@ -182,8 +182,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleMultiPrimitiveReturnVoid");
             Invoke(handler, method, 1.0d, 2);
             Assert.Equal(1.0d, handler.DoubleValue);
@@ -195,8 +195,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleMultiReturnVoid");
             Invoke(handler, method, 1.0d, 2, handler);
             Assert.Equal(1.0d, handler.DoubleValue);
@@ -209,8 +209,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleNullablePrimitive");
             var result = Invoke(handler, method, 10, "stringArg");
             Assert.Equal(1, handler.InvocationCount);
@@ -222,8 +222,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
             var ticks1 = TimedInvoke(handler, method, 100_000, 1.0d);
             Assert.Equal(100_000, handler.InvocationCount);
@@ -237,8 +237,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleAsyncVoidMethod");
             var result = Invoke(handler, method, 1.0d) as Task;
             await result;
@@ -251,8 +251,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler2();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler2).GetMethod("HandleAsyncStringMethod");
             var result = Invoke(handler, method, 10, "stringArg") as Task<string>;
             var str = await result;
