@@ -296,16 +296,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
             var port = proxy.Port;
-            var clientConnectionFactory = new RabbitMQ.Client.ConnectionFactory
-            {
-                AutomaticRecoveryEnabled = false,
-                RequestedConnectionTimeout = 1000,
-                ContinuationTimeout = TimeSpan.FromMilliseconds(1000),
-                HandshakeContinuationTimeout = TimeSpan.FromMilliseconds(1000)
-            };
-
-            var ccf = new CachingConnectionFactory("127.0.0.1", proxy.Port, clientConnectionFactory, LoggerFactory);
-
+            var ccf = new CachingConnectionFactory("localhost", port);
             var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
             consumerProperties.Multiplex = true;
@@ -1391,23 +1382,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-
-            var clientConnectionFactory = new RabbitMQ.Client.ConnectionFactory
-            {
-                AutomaticRecoveryEnabled = false,
-                RequestedConnectionTimeout = 1000,
-                ContinuationTimeout = TimeSpan.FromMilliseconds(1000),
-                HandshakeContinuationTimeout = TimeSpan.FromMilliseconds(1000)
-            };
-
-            CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, clientConnectionFactory, LoggerFactory);
-
+            CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
             var context = RabbitTestBinder.GetApplicationContext();
 
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var provisioner = new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
             var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, rabbitBindingsOptions, provisioner);
-            RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
+            var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
             _testBinder = binder;
 
             var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
@@ -1467,6 +1448,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var durableConsumerBinding = binder.BindConsumer("latePubSub", "lateDurableGroup", durablePubSubInputChannel, noDlqConsumerProperties);
 
             proxy.Start();
+
+            Thread.Sleep(5000);
 
             moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
