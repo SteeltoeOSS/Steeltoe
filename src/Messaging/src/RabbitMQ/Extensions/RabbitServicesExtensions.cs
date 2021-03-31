@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Connector;
+using Steeltoe.Connector.Services;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -240,6 +242,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
         {
             services.Configure<RabbitOptions>(config.GetSection(RabbitOptions.PREFIX));
+
+            services.PostConfigure<RabbitOptions>(options =>
+            {
+                var serviceInfo = config.GetServiceInfos<RabbitMQServiceInfo>().FirstOrDefault();
+
+                if (serviceInfo is not null)
+                {
+                    options.Addresses = $"{serviceInfo.Host}:{serviceInfo.Port}";
+                }
+            });
+
             return services;
         }
 
