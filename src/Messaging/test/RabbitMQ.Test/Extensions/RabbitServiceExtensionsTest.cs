@@ -4,12 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -471,6 +473,39 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             var c = provider.GetService<ISmartMessageConverter>() as Support.Converter.JsonMessageConverter;
             Assert.NotNull(c);
             Assert.False(c.AssumeSupportedContentType);
+        }
+
+        [Fact]
+        public void ConfigureRabbitOptions_Configure()
+        {
+            var services = new ServiceCollection();
+
+            var hostPrefix = "spring:rabbitmq:host";
+            var portPrefix = "spring:rabbitmq:port";
+            var usernamePrefix = "spring:rabbitmq:username";
+            var passwordPrefix = "spring:rabbitmq:password";
+
+            var appsettings = new Dictionary<string, string>()
+            {
+                [hostPrefix] = "this.is.test",
+                [portPrefix] = "12345",
+                [usernamePrefix] = "fakeusername",
+                [passwordPrefix] = "CHANGEME",
+            };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var configuration = configurationBuilder.Build();
+
+            services.ConfigureRabbitOptions(configuration);
+
+            var provider = services.BuildServiceProvider();
+            var rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
+
+            Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host.ToString());
+            Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString());
+            Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username.ToString());
+            Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password.ToString());
         }
     }
 }
