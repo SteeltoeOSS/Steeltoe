@@ -1387,7 +1387,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var provisioner = new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
-            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, rabbitBindingsOptions, provisioner);
+            var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new TestRabbitOptions(), null, rabbitBindingsOptions, provisioner);
             var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
             _testBinder = binder;
 

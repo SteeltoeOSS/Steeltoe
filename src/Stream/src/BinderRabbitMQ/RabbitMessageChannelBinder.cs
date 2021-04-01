@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression;
@@ -51,17 +52,17 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy();
         private static readonly Regex _interceptorNeededPattern = new Regex("(Payload|#root|#this)");
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
         : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
         {
         }
 
-        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, RabbitOptions rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
+        public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
             : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
         {
             if (connectionFactory == null)
@@ -86,7 +87,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public SteeltoeConnectionFactory ConnectionFactory { get; }
 
-        public RabbitOptions RabbitConnectionOptions { get; }
+        public IOptionsMonitor<RabbitOptions> RabbitConnectionOptions { get; }
 
         public RabbitBinderOptions BinderOptions { get; }
 
@@ -484,9 +485,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             }
 
             rabbitTemplate.Mandatory = mandatory; // returned messages
-            if (RabbitConnectionOptions != null && RabbitConnectionOptions.Template.Retry.Enabled)
+            if (RabbitConnectionOptions != null && RabbitConnectionOptions.CurrentValue.Template.Retry.Enabled)
             {
-                var retry = RabbitConnectionOptions.Template.Retry;
+                var retry = RabbitConnectionOptions.CurrentValue.Template.Retry;
                 var retryTemplate = new PollyRetryTemplate(retry.MaxAttempts, (int)retry.InitialInterval.TotalMilliseconds, (int)retry.MaxInterval.TotalMilliseconds, retry.Multiplier, _logger);
                 rabbitTemplate.RetryTemplate = retryTemplate;
             }

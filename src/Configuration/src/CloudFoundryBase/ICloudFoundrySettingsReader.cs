@@ -19,5 +19,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         string InstancePort { get; }
 
         string ServicesJson { get; }
+
+        string SpringApplicationJson { get; }
     }
 }

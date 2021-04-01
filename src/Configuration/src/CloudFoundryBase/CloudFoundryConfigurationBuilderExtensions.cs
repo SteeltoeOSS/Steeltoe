@@ -21,7 +21,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 throw new ArgumentNullException(nameof(configurationBuilder));
             }
 
-            return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
+            return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader })
+                .Add(new SpringEnvConfigurationSource { SettingsReader = settingsReader });
         }
     }
 }

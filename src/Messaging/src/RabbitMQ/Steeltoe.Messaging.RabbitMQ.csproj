@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.RetryPolly\Steeltoe.Common.RetryPolly.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj" />
     <ProjectReference Include="..\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />
   </ItemGroup>
 

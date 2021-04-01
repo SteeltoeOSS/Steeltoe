@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.StreamsHost;
 using System;
 
@@ -28,7 +29,7 @@ namespace Steeltoe.Stream.Extensions
                 var configuration = context.Configuration;
 
                 services.AddOptions();
-
+                services.ConfigureRabbitOptionsForCloudFoundry(configuration);
                 services.AddSingleton<IApplicationContext, GenericApplicationContext>();
 
                 services.AddStreamConfiguration(configuration);

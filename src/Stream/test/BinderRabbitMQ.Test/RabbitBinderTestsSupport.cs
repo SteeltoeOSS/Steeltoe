@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
@@ -88,7 +89,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     PublisherReturns = true
                 };
                 _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, new TestRabbitOptions(options), new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
             }
 
             return _testBinder;
@@ -132,7 +133,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     PublisherReturns = true
                 };
                 _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
+                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, new TestRabbitOptions(options), new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
             }
 
             return _testBinder;
@@ -255,6 +256,25 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public int SelectPartition(object key, int partitionCount)
             {
                 return (int)key;
+            }
+        }
+
+        public class TestRabbitOptions : IOptionsMonitor<RabbitOptions>
+        {
+            private RabbitOptions _rabbitOptions;
+
+            public TestRabbitOptions(RabbitOptions opt = null)
+            {
+                _rabbitOptions = opt ?? new RabbitOptions();
+            }
+
+            public RabbitOptions CurrentValue => _rabbitOptions;
+
+            public RabbitOptions Get(string name) => _rabbitOptions;
+
+            public IDisposable OnChange(Action<RabbitOptions, string> listener)
+            {
+                throw new NotImplementedException();
             }
         }
     }
