@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Lifecycle;
-using Steeltoe.Connector;
-using Steeltoe.Connector.Services;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -20,6 +18,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Linq;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
@@ -241,17 +240,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<RabbitOptions>(config.GetSection(RabbitOptions.PREFIX));
-
-            services.PostConfigure<RabbitOptions>(options =>
-            {
-                var serviceInfo = config.GetServiceInfos<RabbitMQServiceInfo>().FirstOrDefault();
-
-                if (serviceInfo is not null)
+            services.AddOptions<RabbitOptions>()
+                .Bind(config.GetSection(RabbitOptions.PREFIX))
+                .Configure<IServiceProvider>((options, provider) =>
                 {
-                    options.Addresses = $"{serviceInfo.Host}:{serviceInfo.Port}";
-                }
-            });
+                    var connectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+
+                    if (connectionFactory is not null)
+                    {
+                        options.Addresses = $"{connectionFactory.HostName}:{connectionFactory.Port}";
+                    }
+                });
 
             return services;
         }

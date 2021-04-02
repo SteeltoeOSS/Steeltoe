@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
@@ -515,15 +516,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
         {
             var services = new ServiceCollection();
+            var username = "fakeusername";
             var usernamePrefix = "spring:rabbitmq:username";
+            var password = "CHANGEME";
             var passwordPrefix = "spring:rabbitmq:password";
 
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GetRabbitService());
 
             var appsettings = new Dictionary<string, string>()
             {
-                [usernamePrefix] = "fakeusername",
-                [passwordPrefix] = "CHANGEME",
+                [usernamePrefix] = username,
+                [passwordPrefix] = password,
             };
 
             var configurationBuilder = new ConfigurationBuilder();
@@ -535,9 +538,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             services.ConfigureRabbitOptions(configuration);
 
             var provider = services.BuildServiceProvider();
-            var rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
+            var rabbitConnection = provider.GetRequiredService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+            var rabbitOptions = provider.GetRequiredService<IOptions<RabbitOptions>>().Value;
 
-            Assert.Equal("192.168.0.81:15672", rabbitOptions.Addresses);
+            Assert.Equal(username, rabbitOptions.Username);
+            Assert.Equal(password, rabbitOptions.Password);
+            Assert.Equal($"{rabbitConnection.HostName}:{rabbitConnection.Port}", rabbitOptions.Addresses);
         }
 
         private static string GetRabbitService() => @"
