@@ -546,6 +546,40 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             Assert.Equal($"{rabbitConnection.HostName}:{rabbitConnection.Port}", rabbitOptions.Addresses);
         }
 
+        [Fact]
+        public void AddRabbitConnectionFactory_AddRabbitConnector()
+        {
+            var services = new ServiceCollection();
+            var username = "fakeusername";
+            var usernamePrefix = "spring:rabbitmq:username";
+            var password = "CHANGEME";
+            var passwordPrefix = "spring:rabbitmq:password";
+
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetRabbitService());
+
+            var appsettings = new Dictionary<string, string>()
+            {
+                [usernamePrefix] = username,
+                [passwordPrefix] = password,
+            };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddCloudFoundry();
+            var configuration = configurationBuilder.Build();
+
+            services.AddRabbitMQConnection(configuration);
+            services.AddRabbitConnectionFactory();
+
+            var provider = services.BuildServiceProvider();
+            var rabbitConnection = provider.GetRequiredService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+            var rabbitConnectionFactory = provider.GetRequiredService<IConnectionFactory>();
+
+            Assert.Equal(rabbitConnection.UserName, rabbitConnectionFactory.Username);
+            Assert.Equal(rabbitConnection.HostName, rabbitConnectionFactory.Host);
+            Assert.Equal(rabbitConnection.Port, rabbitConnectionFactory.Port);
+        }
+
         private static string GetRabbitService() => @"
         {
             ""p-rabbitmq"": [{

@@ -508,21 +508,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitConnectionFactory<F>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, F> configure = null)
             where F : IConnectionFactory
         {
-            services.AddSingleton<IConnectionFactory>(p =>
-           {
-               var instance = (F)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(F));
-               if (!string.IsNullOrEmpty(serviceName))
-               {
-                   instance.ServiceName = serviceName;
-               }
+            services.AddSingleton<IConnectionFactory>(provider =>
+            {
+                var rabbitConnectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
-               if (configure != null)
-               {
-                   configure(p, instance);
-               }
+                IConnectionFactory instance =
+                    (rabbitConnectionFactory is not null && typeof(F) == typeof(CachingConnectionFactory)) ?
+                    new CachingConnectionFactory(rabbitConnectionFactory) :
+                    (F)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(F));
 
-               return instance;
-           });
+                if (!string.IsNullOrEmpty(serviceName))
+                {
+                    instance.ServiceName = serviceName;
+                }
+
+                if (configure != null)
+                {
+                    configure(provider, (F)instance);
+                }
+
+                return instance;
+            });
 
             return services;
         }
