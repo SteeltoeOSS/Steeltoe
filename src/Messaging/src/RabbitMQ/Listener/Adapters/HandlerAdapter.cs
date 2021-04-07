@@ -34,7 +34,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                     InvokerHandlerMethod.Invoke(message, providedArgs),
                     null,
                     InvokerHandlerMethod.Method.ReturnType,
-                    InvokerHandlerMethod.Bean,
+                    InvokerHandlerMethod.Handler,
                     InvokerHandlerMethod.Method);
             }
             else if (DelegatingHandler.HasDefaultHandler)
@@ -93,7 +93,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             {
                 if (InvokerHandlerMethod != null)
                 {
-                    return InvokerHandlerMethod.Bean;
+                    return InvokerHandlerMethod.Handler;
                 }
                 else
                 {
@@ -106,7 +106,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         {
             if (InvokerHandlerMethod != null)
             {
-                return new InvocationResult(result, null, InvokerHandlerMethod.Method.ReturnType, InvokerHandlerMethod.Bean, InvokerHandlerMethod.Method);
+                return new InvocationResult(result, null, InvokerHandlerMethod.Method.ReturnType, InvokerHandlerMethod.Handler, InvokerHandlerMethod.Method);
             }
             else
             {

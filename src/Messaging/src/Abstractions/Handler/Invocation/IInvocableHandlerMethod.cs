@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
     /// </summary>
     public interface IInvocableHandlerMethod
     {
-        object Bean { get; }
+        object Handler { get; }
 
         MethodInfo Method { get; }
 

@@ -90,13 +90,18 @@ namespace Steeltoe.Messaging.Handler.Invocation
         {
             try
             {
-                return method.Invoke(bean, args);
+                if (_argCount != args.Length)
+                {
+                    throw new InvalidOperationException(FormatInvokeError("Argument count mismatch", args), new TargetParameterCountException());
+                }
+
+                return _invoker(_handler, args);
             }
-            catch (Exception ex) when (ex is ArgumentException || ex is TargetParameterCountException)
+            catch (Exception ex) when (ex is InvalidCastException)
             {
-                AssertTargetBean(method, bean, args);
+                AssertTargetBean(Method, Handler, args);
                 var text = !string.IsNullOrEmpty(ex.Message) ? ex.Message : "Illegal argument";
-                throw new InvalidOperationException(FormatInvokeError(text, args), ex);
+                throw new InvalidOperationException(FormatInvokeError(text, args), new ArgumentException());
             }
             catch (Exception ex)
             {

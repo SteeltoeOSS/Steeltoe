@@ -350,7 +350,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
             var ccf = new CachingConnectionFactory("localhost", proxy.Port);
-
             var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
             consumerProperties.Multiplex = true;

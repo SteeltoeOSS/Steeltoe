@@ -20,6 +20,7 @@ using Steeltoe.Messaging.RabbitMQ.Listener;
 using System;
 using System.Linq;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions
 {
@@ -241,7 +242,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
         public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
         {
-            services.Configure<RabbitOptions>(config.GetSection(RabbitOptions.PREFIX));
+            services.AddOptions<RabbitOptions>()
+                .Bind(config.GetSection(RabbitOptions.PREFIX))
+                .Configure<IServiceProvider>((options, provider) =>
+                {
+                    var connectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+
+                    if (connectionFactory is not null)
+                    {
+                        options.Addresses = $"{connectionFactory.HostName}:{connectionFactory.Port}";
+                    }
+                });
+
             return services;
         }
 
@@ -516,21 +528,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         public static IServiceCollection AddRabbitConnectionFactory<F>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, F> configure = null)
             where F : IConnectionFactory
         {
-            services.AddSingleton<IConnectionFactory>(p =>
-           {
-               var instance = (F)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(F));
-               if (!string.IsNullOrEmpty(serviceName))
-               {
-                   instance.ServiceName = serviceName;
-               }
+            services.AddSingleton<IConnectionFactory>(provider =>
+            {
+                var rabbitConnectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
-               if (configure != null)
-               {
-                   configure(p, instance);
-               }
+                IConnectionFactory instance =
+                    (rabbitConnectionFactory is not null && typeof(F) == typeof(CachingConnectionFactory)) ?
+                    new CachingConnectionFactory(rabbitConnectionFactory) :
+                    (F)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(F));
 
-               return instance;
-           });
+                if (!string.IsNullOrEmpty(serviceName))
+                {
+                    instance.ServiceName = serviceName;
+                }
+
+                if (configure != null)
+                {
+                    configure(provider, (F)instance);
+                }
+
+                return instance;
+            });
 
             return services;
         }
