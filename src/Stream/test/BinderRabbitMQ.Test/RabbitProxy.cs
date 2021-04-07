@@ -18,18 +18,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private readonly ILogger<RabbitProxy> _logger;
         private readonly TcpListener _listener = null;
         private volatile bool _run = true;
+        private volatile bool _rejectConnections = true;
 
         public RabbitProxy(ILogger<RabbitProxy> logger)
         {
             _listener = new TcpListener(IPAddress.Loopback, 0);
             _listener.Start();
-            _logger = new LoggerFactory().CreateLogger<RabbitProxy>();
+            _logger = logger;
+            var listenerThread = new Thread(new ParameterizedThreadStart(StartListener));
+            listenerThread.Start();
         }
 
         public void Start()
         {
-            var listenerThread = new Thread(new ParameterizedThreadStart(StartListener));
-            listenerThread.Start();
+            _rejectConnections = false;
         }
 
         public int Port
@@ -40,6 +42,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void Stop()
         {
             _run = false;
+            _rejectConnections = true;
             _listener.Stop();
         }
 
@@ -50,10 +53,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 while (_run)
                 {
                     _logger.LogInformation("Waiting for a connection...");
-                    TcpClient client = _listener.AcceptTcpClient();
-                    _logger.LogInformation("Connected to client!");
-                    Thread t = new Thread(new ParameterizedThreadStart(HandleConnection));
-                    t.Start(client);
+                    var client = _listener.AcceptTcpClient();
+                    if (!_rejectConnections)
+                    {
+                        _logger.LogInformation("Connected to client!");
+                        var t = new Thread(new ParameterizedThreadStart(HandleConnection));
+                        t.Start(client);
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Disposing connection");
+                        client.Dispose();
+                    }
                 }
             }
             catch (SocketException e)
@@ -65,19 +76,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         private void HandleConnection(object obj)
         {
-            TcpClient client = (TcpClient)obj;
+            var client = (TcpClient)obj;
             var stream = client.GetStream();
 
             var rabbitClient = new TcpClient();
             rabbitClient.Connect("localhost", 5672);
             var rabbitStream = rabbitClient.GetStream();
 
-            byte[] bytes = new byte[1];
+            var bytes = new byte[1];
             var serverBytes = new byte[1];
             try
             {
-                int totalServerBytes = 0;
-                int totalClientBytes = 0;
+                var totalServerBytes = 0;
+                var totalClientBytes = 0;
 
                 var t = Task.Run(() =>
                 {

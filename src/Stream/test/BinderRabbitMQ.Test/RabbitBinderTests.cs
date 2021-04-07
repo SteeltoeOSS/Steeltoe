@@ -297,7 +297,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
             var port = proxy.Port;
             var ccf = new CachingConnectionFactory("localhost", port);
-
             var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
             consumerProperties.Multiplex = true;
@@ -1377,23 +1376,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
         /*
          * Test late binding due to broker down; queues with and without DLQs, and partitioned
          * queues.
-         * Runs about 40 mins
          */
         [Fact]
         [Trait("Category", "SkipOnLinux")]
         public void TestLateBinding()
         {
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-
-            // proxy.Start(); // Uncomment to debug this test, the initial failures when broker down is what makes this test slow.
             CachingConnectionFactory cf = new CachingConnectionFactory("127.0.0.1", proxy.Port, LoggerFactory);
-
             var context = RabbitTestBinder.GetApplicationContext();
 
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var provisioner = new RabbitExchangeQueueProvisioner(cf, rabbitBindingsOptions, context, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
             var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, new RabbitOptions(), null, rabbitBindingsOptions, provisioner);
-            RabbitTestBinder binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
+            var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
             _testBinder = binder;
 
             var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
@@ -1454,6 +1449,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             proxy.Start();
 
+            Thread.Sleep(5000);
+
             moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
@@ -1505,6 +1502,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
             pubSubProducerBinding.Unbind();
             nonDurableConsumerBinding.Unbind();
             durableConsumerBinding.Unbind();
+
+            // Reset timeouts so cleanup happens
+            _testBinder.ResetConnectionFactoryTimeout();
 
             Cleanup();
 

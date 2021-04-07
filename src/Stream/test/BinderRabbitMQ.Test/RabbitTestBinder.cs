@@ -29,6 +29,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public RabbitBindingsOptions BindingsOptions { get; }
 
         private readonly ILogger _logger;
+        private readonly ILoggerFactory _loggerFactory;
 
         public static IApplicationContext GetApplicationContext()
         {
@@ -51,6 +52,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
         {
             BindingsOptions = bindingsOptions;
+            _loggerFactory = loggerFactory;
         }
 
         public RabbitTestBinder(IConnectionFactory connectionFactory, RabbitMessageChannelBinder binder, ILogger<RabbitTestBinder> logger)
@@ -100,6 +102,15 @@ namespace Steeltoe.Stream.Binder.Rabbit
             DeadLetters(properties);
 
             return base.BindProducer(name, outboundTarget, producerOptions);
+        }
+
+        public void ResetConnectionFactoryTimeout()
+        {
+            var host = _rabbitAdmin.ConnectionFactory.Host;
+            var port = _rabbitAdmin.ConnectionFactory.Port;
+
+            _rabbitAdmin.ConnectionFactory =
+            _rabbitAdmin.RabbitTemplate.ConnectionFactory = new CachingConnectionFactory(host, port, _loggerFactory);
         }
 
         public override void Cleanup()
