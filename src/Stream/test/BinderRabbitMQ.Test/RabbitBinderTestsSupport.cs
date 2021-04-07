@@ -35,7 +35,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly string _bigExceptionMessage = new string('x', 10_000);
 
         private RabbitTestBinder _testBinder;
-        private CachingConnectionFactory _cachingConnectionFactory;
+      //  private CachingConnectionFactory CachingConnectionFactory;
 
         private int _maxStackTraceSize;
 
@@ -80,7 +80,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             };
         }
 
-        public RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions)
+        protected override RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions = null)
         {
             if (_testBinder == null)
             {
@@ -88,52 +88,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     PublisherReturns = true
                 };
-                _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, new TestRabbitOptions(options), new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
-            }
-
-            return _testBinder;
-        }
-
-        protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
-        {
-            rabbitConsumerOptions ??= new RabbitConsumerOptions();
-            rabbitConsumerOptions.PostProcess();
-
-            bindingOptions ??= new RabbitBindingOptions();
-            bindingOptions.Consumer = rabbitConsumerOptions;
-            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
-
-            var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
-            consumerOptions.PostProcess(bindingName);
-            return consumerOptions;
-        }
-
-        protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
-        {
-            var rabbitProducerOptions = new RabbitProducerOptions();
-            rabbitProducerOptions.PostProcess();
-
-            bindingOptions ??= new RabbitBindingOptions();
-
-            bindingOptions.Producer = rabbitProducerOptions;
-            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
-
-            var producerOptions = new ProducerOptions() { BindingName = bindingName };
-            producerOptions.PostProcess(bindingName);
-            return producerOptions;
-        }
-
-        protected override RabbitTestBinder GetBinder()
-        {
-            if (_testBinder == null)
-            {
-                var options = new RabbitOptions
-                {
-                    PublisherReturns = true
-                };
-                _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, new TestRabbitOptions(options), new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
+                var ccf = GetResource();
+                _testBinder = new RabbitTestBinder(ccf, new TestRabbitOptions(options), new RabbitBinderOptions(), rabbitBindingsOptions ?? new RabbitBindingsOptions(), LoggerFactory);
             }
 
             return _testBinder;
@@ -181,15 +137,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return BigCause(innerException);
         }
 
-        private class TestMessageHandler : IMessageHandler
-        {
-            public Action<IMessage> OnHandleMessage { get; set; }
-
-            public string ServiceName { get => "TestMessageHandler"; set => throw new NotImplementedException(); }
-
-            public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
-        }
-
         private void Cleanup()
         {
             if (_testBinder != null)
@@ -197,11 +144,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Cleanup(_testBinder);
             }
 
-            if (_cachingConnectionFactory != null)
+            if (CachingConnectionFactory != null)
             {
-                _cachingConnectionFactory.ResetConnection();
-                _cachingConnectionFactory.Destroy();
-                _cachingConnectionFactory = null;
+                CachingConnectionFactory.ResetConnection();
+                CachingConnectionFactory.Destroy();
+                CachingConnectionFactory = null;
             }
 
             _testBinder = null;
@@ -211,19 +158,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             binder.Cleanup();
             binder.CoreBinder.ConnectionFactory.Destroy();
-            _cachingConnectionFactory = null;
+            CachingConnectionFactory = null;
         }
 
-        private CachingConnectionFactory GetResource()
-        {
-            if (_cachingConnectionFactory == null)
-            {
-                _cachingConnectionFactory = new CachingConnectionFactory("localhost");
-                _cachingConnectionFactory.CreateConnection().Close();
-            }
-
-            return _cachingConnectionFactory;
-        }
+       
 
         public class WrapperAccessor : RabbitOutboundEndpoint
         {

@@ -43,6 +43,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public string ConfirmAckChannel { get; set; }
 
+        public bool? UseConfirmHeader { get; set; }
+
         internal void PostProcess(RabbitProducerOptions defaultOptions = null)
         {
             if (!Compress.HasValue)
@@ -52,52 +54,57 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (!BatchingEnabled.HasValue)
             {
-                BatchingEnabled = defaultOptions != null ? defaultOptions.BatchingEnabled : false;
+                BatchingEnabled = defaultOptions?.BatchingEnabled ?? false;
             }
 
             if (!BatchSize.HasValue)
             {
-                BatchSize = defaultOptions != null ? defaultOptions.BatchSize : 100;
+                BatchSize = defaultOptions?.BatchSize ?? 100;
             }
 
             if (!BatchBufferLimit.HasValue)
             {
-                BatchBufferLimit = defaultOptions != null ? defaultOptions.BatchBufferLimit : 10000;
+                BatchBufferLimit = defaultOptions?.BatchBufferLimit ?? 10000;
             }
 
             if (!BatchTimeout.HasValue)
             {
-                BatchTimeout = defaultOptions != null ? defaultOptions.BatchTimeout : 5000;
+                BatchTimeout = defaultOptions?.BatchTimeout ?? 5000;
             }
 
             if (!Transacted.HasValue)
             {
-                Transacted = defaultOptions != null ? defaultOptions.Transacted : false;
+                Transacted =  defaultOptions?.Transacted ?? false;
             }
 
             if (!DeliveryMode.HasValue)
             {
-                DeliveryMode = defaultOptions != null ? defaultOptions.DeliveryMode : MessageDeliveryMode.PERSISTENT;
+                DeliveryMode = defaultOptions?.DeliveryMode ?? MessageDeliveryMode.PERSISTENT;
             }
 
             if (HeaderPatterns == null)
             {
-                HeaderPatterns = defaultOptions != null ? defaultOptions.HeaderPatterns : new List<string>() { "*" };
+                HeaderPatterns = defaultOptions?.HeaderPatterns ?? new List<string>() { "*" };
             }
 
             if (DelayExpression == null)
             {
-                DelayExpression = defaultOptions != null ? defaultOptions.DelayExpression : null;
+                DelayExpression = defaultOptions?.DelayExpression;
             }
 
             if (RoutingKeyExpression == null)
             {
-                RoutingKeyExpression = defaultOptions != null ? defaultOptions.RoutingKeyExpression : null;
+                RoutingKeyExpression = defaultOptions?.RoutingKeyExpression;
             }
 
             if (ConfirmAckChannel == null)
             {
-                ConfirmAckChannel = defaultOptions != null ? defaultOptions.ConfirmAckChannel : null;
+                ConfirmAckChannel = defaultOptions?.ConfirmAckChannel;
+            }
+
+            if (!UseConfirmHeader.HasValue)
+            {
+                UseConfirmHeader = defaultOptions?.UseConfirmHeader ?? false;
             }
 
             base.PostProcess(defaultOptions);

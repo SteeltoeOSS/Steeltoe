@@ -21,6 +21,7 @@ namespace Steeltoe.Stream.Config
         private const bool DefaultRetryable_Default = true;
         private const bool UseNativeDecoding_Default = false;
         private const bool Multiplex_Default = false;
+        private const bool IsBatchMode_Default = false;
 
         public ConsumerOptions()
         {

@@ -9,16 +9,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public class SpringEnvConfigurationProvider : ConfigurationProvider
     {
-        private readonly ICloudFoundrySettingsReader _settingsReader;
 
-        public SpringEnvConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
+        public SpringEnvConfigurationProvider()
         {
-            _settingsReader = settingsReader ?? throw new ArgumentNullException(nameof(settingsReader));
         }
 
         public override void Load()
         {
-            var springAppJson = _settingsReader.SpringApplicationJson;
+            var springAppJson = "test"; //TODO: fix configuration 
 
             if (!string.IsNullOrEmpty(springAppJson))
             {

@@ -138,10 +138,13 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var prefix = extendedProperties.Prefix;
             var exchangeName = destination.Name;
             var destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
-            var endpoint = new RabbitOutboundEndpoint(ApplicationContext, BuildRabbitTemplate(extendedProperties, errorChannel != null), _logger)
-            {
-                ExchangeName = exchangeName
-            };
+            var endpoint = new RabbitOutboundEndpoint(
+                ApplicationContext,
+                BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault()),
+                _logger)
+                {
+                    ExchangeName = exchangeName
+                };
             var expressionInterceptorNeeded = ExpressionInterceptorNeeded(extendedProperties);
             var routingKeyExpression = extendedProperties.RoutingKeyExpression;
             if (!producerProperties.IsPartitioned)
@@ -182,16 +185,27 @@ namespace Steeltoe.Stream.Binder.Rabbit
             {
                 CheckConnectionFactoryIsErrorCapable();
                 endpoint.ReturnChannel = errorChannel;
-                endpoint.ConfirmNackChannel = errorChannel;
-                var ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel) ? extendedProperties.ConfirmAckChannel : IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
-                if (!ackChannelBeanName.Equals(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME) && !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
+                if (!extendedProperties.UseConfirmHeader.GetValueOrDefault())
                 {
-                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
-                     ApplicationContext.Register(ackChannelBeanName, ackChannel);
+                    endpoint.ConfirmNackChannel = errorChannel;
+                    var ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel) ? extendedProperties.ConfirmAckChannel : IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME;
+                    if (!ackChannelBeanName.Equals(IntegrationContextUtils.NULL_CHANNEL_BEAN_NAME) && !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
+                    {
+                        var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
+                        ApplicationContext.Register(ackChannelBeanName, ackChannel);
+                    }
+
+                    endpoint.ConfirmAckChannelName = ackChannelBeanName;
+                    endpoint.SetConfirmCorrelationExpressionString("#root");
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel))
+                    {
+                        throw new InvalidOperationException("You cannot specify a 'confirmAckChannel' when 'useConfirmHeader' is true");
+                    }
                 }
 
-                endpoint.ConfirmAckChannelName = ackChannelBeanName;
-                endpoint.SetConfirmCorrelationExpressionString("#root");
                 endpoint.ErrorMessageStrategy = new DefaultErrorMessageStrategy();
             }
 

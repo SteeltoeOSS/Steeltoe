@@ -8,11 +8,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public class SpringEnvConfigurationSource : IConfigurationSource
     {
-        public ICloudFoundrySettingsReader SettingsReader { get; set; }
-
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new SpringEnvConfigurationProvider(SettingsReader ?? new CloudFoundryEnvironmentSettingsReader());
+            return new SpringEnvConfigurationProvider();
         }
     }
 }

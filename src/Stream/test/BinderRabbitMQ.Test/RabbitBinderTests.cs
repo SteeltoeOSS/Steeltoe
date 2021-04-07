@@ -215,6 +215,36 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
+        public void TestProducerConfirmHeader()
+        {
+            var binder = GetBinder();
+
+            var ccf = GetResource();
+            ccf.IsPublisherReturns = true;
+            ccf.PublisherConfirmType = ConfirmType.CORRELATED;
+            ccf.ResetConnection();
+
+            var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var rabbitBindingOptions = new RabbitBindingOptions();
+
+            var producerProps = GetProducerOptions("output", rabbitBindingsOptions, rabbitBindingOptions);
+            rabbitBindingOptions.Producer.UseConfirmHeader = true;
+            var producerBinding = binder.BindProducer("confirms.0", moduleOutputChannel, producerProps);
+
+            var correlation = new CorrelationData("testConfirm");
+            var message = MessageBuilder.WithPayload("confirmsMessage".GetBytes())
+                    .SetHeader(RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION, correlation)
+                    .Build();
+            moduleOutputChannel.Send(message);
+            var confirm = correlation.Future.Result;
+            Assert.True(confirm.Ack);
+
+            // Assert.NotNull(correlation.ReturnedMessage); Deprecated in Spring
+            producerBinding.Unbind();
+        }
+
+        [Fact]
         public void TestConsumerProperties()
         {
             var rabbitConsumerOptions = new RabbitConsumerOptions
@@ -290,13 +320,37 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
+        public void TestMultiplexOnPartitionedConsumer()
+        {
+
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
+            var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
+
+
+            var ccf = new CachingConnectionFactory("localhost", proxy.Port);
+
+            var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
+
+            consumerProperties.Multiplex = true;
+            consumerProperties.Partitioned = true;
+            consumerProperties.InstanceIndexList = new int[] { 1, 2, 3 }.ToList();
+
+            var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo", "boo", consumerProperties);
+
+
+
+            Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3", consumerDestination.Name);
+        }
+
+        [Fact]
         public void TestMultiplexOnPartitionedConsumerWithMultipleDestinations()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-            var port = proxy.Port;
-            var ccf = new CachingConnectionFactory("localhost", port);
+            var ccf = new CachingConnectionFactory("localhost", proxy.Port);
+
             var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, rabbitBindingsOptions, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
             consumerProperties.Multiplex = true;
@@ -305,7 +359,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
 
-            proxy.Stop();
+            //proxy.Stop();
             Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
         }
 
@@ -1329,6 +1383,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
             consumerBinding.Unbind();
         }
 
+        // TestProducerBatching, TestConsumerBatching only works with SMLC - not implemented in steeltoe
+
         [Fact]
         public void TestInternalHeadersNotPropagated()
         {
@@ -1843,11 +1899,24 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binding.Unbind();
         }
 
-        [Fact]
-        public void TestAnonymousGroup()
+        // TestCustomBatchingStrategy - not supported in Steeltoe
+        protected override string GetEndpointRouting(object endpoint)
         {
-            TestAnonymousGroupBase();
+            var spelExp = GetPropertyValue<SpelExpression>(endpoint, "RoutingKeyExpression");
+            return spelExp.ExpressionString;
         }
+
+        protected override void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)
+        {
+            var routingExpression = GetEndpointRouting(endpoint);
+            var delimiter = GetDestinationNameDelimiter();
+            var dest = GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test") + " + '-' + Headers['" + BinderHeaders.PARTITION_HEADER + "']";
+
+            Assert.Contains(dest, routingExpression);
+        }
+
+        protected override string GetExpectedRoutingBaseDestination(string name, string group) => name;
+        protected override bool UsesExplicitRouting() => true;
 
         private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
         {
@@ -1996,9 +2065,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
             appcontext.Register(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, errorChannel);
         }
 
-        private BindingOptions GetDefaultBindingOptions()
-        {
-            return new BindingOptions() { ContentType = BindingOptions.DEFAULT_CONTENT_TYPE.ToString() };
-        }
-    }
+      
+
+    //protected ConsumerOptions GetConsumerOptions2(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
+    //{
+    //    rabbitConsumerOptions ??= new RabbitConsumerOptions();
+    //    rabbitConsumerOptions.PostProcess();
+
+    //    bindingOptions ??= new RabbitBindingOptions();
+    //    bindingOptions.Consumer = rabbitConsumerOptions;
+    //    bindingsOptions.Bindings.Add(bindingName, bindingOptions);
+
+    //    var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
+    //    consumerOptions.PostProcess(bindingName);
+    //    return consumerOptions;
+    //}
+}
 }
