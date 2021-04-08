@@ -515,12 +515,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         [Fact]
         public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
         {
-            var services = new ServiceCollection();
+            IServiceCollection services = new ServiceCollection();
             var username = "fakeusername";
             var usernamePrefix = "spring:rabbitmq:username";
             var password = "CHANGEME";
             var passwordPrefix = "spring:rabbitmq:password";
 
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GetRabbitService());
 
             var appsettings = new Dictionary<string, string>()
@@ -543,96 +544,47 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
             Assert.Equal(username, rabbitOptions.Username);
             Assert.Equal(password, rabbitOptions.Password);
-            Assert.Equal($"{rabbitConnection.HostName}:{rabbitConnection.Port}", rabbitOptions.Addresses);
+            Assert.Equal($"192.168.0.90:3306", rabbitOptions.Addresses);
         }
 
         [Fact]
         public void AddRabbitConnectionFactory_AddRabbitConnector()
         {
-            var services = new ServiceCollection();
-            var username = "fakeusername";
-            var usernamePrefix = "spring:rabbitmq:username";
-            var password = "CHANGEME";
-            var passwordPrefix = "spring:rabbitmq:password";
+            IServiceCollection services = new ServiceCollection();
 
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GetRabbitService());
 
-            var appsettings = new Dictionary<string, string>()
-            {
-                [usernamePrefix] = username,
-                [passwordPrefix] = password,
-            };
-
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
             configurationBuilder.AddCloudFoundry();
             var configuration = configurationBuilder.Build();
 
             services.AddRabbitMQConnection(configuration);
+
             services.AddRabbitConnectionFactory();
 
             var provider = services.BuildServiceProvider();
             var rabbitConnection = provider.GetRequiredService<RC.IConnectionFactory>() as RC.ConnectionFactory;
             var rabbitConnectionFactory = provider.GetRequiredService<IConnectionFactory>();
 
-            Assert.Equal(rabbitConnection.UserName, rabbitConnectionFactory.Username);
-            Assert.Equal(rabbitConnection.HostName, rabbitConnectionFactory.Host);
-            Assert.Equal(rabbitConnection.Port, rabbitConnectionFactory.Port);
+            Assert.Equal("192.168.0.90", rabbitConnectionFactory.Host);
+            Assert.Equal(3306, rabbitConnectionFactory.Port);
         }
 
         private static string GetRabbitService() => @"
         {
             ""p-rabbitmq"": [{
                 ""credentials"": {
-                    ""http_api_uris"": [""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/""],
-                    ""ssl"": false,
-                    ""dashboard_url"": ""https://pivotal-rabbitmq.system.testcloud.com/#/login/03c7a684-6ff1-4bd0-ad45-d10374ffb2af/l5oq2q0unl35s6urfsuib0jvpo"",
-                    ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
-                    ""protocols"": {
-                        ""management"": {
-                            ""path"": ""/api/"",
-                            ""ssl"": false,
-                            ""hosts"": [""192.168.0.81""],
-                            ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
-                            ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
-                            ""port"": 15672,
-                            ""host"": ""192.168.0.81"",
-                            ""uri"": ""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/"",
-                            ""uris"": [""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:15672/api/""]
-                        },
-                        ""amqp"": {
-                            ""vhost"": ""fb03d693-91fe-4dc5-8203-ff7a6390df66"",
-                            ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
-                            ""password"": ""l5oq2q0unl35s6urfsuib0jvpo"",
-                            ""port"": 5672,
-                            ""host"": ""192.168.0.81"",
-                            ""hosts"": [""192.168.0.81""],
-                            ""ssl"": false,
-                            ""uri"": ""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66"",
-                            ""uris"": [""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66""]
-                        }
-                    },
-                    ""username"": ""03c7a684-6ff1-4bd0-ad45-d10374ffb2af"",
-                    ""hostname"": ""192.168.0.81"",
-                    ""hostnames"": [""192.168.0.81""],
-                    ""vhost"": ""fb03d693-91fe-4dc5-8203-ff7a6390df66"",
-                    ""http_api_uri"": ""https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/"",
-                    ""uri"": ""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66"",
-                    ""uris"": [""amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66""]
+                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
                 },
                 ""syslog_drain_url"": null,
                 ""label"": ""p-rabbitmq"",
                 ""provider"": null,
                 ""plan"": ""standard"",
-                ""name"": ""spring-cloud-broker-rmq"",
+                ""name"": ""myRabbitMQService1"",
                 ""tags"": [
                     ""rabbitmq"",
-                    ""messaging"",
-                    ""message-queue"",
-                    ""amqp"",
-                    ""stomp"",
-                    ""mqtt"",
-                    ""pivotal""
+                    ""amqp""
                 ]
             }]
         }";

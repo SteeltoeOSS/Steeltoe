@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
     <ProjectReference Include="..\..\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
   </ItemGroup>
