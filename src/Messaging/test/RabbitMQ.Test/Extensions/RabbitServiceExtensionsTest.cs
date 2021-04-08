@@ -513,14 +513,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         [Fact]
         public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
         {
-            var host = "192.168.0.90";
-            var port = 3306;
             var usernamePrefix = "spring:rabbitmq:username";
             var passwordPrefix = "spring:rabbitmq:password";
             var services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration(host, port));
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
 
             var appsettings = new Dictionary<string, string>()
             {
@@ -541,18 +539,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
 
             Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username);
             Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password);
-            Assert.Equal($"{host}:{port}", rabbitOptions.Addresses);
+            Assert.Equal($"192.168.0.90:3306", rabbitOptions.Addresses);
         }
 
         [Fact]
         public void AddRabbitConnectionFactory_AddRabbitConnector()
         {
-            var host = "192.168.0.90";
-            var port = 3306;
             var services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration(host, port));
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
 
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddCloudFoundry();
@@ -564,15 +560,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             var provider = services.BuildServiceProvider();
             var rabbitConnectionFactory = provider.GetRequiredService<IConnectionFactory>();
 
-            Assert.Equal(host, rabbitConnectionFactory.Host);
-            Assert.Equal(port, rabbitConnectionFactory.Port);
+            Assert.Equal("192.168.0.90", rabbitConnectionFactory.Host);
+            Assert.Equal(3306, rabbitConnectionFactory.Port);
         }
 
-        private static string GetCloudFoundryRabbitMqConfiguration(string host, int port) => @"
+        private static string GetCloudFoundryRabbitMqConfiguration() => @"
         {
             ""p-rabbitmq"": [{
                 ""credentials"": {
-                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@" + $"{host}:{port}" + @"/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@" + $"192.168.0.90:3306" + @"/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
                 },
                 ""syslog_drain_url"": null,
                 ""label"": ""p-rabbitmq"",
