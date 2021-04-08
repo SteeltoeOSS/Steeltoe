@@ -568,7 +568,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         {
             ""p-rabbitmq"": [{
                 ""credentials"": {
-                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@" + $"192.168.0.90:3306" + @"/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
                 },
                 ""syslog_drain_url"": null,
                 ""label"": ""p-rabbitmq"",
