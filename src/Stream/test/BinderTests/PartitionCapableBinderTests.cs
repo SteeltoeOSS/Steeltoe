@@ -197,7 +197,7 @@ namespace Steeltoe.Stream.Binder
             var rabbitProducerOptions = bindingsOptions.GetRabbitProducerOptions("output");
             rabbitProducerOptions.RoutingKeyExpression = "'part.0'";
             producerProperties.PartitionKeyExpression = "Payload";
-            producerProperties.PartitionSelectorExpression = "ToString()"; // For strings, Java hash is not equivalent to GetHashCode, but for 0,1,2 ToString() is equivalent to hash. 
+            producerProperties.PartitionSelectorExpression = "ToString()"; // For strings, Java hash is not equivalent to GetHashCode, but for 0,1,2 ToString() is equivalent to hash.
             producerProperties.PartitionCount = 3;
             var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             output.ComponentName = "test.output";

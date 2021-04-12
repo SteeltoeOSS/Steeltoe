@@ -494,7 +494,7 @@ namespace Steeltoe.Stream.Binder
 
             resolver.AddResolver(new PayloadArgumentResolver(factory.MessageConverterForAllRegistered));
             method.MessageMethodArgumentResolvers = resolver;
-            var constr = typeof(StreamListenerMessageHandler).GetConstructor(new Type[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[])});
+            var constr = typeof(StreamListenerMessageHandler).GetConstructor(new Type[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[]) });
 
             var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, new string[0] });
 

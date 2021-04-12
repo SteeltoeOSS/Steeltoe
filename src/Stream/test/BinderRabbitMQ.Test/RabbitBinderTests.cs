@@ -322,7 +322,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestMultiplexOnPartitionedConsumer()
         {
-
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
             var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
@@ -1910,6 +1909,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         protected override string GetExpectedRoutingBaseDestination(string name, string group) => name;
+
         protected override bool UsesExplicitRouting() => true;
 
         private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
@@ -2038,7 +2038,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             Assert.Equal("partPubDLQ.0-0", received.Headers["x-original-routingKey"]);
             Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
 
-            //// verify we got a message on the dedicated error channel and the global (via bridge)
+            // verify we got a message on the dedicated error channel and the global (via bridge)
             Thread.Sleep(2000);
             Assert.NotNull(boundErrorChannelMessage.Value);
 
@@ -2058,21 +2058,5 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var errorChannel = new BinderErrorChannel(appcontext, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, LoggerFactory.CreateLogger<BinderErrorChannel>());
             appcontext.Register(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, errorChannel);
         }
-
-      
-
-    //protected ConsumerOptions GetConsumerOptions2(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
-    //{
-    //    rabbitConsumerOptions ??= new RabbitConsumerOptions();
-    //    rabbitConsumerOptions.PostProcess();
-
-    //    bindingOptions ??= new RabbitBindingOptions();
-    //    bindingOptions.Consumer = rabbitConsumerOptions;
-    //    bindingsOptions.Bindings.Add(bindingName, bindingOptions);
-
-    //    var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
-    //    consumerOptions.PostProcess(bindingName);
-    //    return consumerOptions;
-    //}
 }
 }

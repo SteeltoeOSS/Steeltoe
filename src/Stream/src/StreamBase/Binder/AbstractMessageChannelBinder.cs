@@ -750,7 +750,7 @@ namespace Steeltoe.Stream.Binder
             {
                 _binder.AfterUnbindConsumer(_destination, Group, _options);
                 _binder.DestroyErrorInfrastructure(_destination, Group, _options);
-                Stop(); // Stop lifecycle 
+                Stop(); // Stop lifecycle
             }
         }
 

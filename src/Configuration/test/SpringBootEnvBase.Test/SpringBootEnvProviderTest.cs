@@ -9,7 +9,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv.Test
 {
     public class SpringBootEnvProviderTest
     {
-
         [Fact]
         public void TryGet_Flat()
         {

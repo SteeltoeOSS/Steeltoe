@@ -32,10 +32,10 @@ namespace Steeltoe.Stream.Extensions
 
                 services.AddOptions();
 
-                //services.AddRabbitMQConnection(configuration);
-                //services.AddRabbitConnectionFactory();
-                services.ConfigureRabbitOptionsForCloudFoundry(configuration);
-                
+                services.AddRabbitMQConnection(configuration);
+                services.AddRabbitConnectionFactory();
+                services.ConfigureRabbitOptions(configuration);
+
                 services.AddSingleton<IApplicationContext, GenericApplicationContext>();
 
                 services.AddStreamConfiguration(configuration);

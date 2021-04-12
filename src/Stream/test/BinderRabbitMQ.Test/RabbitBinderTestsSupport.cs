@@ -160,8 +160,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             CachingConnectionFactory = null;
         }
 
-       
-
         public class WrapperAccessor : RabbitOutboundEndpoint
         {
             public WrapperAccessor(IApplicationContext context, RabbitTemplate template)

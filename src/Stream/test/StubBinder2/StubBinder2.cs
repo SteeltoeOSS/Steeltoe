@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.StubBinder2
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            // Nothing to do
         }
     }
 }

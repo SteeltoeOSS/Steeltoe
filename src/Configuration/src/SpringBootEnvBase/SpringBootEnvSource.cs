@@ -30,7 +30,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
         /// <returns>the SpringBootEnv provider</returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new SpringBootEnvProvider( _loggerFactory);
+            return new SpringBootEnvProvider(_loggerFactory);
         }
     }
 }

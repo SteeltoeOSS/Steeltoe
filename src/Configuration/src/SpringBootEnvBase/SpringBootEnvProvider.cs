@@ -39,7 +39,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
         /// </summary>
         public override void Load()
         {
-
             if (!string.IsNullOrEmpty(SpringApplicationJson))
             {
                 var builder = new ConfigurationBuilder();
@@ -77,7 +76,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
 
         private void RExpand(IConfigurationSection section)
         {
-
             foreach (var child in section.GetChildren())
             {
                 if (child.Key.Contains('.') && child.Value != null)
