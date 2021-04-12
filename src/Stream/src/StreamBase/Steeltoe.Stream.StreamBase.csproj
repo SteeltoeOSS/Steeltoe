@@ -14,6 +14,8 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\SpringBootEnvBase\Steeltoe.Extensions.Configuration.SpringBootEnvBase.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />

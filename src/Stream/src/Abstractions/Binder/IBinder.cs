@@ -14,7 +14,7 @@ namespace Steeltoe.Stream.Binder
     /// channel adapter, another message channel, etc.
     /// </summary>
     /// TODO:  Figure out Closable/Disposable usage
-    public interface IBinder : IServiceNameAware // : IDisposable
+    public interface IBinder : IServiceNameAware, IDisposable
     {
         /// <summary>
         /// Gets the target type this binder can bind to

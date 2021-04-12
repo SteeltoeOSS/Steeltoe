@@ -117,6 +117,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             ConnectionFactory?.Destroy();
         }
 
+        public override void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         public RabbitConsumerOptions GetConsumerOptions(string channelName)
         {
             return BindingsOptions.GetRabbitConsumerOptions(channelName);

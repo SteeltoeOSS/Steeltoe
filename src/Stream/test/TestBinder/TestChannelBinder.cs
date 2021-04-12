@@ -30,11 +30,6 @@ namespace Steeltoe.Stream.TestBinder
             : base(context, Array.Empty<string>(), provisioningProvider, logger)
         {
             _logger = logger;
-            _logger.LogInformation("info");
-            _logger.LogDebug("debug");
-            _logger.LogWarning("warning");
-            _logger.LogTrace("trace");
-            _logger.LogCritical("critical");
         }
 
         public IMessage LastError { get; private set; }
@@ -42,6 +37,10 @@ namespace Steeltoe.Stream.TestBinder
         public override string ServiceName { get; set; } = "testbinder";
 
         public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
+
+        public override void Dispose()
+        {
+        }
 
         protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {

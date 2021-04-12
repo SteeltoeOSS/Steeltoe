@@ -5,45 +5,32 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue
+namespace Steeltoe.Extensions.Configuration.SpringBootEnv
 {
     /// <summary>
-    /// Configuration source used in creating a <see cref="RandomValueProvider"/> that generates random numbers
+    /// Configuration source used in creating a <see cref="SpringBootEnvProvider"/> that generates random numbers
     /// </summary>
-    public class RandomValueSource : IConfigurationSource
+    public class SpringBootEnvSource : IConfigurationSource
     {
-        public const string PREFIX = "random:";
         internal ILoggerFactory _loggerFactory;
-        internal string _prefix;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RandomValueSource"/> class.
+        /// Initializes a new instance of the <see cref="SpringBootEnvSource"/> class.
         /// </summary>
         /// <param name="logFactory">the logger factory to use</param>
-        public RandomValueSource(ILoggerFactory logFactory = null)
-            : this(PREFIX, logFactory)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="RandomValueSource"/> class.
-        /// </summary>
-        /// <param name="prefix">key prefix to use to match random number keys. Should end with the configuration seperator</param>
-        /// <param name="logFactory">the logger factory to use</param>
-        public RandomValueSource(string prefix, ILoggerFactory logFactory = null)
+        public SpringBootEnvSource(ILoggerFactory logFactory = null)
         {
             _loggerFactory = logFactory;
-            _prefix = prefix;
         }
 
         /// <summary>
-        /// Builds a <see cref="RandomValueProvider"/> from the sources.
+        /// Builds a <see cref="SpringBootEnvProvider"/> from the sources.
         /// </summary>
         /// <param name="builder">the provided builder</param>
-        /// <returns>the random number provider</returns>
+        /// <returns>the SpringBootEnv provider</returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new RandomValueProvider(_prefix, _loggerFactory);
+            return new SpringBootEnvProvider( _loggerFactory);
         }
     }
 }

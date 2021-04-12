@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Extensions.Configuration.SpringBootEnv;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.StreamsHost;
@@ -18,6 +19,7 @@ namespace Steeltoe.Stream.Extensions
         public static IHostBuilder AddStreamsServices<T>(this IHostBuilder builder)
         {
             return builder
+                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnvSource())
                 .ConfigureServices(ConfigureStreamsDelegate<T>())
                 .ConfigureServices(services => services.AddHostedService<StreamsLifeCycleService>());
         }
@@ -29,7 +31,11 @@ namespace Steeltoe.Stream.Extensions
                 var configuration = context.Configuration;
 
                 services.AddOptions();
+
+                //services.AddRabbitMQConnection(configuration);
+                //services.AddRabbitConnectionFactory();
                 services.ConfigureRabbitOptionsForCloudFoundry(configuration);
+                
                 services.AddSingleton<IApplicationContext, GenericApplicationContext>();
 
                 services.AddStreamConfiguration(configuration);

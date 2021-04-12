@@ -315,6 +315,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.Rabb
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.BinderTests", "Stream\test\BinderTests\Steeltoe.Stream.BinderTests.csproj", "{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootEnvBase", "Configuration\src\SpringBootEnvBase\Steeltoe.Extensions.Configuration.SpringBootEnvBase.csproj", "{9E032700-02AE-4B67-A186-F4D18E4E5EDA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootEnvBase.Test", "Configuration\test\SpringBootEnvBase.Test\Steeltoe.Extensions.Configuration.SpringBootEnvBase.Test.csproj", "{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CloudDataflowToUpperProcessor", "..\..\Samples\Streams\CloudDataFlowToUpperProcessor\CloudDataflowToUpperProcessor.csproj", "{C19C0299-8B21-4A37-858E-5CE660BA1AF6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Basic", "..\..\Samples\Streams\Basic\Basic.csproj", "{91C54B4F-2315-4039-AEDF-29BC02509E59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -825,6 +833,22 @@ Global
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E032700-02AE-4B67-A186-F4D18E4E5EDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E032700-02AE-4B67-A186-F4D18E4E5EDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E032700-02AE-4B67-A186-F4D18E4E5EDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E032700-02AE-4B67-A186-F4D18E4E5EDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C19C0299-8B21-4A37-858E-5CE660BA1AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C19C0299-8B21-4A37-858E-5CE660BA1AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C19C0299-8B21-4A37-858E-5CE660BA1AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C19C0299-8B21-4A37-858E-5CE660BA1AF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91C54B4F-2315-4039-AEDF-29BC02509E59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91C54B4F-2315-4039-AEDF-29BC02509E59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91C54B4F-2315-4039-AEDF-29BC02509E59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91C54B4F-2315-4039-AEDF-29BC02509E59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -957,6 +981,8 @@ Global
 		{09468CF2-61C1-4B83-8E1A-BD7C1321BA0A} = {EA583B9C-D8C6-422A-9FF8-157CF6A4A61E}
 		{92671FCC-F03E-40BE-B645-5B59F8F7F4C4} = {4F1EA720-AA18-4955-A854-016B26F6CED1}
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592} = {4F1EA720-AA18-4955-A854-016B26F6CED1}
+		{9E032700-02AE-4B67-A186-F4D18E4E5EDA} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
+		{054D4A65-E3D3-4A1F-97A1-E4FEA33D026A} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}

@@ -35,7 +35,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly string _bigExceptionMessage = new string('x', 10_000);
 
         private RabbitTestBinder _testBinder;
-      //  private CachingConnectionFactory CachingConnectionFactory;
 
         private int _maxStackTraceSize;
 

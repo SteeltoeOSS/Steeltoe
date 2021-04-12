@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.SpringBootEnv
@@ -13,22 +15,23 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
     /// <summary>
     /// Configuration provider that expands spring style '.' delimited configuration keys to .NET compatible format
     /// </summary>
-    public class SpringEnvProvider : ConfigurationProvider
+    public class SpringBootEnvProvider : ConfigurationProvider
     {
-        internal ILogger<SpringEnvProvider> _logger;
+        internal ILogger<SpringBootEnvProvider> _logger;
 
         private const string SPRING_APPLICATION_JSON = "SPRING_APPLICATION_JSON";
 
-        internal string SpringEnvJson { get; set; } = Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
+        internal string SpringApplicationJson { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SpringEnvProvider"/> class.
+        /// Initializes a new instance of the <see cref="SpringBootEnvProvider"/> class.
         /// The new placeholder resolver wraps the provided configuration
         /// </summary>
         /// <param name="logFactory">the logger factory to use</param>
-        public SpringEnvProvider(ILoggerFactory logFactory = null)
+        public SpringBootEnvProvider(ILoggerFactory logFactory = null)
         {
-            _logger = logFactory?.CreateLogger<SpringEnvProvider>();
+            _logger = logFactory?.CreateLogger<SpringBootEnvProvider>();
+            SpringApplicationJson = Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
         }
 
         /// <summary>
@@ -36,13 +39,16 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
         /// </summary>
         public override void Load()
         {
-            if (!string.IsNullOrEmpty(SpringEnvJson))
+
+            if (!string.IsNullOrEmpty(SpringApplicationJson))
             {
-                var memStream = GetMemoryStream(SpringEnvJson);
                 var builder = new ConfigurationBuilder();
-                builder.Add(new JsonStreamConfigurationSource(memStream));
-                IConfigurationRoot servicesData = builder.Build();
-                var expanded = new Dictionary<string, object>();
+                builder.Add(new JsonStreamConfigurationSource()
+                {
+                    Stream = GetMemoryStream(SpringApplicationJson)
+                });
+
+                var servicesData = builder.Build();
                 if (servicesData != null)
                 {
                     foreach (var child in servicesData.GetChildren())
@@ -52,11 +58,13 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
                             var nk = child.Key.Replace('.', ':');
                             Data[nk] = child.Value;
                         }
+
                         RExpand(child);
                     }
                 }
             }
         }
+
         internal static MemoryStream GetMemoryStream(string json)
         {
             var memStream = new MemoryStream();
@@ -65,6 +73,21 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
             textWriter.Flush();
             memStream.Seek(0, SeekOrigin.Begin);
             return memStream;
+        }
+
+        private void RExpand(IConfigurationSection section)
+        {
+
+            foreach (var child in section.GetChildren())
+            {
+                if (child.Key.Contains('.') && child.Value != null)
+                {
+                    var nk = child.Path.Replace('.', ':');
+                    Data[nk] = child.Value;
+                }
+
+                RExpand(child);
+            }
         }
     }
 }

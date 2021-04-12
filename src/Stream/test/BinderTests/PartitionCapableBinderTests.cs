@@ -27,7 +27,7 @@ namespace Steeltoe.Stream.Binder
         where T : AbstractBinder<IMessageChannel>
     {
         protected static IExpressionParser spelExpressionParser = new SpelExpressionParser();
-        ILogger<PartitionCapableBinderTests<B, T>> _logger;
+        private ILogger<PartitionCapableBinderTests<B, T>> _logger;
 
         protected PartitionCapableBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)
             : base(output, loggerFactory)
@@ -163,7 +163,7 @@ namespace Steeltoe.Stream.Binder
             producerBinding.Unbind();
         }
 
-        [Fact(Skip = "Fix me")]
+        [Fact]
         public void TestPartitionedModuleSpEL()
         {
             var bindingsOptions = new RabbitBindingsOptions();
@@ -174,6 +174,7 @@ namespace Steeltoe.Stream.Binder
             consumerProperties.InstanceIndex = 0;
             consumerProperties.InstanceCount = 3;
             consumerProperties.Partitioned = true;
+
             var delimiter = GetDestinationNameDelimiter();
             var input0 = new QueueChannel
             {
@@ -181,22 +182,22 @@ namespace Steeltoe.Stream.Binder
             };
 
             var input0Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input0, consumerProperties);
-            consumerProperties.InstanceIndex = 1;
 
+            consumerProperties.InstanceIndex = 1;
             var input1 = new QueueChannel();
             input1.ComponentName = "test.input1S";
-
             var input1Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input1, consumerProperties);
+
             consumerProperties.InstanceIndex = 2;
             var input2 = new QueueChannel();
             input2.ComponentName = "test.input2S";
             var input2Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input2, consumerProperties);
 
-            var producerProperties = GetProducerOptions("output", bindingsOptions, null, true);
-
+            var producerProperties = GetProducerOptions("output", bindingsOptions);
+            var rabbitProducerOptions = bindingsOptions.GetRabbitProducerOptions("output");
+            rabbitProducerOptions.RoutingKeyExpression = "'part.0'";
             producerProperties.PartitionKeyExpression = "Payload";
-            producerProperties.PartitionSelectorExpression = "GetHashCode()";
-
+            producerProperties.PartitionSelectorExpression = "ToString()"; // For strings, Java hash is not equivalent to GetHashCode, but for 0,1,2 ToString() is equivalent to hash. 
             producerProperties.PartitionCount = 3;
             var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
             output.ComponentName = "test.output";
@@ -234,9 +235,9 @@ namespace Steeltoe.Stream.Binder
                                        };
             if (UsesExplicitRouting())
             {
-                Assert.Equal("0", receive0.Payload.ToString());
-                Assert.Equal("1", receive1.Payload.ToString());
-                Assert.Equal("2", receive2.Payload.ToString());
+                Assert.Equal("0", ((byte[])receive0.Payload).GetString());
+                Assert.Equal("1", ((byte[])receive1.Payload).GetString());
+                Assert.Equal("2", ((byte[])receive2.Payload).GetString());
                 Assert.True(correlationHeadersForPayload2(receive2));
             }
             else

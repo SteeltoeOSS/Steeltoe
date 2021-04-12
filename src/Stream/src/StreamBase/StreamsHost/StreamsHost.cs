@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Extensions.Configuration.SpringBootEnv;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using System;
@@ -73,7 +74,9 @@ namespace Steeltoe.Stream.StreamsHost
 
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
         {
-            _hostBuilder.ConfigureAppConfiguration(configureDelegate);
+            _hostBuilder
+                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnvSource())
+                .ConfigureAppConfiguration(configureDelegate);
             return this;
         }
 

@@ -457,9 +457,9 @@ namespace Steeltoe.Stream.Binder
                     DestroyBean(errorChannelName);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log ... context is shutting down.
+                _logger?.LogError(ex, ex.Message);
             }
         }
 
@@ -748,20 +748,9 @@ namespace Steeltoe.Stream.Binder
 
             protected override void AfterUnbind()
             {
-                // TODO: Figure out IDisposable/Closeable usage
-                // try
-                // {
-                //    if (Endpoint is IDisposable)
-                //    {
-                //        ((IDisposable)Endpoint).Dispose();
-                //    }
-                // }
-                // catch (Exception)
-                // {
-                //    // Log
-                // }
                 _binder.AfterUnbindConsumer(_destination, Group, _options);
                 _binder.DestroyErrorInfrastructure(_destination, Group, _options);
+                Stop(); // Stop lifecycle 
             }
         }
 

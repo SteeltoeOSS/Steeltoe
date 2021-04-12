@@ -22,7 +22,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             }
 
             return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
-               // .Add(new SpringEnvConfigurationSource { SettingsReader = settingsReader }); Todo Create its own extension
         }
     }
 }

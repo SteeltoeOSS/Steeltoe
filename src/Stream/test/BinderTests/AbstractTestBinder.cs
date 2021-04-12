@@ -75,6 +75,8 @@ namespace Steeltoe.Stream.Binder
 
         public abstract void Cleanup();
 
+        public abstract void Dispose();
+
         private void CheckChannelIsConfigured(IMessageChannel messageChannel, IConsumerOptions options)
         {
             if (messageChannel is AbstractSubscribableChannel && !options.UseNativeDecoding)

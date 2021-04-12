@@ -8,7 +8,9 @@ using System;
 
 namespace Steeltoe.Stream.StubBinder2
 {
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly
     public class StubBinder2 : IBinder<object>
+#pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
         public const string BINDER_NAME = "binder2";
 
@@ -29,5 +31,10 @@ namespace Steeltoe.Stream.StubBinder2
         public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions) => null;
 
         public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions) => null;
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

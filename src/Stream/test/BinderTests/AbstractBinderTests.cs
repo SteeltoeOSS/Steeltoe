@@ -7,27 +7,27 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Util;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.Support;
+using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
-using Steeltoe.Stream.Binder.Rabbit.Config;
-using Steeltoe.Messaging.RabbitMQ.Connection;
-using Steeltoe.Messaging.Support;
-using System.Threading;
-using Steeltoe.Common.Util;
-using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Reflection;
-using Steeltoe.Messaging.Handler.Invocation;
-using Steeltoe.Messaging.Handler.Attributes.Support;
-using System.Collections.Generic;
-using System.Collections;
-using System.Runtime.Serialization;
 
 namespace Steeltoe.Stream.Binder
 {
@@ -445,7 +445,7 @@ namespace Steeltoe.Stream.Binder
             return consumerOptions;
         }
 
-        protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null, bool partitionedSpelTest = false)
+        protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
         {
             var rabbitProducerOptions = new RabbitProducerOptions();
             rabbitProducerOptions.PostProcess();
@@ -453,11 +453,6 @@ namespace Steeltoe.Stream.Binder
             bindingOptions ??= new RabbitBindingOptions();
 
             bindingOptions.Producer = rabbitProducerOptions;
-
-            if (partitionedSpelTest)
-            {
-                rabbitProducerOptions.RoutingKeyExpression = "'part.0'";
-            }
 
             bindingsOptions.Bindings.Add(bindingName, bindingOptions);
 
@@ -485,7 +480,7 @@ namespace Steeltoe.Stream.Binder
 
         public string EchoStationString(string station) => station;
 
-        private StreamListenerMessageHandler BuildStreamListener(Type handlerType, string handlerMethodName, params Type[] parameters)//, Class<?>...parameters) throws Exception        
+        private StreamListenerMessageHandler BuildStreamListener(Type handlerType, string handlerMethodName, params Type[] parameters)
         {
             var channelName = "reply_" + default(DateTime).Ticks.ToString();
             var binder = GetBinder();
