@@ -12,7 +12,7 @@ using System.Linq;
 namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
     /// <summary>
-    /// Configuration provider that expands the contents of `SPRING_APPLICATION_JSON`'s Spring-style '.' delimited configuration key/value pairs to .NET compatible form
+    /// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET compatible form
     /// </summary>
     public class SpringBootEnvProvider : ConfigurationProvider
     {
