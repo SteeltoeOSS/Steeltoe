@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.SpringBoot</RootNamespace>
-    <Description>Configuration provider for reading SpringBoot vars</Description>
-    <PackageTags>configuration;springboot env</PackageTags>
+    <Description>Configuration provider for reading Spring Boot style configuration</Description>
+    <PackageTags>configuration;springboot</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

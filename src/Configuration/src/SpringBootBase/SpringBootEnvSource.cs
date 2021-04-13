@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
     /// <summary>
-    /// Configuration source used in creating a <see cref="SpringBootEnvProvider"/> that generates random numbers
+    /// Configuration source used in creating a <see cref="SpringBootEnvProvider"/>
     /// </summary>
     public class SpringBootEnvSource : IConfigurationSource
     {

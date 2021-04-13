@@ -11,8 +11,8 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
     public static class SpringBootConfigurationBuilderExtensions
     {
         /// <summary>
-        /// Add a SpringBoot configuration source to the <see cref="ConfigurationBuilder"/>.
-        /// This Source translates configuration keys in '.' delimited style to a format understood by .NET
+        /// Add a configuration source to the <see cref="ConfigurationBuilder"/> that reads SPRING_BOOT_APPLICATION from the environment and expands the child keys found within.
+        /// Configuration keys in '.' delimited style are also converted to a format understood by .NET
         /// </summary>
         /// <param name="builder">the configuration builder</param>
         /// <param name="loggerFactory">the logger factory to use</param>
