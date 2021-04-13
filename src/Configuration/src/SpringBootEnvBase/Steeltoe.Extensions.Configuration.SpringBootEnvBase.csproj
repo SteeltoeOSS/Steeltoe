@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.SpringBootEnv</RootNamespace>
-    <Description>Configuration provider for generating random values</Description>
-    <PackageTags>configuration;random values</PackageTags>
+    <Description>Configuration provider for reading SpringBoot Env vars</Description>
+    <PackageTags>configuration;springboot env</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -12,9 +12,5 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
   </ItemGroup>
 </Project>

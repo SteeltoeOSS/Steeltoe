@@ -39,28 +39,35 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
         /// </summary>
         public override void Load()
         {
-            if (!string.IsNullOrEmpty(SpringApplicationJson))
+            try
             {
-                var builder = new ConfigurationBuilder();
-                builder.Add(new JsonStreamConfigurationSource()
+                if (!string.IsNullOrEmpty(SpringApplicationJson))
                 {
-                    Stream = GetMemoryStream(SpringApplicationJson)
-                });
-
-                var servicesData = builder.Build();
-                if (servicesData != null)
-                {
-                    foreach (var child in servicesData.GetChildren())
+                    var builder = new ConfigurationBuilder();
+                    builder.Add(new JsonStreamConfigurationSource()
                     {
-                        if (child.Key.Contains('.') && child.Value != null)
-                        {
-                            var nk = child.Key.Replace('.', ':');
-                            Data[nk] = child.Value;
-                        }
+                        Stream = GetMemoryStream(SpringApplicationJson)
+                    });
 
-                        RExpand(child);
+                    var servicesData = builder.Build();
+                    if (servicesData != null)
+                    {
+                        foreach (var child in servicesData.GetChildren())
+                        {
+                            if (child.Key.Contains('.') && child.Value != null)
+                            {
+                                var nk = child.Key.Replace('.', ':');
+                                Data[nk] = child.Value;
+                            }
+
+                            RExpand(child);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error reading configuration from " + SPRING_APPLICATION_JSON);
             }
         }
 
