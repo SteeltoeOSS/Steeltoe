@@ -22,8 +22,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         private const string VCAP_SERVICES = "VCAP_SERVICES";
 
-        private const string SPRING_APPLICATION_JSON = "SPRING_APPLICATION_JSON";
-
         public string ApplicationJson => Environment.GetEnvironmentVariable(VCAP_APPLICATION);
 
         public string InstanceId => Environment.GetEnvironmentVariable(CF_INSTANCE_GUID);
@@ -38,6 +36,5 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
         public string ServicesJson => Environment.GetEnvironmentVariable(VCAP_SERVICES);
 
-        public string SpringApplicationJson => Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
     }
 }
