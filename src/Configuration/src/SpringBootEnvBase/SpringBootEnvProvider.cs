@@ -13,7 +13,7 @@ using System.Linq;
 namespace Steeltoe.Extensions.Configuration.SpringBootEnv
 {
     /// <summary>
-    /// Configuration provider that expands spring style '.' delimited configuration keys to .NET compatible format
+    /// Configuration provider that expands the contents of `SPRING_APPLICATION_JSON`'s Spring-style '.' delimited configuration key/value pairs to .NET compatible form
     /// </summary>
     public class SpringBootEnvProvider : ConfigurationProvider
     {
@@ -25,7 +25,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpringBootEnvProvider"/> class.
-        /// The new placeholder resolver wraps the provided configuration
         /// </summary>
         /// <param name="logFactory">the logger factory to use</param>
         public SpringBootEnvProvider(ILoggerFactory logFactory = null)
@@ -67,7 +66,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error reading configuration from " + SPRING_APPLICATION_JSON);
+                _logger?.LogError(ex, "Error reading configuration from " + SPRING_APPLICATION_JSON);
             }
         }
 

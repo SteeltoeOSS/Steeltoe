@@ -1,6 +1,6 @@
 # Configuration SpringBoot Env .NET Configuration Provider
 
-This project contains a SpringBoot Env configuration provider.
+This project contains a SpringApplicationJSON configuration provider. For environments friendly to Spring Boot applications like SCDF where configuration is provided as a json string inside a single env variable that looks like 
 For more information on how to use this component see the online [Steeltoe documentation](https://steeltoe.io/).
 
 ```

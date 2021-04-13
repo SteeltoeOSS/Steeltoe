@@ -22,14 +22,12 @@ namespace Steeltoe.Extensions.Configuration.SpringBootEnv.Test
         }
 
         [Fact]
-        public void AddSpringBootEnvSource_Ignores()
+        public void AddSpringBootEnvSource_AddSource()
         {
+            Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
+
             var builder = new ConfigurationBuilder()
-                .AddSpringBootEnvSource()
-                .AddInMemoryCollection(new Dictionary<string, string>()
-                {
-                    { "foo:bar", "value" }
-                });
+                .AddSpringBootEnvSource();
             var config = builder.Build();
             var value = config["foo:bar"];
             Assert.Equal("value", value);
