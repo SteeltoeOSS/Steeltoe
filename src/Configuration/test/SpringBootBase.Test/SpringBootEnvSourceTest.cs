@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv.Test
+namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 {
     public class SpringBootEnvSourceTest
     {

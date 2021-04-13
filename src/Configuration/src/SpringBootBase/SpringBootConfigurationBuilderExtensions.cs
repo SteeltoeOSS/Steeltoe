@@ -6,18 +6,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv
+namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
-    public static class SpringBootEnvExtensions
+    public static class SpringBootConfigurationBuilderExtensions
     {
         /// <summary>
-        /// Add a SpringBootEnv configuration source to the <see cref="ConfigurationBuilder"/>.
+        /// Add a SpringBoot configuration source to the <see cref="ConfigurationBuilder"/>.
         /// This Source translates configuration keys in '.' delimited style to a format understood by .NET
         /// </summary>
         /// <param name="builder">the configuration builder</param>
         /// <param name="loggerFactory">the logger factory to use</param>
         /// <returns>builder</returns>
-        public static IConfigurationBuilder AddSpringBootEnvSource(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
+        public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
         {
             if (builder == null)
             {

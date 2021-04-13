@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv
+namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
     /// <summary>
     /// Configuration source used in creating a <see cref="SpringBootEnvProvider"/> that generates random numbers

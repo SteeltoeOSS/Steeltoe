@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <RootNamespace>Steeltoe.Extensions.Configuration.SpringBootEnv</RootNamespace>
-    <Description>Configuration provider for reading SpringBoot Env vars</Description>
+    <RootNamespace>Steeltoe.Extensions.Configuration.SpringBoot</RootNamespace>
+    <Description>Configuration provider for reading SpringBoot vars</Description>
     <PackageTags>configuration;springboot env</PackageTags>
   </PropertyGroup>
 

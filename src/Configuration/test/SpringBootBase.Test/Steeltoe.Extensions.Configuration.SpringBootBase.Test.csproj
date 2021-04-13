@@ -13,6 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\SpringBootEnvBase\Steeltoe.Extensions.Configuration.SpringBootEnvBase.csproj" />
+    <ProjectReference Include="..\..\src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj" />
   </ItemGroup>
 </Project>

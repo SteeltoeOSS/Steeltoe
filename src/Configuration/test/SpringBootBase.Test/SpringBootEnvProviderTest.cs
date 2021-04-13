@@ -8,7 +8,7 @@ using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv.Test
+namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 {
     public class SpringBootEnvProviderTest
     {

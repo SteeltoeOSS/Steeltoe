@@ -6,11 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv
+namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
     /// <summary>
     /// Configuration provider that expands the contents of `SPRING_APPLICATION_JSON`'s Spring-style '.' delimited configuration key/value pairs to .NET compatible form

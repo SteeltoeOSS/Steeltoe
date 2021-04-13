@@ -7,27 +7,27 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.SpringBootEnv.Test
+namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 {
-    public class SpringBootEnvBaseExtensionsTest
+    public class SpringBootConfigurationBuilderExtensionsTest
     {
         [Fact]
-        public void AddSpringBootEnvSource_ThrowsIfConfigBuilderNull()
+        public void AddSpringBootEnv_ThrowsIfConfigBuilderNull()
         {
             // Arrange
             IConfigurationBuilder configurationBuilder = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootEnvExtensions.AddSpringBootEnvSource(configurationBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootEnv(configurationBuilder));
         }
 
         [Fact]
-        public void AddSpringBootEnvSource_AddSource()
+        public void AddSpringBootEnv_AddKeys()
         {
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
             var builder = new ConfigurationBuilder()
-                .AddSpringBootEnvSource();
+                .AddSpringBootEnv();
             var config = builder.Build();
             var value = config["foo:bar"];
             Assert.Equal("value", value);

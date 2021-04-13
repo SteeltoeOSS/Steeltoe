@@ -83,9 +83,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Kubernetes"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Discovery.Eureka", "..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj", "{C2F6F69B-4E0C-46D8-BAA6-A4A3BDEE4E8C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootEnvBase", "src\SpringBootEnvBase\Steeltoe.Extensions.Configuration.SpringBootEnvBase.csproj", "{C487129C-322A-458F-A488-3DD1BFF922C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase", "src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj", "{BBE564CB-CA97-46C4-BE5C-5F718FDE700A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootEnvBase.Test", "test\SpringBootEnvBase.Test\Steeltoe.Extensions.Configuration.SpringBootEnvBase.Test.csproj", "{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase.Test", "test\SpringBootBase.Test\Steeltoe.Extensions.Configuration.SpringBootBase.Test.csproj", "{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,14 +209,14 @@ Global
 		{C2F6F69B-4E0C-46D8-BAA6-A4A3BDEE4E8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F6F69B-4E0C-46D8-BAA6-A4A3BDEE4E8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2F6F69B-4E0C-46D8-BAA6-A4A3BDEE4E8C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C487129C-322A-458F-A488-3DD1BFF922C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C487129C-322A-458F-A488-3DD1BFF922C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C487129C-322A-458F-A488-3DD1BFF922C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C487129C-322A-458F-A488-3DD1BFF922C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBE564CB-CA97-46C4-BE5C-5F718FDE700A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBE564CB-CA97-46C4-BE5C-5F718FDE700A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBE564CB-CA97-46C4-BE5C-5F718FDE700A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBE564CB-CA97-46C4-BE5C-5F718FDE700A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -251,8 +251,8 @@ Global
 		{6E06F0EF-4A90-43D1-AA61-FC5E09EB0877} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{6332A007-D01B-4CF9-BE09-BFB954FC9306} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
 		{C2F6F69B-4E0C-46D8-BAA6-A4A3BDEE4E8C} = {DA72FD0C-6B60-455A-9A07-7CA9D9064402}
-		{C487129C-322A-458F-A488-3DD1BFF922C1} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
-		{4DD472F7-5D95-48EE-B3D2-4C63C28EBAD4} = {17EC73D7-89DD-4A26-BC01-F34900140409}
+		{BBE564CB-CA97-46C4-BE5C-5F718FDE700A} = {8C0E6601-CC7E-4A02-91B1-1E2BF93DBF9E}
+		{BA56CBD5-A9B0-4EE0-974C-33FAE072A8AB} = {17EC73D7-89DD-4A26-BC01-F34900140409}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FF622C8D-0862-46BD-806B-1624BEC226E5}
