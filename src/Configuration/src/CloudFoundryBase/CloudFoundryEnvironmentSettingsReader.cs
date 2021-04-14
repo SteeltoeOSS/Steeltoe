@@ -35,6 +35,5 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         public string InstancePort => Environment.GetEnvironmentVariable(CF_INSTANCE_PORT);
 
         public string ServicesJson => Environment.GetEnvironmentVariable(VCAP_SERVICES);
-
     }
 }

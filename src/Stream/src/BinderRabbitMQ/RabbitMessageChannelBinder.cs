@@ -119,7 +119,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public override void Dispose()
         {
-            throw new NotImplementedException();
+            Destroy();
         }
 
         public RabbitConsumerOptions GetConsumerOptions(string channelName)

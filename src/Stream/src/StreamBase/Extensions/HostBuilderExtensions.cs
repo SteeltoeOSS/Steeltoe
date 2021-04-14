@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Connector.RabbitMQ;
-using Steeltoe.Extensions.Configuration.SpringBootEnv;
+using Steeltoe.Extensions.Configuration.SpringBoot;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.StreamsHost;
@@ -19,7 +19,7 @@ namespace Steeltoe.Stream.Extensions
         public static IHostBuilder AddStreamsServices<T>(this IHostBuilder builder)
         {
             return builder
-                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnvSource())
+                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
                 .ConfigureServices(ConfigureStreamsDelegate<T>())
                 .ConfigureServices(services => services.AddHostedService<StreamsLifeCycleService>());
         }
