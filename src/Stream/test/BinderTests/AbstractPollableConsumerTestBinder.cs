@@ -40,7 +40,7 @@ namespace Steeltoe.Stream.Binder
 
         public override void Dispose()
         {
-            _binder?.Dispose();
+           // _binder?.Dispose();
         }
     }
 }

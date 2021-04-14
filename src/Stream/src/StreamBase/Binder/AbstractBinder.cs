@@ -76,7 +76,9 @@ namespace Steeltoe.Stream.Binder
             return DoBindProducer(name, (T)outboundTarget, producerOptions);
         }
 
+#pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
         public abstract void Dispose();
+#pragma warning restore S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
 
         protected abstract IBinding DoBindProducer(string name, T outboundTarget, IProducerOptions producerOptions);
 
