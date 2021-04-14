@@ -1892,7 +1892,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             binding.Unbind();
         }
 
-        // TestCustomBatchingStrategy - not supported in Steeltoe
+        // TestCustomBatchingStrategy - Test not ported because CustomBatching Strategy is not yet supported in Steeltoe
         protected override string GetEndpointRouting(object endpoint)
         {
             var spelExp = GetPropertyValue<SpelExpression>(endpoint, "RoutingKeyExpression");

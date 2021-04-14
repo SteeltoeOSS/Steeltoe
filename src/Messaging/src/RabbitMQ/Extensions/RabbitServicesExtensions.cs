@@ -264,24 +264,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             return services;
         }
 
-        public static IServiceCollection ConfigureRabbitOptionsForCloudFoundry(this IServiceCollection services, IConfiguration config)
-        {
-            var serviceInfo = config.GetServiceInfos<RabbitMQServiceInfo>().FirstOrDefault();
-            if (serviceInfo != null)
-            {
-                services.PostConfigure<RabbitOptions>(opts =>
-                {
-                    opts.Host = serviceInfo.Host;
-                    opts.Port = serviceInfo.Port;
-                    opts.VirtualHost = serviceInfo.VirtualHost;
-                    opts.Username = serviceInfo.UserName;
-                    opts.Password = serviceInfo.Password;
-                });
-            }
-
-            return services;
-        }
-
         public static IServiceCollection AddRabbitServices(this IServiceCollection services, bool useJsonMessageConverter = false)
         {
             if (services == null)

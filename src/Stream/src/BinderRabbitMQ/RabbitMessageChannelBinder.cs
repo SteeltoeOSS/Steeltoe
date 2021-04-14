@@ -143,13 +143,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var prefix = extendedProperties.Prefix;
             var exchangeName = destination.Name;
             var destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
-            var endpoint = new RabbitOutboundEndpoint(
-                ApplicationContext,
-                BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault()),
-                _logger)
-                {
-                    ExchangeName = exchangeName
-                };
+            var template = BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault());
+            var endpoint = new RabbitOutboundEndpoint(ApplicationContext, template, _logger)
+                            {
+                                ExchangeName = exchangeName
+                            };
             var expressionInterceptorNeeded = ExpressionInterceptorNeeded(extendedProperties);
             var routingKeyExpression = extendedProperties.RoutingKeyExpression;
             if (!producerProperties.IsPartitioned)
