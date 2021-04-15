@@ -16,8 +16,6 @@ namespace Steeltoe.Stream.StreamsHost
     public class StreamsHostTest
     {
         [Fact]
-        [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
-        [Trait("Category", "SkipOnLinux")]
         public void HostCanBeStarted()
         {
             FakeHostedService service;
@@ -39,8 +37,6 @@ namespace Steeltoe.Stream.StreamsHost
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
-        [Trait("Category", "SkipOnLinux")]
         public void HostSetsupSpringBootConfigSource()
         {
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"spring.cloud.stream.bindings.input.destination\":\"foobar\",\"spring.cloud.stream.bindings.output.destination\":\"barfoo\"}");

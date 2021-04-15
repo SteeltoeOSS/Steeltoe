@@ -18,8 +18,6 @@ namespace Steeltoe.Stream.Extensions
     public class HostBuilderExtensionsTest
     {
         [Fact]
-        [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
-        [Trait("Category", "SkipOnLinux")]
         public void AddStreamsServices_AddsServices()
         {
             var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
@@ -30,8 +28,6 @@ namespace Steeltoe.Stream.Extensions
         }
 
         [Fact]
-        [Trait("Category", "SkipOnMacOS")] // TODO: Figure out why
-        [Trait("Category", "SkipOnLinux")]
         public void AddStreamsServices_AddsSpringBootEnv()
         {
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"spring.cloud.stream.bindings.input.destination\":\"foobar\",\"spring.cloud.stream.bindings.output.destination\":\"barfoo\"}");
