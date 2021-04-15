@@ -1,0 +1,60 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <RootNamespace>Steeltoe.Bootstrap.Autoconfig</RootNamespace>
+    <Description>Steeltoe autoconfiguration</Description>
+    <PackageTags>Autoconfiguration</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\KubernetesCore\Steeltoe.Extensions.Configuration.KubernetesCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Configuration\src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector.EF6Core\Steeltoe.Connector.EF6Core.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\TaskCore\Steeltoe.Management.TaskCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Management\src\TracingCore\Steeltoe.Management.TracingCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.MtlsCore\Steeltoe.Security.Authentication.MtlsCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\DataProtection.CredHubCore\Steeltoe.Security.DataProtection.CredHubCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Security\src\DataProtection.RedisCore\Steeltoe.Security.DataProtection.RedisCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Connectors\src\Connector.EFCore\Steeltoe.Connector.EFCore.csproj" PrivateAssets="All" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\..\Connectors\src\ConnectorBase\**\*TypeLocator.cs" LinkBase=".\TypeLocators" />
+    <Compile Update="LogMessages.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="LogMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>LogMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemDefinitionGroup>
+    <Reference>
+      <Private>False</Private>
+    </Reference>
+    <ProjectReference>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+</Project>

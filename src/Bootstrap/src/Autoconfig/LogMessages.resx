@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:element name="root" msdata:IsDataSet="true">
+      
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="WireKubernetesActuators" xml:space="preserve">
+    <value>Configured Kubernetes actuators</value>
+  </data>
+  <data name="WireConfigServer" xml:space="preserve">
+    <value>Configured config server configuration provider</value>
+  </data>
+  <data name="WireCloudFoundryConfiguration" xml:space="preserve">
+    <value>Configured Cloud Foundry configuration provider</value>
+  </data>
+  <data name="WireKubernetesConfiguration" xml:space="preserve">
+    <value>Configured Kubernetes configuration provider</value>
+  </data>
+  <data name="WirePlaceholderResolver" xml:space="preserve">
+    <value>Configured placeholder configuration provider</value>
+  </data>
+  <data name="WireMySqlConnection" xml:space="preserve">
+    <value>Configured MySQL connector</value>
+  </data>
+  <data name="WireMongoClient" xml:space="preserve">
+    <value>Configured MongoDB connector</value>
+  </data>
+  <data name="WireOracleConnection" xml:space="preserve">
+    <value>Configured Oracle connector</value>
+  </data>
+  <data name="WirePostgresConnection" xml:space="preserve">
+    <value>Configured PostgreSQL connector</value>
+  </data>
+  <data name="WireRabbitMqConnection" xml:space="preserve">
+    <value>Configured RabbitMQ connector</value>
+  </data>
+  <data name="WireRedisConnectionMultiplexer" xml:space="preserve">
+    <value>Configured StackExchange RabbitMQ connector</value>
+  </data>
+  <data name="WireDistributedRedisCache" xml:space="preserve">
+    <value>Configured Redis distributed cache connector</value>
+  </data>
+  <data name="WireSqlServerConnection" xml:space="preserve">
+    <value>Configured SQL Server connector</value>
+  </data>
+  <data name="WireDistributedTracing" xml:space="preserve">
+    <value>Configured distributed tracing</value>
+  </data>
+  <data name="WireDiscoveryClient" xml:space="preserve">
+    <value>Configured discovery client</value>
+  </data>
+  <data name="WireCloudFoundryActuators" xml:space="preserve">
+    <value>Configured Cloud Foundry actuators</value>
+  </data>
+  <data name="WireDynamicSerilog" xml:space="preserve">
+    <value>Configured dynamic console logger for Serilog</value>
+  </data>
+  <data name="WireDynamicLogging" xml:space="preserve">
+    <value>Configured dynamic console logger</value>
+  </data>
+  <data name="WireCloudFoundryContainerIdentity" xml:space="preserve">
+    <value>Configured Cloud Foundry MTLs security</value>
+  </data>
+</root>
