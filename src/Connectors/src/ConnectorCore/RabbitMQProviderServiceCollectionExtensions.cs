@@ -10,6 +10,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
+using System.Reflection;
 
 namespace Steeltoe.Connector.RabbitMQ
 {
@@ -36,9 +37,16 @@ namespace Steeltoe.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
+            try
+            {
+                var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
-            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+                DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+            }
+            catch (ReflectionTypeLoadException)
+            {
+            }
+
             return services;
         }
 
