@@ -45,13 +45,14 @@ namespace Steeltoe.Stream.Binder
             var output = CreateBindableChannel("output", producerBindingOptions);
 
             var consumerOptions = GetConsumerOptions("output", bindingsOptions);
-            var producerBinding = binder.BindProducer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), output, producerBindingOptions.Producer);
+            var delimiter = GetDestinationNameDelimiter();
+            var producerBinding = binder.BindProducer($"defaultGroup{delimiter}0", output, producerBindingOptions.Producer);
 
             QueueChannel input1 = new QueueChannel();
-            var binding1 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input1, consumerOptions);
+            var binding1 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input1, consumerOptions);
 
             QueueChannel input2 = new QueueChannel();
-            var binding2 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input2, consumerOptions);
+            var binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
 
             var testPayload1 = "foo-" + Guid.NewGuid().ToString();
             output.Send(MessageBuilder.WithPayload(testPayload1)
@@ -74,7 +75,7 @@ namespace Steeltoe.Stream.Binder
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
                     .Build());
 
-            binding2 = binder.BindConsumer(string.Format("defaultGroup%s0", GetDestinationNameDelimiter()), null, input2, consumerOptions);
+            binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
             var testPayload3 = "foo-" + Guid.NewGuid().ToString();
             output.Send(MessageBuilder.WithPayload(testPayload3)
                     .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)

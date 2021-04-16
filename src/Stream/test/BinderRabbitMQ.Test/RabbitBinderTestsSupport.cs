@@ -33,6 +33,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private const string TEST_PREFIX = "bindertest.";
 #pragma warning restore IDE1006 // Naming Styles
         private static readonly string _bigExceptionMessage = new string('x', 10_000);
+        private bool _disposed = false;
 
         private RabbitTestBinder _testBinder;
 
@@ -45,9 +46,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            Output.WriteLine("running dispose ...");
-            Cleanup();
         }
 
         public Spy SpyOn(string queue)
@@ -77,6 +77,19 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     return bar;
                 }
             };
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    Cleanup();
+                }
+
+                _disposed = true;
+            }
         }
 
         protected override RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions = null)
