@@ -38,10 +38,6 @@ namespace Steeltoe.Stream.TestBinder
 
         public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
 
-        public override void Dispose()
-        {
-        }
-
         protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {
             var handler = new BridgeHandler(ApplicationContext)

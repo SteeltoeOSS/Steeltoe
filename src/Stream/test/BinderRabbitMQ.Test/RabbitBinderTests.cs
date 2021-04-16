@@ -358,7 +358,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
-        public async void TestConsumerPropertiesWithUserInfrastructureNoBind()
+        public async Task TestConsumerPropertiesWithUserInfrastructureNoBind()
         {
             var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
             var admin = new RabbitAdmin(RabbitTestBinder.GetApplicationContext(), GetResource(), logger);
@@ -654,7 +654,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
-        public async void TestConsumerPropertiesWithHeaderExchanges()
+        public async Task TestConsumerPropertiesWithHeaderExchanges()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(rabbitBindingsOptions);
@@ -948,7 +948,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
-        public async void TestAutoBindDLQManualAcks()
+        public async Task TestAutoBindDLQManualAcks()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(rabbitBindingsOptions);
@@ -1564,7 +1564,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
-        public async void TestBadUserDeclarationsFatal()
+        public async Task TestBadUserDeclarationsFatal()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(rabbitBindingsOptions);

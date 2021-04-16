@@ -13,9 +13,7 @@ using System.Linq;
 
 namespace Steeltoe.Stream.Binder
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public class DefaultBinderFactory : IBinderFactory, IDisposable
-#pragma warning restore S3881 // "IDisposable" should be implemented correctly
+    public class DefaultBinderFactory : IBinderFactory
     {
         private readonly object _lock = new object();
         private readonly IBinderConfigurations _binderConfigurations;
@@ -53,19 +51,18 @@ namespace Steeltoe.Stream.Binder
             _listeners = listeners?.ToList();
         }
 
-        public void Dispose()
-        {
-            if (_binderInstanceCache != null)
-            {
-                foreach (var binder in _binderInstanceCache)
-                {
-                  // binder.Value.Dispose();
-                }
-
-                _binderInstanceCache = null;
-            }
-        }
-
+        // TODO: Figure out Disposable/Closable/DisposableBean usages
+        // public void Dispose()
+        // {
+        //    if (_binderInstanceCache != null)
+        //    {
+        //        foreach (var binder in _binderInstanceCache)
+        //        {
+        //          // binder.Value.Dispose();
+        //        }
+        //        _binderInstanceCache = null;
+        //    }
+        // }
         public IBinder GetBinder(string name)
         {
             return GetBinder(name, typeof(object));

@@ -31,12 +31,5 @@ namespace Steeltoe.Stream.StubBinder2
         public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions) => null;
 
         public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions) => null;
-
-#pragma warning disable S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
-        public void Dispose()
-#pragma warning restore S2953 // Methods named "Dispose" should implement "IDisposable.Dispose"
-        {
-            // Nothing to do
-        }
     }
 }

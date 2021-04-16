@@ -37,10 +37,5 @@ namespace Steeltoe.Stream.Binder
         {
             throw new NotImplementedException();
         }
-
-        public override void Dispose()
-        {
-           // _binder?.Dispose();
-        }
     }
 }
