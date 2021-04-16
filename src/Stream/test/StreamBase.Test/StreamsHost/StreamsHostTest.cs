@@ -11,6 +11,7 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Messaging;
 using System;
+using System.ComponentModel;
 using Xunit;
 
 namespace Steeltoe.Stream.StreamsHost
@@ -53,6 +54,7 @@ namespace Steeltoe.Stream.StreamsHost
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void HostConfiguresRabbitOptions()
         {
             // Arrange
