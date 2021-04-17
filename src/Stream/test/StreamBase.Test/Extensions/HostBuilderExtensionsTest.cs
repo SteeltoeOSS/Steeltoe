@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -20,24 +21,12 @@ namespace Steeltoe.Stream.Extensions
         [Fact]
         public void AddStreamsServices_AddsServices()
         {
-            var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
-            var server = hostBuilder.Build();
+            var serviceCollection = new ServiceCollection();
+            var configuration = new ConfigurationBuilder().Build();
+            serviceCollection.AddStreamServices<SampleSink>(configuration);
 
-            var service = server.Services.GetService<IHostedService>();
+            var service = serviceCollection.BuildServiceProvider().GetService<SampleSink>();
             Assert.NotNull(service);
-        }
-
-        [Fact]
-        public void AddStreamsServices_AddsSpringBootEnv()
-        {
-            Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"spring.cloud.stream.bindings.input.destination\":\"foobar\",\"spring.cloud.stream.bindings.output.destination\":\"barfoo\"}");
-            var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
-            var server = hostBuilder.Build();
-
-            var rabbitBindingsOptions = server.Services.GetService<IOptionsMonitor<BindingServiceOptions>>();
-            Assert.NotNull(rabbitBindingsOptions);
-            Assert.Equal("foobar", rabbitBindingsOptions.CurrentValue.Bindings["input"].Destination);
-            Assert.Equal("barfoo", rabbitBindingsOptions.CurrentValue.Bindings["output"].Destination);
         }
     }
 }
