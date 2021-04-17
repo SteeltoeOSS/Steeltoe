@@ -37,16 +37,8 @@ namespace Steeltoe.Connector.RabbitMQ
                 throw new ArgumentNullException(nameof(config));
             }
 
-            try
-            {
-                var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
-                DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
-            }
-
-            // On Mac with some of the tests cause intermittent exceptions
-            catch (ReflectionTypeLoadException)
-            {
-            }
+            var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
+            DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
 
             return services;
         }

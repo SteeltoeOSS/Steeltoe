@@ -5,13 +5,16 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
@@ -104,6 +107,21 @@ namespace Steeltoe.Stream.Extensions
             services.AddBinderServices(configuration);
 
             services.AddStreamCoreServices(configuration);
+        }
+
+        public static void AddStreamServices<T>(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddOptions();
+            services.AddRabbitMQConnection(configuration);
+            services.AddRabbitConnectionFactory();
+            services.ConfigureRabbitOptions(configuration);
+            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+
+            services.AddStreamServices(configuration);
+            services.AddSourceStreamBinding();
+            services.AddSinkStreamBinding();
+
+            services.AddEnableBinding<T>();
         }
     }
 }

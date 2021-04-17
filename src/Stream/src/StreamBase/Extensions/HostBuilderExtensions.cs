@@ -20,58 +20,11 @@ namespace Steeltoe.Stream.Extensions
         {
             return builder
                 .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
-                .ConfigureServices(ConfigureStreamsDelegate<T>())
-                .ConfigureServices(services => services.AddHostedService<StreamsLifeCycleService>());
-        }
-
-        public static Action<HostBuilderContext, IServiceCollection> ConfigureStreamsDelegate<T>()
-        {
-            return (context, services) =>
-            {
-                var configuration = context.Configuration;
-
-                services.AddOptions();
-                try
+                .ConfigureServices((context, services) =>
                 {
-                    services.AddRabbitMQConnection(configuration);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("AddRabbitMQConnection: " + ex.GetType() + ex.Message + ex.StackTrace);
-                }
-
-                try
-                {
-                    services.AddRabbitConnectionFactory();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("AddRabbitConnectionFactory: " + ex.Message + ex.StackTrace);
-                }
-
-                try
-                {
-                    services.ConfigureRabbitOptions(configuration);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("ConfigureRabbitOptions: " + ex.Message + ex.StackTrace);
-                }
-
-                Console.WriteLine("Past Rabbit");
-                services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-
-                services.AddStreamConfiguration(configuration);
-                services.AddCoreServices();
-                services.AddIntegrationServices();
-                services.AddStreamCoreServices(configuration);
-
-                services.AddBinderServices(configuration);
-                services.AddSourceStreamBinding();
-                services.AddSinkStreamBinding();
-
-                services.AddEnableBinding<T>();
-            };
+                    services.AddStreamServices<T>(context.Configuration);
+                    services.AddHostedService<StreamsLifeCycleService>();
+                });
         }
     }
 }

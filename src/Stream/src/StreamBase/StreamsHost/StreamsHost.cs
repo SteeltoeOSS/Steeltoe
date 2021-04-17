@@ -62,8 +62,8 @@ namespace Steeltoe.Stream.StreamsHost
         public StreamsHostBuilder(IHostBuilder hostBuilder)
         {
             _hostBuilder = hostBuilder
-                                .ConfigureServices(HostBuilderExtensions.ConfigureStreamsDelegate<T>())
-                                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv());
+                                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
+                                .ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
         }
 
         public IDictionary<object, object> Properties => _hostBuilder.Properties;
