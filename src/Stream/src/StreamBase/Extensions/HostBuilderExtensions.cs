@@ -31,11 +31,34 @@ namespace Steeltoe.Stream.Extensions
                 var configuration = context.Configuration;
 
                 services.AddOptions();
+                try
+                {
+                    services.AddRabbitMQConnection(configuration);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("AddRabbitMQConnection: " + ex.GetType() + ex.Message + ex.StackTrace);
+                }
 
-                services.AddRabbitMQConnection(configuration);
-                services.AddRabbitConnectionFactory();
-                services.ConfigureRabbitOptions(configuration);
+                try
+                {
+                    services.AddRabbitConnectionFactory();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("AddRabbitConnectionFactory: " + ex.Message + ex.StackTrace);
+                }
 
+                try
+                {
+                    services.ConfigureRabbitOptions(configuration);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("ConfigureRabbitOptions: " + ex.Message + ex.StackTrace);
+                }
+
+                Console.WriteLine("Past Rabbit");
                 services.AddSingleton<IApplicationContext, GenericApplicationContext>();
 
                 services.AddStreamConfiguration(configuration);
