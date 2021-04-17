@@ -15,6 +15,7 @@ using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
+using Steeltoe.Stream.StreamsHost;
 using System.Linq;
 using Xunit;
 
@@ -65,6 +66,17 @@ namespace Steeltoe.Stream.Extensions
             var serviceProvider = container.BuildServiceProvider();
             ValidateConfigurationServices(serviceProvider);
             ValidateCoreServices(serviceProvider);
+        }
+
+        [Fact]
+        public void AddStreamsServicesGeneric_AddsServices()
+        {
+            var serviceCollection = new ServiceCollection();
+            var configuration = new ConfigurationBuilder().Build();
+            serviceCollection.AddStreamServices<SampleSink>(configuration);
+
+            var service = serviceCollection.BuildServiceProvider().GetService<SampleSink>();
+            Assert.NotNull(service);
         }
 
         private void ValidateCoreServices(ServiceProvider serviceProvider)

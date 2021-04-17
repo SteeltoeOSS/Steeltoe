@@ -19,14 +19,10 @@ namespace Steeltoe.Stream.Extensions
     public class HostBuilderExtensionsTest
     {
         [Fact]
-        public void AddStreamsServices_AddsServices()
+        public void HostBuilderExtensionTest()
         {
-            var serviceCollection = new ServiceCollection();
-            var configuration = new ConfigurationBuilder().Build();
-            serviceCollection.AddStreamServices<SampleSink>(configuration);
-
-            var service = serviceCollection.BuildServiceProvider().GetService<SampleSink>();
-            Assert.NotNull(service);
+            var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
+            Assert.NotNull(hostBuilder);
         }
     }
 }
