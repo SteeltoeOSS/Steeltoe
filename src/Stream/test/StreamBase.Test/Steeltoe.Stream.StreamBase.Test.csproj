@@ -7,6 +7,10 @@
 
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedtest.props" />
+  <ItemGroup>
+    <Compile Remove="Tck\ContentTypeTckTest.cs" />
+    <Compile Remove="Tck\ErrorHandlingTest.cs" />
+  </ItemGroup>
   
   <ItemGroup>
     <None Update="xunit.runner.json">
@@ -26,10 +30,10 @@
     <ProjectReference Include="..\..\..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
     <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
-    <ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj">
+    <!--<ProjectReference Include="..\TestBinder\Steeltoe.Stream.TestBinder.csproj">
       <Private>false</Private>
       <IncludeAssets>compile</IncludeAssets>
       <ExcludeAssets>all</ExcludeAssets>
-    </ProjectReference>
+    </ProjectReference>-->
 </ItemGroup>
 </Project>
