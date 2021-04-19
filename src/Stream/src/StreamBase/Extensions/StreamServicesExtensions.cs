@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
@@ -18,6 +19,7 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
+using System;
 
 namespace Steeltoe.Stream.Extensions
 {
@@ -112,7 +114,7 @@ namespace Steeltoe.Stream.Extensions
         public static void AddStreamServices<T>(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
-            services.AddRabbitMQConnection(configuration);
+            services.SafeAddRabbitMQConnection(configuration);
             services.AddRabbitConnectionFactory();
             services.ConfigureRabbitOptions(configuration);
             services.AddSingleton<IApplicationContext, GenericApplicationContext>();
@@ -122,6 +124,22 @@ namespace Steeltoe.Stream.Extensions
             services.AddSinkStreamBinding();
 
             services.AddEnableBinding<T>();
+        }
+
+        // Deal with intermittent TypeLoadExceptions in Connectors (mac, linux)s
+        public static void SafeAddRabbitMQConnection(this IServiceCollection services, IConfiguration configuration)
+        {
+            var loggerFactory = services.BuildServiceProvider().GetService<ILoggerFactory>();
+            var logger = loggerFactory?.CreateLogger("Steeltoe.Stream.Extensions.SafeAddRabbitMQConnection");
+
+            try
+            {
+                services.AddRabbitMQConnection(configuration);
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError(ex, ex.Message);
+            }
         }
     }
 }

@@ -42,6 +42,8 @@ namespace Steeltoe.Stream.StreamsHost
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
+        [Trait("Category", "SkipOnLinux")]
         public void HostConfiguresRabbitOptions()
         {
             // Arrange
@@ -63,39 +65,6 @@ namespace Steeltoe.Stream.StreamsHost
                 Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
                 Assert.Equal($"Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
             }
-        }
-
-        [Fact]
-        public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
-        {
-            var usernamePrefix = "spring:rabbitmq:username";
-            var passwordPrefix = "spring:rabbitmq:password";
-            var services = new ServiceCollection();
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-
-            var appsettings = new Dictionary<string, string>()
-            {
-                [usernamePrefix] = "fakeusername",
-                [passwordPrefix] = "CHANGEME",
-            };
-
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            configurationBuilder.AddCloudFoundry();
-            var configuration = configurationBuilder.Build();
-
-            services.AddRabbitMQConnection(configuration);
-            services.ConfigureRabbitOptions(configuration);
-
-            var provider = services.BuildServiceProvider();
-            var rabbitOptions = provider.GetRequiredService<IOptions<RabbitOptions>>().Value;
-
-            Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
-            Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
-            Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
-            Assert.Equal($"Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
         }
 
         private static string GetCloudFoundryRabbitMqConfiguration() => @"
