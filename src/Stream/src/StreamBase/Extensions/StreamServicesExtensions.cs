@@ -138,7 +138,7 @@ namespace Steeltoe.Stream.Extensions
             }
             catch (Exception ex)
             {
-                logger?.LogError(ex, ex.Message);
+                logger?.LogDebug(ex, ex.Message);
             }
         }
     }
