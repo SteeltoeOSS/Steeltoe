@@ -25,6 +25,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void AddPlaceholderResolver_ThrowsIfConfigNull()
         {
             // Arrange
