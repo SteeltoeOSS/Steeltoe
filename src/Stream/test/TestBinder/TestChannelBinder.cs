@@ -30,11 +30,6 @@ namespace Steeltoe.Stream.TestBinder
             : base(context, Array.Empty<string>(), provisioningProvider, logger)
         {
             _logger = logger;
-            _logger.LogInformation("info");
-            _logger.LogDebug("debug");
-            _logger.LogWarning("warning");
-            _logger.LogTrace("trace");
-            _logger.LogCritical("critical");
         }
 
         public IMessage LastError { get; private set; }

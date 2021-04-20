@@ -90,7 +90,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            configurationBuilder.AddJsonFile(fileName);
+            configurationBuilder.AddJsonFile(fileName, false, false);
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
@@ -122,7 +122,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            configurationBuilder.AddXmlFile(fileName);
+            configurationBuilder.AddXmlFile(fileName, false, false);
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
@@ -147,7 +147,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            configurationBuilder.AddIniFile(fileName);
+            configurationBuilder.AddIniFile(fileName, false, false);
 
             // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
@@ -221,9 +221,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
-            configurationBuilder.AddJsonFile(jsonfileName);
-            configurationBuilder.AddXmlFile(xmlfileName);
-            configurationBuilder.AddIniFile(inifileName);
+            configurationBuilder.AddJsonFile(jsonfileName, false, false);
+            configurationBuilder.AddXmlFile(xmlfileName, false, false);
+            configurationBuilder.AddIniFile(inifileName, false, false);
             configurationBuilder.AddCommandLine(appsettingsLine);
 
             // Act and Assert

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
@@ -32,9 +33,9 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private const string TEST_PREFIX = "bindertest.";
 #pragma warning restore IDE1006 // Naming Styles
         private static readonly string _bigExceptionMessage = new string('x', 10_000);
+        private bool _disposed = false;
 
         private RabbitTestBinder _testBinder;
-        private CachingConnectionFactory _cachingConnectionFactory;
 
         private int _maxStackTraceSize;
 
@@ -45,9 +46,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
         public void Dispose()
         {
+            Dispose(true);
             GC.SuppressFinalize(this);
-            Output.WriteLine("running dispose ...");
-            Cleanup();
         }
 
         public Spy SpyOn(string queue)
@@ -79,51 +79,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
             };
         }
 
-        public RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions)
+        protected virtual void Dispose(bool disposing)
         {
-            if (_testBinder == null)
+            if (!_disposed)
             {
-                var options = new RabbitOptions
+                if (disposing)
                 {
-                    PublisherReturns = true
-                };
-                _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), rabbitBindingsOptions, LoggerFactory);
+                    Cleanup();
+                }
+
+                _disposed = true;
             }
-
-            return _testBinder;
         }
 
-        protected ConsumerOptions GetConsumerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitConsumerOptions rabbitConsumerOptions = null, RabbitBindingOptions bindingOptions = null)
-        {
-            rabbitConsumerOptions ??= new RabbitConsumerOptions();
-            rabbitConsumerOptions.PostProcess();
-
-            bindingOptions ??= new RabbitBindingOptions();
-            bindingOptions.Consumer = rabbitConsumerOptions;
-            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
-
-            var consumerOptions = new ConsumerOptions() { BindingName = bindingName };
-            consumerOptions.PostProcess(bindingName);
-            return consumerOptions;
-        }
-
-        protected ProducerOptions GetProducerOptions(string bindingName, RabbitBindingsOptions bindingsOptions, RabbitBindingOptions bindingOptions = null)
-        {
-            var rabbitProducerOptions = new RabbitProducerOptions();
-            rabbitProducerOptions.PostProcess();
-
-            bindingOptions ??= new RabbitBindingOptions();
-
-            bindingOptions.Producer = rabbitProducerOptions;
-            bindingsOptions.Bindings.Add(bindingName, bindingOptions);
-
-            var producerOptions = new ProducerOptions() { BindingName = bindingName };
-            producerOptions.PostProcess(bindingName);
-            return producerOptions;
-        }
-
-        protected override RabbitTestBinder GetBinder()
+        protected override RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions = null)
         {
             if (_testBinder == null)
             {
@@ -131,8 +100,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 {
                     PublisherReturns = true
                 };
-                _cachingConnectionFactory = GetResource();
-                _testBinder = new RabbitTestBinder(_cachingConnectionFactory, options, new RabbitBinderOptions(), new RabbitBindingsOptions(), LoggerFactory);
+                var ccf = GetResource();
+                _testBinder = new RabbitTestBinder(ccf, new TestRabbitOptions(options), new RabbitBinderOptions(), rabbitBindingsOptions ?? new RabbitBindingsOptions(), LoggerFactory);
             }
 
             return _testBinder;
@@ -180,15 +149,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             return BigCause(innerException);
         }
 
-        private class TestMessageHandler : IMessageHandler
-        {
-            public Action<IMessage> OnHandleMessage { get; set; }
-
-            public string ServiceName { get => "TestMessageHandler"; set => throw new NotImplementedException(); }
-
-            public void HandleMessage(IMessage message) => OnHandleMessage.Invoke(message);
-        }
-
         private void Cleanup()
         {
             if (_testBinder != null)
@@ -196,11 +156,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 Cleanup(_testBinder);
             }
 
-            if (_cachingConnectionFactory != null)
+            if (CachingConnectionFactory != null)
             {
-                _cachingConnectionFactory.ResetConnection();
-                _cachingConnectionFactory.Destroy();
-                _cachingConnectionFactory = null;
+                CachingConnectionFactory.ResetConnection();
+                CachingConnectionFactory.Destroy();
+                CachingConnectionFactory = null;
             }
 
             _testBinder = null;
@@ -210,18 +170,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         {
             binder.Cleanup();
             binder.CoreBinder.ConnectionFactory.Destroy();
-            _cachingConnectionFactory = null;
-        }
-
-        private CachingConnectionFactory GetResource()
-        {
-            if (_cachingConnectionFactory == null)
-            {
-                _cachingConnectionFactory = new CachingConnectionFactory("localhost");
-                _cachingConnectionFactory.CreateConnection().Close();
-            }
-
-            return _cachingConnectionFactory;
+            CachingConnectionFactory = null;
         }
 
         public class WrapperAccessor : RabbitOutboundEndpoint
@@ -255,6 +204,25 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public int SelectPartition(object key, int partitionCount)
             {
                 return (int)key;
+            }
+        }
+
+        public class TestRabbitOptions : IOptionsMonitor<RabbitOptions>
+        {
+            private RabbitOptions _rabbitOptions;
+
+            public TestRabbitOptions(RabbitOptions opt = null)
+            {
+                _rabbitOptions = opt ?? new RabbitOptions();
+            }
+
+            public RabbitOptions CurrentValue => _rabbitOptions;
+
+            public RabbitOptions Get(string name) => _rabbitOptions;
+
+            public IDisposable OnChange(Action<RabbitOptions, string> listener)
+            {
+                throw new NotImplementedException();
             }
         }
     }

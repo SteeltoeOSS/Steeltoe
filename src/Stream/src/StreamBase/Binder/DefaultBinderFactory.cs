@@ -58,10 +58,9 @@ namespace Steeltoe.Stream.Binder
         //    {
         //        foreach (var binder in _binderInstanceCache)
         //        {
-        //            binder.Value.Dispose();
+        //          // binder.Value.Dispose();
         //        }
-
-        // _binderInstanceCache = null;
+        //        _binderInstanceCache = null;
         //    }
         // }
         public IBinder GetBinder(string name)
