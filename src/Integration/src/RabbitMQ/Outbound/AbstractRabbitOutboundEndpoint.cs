@@ -252,15 +252,13 @@ namespace Steeltoe.Integration.Rabbit.Outbound
         protected virtual CorrelationData GenerateCorrelationData(IMessage requestMessage)
         {
             CorrelationData correlationData = null;
+
+            var messageId = requestMessage.Headers.Id ?? _no_id;
+
             if (CorrelationDataGenerator != null)
             {
-                var messageId = requestMessage.Headers.Id;
-                if (messageId == null)
-                {
-                    messageId = _no_id;
-                }
-
                 var userData = CorrelationDataGenerator.ProcessMessage(requestMessage);
+
                 if (userData != null)
                 {
                     correlationData = new CorrelationDataWrapper(messageId, userData, requestMessage);
@@ -268,6 +266,21 @@ namespace Steeltoe.Integration.Rabbit.Outbound
                 else
                 {
                     _logger?.LogDebug("'confirmCorrelationExpression' resolved to 'null'; no publisher confirm will be sent to the ack or nack channel");
+                }
+            }
+
+            if (correlationData == null)
+            {
+                object correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
+
+                if (correlation is CorrelationData cdata)
+                {
+                    correlationData = cdata;
+                }
+
+                if (correlationData != null)
+                {
+                    correlationData = new CorrelationDataWrapper(messageId, correlationData, requestMessage);
                 }
             }
 

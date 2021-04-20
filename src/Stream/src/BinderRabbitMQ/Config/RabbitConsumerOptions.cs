@@ -54,6 +54,8 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
         public string AnonymousGroupPrefix { get; set; }
 
+        public bool? IsEnableBatching { get; set; }
+
         internal void PostProcess(RabbitConsumerOptions defaultOptions = null)
         {
             if (!Transacted.HasValue)
@@ -144,6 +146,11 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             if (AnonymousGroupPrefix == null)
             {
                 AnonymousGroupPrefix = defaultOptions?.AnonymousGroupPrefix ?? "anonymous.";
+            }
+
+            if (!IsEnableBatching.HasValue)
+            {
+                IsEnableBatching = defaultOptions?.IsEnableBatching ?? false;
             }
 
             base.PostProcess();

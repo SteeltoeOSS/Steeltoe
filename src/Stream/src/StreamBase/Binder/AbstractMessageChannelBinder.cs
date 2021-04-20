@@ -457,9 +457,9 @@ namespace Steeltoe.Stream.Binder
                     DestroyBean(errorChannelName);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log ... context is shutting down.
+                _logger?.LogError(ex, ex.Message);
             }
         }
 

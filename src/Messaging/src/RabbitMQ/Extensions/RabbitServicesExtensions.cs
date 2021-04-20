@@ -244,11 +244,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
                 .Bind(config.GetSection(RabbitOptions.PREFIX))
                 .Configure<IServiceProvider>((options, provider) =>
                 {
-                    var connectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
-
-                    if (connectionFactory is not null)
+                    using (var scope = provider.CreateScope())
                     {
-                        options.Addresses = $"{connectionFactory.HostName}:{connectionFactory.Port}";
+                        var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+
+                        if (connectionFactory is not null)
+                        {
+                            options.Addresses = $"{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
+                            options.VirtualHost = connectionFactory.VirtualHost;
+                            options.Host = connectionFactory.HostName;
+                            options.Username = connectionFactory.UserName;
+                            options.Password = connectionFactory.Password;
+                        }
                     }
                 });
 

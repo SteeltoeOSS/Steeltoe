@@ -37,8 +37,8 @@ namespace Steeltoe.Connector.RabbitMQ
             }
 
             var info = config.GetSingletonServiceInfo<RabbitMQServiceInfo>();
-
             DoAdd(services, info, config, contextLifetime, addSteeltoeHealthChecks);
+
             return services;
         }
 

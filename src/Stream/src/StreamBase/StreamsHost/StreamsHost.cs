@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Extensions.Configuration.SpringBoot;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using System;
@@ -60,7 +61,9 @@ namespace Steeltoe.Stream.StreamsHost
 
         public StreamsHostBuilder(IHostBuilder hostBuilder)
         {
-            _hostBuilder = hostBuilder.ConfigureServices(HostBuilderExtensions.ConfigureStreamsDelegate<T>());
+            _hostBuilder = hostBuilder
+                                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
+                                .ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
         }
 
         public IDictionary<object, object> Properties => _hostBuilder.Properties;

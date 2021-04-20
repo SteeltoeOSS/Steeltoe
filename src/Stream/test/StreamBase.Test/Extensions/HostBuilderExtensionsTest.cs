@@ -2,8 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Messaging;
 using Steeltoe.Stream.StreamsHost;
 using System;
@@ -13,19 +16,13 @@ using Xunit;
 
 namespace Steeltoe.Stream.Extensions
 {
-    public class HostBuilderExtensions
+    public class HostBuilderExtensionsTest
     {
         [Fact]
-        public void AddStreamsServices_AddsServices()
+        public void HostBuilderExtensionTest()
         {
-            var hostBuilder = Host.CreateDefaultBuilder().
-                  AddStreamsServices<SampleSink>();
-            var server = hostBuilder
-                .AddStreamsServices<SampleSink>()
-                .Build();
-
-            var service = server.Services.GetService<IHostedService>();
-            Assert.NotNull(service);
+            var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
+            Assert.NotNull(hostBuilder);
         }
     }
 }
