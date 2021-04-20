@@ -10,7 +10,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
-using System.Reflection;
 
 namespace Steeltoe.Connector.RabbitMQ
 {

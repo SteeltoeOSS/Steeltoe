@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
@@ -13,8 +15,10 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
+using Steeltoe.Stream.Messaging;
 using Steeltoe.Stream.StreamsHost;
 using System.Linq;
 using Xunit;
@@ -73,10 +77,17 @@ namespace Steeltoe.Stream.Extensions
         {
             var serviceCollection = new ServiceCollection();
             var configuration = new ConfigurationBuilder().Build();
+
+            serviceCollection.AddSingleton<IConfiguration>(configuration);
             serviceCollection.AddStreamServices<SampleSink>(configuration);
 
-            var service = serviceCollection.BuildServiceProvider().GetService<SampleSink>();
-            Assert.NotNull(service);
+            var provider = serviceCollection.BuildServiceProvider();
+
+            Assert.True(provider.GetService<SampleSink>() != null, "SampleSink not found in Container");
+
+            Assert.True(provider.GetService<ISource>() != null, "ISource not found in Container");
+
+            Assert.True(provider.GetService<ISink>() != null, "ISink not found in Container");
         }
 
         private void ValidateCoreServices(ServiceProvider serviceProvider)
