@@ -9,7 +9,15 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class DataCenterInfo : IDataCenterInfo
     {
-        public DataCenterName Name { get; private set; }
+        public DataCenterName Name { get; internal set; }
+
+        public DataCenterInfo(string dataCenterName)
+        {
+            if (Enum.TryParse(dataCenterName, out DataCenterName name))
+            {
+                Name = name;
+            }
+        }
 
         public DataCenterInfo(DataCenterName name)
         {

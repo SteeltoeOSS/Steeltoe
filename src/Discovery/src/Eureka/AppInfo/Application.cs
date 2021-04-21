@@ -6,16 +6,41 @@ using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class Application
     {
-        public string Name { get; internal set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
 
         public int Count => InstanceMap.Count;
 
-        public IList<InstanceInfo> Instances => new List<InstanceInfo>(InstanceMap.Values);
+        [JsonPropertyName("instance")]
+        public IList<InstanceInfo> Instances
+        {
+            get
+            {
+                return new List<InstanceInfo>(InstanceMap.Values);
+            }
+
+            set
+            {
+                foreach (var instanceInfo in value)
+                {
+                    InstanceMap.AddOrUpdate(
+                        instanceInfo.InstanceId,
+                        instanceInfo,
+                        (key, newInstanceInfo) =>
+                        {
+                            return newInstanceInfo;
+                        });
+                }
+            }
+        }
+
+        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ConcurrentDictionary<string, InstanceInfo>();
 
         public InstanceInfo GetInstance(string instanceId)
         {
@@ -36,6 +61,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
             sb.Append("]");
             return sb.ToString();
+        }
+
+        public Application()
+        {
         }
 
         internal Application(string name)
@@ -71,8 +100,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 InstanceMap.TryRemove(info.HostName, out removed);
             }
         }
-
-        internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ConcurrentDictionary<string, InstanceInfo>();
 
         internal static Application FromJsonApplication(JsonApplication japp)
         {

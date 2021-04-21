@@ -2,23 +2,26 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
     public class InstanceInfo
     {
-        public string InstanceId { get; internal set; }
+        public string InstanceId { get; set; }
 
-        public string AppName { get; internal set; }
+        [JsonPropertyName("app")]
+        public string AppName { get; set; }
 
-        public string AppGroupName { get; internal set; }
+        public string AppGroupName { get; set; }
 
-        public string IpAddr { get; internal set; }
+        public string IpAddr { get; set; }
 
         private string _sid;
 
@@ -36,27 +39,82 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
         }
 
+        [JsonPropertyName("port")]
+        public InstancePort PortProperties
+        {
+            get
+            {
+                return _port;
+            }
+
+            set
+            {
+                _port = value;
+                Port = value.Port;
+            }
+        }
+
+        [JsonIgnore]
         public int Port { get; internal set; }
 
+        private InstancePort _port;
+
+        [JsonPropertyName("securePort")]
+        public InstancePort SecurePortProperties
+        {
+            get
+            {
+                return _securePort;
+            }
+
+            set
+            {
+                _securePort = value;
+                SecurePort = value.Port;
+            }
+        }
+
+        [JsonIgnore]
         public int SecurePort { get; internal set; }
 
-        public string HomePageUrl { get; internal set; }
+        private InstancePort _securePort;
 
-        public string StatusPageUrl { get; internal set; }
+        public string HomePageUrl { get; set; }
 
-        public string HealthCheckUrl { get; internal set; }
+        public string StatusPageUrl { get; set; }
 
-        public string SecureHealthCheckUrl { get; internal set; }
+        public string HealthCheckUrl { get; set; }
 
-        public string VipAddress { get; internal set; }
+        public string SecureHealthCheckUrl { get; set; }
 
-        public string SecureVipAddress { get; internal set; }
+        public string VipAddress { get; set; }
 
-        public int CountryId { get; internal set; }
+        public string SecureVipAddress { get; set; }
 
+        public int CountryId { get; set; }
+
+        [JsonPropertyName("dataCenterInfo")]
+        public DataCenterInfoProperties DataCenterInfoProperties
+        {
+            get
+            {
+                return _dataCenterInfoProperties;
+            }
+
+            set
+            {
+                _dataCenterInfoProperties = value;
+                DataCenterInfo = new DataCenterInfo(_dataCenterInfoProperties?.Name);
+            }
+        }
+
+        // Deserialization of interfaces not supported by System.Text.Json
+        [JsonIgnore]
         public IDataCenterInfo DataCenterInfo { get; internal set; }
 
-        public string HostName { get; internal set; }
+        private DataCenterInfoProperties _dataCenterInfoProperties;
+
+        public string HostName { get; set; }
 
         private InstanceStatus _status;
 
@@ -79,7 +137,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
         public InstanceStatus OverriddenStatus { get; internal set; }
 
-        public LeaseInfo LeaseInfo { get; internal set; }
+        public LeaseInfo LeaseInfo { get; set; }
 
         public bool IsCoordinatingDiscoveryServer { get; internal set; }
 
@@ -92,20 +150,23 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return _metaData;
             }
 
-            internal set
+            set
             {
                 _metaData = value;
                 IsDirty = true;
             }
         }
 
-        public long LastUpdatedTimestamp { get; internal set; }
+        [JsonConverter(typeof(LongStringJsonConverter))]
+        public long LastUpdatedTimestamp { get; set; }
 
-        public long LastDirtyTimestamp { get; internal set; }
+        [JsonConverter(typeof(LongStringJsonConverter))]
+        public long LastDirtyTimestamp { get; set; }
 
-        public ActionType Actiontype { get; internal set; }
+        [JsonIgnore]
+        public ActionType Actiontype { get; set; }
 
-        public string AsgName { get; internal set; }
+        public string AsgName { get; set; }
 
         public bool IsUnsecurePortEnabled { get; internal set; }
 
@@ -190,7 +251,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             return sb.ToString();
         }
 
-        internal InstanceInfo()
+        public InstanceInfo()
         {
             OverriddenStatus = InstanceStatus.UNKNOWN;
             IsSecurePortEnabled = false;
@@ -392,6 +453,24 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
 
             return string.Empty;
         }
+    }
+
+    public class DataCenterInfoProperties
+    {
+        [JsonPropertyName("@class")]
+        public string ClassName { get; set; }
+
+        public string Name { get; set; }
+    }
+
+    public class InstancePort
+    {
+        [JsonPropertyName("@enabled")]
+        [JsonConverter(typeof(BoolStringJsonConverter))]
+        public bool Enabled { get; set; }
+
+        [JsonPropertyName("$")]
+        public int Port { get; set; }
     }
 
     public enum InstanceStatus

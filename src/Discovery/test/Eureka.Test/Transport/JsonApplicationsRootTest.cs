@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Newtonsoft.Json.Linq;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
@@ -46,9 +48,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                     }]
                 }
             }";
-            var result = JsonSerializer.Deserialize<JsonApplicationsRoot>(json);
-            Assert.NotNull(result);
-            Assert.NotNull(result.Applications);
+
+            var applicationsRoot = JObject.Parse(json).SelectToken("applications").ToString();
+
+            var applications = JsonSerializer.Deserialize<Applications>(
+                applicationsRoot,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.NotNull(applications);
+            Assert.NotEmpty(applications.ApplicationInstances);
 
             // Rest is validated by JsonApplicationsTest
         }

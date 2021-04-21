@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Newtonsoft.Json.Linq;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
@@ -15,30 +16,33 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         public void Deserialize_GoodJson()
         {
             var json = @"
-{ 
-    ""instanceId"":""localhost:foo"",
-    ""hostName"":""localhost"",
-    ""app"":""FOO"",
-    ""ipAddr"":""192.168.56.1"",
-    ""status"":""UP"",
-    ""overriddenstatus"":""UNKNOWN"",
-    ""port"":{""$"":8080,""@enabled"":""true""},
-    ""securePort"":{""$"":443,""@enabled"":""false""},
-    ""countryId"":1,
-    ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
-    ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
-    ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
-    ""homePageUrl"":""http://localhost:8080/"",
-    ""statusPageUrl"":""http://localhost:8080/info"",
-    ""healthCheckUrl"":""http://localhost:8080/health"",
-    ""vipAddress"":""foo"",
-    ""isCoordinatingDiscoveryServer"":""false"",
-    ""lastUpdatedTimestamp"":""1457714988223"",
-    ""lastDirtyTimestamp"":""1457714988172"",
-    ""actionType"":""ADDED""
-}";
+            { 
+                ""instanceId"":""localhost:foo"",
+                ""hostName"":""localhost"",
+                ""app"":""FOO"",
+                ""ipAddr"":""192.168.56.1"",
+                ""status"":""UP"",
+                ""overriddenstatus"":""UNKNOWN"",
+                ""port"":{""$"":8080,""@enabled"":""true""},
+                ""securePort"":{""$"":443,""@enabled"":""false""},
+                ""countryId"":1,
+                ""dataCenterInfo"":{""@class"":""com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo"",""name"":""MyOwn""},
+                ""leaseInfo"":{""renewalIntervalInSecs"":30,""durationInSecs"":90,""registrationTimestamp"":1457714988223,""lastRenewalTimestamp"":1457716158319,""evictionTimestamp"":0,""serviceUpTimestamp"":1457714988223},
+                ""metadata"":{""@class"":""java.util.Collections$EmptyMap""},
+                ""homePageUrl"":""http://localhost:8080/"",
+                ""statusPageUrl"":""http://localhost:8080/info"",
+                ""healthCheckUrl"":""http://localhost:8080/health"",
+                ""vipAddress"":""foo"",
+                ""isCoordinatingDiscoveryServer"":""false"",
+                ""lastUpdatedTimestamp"":""1457714988223"",
+                ""lastDirtyTimestamp"":""1457714988172"",
+                ""actionType"":""ADDED""
+            }";
 
-            var result = JsonSerializer.Deserialize<JsonInstanceInfo>(json);
+            var result = JsonSerializer.Deserialize<InstanceInfo>(
+                json,
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
             Assert.NotNull(result);
             Assert.Equal("localhost:foo", result.InstanceId);
             Assert.Equal("localhost", result.HostName);
@@ -46,16 +50,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("192.168.56.1", result.IpAddr);
             Assert.Equal(InstanceStatus.UP, result.Status);
             Assert.Equal(InstanceStatus.UNKNOWN, result.OverriddenStatus);
-            var port = result.Port;
+            var port = result.PortProperties;
             Assert.True(port.Enabled);
             Assert.Equal(8080, port.Port);
-            var securePort = result.SecurePort;
+            var securePort = result.SecurePortProperties;
             Assert.False(securePort.Enabled);
             Assert.Equal(443, securePort.Port);
             Assert.Equal(1, result.CountryId);
-            var dataCenterInfo = result.DataCenterInfo;
-            Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", dataCenterInfo.ClassName);
-            Assert.Equal("MyOwn", dataCenterInfo.Name);
+            Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", result.DataCenterInfoProperties.ClassName);
+            Assert.Equal(DataCenterName.MyOwn, result.DataCenterInfo.Name);
             var leaseInfo = result.LeaseInfo;
             Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);
             Assert.Equal(90, leaseInfo.DurationInSecs);

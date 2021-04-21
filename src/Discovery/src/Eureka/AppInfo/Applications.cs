@@ -2,12 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo
 {
@@ -15,9 +17,35 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
     {
         private readonly object _addRemoveInstanceLock = new object();
 
-        public string AppsHashCode { get; internal set; }
+        [JsonPropertyName("apps__hashcode")]
+        public string AppsHashCode { get; set; }
 
-        public long Version { get; internal set; }
+        [JsonPropertyName("versions__delta")]
+        [JsonConverter(typeof(LongStringJsonConverter))]
+        public long Version { get; set; }
+
+        [JsonPropertyName("application")]
+        public IEnumerable<Application> ApplicationInstances
+        {
+            get
+            {
+                return new List<Application>(ApplicationMap.Values);
+            }
+
+            set
+            {
+                foreach (var application in value)
+                {
+                    ApplicationMap.AddOrUpdate(
+                        application.Name,
+                        application,
+                        (key, newApplication) =>
+                        {
+                            return newApplication;
+                        });
+                }
+            }
+        }
 
         public bool ReturnUpInstancesOnly { get; set; }
 
@@ -70,7 +98,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             return sb.ToString();
         }
 
-        internal Applications()
+        public Applications()
         {
         }
 
