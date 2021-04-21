@@ -6,7 +6,9 @@ using Steeltoe.Stream.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 
 namespace Steeltoe.Stream.Binder
@@ -91,8 +93,7 @@ namespace Steeltoe.Stream.Binder
 
         internal static void AddBinderTypes(string directory, Dictionary<string, IBinderType> registrations)
         {
-            var context = new SearchingAssemblyLoadContext();
-
+            var context = new MetadataLoadContext(GetAssemblyResolver(directory));
             var dirinfo = new DirectoryInfo(directory);
 
             foreach (var file in dirinfo.EnumerateFiles("*.dll"))
@@ -114,7 +115,7 @@ namespace Steeltoe.Stream.Binder
                 }
             }
 
-            context.Unload();
+            context.Dispose();
         }
 
         internal static bool ShouldCheckFile(FileInfo file)
@@ -128,7 +129,7 @@ namespace Steeltoe.Stream.Binder
             return true;
         }
 
-        internal static IBinderType LoadAndCheckAssembly(AssemblyLoadContext context, string assemblyPath)
+        internal static IBinderType LoadAndCheckAssembly(MetadataLoadContext context, string assemblyPath)
         {
             BinderType result = null;
             try
@@ -139,9 +140,9 @@ namespace Steeltoe.Stream.Binder
                     return CheckAssembly(assembly);
                 }
             }
-            catch (Exception)
+            catch
             {
-                // Log
+                // most failures here are situations that aren't relevant, so just fail silently
             }
 
             return result;
@@ -149,21 +150,62 @@ namespace Steeltoe.Stream.Binder
 
         internal static IBinderType CheckAssembly(Assembly assembly)
         {
-            var attr = assembly.GetCustomAttribute<BinderAttribute>();
-            if (attr != null)
+            foreach (var data in assembly.GetCustomAttributesData())
             {
-                return new BinderType(attr.Name, attr.ConfigureClass, assembly.Location);
+                if (data.AttributeType.FullName == typeof(BinderAttribute).FullName)
+                {
+                    return new BinderType(GetName(data), GetConfigureClass(data), assembly.Location);
+                }
             }
 
             return null;
         }
 
-        internal class SearchingAssemblyLoadContext : AssemblyLoadContext
+        internal static PathAssemblyResolver GetAssemblyResolver(string directory)
         {
-            public SearchingAssemblyLoadContext()
-                : base("SearchingLoadContext", true)
+            var paths = new List<string>();
+            paths.AddRange(Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll"));
+            if (!Environment.CurrentDirectory.Equals(directory, StringComparison.InvariantCultureIgnoreCase))
             {
+                paths.AddRange(Directory.GetFiles(Environment.CurrentDirectory, "*.dll"));
             }
+
+            return new PathAssemblyResolver(paths);
+        }
+
+        internal static string GetName(CustomAttributeData data)
+        {
+            if (data.ConstructorArguments[0].Value is not string result)
+            {
+                result = GetNamedArgument<string>(data.NamedArguments, "Name");
+            }
+
+            return result;
+        }
+
+        internal static T GetNamedArgument<T>(IList<CustomAttributeNamedArgument> namedArguments, string name)
+            where T : class
+        {
+            foreach (var arg in namedArguments)
+            {
+                if (arg.MemberName == name)
+                {
+                    return (T)arg.TypedValue.Value;
+                }
+            }
+
+            return default;
+        }
+
+        internal static string GetConfigureClass(CustomAttributeData data)
+        {
+            var type = data.ConstructorArguments[1].Value as Type;
+            if (type == null)
+            {
+                type = GetNamedArgument<Type>(data.NamedArguments, "ConfigureClass");
+            }
+
+            return type?.AssemblyQualifiedName;
         }
     }
 }
