@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
@@ -14,14 +15,15 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         public void Deserialize_BadJson_Throws()
         {
             var json = @"
-{ 
-    'instanceId':'localhost:foo',
-    'hostName':'localhost',
-    'app':'FOO',
-    'ipAddr':'192.168.56.1',
+            { 
+                'instanceId':'localhost:foo',
+                'hostName':'localhost',
+                'app':'FOO',
+                'ipAddr':'192.168.56.1',
     
-";
-            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
+            ";
+
+            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<InstanceInfo>(json));
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public int Count => InstanceMap.Count;
 
         [JsonPropertyName("instance")]
+        [JsonConverter(typeof(JsonInstanceInfoConverter))]
         public IList<InstanceInfo> Instances
         {
             get
@@ -99,26 +100,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             {
                 InstanceMap.TryRemove(info.HostName, out removed);
             }
-        }
-
-        internal static Application FromJsonApplication(JsonApplication japp)
-        {
-            if (japp == null)
-            {
-                return null;
-            }
-
-            var app = new Application(japp.Name);
-            if (japp.Instances != null)
-            {
-                foreach (var instance in japp.Instances)
-                {
-                    var inst = InstanceInfo.FromJsonInstance(instance);
-                    app.Add(inst);
-                }
-            }
-
-            return app;
         }
     }
 }

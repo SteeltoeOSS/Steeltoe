@@ -5,6 +5,7 @@
 using Newtonsoft.Json.Linq;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
+using System.Linq;
 using System.Text.Json;
 using Xunit;
 
@@ -47,20 +48,20 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                 }
             }";
 
-            var instanceRoot = JObject.Parse(json).SelectToken("instance").ToString();
-
-            var result = JsonSerializer.Deserialize<InstanceInfo>(
-                instanceRoot,
+            var result = JsonSerializer.Deserialize<Application>(
+                json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
             Assert.NotNull(result);
 
+            var instance = result.Instances.FirstOrDefault();
+
             // Random check some values
-            Assert.Equal(ActionType.ADDED, result.Actiontype);
-            Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", result.HealthCheckUrl);
-            Assert.Equal("FOOBAR", result.AppName);
-            Assert.Equal(80, result.Port);
-            Assert.Equal(443, result.SecurePort);
+            Assert.Equal(ActionType.ADDED, instance.Actiontype);
+            Assert.Equal("http://DESKTOP-GNQ5SUT:80/healthcheck", instance.HealthCheckUrl);
+            Assert.Equal("FOOBAR", instance.AppName);
+            Assert.Equal(80, instance.Port);
+            Assert.Equal(443, instance.SecurePort);
         }
     }
 }

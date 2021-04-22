@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Http.Serialization;
-using Steeltoe.Discovery.Eureka.Transport;
-using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -321,114 +319,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             }
 
             return info;
-        }
-
-        internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
-        {
-            var info = new InstanceInfo();
-            if (json != null)
-            {
-                info._sid = json.Sid ?? "na";
-                info.AppName = json.AppName;
-                info.AppGroupName = json.AppGroupName;
-                info.IpAddr = json.IpAddr;
-                info.Port = (json.Port == null) ? 0 : json.Port.Port;
-                info.IsUnsecurePortEnabled = json.Port != null && json.Port.Enabled;
-                info.SecurePort = (json.SecurePort == null) ? 0 : json.SecurePort.Port;
-                info.IsSecurePortEnabled = json.SecurePort != null && json.SecurePort.Enabled;
-                info.HomePageUrl = json.HomePageUrl;
-                info.StatusPageUrl = json.StatusPageUrl;
-                info.HealthCheckUrl = json.HealthCheckUrl;
-                info.SecureHealthCheckUrl = json.SecureHealthCheckUrl;
-                info.VipAddress = json.VipAddress;
-                info.SecureVipAddress = json.SecureVipAddress;
-                info.CountryId = json.CountryId;
-                info.DataCenterInfo = (json.DataCenterInfo == null) ? null : AppInfo.DataCenterInfo.FromJson(json.DataCenterInfo);
-                info.HostName = json.HostName;
-                info.Status = json.Status;
-                info.OverriddenStatus = json.OverriddenStatus;
-                info.LeaseInfo = LeaseInfo.FromJson(json.LeaseInfo);
-                info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
-                info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
-                info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
-                info.Actiontype = json.Actiontype;
-                info.AsgName = json.AsgName;
-                info._metaData = GetMetaDataFromJson(json.Metadata);
-                info.InstanceId = GetInstanceIdFromJson(json, info._metaData);
-            }
-
-            return info;
-        }
-
-        internal JsonInstanceInfo ToJsonInstance()
-        {
-            var jinfo = new JsonInstanceInfo
-            {
-                InstanceId = InstanceId,
-                Sid = Sid ?? "na",
-                AppName = AppName,
-                AppGroupName = AppGroupName,
-                IpAddr = IpAddr,
-                Port = new JsonInstanceInfo.JsonPortWrapper(IsUnsecurePortEnabled, Port),
-                SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
-                HomePageUrl = HomePageUrl,
-                StatusPageUrl = StatusPageUrl,
-                HealthCheckUrl = HealthCheckUrl,
-                SecureHealthCheckUrl = SecureHealthCheckUrl,
-                VipAddress = VipAddress,
-                SecureVipAddress = SecureVipAddress,
-                CountryId = CountryId,
-                DataCenterInfo = (DataCenterInfo == null) ? null : ((DataCenterInfo)DataCenterInfo).ToJson(),
-                HostName = HostName,
-                Status = Status,
-                OverriddenStatus = OverriddenStatus,
-                LeaseInfo = LeaseInfo?.ToJson(),
-                IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
-                LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
-                LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
-                Actiontype = Actiontype,
-                AsgName = AsgName,
-                Metadata = (Metadata.Count == 0) ? new Dictionary<string, string>() { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
-            };
-
-            return jinfo;
-        }
-
-        private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
-        {
-            if (json == null)
-            {
-                return new Dictionary<string, string>();
-            }
-
-            if (json.TryGetValue("@class", out var value) && value.Equals("java.util.Collections$EmptyMap"))
-            {
-                return new Dictionary<string, string>();
-            }
-
-            return new Dictionary<string, string>(json);
-        }
-
-        private static string GetInstanceIdFromJson(JsonInstanceInfo jinfo, Dictionary<string, string> metaData)
-        {
-            if (string.IsNullOrEmpty(jinfo.InstanceId))
-            {
-                if (metaData == null)
-                {
-                    return null;
-                }
-
-                if (metaData.TryGetValue("instanceId", out var mid))
-                {
-                    return jinfo.HostName + ":" + mid;
-                }
-
-                return null;
-            }
-            else
-            {
-                return jinfo.InstanceId;
-            }
         }
 
         private static string MakeUrl(InstanceInfo info, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)

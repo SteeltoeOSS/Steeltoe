@@ -107,11 +107,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
                 try
                 {
-                    request.Content = GetRequestContent(new JsonInstanceInfoRoot { Instance = info.ToJsonInstance() });
-
+                    request.Content = GetRequestContent(new { Instance = info });
                     using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
                     _logger?.LogDebug("RegisterAsync {RequestUri}, status: {StatusCode}, retry: {retry}", requestUri.ToMaskedString(), response.StatusCode, retry);
                     var statusCode = (int)response.StatusCode;
+
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                     {
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
@@ -202,10 +202,13 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 try
                 {
                     using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-                    JsonInstanceInfo jinfo = null;
+
+                    InstanceInfo instanceInfo = null;
+
                     try
                     {
-                        jinfo = await response.Content.ReadFromJsonAsync<JsonInstanceInfo>(JsonSerializerOptions);
+                        var application = await response.Content.ReadFromJsonAsync<Application>(JsonSerializerOptions);
+                        instanceInfo = application.Instances.FirstOrDefault();
                     }
                     catch (Exception e)
                     {
@@ -220,23 +223,17 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         }
                     }
 
-                    InstanceInfo infoResp = null;
-                    if (jinfo != null)
-                    {
-                        infoResp = InstanceInfo.FromJsonInstance(jinfo);
-                    }
-
                     _logger?.LogDebug(
                         "SendHeartbeatAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (infoResp != null) ? infoResp.ToString() : "null",
+                        (instanceInfo != null) ? instanceInfo.ToString() : "null",
                         retry);
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                     {
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                        var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
+                        var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, instanceInfo)
                         {
                             Headers = response.Headers
                         };
@@ -331,28 +328,29 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 try
                 {
                     using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-                    var jroot = await response.Content.ReadFromJsonAsync<JsonApplicationRoot>(JsonSerializerOptions).ConfigureAwait(false);
 
-                    Application appResp = null;
-                    if (jroot != null)
-                    {
-                        appResp = Application.FromJsonApplication(jroot.Application);
-                    }
+                    var applications = await response.Content.ReadFromJsonAsync<Applications>(JsonSerializerOptions).ConfigureAwait(false);
 
                     _logger?.LogDebug(
                         "GetApplicationAsync {RequestUri}, status: {StatusCode}, application: {Application}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (appResp != null) ? appResp.ToString() : "null",
+                        (applications != null) ? applications.ToString() : "null",
                         retry);
+
                     var statusCode = (int)response.StatusCode;
+
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 403 || statusCode == 404)
                     {
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                        var resp = new EurekaHttpResponse<Application>(response.StatusCode, appResp)
+
+                        var application = applications?.ApplicationInstances.FirstOrDefault();
+
+                        var resp = new EurekaHttpResponse<Application>(response.StatusCode, application)
                         {
                             Headers = response.Headers
                         };
+
                         return resp;
                     }
                 }
@@ -818,13 +816,10 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 try
                 {
                     using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-                    var jroot = await response.Content.ReadFromJsonAsync<JsonInstanceInfoRoot>(JsonSerializerOptions).ConfigureAwait(false);
 
-                    InstanceInfo infoResp = null;
-                    if (jroot != null)
-                    {
-                        infoResp = InstanceInfo.FromJsonInstance(jroot.Instance);
-                    }
+                    var application = await response.Content.ReadFromJsonAsync<Application>(JsonSerializerOptions).ConfigureAwait(false);
+
+                    InstanceInfo infoResp = application?.Instances.FirstOrDefault() ?? null;
 
                     _logger?.LogDebug(
                         "DoGetInstanceAsync {RequestUri}, status: {StatusCode}, instanceInfo: {Instance}, retry: {retry}",
@@ -832,14 +827,18 @@ namespace Steeltoe.Discovery.Eureka.Transport
                         response.StatusCode,
                         (infoResp != null) ? infoResp.ToString() : "null",
                         retry);
+
                     var statusCode = (int)response.StatusCode;
+
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                     {
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
+
                         var resp = new EurekaHttpResponse<InstanceInfo>(response.StatusCode, infoResp)
                         {
                             Headers = response.Headers
                         };
+
                         return resp;
                     }
                 }
@@ -890,33 +889,36 @@ namespace Steeltoe.Discovery.Eureka.Transport
                 try
                 {
                     using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
-                    JsonApplicationsRoot jroot = null;
-                    try
-                    {
-                        jroot = await response.Content.ReadFromJsonAsync<JsonApplicationsRoot>(JsonSerializerOptions).ConfigureAwait(false);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger?.LogInformation(e, "Failed to deserialize response");
-                    }
 
-                    Applications appsResp = null;
-                    if (response.StatusCode == HttpStatusCode.OK && jroot != null)
+                    Applications applications = null;
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        appsResp = Applications.FromJsonApplications(jroot.Applications);
+                        try
+                        {
+                            var jsonResponseBody = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
+                            var applicationsRoot = jsonResponseBody.RootElement.GetProperty("applications").ToString();
+                            applications = JsonSerializer.Deserialize<Applications>(applicationsRoot, JsonSerializerOptions);
+                            // applications = await response.Content.ReadFromJsonAsync<Applications>(JsonSerializerOptions).ConfigureAwait(false);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger?.LogInformation(e, "Failed to deserialize response");
+                        }
                     }
 
                     _logger?.LogDebug(
                         "DoGetApplicationsAsync {RequestUri}, status: {StatusCode}, applications: {Application}, retry: {retry}",
                         requestUri.ToMaskedString(),
                         response.StatusCode,
-                        (appsResp != null) ? appsResp.ToString() : "null",
+                        (applications != null) ? applications.ToString() : "null",
                         retry);
+
                     var statusCode = (int)response.StatusCode;
                     if ((statusCode >= 200 && statusCode < 300) || statusCode == 404)
                     {
                         Interlocked.Exchange(ref _serviceUrl, serviceUrl);
-                        var resp = new EurekaHttpResponse<Applications>(response.StatusCode, appsResp)
+                        var resp = new EurekaHttpResponse<Applications>(response.StatusCode, applications)
                         {
                             Headers = response.Headers
                         };

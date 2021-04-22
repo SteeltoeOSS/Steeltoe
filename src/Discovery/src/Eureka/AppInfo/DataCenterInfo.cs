@@ -23,29 +23,5 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         {
             Name = name;
         }
-
-        internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo jcenter)
-        {
-            if (DataCenterName.MyOwn.ToString().Equals(jcenter.Name))
-            {
-                return new DataCenterInfo(DataCenterName.MyOwn);
-            }
-            else if (DataCenterName.Amazon.ToString().Equals(jcenter.Name))
-            {
-                return new DataCenterInfo(DataCenterName.Amazon);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("Datacenter name");
-            }
-        }
-
-        internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
-        {
-            // TODO: Other datacenters @class settings?
-            return new JsonInstanceInfo.JsonDataCenterInfo(
-                "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-                Name.ToString());
-        }
     }
 }

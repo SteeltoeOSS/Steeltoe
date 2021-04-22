@@ -25,6 +25,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         public long Version { get; set; }
 
         [JsonPropertyName("application")]
+        [JsonConverter(typeof(JsonApplicationConverter))]
         public IEnumerable<Application> ApplicationInstances
         {
             get
@@ -267,27 +268,6 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
         internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
 
         internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>>();
-
-        internal static Applications FromJsonApplications(JsonApplications japps)
-        {
-            var apps = new Applications();
-            if (japps != null)
-            {
-                apps.Version = japps.VersionDelta;
-                apps.AppsHashCode = japps.AppsHashCode;
-
-                if (japps.Applications != null)
-                {
-                    foreach (var japp in japps.Applications)
-                    {
-                        var app = Application.FromJsonApplication(japp);
-                        apps.Add(app);
-                    }
-                }
-            }
-
-            return apps;
-        }
 
         private IList<InstanceInfo> DoGetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
         {
