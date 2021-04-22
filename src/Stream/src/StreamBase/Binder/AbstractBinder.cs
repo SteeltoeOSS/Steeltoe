@@ -59,7 +59,7 @@ namespace Steeltoe.Stream.Binder
             return DoBindConsumer(name, group, inboundTarget, consumerOptions);
         }
 
-        public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+        public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
         {
             return DoBindConsumer(name, group, (T)inboundTarget, consumerOptions);
         }
