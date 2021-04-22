@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Binder
             var binderAssembly = binderDir + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
             var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
             Assert.Equal(binderAssembly, result.AssemblyPath);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=3.0.2.0, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
             Assert.Equal("testbinder", result.Name);
             context.Dispose();
         }
@@ -46,7 +46,7 @@ namespace Steeltoe.Stream.Binder
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(binderDir, result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=3.0.2.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Steeltoe.Stream.Binder
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=3.0.2.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+ Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact]
@@ -87,7 +87,7 @@ namespace Steeltoe.Stream.Binder
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=3.0.2.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact(Skip = "TypeRegistryTests")]
@@ -96,7 +96,7 @@ namespace Steeltoe.Stream.Binder
             var searchDirectories = new List<string>();
             var result = DefaultBinderTypeRegistry.FindBinders(searchDirectories);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact(Skip = "TypeRegistryTests")]
@@ -104,7 +104,7 @@ namespace Steeltoe.Stream.Binder
         {
             var registry = new DefaultBinderTypeRegistry();
             Assert.Single(registry.GetAll());
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", registry.Get("testbinder").ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", registry.Get("testbinder").ConfigureClass);
         }
 
         private List<string> BuildPaths(string binderPath)
