@@ -9,7 +9,7 @@
   <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
-    <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
