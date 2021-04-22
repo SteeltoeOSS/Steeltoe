@@ -124,8 +124,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
             Assert.Equal("/apps/FOOBAR", TestConfigServerStartup.LastRequest.Path.Value);
 
             // Check JSON payload
-
-            // TODO: Check root
             var recvJson = JsonSerializer.Deserialize<InstanceInfo>(new StreamReader(TestConfigServerStartup.LastRequest.Body).ReadToEnd());
             Assert.NotNull(recvJson);
         }

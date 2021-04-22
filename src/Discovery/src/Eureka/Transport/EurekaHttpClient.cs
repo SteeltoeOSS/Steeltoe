@@ -899,7 +899,6 @@ namespace Steeltoe.Discovery.Eureka.Transport
                             var jsonResponseBody = await JsonDocument.ParseAsync(await response.Content.ReadAsStreamAsync());
                             var applicationsRoot = jsonResponseBody.RootElement.GetProperty("applications").ToString();
                             applications = JsonSerializer.Deserialize<Applications>(applicationsRoot, JsonSerializerOptions);
-                            // applications = await response.Content.ReadFromJsonAsync<Applications>(JsonSerializerOptions).ConfigureAwait(false);
                         }
                         catch (Exception e)
                         {
