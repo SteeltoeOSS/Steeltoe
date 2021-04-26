@@ -110,7 +110,7 @@ namespace Steeltoe.Stream.Binding
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogDebug(ex, ex.Message);
+                    _logger?.LogDebug(ex, ex.Message);
                     Thread.Sleep(Options.BindingRetryInterval * 1000);
                 }
             }
