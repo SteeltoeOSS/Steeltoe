@@ -5,24 +5,32 @@
 using Moq;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test
 {
     public class InvocableHandlerMethodTest
     {
-        private HandlerMethodArgumentResolverComposite resolvers;
-        private IMessage message;
+        private HandlerMethodArgumentResolverComposite _resolvers;
+        private IMessage _message;
+        private ITestOutputHelper _outputHelper;
+
+        public InvocableHandlerMethodTest(ITestOutputHelper output)
+        {
+            _outputHelper = output;
+        }
 
         [Fact]
         public void ResolveArg()
         {
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
-            resolvers.AddResolver(new StubArgumentResolver(99));
-            resolvers.AddResolver(new StubArgumentResolver("value"));
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers.AddResolver(new StubArgumentResolver(99));
+            _resolvers.AddResolver(new StubArgumentResolver("value"));
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var value = Invoke(new Handler(), method);
 
@@ -37,11 +45,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         public void ResolveNoArgValue()
         {
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
-            resolvers.AddResolver(new StubArgumentResolver(typeof(int?)));
-            resolvers.AddResolver(new StubArgumentResolver(typeof(string)));
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(int?)));
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(string)));
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
 
             var value = Invoke(new Handler(), method);
@@ -56,9 +64,9 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
+            _message = messageMock.Object;
 
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var ex = Assert.Throws<MethodArgumentResolutionException>(() => Invoke(new Handler(), method));
             Assert.Contains("Could not resolve parameter [0]", ex.Message);
         }
@@ -68,8 +76,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
             var value = Invoke(new Handler(), method, 99, "value");
 
@@ -83,11 +91,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new StubArgumentResolver(1));
-            resolvers.AddResolver(new StubArgumentResolver("value1"));
+            _resolvers.AddResolver(new StubArgumentResolver(1));
+            _resolvers.AddResolver(new StubArgumentResolver("value1"));
             var value = Invoke(new Handler(), method, 2, "value2");
 
             Assert.Equal("2-value2", value);
@@ -98,10 +106,10 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new ExceptionRaisingArgumentResolver());
+            _resolvers.AddResolver(new ExceptionRaisingArgumentResolver());
             Assert.Throws<ArgumentException>(() => Invoke(new Handler(), method));
 
             // expected -  allow HandlerMethodArgumentResolver exceptions to propagate
@@ -112,11 +120,11 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var method = typeof(Handler).GetMethod("Handle", new Type[] { typeof(int?), typeof(string) });
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
 
-            resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
-            resolvers.AddResolver(new StubArgumentResolver("value"));
+            _resolvers.AddResolver(new StubArgumentResolver(typeof(int?), "__not_an_int__"));
+            _resolvers.AddResolver(new StubArgumentResolver("value"));
             var ex = Assert.Throws<InvalidOperationException>(() => Invoke(new Handler(), method));
             Assert.IsType<ArgumentException>(ex.InnerException);
             Assert.Contains("Endpoint [", ex.Message);
@@ -131,8 +139,8 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             var handler = new Handler();
             var messageMock = new Mock<IMessage>();
-            message = messageMock.Object;
-            resolvers = new HandlerMethodArgumentResolverComposite();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
             var method = typeof(Handler).GetMethod("HandleWithException");
 
             var runtimeException = new Exception("error");
@@ -144,26 +152,160 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             Assert.Same(error, ex2);
         }
 
+        [Fact]
+        public void HandleSinglePrimitiveReturnVoid()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
+            Invoke(handler, method, 1.0d);
+            Assert.Equal(1.0d, handler.DoubleValue);
+        }
+
+        [Fact]
+        public void HandleSinglePrimitiveReturnVoidPerf()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
+
+            Invoke(handler, method, 1.0d);
+            Assert.Equal(1.0d, handler.DoubleValue);
+        }
+
+        [Fact]
+        public void HandleMultiPrimitiveReturnVoid()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleMultiPrimitiveReturnVoid");
+            Invoke(handler, method, 1.0d, 2);
+            Assert.Equal(1.0d, handler.DoubleValue);
+            Assert.Equal(2, handler.IntValue);
+        }
+
+        [Fact]
+        public void HandleMultiReturnVoid()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleMultiReturnVoid");
+            Invoke(handler, method, 1.0d, 2, handler);
+            Assert.Equal(1.0d, handler.DoubleValue);
+            Assert.Equal(2, handler.IntValue);
+            Assert.Same(handler, handler.ObjectValue);
+        }
+
+        [Fact]
+        public void HandleNullablePrimitive()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleNullablePrimitive");
+            var result = Invoke(handler, method, 10, "stringArg");
+            Assert.Equal(1, handler.InvocationCount);
+            Assert.Equal("10-stringArg", result);
+        }
+
+        [Fact]
+        public void ComparePerfHandleSinglePrimitiveReturnVoid()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleSinglePrimitiveReturnVoid");
+            var ticks1 = TimedInvoke(handler, method, 100_000, 1.0d);
+            Assert.Equal(100_000, handler.InvocationCount);
+            var ticks2 = TimedReflectionInvoke(handler, method, 100_000, 1.0d);
+            Assert.Equal(200_000, handler.InvocationCount);
+            Assert.True(ticks2 > ticks1);
+        }
+
+        [Fact]
+        public async Task HandleAsyncVoidMethod()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleAsyncVoidMethod");
+            var result = Invoke(handler, method, 1.0d) as Task;
+            await result;
+            Assert.Equal(1, handler.InvocationCount);
+            Assert.Equal(1.0d, handler.DoubleValue);
+        }
+
+        [Fact]
+        public async Task HandleAsyncStringMethod()
+        {
+            var handler = new Handler2();
+            var messageMock = new Mock<IMessage>();
+            _message = messageMock.Object;
+            _resolvers = new HandlerMethodArgumentResolverComposite();
+            var method = typeof(Handler2).GetMethod("HandleAsyncStringMethod");
+            var result = Invoke(handler, method, 10, "stringArg") as Task<string>;
+            var str = await result;
+            Assert.Equal(1, handler.InvocationCount);
+            Assert.Equal("10-stringArg", str);
+        }
+
         private object Invoke(object handler, MethodInfo method, params object[] providedArgs)
         {
             var handlerMethod = new InvocableHandlerMethod(handler, method)
             {
-                MessageMethodArgumentResolvers = resolvers
+                MessageMethodArgumentResolvers = _resolvers
             };
-            return handlerMethod.Invoke(message, providedArgs);
+            return handlerMethod.Invoke(_message, providedArgs);
+        }
+
+        private long TimedInvoke(object handler, MethodInfo method, int count, params object[] providedArgs)
+        {
+            var handlerMethod = new InvocableHandlerMethod(handler, method);
+            var invoker = handlerMethod.HandlerInvoker;
+
+            var start = DateTime.Now.Ticks;
+            for (var i = 0; i < count; i++)
+            {
+                invoker(handler, providedArgs);
+            }
+
+            var end = DateTime.Now.Ticks;
+            _outputHelper.WriteLine("Ticks: " + (end - start));
+            return end - start;
+        }
+
+        private long TimedReflectionInvoke(object handler, MethodInfo method, int count, params object[] providedArgs)
+        {
+            var start = DateTime.Now.Ticks;
+            for (var i = 0; i < count; i++)
+            {
+                method.Invoke(handler, providedArgs);
+            }
+
+            var end = DateTime.Now.Ticks;
+            _outputHelper.WriteLine("Ticks: " + (end - start));
+            return end - start;
         }
 
         private StubArgumentResolver GetStubResolver(int index)
         {
-            return (StubArgumentResolver)resolvers.Resolvers[index];
+            return (StubArgumentResolver)_resolvers.Resolvers[index];
         }
 
         internal class Handler
         {
-            public string Handle(int? intArg, string stringArg)
-            {
-                return (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
-            }
+            public string Handle(int? intArg, string stringArg) => (intArg.HasValue ? intArg.Value.ToString() : "null") + "-" + (stringArg ?? "null");
 
             public void Handle(double amount)
             {
@@ -172,6 +314,61 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
             public void HandleWithException(Exception ex)
             {
                 throw ex;
+            }
+        }
+
+        internal class Handler2
+        {
+            public long InvocationCount;
+            public double DoubleValue;
+            public int IntValue;
+            public object ObjectValue;
+
+            public string HandleNullablePrimitive(int? intArg, string stringArg)
+            {
+                InvocationCount++;
+                return (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
+            }
+
+            public void HandleSinglePrimitiveReturnVoid(double value)
+            {
+                InvocationCount++;
+                DoubleValue = value;
+            }
+
+            public void HandleMultiPrimitiveReturnVoid(double value1, int value2)
+            {
+                InvocationCount++;
+                DoubleValue = value1;
+                IntValue = value2;
+            }
+
+            public void HandleMultiReturnVoid(double value1, int value2, Handler2 value3)
+            {
+                InvocationCount++;
+                DoubleValue = value1;
+                IntValue = value2;
+                ObjectValue = value3;
+            }
+
+            public void HandleWithException(Exception ex)
+            {
+                InvocationCount++;
+                throw ex;
+            }
+
+            public Task HandleAsyncVoidMethod(double value)
+            {
+                InvocationCount++;
+                DoubleValue = value;
+                return Task.CompletedTask;
+            }
+
+            public Task<string> HandleAsyncStringMethod(int? intArg, string stringArg)
+            {
+                InvocationCount++;
+                var result = (intArg == null ? "null" : intArg.Value.ToString()) + "-" + (stringArg == null ? "null" : stringArg);
+                return Task.FromResult(result);
             }
         }
 

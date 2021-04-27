@@ -66,14 +66,11 @@ namespace Steeltoe.Management.Endpoint
         }
 
         /// <summary>
-        /// Maps all actutators that have been registered in <see cref="IServiceCollection"/>
+        /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
         /// </summary>
         /// <param name="endpoints">The endpoint builder</param>
-        /// <param name="version">Media Version</param>
         /// <returns>Endpoint convention builder</returns>
-#pragma warning disable IDE0060 // Remove unused parameter
-        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version = MediaTypeVersion.V2)
-#pragma warning restore IDE0060 // Remove unused parameter
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints)
         {
             var conventionBuilder = new EndpointCollectionConventionBuilder();
 
@@ -92,6 +89,16 @@ namespace Steeltoe.Management.Endpoint
 
             return conventionBuilder;
         }
+
+        /// <summary>
+        /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>
+        /// </summary>
+        /// <param name="endpoints">The endpoint builder</param>
+        /// <param name="version">Media Version</param>
+        /// <returns>Endpoint convention builder</returns>
+        [Obsolete("MediaTypeVersion parameter is not used")]
+        public static IEndpointConventionBuilder MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
+            => endpoints.MapAllActuators();
 
         internal static IEndpointConventionBuilder MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, EndpointCollectionConventionBuilder conventionBuilder = null)
         {

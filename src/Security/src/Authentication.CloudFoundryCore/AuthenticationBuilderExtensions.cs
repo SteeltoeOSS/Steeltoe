@@ -55,6 +55,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(options);
+                options.SetEndpoints(GetAuthDomain(securitySection));
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryOAuthConfigurer.Configure(info, options);
@@ -222,6 +223,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 var cloudFoundryOptions = new CloudFoundryJwtBearerOptions();
                 var securitySection = config.GetSection(CloudFoundryDefaults.SECURITY_CLIENT_SECTION_PREFIX);
                 securitySection.Bind(cloudFoundryOptions);
+                cloudFoundryOptions.SetEndpoints(GetAuthDomain(securitySection));
 
                 var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
                 CloudFoundryJwtBearerConfigurer.Configure(info, options, cloudFoundryOptions);
@@ -300,5 +302,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             });
             return builder;
         }
+
+        private static string GetAuthDomain(IConfigurationSection configurationSection) =>
+            configurationSection.GetValue<string>(nameof(SsoServiceInfo.AuthDomain));
     }
 }

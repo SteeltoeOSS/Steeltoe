@@ -37,6 +37,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IDbMigrationsOptions>(options);
             services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
             services.TryAddSingleton<DbMigrationsEndpoint>();
+            services.TryAddSingleton<IDbMigrationsEndpoint>(provider => provider.GetRequiredService<DbMigrationsEndpoint>());
 
             return services;
         }

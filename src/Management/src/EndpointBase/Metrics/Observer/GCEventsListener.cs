@@ -57,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger?.LogError(ex.Message);
             }
         }
 
@@ -65,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (eventSource.Name == EventSourceName)
             {
-                EnableEvents(eventSource, EventLevel.Verbose, GCEventsKeywords);
+                SafelyEnableEvents(eventSource, EventLevel.Verbose, GCEventsKeywords);
             }
         }
 

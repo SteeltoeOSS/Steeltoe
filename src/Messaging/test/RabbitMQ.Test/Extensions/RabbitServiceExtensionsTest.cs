@@ -4,12 +4,17 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Xunit;
@@ -472,5 +477,110 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
             Assert.NotNull(c);
             Assert.False(c.AssumeSupportedContentType);
         }
-    }
+
+        [Fact]
+        public void ConfigureRabbitOptions_Configure()
+        {
+            var hostPrefix = "spring:rabbitmq:host";
+            var portPrefix = "spring:rabbitmq:port";
+            var usernamePrefix = "spring:rabbitmq:username";
+            var passwordPrefix = "spring:rabbitmq:password";
+            var services = new ServiceCollection();
+
+            var appsettings = new Dictionary<string, string>()
+            {
+                [hostPrefix] = "this.is.test",
+                [portPrefix] = "12345",
+                [usernamePrefix] = "fakeusername",
+                [passwordPrefix] = "CHANGEME",
+            };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            var configuration = configurationBuilder.Build();
+
+            services.ConfigureRabbitOptions(configuration);
+
+            var provider = services.BuildServiceProvider();
+            var rabbitOptions = provider.GetService<IOptions<RabbitOptions>>().Value;
+
+            Assert.Equal(appsettings[hostPrefix], rabbitOptions.Host.ToString());
+            Assert.Equal(appsettings[portPrefix], rabbitOptions.Port.ToString());
+            Assert.Equal(appsettings[usernamePrefix], rabbitOptions.Username.ToString());
+            Assert.Equal(appsettings[passwordPrefix], rabbitOptions.Password.ToString());
+        }
+
+        [Fact]
+        public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
+        {
+            var usernamePrefix = "spring:rabbitmq:username";
+            var passwordPrefix = "spring:rabbitmq:password";
+            var services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
+
+            var appsettings = new Dictionary<string, string>()
+            {
+                [usernamePrefix] = "fakeusername",
+                [passwordPrefix] = "CHANGEME",
+            };
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddInMemoryCollection(appsettings);
+            configurationBuilder.AddCloudFoundry();
+            var configuration = configurationBuilder.Build();
+
+            services.AddRabbitMQConnection(configuration);
+            services.ConfigureRabbitOptions(configuration);
+
+            var provider = services.BuildServiceProvider();
+            var rabbitOptions = provider.GetRequiredService<IOptions<RabbitOptions>>().Value;
+
+            Assert.Equal("Dd6O1BPXUHdrmzbP", rabbitOptions.Username);
+            Assert.Equal("7E1LxXnlH2hhlPVt", rabbitOptions.Password);
+            Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", rabbitOptions.VirtualHost);
+            Assert.Equal($"Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306", rabbitOptions.Addresses);
+        }
+
+        [Fact]
+        public void AddRabbitConnectionFactory_AddRabbitConnector()
+        {
+            var services = new ServiceCollection();
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddCloudFoundry();
+            var configuration = configurationBuilder.Build();
+
+            services.AddRabbitMQConnection(configuration);
+            services.AddRabbitConnectionFactory();
+
+            var provider = services.BuildServiceProvider();
+            var rabbitConnectionFactory = provider.GetRequiredService<IConnectionFactory>();
+
+            Assert.Equal("192.168.0.90", rabbitConnectionFactory.Host);
+            Assert.Equal(3306, rabbitConnectionFactory.Port);
+        }
+
+        private static string GetCloudFoundryRabbitMqConfiguration() => @"
+        {
+            ""p-rabbitmq"": [{
+                ""credentials"": {
+                    ""uri"": ""amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355""
+                },
+                ""syslog_drain_url"": null,
+                ""label"": ""p-rabbitmq"",
+                ""provider"": null,
+                ""plan"": ""standard"",
+                ""name"": ""myRabbitMQService1"",
+                ""tags"": [
+                    ""rabbitmq"",
+                    ""amqp""
+                ]
+            }]
+        }";
+     }
 }

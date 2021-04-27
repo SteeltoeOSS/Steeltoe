@@ -1,35 +1,53 @@
 trigger:
   branches:
     include:
-    - master
+    - main
   paths:
     exclude:
     - README.md
     - project-docs/*
     - roadmaps/*
 pr:
-- master
+- main
 
 jobs:
+- job: Quick_Response
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: src/Steeltoe.All.sln
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: src/Steeltoe.All.sln
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: src/Steeltoe.All.sln
+      arguments: '--blame --no-build -c $(buildConfiguration) -v n -f netcoreapp3.1 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
 - job: Steeltoe_CI
+  timeoutInMinutes: 150
+  dependsOn:
+  - Quick_Response
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     PackageVersion: $[format('3.1.0-{0}', variables['Build.BuildId'])]
   strategy:
     matrix:
-      Linux_netcoreapp3_1:
+      Linux:
         imageName: ubuntu-latest
-        skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux"'
-        integrationTests: false
+        skipFilter: '--filter "Category!=SkipOnLinux"'
         sonarAnalyze: true
-      Linux_net5:
-        imageName: ubuntu-latest
-        skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnLinux" --blame-hang --blame-hang-timeout 4m'
-        integrationTests: false
-      Linux_integration_and_Hystrix:
-        imageName: ubuntu-latest
-        skipFilter: '--filter "(Category=Integration|FullyQualifiedName~CircuitBreaker)&Category!=SkipOnLinux"'
         integrationTests: true
       MacOS_netcoreapp3_1:
         imageName: macOS-latest
@@ -195,9 +213,9 @@ jobs:
     vmImage: ubuntu-latest
   steps:
   - download: current
-    artifact: coverageResults-Steeltoe_CI Linux_integration_and_Hystrix
+    artifact: coverageResults-Steeltoe_CI Linux
     condition: succeededOrFailed()
-    displayName: Download integration test coverage results
+    displayName: Download test coverage results from Linux
     continueOnError: true
   - download: current
     artifact: coverageResults-Steeltoe_CI Windows_netcoreapp3_1

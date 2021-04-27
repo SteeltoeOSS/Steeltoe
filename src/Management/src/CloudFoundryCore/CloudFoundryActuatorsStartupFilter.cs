@@ -11,13 +11,16 @@ using System;
 
 namespace Steeltoe.Management.CloudFoundry
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class CloudFoundryActuatorsStartupFilter : IStartupFilter
     {
-        private MediaTypeVersion MediaTypeVersion { get; }
+        public CloudFoundryActuatorsStartupFilter()
+        {
+        }
 
+        [Obsolete("MediaTypeVersion parameter is not used")]
         public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
         {
-            MediaTypeVersion = mediaTypeVersion;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -26,14 +29,11 @@ namespace Steeltoe.Management.CloudFoundry
             {
                 app.UseCors("SteeltoeManagement");
                 app.UseCloudFoundrySecurity();
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<CloudFoundryEndpoint>();
-                    endpoints.MapAllActuators(MediaTypeVersion);
-                });
 
-                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
+                next(app);
+
+                app.UseEndpoints(endpoints => endpoints.MapAllActuators());
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }

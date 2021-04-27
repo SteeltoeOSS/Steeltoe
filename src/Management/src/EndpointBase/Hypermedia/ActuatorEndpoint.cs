@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
     /// <summary>
     /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
     /// </summary>
-    public class ActuatorEndpoint : AbstractEndpoint<Links, string>
+    public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
     {
         private readonly ILogger<ActuatorEndpoint> _logger;
         private readonly ActuatorManagementOptions _mgmtOption;

@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Messaging.RabbitMQ.Expressions
+namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public interface IServiceExpressionContext
+    public interface IPrometheusScraperEndpoint
     {
-        // public IConfigurableBeanFactory BeanFactory { get; }
-        string ResolveEmbeddedValue(string value);
+        string Invoke();
     }
 }

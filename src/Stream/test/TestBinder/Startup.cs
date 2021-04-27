@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.TestBinder;

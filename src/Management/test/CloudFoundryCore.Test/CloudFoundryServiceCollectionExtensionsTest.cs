@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test
 {
+    [Obsolete]
     public class CloudFoundryServiceCollectionExtensionsTest
     {
         [Fact]

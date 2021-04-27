@@ -178,13 +178,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public static readonly SpelMessage UNABLE_TO_DYNAMICALLY_CREATE_OBJECT = new SpelMessage(
             Kind.ERROR, 1056, "Unable to dynamically create instance of ''{0}'' to replace a null value");
 
-        public static readonly SpelMessage NO_BEAN_RESOLVER_REGISTERED = new SpelMessage(
-            Kind.ERROR, 1057, "No bean resolver registered in the context to resolve access to bean ''{0}''");
+        public static readonly SpelMessage NO_SERVICE_RESOLVER_REGISTERED = new SpelMessage(
+            Kind.ERROR, 1057, "No service resolver registered in the context to resolve access to service ''{0}''");
 
-        public static readonly SpelMessage EXCEPTION_DURING_BEAN_RESOLUTION = new SpelMessage(
-            Kind.ERROR, 1058, "A problem occurred when trying to resolve bean ''{0}'':''{1}''");
+        public static readonly SpelMessage EXCEPTION_DURING_SERVICE_RESOLUTION = new SpelMessage(
+            Kind.ERROR, 1058, "A problem occurred when trying to resolve service ''{0}'':''{1}''");
 
-        public static readonly SpelMessage INVALID_BEAN_REFERENCE = new SpelMessage(
+        public static readonly SpelMessage INVALID_SERVICE_REFERENCE = new SpelMessage(
             Kind.ERROR, 1059, "@ or & can only be followed by an identifier or a quoted name");
 
         public static readonly SpelMessage TYPE_NAME_EXPECTED_FOR_ARRAY_CONSTRUCTION = new SpelMessage(

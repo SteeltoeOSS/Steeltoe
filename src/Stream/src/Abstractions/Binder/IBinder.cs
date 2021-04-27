@@ -13,8 +13,7 @@ namespace Steeltoe.Stream.Binder
     /// intended to identify a logical consumer or producer of messages. This may be a queue, a
     /// channel adapter, another message channel, etc.
     /// </summary>
-    /// TODO:  Figure out Closable/Disposable usage
-    public interface IBinder : IServiceNameAware // : IDisposable
+    public interface IBinder : IServiceNameAware // , IDisposable
     {
         /// <summary>
         /// Gets the target type this binder can bind to

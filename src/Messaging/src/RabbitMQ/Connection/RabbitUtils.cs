@@ -90,7 +90,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error during TxCommit");
+                logger?.LogError(ex, "Error during TxCommit");
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }
@@ -108,7 +108,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error during TxCommit");
+                logger?.LogError(ex, "Error during TxCommit");
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
             }
         }

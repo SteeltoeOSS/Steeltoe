@@ -10,13 +10,11 @@ using System;
 
 namespace Steeltoe.Management.Kubernetes
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class KubernetesActuatorsStartupFilter : IStartupFilter
     {
-        private MediaTypeVersion MediaTypeVersion { get; }
-
         public KubernetesActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
         {
-            MediaTypeVersion = mediaTypeVersion;
         }
 
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
@@ -26,9 +24,9 @@ namespace Steeltoe.Management.Kubernetes
                 next(app);
                 app.UseEndpoints(endpoints =>
                 {
-                    endpoints.MapAllActuators(MediaTypeVersion);
+                    endpoints.MapAllActuators();
                 });
-                HealthStartupFilter.InitializeAvailability(app.ApplicationServices);
+                app.ApplicationServices.InitializeAvailability();
             };
         }
     }

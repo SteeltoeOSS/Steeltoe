@@ -29,13 +29,16 @@ namespace Steeltoe.Stream.Binder
         protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new EmbeddedHeadersChannelInterceptor();
         protected readonly string[] _headersToEmbed;
         protected bool _producerBindingExist;
+        private readonly ILogger _logger;
 
         protected AbstractMessageChannelBinder(
             IApplicationContext context,
             string[] headersToEmbed,
-            IProvisioningProvider provisioningProvider)
-        : this(context, headersToEmbed, provisioningProvider, null, null)
+            IProvisioningProvider provisioningProvider,
+            ILogger logger)
+        : this(context, headersToEmbed, provisioningProvider, null, null, logger)
         {
+            _logger = logger;
         }
 
         protected AbstractMessageChannelBinder(
@@ -43,13 +46,15 @@ namespace Steeltoe.Stream.Binder
             string[] headersToEmbed,
             IProvisioningProvider provisioningProvider,
             IListenerContainerCustomizer containerCustomizer,
-            IMessageSourceCustomizer sourceCustomizer)
-            : base(context)
+            IMessageSourceCustomizer sourceCustomizer,
+            ILogger logger)
+            : base(context, logger)
         {
-            _headersToEmbed = headersToEmbed ?? (new string[0]);
+            _headersToEmbed = headersToEmbed ?? Array.Empty<string>();
             _provisioningProvider = provisioningProvider;
             ListenerContainerCustomizer = containerCustomizer;
             MessageSourceCustomizer = sourceCustomizer;
+            _logger = logger;
         }
 
         public override Type TargetType { get; } = typeof(IMessageChannel);
@@ -83,9 +88,9 @@ namespace Steeltoe.Stream.Binder
                 throw new BinderException("Exception thrown while building outbound endpoint", e);
             }
 
-            if (producerOptions.AutoStartup && producerMessageHandler is ILifecycle)
+            if (producerOptions.AutoStartup && producerMessageHandler is ILifecycle producerMsgHandlerLifecycle)
             {
-                ((ILifecycle)producerMessageHandler).Start();
+                producerMsgHandlerLifecycle.Start();
             }
 
             PostProcessOutputChannel(outboundTarget, producerOptions);
@@ -97,7 +102,7 @@ namespace Steeltoe.Stream.Binder
                 this,
                 name,
                 outboundTarget,
-                producerMessageHandler is ILifecycle ? (ILifecycle)producerMessageHandler : null,
+                producerMessageHandler is ILifecycle lifecycle ? lifecycle : null,
                 producerOptions,
                 producerDestination);
 
@@ -146,9 +151,9 @@ namespace Steeltoe.Stream.Binder
                 consumerEndpoint = CreateConsumerEndpoint(destination, group, consumerOptions);
                 consumerEndpoint.OutputChannel = inputTarget;
 
-                if (consumerOptions.AutoStartup && consumerEndpoint is ILifecycle)
+                if (consumerOptions.AutoStartup && consumerEndpoint is ILifecycle lifecycle)
                 {
-                    ((ILifecycle)consumerEndpoint).Start();
+                    lifecycle.Start();
                 }
 
                 IBinding binding = new DefaultConsumerMessageChannelBinding(
@@ -156,7 +161,7 @@ namespace Steeltoe.Stream.Binder
                             name,
                             group,
                             inputTarget,
-                            consumerEndpoint is ILifecycle ? (ILifecycle)consumerEndpoint : null,
+                            consumerEndpoint is ILifecycle consumerEpLifeCycle ? consumerEpLifeCycle : null,
                             consumerOptions,
                             destination);
 
@@ -164,9 +169,9 @@ namespace Steeltoe.Stream.Binder
             }
             catch (Exception e)
             {
-                if (consumerEndpoint is ILifecycle)
+                if (consumerEndpoint is ILifecycle lifecycle)
                 {
-                    ((ILifecycle)consumerEndpoint).Stop();
+                    lifecycle.Stop();
                 }
 
                 if (e is BinderException)
@@ -190,42 +195,20 @@ namespace Steeltoe.Stream.Binder
         {
         }
 
-        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
+        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, ILogger logger)
         {
-            return RegisterErrorInfrastructure(destination, group, consumerOptions, false);
+            return RegisterErrorInfrastructure(destination, group, consumerOptions, false, logger);
         }
 
-        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, bool polled)
+        protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, bool polled, ILogger logger)
         {
             var errorMessageStrategy = GetErrorMessageStrategy();
 
             var errorChannelName = GetErrorsBaseName(destination, group, consumerOptions);
-            ISubscribableChannel errorChannel;
-            var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
-            if (errorChannelObject != null)
-            {
-                if (!(errorChannelObject is ISubscribableChannel))
-                {
-                    throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
-                }
 
-                errorChannel = (ISubscribableChannel)errorChannelObject;
-            }
-            else
-            {
-                errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName);
-                ApplicationContext.Register(errorChannelName, errorChannel);
-            }
+            var errorChannel = GetErrorChannel(logger, errorChannelName);
 
-            ErrorMessageSendingRecoverer recoverer;
-            if (errorMessageStrategy == null)
-            {
-                recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel);
-            }
-            else
-            {
-                recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel, errorMessageStrategy);
-            }
+            var recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel, errorMessageStrategy);
 
             var recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
             ApplicationContext.Register(recovererBeanName, recoverer);
@@ -242,9 +225,9 @@ namespace Steeltoe.Stream.Binder
 
             var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
 
-            if (handler == null && errorChannel is ILastSubscriberAwareChannel)
+            if (handler == null && errorChannel is ILastSubscriberAwareChannel channel)
             {
-                handler = GetDefaultErrorMessageHandler((ILastSubscriberAwareChannel)errorChannel, defaultErrorChannel != null);
+                handler = GetDefaultErrorMessageHandler(channel, defaultErrorChannel != null);
             }
 
             var errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, consumerOptions);
@@ -260,11 +243,11 @@ namespace Steeltoe.Stream.Binder
                 }
                 else
                 {
-                    // this.logger.warn("The provided errorChannel '" + errorChannelName
-                    //        + "' is an instance of DirectChannel, "
-                    //        + "so no more subscribers could be added which may affect DLQ processing. "
-                    //        + "Resolution: Configure your own errorChannel as "
-                    //        + "an instance of PublishSubscribeChannel");
+                    _logger?.LogWarning("The provided errorChannel '" + errorChannelName
+                           + "' is an instance of DirectChannel, "
+                           + "so no more subscribers could be added which may affect DLQ processing. "
+                           + "Resolution: Configure your own errorChannel as "
+                           + "an instance of PublishSubscribeChannel");
                 }
             }
 
@@ -284,11 +267,11 @@ namespace Steeltoe.Stream.Binder
                 }
                 else
                 {
-                    // this.logger.warn("The provided errorChannel '" + errorChannelName
-                    //        + "' is an instance of DirectChannel, "
-                    //        + "so no more subscribers could be added and no error messages will be sent to global error channel. "
-                    //        + "Resolution: Configure your own errorChannel as "
-                    //        + "an instance of PublishSubscribeChannel");
+                    _logger?.LogWarning("The provided errorChannel '" + errorChannelName
+                           + "' is an instance of DirectChannel, "
+                           + "so no more subscribers could be added and no error messages will be sent to global error channel. "
+                           + "Resolution: Configure your own errorChannel as "
+                           + "an instance of PublishSubscribeChannel");
                 }
             }
 
@@ -345,6 +328,54 @@ namespace Steeltoe.Stream.Binder
             return GetErrorsBaseName(destination) + ".bridge";
         }
 
+        private static bool IsSubscribable(ISubscribableChannel errorChannel)
+        => errorChannel is PublishSubscribeChannel
+        || errorChannel is not Integration.Channel.AbstractSubscribableChannel
+        || (errorChannel is Integration.Channel.AbstractSubscribableChannel subscribableChannel && subscribableChannel.SubscriberCount == 0);
+
+        private static Dictionary<string, object> DoGetExtendedInfo(object destination, object properties)
+        {
+            var extendedInfo = new Dictionary<string, object>
+            {
+                { "bindingDestination", destination.ToString() }
+            };
+
+            object value;
+            if (properties is string strval)
+            {
+                value = JsonSerializer.Deserialize<Dictionary<string, object>>(strval);
+            }
+            else
+            {
+                value = properties;
+            }
+
+            extendedInfo.Add(properties.GetType().Name, value);
+            return extendedInfo;
+        }
+
+        private ISubscribableChannel GetErrorChannel(ILogger logger, string errorChannelName)
+        {
+            ISubscribableChannel errorChannel;
+            var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
+            if (errorChannelObject != null)
+            {
+                if (!(errorChannelObject is ISubscribableChannel))
+                {
+                    throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
+                }
+
+                errorChannel = (ISubscribableChannel)errorChannelObject;
+            }
+            else
+            {
+                errorChannel = new BinderErrorChannel(ApplicationContext, errorChannelName, logger);
+                ApplicationContext.Register(errorChannelName, errorChannel);
+            }
+
+            return errorChannel;
+        }
+
         private ISubscribableChannel RegisterErrorInfrastructure(IProducerDestination destination)
         {
             var errorChannelName = GetErrorsBaseName(destination);
@@ -365,7 +396,7 @@ namespace Steeltoe.Stream.Binder
                 ApplicationContext.Register(errorChannelName, errorChannel);
             }
 
-            var defaultErrorChannel = (IMessageChannel)ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            var defaultErrorChannel = ApplicationContext.GetService<IMessageChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
 
             if (defaultErrorChannel != null)
             {
@@ -379,16 +410,6 @@ namespace Steeltoe.Stream.Binder
             }
 
             return errorChannel;
-        }
-
-        private bool IsSubscribable(ISubscribableChannel errorChannel)
-        {
-            if (errorChannel is PublishSubscribeChannel)
-            {
-                return true;
-            }
-
-            return errorChannel is Integration.Channel.AbstractSubscribableChannel ? ((Integration.Channel.AbstractSubscribableChannel)errorChannel).SubscriberCount == 0 : true;
         }
 
         private void DestroyErrorInfrastructure(IProducerDestination destination)
@@ -436,34 +457,15 @@ namespace Steeltoe.Stream.Binder
                     DestroyBean(errorChannelName);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log ... context is shutting down.
+                _logger?.LogError(ex, ex.Message);
             }
         }
 
         private void DestroyBean(string beanName)
         {
             ApplicationContext.Deregister(beanName);
-        }
-
-        private Dictionary<string, object> DoGetExtendedInfo(object destination, object properties)
-        {
-            var extendedInfo = new Dictionary<string, object>();
-            extendedInfo.Add("bindingDestination", destination.ToString());
-
-            object value;
-            if (properties is string)
-            {
-                value = JsonSerializer.Deserialize<Dictionary<string, object>>((string)properties);
-            }
-            else
-            {
-                value = properties;
-            }
-
-            extendedInfo.Add(properties.GetType().Name, value);
-            return extendedInfo;
         }
 
         private void EnhanceMessageChannel(IMessageChannel inputChannel)
@@ -596,10 +598,10 @@ namespace Steeltoe.Stream.Binder
             public SendingHandler(IApplicationContext context, IMessageHandler handler, bool embedHeaders, string[] headersToEmbed, bool useNativeEncoding)
                 : base(context)
             {
-                this._handler = handler;
-                this._embedHeaders = embedHeaders;
+                _handler = handler;
+                _embedHeaders = embedHeaders;
                 _embeddedHeaders = headersToEmbed;
-                this._useNativeEncoding = useNativeEncoding;
+                _useNativeEncoding = useNativeEncoding;
             }
 
             public override void Initialize()
@@ -608,9 +610,9 @@ namespace Steeltoe.Stream.Binder
 
             public Task Start()
             {
-                if (_handler is ILifecycle)
+                if (_handler is ILifecycle lifecycle)
                 {
-                    return ((ILifecycle)_handler).Start();
+                    return lifecycle.Start();
                 }
 
                 return Task.CompletedTask;
@@ -618,9 +620,9 @@ namespace Steeltoe.Stream.Binder
 
             public Task Stop()
             {
-                if (_handler is ILifecycle)
+                if (_handler is ILifecycle lifecycle)
                 {
-                    return ((ILifecycle)_handler).Stop();
+                    return lifecycle.Stop();
                 }
 
                 return Task.CompletedTask;
@@ -630,7 +632,7 @@ namespace Steeltoe.Stream.Binder
             {
                 get
                 {
-                    return _handler is ILifecycle && ((ILifecycle)_handler).IsRunning;
+                    return _handler is ILifecycle lifecycle && lifecycle.IsRunning;
                 }
             }
 
@@ -682,15 +684,15 @@ namespace Steeltoe.Stream.Binder
                 IProducerDestination producerDestination)
                 : base(destination, target, lifecycle)
             {
-                this._binder = binder;
-                this._options = options;
-                this._producerDestination = producerDestination;
+                _binder = binder;
+                _options = options;
+                _producerDestination = producerDestination;
             }
 
             // @Override
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return _binder.DoGetExtendedInfo(Name, _options); }
+                get => DoGetExtendedInfo(Name, _options);
             }
 
             public override bool IsInput
@@ -729,14 +731,14 @@ namespace Steeltoe.Stream.Binder
                 IConsumerDestination consumerDestination)
                 : base(name, group, inputChannel, lifecycle)
             {
-                this._binder = binder;
-                this._options = options;
+                _binder = binder;
+                _options = options;
                 _destination = consumerDestination;
             }
 
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return _binder.DoGetExtendedInfo(_destination, _options); }
+                get => DoGetExtendedInfo(_destination, _options);
             }
 
             public override bool IsInput
@@ -779,14 +781,14 @@ namespace Steeltoe.Stream.Binder
                         IConsumerDestination consumerDestination)
                   : base(name, group, inboundBindTarget, lifecycle)
             {
-                this._binder = binder;
-                this._options = options;
+                _binder = binder;
+                _options = options;
                 _destination = consumerDestination;
             }
 
             public override IDictionary<string, object> ExtendedInfo
             {
-                get { return _binder.DoGetExtendedInfo(_destination, _options); }
+                get => DoGetExtendedInfo(_destination, _options);
             }
 
             public override bool IsInput
@@ -803,25 +805,25 @@ namespace Steeltoe.Stream.Binder
 
         protected class EmbeddedHeadersChannelInterceptor : AbstractChannelInterceptor
         {
-            protected readonly ILogger logger;
+            protected readonly ILogger _logger;
 
             public EmbeddedHeadersChannelInterceptor(ILogger logger = null)
             {
-                this.logger = logger;
+                _logger = logger;
             }
 
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {
-                if (message.Payload is byte[]
+                if (message.Payload is byte[] payloadBytes
                         && !message.Headers.ContainsKey(BinderHeaders.NATIVE_HEADERS_PRESENT)
-                        && EmbeddedHeaderUtils.MayHaveEmbeddedHeaders((byte[])message.Payload))
+                        && EmbeddedHeaderUtils.MayHaveEmbeddedHeaders(payloadBytes))
                 {
                     MessageValues messageValues;
                     try
                     {
                         messageValues = EmbeddedHeaderUtils.ExtractHeaders((IMessage<byte[]>)message, true);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
                         /*
                          * debug() rather then error() since we don't know for sure that it
@@ -829,7 +831,7 @@ namespace Steeltoe.Stream.Binder
                          * criteria in EmbeddedHeaderUtils.mayHaveEmbeddedHeaders().
                          */
 
-                        // this.logger?.LogDebug(EmbeddedHeaderUtils.DecodeExceptionMessage(message), e);
+                        _logger?.LogDebug(e, e.Message);
                         messageValues = new MessageValues(message);
                     }
 

@@ -23,6 +23,7 @@ using Xunit;
 
 namespace Steeltoe.Management.CloudFoundry.Test
 {
+    [Obsolete]
     public class CloudFoundryHostBuilderExtensionsTest
     {
         private static readonly Dictionary<string, string> ManagementSettings = new Dictionary<string, string>()

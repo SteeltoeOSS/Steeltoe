@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -32,42 +31,36 @@ namespace Steeltoe.Management.Endpoint
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddDbMigrationsActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddDbMigrationsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, DbMigrationsStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Environment actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddEnvActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddEnvActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, EnvStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Health actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Health actuator to the application
@@ -75,14 +68,12 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="contributors">Types that contribute to the overall health of the app</param>
         public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, Type[] contributors)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration, contributors);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Health actuator to the application
@@ -91,56 +82,48 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="aggregator">Custom health aggregator</param>
         /// <param name="contributors">Types that contribute to the overall health of the app</param>
         public static IWebHostBuilder AddHealthActuator(this IWebHostBuilder hostBuilder, IHealthAggregator aggregator, Type[] contributors)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHealthActuator(context.Configuration, aggregator, contributors);
-                    collection.AddTransient<IStartupFilter, HealthStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the HeapDump actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddHeapDumpActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHeapDumpActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HeapDumpStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Hypermedia actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddHypermediaActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddHypermediaActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, HypermediaStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Info actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddInfoActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, InfoStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Info actuator to the application
@@ -148,71 +131,61 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="contributors">Contributors to application information</param>
         public static IWebHostBuilder AddInfoActuator(this IWebHostBuilder hostBuilder, IInfoContributor[] contributors)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddInfoActuator(context.Configuration, contributors);
-                    collection.AddTransient<IStartupFilter, InfoStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Loggers actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddLoggersActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureLogging(builder => builder.AddDynamicConsole())
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddLoggersActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, LoggersStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Mappings actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddMappingsActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddMappingsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, MappingsStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Metrics actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddMetricsActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddMetricsActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, MetricsStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Refresh actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddRefreshActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddRefreshActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, RefreshStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the ThreadDump actuator to the application
@@ -220,14 +193,12 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
         public static IWebHostBuilder AddThreadDumpActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddThreadDumpActuator(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, ThreadDumpStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Trace actuator to the application
@@ -235,28 +206,24 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="hostBuilder">Your HostBuilder</param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
         public static IWebHostBuilder AddTraceActuator(this IWebHostBuilder hostBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddTraceActuator(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, TraceStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds the Cloud Foundry actuator to the application
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
         public static IWebHostBuilder AddCloudFoundryActuator(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddCloudFoundryActuator(context.Configuration);
-                    collection.AddTransient<IStartupFilter, CloudFoundryActuatorStartupFilter>();
+                    collection.ActivateActuatorEndpoints();
                 });
-        }
 
         /// <summary>
         /// Adds all Steeltoe Actuators to the application
@@ -265,14 +232,12 @@ namespace Steeltoe.Management.Endpoint
         /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
         /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
         public static IWebHostBuilder AddAllActuators(this IWebHostBuilder hostBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
-        {
-            return hostBuilder
+            => hostBuilder
                 .ConfigureLogging(builder => builder.AddDynamicConsole())
                 .ConfigureServices((context, collection) =>
                 {
                     collection.AddAllActuators(context.Configuration, mediaTypeVersion);
-                    collection.AddTransient<IStartupFilter, AllActuatorsStartupFilter>(provider => new AllActuatorsStartupFilter(configureEndpoints));
+                    collection.ActivateActuatorEndpoints(configureEndpoints);
                 });
-        }
     }
 }

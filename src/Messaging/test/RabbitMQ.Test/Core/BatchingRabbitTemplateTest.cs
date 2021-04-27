@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -187,7 +188,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var config = new ConfigurationBuilder().Build();
             var received = new List<IMessage>();
             var latch = new CountdownEvent(2);
-            var container = new DirectMessageListenerContainer(new GenericApplicationContext(provider, config), connectionFactory);
+            var context = new GenericApplicationContext(provider, config);
+            context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+            var container = new DirectMessageListenerContainer(context, connectionFactory);
             container.SetQueueNames(ROUTE);
             var lastInBatch = new List<bool>();
             var batchSize = new AtomicInteger();
@@ -230,7 +233,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var received = new List<IMessage>();
             var count = 100000;
             var latch = new CountdownEvent(count);
-            var container = new DirectMessageListenerContainer(new GenericApplicationContext(provider, config), connectionFactory);
+            var context = new GenericApplicationContext(provider, config);
+            context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+            var container = new DirectMessageListenerContainer(context, connectionFactory);
             container.SetQueueNames(ROUTE);
             var lastInBatch = new List<bool>();
             var batchSize = new AtomicInteger();
@@ -272,7 +277,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             var provider = new ServiceCollection().BuildServiceProvider();
             var config = new ConfigurationBuilder().Build();
-            var container = new DirectMessageListenerContainer(new GenericApplicationContext(provider, config), connectionFactory);
+            var context = new GenericApplicationContext(provider, config);
+            context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+            var container = new DirectMessageListenerContainer(context, connectionFactory);
             container.SetQueueNames(ROUTE);
             var listener = new EmptyListener();
             container.MessageListener = listener;

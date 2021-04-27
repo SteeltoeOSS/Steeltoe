@@ -112,6 +112,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
             ServiceName = DEFAULT_SERVICE_NAME;
         }
 
+        public CachingConnectionFactory(string hostNameArg, int port, RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+           : base(connectionFactory, loggerFactory)
+        {
+            var hostname = hostNameArg;
+            if (string.IsNullOrEmpty(hostname))
+            {
+                hostname = GetDefaultHostName();
+            }
+
+            _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+            Host = hostname;
+            Port = port;
+            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+            PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
+            InitCacheWaterMarks();
+            ServiceName = DEFAULT_SERVICE_NAME;
+        }
+
         public CachingConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
             : this(uri, CachingMode.CHANNEL, loggerFactory)
         {

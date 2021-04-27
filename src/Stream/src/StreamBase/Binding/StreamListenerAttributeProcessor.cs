@@ -29,6 +29,7 @@ namespace Steeltoe.Stream.Binding
         private readonly List<IStreamListenerSetupMethodOrchestrator> _methodOrchestrators;
         private readonly List<IStreamListenerMethod> _streamListenerMethods;
 
+#pragma warning disable S107 // Methods should not have too many parameters
         public StreamListenerAttributeProcessor(
             IApplicationContext context,
             IOptionsMonitor<SpringIntegrationOptions> springIntegrationOptionsMonitor,
@@ -38,6 +39,7 @@ namespace Steeltoe.Stream.Binding
             IMessageHandlerMethodFactory messageHandlerMethodFactory,
             IEnumerable<IStreamListenerSetupMethodOrchestrator> methodOrchestrators,
             IEnumerable<IStreamListenerMethod> methods)
+#pragma warning restore S107 // Methods should not have too many parameters
         {
             _context = context;
             _springIntegrationOptionsMonitor = springIntegrationOptionsMonitor;
@@ -56,7 +58,7 @@ namespace Steeltoe.Stream.Binding
             }
         }
 
-        public void AfterSingletonsInstantiated()
+        public void Initialize()
         {
             if (_streamListenerMethods.Count <= 0)
             {
@@ -131,8 +133,7 @@ namespace Steeltoe.Stream.Binding
                 //        handler.getClass().getSimpleName() + handler.hashCode(), handler);
                 // this.applicationContext
                 //    .getBean(mappedBindingEntry.getKey(), typeof(ISubscribableChannel))
-                var channel = BindingHelpers.GetBindable<IMessageChannel>(_context, mappedBindingEntry.Key) as ISubscribableChannel;
-                if (channel == null)
+                if (BindingHelpers.GetBindable<IMessageChannel>(_context, mappedBindingEntry.Key) is not ISubscribableChannel channel)
                 {
                     throw new InvalidOperationException("Unable to locate ISubscribableChannel with ServiceName: " + mappedBindingEntry.Key);
                 }
@@ -159,7 +160,7 @@ namespace Steeltoe.Stream.Binding
             return attribute;
         }
 
-        private string ResolveExpressionAsString(string value)
+        private static string ResolveExpressionAsString(string value)
         {
             var resolvedValue = value;
 
@@ -191,7 +192,7 @@ namespace Steeltoe.Stream.Binding
             var beanType = listenerMethod.ImplementationType;
 
             var orchestrators = _methodOrchestrators.Select((o) => o.Supports(method) ? o : null);
-            if (orchestrators.Count() == 0 || orchestrators.Count() > 1)
+            if (orchestrators.Count() != 1)
             {
                 throw new InvalidOperationException("Unable to determine IStreamListenerSetupMethodOrchestrator to utilize");
             }

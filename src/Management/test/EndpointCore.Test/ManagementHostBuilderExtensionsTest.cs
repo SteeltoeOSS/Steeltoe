@@ -53,14 +53,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<DbMigrationsStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddDbMigrationsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
@@ -84,14 +84,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<EnvStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddEnvActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddEnvActuator().StartAsync();
@@ -115,7 +115,7 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
@@ -149,14 +149,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<HealthStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHealthActuator().StartAsync();
@@ -170,7 +170,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddHealthActuator_IHostBuilder_IStartupFilterFireRegistersAvailabilityEvents()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // start the server, get a client
             var host = await hostBuilder.AddHealthActuator().StartAsync();
@@ -207,7 +207,7 @@ namespace Steeltoe.Management.Endpoint.Test
                 // Assert
                 Assert.Single(managementEndpoint);
                 Assert.NotNull(filter);
-                Assert.IsType<HeapDumpStartupFilter>(filter);
+                Assert.IsType<AllActuatorsStartupFilter>(filter);
             }
         }
 
@@ -217,7 +217,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+                var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
@@ -242,14 +242,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<HypermediaStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddHypermediaActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddHypermediaActuator().StartAsync();
@@ -273,7 +273,7 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<InfoStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
@@ -290,14 +290,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<InfoStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddInfoActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddInfoActuator().StartAsync();
@@ -321,14 +321,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<LoggersStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddLoggersActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
@@ -343,7 +343,7 @@ namespace Steeltoe.Management.Endpoint.Test
         {
             // Add Serilog + DynamicConsole = runs OK
             // Arrange
-            var hostBuilder = new HostBuilder().AddDynamicSerilog().AddDynamicLogging().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().AddDynamicSerilog().AddDynamicLogging().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddLoggersActuator().StartAsync();
@@ -354,7 +354,7 @@ namespace Steeltoe.Management.Endpoint.Test
 
             // Add DynamicConsole + Serilog = throws exception
             // Arrange
-            hostBuilder = new HostBuilder().AddDynamicLogging().AddDynamicSerilog().ConfigureWebHost(testServerWithRouting);
+            hostBuilder = new HostBuilder().AddDynamicLogging().AddDynamicSerilog().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () => await hostBuilder.AddLoggersActuator().StartAsync());
@@ -377,14 +377,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<MappingsStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddMappingsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMappingsActuator().StartAsync();
@@ -408,14 +408,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<MetricsStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddMetricsActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddMetricsActuator().StartAsync();
@@ -439,14 +439,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<RefreshStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddRefreshActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddRefreshActuator().StartAsync();
@@ -472,7 +472,7 @@ namespace Steeltoe.Management.Endpoint.Test
                 // Assert
                 Assert.Single(managementEndpoint);
                 Assert.NotNull(filter);
-                Assert.IsType<ThreadDumpStartupFilter>(filter);
+                Assert.IsType<AllActuatorsStartupFilter>(filter);
             }
         }
 
@@ -482,7 +482,7 @@ namespace Steeltoe.Management.Endpoint.Test
             if (Platform.IsWindows)
             {
                 // Arrange
-                var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+                var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
                 // Act
                 var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
@@ -507,14 +507,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<TraceStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddTraceActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddTraceActuator().StartAsync();
@@ -538,14 +538,14 @@ namespace Steeltoe.Management.Endpoint.Test
             // Assert
             Assert.Single(managementEndpoint);
             Assert.NotNull(filter);
-            Assert.IsType<CloudFoundryActuatorStartupFilter>(filter);
+            Assert.IsType<AllActuatorsStartupFilter>(filter);
         }
 
         [Fact]
         public async Task AddAllActuators_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddAllActuators().StartAsync();
@@ -563,7 +563,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddAllActuatorsWithConventions_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithSecureRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting);
 
             // Act
             var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
@@ -598,7 +598,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public async Task AddCloudFoundryActuator_IHostBuilder_IStartupFilterFires()
         {
             // Arrange
-            var hostBuilder = new HostBuilder().ConfigureWebHost(testServerWithRouting);
+            var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
             // Act
             var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
@@ -607,8 +607,60 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        private Action<IWebHostBuilder> testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
-        private Action<IWebHostBuilder> testServerWithSecureRouting =
+        [Fact]
+        public async Task AddSeveralActuators_IHostBuilder_NoConflict()
+        {
+            // Arrange
+            var hostBuilder =
+                new HostBuilder()
+                    .ConfigureWebHost(_testServerWithSecureRouting)
+                    .AddHypermediaActuator()
+                    .AddInfoActuator()
+                    .AddHealthActuator()
+                    .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
+
+            // Act
+            var host = await hostBuilder.StartAsync();
+
+            // Assert
+            Assert.Single(host.Services.GetServices<IStartupFilter>());
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddSeveralActuators_IHostBuilder_PrefersEndpointConfiguration()
+        {
+            var hostBuilder =
+                new HostBuilder()
+                    .ConfigureWebHost(_testServerWithSecureRouting)
+                    .ConfigureServices(services => services.ActivateActuatorEndpoints(ep => ep.RequireAuthorization("TestAuth")))
+
+                    // each of these will try to add their own AllActuatorsStartupFilter but should no-op in favor of the above
+                    .AddHypermediaActuator()
+                    .AddInfoActuator()
+                    .AddHealthActuator();
+
+            // Act
+            var host = await hostBuilder.StartAsync();
+
+            // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
+            // Assert
+            Assert.Single(host.Services.GetServices<IStartupFilter>());
+            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        private readonly Action<IWebHostBuilder> _testServerWithRouting = builder => builder.UseTestServer().ConfigureServices(s => s.AddRouting()).Configure(a => a.UseRouting());
+        private readonly Action<IWebHostBuilder> _testServerWithSecureRouting =
             builder => builder.UseTestServer()
             .ConfigureServices(s =>
             {

@@ -23,18 +23,20 @@ namespace Steeltoe.Stream.Config
             : base(conversionService, compositeMessageConverter)
         {
             MessageConverter = compositeMessageConverter;
-            var resolvers = new List<IHandlerMethodArgumentResolver>();
-            resolvers.Add(new SmartPayloadArgumentResolver(compositeMessageConverter));
-            resolvers.Add(new SmartMessageMethodArgumentResolver(compositeMessageConverter));
-            resolvers.Add(new HeaderMethodArgumentResolver(conversionService));
-            resolvers.Add(new HeadersMethodArgumentResolver());
+            var resolvers = new List<IHandlerMethodArgumentResolver>
+            {
+                new SmartPayloadArgumentResolver(compositeMessageConverter),
+                new SmartMessageMethodArgumentResolver(compositeMessageConverter),
+                new HeaderMethodArgumentResolver(conversionService),
+                new HeadersMethodArgumentResolver(),
 
-            resolvers.Add(new NullAwarePayloadArgumentResolver(compositeMessageConverter));
-            resolvers.Add(new PayloadExpressionArgumentResolver(applicationContext));
+                new NullAwarePayloadArgumentResolver(compositeMessageConverter),
+                new PayloadExpressionArgumentResolver(applicationContext),
 
-            resolvers.Add(new PayloadsArgumentResolver(applicationContext));
+                new PayloadsArgumentResolver(applicationContext),
 
-            resolvers.Add(new DictionaryArgumentResolver(applicationContext));
+                new DictionaryArgumentResolver(applicationContext)
+            };
 
             SetArgumentResolvers(resolvers);
         }

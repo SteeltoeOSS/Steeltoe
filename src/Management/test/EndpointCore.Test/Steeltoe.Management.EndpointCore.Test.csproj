@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogBase\Steeltoe.Extensions.Logging.DynamicSerilogBase.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" />
     <ProjectReference Include="..\..\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />

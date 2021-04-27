@@ -1285,7 +1285,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             ExpectFailNotAssignable(parser, ctx, "--({'a':1,'b':2,'c':3})");
             ExpectFailSetValueNotSupported(parser, ctx, "({'a':1,'b':2,'c':3})=({'a':1,'b':2,'c':3})");
 
-            // BeanReference
+            // ServiceReference
             ctx.ServiceResolver = new MyServiceResolver();
             ExpectFailNotAssignable(parser, ctx, "@foo++");
             ExpectFailNotAssignable(parser, ctx, "--@foo");

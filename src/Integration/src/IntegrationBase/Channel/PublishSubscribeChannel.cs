@@ -7,7 +7,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
-using System;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Channel

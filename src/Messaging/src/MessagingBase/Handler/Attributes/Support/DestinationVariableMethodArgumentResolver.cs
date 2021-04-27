@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
         public const string DESTINATION_TEMPLATE_VARIABLES_HEADER = nameof(DestinationVariableMethodArgumentResolver) + ".templateVariables";
 
         public DestinationVariableMethodArgumentResolver(IConversionService conversionService)
-            : base(conversionService)
+            : base(conversionService, null)
         {
         }
 

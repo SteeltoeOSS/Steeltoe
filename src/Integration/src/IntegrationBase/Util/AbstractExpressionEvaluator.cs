@@ -21,7 +21,7 @@ namespace Steeltoe.Integration.Util
 
         private IIntegrationServices _integrationServices;
 
-        public IExpressionParser ExpressionParser { get; } = new SpelExpressionParser();
+        public static IExpressionParser ExpressionParser { get; } = new SpelExpressionParser();
 
         public IEvaluationContext EvaluationContext
         {
@@ -72,7 +72,7 @@ namespace Steeltoe.Integration.Util
             }
         }
 
-        public ITypeConverter TypeConverter { get; set; } = new BeanFactoryTypeConverter();
+        public ITypeConverter TypeConverter { get; set; } = new ServiceFactoryTypeConverter();
 
         public IApplicationContext ApplicationContext { get; }
 

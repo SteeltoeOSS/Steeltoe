@@ -14,7 +14,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 namespace Steeltoe.Management.Endpoint.Health
 {
     // Note: this is not used by EndpointCore (ASP.NET Core apps) -- see also HealthEndpointCore.cs
-    public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurityContext>
+    public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurityContext>, IHealthEndpoint
     {
         private readonly IHealthAggregator _aggregator;
         private readonly IList<IHealthContributor> _contributors;

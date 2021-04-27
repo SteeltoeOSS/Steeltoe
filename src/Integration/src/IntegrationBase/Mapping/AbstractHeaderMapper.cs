@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using System;
@@ -17,6 +18,8 @@ namespace Steeltoe.Integration.Mapping
 
         private readonly List<string> _transient_header_names = new List<string>() { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
 
+        private readonly ILogger _logger;
+
         public string StandardHeaderPrefix { get; set; }
 
         public List<string> RequestHeaderNames { get; set; }
@@ -27,11 +30,13 @@ namespace Steeltoe.Integration.Mapping
 
         public IHeaderMatcher ReplyHeaderMatcher { get; set; }
 
-        protected AbstractHeaderMapper(string standardHeaderPrefix, List<string> requestHeaderNames, List<string> replyHeaderNames)
+        protected AbstractHeaderMapper(string standardHeaderPrefix, List<string> requestHeaderNames, List<string> replyHeaderNames, ILogger logger)
         {
             StandardHeaderPrefix = standardHeaderPrefix;
             RequestHeaderNames = requestHeaderNames;
             ReplyHeaderNames = replyHeaderNames;
+            _logger = logger;
+
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
             RequestHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, RequestHeaderNames);
             ReplyHeaderMatcher = CreateDefaultHeaderMatcher(StandardHeaderPrefix, ReplyHeaderNames);
@@ -106,12 +111,12 @@ namespace Steeltoe.Integration.Mapping
                     var negate = false;
                     if (pattern.StartsWith("!"))
                     {
-                        thePattern = pattern.Substring(1);
+                        thePattern = pattern[1..];
                         negate = true;
                     }
                     else if (pattern.StartsWith("\\!"))
                     {
-                        thePattern = pattern.Substring(1);
+                        thePattern = pattern[1..];
                     }
 
                     if (negate)
@@ -137,7 +142,7 @@ namespace Steeltoe.Integration.Mapping
                 return default;
             }
 
-            if (!type.IsAssignableFrom(value.GetType()))
+            if (!type.IsInstanceOfType(value))
             {
                 return default;
             }
@@ -170,12 +175,14 @@ namespace Steeltoe.Integration.Mapping
 
         protected abstract void PopulateUserDefinedHeader(string headerName, object headerValue, T target);
 
+        private static bool IsMessageChannel(object headerValue) => headerValue is IMessageChannel;
+
         private void FromHeaders(IMessageHeaders headers, T target, IHeaderMatcher headerMatcher)
         {
             try
             {
                 var subset = new Dictionary<string, object>();
-                foreach (var entry in headers)
+                foreach (var entry in (IDictionary<string, object>)headers)
                 {
                     var headerName = entry.Key;
                     if (ShouldMapHeader(headerName, headerMatcher))
@@ -187,9 +194,9 @@ namespace Steeltoe.Integration.Mapping
                 PopulateStandardHeaders(headers, subset, target);
                 PopulateUserDefinedHeaders(subset, target);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // Log
+                 _logger?.LogError(ex, ex.Message);
             }
         }
 
@@ -199,7 +206,7 @@ namespace Steeltoe.Integration.Mapping
             {
                 var headerName = entry.Key;
                 var value = entry.Value;
-                if (value != null && !IsMessageChannel(headerName, value))
+                if (value != null && !IsMessageChannel(value))
                 {
                     try
                     {
@@ -209,22 +216,12 @@ namespace Steeltoe.Integration.Mapping
                             PopulateUserDefinedHeader(key, value, target);
                         }
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
-                        // Log
+                        _logger?.LogError(ex, ex.Message);
                     }
                 }
             }
-        }
-
-        private bool IsMessageChannel(string headerName, object headerValue)
-        {
-            if (headerValue is IMessageChannel)
-            {
-                return true;
-            }
-
-            return false;
         }
 
         private Dictionary<string, object> ToHeaders(T source, IHeaderMatcher headerMatcher)

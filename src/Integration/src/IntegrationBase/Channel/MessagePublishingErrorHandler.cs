@@ -60,7 +60,7 @@ namespace Steeltoe.Integration.Channel
 
             if (!sent)
             {
-                var failedMessage = (exception is MessagingException) ? ((MessagingException)exception).FailedMessage : null;
+                var failedMessage = (exception is MessagingException ex) ? ex.FailedMessage : null;
                 if (failedMessage != null)
                 {
                     _logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
@@ -82,7 +82,7 @@ namespace Steeltoe.Integration.Channel
                 actualThrowable = exception.InnerException;
             }
 
-            var failedMessage = (actualThrowable is MessagingException) ? ((MessagingException)actualThrowable).FailedMessage : null;
+            var failedMessage = (actualThrowable is MessagingException ex) ? ex.FailedMessage : null;
             if (DefaultErrorChannel == null && ChannelResolver != null)
             {
                 Channel = ChannelResolver.ResolveDestination(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
@@ -94,12 +94,12 @@ namespace Steeltoe.Integration.Channel
             }
 
             var errorChannelHeader = failedMessage.Headers.ErrorChannel;
-            if (errorChannelHeader is IMessageChannel)
+            if (errorChannelHeader is IMessageChannel channel)
             {
-                return (IMessageChannel)errorChannelHeader;
+                return channel;
             }
 
-            if (!(errorChannelHeader is string))
+            if (errorChannelHeader is not string)
             {
                 throw new ArgumentException("Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [" + errorChannelHeader.GetType() + "]");
             }
@@ -118,8 +118,8 @@ namespace Steeltoe.Integration.Channel
         {
             public ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes)
             {
-                return payload is MessagingExceptionWrapperException
-                    ? new ErrorMessage(payload.InnerException, ((MessagingExceptionWrapperException)payload).FailedMessage)
+                return payload is MessagingExceptionWrapperException exception
+                    ? new ErrorMessage(payload.InnerException, exception.FailedMessage)
                     : new ErrorMessage(payload);
             }
         }

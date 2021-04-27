@@ -8,6 +8,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class DbMigrationsStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)

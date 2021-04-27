@@ -353,8 +353,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             {
                 if (nodes == null)
                 {
-                    nodes = new List<SpelNode>(4);
-                    nodes.Add(start);
+                    nodes = new List<SpelNode>(4)
+                    {
+                        start
+                    };
                 }
 
                 nodes.Add(node);
@@ -510,7 +512,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             {
                 return Pop();
             }
-            else if (MaybeEatBeanReference())
+            else if (MaybeEatServiceReference())
             {
                 return Pop();
             }
@@ -528,41 +530,41 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             }
         }
 
-        private bool MaybeEatBeanReference()
+        private bool MaybeEatServiceReference()
         {
-            if (PeekToken(TokenKind.BEAN_REF) || PeekToken(TokenKind.FACTORY_BEAN_REF))
+            if (PeekToken(TokenKind.SERVICE_REF) || PeekToken(TokenKind.FACTORY_SERVICE_REF))
             {
-                var beanRefToken = TakeToken();
-                Token beanNameToken = null;
-                string beanName = null;
+                var serviceRefToken = TakeToken();
+                Token serviceNameToken = null;
+                string serviceName = null;
                 if (PeekToken(TokenKind.IDENTIFIER))
                 {
-                    beanNameToken = EatToken(TokenKind.IDENTIFIER);
-                    beanName = beanNameToken.StringValue;
+                    serviceNameToken = EatToken(TokenKind.IDENTIFIER);
+                    serviceName = serviceNameToken.StringValue;
                 }
                 else if (PeekToken(TokenKind.LITERAL_STRING))
                 {
-                    beanNameToken = EatToken(TokenKind.LITERAL_STRING);
-                    beanName = beanNameToken.StringValue;
-                    beanName = beanName.Substring(1, beanName.Length - 1 - 1);
+                    serviceNameToken = EatToken(TokenKind.LITERAL_STRING);
+                    serviceName = serviceNameToken.StringValue;
+                    serviceName = serviceName.Substring(1, serviceName.Length - 1 - 1);
                 }
                 else
                 {
-                    throw InternalException(beanRefToken.StartPos, SpelMessage.INVALID_BEAN_REFERENCE);
+                    throw InternalException(serviceRefToken.StartPos, SpelMessage.INVALID_SERVICE_REFERENCE);
                 }
 
-                ServiceReference beanReference;
-                if (beanRefToken.Kind == TokenKind.FACTORY_BEAN_REF)
+                ServiceReference serviceReference;
+                if (serviceRefToken.Kind == TokenKind.FACTORY_SERVICE_REF)
                 {
-                    var beanNameString = new string(TokenKind.FACTORY_BEAN_REF.TokenChars) + beanName;
-                    beanReference = new ServiceReference(beanRefToken.StartPos, beanNameToken.EndPos, beanNameString);
+                    var serviceNameString = new string(TokenKind.FACTORY_SERVICE_REF.TokenChars) + serviceName;
+                    serviceReference = new ServiceReference(serviceRefToken.StartPos, serviceNameToken.EndPos, serviceNameString);
                 }
                 else
                 {
-                    beanReference = new ServiceReference(beanNameToken.StartPos, beanNameToken.EndPos, beanName);
+                    serviceReference = new ServiceReference(serviceNameToken.StartPos, serviceNameToken.EndPos, serviceName);
                 }
 
-                ConstructedNodes.Push(beanReference);
+                ConstructedNodes.Push(serviceReference);
                 return true;
             }
 
@@ -896,8 +898,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 }
 
                 var possiblyQualifiedConstructorName = EatPossiblyQualifiedId();
-                var nodes = new List<SpelNode>();
-                nodes.Add(possiblyQualifiedConstructorName);
+                var nodes = new List<SpelNode>
+                {
+                    possiblyQualifiedConstructorName
+                };
                 if (PeekToken(TokenKind.LSQUARE))
                 {
                     // array initializer

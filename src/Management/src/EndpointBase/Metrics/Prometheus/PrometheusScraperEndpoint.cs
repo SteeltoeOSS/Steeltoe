@@ -8,7 +8,7 @@ using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.Pr
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class PrometheusScraperEndpoint : AbstractEndpoint<string>
+    public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
         private readonly PrometheusExporter _exporter;
         private string _cachedMetrics;

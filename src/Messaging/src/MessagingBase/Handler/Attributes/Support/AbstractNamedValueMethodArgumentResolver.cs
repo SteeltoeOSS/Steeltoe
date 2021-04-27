@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
+using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging.Handler.Invocation;
 using System;
 using System.Collections.Concurrent;
@@ -13,11 +15,15 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
     public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
         private readonly IConversionService _conversionService;
+        private readonly IApplicationContext _applicationContext;
+        private readonly ServiceExpressionContext _expressionContext;
         private readonly ConcurrentDictionary<ParameterInfo, NamedValueInfo> _namedValueInfoCache = new ConcurrentDictionary<ParameterInfo, NamedValueInfo>();
 
-        protected AbstractNamedValueMethodArgumentResolver(IConversionService conversionService)
+        protected AbstractNamedValueMethodArgumentResolver(IConversionService conversionService, IApplicationContext context)
         {
             _conversionService = conversionService;
+            _applicationContext = context;
+            _expressionContext = context != null ? new ServiceExpressionContext(context) : null;
         }
 
         public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
@@ -130,19 +136,19 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         private object ResolveEmbeddedValuesAndExpressions(string value)
         {
-            // if (this.configurableBeanFactory == null || this.expressionContext == null)
-            // {
-            //    return value;
-            // }
+            if (_applicationContext == null || _expressionContext == null)
+            {
+                return value;
+            }
 
-            // String placeholdersResolved = this.configurableBeanFactory.resolveEmbeddedValue(value);
-            // BeanExpressionResolver exprResolver = this.configurableBeanFactory.getBeanExpressionResolver();
-            // if (exprResolver == null)
-            // {
-            //    return value;
-            // }
-            // return exprResolver.evaluate(placeholdersResolved, this.expressionContext);
-            return value;
+            var placeholdersResolved = _applicationContext.ResolveEmbeddedValue(value);
+            var exprResolver = _applicationContext.ServiceExpressionResolver;
+            if (exprResolver == null)
+            {
+                return value;
+            }
+
+            return exprResolver.Evaluate(placeholdersResolved, _expressionContext);
         }
 
         protected class NamedValueInfo

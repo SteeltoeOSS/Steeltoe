@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
@@ -19,12 +19,20 @@ namespace Steeltoe.Stream.Binder
         private const string GROUP_INDEX_DELIMITER = ".";
 
         private readonly IApplicationContext _context;
+        private readonly ILogger _logger;
+
         private IEvaluationContext _evaluationContext;
         private IExpressionParser _expressionParser;
 
-        protected AbstractBinder(IApplicationContext context)
+        protected AbstractBinder(IApplicationContext context, ILogger logger)
         {
             _context = context;
+            _logger = logger;
+        }
+
+        public virtual IApplicationContext ApplicationContext
+        {
+            get { return _context; }
         }
 
         public static string ApplyPrefix(string prefix, string name)
@@ -76,7 +84,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (_evaluationContext == null)
                 {
-                    _evaluationContext = _context.GetService<IEvaluationContext>();  // This is not right, change when expressions integrated!
+                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
                 }
 
                 return _evaluationContext;
@@ -106,11 +114,6 @@ namespace Steeltoe.Stream.Binder
             }
         }
 
-        protected virtual IApplicationContext ApplicationContext
-        {
-            get { return _context; }
-        }
-
         protected virtual string GroupedName(string name, string group)
         {
             return name + GROUP_INDEX_DELIMITER
@@ -119,7 +122,7 @@ namespace Steeltoe.Stream.Binder
 
         protected RetryTemplate BuildRetryTemplate(IConsumerOptions options)
         {
-            return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier);
+            return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
         }
 
         protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)
@@ -129,7 +132,7 @@ namespace Steeltoe.Stream.Binder
             {
                 if (exception[0] == '!')
                 {
-                    var type = Type.GetType(exception.Substring(1), true);
+                    var type = Type.GetType(exception[1..], true);
                     dict.Add(type, false);
                 }
                 else

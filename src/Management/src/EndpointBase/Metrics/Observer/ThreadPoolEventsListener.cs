@@ -91,7 +91,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             if (eventSource.Name == EventSourceName)
             {
-                EnableEvents(eventSource, EventLevel.Verbose, ThreadPoolEvents);
+                SafelyEnableEvents(eventSource, EventLevel.Verbose, ThreadPoolEvents);
             }
         }
 

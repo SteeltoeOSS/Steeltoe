@@ -34,7 +34,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
             var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
             DoSend(provider, message);
 
@@ -51,7 +51,7 @@ namespace Steeltoe.Stream.Tck
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
             var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.AfterSingletonsInstantiated();
+            streamProcessor.Initialize();
             var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
             DoSend(provider, message);
 

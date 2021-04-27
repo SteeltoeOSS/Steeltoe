@@ -50,7 +50,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             _logger = logger;
             ApplicationContext = applicationContext;
             ConnectionFactory = connectionFactory;
-            RabbitTemplate = new RabbitTemplate(connectionFactory);
+            RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
             DoInitialize();
         }
 
@@ -353,6 +353,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     RetryTemplate.Execute(
                         c =>
                         {
+                            _logger?.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
                             Initialize();
                         });
                 }
@@ -743,7 +744,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 if (RetryTemplate == null && !RetryDisabled)
                 {
-                    RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER);
+                    RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DECLARE_MAX_ATTEMPTS, true, DECLARE_INITIAL_RETRY_INTERVAL, DECLARE_MAX_RETRY_INTERVAL, DECLARE_RETRY_MULTIPLIER, _logger);
                 }
 
                 if (ConnectionFactory is CachingConnectionFactory && ((CachingConnectionFactory)ConnectionFactory).CacheMode == CachingMode.CONNECTION)

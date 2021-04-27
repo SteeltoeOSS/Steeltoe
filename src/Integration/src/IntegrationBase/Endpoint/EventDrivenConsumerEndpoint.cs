@@ -32,13 +32,13 @@ namespace Steeltoe.Integration.Endpoint
         {
             get
             {
-                if (_handler is IMessageProducer)
+                if (_handler is IMessageProducer producer)
                 {
-                    return ((IMessageProducer)_handler).OutputChannel;
+                    return producer.OutputChannel;
                 }
-                else if (_handler is IMessageRouter)
+                else if (_handler is IMessageRouter router)
                 {
-                    return ((IMessageRouter)_handler).DefaultOutputChannel;
+                    return router.DefaultOutputChannel;
                 }
                 else
                 {
@@ -50,9 +50,9 @@ namespace Steeltoe.Integration.Endpoint
         protected override Task DoStart()
         {
             _inputChannel.Subscribe(_handler);
-            if (_handler is ILifecycle)
+            if (_handler is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_handler).Start();
+                return lifecycle.Start();
             }
 
             return Task.CompletedTask;
@@ -61,9 +61,9 @@ namespace Steeltoe.Integration.Endpoint
         protected override Task DoStop()
         {
             _inputChannel.Unsubscribe(_handler);
-            if (_handler is ILifecycle)
+            if (_handler is ILifecycle lifecycle)
             {
-                return ((ILifecycle)_handler).Stop();
+                return lifecycle.Stop();
             }
 
             return Task.CompletedTask;
