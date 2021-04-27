@@ -7,6 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Integration.Extensions;
@@ -122,6 +125,9 @@ namespace Steeltoe.Stream.Extensions
             services.AddStreamServices(configuration);
             services.AddSourceStreamBinding();
             services.AddSinkStreamBinding();
+
+            services.AddSingleton<IExpressionParser, SpelExpressionParser>();
+            services.AddSingleton<IEvaluationContext, StandardEvaluationContext>();
 
             services.AddEnableBinding<T>();
         }

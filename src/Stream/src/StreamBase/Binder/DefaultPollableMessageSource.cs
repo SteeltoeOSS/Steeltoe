@@ -211,6 +211,12 @@ namespace Steeltoe.Stream.Binder
         private IMessage Receive(Type type)
         {
             var result = Source.Receive();
+
+            if (result == null)
+            {
+                return result;
+            }
+
             var message = ApplyInterceptors(result);
 
             if (message != null && type != null && _messageConverter != null)
