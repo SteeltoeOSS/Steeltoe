@@ -6,45 +6,51 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder
 {
-    public class DefaultBinderTypeRegistryTest
+    public class DefaultBinderTypeRegistryTest : AbstractTest
     {
-        [Fact(Skip = "TypeRegistryTests")]
+        [Fact]
         public void LoadAndCheckAssembly_WithValidPath_ReturnsBinderType()
         {
-            var context = new DefaultBinderTypeRegistry.SearchingAssemblyLoadContext();
-            var path = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
-            var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, path);
-            Assert.Equal(path, result.AssemblyPath);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
+            var binderDir = GetSearchDirectories("TestBinder")[0];
+            var paths = BuildPaths(binderDir);
+
+            var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
+            var binderAssembly = binderDir + Path.DirectorySeparatorChar + "Steeltoe.Stream.TestBinder.dll";
+            var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
+            Assert.Equal(binderAssembly, result.AssemblyPath);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result.ConfigureClass);
             Assert.Equal("testbinder", result.Name);
-            context.Unload();
+            context.Dispose();
         }
 
-        [Fact(Skip = "TypeRegistryTests")]
-        public void LoadAndCheckAssembly_WithInValidPath_ReturnsBinderType()
+        [Fact]
+        public void LoadAndCheckAssembly_WithInValidPath_DoesNotReturnsBinderType()
         {
-            var context = new DefaultBinderTypeRegistry.SearchingAssemblyLoadContext();
-            var path = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Steeltoe.Stream.FooBar.dll";
-            var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, path);
+            var paths = BuildPaths(null);
+            var context = new MetadataLoadContext(new PathAssemblyResolver(paths));
+            var binderAssembly = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "Steeltoe.Stream.FooBar.dll";
+            var result = DefaultBinderTypeRegistry.LoadAndCheckAssembly(context, binderAssembly);
             Assert.Null(result);
-            context.Unload();
+            context.Dispose();
         }
 
-        [Fact(Skip = "TypeRegistryTests")]
+        [Fact]
         public void AddBinderTypes_WithValidDirectory_ReturnsBinder()
         {
+            var binderDir = GetSearchDirectories("TestBinder")[0];
             var result = new Dictionary<string, IBinderType>();
-            DefaultBinderTypeRegistry.AddBinderTypes(Environment.CurrentDirectory, result);
+            DefaultBinderTypeRegistry.AddBinderTypes(binderDir, result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
-        [Fact(Skip = "TypeRegistryTests")]
-        public void AddBinderTypes_WithInValidDirectory_ReturnsBinder()
+        [Fact]
+        public void AddBinderTypes_WithInValidDirectory_ReturnsNoBinders()
         {
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(Path.GetTempPath(), result);
@@ -57,19 +63,19 @@ namespace Steeltoe.Stream.Binder
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+ Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
-        [Fact(Skip = "TypeRegistryTests")]
+        [Fact]
         public void ShouldCheckFile_ReturnsExpected()
         {
-            var fileInfo = new FileInfo("Steeltoe.Stream.Base.dll");
+            var fileInfo = new FileInfo("Steeltoe.Stream.StreamBase.dll");
             Assert.False(DefaultBinderTypeRegistry.ShouldCheckFile(fileInfo));
             fileInfo = new FileInfo("foo.bar");
             Assert.True(DefaultBinderTypeRegistry.ShouldCheckFile(fileInfo));
         }
 
-        [Fact(Skip = "TypeRegistryTests")]
+        [Fact]
         public void CheckAssembly_ReturnsExpected()
         {
             Assert.Null(DefaultBinderTypeRegistry.CheckAssembly(Assembly.GetExecutingAssembly()));
@@ -81,7 +87,7 @@ namespace Steeltoe.Stream.Binder
             var result = new Dictionary<string, IBinderType>();
             DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact(Skip = "TypeRegistryTests")]
@@ -90,7 +96,7 @@ namespace Steeltoe.Stream.Binder
             var searchDirectories = new List<string>();
             var result = DefaultBinderTypeRegistry.FindBinders(searchDirectories);
             Assert.Single(result);
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
         }
 
         [Fact(Skip = "TypeRegistryTests")]
@@ -98,7 +104,19 @@ namespace Steeltoe.Stream.Binder
         {
             var registry = new DefaultBinderTypeRegistry();
             Assert.Single(registry.GetAll());
-            Assert.Equal("Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null", registry.Get("testbinder").ConfigureClass);
+            Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", registry.Get("testbinder").ConfigureClass);
+        }
+
+        private List<string> BuildPaths(string binderPath)
+        {
+            var paths = new List<string>();
+            paths.AddRange(Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll"));
+            if (!Environment.CurrentDirectory.Equals(binderPath, StringComparison.InvariantCultureIgnoreCase))
+            {
+                paths.AddRange(Directory.GetFiles(Environment.CurrentDirectory, "*.dll"));
+            }
+
+            return paths;
         }
     }
 }
