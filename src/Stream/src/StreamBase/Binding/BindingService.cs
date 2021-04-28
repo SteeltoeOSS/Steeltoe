@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
@@ -18,6 +19,7 @@ namespace Steeltoe.Stream.Binding
         private readonly IBinderFactory _binderFactory;
         private readonly BindingServiceOptions _bindingServiceOptions;
         private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
+        private readonly ILogger<BindingService> _logger;
 
         public BindingServiceOptions Options
         {
@@ -32,16 +34,18 @@ namespace Steeltoe.Stream.Binding
             }
         }
 
-        public BindingService(IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderFactory binderFactory)
+        public BindingService(IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
         {
             _optionsMonitor = optionsMonitor;
             _binderFactory = binderFactory;
+            _logger = logger;
         }
 
-        internal BindingService(BindingServiceOptions bindingServiceOptions, IBinderFactory binderFactory)
+        internal BindingService(BindingServiceOptions bindingServiceOptions, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
         {
             _bindingServiceOptions = bindingServiceOptions;
             _binderFactory = binderFactory;
+            _logger = logger;
         }
 
         public ICollection<IBinding> BindConsumer<T>(T inputChannel, string name)
@@ -103,9 +107,9 @@ namespace Steeltoe.Stream.Binding
                 {
                     return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputChan, consumerOptions);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // log
+                    _logger?.LogDebug(ex, ex.Message);
                     Thread.Sleep(Options.BindingRetryInterval * 1000);
                 }
             }

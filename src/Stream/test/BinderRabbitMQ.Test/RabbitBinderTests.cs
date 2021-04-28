@@ -1730,6 +1730,20 @@ namespace Steeltoe.Stream.Binder.Rabbit
         }
 
         [Fact]
+        public void TestPolledConsumer_AbstractBinder()
+        {
+            var rabbitBindingsOptions = new RabbitBindingsOptions();
+            var binder = GetBinder(rabbitBindingsOptions);
+            var messageConverter = new CompositeMessageConverterFactory().MessageConverterForAllRegistered;
+            var inboundBindTarget = new DefaultPollableMessageSource(binder.ApplicationContext, messageConverter);
+
+            var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
+            var binding = binder.BindConsumer("pollable", "group", (object)inboundBindTarget, consumerOptions);
+            Assert.True(typeof(DefaultBinding<IPollableSource<IMessageHandler>>).IsAssignableFrom(binding.GetType()));
+            binding.Unbind();
+        }
+
+        [Fact]
         public void TestPolledConsumerRequeue()
         {
             var rabbitBindingsOptions = new RabbitBindingsOptions();
