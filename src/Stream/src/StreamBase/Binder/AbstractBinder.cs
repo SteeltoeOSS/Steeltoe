@@ -49,7 +49,7 @@ namespace Steeltoe.Stream.Binder
 
         public abstract Type TargetType { get; }
 
-        public IBinding BindConsumer(string name, string group, T inboundTarget, IConsumerOptions consumerOptions)
+        public virtual IBinding BindConsumer(string name, string group, T inboundTarget, IConsumerOptions consumerOptions)
         {
             if (string.IsNullOrEmpty(group) && consumerOptions.IsPartitioned)
             {
@@ -64,12 +64,12 @@ namespace Steeltoe.Stream.Binder
             return DoBindConsumer(name, group, (T)inboundTarget, consumerOptions);
         }
 
-        public IBinding BindProducer(string name, T outboundTarget, IProducerOptions producerOptions)
+        public virtual IBinding BindProducer(string name, T outboundTarget, IProducerOptions producerOptions)
         {
             return DoBindProducer(name, outboundTarget, producerOptions);
         }
 
-        public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
+        public virtual IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
         {
             return DoBindProducer(name, (T)outboundTarget, producerOptions);
         }

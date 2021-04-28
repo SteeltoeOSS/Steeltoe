@@ -439,8 +439,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
 
-            // after switching to new config server image, this value now ends with " (document #0),"
-            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml", result);
+            // after switching to newer config server image, the health response has changed to
+            // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
+            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config", result);
         }
     }
 }
