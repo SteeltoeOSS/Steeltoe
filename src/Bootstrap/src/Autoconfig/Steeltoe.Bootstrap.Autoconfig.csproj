@@ -1,4 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
@@ -6,9 +8,8 @@
     <Description>Steeltoe autoconfiguration</Description>
     <PackageTags>Autoconfiguration</PackageTags>
     <IsPackable>true</IsPackable>
+    <VersionPrefix>0.0.1</VersionPrefix>
   </PropertyGroup>
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
