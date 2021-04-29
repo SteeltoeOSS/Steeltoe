@@ -37,6 +37,16 @@ namespace Steeltoe.Stream.Binder
         {
         }
 
+        public override IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+        {
+            if (inboundTarget is IPollableSource<IMessageHandler>)
+            {
+                return BindConsumer(name, group, (IPollableSource<IMessageHandler>)inboundTarget, consumerOptions);
+            }
+
+            return base.BindConsumer(name, group, inboundTarget, consumerOptions);
+        }
+
         public virtual IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
         {
             if (!(inboundTarget is DefaultPollableMessageSource bindingTarget))

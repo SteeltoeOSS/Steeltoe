@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Integration.Support.Converter;
@@ -88,6 +89,10 @@ namespace Steeltoe.Stream.Extensions
             Assert.True(provider.GetService<ISource>() != null, "ISource not found in Container");
 
             Assert.True(provider.GetService<ISink>() != null, "ISink not found in Container");
+
+            Assert.True(provider.GetService<IExpressionParser>() != null, "IExpressionParser not found in Container");
+
+            Assert.True(provider.GetService<IEvaluationContext>() != null, "IEvaluationContext not found in Container");
         }
 
         private void ValidateCoreServices(ServiceProvider serviceProvider)
