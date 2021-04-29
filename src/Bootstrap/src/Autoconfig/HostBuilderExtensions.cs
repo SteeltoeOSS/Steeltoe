@@ -3,13 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 #pragma warning disable 0436
-#pragma warning disable S1144
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Oracle;
@@ -22,16 +20,15 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Steeltoe.Extensions.Configuration.Kubernetes;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using Steeltoe.Extensions.Logging;
+using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging.DynamicSerilog;
+using Steeltoe.Management.CloudFoundry;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
-using Steeltoe.Management.TaskCore;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -41,8 +38,10 @@ namespace Steeltoe.Bootstrap.Autoconfig
 {
     public static class HostBuilderExtensions
     {
-        private const string LoggerName = "Steeltoe.Autoconfig";
-        private static HashSet<string> missingAssemblies = new ();
+        private const string _loggerName = "Steeltoe.Autoconfig";
+        private static HashSet<string> _missingAssemblies = new ();
+        private static IEnumerable<string> _excludedAssemblies;
+        private static ILoggerFactory _loggerFactory;
 
         static HostBuilderExtensions()
         {
@@ -55,7 +54,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 // Load whatever version available - strip out version and culture info
                 string GetSimpleName(string assemblyName) => new Regex(",.*").Replace(assemblyName, string.Empty);
                 var name = GetSimpleName(args.Name);
-                if (missingAssemblies.Contains(name))
+                if (_missingAssemblies.Contains(name))
                 {
                     return null;
                 }
@@ -71,28 +70,38 @@ namespace Steeltoe.Bootstrap.Autoconfig
                     return args.RequestingAssembly;
                 }
 
-                missingAssemblies.Add(name); // throw it in there to prevent recursive attempts to resolve
+                _missingAssemblies.Add(name); // throw it in there to prevent recursive attempts to resolve
                 assembly = Assembly.Load(name);
-                missingAssemblies.Remove(name);
+                _missingAssemblies.Remove(name);
                 return assembly;
             }
         }
 
-        public static IHostBuilder AddSteeltoe(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null)
+        /// <summary>
+        /// Automatically configure Steeltoe packages that have been added as NuGet references.<para />
+        /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured!
+        /// </summary>
+        /// <param name="hostBuilder">Your <see cref="IHostBuilder" /></param>
+        /// <param name="exclusions">A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" /></param>
+        /// <param name="loggerFactory">For logging within auto-configuration</param>
+        public static IHostBuilder AddSteeltoe(this IHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
         {
-            var logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
-            hostBuilder.Properties[LoggerName] = logger;
+            _excludedAssemblies = exclusions ?? new List<string>();
+            _loggerFactory = loggerFactory;
+            var logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
+            hostBuilder.Properties[_loggerName] = logger;
 
             if (!hostBuilder.WireIfLoaded(WireConfigServer, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore))
             {
                 hostBuilder.WireIfLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_CloudFoundryCore);
             }
 
-            if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore) && IsRunningInKubernetes())
+            if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Extensions_Configuration_KubernetesCore) && Platform.IsKubernetes)
             {
                 WireKubernetesConfiguration(hostBuilder);
             }
 
+            hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
             hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore);
 
             if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
@@ -107,22 +116,31 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 hostBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
             }
 
-            hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.Steeltoe_Management_KubernetesCore);
+            hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
             hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
-            hostBuilder.WireIfLoaded(WireCloudFoundryActuators, SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore);
-            hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.Steeltoe_Management_TracingCore);
 
-            if (!hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore))
+            if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore) || IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore))
             {
-                hostBuilder.WireIfLoaded(WireDynamicLogging, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicLogger);
+                hostBuilder.WireIfLoaded(WireKubernetesActuators, SteeltoeAssemblies.Steeltoe_Management_KubernetesCore);
+                hostBuilder.WireIfLoaded(WireCloudFoundryActuators, SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore);
+            }
+            else
+            {
+                hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
+            hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.Steeltoe_Management_TracingCore);
             hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
             return hostBuilder;
         }
 
         private static bool IsAssemblyLoaded(string typeName)
         {
+            if (_excludedAssemblies.Contains(typeName))
+            {
+                return false;
+            }
+
             try
             {
                 Assembly.Load(typeName);
@@ -156,15 +174,9 @@ namespace Steeltoe.Bootstrap.Autoconfig
             return false;
         }
 
-        // ReSharper disable once S1144
-        // ReSharper disable once UnusedMember.Local
-        private static bool IsRunningInCloudFoundry() => Environment.GetEnvironmentVariable("VCAP_APPLICATION") != null;
-
-        private static bool IsRunningInKubernetes() => Environment.GetEnvironmentVariable("KUBERNETES_SERVICE_HOST") != null;
-
         private static IHostBuilder Log(this IHostBuilder host, string message)
         {
-            var logger = (ILogger)host.Properties[LoggerName];
+            var logger = (ILogger)host.Properties[_loggerName];
             logger.LogInformation(message);
             return host;
         }
@@ -175,7 +187,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireConfigServer(this IHostBuilder hostBuilder) =>
-            hostBuilder.AddConfigServer().Log(LogMessages.WireConfigServer);
+            hostBuilder.AddConfigServer(_loggerFactory).Log(LogMessages.WireConfigServer);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireCloudFoundryConfiguration(this IHostBuilder hostBuilder) =>
@@ -183,11 +195,15 @@ namespace Steeltoe.Bootstrap.Autoconfig
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireKubernetesConfiguration(this IHostBuilder hostBuilder) =>
-            hostBuilder.AddKubernetesConfiguration().Log(LogMessages.WireKubernetesConfiguration);
+            hostBuilder.AddKubernetesConfiguration(loggerFactory: _loggerFactory).Log(LogMessages.WireKubernetesConfiguration);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireRandomValueProvider(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddRandomValueSource(_loggerFactory)).Log(LogMessages.WireRandomValueProvider);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WirePlaceholderResolver(this IHostBuilder hostBuilder) =>
-            hostBuilder.AddPlaceholderResolver().Log(LogMessages.WirePlaceholderResolver);
+            hostBuilder.AddPlaceholderResolver(_loggerFactory).Log(LogMessages.WirePlaceholderResolver);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireMySqlConnection(this IHostBuilder hostBuilder) =>
@@ -229,13 +245,15 @@ namespace Steeltoe.Bootstrap.Autoconfig
         private static void WireDiscoveryClient(this IHostBuilder hostBuilder) => hostBuilder.AddDiscoveryClient().Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireCloudFoundryActuators(this IHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryActuator().Log(LogMessages.WireCloudFoundryActuators);
+#pragma warning disable CS0618 // Type or member is obsolete
+        private static void WireCloudFoundryActuators(this IHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryActuators().Log(LogMessages.WireCloudFoundryActuators);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireAllActuators(this IHostBuilder hostBuilder) => hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this IHostBuilder hostBuilder) => hostBuilder.AddDynamicSerilog().Log(LogMessages.WireDynamicSerilog);
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDynamicLogging(this IHostBuilder hostBuilder) => hostBuilder.AddDynamicLogging().Log(LogMessages.WireDynamicLogging);
 
         private static void WireCloudFoundryContainerIdentity(this IHostBuilder hostBuilder) => hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
@@ -243,3 +261,5 @@ namespace Steeltoe.Bootstrap.Autoconfig
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
     }
 }
+
+#pragma warning restore 0436

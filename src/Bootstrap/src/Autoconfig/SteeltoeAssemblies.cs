@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Steeltoe.Bootstrap.Autoconfig
 {
-    internal static class SteeltoeAssemblies
+    public static class SteeltoeAssemblies
     {
         public const string Steeltoe_CircuitBreaker_Hystrix_MetricsEventsCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore";
         public const string Steeltoe_CircuitBreaker_Hystrix_MetricsStreamCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore";
@@ -15,6 +15,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         public const string Steeltoe_Extensions_Configuration_CloudFoundryCore = "Steeltoe.Extensions.Configuration.CloudFoundryCore";
         public const string Steeltoe_Extensions_Configuration_ConfigServerCore = "Steeltoe.Extensions.Configuration.ConfigServerCore";
         public const string Steeltoe_Extensions_Configuration_KubernetesCore = "Steeltoe.Extensions.Configuration.KubernetesCore";
+        public const string Steeltoe_Extensions_Configuration_RandomValueBase = "Steeltoe.Extensions.Configuration.RandomValueBase";
         public const string Steeltoe_Extensions_Configuration_PlaceholderCore = "Steeltoe.Extensions.Configuration.PlaceholderCore";
         public const string Steeltoe_Connector_EF6Core = "Steeltoe.Connector.EF6Core";
         public const string Steeltoe_Connector_EFCore = "Steeltoe.Connector.EFCore";

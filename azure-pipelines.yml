@@ -12,6 +12,7 @@ pr:
 
 jobs:
 - job: Quick_Response
+  timeoutInMinutes: 20
   pool:
     vmImage: ubuntu-latest
   steps:

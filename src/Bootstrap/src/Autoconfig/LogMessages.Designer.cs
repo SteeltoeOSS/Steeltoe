@@ -19,7 +19,7 @@ namespace Steeltoe.Bootstrap.Autoconfig {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class LogMessages {
@@ -57,6 +57,15 @@ namespace Steeltoe.Bootstrap.Autoconfig {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configured actuators.
+        /// </summary>
+        internal static string WireAllActuators {
+            get {
+                return ResourceManager.GetString("WireAllActuators", resourceCulture);
             }
         }
         
@@ -210,6 +219,15 @@ namespace Steeltoe.Bootstrap.Autoconfig {
         internal static string WireRabbitMqConnection {
             get {
                 return ResourceManager.GetString("WireRabbitMqConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Configured Random Value configuration provider.
+        /// </summary>
+        internal static string WireRandomValueProvider {
+            get {
+                return ResourceManager.GetString("WireRandomValueProvider", resourceCulture);
             }
         }
         
