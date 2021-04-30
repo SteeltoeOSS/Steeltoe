@@ -27,21 +27,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = await hostBuilder.AddKubernetesActuators().StartAsync();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            response = await testClient.GetAsync("/actuator/httptrace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -53,21 +54,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = await hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).StartAsync();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/trace");
+            response = await testClient.GetAsync("/actuator/trace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -79,21 +81,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = await hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            response = await testClient.GetAsync("/actuator/httptrace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -106,21 +109,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = hostBuilder.AddKubernetesActuators().Start();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            response = await testClient.GetAsync("/actuator/httptrace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -133,21 +137,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Start();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/trace");
+            response = await testClient.GetAsync("/actuator/trace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
@@ -160,21 +165,22 @@ namespace Steeltoe.Management.Kubernetes.Test
 
             // Act
             var host = hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
+            var testClient = host.GetTestServer().CreateClient();
 
             // Assert
-            var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
+            var response = await testClient.GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
+            response = await testClient.GetAsync("/actuator/info");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
+            response = await testClient.GetAsync("/actuator/health");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/liveness");
+            response = await testClient.GetAsync("/actuator/health/liveness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"LivenessState\":\"CORRECT\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health/readiness");
+            response = await testClient.GetAsync("/actuator/health/readiness");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("\"ReadinessState\":\"ACCEPTING_TRAFFIC\"", await response.Content.ReadAsStringAsync());
-            response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
+            response = await testClient.GetAsync("/actuator/httptrace");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 

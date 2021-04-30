@@ -180,4 +180,7 @@
   <data name="WireRandomValueProvider" xml:space="preserve">
     <value>Configured Random Value configuration provider</value>
   </data>
+  <data name="WireConnectorsConfiguration" xml:space="preserve">
+    <value>Configured ConnectionStrings configuration provider</value>
+  </data>
 </root>

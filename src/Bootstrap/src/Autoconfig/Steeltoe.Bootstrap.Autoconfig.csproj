@@ -8,7 +8,6 @@
     <Description>**EXPERIMENTAL** Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
     <PackageTags>Autoconfiguration</PackageTags>
     <IsPackable>true</IsPackable>
-    <VersionPrefix>0.0.1</VersionPrefix>
   </PropertyGroup>
 
   <ItemGroup>

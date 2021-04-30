@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
+using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
 using Steeltoe.Connector.Oracle;
@@ -104,7 +105,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
             hostBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_RandomValueBase);
             hostBuilder.WireIfLoaded(WirePlaceholderResolver, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_PlaceholderCore);
 
-            if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
+            if (hostBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.Steeltoe_Connector_ConnectorCore))
             {
                 hostBuilder.WireIfAnyLoaded(WireMySqlConnection, MySqlTypeLocator.Assemblies);
                 hostBuilder.WireIfAnyLoaded(WireMongoClient, MongoDbTypeLocator.Assemblies);
@@ -206,6 +207,10 @@ namespace Steeltoe.Bootstrap.Autoconfig
             hostBuilder.AddPlaceholderResolver(_loggerFactory).Log(LogMessages.WirePlaceholderResolver);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireConnectorConfiguration(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureAppConfiguration((host, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireMySqlConnection(this IHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddMySqlConnection(host.Configuration)).Log(LogMessages.WireMySqlConnection);
 
@@ -255,6 +260,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDynamicSerilog(this IHostBuilder hostBuilder) => hostBuilder.AddDynamicSerilog().Log(LogMessages.WireDynamicSerilog);
 
+        [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireCloudFoundryContainerIdentity(this IHostBuilder hostBuilder) => hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
             .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth(host.Configuration))

@@ -106,6 +106,15 @@ namespace Steeltoe.Bootstrap.Autoconfig {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Configured ConnectionStrings configuration provider.
+        /// </summary>
+        internal static string WireConnectorsConfiguration {
+            get {
+                return ResourceManager.GetString("WireConnectorsConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Configured discovery client.
         /// </summary>
         internal static string WireDiscoveryClient {
