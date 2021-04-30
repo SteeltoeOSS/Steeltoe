@@ -117,7 +117,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
             }
 
             hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
-            hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
+            hostBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientBase, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
 
             if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore) || IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore))
             {

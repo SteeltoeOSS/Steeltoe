@@ -20,6 +20,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         public const string Steeltoe_Connector_EF6Core = "Steeltoe.Connector.EF6Core";
         public const string Steeltoe_Connector_EFCore = "Steeltoe.Connector.EFCore";
         public const string Steeltoe_Connector_ConnectorCore = "Steeltoe.Connector.ConnectorCore";
+        public const string Steeltoe_Discovery_ClientBase = "Steeltoe.Discovery.ClientBase";
         public const string Steeltoe_Discovery_ClientCore = "Steeltoe.Discovery.ClientCore";
         public const string Steeltoe_Extensions_Logging_DynamicSerilogCore = "Steeltoe.Extensions.Logging.DynamicSerilogCore";
         public const string Steeltoe_Extensions_Logging_DynamicLogger = "Steeltoe.Extensions.Logging.DynamicLogger";
@@ -33,7 +34,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         public const string Steeltoe_Security_DataProtection_CredHubCore = "Steeltoe.Security.DataProtection.CredHubCore";
         public const string Steeltoe_Security_DataProtection_RedisCore = "Steeltoe.Security.DataProtection.RedisCore";
 
-        internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields(BindingFlags.Static)
+        internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields()
             .Where(x => x.FieldType == typeof(string))
             .Select(x => x.GetValue(null))
             .Cast<string>()
