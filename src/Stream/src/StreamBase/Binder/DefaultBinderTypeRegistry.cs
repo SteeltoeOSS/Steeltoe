@@ -165,11 +165,8 @@ namespace Steeltoe.Stream.Binder
         {
             var paths = new List<string>();
             paths.AddRange(Directory.GetFiles(RuntimeEnvironment.GetRuntimeDirectory(), "*.dll"));
-            if (!Environment.CurrentDirectory.Equals(directory, StringComparison.InvariantCultureIgnoreCase))
-            {
-                paths.AddRange(Directory.GetFiles(directory, "*.dll"));
-            }
-
+            paths.AddRange(Directory.GetFiles(directory, "*.dll"));
+          
             return new PathAssemblyResolver(paths);
         }
 
