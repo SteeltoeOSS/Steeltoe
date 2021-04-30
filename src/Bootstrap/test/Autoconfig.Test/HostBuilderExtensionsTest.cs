@@ -88,7 +88,7 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
         }
 
-        [Fact]
+        [Fact(Skip = "Requires Kubernetes")]
         public void KubernetesConfiguration_IsAutowired()
         {
             // Arrange
