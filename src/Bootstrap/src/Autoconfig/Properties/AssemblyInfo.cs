@@ -4,6 +4,4 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.KubernetesBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Configuration.KubernetesCore.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.Autoconfig.Test")]

@@ -73,20 +73,20 @@ namespace Steeltoe.Common.Security.Test
             Assert.Equal("key1", config["privateKey"]);
 
             await File.WriteAllTextAsync(tempFile1, "barfoo");
-            Thread.Sleep(2000);
+            Thread.Sleep(4000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("key1", config["privateKey"]);
-            Assert.True(changeCalled);
+            Assert.True(changeCalled, "Change wasn't called for tempFile1");
 
             token = config.GetReloadToken();
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
 
             changeCalled = false;
             await File.WriteAllTextAsync(tempFile2, "barbar");
-            Thread.Sleep(2000);
+            Thread.Sleep(4000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("barbar", config["privateKey"]);
-            Assert.True(changeCalled);
+            Assert.True(changeCalled, "Change wasn't called for tempFile2");
         }
 
         [Fact]

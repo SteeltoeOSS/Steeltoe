@@ -1,0 +1,46 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedtest.props" />
+
+  <ItemGroup>
+    <None Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryCore\Steeltoe.Extensions.Configuration.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\KubernetesCore\Steeltoe.Extensions.Configuration.KubernetesCore.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\PlaceholderCore\Steeltoe.Extensions.Configuration.PlaceholderCore.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\src\RandomValueBase\Steeltoe.Extensions.Configuration.RandomValueBase.csproj" />
+    <ProjectReference Include="..\..\..\Configuration\test\KubernetesCore.Test\Steeltoe.Extensions.Configuration.KubernetesCore.Test.csproj" />
+    <ProjectReference Include="..\..\..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\ClientCore\Steeltoe.Discovery.ClientCore.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
+    <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\CloudFoundryCore\Steeltoe.Management.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" />
+    <ProjectReference Include="..\..\..\Management\src\TracingCore\Steeltoe.Management.TracingCore.csproj" />
+    <ProjectReference Include="..\..\..\Security\src\Authentication.CloudFoundryCore\Steeltoe.Security.Authentication.CloudFoundryCore.csproj" />
+    <ProjectReference Include="..\..\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+
+    <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
+    <PackageReference Include="MongoDB.Driver" Version="$(MongoDbClientVersion)" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
+    <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
+    <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
+    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+  </ItemGroup>
+
+</Project>

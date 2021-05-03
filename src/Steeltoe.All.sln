@@ -319,6 +319,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase.Test", "Configuration\test\SpringBootBase.Test\Steeltoe.Extensions.Configuration.SpringBootBase.Test.csproj", "{BA38127A-DA5A-437F-9C84-5997FBE0B6A0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Boostrap", "Boostrap", "{EA9C3A73-3F31-4DC9-982C-963CE613E119}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.Autoconfig", "Bootstrap\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj", "{38EFC635-0C56-442D-8CA3-20AEC1930D7B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.Autoconfig.Test", "Bootstrap\test\Autoconfig.Test\Steeltoe.Bootstrap.Autoconfig.Test.csproj", "{6499285A-88CF-426A-909D-307382B91AA3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Benchmark", "Integration\test\Benchmark\Benchmark.csproj", "{267B24D5-1460-42D4-AEE7-438094164345}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChannelBenchmark", "Messaging\test\Benchmarks\Channel\ChannelBenchmark.csproj", "{15BDC5D8-7594-4506-B81A-A60D5DF1947C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -837,6 +847,22 @@ Global
 		{BA38127A-DA5A-437F-9C84-5997FBE0B6A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA38127A-DA5A-437F-9C84-5997FBE0B6A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA38127A-DA5A-437F-9C84-5997FBE0B6A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38EFC635-0C56-442D-8CA3-20AEC1930D7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38EFC635-0C56-442D-8CA3-20AEC1930D7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38EFC635-0C56-442D-8CA3-20AEC1930D7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38EFC635-0C56-442D-8CA3-20AEC1930D7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6499285A-88CF-426A-909D-307382B91AA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6499285A-88CF-426A-909D-307382B91AA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6499285A-88CF-426A-909D-307382B91AA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6499285A-88CF-426A-909D-307382B91AA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{267B24D5-1460-42D4-AEE7-438094164345}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{267B24D5-1460-42D4-AEE7-438094164345}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{267B24D5-1460-42D4-AEE7-438094164345}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{267B24D5-1460-42D4-AEE7-438094164345}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15BDC5D8-7594-4506-B81A-A60D5DF1947C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15BDC5D8-7594-4506-B81A-A60D5DF1947C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15BDC5D8-7594-4506-B81A-A60D5DF1947C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15BDC5D8-7594-4506-B81A-A60D5DF1947C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -971,6 +997,10 @@ Global
 		{FAFA69DA-494E-4FC8-BDD8-78AF2B834592} = {4F1EA720-AA18-4955-A854-016B26F6CED1}
 		{D94706F7-7622-4D4C-87BD-84FB40D4E6BD} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
 		{BA38127A-DA5A-437F-9C84-5997FBE0B6A0} = {4AB95F47-0C93-4C88-B87F-231262CD0E89}
+		{38EFC635-0C56-442D-8CA3-20AEC1930D7B} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
+		{6499285A-88CF-426A-909D-307382B91AA3} = {EA9C3A73-3F31-4DC9-982C-963CE613E119}
+		{267B24D5-1460-42D4-AEE7-438094164345} = {EA583B9C-D8C6-422A-9FF8-157CF6A4A61E}
+		{15BDC5D8-7594-4506-B81A-A60D5DF1947C} = {283EAD31-6CC1-4306-A0E8-AB60F6CB3FD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AB0245B9-2464-47F8-BE15-D80A7A2FA965}
