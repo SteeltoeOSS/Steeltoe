@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Security.Test
             Thread.Sleep(4000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("key1", config["privateKey"]);
-            Assert.True(changeCalled);
+            Assert.True(changeCalled, "Change wasn't called for tempFile1");
 
             token = config.GetReloadToken();
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
@@ -86,7 +86,7 @@ namespace Steeltoe.Common.Security.Test
             Thread.Sleep(4000);
             Assert.Equal("barfoo", config["certificate"]);
             Assert.Equal("barbar", config["privateKey"]);
-            Assert.True(changeCalled);
+            Assert.True(changeCalled, "Change wasn't called for tempFile2");
         }
 
         [Fact]
