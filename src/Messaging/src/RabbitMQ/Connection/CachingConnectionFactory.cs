@@ -385,7 +385,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         public void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args)
         {
-            _closeExceptionLogger.Log(_logger, "Channel shutdown", args.Cause);
+            _closeExceptionLogger.Log(_logger, "Channel shutdown", args);
             ChannelListener.OnShutDown(args);
         }
 
