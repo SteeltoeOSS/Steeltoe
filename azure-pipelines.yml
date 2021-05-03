@@ -88,7 +88,6 @@ jobs:
       Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
       $prefix = $env:PackageVersion.Split('-')[0]
       $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=PackageVersionExp;]$prefix-experimental"
       Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
       Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
     displayName: Set build variables
@@ -185,19 +184,9 @@ jobs:
     inputs:
       command: pack
       feedsToUse: select
-      packagesToPack: '**/*.csproj; **/!*Test*.csproj; **/!Steeltoe.Bootstrap.Autoconfig.csproj'
+      packagesToPack: src/Steeltoe.All.sln
       versioningScheme: byEnvVar
       versionEnvVar: PackageVersion
-      nobuild: true
-  - task: DotNetCoreCLI@2
-    condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
-    displayName: dotnet pack experimental
-    inputs:
-      command: pack
-      feedsToUse: select
-      packagesToPack: '**/Steeltoe.Bootstrap.Autoconfig.csproj'
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersionExp
       nobuild: true
   - task: PowerShell@2
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')), eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
