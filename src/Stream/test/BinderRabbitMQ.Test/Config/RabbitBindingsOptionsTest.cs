@@ -280,10 +280,5 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 }
             }
         }
-
-        public class MyOptions
-        {
-            public string Test { get; set; }
-        }
     }
 }
