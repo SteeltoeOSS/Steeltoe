@@ -3,6 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -69,8 +71,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:default:consumer:dlqMaxLength", "10000" },
                 { "spring:cloud:stream:rabbit:default:producer:autoBindDlq", "true" },
                 { "spring:cloud:stream:rabbit:default:producer:dlqMaxLength", "10000" },
-
-                // { "spring:cloud:stream:rabbit:bindings:input:consumer:autoBindDlq", "true" },
+                { "spring:cloud:stream:rabbit:bindings:input:consumer:autoBindDlq", "true" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:bindingRoutingKey", "bindingRoutingKey" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:bindingRoutingKeyDelimiter", "bindingRoutingKeyDelimiter" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:bindQueue", "true" },
@@ -87,8 +88,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqDeadLetterExchange", "dlqDeadLetterExchange" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqDeadLetterRoutingKey", "dlqDeadLetterRoutingKey" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqExpires", "1000" },
-
-                // { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqLazy", "true" },
+                { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqLazy", "true" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqMaxLength", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqMaxLengthBytes", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqMaxPriority", "1000" },
@@ -124,7 +124,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:singleActiveConsumer", "true" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:transacted", "true" },
 
-                // { "spring:cloud:stream:rabbit:bindings:input:consumer:txSize", "1000" },
+                // { "spring:cloud:stream:rabbit:bindings:input:consumer:txSize", "1000" }, // Not supported in Steeltoe:  Not supported when the containerType is direct.
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:ttl", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:quorum:deliveryLimit", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:quorum:enabled", "true" },
@@ -132,8 +132,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqQuorum:deliveryLimit", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqQuorum:enabled", "true" },
                 { "spring:cloud:stream:rabbit:bindings:input:consumer:dlqQuorum:initialQuorumSize", "1000" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:autoBindDlq", "true" },
+                { "spring:cloud:stream:rabbit:bindings:output:producer:autoBindDlq", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:batchingEnabled", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:batchSize", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:batchBufferLimit", "1000" },
@@ -158,8 +157,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqDeadLetterRoutingKey", "dlqDeadLetterRoutingKey" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqExpires", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqLazy", "true" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:dlqMaxLength", "1000" },
+                { "spring:cloud:stream:rabbit:bindings:output:producer:dlqMaxLength", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqMaxLengthBytes", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqMaxPriority", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:dlqSingleActiveConsumer", "true" },
@@ -171,32 +169,20 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
                 { "spring:cloud:stream:rabbit:bindings:output:producer:exclusive", "false" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:expires", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:failedDeclarationRetryInterval", "1000" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:frameMaxHeadroom", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:headerPatterns:0", "headerPatterns0" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:headerPatterns:1", "headerPatterns1" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:lazy", "true" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:maxConcurrency", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxLength", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxLengthBytes", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:maxPriority", "1000" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:missingQueuesFatal", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:overflowBehavior", "overflowBehavior" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:prefetch", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:prefix", "prefix" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueBindingArguments:foo", "bar" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueBindingArguments:bar", "foo" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:queueDeclarationRetries", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:queueNameGroupOnly", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:routingKeyExpression", "routingKeyExpression" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:singleActiveConsumer", "true" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:transacted", "true" },
-
-                // { "spring:cloud:stream:rabbit:bindings:output:producer:txSize", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:ttl", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:quorum:deliveryLimit", "1000" },
                 { "spring:cloud:stream:rabbit:bindings:output:producer:quorum:enabled", "true" },
@@ -214,7 +200,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             builder.AddInMemoryCollection(dict);
 
-            var config = builder.Build().GetSection("spring:cloud:stream:rabbit");
+            var config = builder.Build().GetSection(RabbitBindingsOptions.PREFIX);
             var options = new RabbitBindingsOptions(config);
             options.PostProcess();
             Assert.NotNull(options.Default);

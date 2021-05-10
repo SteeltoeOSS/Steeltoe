@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 {
     public class RabbitBindingsOptions
     {
-        public const string PREFIX = "spring:cloud:stream:rabbit:bindings";
+        public const string PREFIX = "spring:cloud:stream:rabbit";
 
         // spring.cloud.stream.rabbit.bindings.<channelName>.consumer
         // spring.cloud.stream.rabbit.bindings.<channelName>.producer
@@ -21,7 +21,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
             PostProcess();
         }
 
-        internal RabbitBindingsOptions(IConfiguration config)
+        public RabbitBindingsOptions(IConfiguration config)
         {
             if (config == null)
             {

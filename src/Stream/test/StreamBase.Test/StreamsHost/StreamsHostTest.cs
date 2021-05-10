@@ -16,7 +16,7 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Stream.StreamsHost
+namespace Steeltoe.Stream.StreamHost
 {
     public class StreamsHostTest
     {
@@ -24,7 +24,7 @@ namespace Steeltoe.Stream.StreamsHost
         public void HostCanBeStarted()
         {
             FakeHostedService service;
-            using (var host = StreamsHost.CreateDefaultBuilder<SampleSink>()
+            using (var host = StreamHost.CreateDefaultBuilder<SampleSink>()
                                 .ConfigureServices(svc => svc.AddSingleton<IHostedService, FakeHostedService>())
                                 .Start())
             {
@@ -51,7 +51,7 @@ namespace Steeltoe.Stream.StreamsHost
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", GetCloudFoundryRabbitMqConfiguration());
-            using (var host = StreamsHost
+            using (var host = StreamHost
                 .CreateDefaultBuilder<SampleSink>()
                 .ConfigureAppConfiguration(c => c.AddCloudFoundry())
                 .Start())

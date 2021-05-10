@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Messaging;
-using Steeltoe.Stream.StreamsHost;
+using Steeltoe.Stream.StreamHost;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,7 +21,7 @@ namespace Steeltoe.Stream.Extensions
         [Fact]
         public void HostBuilderExtensionTest()
         {
-            var hostBuilder = Host.CreateDefaultBuilder().AddStreamsServices<SampleSink>();
+            var hostBuilder = Host.CreateDefaultBuilder().AddStreamServices<SampleSink>();
             Assert.NotNull(hostBuilder);
         }
     }

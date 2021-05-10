@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
@@ -45,12 +46,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             }
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
             : this(connectionFactory, new List<IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
         {
         }
 
-        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<IDeclarableCustomizer> customizers, RabbitBindingsOptions bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+        public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<IDeclarableCustomizer> customizers, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
         {
             Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
 
@@ -60,7 +61,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
             Admin.ApplicationContext = _autoDeclareContext;
             Admin.Initialize();
             Customizers = customizers;
-            Options = bindingsOptions;
+            Options = bindingsOptions.CurrentValue;
         }
 
         private RabbitAdmin Admin { get; }

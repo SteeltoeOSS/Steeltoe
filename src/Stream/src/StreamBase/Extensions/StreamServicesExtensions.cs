@@ -32,7 +32,6 @@ namespace Steeltoe.Stream.Extensions
         {
             services.Configure<SpringIntegrationOptions>(configuration.GetSection(SpringIntegrationOptions.PREFIX));
             services.Configure<BindingServiceOptions>(configuration.GetSection(BindingServiceOptions.PREFIX));
-
             services.PostConfigure<BindingServiceOptions>(o => o.PostProcess());
         }
 

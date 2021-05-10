@@ -101,7 +101,11 @@ namespace Steeltoe.Stream.Binder.Rabbit
                     PublisherReturns = true
                 };
                 var ccf = GetResource();
-                _testBinder = new RabbitTestBinder(ccf, new TestRabbitOptions(options), new RabbitBinderOptions(), rabbitBindingsOptions ?? new RabbitBindingsOptions(), LoggerFactory);
+                var rabbitOptions = new TestOptionsMonitor<RabbitOptions>(options);
+                var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(null);
+                var bindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions ?? new RabbitBindingsOptions());
+
+                _testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, bindingsOptions, LoggerFactory);
             }
 
             return _testBinder;
@@ -204,25 +208,6 @@ namespace Steeltoe.Stream.Binder.Rabbit
             public int SelectPartition(object key, int partitionCount)
             {
                 return (int)key;
-            }
-        }
-
-        public class TestRabbitOptions : IOptionsMonitor<RabbitOptions>
-        {
-            private RabbitOptions _rabbitOptions;
-
-            public TestRabbitOptions(RabbitOptions opt = null)
-            {
-                _rabbitOptions = opt ?? new RabbitOptions();
-            }
-
-            public RabbitOptions CurrentValue => _rabbitOptions;
-
-            public RabbitOptions Get(string name) => _rabbitOptions;
-
-            public IDisposable OnChange(Action<RabbitOptions, string> listener)
-            {
-                throw new NotImplementedException();
             }
         }
     }
