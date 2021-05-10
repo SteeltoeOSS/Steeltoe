@@ -12,6 +12,7 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder.Rabbit;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
+using Steeltoe.Stream.Config;
 
 [assembly: Binder("rabbit", typeof(Startup))]
 
@@ -32,15 +33,18 @@ namespace Steeltoe.Stream.Binder.Rabbit
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureRabbitOptions(Configuration);
+            var c = Configuration.GetSection(RabbitBindingsOptions.PREFIX);
+            services.Configure<RabbitBindingsOptions>(c);
+            services.Configure<RabbitBindingsOptions>(o => o.PostProcess());
+
+            services.Configure<RabbitBinderOptions>(Configuration.GetSection(RabbitBinderOptions.PREFIX));
+
             services.AddSingleton<IConnectionFactory, CachingConnectionFactory>();
             services.AddSingleton<RabbitExchangeQueueProvisioner>();
-            services.AddSingleton<RabbitBinderOptions>();
-            services.AddSingleton<RabbitBindingsOptions>();
             services.AddSingleton<RabbitMessageChannelBinder>();
             services.AddSingleton<IBinder>((p) =>
             {
                 var logger = p.GetRequiredService<ILogger<RabbitMessageChannelBinder>>();
-                var rabbitBinderOptions = p.GetRequiredService<RabbitBinderOptions>();
                 var exchangeprov = p.GetRequiredService<RabbitExchangeQueueProvisioner>();
                 return p.GetRequiredService<RabbitMessageChannelBinder>();
             });

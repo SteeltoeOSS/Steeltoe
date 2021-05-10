@@ -9,21 +9,21 @@ using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Extensions.Configuration.SpringBoot;
 using Steeltoe.Integration.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using Steeltoe.Stream.StreamsHost;
+using Steeltoe.Stream.StreamHost;
 using System;
 
 namespace Steeltoe.Stream.Extensions
 {
     public static class HostBuilderExtensions
     {
-        public static IHostBuilder AddStreamsServices<T>(this IHostBuilder builder)
+        public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
         {
             return builder
                 .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
                 .ConfigureServices((context, services) =>
                 {
                     services.AddStreamServices<T>(context.Configuration);
-                    services.AddHostedService<StreamsLifeCycleService>();
+                    services.AddHostedService<StreamLifeCycleService>();
                 });
         }
     }

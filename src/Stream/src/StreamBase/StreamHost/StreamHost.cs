@@ -14,15 +14,15 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Stream.StreamsHost
+namespace Steeltoe.Stream.StreamHost
 {
-    public sealed class StreamsHost : IHost
+    public sealed class StreamHost : IHost
     {
         public static IHostBuilder CreateDefaultBuilder<T>() => new StreamsHostBuilder<T>(Host.CreateDefaultBuilder());
 
         public static IHostBuilder CreateDefaultBuilder<T>(string[] args) => new StreamsHostBuilder<T>(Host.CreateDefaultBuilder(args));
 
-        public StreamsHost(IHost host)
+        public StreamHost(IHost host)
         {
             _host = host;
         }
@@ -71,7 +71,7 @@ namespace Steeltoe.Stream.StreamsHost
         public IHost Build()
         {
             var host = _hostBuilder.Build();
-            return new StreamsHost(host);
+            return new StreamHost(host);
         }
 
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)

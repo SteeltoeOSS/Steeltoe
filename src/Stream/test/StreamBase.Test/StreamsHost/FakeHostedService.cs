@@ -7,7 +7,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Stream.StreamsHost
+namespace Steeltoe.Stream.StreamHost
 {
     public class FakeHostedService : IHostedService, IDisposable
     {

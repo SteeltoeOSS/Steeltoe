@@ -16,16 +16,16 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Stream.StreamsHost
+namespace Steeltoe.Stream.StreamHost
 {
     /// <summary>
     /// Implements a hosted service to be used in a Generic Host (as opposed to streams host)
     /// </summary>
-    public class StreamsLifeCycleService : IHostedService
+    public class StreamLifeCycleService : IHostedService
     {
         private readonly IApplicationContext _applicationContext;
 
-        public StreamsLifeCycleService(IApplicationContext applicationContext)
+        public StreamLifeCycleService(IApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
         }

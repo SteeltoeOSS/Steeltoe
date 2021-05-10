@@ -49,10 +49,10 @@ namespace Steeltoe.Stream.Binder.Rabbit
             GetApplicationContext();
         }
 
-        public RabbitTestBinder(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, RabbitBinderOptions binderOptions, RabbitBindingsOptions bindingsOptions, ILoggerFactory loggerFactory)
+        public RabbitTestBinder(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, ILoggerFactory loggerFactory)
             : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
         {
-            BindingsOptions = bindingsOptions;
+            BindingsOptions = bindingsOptions.CurrentValue;
             _loggerFactory = loggerFactory;
         }
 

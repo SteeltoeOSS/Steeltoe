@@ -20,7 +20,7 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Messaging;
-using Steeltoe.Stream.StreamsHost;
+using Steeltoe.Stream.StreamHost;
 using System.Linq;
 using Xunit;
 
