@@ -42,13 +42,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 services.AddActuatorManagementOptions(config);
                 services.AddHeapDumpActuatorServices(config);
 
-                if (Platform.IsWindows)
+                if (RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase) && Platform.IsWindows)
                 {
                     services.TryAddSingleton<IHeapDumper, WindowsHeapDumper>();
                 }
-                else if (Platform.IsLinux)
+                else
                 {
-                    services.TryAddSingleton<IHeapDumper, LinuxHeapDumper>();
+                    services.TryAddSingleton<IHeapDumper, HeapDumper>();
                 }
 
                 services.AddActuatorEndpointMapping<HeapDumpEndpoint>();

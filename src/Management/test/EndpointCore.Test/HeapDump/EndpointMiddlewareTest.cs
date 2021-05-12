@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test
@@ -50,10 +51,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
-                var logger4 = loggerFactory.CreateLogger<LinuxHeapDumper>();
+                var logger4 = loggerFactory.CreateLogger<HeapDumper>();
 
-                var obs = Platform.IsWindows ? (IHeapDumper)new WindowsHeapDumper(opts, logger: logger1)
-                                : Platform.IsLinux ? (IHeapDumper)new LinuxHeapDumper(opts, logger: logger4)
+                // WindowsHeapDumper should be used with .NET Core 3.1 on Windows. HeapDumper should be used with Linux and .NET 5 on Windows. , O
+                var obs = (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
+                            ? new WindowsHeapDumper(opts, logger: logger1)
+                            : !Platform.IsOSX
+                                ? (IHeapDumper)new HeapDumper(opts, logger: logger4)
                                 : throw new InvalidOperationException("Unsupported Platfornm");
 
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
