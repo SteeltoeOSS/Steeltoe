@@ -41,7 +41,9 @@ namespace Steeltoe.Messaging
 
             return (IMessage)Activator.CreateInstance(
                 typeToCreate,
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 null,
                 new object[] { payload },
                 null,
@@ -55,7 +57,9 @@ namespace Steeltoe.Messaging
 
             return (IMessage)Activator.CreateInstance(
                   typeToCreate,
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                   null,
                   new object[] { payload, headers },
                   null,
@@ -69,7 +73,9 @@ namespace Steeltoe.Messaging
 
             return (IMessage)Activator.CreateInstance(
                   typeToCreate,
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                   BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                   null,
                   new object[] { payload, headers },
                   null,
