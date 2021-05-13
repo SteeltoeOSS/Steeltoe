@@ -11,95 +11,43 @@ pr:
 - main
 
 jobs:
-- job: Quick_Response
-  timeoutInMinutes: 20
+- job: Steeltoe_CI
+  timeoutInMinutes: 90
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     PackageVersion: $[format('3.1.0-{0}', variables['Build.BuildId'])]
+  strategy:
+    matrix:
+      Linux:
+        imageName: ubuntu-latest
+        skipFilter: '--filter "Category!=SkipOnLinux"'
+        integrationTests: true
+        sonarAnalyze: true
+      MacOS:
+        imageName: macOS-latest
+        skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      Windows:
+        imageName: windows-latest
+        package: true
+        skipFilter: '--filter "Category!=Integration"'
   pool:
-    vmImage: ubuntu-latest
+    vmImage: $(imageName)
   steps:
   - pwsh: |
       if ($env:PackageVersionOverride) {
           $env:PackageVersion = $env:PackageVersionOverride
       }
       Write-Host "##vso[build.updatebuildnumber]$env:PackageVersion"
-      Write-Host "##vso[task.setvariable variable=PackageVersion;isOutput=true;]$env:PackageVersion"
+      Write-Host "##vso[task.setvariable variable=PackageVersion;]$env:PackageVersion"
       $prefix = $env:PackageVersion.Split('-')[0]
       $suffix = $env:PackageVersion.Split('-')[1]
-      Write-Host "##vso[task.setvariable variable=VersionPrefix;isOutput=true;]$prefix"
-      Write-Host "##vso[task.setvariable variable=VersionSuffix;isOutput=true;]$suffix"
+      Write-Host "##vso[task.setvariable variable=VersionPrefix;]$prefix"
+      Write-Host "##vso[task.setvariable variable=VersionSuffix;]$suffix"
     displayName: Set build variables
-    name: buildVars
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: src/Steeltoe.All.sln
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: src/Steeltoe.All.sln
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: src/Steeltoe.All.sln
-      arguments: '--blame --no-build -c $(buildConfiguration) -v n -f netcoreapp3.1 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
-- job: Steeltoe_CI
-  timeoutInMinutes: 150
-  dependsOn: ['Quick_Response']
-  variables:
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-    DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[ dependencies.Quick_Response.outputs['buildVars.PackageVersion'] ]
-    VersionPrefix: $[ dependencies.Quick_Response.outputs['buildVars.VersionPrefix'] ]
-    VersionSuffix: $[ dependencies.Quick_Response.outputs['buildVars.VersionSuffix'] ]
-  strategy:
-    matrix:
-      Linux:
-        imageName: ubuntu-latest
-        skipFilter: '--filter "Category!=SkipOnLinux"'
-        sonarAnalyze: true
-        integrationTests: true
-      MacOS_netcoreapp3_1:
-        imageName: macOS-latest
-        skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS"'
-        integrationTests: false
-      MacOS_net5:
-        imageName: macOS-latest
-        skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker&Category!=SkipOnMacOS" --blame-hang --blame-hang-timeout 4m'
-        integrationTests: false
-      MacOS_Hystrix:
-        imageName: macOS-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker&Category!=SkipOnMacOS"'
-        integrationTests: false
-      Windows_netcoreapp3_1:
-        imageName: windows-latest
-        skipFilter: '-f netcoreapp3.1 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
-        package: true
-        integrationTests: false
-      Windows_net5:
-        imageName: windows-latest
-        skipFilter: '-f net5.0 --filter "Category!=Integration&FullyQualifiedName!~CircuitBreaker" --blame-hang --blame-hang-timeout 4m'
-        package: false
-        integrationTests: false
-      Windows_Hystrix:
-        imageName: windows-latest
-        skipFilter: '--filter "Category!=Integration&FullyQualifiedName~CircuitBreaker"'
-        package: false
-        integrationTests: false
-  pool:
-    vmImage: $(imageName)
-  steps:
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:
@@ -115,10 +63,10 @@ jobs:
       organization: steeltoeoss
       projectKey: SteeltoeOSS_steeltoe
       extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
+          sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*opencover.xml
           sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
           sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/Diagnostics*
-          sonar.coverage.exclusions=**/*Test*/**/*
+          sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
     displayName: dotnet build
     inputs:
@@ -135,8 +83,7 @@ jobs:
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) /p:CopyLocalLockFileAssemblies=true --collect:"XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
-      publishTestResults: false
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "Code coverage" --collect "XPlat Code Coverage" --settings coverlet.runsettings'
   - script: |
       docker kill configserver
       docker rm configserver
@@ -144,26 +91,6 @@ jobs:
       docker rm rabbitmq
     condition: eq(variables['integrationTests'], 'true')
     displayName: 'Stop Docker services'
-  - task: PublishTestResults@2
-    condition: succeededOrFailed()
-    displayName: Publish test results
-    inputs:
-      testResultsFormat: VSTest
-      testResultsFiles: '*.trx'
-      mergeTestResults: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
-    displayName: Consolidate coverage for this job
-    inputs:
-      reports: '$(Build.SourcesDirectory)/**/coverage.opencover.xml'
-      targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage-$(Agent.JobName)'
-      reporttypes: 'Cobertura'
-  - task: PublishBuildArtifacts@1
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
-    displayName: Publish code coverage artifacts
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)/CodeCoverage-$(Agent.JobName)
-      ArtifactName: coverageResults-$(Agent.JobName)
   - task: SonarCloudAnalyze@1
     condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
     displayName: Run code analysis
@@ -171,17 +98,18 @@ jobs:
     condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
     displayName: Publish quality gate result
   - task: DotNetCoreCLI@2
-    condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
+    condition: eq(variables['package'], 'true')
     displayName: dotnet pack
     inputs:
       command: pack
       feedsToUse: select
       packagesToPack: src/Steeltoe.All.sln
+      packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
       versioningScheme: byEnvVar
       versionEnvVar: PackageVersion
       nobuild: true
   - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')), eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), eq(variables['package'], 'true'))
     displayName: Authenticode sign packages
     inputs:
       filePath: build/sign-packages.ps1
@@ -189,47 +117,10 @@ jobs:
       SignClientUser: $(SignClientUser)
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
-    condition: and(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['package'], 'true'))
+  - publish: '$(Build.ArtifactStagingDirectory)/packages'
+    condition: eq(variables['package'], 'true')
     displayName: Publish build artifacts
-    inputs:
-      PathtoPublish: $(Build.ArtifactStagingDirectory)
-      ArtifactName: Packages
-      publishLocation: Container
-  - bash: bash <(curl -s https://codecov.io/bash)
+    artifact: Packages
+  - bash: bash <(curl -s https://codecov.io/bash) -f '$(Agent.TempDirectory)/*opencover.xml'
     displayName: 'Upload to codecov.io'
     condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
-- job: Wrap_up
-  dependsOn:
-  - Steeltoe_CI
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - download: current
-    artifact: coverageResults-Steeltoe_CI Linux
-    condition: succeededOrFailed()
-    displayName: Download test coverage results from Linux
-    continueOnError: true
-  - download: current
-    artifact: coverageResults-Steeltoe_CI Windows_netcoreapp3_1
-    condition: succeededOrFailed()
-    displayName: Download .NET Core 3.1 code coverage results
-    continueOnError: true
-  - download: current
-    artifact: coverageResults-Steeltoe_CI Windows_net5
-    condition: succeededOrFailed()
-    displayName: Download .NET 5 code coverage results
-    continueOnError: true
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
-    condition: succeededOrFailed()
-    displayName: Consolidate code coverage results
-    inputs:
-      reports: '$(Pipeline.Workspace)/**/Cobertura.xml'
-      targetdir: '$(Build.ArtifactStagingDirectory)/CodeCoverage'
-      reporttypes: 'Cobertura'
-  - task: PublishCodeCoverageResults@1
-    condition: succeededOrFailed()
-    displayName: Publish code coverage to Azure DevOps
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml'

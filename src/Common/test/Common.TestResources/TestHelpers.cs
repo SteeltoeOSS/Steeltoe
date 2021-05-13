@@ -21,7 +21,7 @@ using System.Reflection;
 
 namespace Steeltoe
 {
-    public class TestHelpers
+    public static class TestHelpers
     {
         public static string CreateTempFile(string contents)
         {
