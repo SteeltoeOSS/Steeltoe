@@ -271,26 +271,40 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
         private object ConvertLongStringIfNecessary(object valueArg, Encoding charset)
         {
-            if (valueArg is byte[])
+            switch (valueArg)
             {
-                try
-                {
-                    return charset.GetString((byte[])valueArg);
-                }
-                catch (Exception)
-                {
-                    // Log
-                }
-            }
-            else if (valueArg is List<object>)
-            {
-                var convertedList = new List<object>();
-                foreach (var listValue in (List<object>)valueArg)
-                {
-                    convertedList.Add(ConvertLongStringIfNecessary(listValue, charset));
-                }
+                case byte[] byteValue:
 
-                return convertedList;
+                    try
+                    {
+                        return charset.GetString(byteValue);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger?.LogError(ex, ex.Message);
+                    }
+
+                    break;
+
+                case List<object> listValue:
+
+                    var convertedList = new List<object>();
+                    foreach (var item in listValue)
+                    {
+                        convertedList.Add(ConvertLongStringIfNecessary(item, charset));
+                    }
+
+                    return convertedList;
+
+                case IDictionary<string, object> dictValue:
+
+                    var convertedMap = new Dictionary<string, object>();
+                    foreach (var entry in dictValue)
+                    {
+                        convertedMap.Add(entry.Key, ConvertLongStringIfNecessary(entry.Value, charset));
+                    }
+
+                    return convertedMap;
             }
 
             return valueArg;
