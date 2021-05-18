@@ -56,7 +56,7 @@ jobs:
       feedsToUse: config
       nugetConfigPath: nuget.config
   - task: SonarCloudPrepare@1
-    condition: eq( variables['sonarAnalyze'], 'true' )
+    condition: eq(variables['sonarAnalyze'], 'true')
     displayName: Prepare analysis on SonarCloud
     inputs:
       SonarCloud: SonarCloud
@@ -77,25 +77,37 @@ jobs:
       docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server
       docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
     condition: eq(variables['integrationTests'], 'true')
-    displayName: 'Start Docker services'
+    displayName: Start Docker services
   - task: DotNetCoreCLI@2
     displayName: dotnet test
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "Code coverage" --collect "XPlat Code Coverage" --settings coverlet.runsettings'
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "Code coverage" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Agent.TempDirectory)'
+      publishTestResults: false
   - script: |
       docker kill configserver
       docker rm configserver
       docker kill rabbitmq
       docker rm rabbitmq
     condition: eq(variables['integrationTests'], 'true')
-    displayName: 'Stop Docker services'
+    displayName: Stop Docker services
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    displayName: Publish test results
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: $(Agent.TempDirectory)/*.trx
+      mergeTestResults: true
+  - publish: $(Agent.TempDirectory)/**/*opencover.xml
+    condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
+    displayName: Publish code coverage artifacts
+    artifact: coverageResults-$(Agent.JobName)
   - task: SonarCloudAnalyze@1
-    condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
+    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Run code analysis
   - task: SonarCloudPublish@1
-    condition: and(succeededOrFailed(), eq( variables['sonarAnalyze'], 'true' ))
+    condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Publish quality gate result
   - task: DotNetCoreCLI@2
     condition: eq(variables['package'], 'true')
@@ -104,7 +116,7 @@ jobs:
       command: pack
       feedsToUse: select
       packagesToPack: src/Steeltoe.All.sln
-      packDirectory: '$(Build.ArtifactStagingDirectory)/packages'
+      packDirectory: $(Build.ArtifactStagingDirectory)/packages
       versioningScheme: byEnvVar
       versionEnvVar: PackageVersion
       nobuild: true
@@ -117,10 +129,39 @@ jobs:
       SignClientUser: $(SignClientUser)
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)
-  - publish: '$(Build.ArtifactStagingDirectory)/packages'
+  - publish: $(Build.ArtifactStagingDirectory)/packages
     condition: eq(variables['package'], 'true')
     displayName: Publish build artifacts
     artifact: Packages
-  - bash: bash <(curl -s https://codecov.io/bash) -f '$(Agent.TempDirectory)/*opencover.xml'
-    displayName: 'Upload to codecov.io'
-    condition: and(succeededOrFailed(), or(eq( variables['Agent.OS'], 'Windows_NT' ), eq(variables['integrationTests'], 'true')))
+- job: Wrap_up
+  dependsOn:
+  - Steeltoe_CI
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - download: current
+    artifact: coverageResults-Steeltoe_CI Linux
+    condition: succeededOrFailed()
+    displayName: Download test coverage results from Linux
+    continueOnError: true
+  - download: current
+    artifact: coverageResults-Steeltoe_CI Windows
+    condition: succeededOrFailed()
+    displayName: Download test coverage results from Windows
+    continueOnError: true
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+    condition: succeededOrFailed()
+    displayName: Consolidate code coverage results
+    inputs:
+      reports: $(Pipeline.Workspace)/**/coverage.opencover.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
+      reporttypes: Cobertura
+  - task: PublishCodeCoverageResults@1
+    condition: succeededOrFailed()
+    displayName: Publish code coverage to Azure DevOps
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml
+  - bash: bash <(curl -s https://codecov.io/bash) -f '$(Pipeline.Workspace)/**/*opencover.xml'
+    displayName: Upload to codecov.io
+    condition: succeededOrFailed()
