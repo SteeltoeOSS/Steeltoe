@@ -11,7 +11,32 @@ pr:
 - main
 
 jobs:
+- job: Quick_Response
+  timeoutInMinutes: 20
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: src/Steeltoe.All.sln
+      feedsToUse: config
+      nugetConfigPath: nuget.config
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: src/Steeltoe.All.sln
+      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test
+    inputs:
+      command: test
+      projects: src/Steeltoe.All.sln
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -v n -f net5.0 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
 - job: Steeltoe_CI
+  dependsOn: ['Quick_Response']
   timeoutInMinutes: 90
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -83,7 +108,7 @@ jobs:
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --collect "Code coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
       docker kill configserver
@@ -135,7 +160,7 @@ jobs:
     env:
       SignClientUser: $(SignClientUser)
       SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)
+      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
   - publish: $(Build.ArtifactStagingDirectory)/packages
     condition: eq(variables['package'], 'true')
     displayName: Publish build artifacts
