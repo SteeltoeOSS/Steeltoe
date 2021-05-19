@@ -95,11 +95,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 target.ContentType = source.ContentType();
             }
 
-            if (string.IsNullOrEmpty(target.ContentType))
-            {
-                target.ContentType = RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE;
-            }
-
             if (source.ContentEncoding() != null)
             {
                 target.ContentEncoding = source.ContentEncoding();
@@ -155,10 +150,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             target.Priority = source.Priority;
 
             target.ContentType = source.ContentType;
-            if (string.IsNullOrEmpty(target.ContentType))
-            {
-                target.ContentType = RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE;
-            }
 
             target.ContentEncoding = source.ContentEncoding;
             var correlationId = source.CorrelationId;
