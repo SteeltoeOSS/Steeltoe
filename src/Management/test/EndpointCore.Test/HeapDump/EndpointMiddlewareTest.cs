@@ -19,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         };
 
         [Fact]
-        public async void HandleHeapDumpRequestAsync_ReturnsExpected()
+        public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
         {
             if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
@@ -76,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         }
 
         [Fact]
-        public async void HeapDumpActuator_ReturnsExpectedData()
+        public async Task HeapDumpActuator_ReturnsExpectedData()
         {
             if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {

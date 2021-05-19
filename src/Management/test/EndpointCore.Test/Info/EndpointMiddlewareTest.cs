@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test
@@ -39,7 +40,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         };
 
         [Fact]
-        public async void HandleInfoRequestAsync_ReturnsExpected()
+        public async Task HandleInfoRequestAsync_ReturnsExpected()
         {
             var opts = new InfoEndpointOptions();
             var mopts = new ActuatorManagementOptions();
@@ -56,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
         }
 
         [Fact]
-        public async void InfoActuator_ReturnsExpectedData()
+        public async Task InfoActuator_ReturnsExpectedData()
         {
             // Note: This test pulls in from git.properties and appsettings created
             // in the Startup class

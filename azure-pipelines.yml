@@ -47,15 +47,15 @@ jobs:
       Linux:
         imageName: ubuntu-latest
         skipFilter: '--filter "Category!=SkipOnLinux"'
-        integrationTests: true
         sonarAnalyze: true
+        integrationTests: true
       MacOS:
         imageName: macOS-latest
         skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
       Windows:
         imageName: windows-latest
-        package: true
         skipFilter: '--filter "Category!=Integration"'
+        package: true
   pool:
     vmImage: $(imageName)
   steps:

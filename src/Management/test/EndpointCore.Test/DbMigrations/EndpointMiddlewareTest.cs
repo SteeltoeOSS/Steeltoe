@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations.Test
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         };
 
         [Fact]
-        public async void HandleEntityFrameworkRequestAsync_ReturnsExpected()
+        public async Task HandleEntityFrameworkRequestAsync_ReturnsExpected()
         {
             var opts = new DbMigrationsEndpointOptions();
 
@@ -76,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
         }
 
         [Fact]
-        public async void EntityFrameworkActuator_ReturnsExpectedData()
+        public async Task EntityFrameworkActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()

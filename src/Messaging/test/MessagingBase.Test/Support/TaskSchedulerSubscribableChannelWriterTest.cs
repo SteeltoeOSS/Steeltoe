@@ -26,7 +26,7 @@ namespace Steeltoe.Messaging.Support.Test
         }
 
         [Fact]
-        public async void MessageMustNotBeNull()
+        public async Task MessageMustNotBeNull()
         {
             Exception exception = null;
             try
@@ -95,7 +95,7 @@ namespace Steeltoe.Messaging.Support.Test
         }
 
         [Fact]
-        public async void UnsubscribeTwice()
+        public async Task UnsubscribeTwice()
         {
             var mock = new Mock<IMessageHandler>();
             _handler = mock.Object;

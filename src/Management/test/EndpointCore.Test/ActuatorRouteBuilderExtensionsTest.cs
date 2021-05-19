@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Threading.Tasks;
 using Xunit;
 using EndpointServiceCollectionExtensions = Steeltoe.Management.Endpoint.HeapDump.EndpointServiceCollectionExtensions;
 
@@ -67,7 +68,7 @@ namespace Steeltoe.Management.Endpoint
 
         [Theory]
         [MemberData(nameof(IEndpointImplementationsWithAuth))]
-        public async void MapTestAuthSuccess(Type type, bool authSuccess)
+        public async Task MapTestAuthSuccess(Type type, bool authSuccess)
         {
             // Arrange
             ServiceProvider provider = null;

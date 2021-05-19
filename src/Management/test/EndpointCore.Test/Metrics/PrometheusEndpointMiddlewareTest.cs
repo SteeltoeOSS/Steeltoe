@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
     public class PrometheusEndpointMiddlewareTest : BaseTest
     {
         [Fact]
-        public async void HandlePrometheusRequestAsync_ReturnsExpected()
+        public async Task HandlePrometheusRequestAsync_ReturnsExpected()
         {
             var opts = new PrometheusEndpointOptions();
             var mopts = new ActuatorManagementOptions();
