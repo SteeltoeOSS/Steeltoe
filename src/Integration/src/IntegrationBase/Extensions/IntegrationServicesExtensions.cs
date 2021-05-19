@@ -176,9 +176,7 @@ namespace Steeltoe.Integration.Extensions
             var targetMethods = AttributeUtils.FindMethodsWithAttribute(
                 targetClass,
                 typeof(ServiceActivatorAttribute),
-#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
             foreach (var method in targetMethods)
             {
                 services.AddServiceActivator(method, targetClass);

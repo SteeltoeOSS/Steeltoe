@@ -233,9 +233,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
             if (handlerType != null)
             {
                 var results = new Dictionary<MethodInfo, T>();
-#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 var methods = handlerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 foreach (var method in methods)
                 {
                     var mapping = GetMappingForMethod(method, handlerType);

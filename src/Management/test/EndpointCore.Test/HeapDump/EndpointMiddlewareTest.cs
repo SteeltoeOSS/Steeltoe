@@ -53,7 +53,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
                 var logger4 = loggerFactory.CreateLogger<HeapDumper>();
 
-                // WindowsHeapDumper should be used with .NET Core 3.1 on Windows. HeapDumper should be used with Linux and .NET 5 on Windows. , O
+                // WindowsHeapDumper should be used with .NET Core 3.1 on Windows. HeapDumper should be used with Linux and .NET 5 on Windows
                 var obs = (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
                             ? new WindowsHeapDumper(opts, logger: logger1)
                             : !Platform.IsOSX

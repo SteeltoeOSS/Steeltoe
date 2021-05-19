@@ -166,9 +166,7 @@ namespace Steeltoe.Common.Util
                 throw new InvalidOperationException("No target class set");
             }
 
-#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
             MethodInfo[] candidates = targetClass.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
             var minTypeDiffWeight = int.MaxValue;
             MethodInfo matchingMethod = null;
 

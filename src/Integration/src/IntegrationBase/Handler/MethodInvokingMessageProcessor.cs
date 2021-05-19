@@ -107,9 +107,7 @@ namespace Steeltoe.Integration.Handler
             var results = AttributeUtils.FindMethodsWithAttribute(
                 target.GetType(),
                 attribute,
-#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
 
             if (results.Count != 1)
             {
