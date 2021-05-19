@@ -63,8 +63,8 @@ jobs:
       organization: steeltoeoss
       projectKey: SteeltoeOSS_steeltoe
       extraProperties: |
-          sonar.cs.opencover.reportsPaths=$(Agent.TempDirectory)/**/*opencover.xml
-          sonar.cs.vstest.reportsPaths=$(Agent.TempDirectory)/*.trx
+          sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/**/*opencover.xml
+          sonar.cs.vstest.reportsPaths=$(Build.SourcesDirectory)/*.trx
           sonar.exclusions=$(Build.SourcesDirectory)/src/Management/src/Diagnostics*
           sonar.coverage.exclusions=**/test/**/*
   - task: DotNetCoreCLI@2
@@ -83,7 +83,7 @@ jobs:
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "Code coverage" --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Agent.TempDirectory)'
+      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --collect "Code coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
       docker kill configserver
@@ -97,9 +97,16 @@ jobs:
     displayName: Publish test results
     inputs:
       testResultsFormat: VSTest
-      testResultsFiles: $(Agent.TempDirectory)/*.trx
+      testResultsFiles: '*.trx'
       mergeTestResults: true
-  - publish: $(Agent.TempDirectory)/**/*opencover.xml
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+    condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
+    displayName: Consolidate coverage for this job
+    inputs:
+      reports: $(Build.SourcesDirectory)/**/*opencover.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
+      reporttypes: Cobertura
+  - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
     condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
     artifact: coverageResults-$(Agent.JobName)
@@ -133,6 +140,9 @@ jobs:
     condition: eq(variables['package'], 'true')
     displayName: Publish build artifacts
     artifact: Packages
+  - bash: bash <(curl -s https://codecov.io/bash)
+    displayName: Upload to codecov.io
+    condition: succeededOrFailed()
 - job: Wrap_up
   dependsOn:
   - Steeltoe_CI
@@ -153,7 +163,7 @@ jobs:
     condition: succeededOrFailed()
     displayName: Consolidate code coverage results
     inputs:
-      reports: $(Pipeline.Workspace)/**/coverage.opencover.xml
+      reports: $(Pipeline.Workspace)/**/Cobertura.xml
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
       reporttypes: Cobertura
   - task: PublishCodeCoverageResults@1
@@ -162,6 +172,3 @@ jobs:
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/Cobertura.xml
-  - bash: bash <(curl -s https://codecov.io/bash) -f '$(Pipeline.Workspace)/**/*opencover.xml'
-    displayName: Upload to codecov.io
-    condition: succeededOrFailed()
