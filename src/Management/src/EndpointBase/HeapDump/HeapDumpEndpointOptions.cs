@@ -29,6 +29,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
         public string HeapDumpType { get; set; }
 
         // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
-        public override bool DefaultEnabled { get; } = !Platform.IsCloudFoundry || !Platform.IsLinux;
+        public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
     }
 }

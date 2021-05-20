@@ -42,6 +42,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
                 services.AddActuatorManagementOptions(config);
                 services.AddHeapDumpActuatorServices(config);
 
+                // if running .NET Core on Windows
                 if (RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase) && Platform.IsWindows)
                 {
                     services.TryAddSingleton<IHeapDumper, WindowsHeapDumper>();
