@@ -9,14 +9,13 @@ using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
-    [Obsolete("This class will be removed in a future release. Use HeapDumper instead")]
-    public class LinuxHeapDumper : IHeapDumper
+    public class HeapDumper : IHeapDumper
     {
         private readonly string _basePathOverride;
-        private readonly ILogger<LinuxHeapDumper> _logger;
+        private readonly ILogger<HeapDumper> _logger;
         private readonly IHeapDumpOptions _options;
 
-        public LinuxHeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<LinuxHeapDumper> logger = null)
+        public HeapDumper(IHeapDumpOptions options, string basePathOverride = null, ILogger<HeapDumper> logger = null)
         {
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
@@ -25,7 +24,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public string DumpHeap()
         {
-            string fileName = CreateFileName();
+            var fileName = CreateFileName();
             if (_basePathOverride != null)
             {
                 fileName = _basePathOverride + fileName;
@@ -33,8 +32,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
             try
             {
-                // TODO: Honor option with respect to dump type (how? - IHeapDumpOptions don't seems to have the information)
-                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(DumpType.Full, fileName, false);
+                if (!Enum.TryParse(typeof(DumpType), _options.HeapDumpType, out var dumpType))
+                {
+                    dumpType = DumpType.Full;
+                }
+
+                _logger?.LogInformation($"Attempting to create a '{dumpType}' heap dump");
+                new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump((DumpType)dumpType, fileName, false);
                 return fileName;
             }
             catch (DiagnosticsClientException dcex)

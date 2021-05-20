@@ -33,14 +33,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         {
             if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
-                ServiceCollection services = new ServiceCollection();
+                var services = new ServiceCollection();
                 var appSettings = new Dictionary<string, string>()
                 {
                     ["management:endpoints:enabled"] = "false",
                     ["management:endpoints:path"] = "/cloudfoundryapplication",
-                    ["management:endpoints:heapdump:enabled"] = "false"
+                    ["management:endpoints:heapdump:enabled"] = "false",
+                    ["management:endpoints:heapdump:HeapDumpType"] = "Normal"
                 };
-                ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+                var configurationBuilder = new ConfigurationBuilder();
                 configurationBuilder.AddInMemoryCollection(appSettings);
                 var config = configurationBuilder.Build();
 
@@ -49,6 +50,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 var serviceProvider = services.BuildServiceProvider();
                 var options = serviceProvider.GetService<IHeapDumpOptions>();
                 Assert.NotNull(options);
+                Assert.Equal("Normal", options.HeapDumpType);
                 var repo = serviceProvider.GetService<IHeapDumper>();
                 Assert.NotNull(repo);
                 var ep = serviceProvider.GetService<HeapDumpEndpoint>();

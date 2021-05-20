@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -43,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
+        public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();
@@ -61,7 +62,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -80,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
+        public async Task CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
         {
             // arrange a server and client
             var builder = new WebHostBuilder()

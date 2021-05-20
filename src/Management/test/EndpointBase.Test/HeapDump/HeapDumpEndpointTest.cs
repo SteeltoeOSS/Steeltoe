@@ -9,6 +9,7 @@ using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -32,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void Invoke_CreatesDump()
         {
-            if (Platform.IsWindows)
+            if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
             {
                 using (var tc = new TestContext(_output))
                 {
@@ -53,7 +54,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                     File.Delete(result);
                 }
             }
-            else if (Platform.IsLinux)
+            else if (!Platform.IsOSX)
             {
                 if (typeof(object).Assembly.GetType("System.Index") != null)
                 {
@@ -64,7 +65,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                             services.AddHeapDumpActuatorServices(configuration);
                             services.AddSingleton<IHeapDumper>(sp =>
                             {
-                                return new LinuxHeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<LinuxHeapDumper>>());
+                                return new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>());
                             });
                         };
 
@@ -76,6 +77,10 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                         File.Delete(result);
                     }
                 }
+            }
+            else if (Platform.IsWindows || Platform.IsLinux)
+            {
+                throw new Exception();
             }
         }
     }

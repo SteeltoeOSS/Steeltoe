@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia.Test
@@ -32,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         };
 
         [Fact]
-        public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
+        public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new HypermediaEndpointOptions();
             var mgmtOpts = new ActuatorManagementOptions();
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [InlineData("http://somehost:443", "https://somehost", "https")]
         [InlineData("http://somehost:80", "http://somehost", "http")]
         [InlineData("http://somehost:8080", "http://somehost:8080", "http")]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
+        public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData(string requestUriString, string calculatedHost, string xForwarded)
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -69,7 +70,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         }
 
         [Fact]
-        public async void HypermediaEndpointMiddleware_ServiceContractNotBroken()
+        public async Task HypermediaEndpointMiddleware_ServiceContractNotBroken()
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
@@ -88,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         }
 
         [Fact]
-        public async void HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
+        public async Task HypermediaEndpointMiddleware_Returns_Expected_When_ManagementPath_Is_Slash()
         {
             var settings = new Dictionary<string, string>(appSettings);
             appSettings.Add("Management:Endpoints:Path", "/");
