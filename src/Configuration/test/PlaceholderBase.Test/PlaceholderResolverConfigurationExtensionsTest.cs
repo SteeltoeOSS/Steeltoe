@@ -66,11 +66,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.NotNull(provider._logger);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
-#if NET5_0
-        // https://github.com/dotnet/runtime/issues/30056
         [Trait("Category", "SkipOnMacOS")]
-#endif
         public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
         {
             // Arrange
@@ -103,11 +101,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
-#if NET5_0
-        // https://github.com/dotnet/runtime/issues/30056
         [Trait("Category", "SkipOnMacOS")]
-#endif
         public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
         {
             // Arrange
@@ -139,11 +135,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
-#if NET5_0
-        // https://github.com/dotnet/runtime/issues/30056
         [Trait("Category", "SkipOnMacOS")]
-#endif
         public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
         {
             // Arrange
@@ -188,11 +182,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
-#if NET5_0
-        // https://github.com/dotnet/runtime/issues/30056
         [Trait("Category", "SkipOnMacOS")]
-#endif
         public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
         {
             var appsettingsJson = @"
