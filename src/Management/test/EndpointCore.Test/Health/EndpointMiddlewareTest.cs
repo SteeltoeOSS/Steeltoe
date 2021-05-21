@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -32,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         };
 
         [Fact]
-        public async void HandleHealthRequestAsync_ReturnsExpected()
+        public async Task HandleHealthRequestAsync_ReturnsExpected()
         {
             var opts = new HealthEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void HealthActuator_ReturnsOnlyStatus()
+        public async Task HealthActuator_ReturnsOnlyStatus()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -70,7 +71,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void HealthActuator_ReturnsOnlyStatusWhenAuthorized()
+        public async Task HealthActuator_ReturnsOnlyStatusWhenAuthorized()
         {
             var settings = new Dictionary<string, string>(appSettings)
             {
@@ -94,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void HealthActuator_ReturnsDetailsWhenAuthorized()
+        public async Task HealthActuator_ReturnsDetailsWhenAuthorized()
         {
             var settings = new Dictionary<string, string>(appSettings)
             {
@@ -125,7 +126,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void HealthActuator_ReturnsDetails()
+        public async Task HealthActuator_ReturnsDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);
 
@@ -149,7 +150,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void HealthActuator_ReturnsMicrosoftHealthDetails()
+        public async Task HealthActuator_ReturnsMicrosoftHealthDetails()
         {
             var settings = new Dictionary<string, string>(appSettings);
 
@@ -172,7 +173,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void TestDI()
+        public async Task TestDI()
         {
             var settings = new Dictionary<string, string>(appSettings);
 
@@ -195,7 +196,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void GetStatusCode_ReturnsExpected()
+        public async Task GetStatusCode_ReturnsExpected()
         {
             var builder = new WebHostBuilder().ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(appSettings)).UseStartup<Startup>();
 
@@ -277,7 +278,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         }
 
         [Fact]
-        public async void GetStatusCode_MicrosoftAggregator_ReturnsExpected()
+        public async Task GetStatusCode_MicrosoftAggregator_ReturnsExpected()
         {
             var builder = new WebHostBuilder()
               .UseStartup<Startup>()

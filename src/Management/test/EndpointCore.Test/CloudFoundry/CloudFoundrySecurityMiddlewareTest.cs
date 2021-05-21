@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -24,7 +25,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
+        public async Task CloudFoundrySecurityMiddleware_ReturnsServiceUnavailable()
         {
             var appSettings = new Dictionary<string, string>()
             {
@@ -137,7 +138,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_ReturnsWithStatusOverride()
+        public async Task CloudFoundrySecurityMiddleware_ReturnsWithStatusOverride()
         {
             var appSettings = new Dictionary<string, string>()
             {
@@ -196,7 +197,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_ReturnsSecurityException()
+        public async Task CloudFoundrySecurityMiddleware_ReturnsSecurityException()
         {
             var appSettings = new Dictionary<string, string>()
             {
@@ -228,7 +229,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_ReturnsError()
+        public async Task CloudFoundrySecurityMiddleware_ReturnsError()
         {
             var mgmtOptions = new CloudFoundryManagementOptions();
 
@@ -242,7 +243,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
+        public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalse()
         {
             var appSettings = new Dictionary<string, string>()
             {
@@ -275,7 +276,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
+        public async Task CloudFoundrySecurityMiddleware_SkipsSecurityCheckIfEnabledFalseViaEnvVariables()
         {
             Environment.SetEnvironmentVariable("MANAGEMENT__ENDPOINTS__CLOUDFOUNDRY__ENABLED", "False");
             var appSettings = new Dictionary<string, string>()
@@ -327,7 +328,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void GetPermissions_ReturnsExpected()
+        public async Task GetPermissions_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
             var mgmtOptions = new CloudFoundryManagementOptions();

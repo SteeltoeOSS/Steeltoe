@@ -49,7 +49,7 @@ namespace Steeltoe.Common.Security.Test
             if (config["certificate"] == null)
             {
                 // wait a little longer
-                await Task.Delay(2000);
+                await Task.Delay(4000);
             }
 
             Assert.Equal("cert2", config["certificate"]);

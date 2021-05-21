@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Refresh.Test
@@ -32,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         };
 
         [Fact]
-        public async void HandleRefreshRequestAsync_ReturnsExpected()
+        public async Task HandleRefreshRequestAsync_ReturnsExpected()
         {
             var opts = new RefreshEndpointOptions();
             var mopts = new ActuatorManagementOptions();
@@ -55,7 +56,7 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
         }
 
         [Fact]
-        public async void RefreshActuator_ReturnsExpectedData()
+        public async Task RefreshActuator_ReturnsExpectedData()
         {
             var anc_env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);

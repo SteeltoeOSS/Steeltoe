@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
@@ -32,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         };
 
         [Fact]
-        public async void HandleTraceRequestAsync_ReturnsExpected()
+        public async Task HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
@@ -50,7 +51,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
+        public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
@@ -68,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        public async void TraceActuator_ReturnsExpectedData()
+        public async Task TraceActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()

@@ -18,6 +18,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test
@@ -35,7 +36,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         };
 
         [Fact]
-        public async void HandleLoggersRequestAsync_ReturnsExpected()
+        public async Task HandleLoggersRequestAsync_ReturnsExpected()
         {
             var opts = new LoggersEndpointOptions();
             var mopts = new ActuatorManagementOptions();
@@ -51,7 +52,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_ReturnsExpectedData()
+        public async Task LoggersActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
@@ -73,7 +74,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_ReturnsBadRequest()
+        public async Task LoggersActuator_ReturnsBadRequest()
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
@@ -92,7 +93,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_AcceptsPost()
+        public async Task LoggersActuator_AcceptsPost()
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
@@ -114,7 +115,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_AcceptsPost_When_ManagementPath_Is_Slash()
+        public async Task LoggersActuator_AcceptsPost_When_ManagementPath_Is_Slash()
         {
             var appSettings = new Dictionary<string, string>(AppSettings);
             appSettings["management:endpoints:path"] = "/";
@@ -140,7 +141,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_UpdateNameSpace_UpdatesChildren()
+        public async Task LoggersActuator_UpdateNameSpace_UpdatesChildren()
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
@@ -177,7 +178,7 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         }
 
         [Fact]
-        public async void LoggersActuator_MultipleProviders_ReturnsExpectedData()
+        public async Task LoggersActuator_MultipleProviders_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                .UseStartup<Startup>()
