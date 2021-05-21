@@ -273,7 +273,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
+        public async Task TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");
             var latch = new CountdownEvent(1);

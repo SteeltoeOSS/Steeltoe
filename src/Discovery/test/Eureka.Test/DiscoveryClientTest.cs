@@ -36,7 +36,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
+        public async System.Threading.Tasks.Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
         {
             var json = @"
                 { 
@@ -126,7 +126,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
+        public async System.Threading.Tasks.Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
         {
             var json = @"
                 { 
@@ -230,7 +230,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
+        public async System.Threading.Tasks.Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -269,7 +269,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+        public async System.Threading.Tasks.Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -309,7 +309,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void RenewAsync_Registers_When404StatusReturned()
+        public async System.Threading.Tasks.Task RenewAsync_Registers_When404StatusReturned()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -350,7 +350,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void RenewAsync_ReturnsTrue_WhenOKStatusReturned()
+        public async System.Threading.Tasks.Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -384,7 +384,7 @@ namespace Steeltoe.Discovery.Eureka.Test
         }
 
         [Fact]
-        public async void UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
+        public async System.Threading.Tasks.Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;

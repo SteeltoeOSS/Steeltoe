@@ -64,7 +64,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        public async void TestSingleBucketGetsStored()
+        public async Task TestSingleBucketGetsStored()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-B");
             var latch = new CountdownEvent(1);
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         // FAILURE
         // TIMEOUT
         [Fact]
-        public async void TestSingleBucketWithMultipleEventTypes()
+        public async Task TestSingleBucketWithMultipleEventTypes()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-C");
             var latch = new CountdownEvent(1);
@@ -123,7 +123,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        public async void TestShortCircuitedCommandDoesNotGetLatencyTracked()
+        public async Task TestShortCircuitedCommandDoesNotGetLatencyTracked()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-D");
             var latch = new CountdownEvent(1);
@@ -168,7 +168,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
+        public async Task TestThreadPoolRejectedCommandDoesNotGetLatencyTracked()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-E");
             var latch = new CountdownEvent(1);
@@ -205,7 +205,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
+        public async Task TestSemaphoreRejectedCommandDoesNotGetLatencyTracked()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-F");
             var latch = new CountdownEvent(1);
@@ -269,7 +269,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestMultipleBucketsBothGetStored()
+        public async Task TestMultipleBucketsBothGetStored()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-H");
             var latch = new CountdownEvent(1);
@@ -302,7 +302,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        public async void TestMultipleBucketsBothGetStoredAndThenAgeOut()
+        public async Task TestMultipleBucketsBothGetStoredAndThenAgeOut()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Latency-I");
             var latch = new CountdownEvent(1);

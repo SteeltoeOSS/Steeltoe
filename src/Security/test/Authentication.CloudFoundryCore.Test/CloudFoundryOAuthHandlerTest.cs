@@ -13,6 +13,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -20,7 +21,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     public class CloudFoundryOAuthHandlerTest
     {
         [Fact]
-        public async void ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
+        public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -51,7 +52,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void ExchangeCodeAsync_SendsTokenRequest_ReturnsErrorResponse()
+        public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsErrorResponse()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
@@ -143,7 +144,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CreateTicketAsync_SendsTokenInfoRequest_ReturnsValidTokenInfo()
+        public async Task CreateTicketAsync_SendsTokenInfoRequest_ReturnsValidTokenInfo()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)

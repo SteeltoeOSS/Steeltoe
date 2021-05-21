@@ -40,7 +40,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
-        public async void RegisterAsync_CallsServiceRegister_AddsHeartbeatToScheduler()
+        public async Task RegisterAsync_CallsServiceRegister_AddsHeartbeatToScheduler()
         {
             var clientMoq = new Mock<IConsulClient>();
             var agentMoq = new Mock<IAgentEndpoint>();
@@ -83,7 +83,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
-        public async void DeregisterAsync_CallsServiceDeregister_RemovesHeartbeatFromScheduler()
+        public async Task DeregisterAsync_CallsServiceDeregister_RemovesHeartbeatFromScheduler()
         {
             var clientMoq = new Mock<IConsulClient>();
             var agentMoq = new Mock<IAgentEndpoint>();
@@ -152,7 +152,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
-        public async void SetStatusAsync_CallsConsulClient()
+        public async Task SetStatusAsync_CallsConsulClient()
         {
             var clientMoq = new Mock<IConsulClient>();
             var agentMoq = new Mock<IAgentEndpoint>();
@@ -193,7 +193,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test
         }
 
         [Fact]
-        public async void GetStatusAsync_ReturnsExpected()
+        public async Task GetStatusAsync_ReturnsExpected()
         {
             var opts = new ConsulDiscoveryOptions();
             var builder = new ConfigurationBuilder()
