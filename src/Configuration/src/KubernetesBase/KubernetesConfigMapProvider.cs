@@ -4,11 +4,14 @@
 
 using k8s;
 using k8s.Models;
+using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Threading;
 
@@ -16,6 +19,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
     {
+        private const string ConfigFileKey = "appsettings.json";
+
         private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
 
         internal KubernetesConfigMapProvider(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken cancellationToken = default)
@@ -63,6 +68,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 K8sClient.Dispose();
                 K8sClient = null;
             }
+        }
+
+        private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)
+        {
+            var exposedJsonConfigurationProvider =
+                new ExposedJsonStreamConfigurationParser(new JsonStreamConfigurationSource { Stream = jsonFileContents });
+            exposedJsonConfigurationProvider.Load();
+            return exposedJsonConfigurationProvider.GetData();
         }
 
         private static string NormalizeKey(string key) => key.Replace("__", ":");
@@ -121,11 +134,52 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 foreach (var data in item?.Data)
                 {
-                    configMapContents[NormalizeKey(data.Key)] = data.Value;
+                    // Should this check for application.{env.Environment}.json as well?
+                    if (string.Equals(data.Key, ConfigFileKey, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        using var stream = this.GenerateStreamFromString(data.Value);
+                        var jsonConfiguration = ParseConfigMapFile(stream);
+
+                        // Give precedence to overrides in the configmap, so ignore duplicate keys
+                        foreach (var jsonKey in jsonConfiguration.Keys.Where(k => !item.Data.Keys.Contains(k)))
+                        {
+                            configMapContents[NormalizeKey(jsonKey)] = jsonConfiguration[jsonKey];
+                        }
+                    }
+                    else
+                    {
+                        configMapContents[NormalizeKey(data.Key)] = data.Value;
+                    }
                 }
             }
 
             Data = configMapContents;
+        }
+
+        private Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
+        }
+
+        /// <summary>
+        /// A private class to get access to Data while still using the JsonStreamConfigurationProvider
+        /// to parse the value of an appsettings.json key in a ConfigMap.
+        /// This requires a dependency on the Microsoft.Extensions.Configuration.Json package,
+        /// but will ensure users' appsettings.json values will be parsed consistently.
+        /// </summary>
+        private class ExposedJsonStreamConfigurationParser : JsonStreamConfigurationProvider
+        {
+            public ExposedJsonStreamConfigurationParser(JsonStreamConfigurationSource source)
+                : base(source)
+            {
+            }
+
+            public IDictionary<string, string> GetData() => this.Data;
         }
     }
 }
