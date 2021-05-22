@@ -386,7 +386,7 @@ namespace Steeltoe.Common.Converter
         internal static Type MakeGenericDictionaryType(Type type)
         {
             var keyType = type.GetGenericArguments()[0];
-            var valType = type.GetGenericArguments()[0];
+            var valType = type.GetGenericArguments()[1];
             return typeof(Dictionary<,>).MakeGenericType(new Type[] { keyType, valType });
         }
     }

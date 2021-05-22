@@ -62,7 +62,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 _applicationContext = value;
                 if (_applicationContext != null)
                 {
-                    Resolver = _applicationContext.ServiceExpressionResolver;
+                    Resolver = _applicationContext.ServiceExpressionResolver ?? new StandardServiceExpressionResolver();
                     ExpressionContext = new ServiceExpressionContext(_applicationContext);
                 }
             }
