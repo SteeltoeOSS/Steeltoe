@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
@@ -28,7 +29,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
         }
 
         [Fact]
-        public async void Endpoint_ReturnsHeaders()
+        public async Task Endpoint_ReturnsHeaders()
         {
             var builder = new WebHostBuilder().UseStartup<Startup>();
             using var server = new TestServer(builder);

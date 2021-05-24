@@ -49,7 +49,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestEmptyStreamProducesZeros()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-A");
@@ -68,8 +67,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleSuccess()
+        public async Task TestSingleSuccess()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-B");
 
@@ -90,8 +88,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleFailure()
+        public async Task TestSingleFailure()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-C");
 
@@ -113,8 +110,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleTimeout()
+        public async Task TestSingleTimeout()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-D");
             var latch = new CountdownEvent(1);
@@ -136,8 +132,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleBadRequest()
+        public async Task TestSingleBadRequest()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-E");
             var latch = new CountdownEvent(1);
@@ -159,8 +154,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestRequestFromCache()
+        public async Task TestRequestFromCache()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-F");
             var latch = new CountdownEvent(1);
@@ -186,7 +180,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuited()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-G");
@@ -227,8 +220,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSemaphoreRejected()
+        public async Task TestSemaphoreRejected()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-H");
             var latch = new CountdownEvent(1);
@@ -275,7 +267,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestThreadPoolRejected()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-I");
@@ -320,8 +311,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackFailure()
+        public async Task TestFallbackFailure()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-J");
             var latch = new CountdownEvent(1);
@@ -344,8 +334,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackMissing()
+        public async Task TestFallbackMissing()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-K");
             var latch = new CountdownEvent(1);
@@ -369,8 +358,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackRejection()
+        public async Task TestFallbackRejection()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-L");
             var latch = new CountdownEvent(1);
@@ -417,7 +405,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCancelled()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-M");
@@ -462,7 +449,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCollapsed()
         {
             var key = HystrixCommandKeyDefault.AsKey("BatchCommand");
@@ -490,8 +476,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestMultipleEventsOverTimeGetStoredAndNeverAgeOut()
+        public async Task TestMultipleEventsOverTimeGetStoredAndNeverAgeOut()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-CumulativeCounter-N");
             var latch = new CountdownEvent(1);

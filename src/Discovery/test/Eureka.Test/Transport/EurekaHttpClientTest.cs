@@ -47,7 +47,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void Register_Throws_IfInstanceInfoNull()
+        public async System.Threading.Tasks.Task Register_Throws_IfInstanceInfoNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -56,7 +56,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
+        public async System.Threading.Tasks.Task RegisterAsync_ThrowsHttpRequestException_ServerTimeout()
         {
             var config = new EurekaClientConfig()
             {
@@ -68,7 +68,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+        public async System.Threading.Tasks.Task RegisterAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -94,7 +94,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void RegisterAsync_SendsValidPOSTData()
+        public async System.Threading.Tasks.Task RegisterAsync_SendsValidPOSTData()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -136,7 +136,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void SendHeartbeat_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -145,7 +145,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void SendHeartbeat_Throws_IfIdNull()
+        public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfIdNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -154,7 +154,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void SendHeartbeat_Throws_IfInstanceInfoNull()
+        public async System.Threading.Tasks.Task SendHeartbeat_Throws_IfInstanceInfoNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -163,7 +163,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+        public async System.Threading.Tasks.Task SendHeartBeatAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -198,7 +198,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
+        public async System.Threading.Tasks.Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
         {
             var json = @"
                 { 
@@ -275,7 +275,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetVipAsync_Throws_IfVipAddressNull()
+        public async System.Threading.Tasks.Task GetVipAsync_Throws_IfVipAddressNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -284,7 +284,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetSecureVipAsync_Throws_IfVipAddressNull()
+        public async System.Threading.Tasks.Task GetSecureVipAsync_Throws_IfVipAddressNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -293,7 +293,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetApplicationAsync_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task GetApplicationAsync_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -302,7 +302,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
+        public async System.Threading.Tasks.Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
         {
             var json = @"
                 {
@@ -372,7 +372,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
+        public async System.Threading.Tasks.Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
         {
             var json = @"
                 {
@@ -443,7 +443,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetInstanceAsync_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -452,7 +452,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
+        public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfAppNameNotNullAndIDNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -461,7 +461,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetInstanceAsync_Throws_IfIDNull()
+        public async System.Threading.Tasks.Task GetInstanceAsync_Throws_IfIDNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -470,7 +470,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
+        public async System.Threading.Tasks.Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
         {
             var json = @"
                 { 
@@ -534,7 +534,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
+        public async System.Threading.Tasks.Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
         {
             var json = @"
                 { 
@@ -599,7 +599,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void CancelAsync_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task CancelAsync_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -608,7 +608,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void CancelAsync_Throws_IfAppNameNotNullAndIDNull()
+        public async System.Threading.Tasks.Task CancelAsync_Throws_IfAppNameNotNullAndIDNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -617,7 +617,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+        public async System.Threading.Tasks.Task CancelAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -645,7 +645,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void StatusUpdateAsync_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -654,7 +654,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void StatusUpdateAsync_Throws_IfIdNull()
+        public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfIdNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -663,7 +663,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void StatusUpdateAsync_Throws_IfInstanceInfoNull()
+        public async System.Threading.Tasks.Task StatusUpdateAsync_Throws_IfInstanceInfoNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -672,7 +672,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+        public async System.Threading.Tasks.Task StatusUpdateAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;
@@ -703,7 +703,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void DeleteStatusOverrideAsync_Throws_IfAppNameNull()
+        public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfAppNameNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -712,7 +712,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void DeleteStatusOverrideAsync_Throws_IfIdNull()
+        public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfIdNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -721,7 +721,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
+        public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_Throws_IfInstanceInfoNull()
         {
             var config = new EurekaClientConfig();
             var client = new EurekaHttpClient(config);
@@ -730,7 +730,7 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         }
 
         [Fact]
-        public async void DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
+        public async System.Threading.Tasks.Task DeleteStatusOverrideAsync_InvokesServer_ReturnsStatusCodeAndHeaders()
         {
             var envir = HostingHelpers.GetHostingEnvironment();
             TestConfigServerStartup.Response = string.Empty;

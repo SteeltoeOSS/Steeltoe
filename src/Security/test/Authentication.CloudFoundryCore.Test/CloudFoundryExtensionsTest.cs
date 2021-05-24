@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -80,7 +81,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             }";
 
         [Fact]
-        public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
+        public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
         {
             var builder = GetHostBuilder<TestServerStartup>();
             using var server = new TestServer(builder);
@@ -92,7 +93,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
+        public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
@@ -112,7 +113,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
+        public async Task AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
         {
             var builder = GetHostBuilder<TestServerJwtStartup>();
             using var server = new TestServer(builder);
@@ -122,7 +123,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void AddCloudFoundryOpenId_AddsIntoPipeline()
+        public async Task AddCloudFoundryOpenId_AddsIntoPipeline()
         {
             Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse);
             Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
@@ -138,7 +139,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
+        public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
         {
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
