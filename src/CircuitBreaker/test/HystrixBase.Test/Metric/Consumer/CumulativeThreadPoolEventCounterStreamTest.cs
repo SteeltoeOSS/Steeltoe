@@ -71,7 +71,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleSuccess()
+        public async Task TestSingleSuccess()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-B");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-B");
@@ -96,7 +96,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleFailure()
+        public async Task TestSingleFailure()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-C");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-C");
@@ -122,7 +122,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleTimeout()
+        public async Task TestSingleTimeout()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-D");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-D");
@@ -146,7 +146,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSingleBadRequest()
+        public async Task TestSingleBadRequest()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-E");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-E");
@@ -171,7 +171,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestRequestFromCache()
+        public async Task TestRequestFromCache()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-F");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-F");
@@ -202,7 +202,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestShortCircuited()
+        public async Task TestShortCircuited()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-G");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-G");
@@ -247,7 +247,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestSemaphoreRejected()
+        public async Task TestSemaphoreRejected()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-H");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-H");
@@ -347,7 +347,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackFailure()
+        public async Task TestFallbackFailure()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-J");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-J");
@@ -372,7 +372,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackMissing()
+        public async Task TestFallbackMissing()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-K");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-K");
@@ -398,7 +398,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestFallbackRejection()
+        public async Task TestFallbackRejection()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-L");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-L");
@@ -451,7 +451,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
         // in a rolling window, take(20) would age out all counters.  in the cumulative count, we expect them to remain non-zero forever
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestMultipleEventsOverTimeGetStoredAndDoNotAgeOut()
+        public async Task TestMultipleEventsOverTimeGetStoredAndDoNotAgeOut()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("Cumulative-ThreadPool-M");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("Cumulative-ThreadPool-M");

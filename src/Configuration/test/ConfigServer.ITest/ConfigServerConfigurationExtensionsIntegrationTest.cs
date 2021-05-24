@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
@@ -68,7 +69,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
+        public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // These settings match the default java config server
             var appsettings = @"
@@ -116,7 +117,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
+        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // Arrange
             var vcap_application = @" 
@@ -211,7 +212,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
+        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
         {
             // Arrange
             var vcap_application = @" 
@@ -401,7 +402,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
+        public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
         {
             // These settings match the default java config server
             var appsettings = @"

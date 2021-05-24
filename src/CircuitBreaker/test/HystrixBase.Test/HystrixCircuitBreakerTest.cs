@@ -28,7 +28,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitAsync()
         {
             var key = "cmd-A";
@@ -75,7 +74,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnFailuresAboveThreshold()
         {
             var key = "cmd-B";
@@ -117,7 +115,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitDoesNotTripOnFailuresBelowThreshold()
         {
             var key = "cmd-C";
@@ -159,7 +156,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeouts()
         {
             var key = "cmd-D";
@@ -191,7 +187,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeoutsAboveThreshold()
         {
             var key = "cmd-E";
@@ -238,7 +233,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
             var key = "cmd-F";
@@ -281,7 +275,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitClosedAfterSuccess()
         {
             var key = "cmd-G";
@@ -338,7 +331,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestMultipleTimeWindowRetriesBeforeClosingCircuit()
         {
             var key = "cmd-H";

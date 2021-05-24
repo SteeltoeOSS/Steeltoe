@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     public class HystrixRequestContextMiddlewareTest
     {
         [Fact]
-        public async void Invoke_CreatesContext_ThenDisposes()
+        public async Task Invoke_CreatesContext_ThenDisposes()
         {
             RequestDelegate del = (ctx) =>
             {
