@@ -578,6 +578,14 @@ namespace Steeltoe.Common.Converter.Test
         }
 
         [Fact]
+        public void ConvertListToDictionaryAssignableTarget()
+        {
+            IList<object> source = new List<object>() { new Dictionary<string, object>() { ["test"] = 3 } };
+            var result = ConversionService.Convert<IDictionary<string, object>>(source);
+            Assert.Equal(3, result["test"]);
+        }
+
+        [Fact]
         public void ConvertObjectToCollection()
         {
             var result = ConversionService.Convert<List<long>>(3L);
