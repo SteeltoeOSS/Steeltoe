@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Health
             // run all HealthCheckRegistration checks in parallel
             Parallel.ForEach(healthCheckRegistrations, registration =>
             {
-                var contributorName = GetKey(keyList, registration.Name);
+                var contributorName = GetKey(ref keyList, registration.Name);
                 HealthCheckResult healthCheckResult = null;
                 try
                 {
