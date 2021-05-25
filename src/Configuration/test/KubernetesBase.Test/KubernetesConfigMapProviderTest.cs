@@ -192,15 +192,14 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         }
 
         [Fact]
-        public void KubernetesConfigMapProvider_AddsJsonFileToDictionaryWithConfigMapOverridesOnSuccess()
+        public void KubernetesConfigMapProvider_AddsEnvSpecificJsonFileToDictionaryOnSuccess()
         {
             // arrange
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             mockHttpMessageHandler
                 .Expect(HttpMethod.Get, "*")
                 .Respond(new StringContent("{\"kind\":\"ConfigMap\",\"apiVersion\":\"v1\",\"metadata\":{\"name\":\"testconfigmap\",\"namespace\":\"default\",\"selfLink\":\"/api/v1/namespaces/default/configmaps/testconfigmap\",\"uid\":\"8582b94c-f4fa-47fa-bacc-47019223775c\",\"resourceVersion\":\"1320622\",\"creationTimestamp\":\"2020-04-15T18:33:49Z\",\"annotations\":{\"kubectl.kubernetes.io/last-applied-configuration\":\"{\\\"apiVersion\\\":\\\"v1\\\",\\\"data\\\":{\\\"ConfigMapName\\\":\\\"testconfigmap\\\"},\\\"kind\\\":\\\"ConfigMap\\\",\\\"metadata\\\":{\\\"annotations\\\":{},\\\"name\\\":\\\"kubernetes1\\\",\\\"namespace\\\":\\\"default\\\"}}\\n\"}},\"data\":{" +
-                                           "\"Test0\": \"Value5\",\n" +
-                                           "\"appsettings.json\": \"{\n  \\\"Test0\\\": \\\"Value0\\\",\n  \\\"Test1\\\": [\n    {\n      \\\"Test2\\\": \\\"Value1\\\"\n    }\n  ]\n}\"" +
+                                           "\"appsettings.demo.json\": \"{\n  \\\"Test0\\\": \\\"Value0\\\",\n  \\\"Test1\\\": [\n    {\n      \\\"Test2\\\": \\\"Value1\\\"\n    }\n  ]\n}\"" +
                                            "}\n}\n"));
 
             using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, httpClient: mockHttpMessageHandler.ToHttpClient());
@@ -212,7 +211,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 
             // assert
             Assert.True(provider.TryGet("Test0", out var testValue));
-            Assert.Equal("Value5", testValue);
+            Assert.Equal("Value0", testValue);
 
             Assert.True(provider.TryGet("Test1:0:Test2", out var testValue2));
             Assert.Equal("Value1", testValue2);

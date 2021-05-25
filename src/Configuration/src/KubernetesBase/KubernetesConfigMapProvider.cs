@@ -19,7 +19,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     internal class KubernetesConfigMapProvider : KubernetesProviderBase, IDisposable
     {
-        private const string ConfigFileKey = "appsettings.json";
+        private const string ConfigFileKeyPrefix = "appsettings";
+        private const string ConfigFileKeySuffix = "json";
 
         private Watcher<V1ConfigMap> ConfigMapWatcher { get; set; }
 
@@ -134,14 +135,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
                 foreach (var data in item?.Data)
                 {
-                    // Should this check for application.{env.Environment}.json as well?
-                    if (string.Equals(data.Key, ConfigFileKey, StringComparison.InvariantCultureIgnoreCase))
+                    if (IsAppsettingsKey(data.Key))
                     {
                         using var stream = this.GenerateStreamFromString(data.Value);
                         var jsonConfiguration = ParseConfigMapFile(stream);
 
-                        // Give precedence to overrides in the configmap, so ignore duplicate keys
-                        foreach (var jsonKey in jsonConfiguration.Keys.Where(k => !item.Data.Keys.Contains(k)))
+                        foreach (var jsonKey in jsonConfiguration.Keys)
                         {
                             configMapContents[NormalizeKey(jsonKey)] = jsonConfiguration[jsonKey];
                         }
@@ -154,6 +153,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             }
 
             Data = configMapContents;
+        }
+
+        private bool IsAppsettingsKey(string key)
+        {
+            return key.StartsWith(ConfigFileKeyPrefix, StringComparison.InvariantCultureIgnoreCase) &&
+                key.EndsWith(ConfigFileKeySuffix, StringComparison.InvariantCultureIgnoreCase);
         }
 
         private Stream GenerateStreamFromString(string s)
