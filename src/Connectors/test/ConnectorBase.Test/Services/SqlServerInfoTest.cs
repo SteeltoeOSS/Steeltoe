@@ -22,5 +22,17 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.Equal("Dd6O1BPXUHdrmzbP", r1.UserName);
             Assert.Equal("de5aa3a747c134b3d8780f8cc80be519e", r1.Path);
         }
+
+        [Fact]
+        public void Handle_Properly_Special_Characters_In_Password()
+        {
+            var uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
+            var r1 = new SqlServerServiceInfo("myId", uri, "fake+Username", "fakePass+word");
+            Assert.Equal("fake+Username", r1.UserName);
+            Assert.Equal("fakePass+word", r1.Password);
+            var r2 = new SqlServerServiceInfo("myId", uri, "fake Username", "fakePass word");
+            Assert.Equal("fake Username", r2.UserName);
+            Assert.Equal("fakePass word", r2.Password);
+        }
     }
 }
