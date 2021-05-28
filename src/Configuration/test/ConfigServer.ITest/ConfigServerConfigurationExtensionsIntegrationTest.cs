@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using Steeltoe.Extensions.Configuration.ConfigServer;
 using System.IO;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
@@ -69,7 +69,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
+        public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // These settings match the default java config server
             var appsettings = @"
@@ -117,7 +117,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
+        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
         {
             // Arrange
             var vcap_application = @" 
@@ -212,7 +212,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
+        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
         {
             // Arrange
             var vcap_application = @" 
@@ -402,7 +402,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
         [Fact]
         [Trait("Category", "Integration")]
-        public async void SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
+        public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
         {
             // These settings match the default java config server
             var appsettings = @"
@@ -440,8 +440,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
 
-            // after switching to new config server image, this value now ends with " (document #0),"
-            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/application.yml", result);
+            // after switching to newer config server image, the health response has changed to
+            // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
+            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config", result);
         }
     }
 }
