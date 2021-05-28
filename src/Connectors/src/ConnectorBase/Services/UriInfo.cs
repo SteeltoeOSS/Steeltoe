@@ -19,8 +19,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             Scheme = scheme;
             Host = host;
             Port = port;
-            UserName = WebUtility.UrlEncode(username?.Replace("+", "-plus-")?.Replace(" ", "-space-"));
-            Password = WebUtility.UrlEncode(password?.Replace("+", "-plus-")?.Replace(" ", "-space-"));
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             Path = path;
             Query = query;
 
@@ -66,8 +66,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
             }
 
-            UserName = WebUtility.UrlEncode(username?.Replace("+", "-plus-")?.Replace(" ", "-space-"));
-            Password = WebUtility.UrlEncode(password?.Replace("+", "-plus-")?.Replace(" ", "-space-"));
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             UriString = uristring;
         }
 
@@ -105,8 +105,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                     Scheme = scheme,
                     Host = host,
                     Port = port,
-                    UserName = WebUtility.UrlEncode(username?.Replace("+", "-plus-")?.Replace(" ", "-space-")),
-                    Password = WebUtility.UrlEncode(password?.Replace("+", "-plus-")?.Replace(" ", "-space-")),
+                    UserName = WebUtility.UrlEncode(username),
+                    Password = WebUtility.UrlEncode(password),
                     Path = cleanedPath
                 };
                 return builder.Uri;

@@ -24,15 +24,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
         }
 
         [Fact]
-        public void Handle_Properly_Special_Characters_In_Password()
+        public void SpecialCharactersInCredentials_AreHandled()
         {
             var uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
-            var r1 = new SqlServerServiceInfo("myId", uri, "fake+Username", "fakePass+word");
-            Assert.Equal("fake+Username", r1.UserName);
-            Assert.Equal("fakePass+word", r1.Password);
-            var r2 = new SqlServerServiceInfo("myId", uri, "fake Username", "fakePass word");
-            Assert.Equal("fake Username", r2.UserName);
-            Assert.Equal("fakePass word", r2.Password);
+            var r1 = new SqlServerServiceInfo("myId", uri, "!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", "[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~");
+            Assert.Equal("!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", r1.UserName);
+            Assert.Equal("[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~", r1.Password);
         }
     }
 }

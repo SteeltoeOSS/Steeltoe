@@ -30,9 +30,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
 
         public string Uri => Info.UriString;
 
-        public string UserName => WebUtility.UrlDecode(Info.UserName)?.Replace("-plus-", "+")?.Replace("-space-", " ");
+        public string UserName => WebUtility.UrlDecode(Info.UserName);
 
-        public string Password => WebUtility.UrlDecode(Info.Password)?.Replace("-plus-", "+")?.Replace("-space-", " ");
+        public string Password => WebUtility.UrlDecode(Info.Password);
 
         public string Host => Info.Host;
 
