@@ -4,6 +4,7 @@
 
 #pragma warning disable 0436
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -16,6 +17,7 @@ using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
+using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
@@ -242,7 +244,8 @@ namespace Steeltoe.Bootstrap.Autoconfig
         #endregion
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDiscoveryClient(this IHostBuilder hostBuilder) => hostBuilder.AddDiscoveryClient().Log(LogMessages.WireDiscoveryClient);
+        private static void WireDiscoveryClient(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDistributedTracing(this IHostBuilder hostBuilder) =>

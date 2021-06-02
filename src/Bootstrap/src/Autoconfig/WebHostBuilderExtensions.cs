@@ -5,6 +5,7 @@
 #pragma warning disable 0436
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -17,6 +18,7 @@ using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
+using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
@@ -118,7 +120,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
             }
 
             hostBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.Steeltoe_Extensions_Logging_DynamicSerilogCore);
-            hostBuilder.WireIfLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
+            hostBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.Steeltoe_Discovery_ClientBase, SteeltoeAssemblies.Steeltoe_Discovery_ClientCore);
 
             if (IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_KubernetesCore) || IsAssemblyLoaded(SteeltoeAssemblies.Steeltoe_Management_CloudFoundryCore))
             {
@@ -242,7 +244,8 @@ namespace Steeltoe.Bootstrap.Autoconfig
         #endregion
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) => hostBuilder.AddDiscoveryClient().Log(LogMessages.WireDiscoveryClient);
+        private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDistributedTracing(this IWebHostBuilder hostBuilder) =>

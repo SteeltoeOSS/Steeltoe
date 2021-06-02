@@ -46,7 +46,8 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             { "eureka:client:shouldRegister", "true" },
             { "eureka:client:eurekaServer:connectTimeoutSeconds", "1" },
             { "eureka:client:eurekaServer:retryCount", "0" },
-            { "redis:client:abortOnConnectFail", "false" }
+            { "redis:client:abortOnConnectFail", "false" },
+            { "redis:client:connectTimeout", "1" }
         };
 
         [Fact]
