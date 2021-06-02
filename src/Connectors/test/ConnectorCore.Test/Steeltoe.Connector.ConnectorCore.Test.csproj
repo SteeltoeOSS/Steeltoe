@@ -18,8 +18,7 @@
     <PackageReference Include="Npgsql" Version="$(NpgsqlVersion)" />
     
     <!--<PackageReference Include="MySqlConnector" Version="$(MySqlConnectorVersion)" />-->
-    <!--<PackageReference Include="MySql.Data" Version="$(MySqlV8)" /> -->
-    <PackageReference Include="MySql.Data" Version="$(MySqlV6)" />
+    <PackageReference Include="MySql.Data" Version="$(MySqlV8)" />
 
     <PackageReference Include="AspNetCore.HealthChecks.MySql" Version="$(HealthChecksMySqlVersion)" />
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="$(HealthChecksMongoDbVersion)" />

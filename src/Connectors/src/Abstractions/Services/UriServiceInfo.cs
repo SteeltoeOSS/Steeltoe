@@ -20,10 +20,10 @@ namespace Steeltoe.Connector.Services
             Info = new UriInfo(uriString, username, password);
         }
 
-        public UriServiceInfo(string id, string uriString, bool urlEncodedCredentials = false)
+        public UriServiceInfo(string id, string uriString)
             : base(id)
         {
-            Info = new UriInfo(uriString, urlEncodedCredentials);
+            Info = new UriInfo(uriString);
         }
 
         public UriInfo Info { get; internal protected set; }
