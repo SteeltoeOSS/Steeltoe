@@ -22,5 +22,14 @@ namespace Steeltoe.Connector.Services.Test
             Assert.Equal("Dd6O1BPXUHdrmzbP", r1.UserName);
             Assert.Equal("de5aa3a747c134b3d8780f8cc80be519e", r1.Path);
         }
+
+        [Fact]
+        public void SpecialCharactersInCredentials_AreHandled()
+        {
+            var uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
+            var r1 = new SqlServerServiceInfo("myId", uri, "!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", "[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~");
+            Assert.Equal("!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", r1.UserName);
+            Assert.Equal("[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~", r1.Password);
+        }
     }
 }
