@@ -26,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var keyList = new ConcurrentBag<string>();
             Parallel.ForEach(contributors, contributor =>
             {
-                var contributorId = GetKey(ref keyList, contributor.Id);
+                var contributorId = GetKey(keyList, contributor.Id);
                 HealthCheckResult healthCheckResult = null;
                 try
                 {
@@ -43,14 +43,14 @@ namespace Steeltoe.Management.Endpoint.Health
             return AddChecksSetStatus(aggregatorResult, healthChecks);
         }
 
-        protected static string GetKey(ref ConcurrentBag<string> keys, string key)
+        protected static string GetKey(ConcurrentBag<string> keys, string key)
         {
             lock (keys)
             {
                 // add the contributor with a -n appended to the id
                 if (keys.Any(k => k.Equals(key)))
                 {
-                    var newKey = string.Concat(key, "-", keys.Count(k => k == key));
+                    var newKey = string.Concat(key, "-", keys.Count(k => k.StartsWith(key)));
                     keys.Add(newKey);
                     return newKey;
                 }

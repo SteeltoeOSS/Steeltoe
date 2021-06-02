@@ -56,16 +56,17 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
         {
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>();
+            for (var i = 0; i < 10; i++)
             {
-                new UpContributor(),
-                new UpContributor()
-            };
+                contribs.Add(new UpContributor());
+            }
+
             var agg = new DefaultHealthAggregator();
             var result = agg.Aggregate(contribs);
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.UP, result.Status);
-            Assert.Contains("Up-1", result.Details.Keys);
+            Assert.Contains("Up-9", result.Details.Keys);
         }
 
         [Fact]
