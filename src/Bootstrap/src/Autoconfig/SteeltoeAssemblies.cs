@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Linq;
-using System.Reflection;
 
 namespace Steeltoe.Bootstrap.Autoconfig
 {
@@ -12,10 +11,14 @@ namespace Steeltoe.Bootstrap.Autoconfig
         public const string Steeltoe_CircuitBreaker_Hystrix_MetricsEventsCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore";
         public const string Steeltoe_CircuitBreaker_Hystrix_MetricsStreamCore = "Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore";
         public const string Steeltoe_CircuitBreaker_HystrixCore = "Steeltoe.CircuitBreaker.HystrixCore";
+        public const string Steeltoe_Extensions_Configuration_CloudFoundryBase = "Steeltoe.Extensions.Configuration.CloudFoundryBase";
         public const string Steeltoe_Extensions_Configuration_CloudFoundryCore = "Steeltoe.Extensions.Configuration.CloudFoundryCore";
+        public const string Steeltoe_Extensions_Configuration_ConfigServerBase = "Steeltoe.Extensions.Configuration.ConfigServerBase";
         public const string Steeltoe_Extensions_Configuration_ConfigServerCore = "Steeltoe.Extensions.Configuration.ConfigServerCore";
+        public const string Steeltoe_Extensions_Configuration_KubernetesBase = "Steeltoe.Extensions.Configuration.KubernetesBase";
         public const string Steeltoe_Extensions_Configuration_KubernetesCore = "Steeltoe.Extensions.Configuration.KubernetesCore";
         public const string Steeltoe_Extensions_Configuration_RandomValueBase = "Steeltoe.Extensions.Configuration.RandomValueBase";
+        public const string Steeltoe_Extensions_Configuration_PlaceholderBase = "Steeltoe.Extensions.Configuration.PlaceholderBase";
         public const string Steeltoe_Extensions_Configuration_PlaceholderCore = "Steeltoe.Extensions.Configuration.PlaceholderCore";
         public const string Steeltoe_Connector_EF6Core = "Steeltoe.Connector.EF6Core";
         public const string Steeltoe_Connector_EFCore = "Steeltoe.Connector.EFCore";
