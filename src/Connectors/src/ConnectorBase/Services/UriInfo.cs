@@ -66,8 +66,8 @@ namespace Steeltoe.CloudFoundry.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
             }
 
-            UserName = username;
-            Password = password;
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             UriString = uristring;
         }
 
