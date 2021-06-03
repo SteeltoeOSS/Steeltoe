@@ -106,7 +106,7 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
             Assert.NotNull(service);
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
-            Assert.NotNull(con as MySqlConnection);
+            Assert.True(con is MySqlConnection);
         }
 
 #if NET5_0

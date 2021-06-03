@@ -54,5 +54,19 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
             var ex = Assert.Throws<ArgumentNullException>(() => OracleDbContextServiceCollectionExtensions.AddDbContext<GoodOracleDbContext>(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
+
+        [Fact]
+        public void AddDbContext_NoVCAPs_AddsDbContext()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
+
+            // Act and Assert
+            services.AddDbContext<GoodOracleDbContext>(config);
+
+            var service = services.BuildServiceProvider().GetService<GoodOracleDbContext>();
+            Assert.NotNull(service);
+        }
     }
 }

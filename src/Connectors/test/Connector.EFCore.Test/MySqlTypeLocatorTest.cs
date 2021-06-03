@@ -26,6 +26,7 @@ namespace Steeltoe.Connector.MySql.Test
             Assert.NotNull(type);
         }
 
+#if !NETCOREAPP3_1
         [Fact]
         public void Driver_Found_In_MySqlConnector_Assembly()
         {
@@ -40,5 +41,6 @@ namespace Steeltoe.Connector.MySql.Test
             Assert.NotNull(type);
             MySqlTypeLocator.Assemblies = types;
         }
+#endif
     }
 }

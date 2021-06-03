@@ -45,17 +45,20 @@ namespace Steeltoe.Management.Endpoint.Health
 
         protected static string GetKey(ConcurrentBag<string> keys, string key)
         {
-            // add the contributor with a -n appended to the id
-            if (keys.Any(k => k.Equals(key)))
+            lock (keys)
             {
-                var newKey = string.Concat(key, "-", keys.Count(k => k == key));
-                keys.Add(newKey);
-                return newKey;
-            }
-            else
-            {
-                keys.Add(key);
-                return key;
+                // add the contributor with a -n appended to the id
+                if (keys.Any(k => k.Equals(key)))
+                {
+                    var newKey = string.Concat(key, "-", keys.Count(k => k.StartsWith(key)));
+                    keys.Add(newKey);
+                    return newKey;
+                }
+                else
+                {
+                    keys.Add(key);
+                    return key;
+                }
             }
         }
 

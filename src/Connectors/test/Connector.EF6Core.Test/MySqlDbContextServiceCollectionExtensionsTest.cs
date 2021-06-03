@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET461
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.Test;
@@ -137,4 +136,3 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         }
     }
 }
-#endif
