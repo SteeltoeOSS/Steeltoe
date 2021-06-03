@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -13,12 +14,12 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.AsyncListenerTest;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes
@@ -99,6 +100,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             Assert.False(container.PossibleAuthenticationFailureFatal);
         }
 
+        [Fact]
+        public async Task TestAsyncListenerErrorHandler()
+        {
+            var template = provider.GetRabbitTemplate();
+            var context = provider.GetApplicationContext();
+            var queueAsyncErrorHandler = context.GetService<IQueue>("queueAsyncErrorHandler");
+            var reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo");
+            Assert.Equal($"{nameof(CustomListenerErrorHandler)} handled/processed", reply);
+        }
+
         public class StartupFixture : IDisposable
         {
             private readonly IServiceCollection services;
@@ -154,13 +165,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 var queue3 = new AnonymousQueue("queue3");
                 var queue4 = new AnonymousQueue("queue4");
                 var queue5 = new AnonymousQueue("queue5");
+                var queueAsyncErrorHandler = new AnonymousQueue("queueAsyncErrorHandler");
                 queue5.Arguments.Add("x-dead-letter-exchange", string.Empty);
                 queue5.Arguments.Add("x-dead-letter-routing-key", queue5DLQ.QueueName);
                 var queue6 = new AnonymousQueue("queue6");
                 queue6.Arguments.Add("x-dead-letter-exchange", string.Empty);
                 queue6.Arguments.Add("x-dead-letter-routing-key", queue6DLQ.QueueName);
                 var queue7 = new AnonymousQueue("queue7");
-                services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5DLQ, queue6DLQ, queue7);
+                services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5DLQ, queue6DLQ, queue7, queueAsyncErrorHandler);
 
                 // Add default container factory
                 services.AddRabbitListenerContainerFactory((p, f) =>
@@ -180,6 +192,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
                 services.AddSingleton<Listener>();
                 services.AddRabbitListeners<Listener>(config);
+                services.AddRabbitListenerErrorHandler<CustomListenerErrorHandler>(nameof(CustomListenerErrorHandler));
+
                 return services;
             }
 
@@ -278,6 +292,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                     return Task.FromResult("listen7");
                 }
             }
+
+            // Error handler is connected when signature is "void", "Task", or "Task<T>"
+            // Error handler is disconnected (value not returned) whenever "async" is added
+            [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asycErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
+            public async Task<string> HandleMessage(string msg)
+            {
+                await Task.Run(() => Console.WriteLine("Running Listener"));
+
+                throw new Exception($"Test {nameof(Listener)} exception");
+            }
         }
 
         public class TemplateAfterRecvPostProcessor : IMessagePostProcessor
@@ -298,6 +322,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 TypeId = message.Headers.Get<object>("__TypeId__");
                 ContentTypeId = message.Headers.Get<object>("__ContentTypeId__");
                 return message;
+            }
+        }
+
+        public class CustomListenerErrorHandler : IRabbitListenerErrorHandler
+        {
+            public string ServiceName { get; set; } = nameof(CustomListenerErrorHandler);
+
+            public object HandleError(IMessage origMessage, IMessage message, ListenerExecutionFailedException exception)
+            {
+                return $"{ServiceName} handled/processed";
             }
         }
     }
