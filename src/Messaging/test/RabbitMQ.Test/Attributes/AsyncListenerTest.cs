@@ -292,8 +292,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
                 }
             }
 
-            // Error handler is connected when signature is "void", "Task", or "Task<T>"
-            // Error handler is disconnected (value not returned) whenever "async" is added
             [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asycErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
             public async Task<string> HandleMessage(string msg)
             {
