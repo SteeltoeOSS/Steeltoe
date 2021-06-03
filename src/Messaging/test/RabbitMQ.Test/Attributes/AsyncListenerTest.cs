@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Services;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
