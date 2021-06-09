@@ -229,102 +229,35 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         protected static OpCode GetLdElemInsn(Type arrElemType)
         {
-            if (arrElemType == typeof(sbyte))
+            return arrElemType switch
             {
-                return OpCodes.Ldelem_I1;
-            }
-
-            if (arrElemType == typeof(byte))
-            {
-                return OpCodes.Ldelem_U1;
-            }
-
-            if (arrElemType == typeof(short) || arrElemType == typeof(char))
-            {
-                return OpCodes.Ldelem_I2;
-            }
-
-            if (arrElemType == typeof(ushort))
-            {
-                return OpCodes.Ldelem_U2;
-            }
-
-            if (arrElemType == typeof(int))
-            {
-                return OpCodes.Ldelem_I4;
-            }
-
-            if (arrElemType == typeof(uint))
-            {
-                return OpCodes.Ldelem_U4;
-            }
-
-            if (arrElemType == typeof(long))
-            {
-                return OpCodes.Ldelem_I8;
-            }
-
-            if (arrElemType == typeof(ulong))
-            {
-                return OpCodes.Ldelem_I8;
-            }
-
-            if (arrElemType == typeof(float))
-            {
-                return OpCodes.Ldelem_R4;
-            }
-
-            if (arrElemType == typeof(double))
-            {
-                return OpCodes.Ldelem_R8;
-            }
-
-            if (arrElemType == typeof(IntPtr) || arrElemType == typeof(UIntPtr))
-            {
-                return OpCodes.Ldelem_I;
-            }
-
-            return OpCodes.Ldelem_Ref;
+                var t when t == typeof(sbyte) => OpCodes.Ldelem_I1,
+                var t when t == typeof(byte) => OpCodes.Ldelem_U1,
+                var t when t == typeof(short) || t == typeof(char) => OpCodes.Ldelem_I2,
+                var t when t == typeof(ushort) => OpCodes.Ldelem_U2,
+                var t when t == typeof(int) => OpCodes.Ldelem_I4,
+                var t when t == typeof(uint) => OpCodes.Ldelem_U4,
+                var t when t == typeof(long) || t == typeof(ulong) => OpCodes.Ldelem_I8,
+                var t when t == typeof(float) => OpCodes.Ldelem_R4,
+                var t when t == typeof(double) => OpCodes.Ldelem_R8,
+                var t when t == typeof(IntPtr) || t == typeof(UIntPtr) => OpCodes.Ldelem_I,
+                _ => OpCodes.Ldelem_Ref
+            };
         }
 
         protected static OpCode GetStelemInsn(Type arrElemType)
         {
-            if (arrElemType == typeof(sbyte) || arrElemType == typeof(byte) || arrElemType == typeof(bool))
+            return arrElemType switch
             {
-                return OpCodes.Stelem_I1;
-            }
-
-            if (arrElemType == typeof(short) || arrElemType == typeof(ushort) || arrElemType == typeof(char))
-            {
-                return OpCodes.Stelem_I2;
-            }
-
-            if (arrElemType == typeof(int) || arrElemType == typeof(uint))
-            {
-                return OpCodes.Stelem_I4;
-            }
-
-            if (arrElemType == typeof(long) || arrElemType == typeof(ulong))
-            {
-                return OpCodes.Stelem_I8;
-            }
-
-            if (arrElemType == typeof(float))
-            {
-                return OpCodes.Stelem_R4;
-            }
-
-            if (arrElemType == typeof(double))
-            {
-                return OpCodes.Stelem_R8;
-            }
-
-            if (arrElemType == typeof(IntPtr) || arrElemType == typeof(UIntPtr))
-            {
-                return OpCodes.Stelem_I;
-            }
-
-            return OpCodes.Stelem_Ref;
+                var t when t == typeof(sbyte) || t == typeof(byte) || t == typeof(bool) => OpCodes.Stelem_I1,
+                var t when t == typeof(short) || t == typeof(ushort) || t == typeof(char) => OpCodes.Stelem_I2,
+                var t when t == typeof(int) || t == typeof(uint) => OpCodes.Stelem_I4,
+                var t when t == typeof(long) || t == typeof(ulong) => OpCodes.Stelem_I8,
+                var t when t == typeof(float) => OpCodes.Stelem_R4,
+                var t when t == typeof(double) => OpCodes.Stelem_R8,
+                var t when t == typeof(IntPtr) || t == typeof(UIntPtr) => OpCodes.Stelem_I,
+                _ => OpCodes.Stelem_Ref
+            };
         }
     }
 }

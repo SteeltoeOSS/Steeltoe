@@ -205,8 +205,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var unboxLeft = !CodeFlow.IsValueType(leftDesc);
             var unboxRight = !CodeFlow.IsValueType(rightDesc);
 
-            var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
-
             cf.EnterCompilationScope();
             left.GenerateCode(gen, cf);
             cf.ExitCompilationScope();

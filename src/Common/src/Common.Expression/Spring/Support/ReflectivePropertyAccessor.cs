@@ -826,26 +826,24 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return;
                 }
 
-                if (field.FieldType == typeof(int) || field.FieldType == typeof(short) || field.FieldType == typeof(char) || field.FieldType == typeof(byte) ||
-                    field.FieldType == typeof(uint) || field.FieldType == typeof(ushort) || field.FieldType == typeof(sbyte))
+                switch (field.FieldType)
                 {
-                    gen.Emit(OpCodes.Ldc_I4, (int)constant);
-                }
-                else if (field.FieldType == typeof(long) || field.FieldType == typeof(ulong))
-                {
-                    gen.Emit(OpCodes.Ldc_I8, (long)constant);
-                }
-                else if (field.FieldType == typeof(float))
-                {
-                    gen.Emit(OpCodes.Ldc_R4, (float)constant);
-                }
-                else if (field.FieldType == typeof(double))
-                {
-                    gen.Emit(OpCodes.Ldc_R8, (double)constant);
-                }
-                else if (field.FieldType == typeof(string))
-                {
-                    gen.Emit(OpCodes.Ldstr, (string)constant);
+                    case var t when t == typeof(int) || t == typeof(short) || t == typeof(char) || t == typeof(byte) || t == typeof(uint) || t == typeof(ushort) || t == typeof(sbyte):
+                        gen.Emit(OpCodes.Ldc_I4, (int)constant);
+                        return;
+                    case var t when t == typeof(long) || t == typeof(ulong):
+                        gen.Emit(OpCodes.Ldc_I8, (long)constant);
+                        return;
+                    case var t when t == typeof(float):
+                        gen.Emit(OpCodes.Ldc_R4, (float)constant);
+                        return;
+                    case var t when t == typeof(double):
+                        gen.Emit(OpCodes.Ldc_R8, (double)constant);
+                        return;
+                    case var t when t == typeof(string):
+                        gen.Emit(OpCodes.Ldstr, (string)constant);
+                        return;
+                    default: return;
                 }
             }
         }
