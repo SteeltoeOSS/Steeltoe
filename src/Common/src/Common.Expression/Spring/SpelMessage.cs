@@ -8,6 +8,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class SpelMessage
     {
+#pragma warning disable IDE1006
+#pragma warning disable IDE0090
         public static readonly SpelMessage TYPE_CONVERSION_ERROR = new SpelMessage(
             Kind.ERROR, 1001, "Type conversion problem, cannot convert from {0} to {1}");
 
@@ -227,6 +229,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public static readonly SpelMessage FLAWED_PATTERN = new SpelMessage(
             Kind.ERROR, 1073, "Failed to efficiently evaluate pattern ''{0}'': consider redesigning it");
 
+#pragma warning restore IDE0090
+#pragma warning restore IDE1006
+
         public enum Kind
         {
             INFO,
@@ -263,8 +268,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public override bool Equals(object obj)
         {
-            var asMessage = obj as SpelMessage;
-            if (asMessage == null)
+            if (obj is not SpelMessage asMessage)
             {
                 return false;
             }

@@ -17,7 +17,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return target is IDictionary && ((IDictionary)target).Contains(name);
+            return target is IDictionary dictionary && dictionary.Contains(name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -42,8 +42,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var asDict = target as IDictionary;
-            if (asDict == null)
+            if (target is not IDictionary asDict)
             {
                 throw new ArgumentException("Target must be of type IDictionary");
             }
@@ -58,8 +57,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public void Write(IEvaluationContext context, object target, string name, object newValue)
         {
-            var asDict = target as IDictionary;
-            if (asDict == null)
+            if (target is not IDictionary asDict)
             {
                 throw new ArgumentException("Target must be of type IDictionary");
             }

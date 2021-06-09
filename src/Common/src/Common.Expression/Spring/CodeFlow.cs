@@ -13,7 +13,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     {
         private static readonly Dictionary<Type, TypeDescriptor> _primitives = new Dictionary<Type, TypeDescriptor>();
         private readonly CompiledExpression _compiledExpression;
-        private readonly DynamicMethod _dynamicMethod;
         private readonly Stack<List<TypeDescriptor>> _compilationScopes;
         private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new List<Action<ILGenerator, CodeFlow>>();
         private int _nextFieldId = 1;
@@ -37,10 +36,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             _primitives.Add(typeof(UIntPtr), TypeDescriptor.Q);
         }
 
-        public CodeFlow(CompiledExpression compiledExpression, DynamicMethod dynamicMethod)
+        public CodeFlow(CompiledExpression compiledExpression)
         {
             _compiledExpression = compiledExpression;
-            _dynamicMethod = dynamicMethod;
             _compilationScopes = new Stack<List<TypeDescriptor>>();
             _compilationScopes.Push(new List<TypeDescriptor>());
         }
@@ -99,7 +97,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var valueType = value?.GetType();
 
-            // TODO: Other .NET types, what about long?
+            // Other .NET types, what about long?
             return valueType == typeof(int) || valueType == typeof(short) || valueType == typeof(byte);
         }
 
@@ -398,7 +396,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public void RegisterNewField(string constantFieldName, object fieldValue)
         {
-            this._compiledExpression._dynamicFields.Add(constantFieldName, fieldValue);
+            _compiledExpression._dynamicFields.Add(constantFieldName, fieldValue);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private readonly int _endPos;
         private SpelNode _parent;
 
-        public SpelNode(int startPos, int endPos, params SpelNode[] operands)
+        protected SpelNode(int startPos, int endPos, params SpelNode[] operands)
         {
             _startPos = startPos;
             _endPos = endPos;
@@ -49,22 +49,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public virtual bool IsCompilable() => false;
 
-        public virtual object GetValue(ExpressionState expressionState)
+        public virtual object GetValue(ExpressionState state)
         {
-            return GetValueInternal(expressionState).Value;
+            return GetValueInternal(state).Value;
         }
 
-        public virtual ITypedValue GetTypedValue(ExpressionState expressionState)
+        public virtual ITypedValue GetTypedValue(ExpressionState state)
         {
-            return GetValueInternal(expressionState);
+            return GetValueInternal(state);
         }
 
-        public virtual bool IsWritable(ExpressionState expressionState)
+        public virtual bool IsWritable(ExpressionState state)
         {
             return false;
         }
 
-        public virtual void SetValue(ExpressionState expressionState, object newValue)
+        public virtual void SetValue(ExpressionState state, object newValue)
         {
             throw new SpelEvaluationException(StartPosition, SpelMessage.SETVALUE_NOT_SUPPORTED, GetType());
         }
@@ -84,12 +84,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return obj is Type ? ((Type)obj) : obj.GetType();
         }
 
-        public virtual void GenerateCode(ILGenerator generator, CodeFlow cf)
+        public virtual void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
             throw new InvalidOperationException(GetType().FullName + " has no GenerateCode(..) method");
         }
 
-        public abstract ITypedValue GetValueInternal(ExpressionState expressionState);
+        public abstract ITypedValue GetValueInternal(ExpressionState state);
 
         public abstract string ToStringAST();
 
@@ -146,10 +146,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (isVarargs)
             {
+                var childCount = arguments.Length;
+
                 // The final parameter may or may not need packaging into an array, or nothing may
                 // have been passed to satisfy the varargs and so something needs to be built.
-                var p = 0; // Current supplied argument being processed
-                var childCount = arguments.Length;
+                int p;
 
                 // Fulfill all the parameter requirements except the last one
                 for (p = 0; p < paramDescriptors.Length - 1; p++)

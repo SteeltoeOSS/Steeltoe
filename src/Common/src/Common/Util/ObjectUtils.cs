@@ -54,7 +54,7 @@ namespace Steeltoe.Common.Util
             return obj.GetHashCode();
         }
 
-        // TODO: Add other .NET types
+        // Add other .NET types?
         internal static int ArrayHashCode(object o1)
         {
             if (o1 is object[] v)
@@ -105,7 +105,7 @@ namespace Steeltoe.Common.Util
             return 0;
         }
 
-        // TODO: Add other .NET types
+        // Add other .NET types?
         internal static bool ArrayEquals(object o1, object o2)
         {
             if (o1 is object[] v && o2 is object[] v1)

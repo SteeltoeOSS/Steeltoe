@@ -13,10 +13,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
     public class SpelExpression : IExpression
     {
         // Number of times to interpret an expression before compiling it
-        internal const int _INTERPRETED_COUNT_THRESHOLD = 100;
+        internal const int INTERPRETED_COUNT_THRESHOLD = 100;
 
         // Number of times to try compiling an expression before giving up
-        internal const int _FAILED_ATTEMPTS_THRESHOLD = 100;
+        internal const int FAILED_ATTEMPTS_THRESHOLD = 100;
 
         // Holds the compiled form of the expression (if it has been compiled)
         internal volatile CompiledExpression _compiledAst;
@@ -98,7 +98,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             return (T)GetValue(typeof(T));
         }
 
-        public object GetValue(Type expectedResultType)
+        public object GetValue(Type desiredResultType)
         {
             if (_compiledAst != null)
             {
@@ -106,13 +106,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 {
                     var context = EvaluationContext;
                     var result = _compiledAst.GetValue(context.RootObject.Value, context);
-                    if (expectedResultType == null)
+                    if (desiredResultType == null)
                     {
                         return result;
                     }
                     else
                     {
-                        return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), expectedResultType);
+                        return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
                     }
                 }
                 catch (Exception ex)
@@ -134,7 +134,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var expressionState = new ExpressionState(EvaluationContext, _configuration);
             var typedResultValue = _ast.GetTypedValue(expressionState);
             CheckCompile(expressionState);
-            return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, expectedResultType);
+            return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, desiredResultType);
         }
 
         public object GetValue(object rootObject)
@@ -172,20 +172,20 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             return (T)GetValue(rootObject, typeof(T));
         }
 
-        public object GetValue(object rootObject, Type expectedResultType)
+        public object GetValue(object rootObject, Type desiredResultType)
         {
             if (_compiledAst != null)
             {
                 try
                 {
                     var result = _compiledAst.GetValue(rootObject, EvaluationContext);
-                    if (expectedResultType == null)
+                    if (desiredResultType == null)
                     {
                         return result;
                     }
                     else
                     {
-                        return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), expectedResultType);
+                        return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
                     }
                 }
                 catch (Exception ex)
@@ -207,7 +207,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var expressionState = new ExpressionState(EvaluationContext, ToTypedValue(rootObject), _configuration);
             var typedResultValue = _ast.GetTypedValue(expressionState);
             CheckCompile(expressionState);
-            return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, expectedResultType);
+            return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, desiredResultType);
         }
 
         public object GetValue(IEvaluationContext context)
@@ -250,7 +250,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             return (T)GetValue(context, typeof(T));
         }
 
-        public object GetValue(IEvaluationContext context, Type expectedResultType)
+        public object GetValue(IEvaluationContext context, Type desiredResultType)
         {
             if (context == null)
             {
@@ -262,9 +262,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 try
                 {
                     var result = _compiledAst.GetValue(context.RootObject.Value, context);
-                    if (expectedResultType != null)
+                    if (desiredResultType != null)
                     {
-                        return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), expectedResultType);
+                        return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
                     }
                     else
                     {
@@ -290,7 +290,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var expressionState = new ExpressionState(context, _configuration);
             var typedResultValue = _ast.GetTypedValue(expressionState);
             CheckCompile(expressionState);
-            return ExpressionUtils.ConvertTypedValue(context, typedResultValue, expectedResultType);
+            return ExpressionUtils.ConvertTypedValue(context, typedResultValue, desiredResultType);
         }
 
         public object GetValue(IEvaluationContext context, object rootObject)
@@ -333,7 +333,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             return (T)GetValue(context, rootObject, typeof(T));
         }
 
-        public object GetValue(IEvaluationContext context, object rootObject, Type expectedResultType)
+        public object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType)
         {
             if (context == null)
             {
@@ -345,9 +345,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 try
                 {
                     var result = _compiledAst.GetValue(rootObject, context);
-                    if (expectedResultType != null)
+                    if (desiredResultType != null)
                     {
-                        return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), expectedResultType);
+                        return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
                     }
                     else
                     {
@@ -373,7 +373,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var expressionState = new ExpressionState(context, ToTypedValue(rootObject), _configuration);
             var typedResultValue = _ast.GetTypedValue(expressionState);
             CheckCompile(expressionState);
-            return ExpressionUtils.ConvertTypedValue(context, typedResultValue, expectedResultType);
+            return ExpressionUtils.ConvertTypedValue(context, typedResultValue, desiredResultType);
         }
 
         public Type GetValueType()
@@ -403,38 +403,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             return _ast.GetValueInternal(expressionState).TypeDescriptor;
         }
 
-        // public Type GetValueTypeDescriptor()
-        // {
-        //    return GetValueTypeDescriptor(EvaluationContext);
-        // }
-
-        // public Type GetValueTypeDescriptor(object rootObject)
-        // {
-        //    var expressionState = new ExpressionState(EvaluationContext, ToTypedValue(rootObject), _configuration);
-        //    return _ast.GetValueInternal(expressionState).TypeDescriptor;
-        // }
-
-        // public Type GetValueTypeDescriptor(IEvaluationContext context)
-        // {
-        //    if (context == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(context));
-        //    }
-
-        // var expressionState = new ExpressionState(context, _configuration);
-        //    return _ast.GetValueInternal(expressionState).TypeDescriptor;
-        // }
-
-        // public Type GetValueTypeDescriptor(IEvaluationContext context, object rootObject)
-        // {
-        //    if (context == null)
-        //    {
-        //        throw new ArgumentNullException(nameof(context));
-        //    }
-
-        // var expressionState = new ExpressionState(context, ToTypedValue(rootObject), _configuration);
-        //    return _ast.GetValueInternal(expressionState).TypeDescriptor;
-        // }
         public bool IsWritable(object rootObject)
         {
             return _ast.IsWritable(new ExpressionState(EvaluationContext, ToTypedValue(rootObject), _configuration));
@@ -494,7 +462,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 return true;
             }
 
-            if (_failedAttempts.Value > _FAILED_ATTEMPTS_THRESHOLD)
+            if (_failedAttempts.Value > FAILED_ATTEMPTS_THRESHOLD)
             {
                 // Don't try again
                 return false;
@@ -555,7 +523,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
                 else
                 {
                     // compilerMode = SpelCompilerMode.MIXED
-                    if (_interpretedCount.Value > _INTERPRETED_COUNT_THRESHOLD)
+                    if (_interpretedCount.Value > INTERPRETED_COUNT_THRESHOLD)
                     {
                         CompileExpression();
                     }

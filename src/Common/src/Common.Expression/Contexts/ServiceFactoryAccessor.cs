@@ -33,8 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var targetContext = target as IApplicationContext;
-            if (targetContext == null)
+            if (target is not IApplicationContext targetContext)
             {
                 throw new InvalidOperationException("target must be of type IApplicationContext");
             }

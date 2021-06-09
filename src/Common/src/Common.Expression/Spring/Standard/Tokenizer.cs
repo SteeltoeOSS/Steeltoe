@@ -7,6 +7,8 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
+    #pragma warning disable S125 // Sections of code should not be commented out
+
     internal class Tokenizer
     {
         // If this gets changed, it must remain sorted...
@@ -48,15 +50,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             }
         }
 
-        private string _expressionString;
+        private readonly int _max;
 
-        private char[] _charsToProcess;
+        private readonly List<Token> _tokens = new List<Token>();
+
+        private readonly string _expressionString;
+
+        private readonly char[] _charsToProcess;
 
         private int _pos;
-
-        private int _max;
-
-        private List<Token> _tokens = new List<Token>();
 
         public Tokenizer(string inputData)
         {
@@ -329,7 +331,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             _tokens.Add(new Token(TokenKind.LITERAL_STRING, Subarray(start, _pos), start, _pos));
         }
 
-        // DQ_STRING_LITERAL: '"'! (~'"')* '"'!;
+                            // DQ_STRING_LITERAL: '"'! (~'"')* '"'!;
         private void LexDoubleQuotedStringLiteral()
         {
             var start = _pos;
@@ -386,7 +388,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             // deal with hexadecimal
             if (firstCharIsZero && isHex)
             {
-                _pos = _pos + 1;
+                _pos++;
                 do
                 {
                     _pos++;
@@ -687,4 +689,5 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             throw new InternalParseException(new SpelParseException(_expressionString, start, msg, inserts));
         }
     }
+#pragma warning restore S125 // Sections of code should not be commented out
 }

@@ -8,6 +8,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class TypeDescriptor
     {
+#pragma warning disable IDE1006
         public static readonly TypeDescriptor V = new TypeDescriptor(typeof(void));
         public static readonly TypeDescriptor I = new TypeDescriptor(typeof(int));
         public static readonly TypeDescriptor J = new TypeDescriptor(typeof(long));
@@ -27,6 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public static readonly TypeDescriptor OBJECT = new TypeDescriptor(typeof(object));
         public static readonly TypeDescriptor STRING = new TypeDescriptor(typeof(string));
         public static readonly TypeDescriptor TYPE = new TypeDescriptor(typeof(Type));
+#pragma warning restore IDE1006
 
         private TypeDescriptor _boxed;
         private TypeDescriptor _unBoxed;
@@ -66,8 +68,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             if (_unBoxed == null)
             {
-                _unBoxed = new TypeDescriptor(Value, false);
-                _unBoxed._boxed = this;
+                _unBoxed = new TypeDescriptor(Value, false)
+                {
+                    _boxed = this
+                };
             }
 
             return _unBoxed;
@@ -82,8 +86,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             if (_boxed == null)
             {
-                _boxed = new TypeDescriptor(Value, true);
-                _boxed._unBoxed = this;
+                _boxed = new TypeDescriptor(Value, true)
+                {
+                    _unBoxed = this
+                };
             }
 
             return _boxed;
@@ -119,8 +125,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 return false;
             }
 
-            return stackDescriptor.Value == this.Value &&
-                stackDescriptor.IsBoxed == this.IsBoxed;
+            return stackDescriptor.Value == Value &&
+                stackDescriptor.IsBoxed == IsBoxed;
         }
 
         public override int GetHashCode()

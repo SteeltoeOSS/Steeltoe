@@ -41,8 +41,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public static bool IsNumber(object target)
         {
-            var targetConv = target as IConvertible;
-            if (targetConv == null)
+            if (target is not IConvertible targetConv)
             {
                 return false;
             }
@@ -207,7 +206,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var unboxRight = !CodeFlow.IsValueType(rightDesc);
 
             var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
-            var targetType = dc.CompatibleType;
 
             cf.EnterCompilationScope();
             left.GenerateCode(gen, cf);
@@ -345,8 +343,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         protected class DescriptorComparison
         {
-            protected static readonly DescriptorComparison _NOT_NUMBERS = new DescriptorComparison(false, false, TypeDescriptor.V);
-            protected static readonly DescriptorComparison _INCOMPATIBLE_NUMBERS = new DescriptorComparison(true, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison NOT_NUMBERS = new DescriptorComparison(false, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new DescriptorComparison(true, false, TypeDescriptor.V);
 
             protected readonly bool _areNumbers;  // Were the two compared descriptor both for numbers?
 
@@ -396,12 +394,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     }
                     else
                     {
-                        return _INCOMPATIBLE_NUMBERS;
+                        return INCOMPATIBLE_NUMBERS;
                     }
                 }
                 else
                 {
-                    return _NOT_NUMBERS;
+                    return NOT_NUMBERS;
                 }
             }
         }

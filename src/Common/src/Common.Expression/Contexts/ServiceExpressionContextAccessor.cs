@@ -32,8 +32,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var targetContext = target as IServiceExpressionContext;
-            if (targetContext == null)
+            if (target is not IServiceExpressionContext targetContext)
             {
                 throw new InvalidOperationException("target must be of type IServiceExpressionContext");
             }

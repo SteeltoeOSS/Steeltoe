@@ -5195,7 +5195,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             for (var i = 0; i < 200; i++)
             {
                 Assert.Equal(9, expression.GetValue<int>());
-                if (i < SpelExpression._INTERPRETED_COUNT_THRESHOLD)
+                if (i < SpelExpression.INTERPRETED_COUNT_THRESHOLD)
                 {
                     AssertNotCompiled(expression);
                 }

@@ -35,9 +35,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             var tv = GetValueInternal(state.GetActiveContextObject(), state.EvaluationContext, state.Configuration.AutoGrowNullReferences);
             var accessorToUse = _cachedReadAccessor;
-            if (accessorToUse is ICompilablePropertyAccessor)
+            if (accessorToUse is ICompilablePropertyAccessor accessor)
             {
-                var accessor = (ICompilablePropertyAccessor)accessorToUse;
                 var descriptor = ComputeExitDescriptor(tv.Value, accessor.GetPropertyType());
                 SetExitTypeDescriptor(descriptor);
             }
@@ -88,13 +87,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override bool IsCompilable()
         {
             var accessorToUse = _cachedReadAccessor;
-            return accessorToUse is ICompilablePropertyAccessor && ((ICompilablePropertyAccessor)accessorToUse).IsCompilable();
+            return accessorToUse is ICompilablePropertyAccessor accessor && accessor.IsCompilable();
         }
 
         public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            var accessorToUse = _cachedReadAccessor as ICompilablePropertyAccessor;
-            if (accessorToUse == null)
+            if (_cachedReadAccessor is not ICompilablePropertyAccessor accessorToUse)
             {
                 throw new InvalidOperationException("Property accessor is not compilable: " + _cachedReadAccessor);
             }
@@ -103,7 +101,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             if (_nullSafe)
             {
                 skipIfNullLabel = gen.DefineLabel();
-                var continueLabel = gen.DefineLabel();
                 gen.Emit(OpCodes.Dup);
                 gen.Emit(OpCodes.Ldnull);
                 gen.Emit(OpCodes.Cgt_Un);
@@ -177,7 +174,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     {
                         var newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        // var newList = new List<object>();
                         WriteProperty(contextObject, evalContext, _name, newList);
                         result = ReadProperty(contextObject, evalContext, _name);
                     }
@@ -188,7 +184,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     {
                         var newMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        // var newMap = new Dictionary<object, object>();
                         WriteProperty(contextObject, evalContext, _name, newMap);
                         result = ReadProperty(contextObject, evalContext, _name);
                     }
@@ -277,9 +272,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var accessor = acc;
                     if (accessor.CanRead(evalContext, contextObject.Value, name))
                     {
-                        if (accessor is ReflectivePropertyAccessor)
+                        if (accessor is ReflectivePropertyAccessor accessor1)
                         {
-                            accessor = ((ReflectivePropertyAccessor)accessor).CreateOptimalAccessor(evalContext, contextObject.Value, name);
+                            accessor = accessor1.CreateOptimalAccessor(evalContext, contextObject.Value, name);
                         }
 
                         _cachedReadAccessor = accessor;
@@ -414,9 +409,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 var value = _ref.GetValueInternal(_contextObject, _evalContext, _autoGrowNullReferences);
                 var accessorToUse = _ref._cachedReadAccessor;
-                if (accessorToUse is ICompilablePropertyAccessor)
+                if (accessorToUse is ICompilablePropertyAccessor accessor)
                 {
-                    var descriptor = _ref.ComputeExitDescriptor(value.Value, ((ICompilablePropertyAccessor)accessorToUse).GetPropertyType());
+                    var descriptor = _ref.ComputeExitDescriptor(value.Value, accessor.GetPropertyType());
                     _ref.SetExitTypeDescriptor(descriptor);
                 }
 

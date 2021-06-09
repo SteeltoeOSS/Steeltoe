@@ -153,8 +153,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public override bool Equals(object obj)
         {
-            var other = obj as TokenKind;
-            if (other == null)
+            if (obj is not TokenKind other)
             {
                 return false;
             }

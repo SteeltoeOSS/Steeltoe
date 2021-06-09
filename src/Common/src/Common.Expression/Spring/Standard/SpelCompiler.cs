@@ -15,15 +15,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<SpelCompiler> _logger;
 
-        // private static readonly int _CLASSES_DEFINED_LIMIT = 100;
-
-        // A compiler is created for each classloader, it manages a child class loader of that
-        // classloader and the child is used to load the compiled expressions.
-        // private static readonly Map<ClassLoader, SpelCompiler> compilers = new ConcurrentReferenceHashMap<>();
-
-        // The child ClassLoader used to load the compiled expression classes
-        // private ChildClassLoader ccl;
-
         // Counter suffix for generated classes within this SpelCompiler instance
         private readonly AtomicInteger _suffixId = new AtomicInteger(1);
 
@@ -34,15 +25,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         public static void RevertToInterpreted(IExpression expression)
         {
-            if (expression is SpelExpression)
+            if (expression is SpelExpression expression1)
             {
-                ((SpelExpression)expression).RevertToInterpreted();
+                expression1.RevertToInterpreted();
             }
         }
 
         public static bool Compile(IExpression expression)
         {
-            return expression is SpelExpression && ((SpelExpression)expression).CompileExpression();
+            return expression is SpelExpression expression1 && expression1.CompileExpression();
         }
 
         public CompiledExpression Compile(ISpelNode expression)
@@ -69,7 +60,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
             var methodName = "SpelExpression" + _suffixId.GetAndIncrement();
             var method = new DynamicMethod(methodName, typeof(object), new Type[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
             var ilGenerator = method.GetILGenerator(4096);
-            var cf = new CodeFlow(compiledExpression, method);
+            var cf = new CodeFlow(compiledExpression);
             try
             {
                 expressionToCompile.GenerateCode(ilGenerator, cf);

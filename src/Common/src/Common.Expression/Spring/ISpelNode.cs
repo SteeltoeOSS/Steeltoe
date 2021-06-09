@@ -17,13 +17,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         bool IsCompilable();
 
-        object GetValue(ExpressionState expressionState);
+        object GetValue(ExpressionState state);
 
-        ITypedValue GetTypedValue(ExpressionState expressionState);
+        ITypedValue GetTypedValue(ExpressionState state);
 
-        bool IsWritable(ExpressionState expressionState);
+        bool IsWritable(ExpressionState state);
 
-        void SetValue(ExpressionState expressionState, object newValue);
+        void SetValue(ExpressionState state, object newValue);
 
         string ToStringAST();
 
@@ -31,6 +31,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         Type GetObjectType(object obj);
 
-        void GenerateCode(ILGenerator generator, CodeFlow cf);
+        void GenerateCode(ILGenerator gen, CodeFlow cf);
     }
 }

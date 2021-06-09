@@ -14,8 +14,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class Indexer : SpelNode
     {
-        private static MethodInfo _listGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");
-        private static MethodInfo _dictionaryGetItemMethod = typeof(IDictionary).GetMethods().Single(m => m.Name == "get_Item");
+        private static readonly MethodInfo _listGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");
+        private static readonly MethodInfo _dictionaryGetItemMethod = typeof(IDictionary).GetMethods().Single(m => m.Name == "get_Item");
 
         private enum IndexedType
         {
@@ -63,7 +63,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             GetValueRef(state).SetValue(newValue);
         }
 
-        public override bool IsWritable(ExpressionState expressionState)
+        public override bool IsWritable(ExpressionState state)
         {
             return true;
         }
@@ -123,8 +123,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
                 // Special case when the key is an unquoted string literal that will be parsed as
                 // a property/field reference
-                var reference = _children[0] as PropertyOrFieldReference;
-                if (reference != null)
+                if (_children[0] is PropertyOrFieldReference reference)
                 {
                     var mapKeyName = reference.Name;
                     gen.Emit(OpCodes.Ldstr, mapKeyName);
@@ -140,13 +139,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
             else if (_indexedType == IndexedType.OBJECT)
             {
-                var accessor = _cachedReadAccessor as ReflectivePropertyAccessor.OptimalPropertyAccessor;
-                if (accessor == null)
+                if (_cachedReadAccessor is not ReflectivePropertyAccessor.OptimalPropertyAccessor accessor)
                 {
                     throw new InvalidOperationException("No cached read accessor");
                 }
 
-                bool isStatic = default;
+                bool isStatic;
                 var method = accessor.Member as MethodInfo;
                 var field = accessor.Member as FieldInfo;
 
@@ -212,9 +210,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             object index;
 
             // This first part of the if clause prevents a 'double dereference' of the property (SPR-5847)
-            if (target is System.Collections.IDictionary && (_children[0] is PropertyOrFieldReference))
+            if (target is System.Collections.IDictionary && (_children[0] is PropertyOrFieldReference reference1))
             {
-                var reference = (PropertyOrFieldReference)_children[0];
+                var reference = reference1;
                 index = reference.Name;
                 indexValue = new TypedValue(index);
             }
@@ -274,11 +272,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     _indexedType = IndexedType.ARRAY;
                     return new ArrayIndexingValueRef(this, state.TypeConverter, target, idx, targetDescriptor);
                 }
-                else if (target is IList)
+                else if (target is IList list)
                 {
                     _indexedType = IndexedType.LIST;
 
-                    return new CollectionIndexingValueRef(this, (IList)target, idx, targetDescriptor, state.TypeConverter, state.Configuration.AutoGrowCollections, state.Configuration.MaximumAutoGrowSize);
+                    return new CollectionIndexingValueRef(this, list, idx, targetDescriptor, state.TypeConverter, state.Configuration.AutoGrowCollections, state.Configuration.MaximumAutoGrowSize);
                 }
                 else
                 {
@@ -288,7 +286,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             // Try and treat the index value as a property of the context object
-            // TODO: could call the conversion service to convert the value to a String
+            // Could call the conversion service to convert the value to a String
             var valueType = indexValue.TypeDescriptor;
             if (valueType != null && typeof(string) == valueType)
             {
@@ -577,17 +575,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                         var accessor = acc;
                         if (accessor.CanRead(_evaluationContext, _targetObject, _name))
                         {
-                            if (accessor is ReflectivePropertyAccessor)
+                            if (accessor is ReflectivePropertyAccessor accessor1)
                             {
-                                accessor = ((ReflectivePropertyAccessor)accessor).CreateOptimalAccessor(_evaluationContext, _targetObject, _name);
+                                accessor = accessor1.CreateOptimalAccessor(_evaluationContext, _targetObject, _name);
                             }
 
                             _indexer._cachedReadAccessor = accessor;
                             _indexer._cachedReadName = _name;
                             _indexer._cachedReadTargetType = targetObjectRuntimeClass;
-                            if (accessor is ReflectivePropertyAccessor.OptimalPropertyAccessor)
+                            if (accessor is ReflectivePropertyAccessor.OptimalPropertyAccessor optimalAccessor)
                             {
-                                var optimalAccessor = (ReflectivePropertyAccessor.OptimalPropertyAccessor)accessor;
                                 var member = optimalAccessor.Member;
                                 _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(member is MethodInfo ? ((MethodInfo)member).ReturnType : ((FieldInfo)member).FieldType);
                             }
@@ -671,7 +668,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 GrowCollectionIfNecessary();
                 if (_collection is IList)
                 {
-                    var o = ((IList)_collection)[_index];
+                    var o = _collection[_index];
                     _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
                     return new TypedValue(o, ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor, o));
                 }
@@ -695,7 +692,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 GrowCollectionIfNecessary();
                 if (_collection is IList)
                 {
-                    var list = (IList)_collection;
+                    var list = _collection;
                     var elemTypeDesc = ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor);
                     if (elemTypeDesc != null)
                     {

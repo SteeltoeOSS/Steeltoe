@@ -17,7 +17,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         private readonly ConcurrentDictionary<PropertyCacheKey, InvokerPair> _readerCache = new ConcurrentDictionary<PropertyCacheKey, InvokerPair>();
         private readonly ConcurrentDictionary<PropertyCacheKey, MemberInfo> _writerCache = new ConcurrentDictionary<PropertyCacheKey, MemberInfo>();
         private readonly ConcurrentDictionary<PropertyCacheKey, Type> _typeDescriptorCache = new ConcurrentDictionary<PropertyCacheKey, Type>();
-        private volatile InvokerPair _lastReadInvokerPair;
 
         public ReflectivePropertyAccessor()
         {
@@ -41,7 +40,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return false;
             }
 
-            var type = target is Type ? (Type)target : target.GetType();
+            var type = target is Type type1 ? type1 : target.GetType();
             if (type.IsArray && name.Equals("Length"))
             {
                 return true;
@@ -86,7 +85,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 throw new ArgumentNullException(nameof(target));
             }
 
-            var type = target is Type ? (Type)target : target.GetType();
+            var type = target is Type type1 ? type1 : target.GetType();
 
             if (type.IsArray && name.Equals("Length"))
             {
@@ -101,11 +100,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             var cacheKey = new PropertyCacheKey(type, name, target is Type);
             _readerCache.TryGetValue(cacheKey, out var invoker);
-            _lastReadInvokerPair = invoker;
 
             if (invoker == null || invoker.Member is MethodInfo)
             {
-                var method = (MethodInfo)(invoker != null ? invoker.Member : null);
+                var method = (MethodInfo)invoker?.Member;
                 if (method == null)
                 {
                     method = FindGetterForProperty(name, type, target);
@@ -116,7 +114,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                         var typeDescriptor = method.ReturnType;
                         method = ClassUtils.GetInterfaceMethodIfPossible(method);
                         invoker = new InvokerPair(method, typeDescriptor);
-                        _lastReadInvokerPair = invoker;
                         _readerCache[cacheKey] = invoker;
                     }
                 }
@@ -137,14 +134,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             if (invoker == null || invoker.Member is FieldInfo)
             {
-                var field = (FieldInfo)(invoker == null ? null : invoker.Member);
+                var field = (FieldInfo)invoker?.Member;
                 if (field == null)
                 {
                     field = FindField(name, type, target);
                     if (field != null)
                     {
                         invoker = new InvokerPair(field, field.FieldType);
-                        _lastReadInvokerPair = invoker;
                         _readerCache[cacheKey] = invoker;
                     }
                 }
@@ -173,7 +169,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return false;
             }
 
-            var type = target is Type ? (Type)target : target.GetType();
+            var type = target is Type type1 ? type1 : target.GetType();
             var cacheKey = new PropertyCacheKey(type, name, target is Type);
             if (_writerCache.ContainsKey(cacheKey))
             {
@@ -216,7 +212,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 throw new ArgumentNullException(nameof(target));
             }
 
-            var type = target is Type ? (Type)target : target.GetType();
+            var type = target is Type type1 ? type1 : target.GetType();
 
             var possiblyConvertedNewValue = newValue;
             var typeDescriptor = GetTypeDescriptor(context, target, name);
@@ -301,7 +297,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 return this;
             }
 
-            var clazz = target is Type ? (Type)target : target.GetType();
+            var clazz = target is Type type ? type : target.GetType();
             if (clazz.IsArray)
             {
                 return this;
@@ -537,7 +533,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         {
             private readonly Type _clazz;
             private readonly string _property;
-            private bool _targetIsClass;
+            private readonly bool _targetIsClass;
 
             public PropertyCacheKey(Type clazz, string name, bool targetIsClass)
             {
@@ -546,19 +542,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 _targetIsClass = targetIsClass;
             }
 
-            public override bool Equals(object other)
+            public override bool Equals(object obj)
             {
-                if (this == other)
+                if (this == obj)
                 {
                     return true;
                 }
 
-                if (!(other is PropertyCacheKey))
+                if (!(obj is PropertyCacheKey))
                 {
                     return false;
                 }
 
-                var otherKey = (PropertyCacheKey)other;
+                var otherKey = (PropertyCacheKey)obj;
                 return _clazz == otherKey._clazz && _property.Equals(otherKey._property) &&
                         _targetIsClass == otherKey._targetIsClass;
             }
@@ -614,15 +610,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return false;
                 }
 
-                var type = target is Type ? (Type)target : target.GetType();
+                var type = target is Type type1 ? type1 : target.GetType();
                 if (type.IsArray)
                 {
                     return false;
                 }
 
-                if (_member is MethodInfo)
+                if (_member is MethodInfo method)
                 {
-                    var method = (MethodInfo)_member;
                     var getterName = "get_" + ReflectivePropertyAccessor.Capitalize(name);
                     if (getterName.Equals(method.Name))
                     {
@@ -640,9 +635,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public ITypedValue Read(IEvaluationContext context, object target, string name)
             {
-                if (_member is MethodInfo)
+                if (_member is MethodInfo method)
                 {
-                    var method = (MethodInfo)_member;
                     try
                     {
                         var value = method.Invoke(target, new object[0]);
@@ -685,9 +679,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return false;
                 }
 
-                if (_member is MethodInfo)
+                if (_member is MethodInfo info)
                 {
-                    return ((MethodInfo)_member).IsPublic;
+                    return info.IsPublic;
                 }
                 else
                 {
@@ -697,9 +691,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public Type GetPropertyType()
             {
-                if (_member is MethodInfo)
+                if (_member is MethodInfo info)
                 {
-                    return ((MethodInfo)_member).ReturnType;
+                    return info.ReturnType;
                 }
                 else
                 {
@@ -707,11 +701,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 }
             }
 
-            public void GenerateCode(string name, ILGenerator gen, CodeFlow cf)
+            public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
             {
-                if (_member is MethodInfo)
+                if (_member is MethodInfo info)
                 {
-                    GenerateCode((MethodInfo)_member, gen, cf);
+                    GenerateCode(info, gen, cf);
                 }
                 else
                 {
@@ -809,7 +803,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
                     if (field.IsLiteral)
                     {
-                        EmitLiteralFieldCode(gen, cf, field);
+                        EmitLiteralFieldCode(gen, field);
                     }
                     else
                     {
@@ -818,7 +812,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 }
             }
 
-            private void EmitLiteralFieldCode(ILGenerator gen, CodeFlow cf, FieldInfo field)
+            private void EmitLiteralFieldCode(ILGenerator gen, FieldInfo field)
             {
                 var constant = field.GetRawConstantValue();
                 if (field.FieldType.IsClass && constant == null)
