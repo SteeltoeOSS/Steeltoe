@@ -52,11 +52,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             cf.EnterCompilationScope();
             _children[0].GenerateCode(gen, cf);
-            var lastDesc = cf.LastDescriptor();
-            if (lastDesc == null)
-            {
-                throw new InvalidOperationException("No last descriptor");
-            }
+            var lastDesc = cf.LastDescriptor() ?? throw new InvalidOperationException("No last descriptor");
 
             if (!CodeFlow.IsValueType(lastDesc))
             {
