@@ -24,7 +24,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="5.1.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
   </ItemGroup>
   
 </Project>
