@@ -324,7 +324,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var descriptors = new List<Type>(arguments.Length);
             foreach (var argument in arguments)
             {
-                descriptors.Add(argument == null ? null : argument.GetType());
+                descriptors.Add(argument?.GetType());
             }
 
             return descriptors;
