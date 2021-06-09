@@ -10,22 +10,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostCanBeStarted()
         {
-            MockRabbitHostedService service;
+            MockRabbitHostedService hostedService;
+
             using (var host = RabbitHost.CreateDefaultBuilder()
                                 .ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>())
                                 .Start())
             {
                 Assert.NotNull(host);
-                service = (MockRabbitHostedService)host.Services.GetRequiredService<IHostedService>();
-                Assert.NotNull(service);
-                Assert.Equal(1, service.StartCount);
-                Assert.Equal(0, service.StopCount);
-                Assert.Equal(0, service.DisposeCount);
+                hostedService = (MockRabbitHostedService)host.Services.GetRequiredService<IHostedService>();
+                Assert.NotNull(hostedService);
+                Assert.Equal(1, hostedService.StartCount);
+                Assert.Equal(0, hostedService.StopCount);
+                Assert.Equal(0, hostedService.DisposeCount);
             }
 
-            Assert.Equal(1, service.StartCount);
-            Assert.Equal(0, service.StopCount);
-            Assert.Equal(1, service.DisposeCount);
+            Assert.Equal(1, hostedService.StartCount);
+            Assert.Equal(0, hostedService.StopCount);
+            Assert.Equal(1, hostedService.DisposeCount);
         }
 
         [Fact]
@@ -33,10 +34,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         {
             using (var host = RabbitHost.CreateDefaultBuilder().Start())
             {
-                var service = host.Services.GetRequiredService<ILifecycleProcessor>();
+                var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
                 var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
 
-                Assert.True(service.IsRunning);
+                Assert.True(lifecycleProcessor.IsRunning);
                 Assert.NotNull(rabbitHostService);
             }
         }
