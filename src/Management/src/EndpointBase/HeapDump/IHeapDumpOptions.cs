@@ -6,5 +6,6 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 {
     public interface IHeapDumpOptions : IEndpointOptions
     {
+        public string HeapDumpType { get; set; }
     }
 }

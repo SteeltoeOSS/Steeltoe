@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         }
 
         [Fact]
-        public async void AddInstancesToListAsync_AddsExpected()
+        public async Task AddInstancesToListAsync_AddsExpected()
         {
             var options = new ConsulDiscoveryOptions();
 
@@ -91,7 +91,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         }
 
         [Fact]
-        public async void GetServicesAsync_ReturnsExpected()
+        public async Task GetServicesAsync_ReturnsExpected()
         {
             var options = new ConsulDiscoveryOptions();
 

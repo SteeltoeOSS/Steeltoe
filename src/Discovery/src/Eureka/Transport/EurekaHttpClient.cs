@@ -743,7 +743,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
             var rawUserInfo = requestUri.GetComponents(UriComponents.UserInfo, UriFormat.Unescaped);
             var request = new HttpRequestMessage(method, rawUri);
 
-            if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.IndexOfAny(COLON_DELIMIT) > 0)
+            if (!string.IsNullOrEmpty(rawUserInfo) && rawUserInfo.IndexOfAny(COLON_DELIMIT) >= 0)
             {
                 var userInfo = GetUserInfo(rawUserInfo);
                 if (userInfo.Length >= 2)

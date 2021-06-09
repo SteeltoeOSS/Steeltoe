@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.LoadBalancer.Test
@@ -21,7 +22,7 @@ namespace Steeltoe.Common.LoadBalancer.Test
         }
 
         [Fact]
-        public async void ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
+        public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex()
         {
             // arrange
             var services = new List<ConfigurationServiceInstance>
@@ -52,7 +53,7 @@ namespace Steeltoe.Common.LoadBalancer.Test
         }
 
         [Fact]
-        public async void ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
+        public async Task ResolveServiceInstance_ResolvesAndIncrementsServiceIndex_WithDistributedCache()
         {
             // arrange
             var services = new List<ConfigurationServiceInstance>

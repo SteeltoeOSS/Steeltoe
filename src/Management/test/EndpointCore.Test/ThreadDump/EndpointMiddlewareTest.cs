@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump.Test
@@ -33,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         };
 
         [Fact]
-        public async void HandleThreadDumpRequestAsync_ReturnsExpected()
+        public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
         {
             if (Platform.IsWindows)
             {
@@ -56,7 +57,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         }
 
         [Fact]
-        public async void ThreadDumpActuator_ReturnsExpectedData()
+        public async Task ThreadDumpActuator_ReturnsExpectedData()
         {
             if (Platform.IsWindows)
             {
@@ -82,7 +83,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         }
 
         [Fact]
-        public async void ThreadDumpActuatorv2_ReturnsExpectedData()
+        public async Task ThreadDumpActuatorv2_ReturnsExpectedData()
         {
             if (Platform.IsWindows)
             {

@@ -10,6 +10,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -84,7 +85,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void ExchangeAuthCodeForClaimsIdentity_ExchangesCodeForIdentity()
+        public async Task ExchangeAuthCodeForClaimsIdentity_ExchangesCodeForIdentity()
         {
             // arrange
             var options = new AuthServerOptions()
@@ -101,7 +102,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void ExchangeAuthCodeForClaimsIdentity_ReturnsNullOnFailure()
+        public async Task ExchangeAuthCodeForClaimsIdentity_ReturnsNullOnFailure()
         {
             // arrange
             var options = new AuthServerOptions()

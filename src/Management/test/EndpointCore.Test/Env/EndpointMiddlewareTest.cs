@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Env.Test
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         private IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
 
         [Fact]
-        public async void HandleEnvRequestAsync_ReturnsExpected()
+        public async Task HandleEnvRequestAsync_ReturnsExpected()
         {
             var opts = new EnvEndpointOptions();
 
@@ -58,7 +59,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         }
 
         [Fact]
-        public async void EnvActuator_ReturnsExpectedData()
+        public async Task EnvActuator_ReturnsExpectedData()
         {
             // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
             var originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");

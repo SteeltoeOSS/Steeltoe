@@ -1,9 +1,10 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
 #pragma warning disable 0436
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -39,14 +40,15 @@ using System.Text.RegularExpressions;
 
 namespace Steeltoe.Bootstrap.Autoconfig
 {
-    public static class HostBuilderExtensions
+    public static class WebHostBuilderExtensions
     {
         private const string _loggerName = "Steeltoe.Autoconfig";
         private static readonly HashSet<string> _missingAssemblies = new ();
         private static IEnumerable<string> _excludedAssemblies;
         private static ILoggerFactory _loggerFactory;
+        private static ILogger _logger;
 
-        static HostBuilderExtensions()
+        static WebHostBuilderExtensions()
         {
             var currentDomain = AppDomain.CurrentDomain;
             currentDomain.AssemblyResolve += LoadAnyVersion;
@@ -83,15 +85,14 @@ namespace Steeltoe.Bootstrap.Autoconfig
         /// Automatically configure Steeltoe packages that have been added as NuGet references.<para />
         /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured!
         /// </summary>
-        /// <param name="hostBuilder">Your <see cref="IHostBuilder" /></param>
+        /// <param name="hostBuilder">Your <see cref="IWebHostBuilder" /></param>
         /// <param name="exclusions">A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" /></param>
         /// <param name="loggerFactory">For logging within auto-configuration</param>
-        public static IHostBuilder AddSteeltoe(this IHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
+        public static IWebHostBuilder AddSteeltoe(this IWebHostBuilder hostBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
         {
             _excludedAssemblies = exclusions ?? new List<string>();
             _loggerFactory = loggerFactory;
-            var logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
-            hostBuilder.Properties[_loggerName] = logger;
+            _logger = loggerFactory?.CreateLogger(_loggerName) ?? NullLogger.Instance;
 
             if (!hostBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerBase, SteeltoeAssemblies.Steeltoe_Extensions_Configuration_ConfigServerCore))
             {
@@ -154,7 +155,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
             }
         }
 
-        private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
+        private static bool WireIfLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params string[] assembly)
         {
             if (assembly.All(IsAssemblyLoaded))
             {
@@ -165,7 +166,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
             return false;
         }
 
-        private static bool WireIfAnyLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
+        private static bool WireIfAnyLoaded(this IWebHostBuilder hostBuilder, Action<IWebHostBuilder> action, params string[] assembly)
         {
             if (assembly.Any(IsAssemblyLoaded))
             {
@@ -176,98 +177,97 @@ namespace Steeltoe.Bootstrap.Autoconfig
             return false;
         }
 
-        private static IHostBuilder Log(this IHostBuilder host, string message)
+        private static IWebHostBuilder Log(this IWebHostBuilder host, string message)
         {
-            var logger = (ILogger)host.Properties[_loggerName];
-            logger.LogInformation(message);
+            _logger.LogInformation(message);
             return host;
         }
 
         #region Config Providers
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireConfigServer(this IHostBuilder hostBuilder) =>
+        private static void WireConfigServer(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddConfigServer(_loggerFactory)).Log(LogMessages.WireConfigServer);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireCloudFoundryConfiguration(this IHostBuilder hostBuilder) =>
+        private static void WireCloudFoundryConfiguration(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry()).Log(LogMessages.WireCloudFoundryConfiguration);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireKubernetesConfiguration(this IHostBuilder hostBuilder) =>
+        private static void WireKubernetesConfiguration(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory)).Log(LogMessages.WireKubernetesConfiguration);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireRandomValueProvider(this IHostBuilder hostBuilder) =>
+        private static void WireRandomValueProvider(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddRandomValueSource(_loggerFactory)).Log(LogMessages.WireRandomValueProvider);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WirePlaceholderResolver(this IHostBuilder hostBuilder) =>
+        private static void WirePlaceholderResolver(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddPlaceholderResolver(_loggerFactory)).Log(LogMessages.WirePlaceholderResolver);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireConnectorConfiguration(this IHostBuilder hostBuilder) =>
+        private static void WireConnectorConfiguration(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureAppConfiguration((host, svc) => svc.AddConnectionStrings()).Log(LogMessages.WireConnectorsConfiguration);
         #endregion
 
         #region Connectors
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireMySqlConnection(this IHostBuilder hostBuilder) =>
+        private static void WireMySqlConnection(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddMySqlConnection(host.Configuration)).Log(LogMessages.WireMySqlConnection);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireMongoClient(this IHostBuilder hostBuilder) =>
+        private static void WireMongoClient(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddMongoClient(host.Configuration)).Log(LogMessages.WireMongoClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireOracleConnection(this IHostBuilder hostBuilder) =>
+        private static void WireOracleConnection(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddOracleConnection(host.Configuration)).Log(LogMessages.WireOracleConnection);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WirePostgresConnection(this IHostBuilder hostBuilder) =>
+        private static void WirePostgresConnection(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddPostgresConnection(host.Configuration)).Log(LogMessages.WirePostgresConnection);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireRabbitMqConnection(this IHostBuilder hostBuilder) =>
+        private static void WireRabbitMqConnection(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddRabbitMQConnection(host.Configuration)).Log(LogMessages.WireRabbitMqConnection);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireRedisConnectionMultiplexer(this IHostBuilder hostBuilder) =>
+        private static void WireRedisConnectionMultiplexer(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddRedisConnectionMultiplexer(host.Configuration)).Log(LogMessages.WireRedisConnectionMultiplexer);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDistributedRedisCache(this IHostBuilder hostBuilder) =>
+        private static void WireDistributedRedisCache(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedRedisCache(host.Configuration)).Log(LogMessages.WireDistributedRedisCache);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireSqlServerConnection(this IHostBuilder hostBuilder) =>
+        private static void WireSqlServerConnection(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddSqlServerConnection(host.Configuration)).Log(LogMessages.WireSqlServerConnection);
         #endregion
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDiscoveryClient(this IHostBuilder hostBuilder) =>
+        private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDistributedTracing(this IHostBuilder hostBuilder) =>
+        private static void WireDistributedTracing(this IWebHostBuilder hostBuilder) =>
             hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing(host.Configuration)).Log(LogMessages.WireDistributedTracing);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
 #pragma warning disable CS0618 // Type or member is obsolete
-        private static void WireCloudFoundryActuators(this IHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryActuators().Log(LogMessages.WireCloudFoundryActuators);
+        private static void WireCloudFoundryActuators(this IWebHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryActuators().Log(LogMessages.WireCloudFoundryActuators);
 #pragma warning restore CS0618 // Type or member is obsolete
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireKubernetesActuators(this IHostBuilder hostBuilder) =>
+        private static void WireKubernetesActuators(this IWebHostBuilder hostBuilder) =>
             hostBuilder.AddKubernetesActuators().Log(LogMessages.WireKubernetesActuators);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireAllActuators(this IHostBuilder hostBuilder) => hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
+        private static void WireAllActuators(this IWebHostBuilder hostBuilder) => hostBuilder.AddAllActuators().Log(LogMessages.WireAllActuators);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDynamicSerilog(this IHostBuilder hostBuilder) => hostBuilder.AddDynamicSerilog().Log(LogMessages.WireDynamicSerilog);
+        private static void WireDynamicSerilog(this IWebHostBuilder hostBuilder) => hostBuilder.AddDynamicSerilog().Log(LogMessages.WireDynamicSerilog);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireCloudFoundryContainerIdentity(this IHostBuilder hostBuilder) => hostBuilder
+        private static void WireCloudFoundryContainerIdentity(this IWebHostBuilder hostBuilder) => hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
             .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth(host.Configuration))
             .Log(LogMessages.WireCloudFoundryContainerIdentity);

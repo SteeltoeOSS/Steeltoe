@@ -24,7 +24,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestGetErrorPercentage()
         {
             var key = "cmd-metrics-A";
@@ -87,7 +86,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestBadRequestsDoNotAffectErrorPercentage()
         {
             var key = "cmd-metrics-B";
