@@ -124,7 +124,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var childValue = _children[i + 1].GetValueInternal(state);
                 var value = childValue.Value;
                 arguments[i] = value;
-                var valueType = value != null ? value.GetType() : null;
+                var valueType = value?.GetType();
                 argumentTypes.Add(valueType);
             }
 
