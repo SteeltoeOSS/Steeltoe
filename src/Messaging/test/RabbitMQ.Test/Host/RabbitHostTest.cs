@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host
