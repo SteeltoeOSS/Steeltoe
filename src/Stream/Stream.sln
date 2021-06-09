@@ -60,6 +60,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Messaging.Abstract
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Expression", "..\Common\src\Common.Expression\Steeltoe.Common.Expression.csproj", "{BA9A9A06-930F-4AEA-8291-CE2994C9C804}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase", "..\Configuration\src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj", "{F0945C79-4685-46DF-8016-4CA7C2B81F03}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +152,10 @@ Global
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0945C79-4685-46DF-8016-4CA7C2B81F03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0945C79-4685-46DF-8016-4CA7C2B81F03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0945C79-4685-46DF-8016-4CA7C2B81F03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0945C79-4685-46DF-8016-4CA7C2B81F03}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -176,6 +182,7 @@ Global
 		{4F7A0CF6-82E0-46A2-9CF4-094B8881C1BA} = {AF57F6AF-A07B-443D-8674-DA73E25133EC}
 		{C6EF77AF-15D4-4296-A2C9-DDA61BB1758F} = {AF57F6AF-A07B-443D-8674-DA73E25133EC}
 		{BA9A9A06-930F-4AEA-8291-CE2994C9C804} = {AF57F6AF-A07B-443D-8674-DA73E25133EC}
+		{F0945C79-4685-46DF-8016-4CA7C2B81F03} = {AF57F6AF-A07B-443D-8674-DA73E25133EC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B1C5C304-490C-4FC9-922E-F6AE3D56E421}
