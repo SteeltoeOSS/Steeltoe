@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
@@ -12,6 +12,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class OpPlus : Operator
     {
+        private static readonly MethodInfo _appendString = typeof(StringBuilder).GetMethod("Append", new Type[] { typeof(string) });
+        private static readonly MethodInfo _toString = typeof(StringBuilder).GetMethod("ToString", new Type[0]);
+        private static readonly ConstructorInfo _sbConstructor = typeof(StringBuilder).GetConstructor(new Type[0]);
+
         public OpPlus(int startPos, int endPos, params SpelNode[] operands)
         : base("+", startPos, endPos, operands)
         {
@@ -33,19 +37,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     if (operandOne is double)
                     {
-                        _exitTypeDescriptor = "D";
+                        _exitTypeDescriptor = TypeDescriptor.D;
                     }
                     else if (operandOne is float)
                     {
-                        _exitTypeDescriptor = "F";
+                        _exitTypeDescriptor = TypeDescriptor.F;
                     }
                     else if (operandOne is long)
                     {
-                        _exitTypeDescriptor = "J";
+                        _exitTypeDescriptor = TypeDescriptor.J;
                     }
                     else if (operandOne is int)
                     {
-                        _exitTypeDescriptor = "I";
+                        _exitTypeDescriptor = TypeDescriptor.I;
                     }
 
                     return new TypedValue(operandOne);
@@ -72,28 +76,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
                 else if (leftNumber is double || rightNumber is double)
                 {
-                    _exitTypeDescriptor = "D";
+                    _exitTypeDescriptor = TypeDescriptor.D;
                     var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal + rightVal);
                 }
                 else if (leftNumber is float || rightNumber is float)
                 {
-                    _exitTypeDescriptor = "F";
+                    _exitTypeDescriptor = TypeDescriptor.F;
                     var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal + rightVal);
                 }
                 else if (leftNumber is long || rightNumber is long)
                 {
-                    _exitTypeDescriptor = "J";
+                    _exitTypeDescriptor = TypeDescriptor.J;
                     var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal + rightVal);
                 }
                 else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
                 {
-                    _exitTypeDescriptor = "I";
+                    _exitTypeDescriptor = TypeDescriptor.I;
                     var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal + rightVal);
@@ -109,7 +113,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (leftOperand is string && rightOperand is string)
             {
-                _exitTypeDescriptor = "LSystem/String";
+                _exitTypeDescriptor = TypeDescriptor.STRING;
                 return new TypedValue((string)leftOperand + (string)rightOperand);
             }
 
@@ -165,73 +169,38 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null;
         }
 
-        // private void Walk(DynamicMethod mv, CodeFlow cf, SpelNode operand)
-        // {
-        //    if (operand is OpPlus) {
-        //        OpPlus plus = (OpPlus)operand;
-        //        walk(mv, cf, plus.getLeftOperand());
-        //        walk(mv, cf, plus.getRightOperand());
-        //    }
-
-        // else if (operand != null)
-        //    {
-        //        cf.enterCompilationScope();
-        //        operand.generateCode(mv, cf);
-        //        if (!"Ljava/lang/String".equals(cf.lastDescriptor()))
-        //        {
-        //            mv.visitTypeInsn(CHECKCAST, "java/lang/String");
-        //        }
-        //        cf.exitCompilationScope();
-        //        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-        //    }
-        // }
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // if ("Ljava/lang/String".equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
-            //        mv.visitInsn(DUP);
-            //        mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
-            //        walk(mv, cf, getLeftOperand());
-            //        walk(mv, cf, getRightOperand());
-            //        mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
-            //    }
-            //    else
-            //    {
-            //        this.children[0].generateCode(mv, cf);
-            //        String leftDesc = this.children[0].exitTypeDescriptor;
-            //        String exitDesc = this.exitTypeDescriptor;
-            //        Assert.state(exitDesc != null, "No exit type descriptor");
-            //        char targetDesc = exitDesc.charAt(0);
-            //        CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, leftDesc, targetDesc);
-            //        if (this.children.length > 1)
-            //        {
-            //            cf.enterCompilationScope();
-            //            this.children[1].generateCode(mv, cf);
-            //            String rightDesc = this.children[1].exitTypeDescriptor;
-            //            cf.exitCompilationScope();
-            //            CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, rightDesc, targetDesc);
-            //            switch (targetDesc)
-            //            {
-            //                case 'I':
-            //                    mv.visitInsn(IADD);
-            //                    break;
-            //                case 'J':
-            //                    mv.visitInsn(LADD);
-            //                    break;
-            //                case 'F':
-            //                    mv.visitInsn(FADD);
-            //                    break;
-            //                case 'D':
-            //                    mv.visitInsn(DADD);
-            //                    break;
-            //                default:
-            //                    throw new IllegalStateException(
-            //                            "Unrecognized exit type descriptor: '" + this.exitTypeDescriptor + "'");
-            //            }
-            //        }
-            //    }
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            if (_exitTypeDescriptor == TypeDescriptor.STRING)
+            {
+                gen.Emit(OpCodes.Newobj, _sbConstructor);
+                Walk(gen, cf, LeftOperand);
+                Walk(gen, cf, RightOperand);
+                gen.Emit(OpCodes.Callvirt, _toString);
+            }
+            else
+            {
+                _children[0].GenerateCode(gen, cf);
+                var leftDesc = _children[0].ExitDescriptor;
+                var exitDesc = _exitTypeDescriptor;
+                if (exitDesc == null)
+                {
+                    throw new InvalidOperationException("No exit type descriptor");
+                }
+
+                CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
+                if (_children.Length > 1)
+                {
+                    cf.EnterCompilationScope();
+                    _children[1].GenerateCode(gen, cf);
+                    var rightDesc = _children[1].ExitDescriptor;
+                    cf.ExitCompilationScope();
+                    CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
+                    gen.Emit(OpCodes.Add);
+                }
+            }
+
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         private static string ConvertTypedValueToString(ITypedValue value, ExpressionState state)
@@ -245,6 +214,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             return value.Value == null ? "null" : value.Value.ToString();
+        }
+
+        private void Walk(ILGenerator gen, CodeFlow cf, SpelNode operand)
+        {
+            if (operand is OpPlus)
+            {
+                var plus = (OpPlus)operand;
+                Walk(gen, cf, plus.LeftOperand);
+                Walk(gen, cf, plus.RightOperand);
+            }
+            else if (operand != null)
+            {
+                cf.EnterCompilationScope();
+                operand.GenerateCode(gen, cf);
+                if (cf.LastDescriptor() != TypeDescriptor.STRING)
+                {
+                    gen.Emit(OpCodes.Castclass, typeof(string));
+                }
+
+                cf.ExitCompilationScope();
+                gen.Emit(OpCodes.Callvirt, _appendString);
+            }
         }
     }
 }

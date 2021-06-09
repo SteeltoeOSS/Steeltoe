@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -47,7 +45,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 // Can only generate bytecode where the right operand is a direct type reference,
                 // not if it is indirect (for example when right operand is a variable reference)
-                _exitTypeDescriptor = "Z";
+                _exitTypeDescriptor = TypeDescriptor.Z;
             }
 
             return result;
@@ -58,23 +56,23 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null && LeftOperand.IsCompilable();
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // getLeftOperand().generateCode(mv, cf);
-            //    CodeFlow.insertBoxIfNecessary(mv, cf.lastDescriptor());
-            //    Assert.state(this.type != null, "No type available");
-            //    if (this.type.isPrimitive())
-            //    {
-            //        // always false - but left operand code always driven
-            //        // in case it had side effects
-            //        mv.visitInsn(POP);
-            //        mv.visitInsn(ICONST_0); // value of false
-            //    }
-            //    else
-            //    {
-            //        mv.visitTypeInsn(INSTANCEOF, Type.getInternalName(this.type));
-            //    }
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            LeftOperand.GenerateCode(gen, cf);
+            CodeFlow.InsertBoxIfNecessary(gen, cf.LastDescriptor());
+            if (_type == null)
+            {
+                throw new InvalidOperationException("No type available");
+            }
+
+            var convert = gen.DeclareLocal(typeof(bool));
+            gen.Emit(OpCodes.Isinst, _type);
+            gen.Emit(OpCodes.Ldnull);
+            gen.Emit(OpCodes.Cgt_Un);
+            gen.Emit(OpCodes.Stloc, convert);
+            gen.Emit(OpCodes.Ldloc, convert);
+
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

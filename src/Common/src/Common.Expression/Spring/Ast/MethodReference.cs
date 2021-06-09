@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -18,7 +17,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         private readonly bool _nullSafe;
 
-        private string _originalPrimitiveExitTypeDescriptor;
+        private TypeDescriptor _originalPrimitiveExitTypeDescriptor;
 
         private volatile CachedMethodExecutor _cachedExecutor;
 
@@ -38,7 +37,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var targetType = state.GetActiveContextObject().TypeDescriptor;
             var arguments = GetArguments(state);
             var result = GetValueInternal(evaluationContext, value, targetType, arguments);
-            UpdateExitTypeDescriptor();
+            UpdateExitTypeDescriptor(result.Value);
             return result;
         }
 
@@ -76,7 +75,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             var clazz = executor.Method.DeclaringType;
-            if (!clazz.IsPublic && executor.GetPublicDeclaringClass() == null)
+            if (!ReflectionHelper.IsPublic(clazz) && executor.GetPublicDeclaringClass() == null)
             {
                 return false;
             }
@@ -84,79 +83,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return true;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // CachedMethodExecutor executorToCheck = this.cachedExecutor;
-            // if (executorToCheck == null || !(executorToCheck.get() is ReflectiveMethodExecutor))
-            // {
-            //    throw new IllegalStateException("No applicable cached executor found: " + executorToCheck);
-            // }
+            var method = GetTargetMethodAndType(out var classType);
+            if (method.IsStatic)
+            {
+                GenerateStaticMethodCode(gen, cf, method, classType);
+            }
+            else
+            {
+                GenerateInstanceMethodCode(gen, cf, method, classType);
+            }
 
-            // ReflectiveMethodExecutor methodExecutor = (ReflectiveMethodExecutor)executorToCheck.get();
-            // Method method = methodExecutor.getMethod();
-            // boolean isStaticMethod = Modifier.isStatic(method.getModifiers());
-            // String descriptor = cf.lastDescriptor();
-
-            // Label skipIfNull = null;
-            // if (descriptor == null && !isStaticMethod)
-            // {
-            //    // Nothing on the stack but something is needed
-            //    cf.loadTarget(mv);
-            // }
-            // if ((descriptor != null || !isStaticMethod) && this.nullSafe)
-            // {
-            //    mv.visitInsn(DUP);
-            //    skipIfNull = new Label();
-            //    Label continueLabel = new Label();
-            //    mv.visitJumpInsn(IFNONNULL, continueLabel);
-            //    CodeFlow.insertCheckCast(mv, this.exitTypeDescriptor);
-            //    mv.visitJumpInsn(GOTO, skipIfNull);
-            //    mv.visitLabel(continueLabel);
-            // }
-            // if (descriptor != null && isStaticMethod)
-            // {
-            //    // Something on the stack when nothing is needed
-            //    mv.visitInsn(POP);
-            // }
-
-            // if (CodeFlow.isPrimitive(descriptor))
-            // {
-            //    CodeFlow.insertBoxIfNecessary(mv, descriptor.charAt(0));
-            // }
-
-            // String classDesc;
-            // if (Modifier.isPublic(method.getDeclaringClass().getModifiers()))
-            // {
-            //    classDesc = method.getDeclaringClass().getName().replace('.', '/');
-            // }
-            // else
-            // {
-            //    Type publicDeclaringClass = methodExecutor.getPublicDeclaringClass();
-            //    Assert.state(publicDeclaringClass != null, "No public declaring class");
-            //    classDesc = publicDeclaringClass.getName().replace('.', '/');
-            // }
-
-            // if (!isStaticMethod && (descriptor == null || !descriptor.substring(1).equals(classDesc)))
-            // {
-            //    CodeFlow.insertCheckCast(mv, "L" + classDesc);
-            // }
-
-            // GenerateCodeForArguments(mv, cf, method, this.children);
-            // mv.visitMethodInsn((isStaticMethod ? INVOKESTATIC : (method.isDefault() ? INVOKEINTERFACE : INVOKEVIRTUAL)),
-            //        classDesc, method.getName(), CodeFlow.createSignatureDescriptor(method),
-            //        method.getDeclaringClass().isInterface());
-            // cf.pushDescriptor(this.exitTypeDescriptor);
-
-            // if (this.originalPrimitiveExitTypeDescriptor != null)
-            // {
-            //    // The output of the accessor will be a primitive but from the block above it might be null,
-            //    // so to have a 'common stack' element at skipIfNull target we need to box the primitive
-            //    CodeFlow.insertBoxIfNecessary(mv, this.originalPrimitiveExitTypeDescriptor);
-            // }
-            // if (skipIfNull != null)
-            // {
-            //    mv.visitLabel(skipIfNull);
-            // }
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)
@@ -169,6 +108,121 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             return new MethodValueRef(this, state, arguments);
+        }
+
+        protected internal TypeDescriptor ComputeExitDescriptor(object result, Type propertyReturnType)
+        {
+            if (propertyReturnType.IsValueType)
+            {
+                return CodeFlow.ToDescriptor(propertyReturnType);
+            }
+
+            return CodeFlow.ToDescriptorFromObject(result);
+        }
+
+        private void GenerateStaticMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo method, Type classType)
+        {
+            var stackDescriptor = cf.LastDescriptor();
+            Label? skipIfNullTarget = null;
+            if (_nullSafe)
+            {
+                skipIfNullTarget = GenerateNullCheckCode(gen, cf);
+            }
+
+            if (stackDescriptor != null)
+            {
+                // Something on the stack when nothing is needed
+                gen.Emit(OpCodes.Pop);
+            }
+
+            GenerateCodeForArguments(gen, cf, method, _children);
+            gen.Emit(OpCodes.Call, method);
+
+            if (_originalPrimitiveExitTypeDescriptor != null)
+            {
+                // The output of the accessor will be a primitive but from the block above it might be null,
+                // so to have a 'common stack' element at skipIfNull target we need to box the primitive
+                CodeFlow.InsertBoxIfNecessary(gen, _originalPrimitiveExitTypeDescriptor);
+            }
+
+            if (skipIfNullTarget.HasValue)
+            {
+                gen.MarkLabel(skipIfNullTarget.Value);
+            }
+        }
+
+        private void GenerateInstanceMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo targetMethod, Type targetType)
+        {
+            var stackDescriptor = cf.LastDescriptor();
+            if (stackDescriptor == null)
+            {
+                // Nothing on the stack but something is needed
+                CodeFlow.LoadTarget(gen);
+                stackDescriptor = TypeDescriptor.OBJECT;
+            }
+
+            Label? skipIfNullTarget = null;
+            if (_nullSafe)
+            {
+                skipIfNullTarget = GenerateNullCheckCode(gen, cf);
+            }
+
+            if (targetType.IsValueType)
+            {
+                if (stackDescriptor.IsBoxed || stackDescriptor.IsReferenceType)
+                {
+                    gen.Emit(OpCodes.Unbox_Any, targetType);
+                }
+
+                var local = gen.DeclareLocal(targetType);
+                gen.Emit(OpCodes.Stloc, local);
+                gen.Emit(OpCodes.Ldloca, local);
+            }
+            else
+            {
+                if (stackDescriptor.Value != targetType)
+                {
+                    CodeFlow.InsertCastClass(gen, new TypeDescriptor(targetType));
+                }
+            }
+
+            GenerateCodeForArguments(gen, cf, targetMethod, _children);
+            if (targetType.IsValueType)
+            {
+                gen.Emit(OpCodes.Call, targetMethod);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Callvirt, targetMethod);
+            }
+
+            if (_originalPrimitiveExitTypeDescriptor != null)
+            {
+                // The output of the accessor will be a primitive but from the block above it might be null,
+                // so to have a 'common stack' element at skipIfNull target we need to box the primitive
+                CodeFlow.InsertBoxIfNecessary(gen, _originalPrimitiveExitTypeDescriptor);
+            }
+
+            if (skipIfNullTarget.HasValue)
+            {
+                gen.MarkLabel(skipIfNullTarget.Value);
+            }
+        }
+
+        private Label GenerateNullCheckCode(ILGenerator gen, CodeFlow cf)
+        {
+            var skipIfNullTarget = gen.DefineLabel();
+            var continueTarget = gen.DefineLabel();
+            gen.Emit(OpCodes.Dup);
+            gen.Emit(OpCodes.Ldnull);
+            gen.Emit(OpCodes.Cgt_Un);
+            gen.Emit(OpCodes.Brtrue, continueTarget);
+
+            // cast null on stack to result type
+            CodeFlow.InsertCastClass(gen, _exitTypeDescriptor);
+            gen.Emit(OpCodes.Br, skipIfNullTarget);
+            gen.MarkLabel(continueTarget);
+            return skipIfNullTarget;
         }
 
         private ITypedValue GetValueInternal(IEvaluationContext evaluationContext, object value, Type targetType, object[] arguments)
@@ -270,7 +324,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var descriptors = new List<Type>(arguments.Length);
             foreach (var argument in arguments)
             {
-                descriptors.Add(argument == null ? typeof(object) : argument.GetType());
+                descriptors.Add(argument == null ? null : argument.GetType());
             }
 
             return descriptors;
@@ -328,14 +382,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
         }
 
-        private void UpdateExitTypeDescriptor()
+        private void UpdateExitTypeDescriptor(object result)
         {
             var executorToCheck = _cachedExecutor;
             if (executorToCheck != null && executorToCheck.Get() is ReflectiveMethodExecutor)
             {
                 var method = ((ReflectiveMethodExecutor)executorToCheck.Get()).Method;
-                var descriptor = CodeFlow.ToDescriptor(method.ReturnType);
-                if (_nullSafe && CodeFlow.IsPrimitive(descriptor))
+                var descriptor = ComputeExitDescriptor(result, method.ReturnType);
+                if (_nullSafe && CodeFlow.IsValueType(descriptor))
                 {
                     _originalPrimitiveExitTypeDescriptor = descriptor;
                     _exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
@@ -344,6 +398,31 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     _exitTypeDescriptor = descriptor;
                 }
+            }
+        }
+
+        private MethodInfo GetTargetMethodAndType(out Type targetType)
+        {
+            var methodExecutor = (ReflectiveMethodExecutor)_cachedExecutor?.Get();
+            if (methodExecutor == null)
+            {
+                throw new InvalidOperationException("No applicable cached executor found: " + _cachedExecutor);
+            }
+
+            var method = methodExecutor.Method;
+            targetType = GetMethodTargetType(method, methodExecutor);
+            return method;
+        }
+
+        private Type GetMethodTargetType(MethodInfo method, ReflectiveMethodExecutor methodExecutor)
+        {
+            if (ReflectionHelper.IsPublic(method.DeclaringType))
+            {
+                return method.DeclaringType;
+            }
+            else
+            {
+                return methodExecutor.GetPublicDeclaringClass();
             }
         }
 
@@ -367,7 +446,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public ITypedValue GetValue()
             {
                 var result = _mref.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
-                _mref.UpdateExitTypeDescriptor();
+                _mref.UpdateExitTypeDescriptor(result.Value);
                 return result;
             }
 
@@ -397,7 +476,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public bool IsSuitable(object value, Type target, IList<Type> argumentTypes)
             {
                 return (_staticClass == null || _staticClass.Equals(value)) &&
-                        ObjectUtils.NullSafeEquals(_target, target) && _argumentTypes.Equals(argumentTypes);
+                        ObjectUtils.NullSafeEquals(_target, target) && Equal(_argumentTypes, argumentTypes);
             }
 
 #pragma warning disable S3400 // Methods should not return constants
@@ -411,6 +490,39 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             public IMethodExecutor Get()
             {
                 return _methodExecutor;
+            }
+
+            private static bool Equal(IList<Type> list1, IList<Type> list2)
+            {
+                if (list1 == list2)
+                {
+                    return true;
+                }
+
+                if (list1 == null)
+                {
+                    return list2 == null;
+                }
+
+                if (list2 == null)
+                {
+                    return list1 == null;
+                }
+
+                if (list1.Count != list2.Count)
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < list1.Count; i++)
+                {
+                    if (list1[i] != list2[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
     }

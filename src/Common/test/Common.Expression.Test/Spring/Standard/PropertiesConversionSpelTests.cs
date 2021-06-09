@@ -13,15 +13,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
     public class PropertiesConversionSpelTests
     {
-        private static readonly SpelExpressionParser _parser = new SpelExpressionParser();
+        private static readonly SpelExpressionParser _parser = new ();
 
         [Fact]
         public void Props()
         {
-            var props = new Dictionary<string, string>();
-            props.Add("x", "1");
-            props.Add("y", "2");
-            props.Add("z", "3");
+            var props = new Dictionary<string, string>
+            {
+                { "x", "1" },
+                { "y", "2" },
+                { "z", "3" }
+            };
             var expression = _parser.ParseExpression("Foo(#props)");
             var context = new StandardEvaluationContext();
             context.SetVariable("props", props);
@@ -32,10 +34,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         [Fact]
         public void MapWithAllStringValues()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("x", "1");
-            map.Add("y", "2");
-            map.Add("z", "3");
+            var map = new Dictionary<string, object>
+            {
+                { "x", "1" },
+                { "y", "2" },
+                { "z", "3" }
+            };
             var expression = _parser.ParseExpression("Foo(#props)");
             var context = new StandardEvaluationContext();
             context.SetVariable("props", map);
@@ -46,11 +50,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         [Fact]
         public void MapWithNonStringValue()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("x", "1");
-            map.Add("y", 2);
-            map.Add("z", "3");
-            map.Add("a", Guid.NewGuid());
+            var map = new Dictionary<string, object>
+            {
+                { "x", "1" },
+                { "y", 2 },
+                { "z", "3" },
+                { "a", Guid.NewGuid() }
+            };
             var expression = _parser.ParseExpression("Foo(#props)");
             var context = new StandardEvaluationContext();
             context.SetVariable("props", map);
@@ -61,10 +67,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         [Fact]
         public void CustomMapWithNonStringValue()
         {
-            CustomMap map = new CustomMap();
-            map.Add("x", "1");
-            map.Add("y", 2);
-            map.Add("z", "3");
+            var map = new CustomMap
+            {
+                { "x", "1" },
+                { "y", 2 },
+                { "z", "3" }
+            };
             var expression = _parser.ParseExpression("Foo(#props)");
             var context = new StandardEvaluationContext();
             context.SetVariable("props", map);

@@ -4,11 +4,8 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Numerics;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -17,7 +14,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public OpGE(int startPos, int endPos, params SpelNode[] operands)
         : base(">=", startPos, endPos, operands)
         {
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
@@ -109,9 +106,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return IsCompilableOperatorUsingNumerics();
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // generateComparisonCode(mv, cf, IFLT, IF_ICMPLT);
+            GenerateComparisonCode(gen, cf, OpCodes.Blt);
         }
     }
 }

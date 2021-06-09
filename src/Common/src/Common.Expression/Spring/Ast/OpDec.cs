@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -91,13 +89,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var val = (sbyte)operandValue;
                     newValue = new TypedValue((sbyte)(val - (sbyte)1), operandTypedValue.TypeDescriptor);
                 }
-
-                // else
-                // {
-                //    // Unknown Number subtype -> best guess is double decrement
-                //    var val = (double)operandValue;
-                //    newValue = new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor);
-                // }
             }
 
             if (newValue == null)

@@ -71,8 +71,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestGetValueFromRootMap()
         {
-            var map = new Dictionary<string, string>();
-            map.Add("key", "value");
+            var map = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
 
             var spelExpressionParser = new SpelExpressionParser();
             var expr = spelExpressionParser.ParseExpression("#root['key']");

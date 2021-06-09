@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -17,31 +15,34 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             : base(payload, startPos, endPos)
         {
             _value = new TypedValue(value);
-            _exitTypeDescriptor = "I";
+            _exitTypeDescriptor = TypeDescriptor.I;
         }
 
         public override ITypedValue GetLiteralValue() => _value;
 
         public override bool IsCompilable() => true;
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // Integer intValue = (Integer)this.value.getValue();
-            // Assert.state(intValue != null, "No int value");
-            // if (intValue == -1)
-            // {
-            //    // Not sure we can get here because -1 is OpMinus
-            //    mv.visitInsn(ICONST_M1);
-            // }
-            // else if (intValue >= 0 && intValue < 6)
-            // {
-            //    mv.visitInsn(ICONST_0 + intValue);
-            // }
-            // else
-            // {
-            //    mv.visitLdcInsn(intValue);
-            // }
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            var intVal = _value.Value;
+            if (intVal == null)
+            {
+                throw new InvalidOperationException("No int value");
+            }
+
+            var intValue = (int)intVal;
+
+            if (intValue == -1)
+            {
+                // Not sure we can get here because -1 is OpMinus
+                gen.Emit(OpCodes.Ldc_I4_M1);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldc_I4, intValue);
+            }
+
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

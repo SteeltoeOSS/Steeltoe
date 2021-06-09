@@ -15,13 +15,13 @@ namespace Steeltoe.Common.Converter
 
         public override bool Matches(Type sourceType, Type targetType)
         {
-            Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
+            var targetCheck = ConversionUtils.GetNullableElementType(targetType);
             return sourceType == typeof(string) && targetCheck.IsEnum;
         }
 
         public override object Convert(object source, Type sourceType, Type targetType)
         {
-            string asString = source as string;
+            var asString = source as string;
             if (string.IsNullOrEmpty(asString))
             {
                 return null;

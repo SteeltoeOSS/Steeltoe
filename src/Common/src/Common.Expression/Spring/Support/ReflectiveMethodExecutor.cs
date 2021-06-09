@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
@@ -53,7 +51,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         private Type DiscoverPublicDeclaringClass(MethodInfo method, Type clazz)
         {
-            if (clazz.IsPublic)
+            if (ReflectionHelper.IsPublic(clazz))
             {
                 try
                 {

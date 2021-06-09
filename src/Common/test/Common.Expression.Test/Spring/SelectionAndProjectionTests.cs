@@ -294,7 +294,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class ListTestBean
         {
-            private readonly List<int> _integers = new List<int>();
+            private readonly List<int> _integers = new ();
 
             public ListTestBean()
             {
@@ -354,7 +354,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class MapTestBean
         {
-            private readonly Dictionary<string, string> _colors = new Dictionary<string, string>();
+            private readonly Dictionary<string, string> _colors = new ();
 
             public MapTestBean()
             {

@@ -57,49 +57,49 @@ namespace Steeltoe.Common.Util
         // TODO: Add other .NET types
         internal static int ArrayHashCode(object o1)
         {
-            if (o1 is object[])
+            if (o1 is object[] v)
             {
-                return ArrayItemsHashCode<object>((object[])o1);
+                return ArrayItemsHashCode<object>(v);
             }
 
-            if (o1 is bool[])
+            if (o1 is bool[] v1)
             {
-                return ArrayItemsHashCode<bool>((bool[])o1);
+                return ArrayItemsHashCode<bool>(v1);
             }
 
-            if (o1 is byte[])
+            if (o1 is byte[] v2)
             {
-                return ArrayItemsHashCode<byte>((byte[])o1);
+                return ArrayItemsHashCode<byte>(v2);
             }
 
-            if (o1 is char[])
+            if (o1 is char[] v3)
             {
-                return ArrayItemsHashCode<char>((char[])o1);
+                return ArrayItemsHashCode<char>(v3);
             }
 
-            if (o1 is double[])
+            if (o1 is double[] v4)
             {
-                return ArrayItemsHashCode<double>((double[])o1);
+                return ArrayItemsHashCode<double>(v4);
             }
 
-            if (o1 is float[])
+            if (o1 is float[] v5)
             {
-                return ArrayItemsHashCode<float>((float[])o1);
+                return ArrayItemsHashCode<float>(v5);
             }
 
-            if (o1 is int[])
+            if (o1 is int[] v6)
             {
-                return ArrayItemsHashCode<int>((int[])o1);
+                return ArrayItemsHashCode<int>(v6);
             }
 
-            if (o1 is long[])
+            if (o1 is long[] v7)
             {
-                return ArrayItemsHashCode<long>((long[])o1);
+                return ArrayItemsHashCode<long>(v7);
             }
 
-            if (o1 is short[])
+            if (o1 is short[] v8)
             {
-                return ArrayItemsHashCode<short>((short[])o1);
+                return ArrayItemsHashCode<short>(v8);
             }
 
             return 0;
@@ -108,49 +108,49 @@ namespace Steeltoe.Common.Util
         // TODO: Add other .NET types
         internal static bool ArrayEquals(object o1, object o2)
         {
-            if (o1 is object[] && o2 is object[])
+            if (o1 is object[] v && o2 is object[] v1)
             {
-                return ArrayItemsEqual<object>((object[])o1, (object[])o2);
+                return ArrayItemsEqual<object>(v, v1);
             }
 
-            if (o1 is bool[] && o2 is bool[])
+            if (o1 is bool[] v2 && o2 is bool[] v3)
             {
-                return ArrayItemsEqual<bool>((bool[])o1, (bool[])o2);
+                return ArrayItemsEqual<bool>(v2, v3);
             }
 
-            if (o1 is byte[] && o2 is byte[])
+            if (o1 is byte[] v4 && o2 is byte[] v5)
             {
-                return ArrayItemsEqual<byte>((byte[])o1, (byte[])o2);
+                return ArrayItemsEqual<byte>(v4, v5);
             }
 
-            if (o1 is char[] && o2 is char[])
+            if (o1 is char[] v6 && o2 is char[] v7)
             {
-                return ArrayItemsEqual<char>((char[])o1, (char[])o2);
+                return ArrayItemsEqual<char>(v6, v7);
             }
 
-            if (o1 is double[] && o2 is double[])
+            if (o1 is double[] v8 && o2 is double[] v9)
             {
-                return ArrayItemsEqual<double>((double[])o1, (double[])o2);
+                return ArrayItemsEqual<double>(v8, v9);
             }
 
-            if (o1 is float[] && o2 is float[])
+            if (o1 is float[] v10 && o2 is float[] v11)
             {
-                return ArrayItemsEqual<float>((float[])o1, (float[])o2);
+                return ArrayItemsEqual<float>(v10, v11);
             }
 
-            if (o1 is int[] && o2 is int[])
+            if (o1 is int[] v12 && o2 is int[] v13)
             {
-                return ArrayItemsEqual<int>((int[])o1, (int[])o2);
+                return ArrayItemsEqual<int>(v12, v13);
             }
 
-            if (o1 is long[] && o2 is long[])
+            if (o1 is long[] v14 && o2 is long[] v15)
             {
-                return ArrayItemsEqual<long>((long[])o1, (long[])o2);
+                return ArrayItemsEqual<long>(v14, v15);
             }
 
-            if (o1 is short[] && o2 is short[])
+            if (o1 is short[] v16 && o2 is short[] v17)
             {
-                return ArrayItemsEqual<short>((short[])o1, (short[])o2);
+                return ArrayItemsEqual<short>(v16, v17);
             }
 
             return false;
@@ -173,10 +173,10 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            for (int i = 0; i < o1.Length; i++)
+            for (var i = 0; i < o1.Length; i++)
             {
-                T item1 = o1[i];
-                T item2 = o2[i];
+                var item1 = o1[i];
+                var item2 = o2[i];
                 if (!(item1 == null ? item2 == null : item1.Equals(item2)))
                 {
                     return false;
@@ -193,8 +193,8 @@ namespace Steeltoe.Common.Util
                 return 0;
             }
 
-            int hash = INITIAL_HASH;
-            foreach (T element in array)
+            var hash = INITIAL_HASH;
+            foreach (var element in array)
             {
                 hash = (MULTIPLIER * hash) + NullSafeHashCode(element);
             }

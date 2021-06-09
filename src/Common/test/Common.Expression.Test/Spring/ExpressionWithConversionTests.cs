@@ -15,8 +15,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class ExpressionWithConversionTests : AbstractExpressionTests
     {
-        private static readonly List<string> ListOfString = new List<string>();
-        private static readonly List<int> ListOfInteger = new List<int>();
+        private static readonly List<string> ListOfString = new ();
+        private static readonly List<int> ListOfInteger = new ();
         private static Type typeDescriptorForListOfInteger = null;
         private static Type typeDescriptorForListOfString = null;
 
@@ -59,18 +59,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestSetParameterizedList()
         {
             var context = TestScenarioCreator.GetTestEvaluationContext();
-            var e = parser.ParseExpression("ListOfInteger.Count");
+            var e = _parser.ParseExpression("ListOfInteger.Count");
             Assert.Equal(0, e.GetValue(context, typeof(int)));
             context.TypeConverter = new TypeConvertorUsingConversionService();
 
             // Assign a List<String> to the List<Integer> field - the component elements should be converted
-            parser.ParseExpression("ListOfInteger").SetValue(context, ListOfString);
+            _parser.ParseExpression("ListOfInteger").SetValue(context, ListOfString);
 
             // size now 3
             Assert.Equal(3, e.GetValue(context, typeof(int)));
 
             // element type correctly Integer
-            var clazz = parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
+            var clazz = _parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
             Assert.Equal(typeof(int), clazz);
         }
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // OK up to here, so the evaluation should be fine...
             // ... but this fails
-            var result2 = (int)parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
+            var result2 = (int)_parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
             Assert.Equal(10, result2);
         }
 
@@ -107,26 +107,26 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var context = new StandardEvaluationContext(root);
 
             // property access
-            var expression = parser.ParseExpression("Foos");
+            var expression = _parser.ParseExpression("Foos");
             expression.SetValue(context, foos);
             var baz = root.Foos.Single();
             Assert.Equal("baz", baz.Value);
 
             // method call
-            expression = parser.ParseExpression("Foos=#foos");
+            expression = _parser.ParseExpression("Foos=#foos");
             context.SetVariable("foos", foos);
             expression.GetValue(context);
             baz = root.Foos.Single();
             Assert.Equal("baz", baz.Value);
 
             // method call with result from method call
-            expression = parser.ParseExpression("Foos=FoosAsStrings");
+            expression = _parser.ParseExpression("Foos=FoosAsStrings");
             expression.GetValue(context);
             baz = root.Foos.Single();
             Assert.Equal("baz", baz.Value);
 
             // method call with result from method call
-            expression = parser.ParseExpression("Foos=FoosAsObjects");
+            expression = _parser.ParseExpression("Foos=FoosAsObjects");
             expression.GetValue(context);
             baz = root.Foos.Single();
             Assert.Equal("baz", baz.Value);

@@ -3,10 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -33,22 +31,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     }
                     else if (operand is double)
                     {
-                        _exitTypeDescriptor = "D";
+                        _exitTypeDescriptor = TypeDescriptor.D;
                         return new TypedValue(0d - ((double)operand));
                     }
                     else if (operand is float)
                     {
-                        _exitTypeDescriptor = "F";
+                        _exitTypeDescriptor = TypeDescriptor.F;
                         return new TypedValue(0f - ((float)operand));
                     }
                     else if (operand is long)
                     {
-                        _exitTypeDescriptor = "J";
+                        _exitTypeDescriptor = TypeDescriptor.J;
                         return new TypedValue(0L - ((long)operand));
                     }
                     else if (operand is int)
                     {
-                        _exitTypeDescriptor = "I";
+                        _exitTypeDescriptor = TypeDescriptor.I;
                         return new TypedValue(0 - ((int)operand));
                     }
                     else if (operand is short)
@@ -96,28 +94,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
                 else if (leftNumber is double || rightNumber is double)
                 {
-                    _exitTypeDescriptor = "D";
+                    _exitTypeDescriptor = TypeDescriptor.D;
                     var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal - rightVal);
                 }
                 else if (leftNumber is float || rightNumber is float)
                 {
-                    _exitTypeDescriptor = "F";
+                    _exitTypeDescriptor = TypeDescriptor.F;
                     var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal - rightVal);
                 }
                 else if (leftNumber is long || rightNumber is long)
                 {
-                    _exitTypeDescriptor = "J";
+                    _exitTypeDescriptor = TypeDescriptor.J;
                     var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal - rightVal);
                 }
                 else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
                 {
-                    _exitTypeDescriptor = "I";
+                    _exitTypeDescriptor = TypeDescriptor.I;
                     var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
                     var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                     return new TypedValue(leftVal - rightVal);
@@ -182,62 +180,32 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // getLeftOperand().generateCode(mv, cf);
-            //    String leftDesc = getLeftOperand().exitTypeDescriptor;
-            //    String exitDesc = this.exitTypeDescriptor;
-            //    Assert.state(exitDesc != null, "No exit type descriptor");
-            //    char targetDesc = exitDesc.charAt(0);
-            //    CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, leftDesc, targetDesc);
-            //    if (this.children.length > 1)
-            //    {
-            //        cf.enterCompilationScope();
-            //        getRightOperand().generateCode(mv, cf);
-            //        String rightDesc = getRightOperand().exitTypeDescriptor;
-            //        cf.exitCompilationScope();
-            //        CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, rightDesc, targetDesc);
-            //        switch (targetDesc)
-            //        {
-            //            case 'I':
-            //                mv.visitInsn(ISUB);
-            //                break;
-            //            case 'J':
-            //                mv.visitInsn(LSUB);
-            //                break;
-            //            case 'F':
-            //                mv.visitInsn(FSUB);
-            //                break;
-            //            case 'D':
-            //                mv.visitInsn(DSUB);
-            //                break;
-            //            default:
-            //                throw new IllegalStateException(
-            //                        "Unrecognized exit type descriptor: '" + this.exitTypeDescriptor + "'");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        switch (targetDesc)
-            //        {
-            //            case 'I':
-            //                mv.visitInsn(INEG);
-            //                break;
-            //            case 'J':
-            //                mv.visitInsn(LNEG);
-            //                break;
-            //            case 'F':
-            //                mv.visitInsn(FNEG);
-            //                break;
-            //            case 'D':
-            //                mv.visitInsn(DNEG);
-            //                break;
-            //            default:
-            //                throw new IllegalStateException(
-            //                        "Unrecognized exit type descriptor: '" + this.exitTypeDescriptor + "'");
-            //        }
-            //    }
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            LeftOperand.GenerateCode(gen, cf);
+            var leftDesc = LeftOperand.ExitDescriptor;
+            var exitDesc = _exitTypeDescriptor;
+            if (exitDesc == null)
+            {
+                throw new InvalidOperationException("No exit type descriptor");
+            }
+
+            CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
+            if (_children.Length > 1)
+            {
+                cf.EnterCompilationScope();
+                RightOperand.GenerateCode(gen, cf);
+                var rightDesc = RightOperand.ExitDescriptor;
+                cf.ExitCompilationScope();
+                CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
+                gen.Emit(OpCodes.Sub);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Neg);
+            }
+
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

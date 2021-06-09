@@ -63,29 +63,29 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             // PROPERTYORFIELDREFERENCE
             // Non existent field (or property):
-            var e1 = parser.ParseExpression("ArrayContainer.wibble");
+            var e1 = _parser.ParseExpression("ArrayContainer.wibble");
             Assert.False(e1.IsWritable(lContext));
 
-            var e2 = parser.ParseExpression("ArrayContainer.wibble.foo");
+            var e2 = _parser.ParseExpression("ArrayContainer.wibble.foo");
             Assert.Throws<SpelEvaluationException>(() => e2.IsWritable(lContext));
 
             // org.springframework.expression.spel.SpelEvaluationException: EL1008E:(pos 15): Property or field 'wibble' cannot be found on object of type 'org.springframework.expression.spel.Testresources.ArrayContainer' - maybe not public?
             // at org.springframework.expression.spel.ast.PropertyOrFieldReference.readProperty(PropertyOrFieldReference.java:225)
             // VARIABLE
             // the variable does not exist (but that is OK, we should be writable)
-            var e3 = parser.ParseExpression("#madeup1");
+            var e3 = _parser.ParseExpression("#madeup1");
             Assert.True(e3.IsWritable(lContext));
 
-            var e4 = parser.ParseExpression("#madeup2.bar"); // compound expression
+            var e4 = _parser.ParseExpression("#madeup2.bar"); // compound expression
             Assert.False(e4.IsWritable(lContext));
 
             // INDEXER
             // non existent indexer (wibble made up)
-            var e5 = parser.ParseExpression("ArrayContainer.wibble[99]");
+            var e5 = _parser.ParseExpression("ArrayContainer.wibble[99]");
             Assert.Throws<SpelEvaluationException>(() => e5.IsWritable(lContext));
 
             // non existent indexer (index via a string)
-            var e6 = parser.ParseExpression("ArrayContainer.ints['abc']");
+            var e6 = _parser.ParseExpression("ArrayContainer.ints['abc']");
             Assert.Throws<SpelEvaluationException>(() => e6.IsWritable(lContext));
         }
 
@@ -210,7 +210,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         protected void SetValueExpectError(string expression, object value)
         {
-            var e = parser.ParseExpression(expression);
+            var e = _parser.ParseExpression(expression);
             Assert.NotNull(e);
             if (DEBUG)
             {
@@ -225,7 +225,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             try
             {
-                var e = parser.ParseExpression(expression);
+                var e = _parser.ParseExpression(expression);
                 Assert.NotNull(e);
                 if (DEBUG)
                 {
@@ -251,7 +251,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             try
             {
-                var e = parser.ParseExpression(expression);
+                var e = _parser.ParseExpression(expression);
                 Assert.NotNull(e);
                 if (DEBUG)
                 {
@@ -277,7 +277,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private IExpression Parse(string expressionstring)
         {
-            return parser.ParseExpression(expressionstring);
+            return _parser.ParseExpression(expressionstring);
         }
     }
 }

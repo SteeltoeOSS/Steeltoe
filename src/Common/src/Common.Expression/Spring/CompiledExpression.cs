@@ -4,15 +4,24 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
 {
-    public class CompiledExpression
+    public abstract class CompiledExpression
     {
-        public object GetValue(object target, IEvaluationContext context)
+        internal readonly Dictionary<string, object> _dynamicFields = new Dictionary<string, object>();
+
+        internal Delegate MethodDelegate { get; set; }
+
+        internal Delegate InitDelegate { get; set; }
+
+        protected CompiledExpression()
         {
-            throw new NotImplementedException();
+        }
+
+        public virtual object GetValue(object target, IEvaluationContext context)
+        {
+            return null;
         }
     }
 }

@@ -11,12 +11,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public Person(string name)
         {
-            this.privateName = name;
+            privateName = name;
         }
 
         public Person(string name, Company company)
         {
-            this.privateName = name;
+            privateName = name;
             this.company = company;
         }
 

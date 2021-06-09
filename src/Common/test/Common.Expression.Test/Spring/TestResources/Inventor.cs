@@ -7,14 +7,16 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 {
+#pragma warning disable IDE0044
+#pragma warning disable IDE1006
     public class Inventor
     {
-        public List<int> ListOfInteger = new List<int>();
-        public List<bool> BoolList = new List<bool>();
-        public Dictionary<string, bool> MapOfstringToBoolean = new Dictionary<string, bool>();
-        public Dictionary<int, string> MapOfNumbersUpToTen = new Dictionary<int, string>();
-        public List<int> ListOfNumbersUpToTen = new List<int>();
-        public List<int> ListOneFive = new List<int>();
+        public List<int> ListOfInteger = new ();
+        public List<bool> BoolList = new ();
+        public Dictionary<string, bool> MapOfstringToBoolean = new ();
+        public Dictionary<int, string> MapOfNumbersUpToTen = new ();
+        public List<int> ListOfNumbersUpToTen = new ();
+        public List<int> ListOneFive = new ();
         public string[] StringArrayOfThreeItems = new string[] { "1", "2", "3" };
         public int Counter;
         public string _name;
@@ -27,12 +29,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         private string name;
         private PlaceOfBirth placeOfBirth;
+
         private DateTime birthdate;
         private string nationality;
         private string[] inventions;
         private bool wonNobelPrize;
         private PlaceOfBirth[] placesLived;
-        private List<PlaceOfBirth> placesLivedList = new List<PlaceOfBirth>();
+        private List<PlaceOfBirth> placesLivedList = new ();
         private bool accessedThroughGetSet;
         private string foo;
 
@@ -44,14 +47,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
             this.birthdate = birthdate;
             this.nationality = nationality;
             ArrayContainer = new ArrayContainer();
-            TestDictionary = new Dictionary<string, string>();
-            TestDictionary.Add("monday", "montag");
-            TestDictionary.Add("tuesday", "dienstag");
-            TestDictionary.Add("wednesday", "mittwoch");
-            TestDictionary.Add("thursday", "donnerstag");
-            TestDictionary.Add("friday", "freitag");
-            TestDictionary.Add("saturday", "samstag");
-            TestDictionary.Add("sunday", "sonntag");
+            TestDictionary = new Dictionary<string, string>
+            {
+                { "monday", "montag" },
+                { "tuesday", "dienstag" },
+                { "wednesday", "mittwoch" },
+                { "thursday", "donnerstag" },
+                { "friday", "freitag" },
+                { "saturday", "samstag" },
+                { "sunday", "sonntag" }
+            };
             ListOneFive.Add(1);
             ListOneFive.Add(5);
             BoolList.Add(false);
@@ -163,9 +168,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public List<string> GetDoublesAsStringList()
         {
-            var result = new List<string>();
-            result.Add("14.35");
-            result.Add("15.45");
+            var result = new List<string>
+            {
+                "14.35",
+                "15.45"
+            };
             return result;
         }
 
@@ -218,4 +225,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
         {
         }
     }
+#pragma warning restore IDE0044 // Add readonly modifier
+#pragma warning restore IDE1006 // Add readonly modifier
 }

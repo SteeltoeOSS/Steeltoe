@@ -483,7 +483,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                         _typeDescriptorCache.TryGetValue(cacheKey, out typeDescriptor);
                     }
                 }
-                catch (AccessException ex)
+                catch (AccessException)
                 {
                     // Continue with null type descriptor
                 }
@@ -497,7 +497,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             var method = FindGetterForProperty(propertyName, clazz, target is Type);
             if (method == null && target is Type)
             {
-                method = FindGetterForProperty(propertyName, target.GetType(), false);
+                method = FindGetterForProperty(propertyName, typeof(Type), false);
             }
 
             return method;
@@ -508,7 +508,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             var method = FindSetterForProperty(propertyName, clazz, target is Type);
             if (method == null && target is Type)
             {
-                method = FindSetterForProperty(propertyName, target.GetType(), false);
+                method = FindSetterForProperty(propertyName, typeof(Type), false);
             }
 
             return method;
@@ -680,7 +680,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             public bool IsCompilable()
             {
-                if (!_member.DeclaringType.IsPublic)
+                if (!ReflectionHelper.IsPublic(_member.DeclaringType))
                 {
                     return false;
                 }
@@ -707,46 +707,152 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 }
             }
 
-            public void GenerateCode(string propertyName, DynamicMethod mv, CodeFlow cf)
+            public void GenerateCode(string name, ILGenerator gen, CodeFlow cf)
             {
-                // bool isStatic = Modifier.isStatic(this.member.getModifiers());
-                //    String descriptor = cf.lastDescriptor();
-                //    String classDesc = this.member.getDeclaringClass().getName().replace('.', '/');
+                if (_member is MethodInfo)
+                {
+                    GenerateCode((MethodInfo)_member, gen, cf);
+                }
+                else
+                {
+                    GenerateCode((FieldInfo)_member, gen, cf);
+                }
+            }
 
-                // if (!isStatic)
-                //    {
-                //        if (descriptor == null)
-                //        {
-                //            cf.loadTarget(mv);
-                //        }
-                //        if (descriptor == null || !classDesc.equals(descriptor.substring(1)))
-                //        {
-                //            mv.visitTypeInsn(CHECKCAST, classDesc);
-                //        }
-                //    }
-                //    else
-                //    {
-                //        if (descriptor != null)
-                //        {
-                //            // A static field/method call will not consume what is on the stack,
-                //            // it needs to be popped off.
-                //            mv.visitInsn(POP);
-                //        }
-                //    }
+            private void GenerateCode(MethodInfo method, ILGenerator gen, CodeFlow cf)
+            {
+                var stackDescriptor = cf.LastDescriptor();
 
-                // if (this.member instanceof Method) {
-                //        Method method = (Method)this.member;
-                //        bool isInterface = method.getDeclaringClass().isInterface();
-                //        int opcode = (isStatic ? INVOKESTATIC : isInterface ? INVOKEINTERFACE : INVOKEVIRTUAL);
-                //        mv.visitMethodInsn(opcode, classDesc, method.getName(),
-                //                CodeFlow.createSignatureDescriptor(method), isInterface);
-                //    }
+                if (stackDescriptor == null)
+                {
+                    CodeFlow.LoadTarget(gen);
+                    stackDescriptor = Spring.TypeDescriptor.OBJECT;
+                }
 
-                // else
-                //    {
-                //        mv.visitFieldInsn((isStatic ? GETSTATIC : GETFIELD), classDesc, this.member.getName(),
-                //                CodeFlow.toJvmDescriptor(((Field)this.member).getType()));
-                //    }
+                if (!method.IsStatic)
+                {
+                    // Instance
+                    if (method.DeclaringType.IsValueType)
+                    {
+                        if (stackDescriptor != null && stackDescriptor.IsBoxed)
+                        {
+                            gen.Emit(OpCodes.Unbox_Any, method.DeclaringType);
+                        }
+
+                        var vtLocal = gen.DeclareLocal(method.DeclaringType);
+                        gen.Emit(OpCodes.Stloc, vtLocal);
+                        gen.Emit(OpCodes.Ldloca, vtLocal);
+                        gen.Emit(OpCodes.Call, method);
+                    }
+                    else
+                    {
+                        if (stackDescriptor == null || method.DeclaringType != stackDescriptor.Value)
+                        {
+                            gen.Emit(OpCodes.Castclass, method.DeclaringType);
+                        }
+
+                        gen.Emit(OpCodes.Callvirt, method);
+                    }
+                }
+                else
+                {
+                    // Static
+                    if (stackDescriptor != null)
+                    {
+                        // A static field/method call will not consume what is on the stack,
+                        // it needs to be popped off.
+                        gen.Emit(OpCodes.Pop);
+                    }
+
+                    gen.Emit(OpCodes.Call, method);
+                }
+            }
+
+            private void GenerateCode(FieldInfo field, ILGenerator gen, CodeFlow cf)
+            {
+                var stackDescriptor = cf.LastDescriptor();
+                if (stackDescriptor == null)
+                {
+                    CodeFlow.LoadTarget(gen);
+                    stackDescriptor = Spring.TypeDescriptor.OBJECT;
+                }
+
+                if (!field.IsStatic)
+                {
+                    // Instance
+                    if (field.DeclaringType.IsValueType)
+                    {
+                        if (stackDescriptor != null && stackDescriptor.IsBoxed)
+                        {
+                            gen.Emit(OpCodes.Unbox_Any, field.DeclaringType);
+                        }
+                    }
+                    else
+                    {
+                        if (stackDescriptor == null || field.DeclaringType != stackDescriptor.Value)
+                        {
+                            gen.Emit(OpCodes.Castclass, field.DeclaringType);
+                        }
+                    }
+
+                    gen.Emit(OpCodes.Ldfld, field);
+                }
+                else
+                {
+                    // Static
+                    if (stackDescriptor != null)
+                    {
+                        // A static field/method call will not consume what is on the stack,
+                        // it needs to be popped off.
+                        gen.Emit(OpCodes.Pop);
+                    }
+
+                    if (field.IsLiteral)
+                    {
+                        EmitLiteralFieldCode(gen, cf, field);
+                    }
+                    else
+                    {
+                        gen.Emit(OpCodes.Ldsfld, field);
+                    }
+                }
+            }
+
+            private void EmitLiteralFieldCode(ILGenerator gen, CodeFlow cf, FieldInfo field)
+            {
+                var constant = field.GetRawConstantValue();
+                if (field.FieldType.IsClass && constant == null)
+                {
+                    gen.Emit(OpCodes.Ldnull);
+                    return;
+                }
+
+                if (constant == null)
+                {
+                    return;
+                }
+
+                if (field.FieldType == typeof(int) || field.FieldType == typeof(short) || field.FieldType == typeof(char) || field.FieldType == typeof(byte) ||
+                    field.FieldType == typeof(uint) || field.FieldType == typeof(ushort) || field.FieldType == typeof(sbyte))
+                {
+                    gen.Emit(OpCodes.Ldc_I4, (int)constant);
+                }
+                else if (field.FieldType == typeof(long) || field.FieldType == typeof(ulong))
+                {
+                    gen.Emit(OpCodes.Ldc_I8, (long)constant);
+                }
+                else if (field.FieldType == typeof(float))
+                {
+                    gen.Emit(OpCodes.Ldc_R4, (float)constant);
+                }
+                else if (field.FieldType == typeof(double))
+                {
+                    gen.Emit(OpCodes.Ldc_R8, (double)constant);
+                }
+                else if (field.FieldType == typeof(string))
+                {
+                    gen.Emit(OpCodes.Ldstr, (string)constant);
+                }
             }
         }
     }

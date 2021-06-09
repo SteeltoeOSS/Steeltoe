@@ -28,7 +28,7 @@ namespace Steeltoe.Common.Retry
         public static IRetryContext Clear()
         {
             var value = GetContext();
-            IRetryContext parent = value == null ? null : value.Parent;
+            var parent = value == null ? null : value.Parent;
             _context.Value = parent;
             return value;
         }

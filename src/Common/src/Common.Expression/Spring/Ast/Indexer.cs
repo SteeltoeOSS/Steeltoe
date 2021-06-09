@@ -6,14 +6,17 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class Indexer : SpelNode
     {
+        private static MethodInfo _listGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");
+        private static MethodInfo _dictionaryGetItemMethod = typeof(IDictionary).GetMethods().Single(m => m.Name == "get_Item");
+
         private enum IndexedType
         {
             ARRAY,
@@ -88,131 +91,105 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return false;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // String descriptor = cf.lastDescriptor();
-            // if (descriptor == null)
-            // {
-            //    // Stack is empty, should use context object
-            //    cf.loadTarget(mv);
-            // }
+            var descriptor = cf.LastDescriptor();
+            if (descriptor == null)
+            {
+                CodeFlow.LoadTarget(gen);
+            }
 
-            // if (this.indexedType == IndexedType.ARRAY)
-            // {
-            //    int insn;
-            //    if ("D".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[D");
-            //        insn = DALOAD;
-            //    }
-            //    else if ("F".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[F");
-            //        insn = FALOAD;
-            //    }
-            //    else if ("J".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[J");
-            //        insn = LALOAD;
-            //    }
-            //    else if ("I".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[I");
-            //        insn = IALOAD;
-            //    }
-            //    else if ("S".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[S");
-            //        insn = SALOAD;
-            //    }
-            //    else if ("B".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[B");
-            //        insn = BALOAD;
-            //    }
-            //    else if ("C".Equals(this.exitTypeDescriptor))
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[C");
-            //        insn = CALOAD;
-            //    }
-            //    else
-            //    {
-            //        mv.visitTypeInsn(CHECKCAST, "[" + this.exitTypeDescriptor +
-            //                (CodeFlow.isPrimitiveArray(this.exitTypeDescriptor) ? "" : ";"));
-            //        //depthPlusOne(exitTypeDescriptor)+"Ljava/lang/Object;");
-            //        insn = AALOAD;
-            //    }
-            //    SpelNodeImpl index = this.children[0];
-            //    cf.enterCompilationScope();
-            //    index.generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    mv.visitInsn(insn);
-            // }
+            if (_indexedType == IndexedType.ARRAY)
+            {
+                var arrayType = _exitTypeDescriptor.Value.MakeArrayType();
+                gen.Emit(OpCodes.Castclass, arrayType);
+                var child = _children[0];
+                cf.EnterCompilationScope();
+                child.GenerateCode(gen, cf);
+                cf.ExitCompilationScope();
+                gen.Emit(GetLdElemInsn(_exitTypeDescriptor.Value));
+            }
+            else if (_indexedType == IndexedType.LIST)
+            {
+                gen.Emit(OpCodes.Castclass, typeof(IList));
+                cf.EnterCompilationScope();
+                _children[0].GenerateCode(gen, cf);
+                cf.ExitCompilationScope();
+                gen.Emit(OpCodes.Callvirt, _listGetItemMethod);
+            }
+            else if (_indexedType == IndexedType.MAP)
+            {
+                gen.Emit(OpCodes.Castclass, typeof(IDictionary));
 
-            // else if (this.indexedType == IndexedType.LIST)
-            // {
-            //    mv.visitTypeInsn(CHECKCAST, "java/util/List");
-            //    cf.enterCompilationScope();
-            //    this.children[0].generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "get", "(I)Ljava/lang/Object;", true);
-            // }
+                // Special case when the key is an unquoted string literal that will be parsed as
+                // a property/field reference
+                var reference = _children[0] as PropertyOrFieldReference;
+                if (reference != null)
+                {
+                    var mapKeyName = reference.Name;
+                    gen.Emit(OpCodes.Ldstr, mapKeyName);
+                }
+                else
+                {
+                    cf.EnterCompilationScope();
+                    _children[0].GenerateCode(gen, cf);
+                    cf.ExitCompilationScope();
+                }
 
-            // else if (this.indexedType == IndexedType.MAP)
-            // {
-            //    mv.visitTypeInsn(CHECKCAST, "java/util/Map");
-            //    // Special case when the key is an unquoted string literal that will be parsed as
-            //    // a property/field reference
-            //    if ((this.children[0] instanceof PropertyOrFieldReference)) {
-            //        PropertyOrFieldReference reference = (PropertyOrFieldReference)this.children[0];
-            //        String mapKeyName = reference.getName();
-            //        mv.visitLdcInsn(mapKeyName);
-            //    }
+                gen.Emit(OpCodes.Callvirt, _dictionaryGetItemMethod);
+            }
+            else if (_indexedType == IndexedType.OBJECT)
+            {
+                var accessor = _cachedReadAccessor as ReflectivePropertyAccessor.OptimalPropertyAccessor;
+                if (accessor == null)
+                {
+                    throw new InvalidOperationException("No cached read accessor");
+                }
 
-            // else
-            //    {
-            //        cf.enterCompilationScope();
-            //        this.children[0].generateCode(mv, cf);
-            //        cf.exitCompilationScope();
-            //    }
-            //    mv.visitMethodInsn(
-            //            INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-            // }
+                bool isStatic = default;
+                var method = accessor.Member as MethodInfo;
+                var field = accessor.Member as FieldInfo;
 
-            // else if (this.indexedType == IndexedType.OBJECT)
-            // {
-            //    ReflectivePropertyAccessor.OptimalPropertyAccessor accessor =
-            //            (ReflectivePropertyAccessor.OptimalPropertyAccessor)this.cachedReadAccessor;
-            //    Assert.state(accessor != null, "No cached read accessor");
-            //    Member member = accessor.member;
-            //    boolean isStatic = Modifier.isStatic(member.getModifiers());
-            //    String classDesc = member.getDeclaringClass().getName().replace('.', '/');
+                if (method != null)
+                {
+                    isStatic = method.IsStatic;
+                }
+                else
+                {
+                    isStatic = field.IsStatic;
+                }
 
-            // if (!isStatic)
-            //    {
-            //        if (descriptor == null)
-            //        {
-            //            cf.loadTarget(mv);
-            //        }
-            //        if (descriptor == null || !classDesc.Equals(descriptor.substring(1)))
-            //        {
-            //            mv.visitTypeInsn(CHECKCAST, classDesc);
-            //        }
-            //    }
+                var targetType = accessor.Member.DeclaringType;
+                if (!isStatic && (descriptor == null || targetType != descriptor.Value))
+                {
+                    gen.Emit(OpCodes.Castclass, targetType);
+                }
 
-            // if (member instanceof Method) {
-            //        mv.visitMethodInsn((isStatic ? INVOKESTATIC : INVOKEVIRTUAL), classDesc, member.getName(),
-            //                CodeFlow.createSignatureDescriptor((Method)member), false);
-            //    }
+                if (method != null)
+                {
+                    if (isStatic)
+                    {
+                        gen.Emit(OpCodes.Call, method);
+                    }
+                    else
+                    {
+                        gen.Emit(OpCodes.Callvirt, method);
+                    }
+                }
+                else
+                {
+                    if (isStatic)
+                    {
+                        gen.Emit(OpCodes.Ldsfld, field);
+                    }
+                    else
+                    {
+                        gen.Emit(OpCodes.Ldfld, field);
+                    }
+                }
+            }
 
-            // else
-            //    {
-            //        mv.visitFieldInsn((isStatic ? GETSTATIC : GETFIELD), classDesc, member.getName(),
-            //                CodeFlow.toJvmDescriptor(((Field)member).getType()));
-            //    }
-            // }
-
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         public override string ToStringAST()
@@ -349,7 +326,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 var array = (bool[])ctx;
                 CheckAccess(array.Length, idx);
-                _exitTypeDescriptor = "Z";
+                _exitTypeDescriptor = TypeDescriptor.Z;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(byte))
@@ -357,7 +334,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (byte[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "B";
+                _exitTypeDescriptor = TypeDescriptor.B;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(char))
@@ -365,7 +342,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (char[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "C";
+                _exitTypeDescriptor = TypeDescriptor.C;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(double))
@@ -373,7 +350,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (double[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "D";
+                _exitTypeDescriptor = TypeDescriptor.D;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(float))
@@ -381,7 +358,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (float[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "F";
+                _exitTypeDescriptor = TypeDescriptor.F;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(int))
@@ -389,7 +366,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (int[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "I";
+                _exitTypeDescriptor = TypeDescriptor.I;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(long))
@@ -397,7 +374,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (long[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "J";
+                _exitTypeDescriptor = TypeDescriptor.J;
                 return array[idx];
             }
             else if (arrayComponentType == typeof(short))
@@ -405,7 +382,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var array = (short[])ctx;
                 CheckAccess(array.Length, idx);
 
-                _exitTypeDescriptor = "S";
+                _exitTypeDescriptor = TypeDescriptor.S;
                 return array[idx];
             }
             else
@@ -755,12 +732,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
                     try
                     {
-                        // var ctor = GetDefaultConstructor(elemTypeDesc);
                         var newElements = _index - _collection.Count;
                         while (newElements >= 0)
                         {
-                            // Insert a null value if the element type does not have a default constructor.
-                            // _collection.Add(ctor != null ? ctor.Invoke(new object[0]) : null);
+                            // Insert a default value if the element type does not have a default constructor.
                             _collection.Add(GetDefaultValue(elemTypeDesc));
                             newElements--;
                         }
@@ -827,17 +802,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return Activator.CreateInstance(elemTypeDesc);
             }
 
-            // private ConstructorInfo GetDefaultConstructor(Type type)
-            // {
-            //    try
-            //    {
-            //        return type.GetConstructor(new Type[0]);
-            //    }
-            //    catch (Exception)
-            //    {
-            //        return null;
-            //    }
-            // }
             public bool IsWritable => true;
         }
 

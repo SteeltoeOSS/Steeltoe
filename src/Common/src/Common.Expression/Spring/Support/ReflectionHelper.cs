@@ -7,7 +7,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
@@ -451,6 +450,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             }
 
             return null;
+        }
+
+        public static bool IsPublic(Type type)
+        {
+            if (type.IsNested)
+            {
+                return type.DeclaringType.IsPublic && type.IsNestedPublic;
+            }
+
+            return type.IsPublic;
         }
 
         private static bool IsFirstEntryInArray(object value, object possibleArray)

@@ -21,13 +21,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var eContext = TestScenarioCreator.GetTestEvaluationContext();
             eContext.OperatorOverloader = new StringAndBooleanAddition();
 
-            var expr = (SpelExpression)parser.ParseExpression("'abc'+true");
+            var expr = (SpelExpression)_parser.ParseExpression("'abc'+true");
             Assert.Equal("abcTrue", expr.GetValue(eContext));
 
-            expr = (SpelExpression)parser.ParseExpression("'abc'-true");
+            expr = (SpelExpression)_parser.ParseExpression("'abc'-true");
             Assert.Equal("abc", expr.GetValue(eContext));
 
-            expr = (SpelExpression)parser.ParseExpression("'abc'+null");
+            expr = (SpelExpression)_parser.ParseExpression("'abc'+null");
             Assert.Equal("abcnull", expr.GetValue(eContext));
         }
 

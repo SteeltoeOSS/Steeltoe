@@ -3,14 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class InlineList : SpelNode
     {
+        private static readonly FieldInfo _fieldInfo = typeof(CompiledExpression).GetField("_dynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
+        private static readonly MethodInfo _getItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
+        private static readonly MethodInfo _addMethod = typeof(IList).GetMethod("Add", new Type[] { typeof(object) });
+        private static readonly ConstructorInfo _listConstr = typeof(List<object>).GetConstructor(new Type[0]);
+
         // If the list is purely literals, it is a constant value and can be computed and cached
         private ITypedValue _constant;  // TODO must be immutable list
 
@@ -66,60 +72,84 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable() => IsConstant;
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow codeflow)
+        public override void GenerateCode(ILGenerator gen, CodeFlow codeflow)
         {
-            // String constantFieldName = "inlineList$" + codeflow.nextFieldId();
-            // String className = codeflow.getClassName();
+            var constantFieldName = "inlineList$" + codeflow.NextFieldId();
+            codeflow.RegisterNewField(constantFieldName, new List<object>());
+            codeflow.RegisterNewInitGenerator((initGenerator, cflow) => { GenerateInitCode(constantFieldName, initGenerator, cflow); });
 
-            // codeflow.registerNewField((cw, cflow)->
-            //        cw.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL, constantFieldName, "Ljava/util/List;", null, null));
-
-            // codeflow.registerNewClinit((mVisitor, cflow)->
-            //        generateClinitCode(className, constantFieldName, mVisitor, cflow, false));
-
-            // mv.visitFieldInsn(GETSTATIC, className, constantFieldName, "Ljava/util/List;");
-            // codeflow.pushDescriptor("Ljava/util/List");
+            GenerateLoadListCode(gen, constantFieldName);
+            codeflow.PushDescriptor(new TypeDescriptor(typeof(IList)));
         }
 
-        // void GenerateClinitCode(string clazzname, string constantFieldName, DynamicMethod mv, CodeFlow codeflow, bool nested)
-        // {
-        //    mv.visitTypeInsn(NEW, "java/util/ArrayList");
-        //    mv.visitInsn(DUP);
-        //    mv.visitMethodInsn(INVOKESPECIAL, "java/util/ArrayList", "<init>", "()V", false);
-        //    if (!nested)
-        //    {
-        //        mv.visitFieldInsn(PUTSTATIC, clazzname, constantFieldName, "Ljava/util/List;");
-        //    }
-        //    int childCount = getChildCount();
-        //    for (var c = 0; c < childCount; c++)
-        //    {
-        //        if (!nested)
-        //        {
-        //            mv.visitFieldInsn(GETSTATIC, clazzname, constantFieldName, "Ljava/util/List;");
-        //        }
-        //        else
-        //        {
-        //            mv.visitInsn(DUP);
-        //        }
-        //        // The children might be further lists if they are not constants. In this
-        //        // situation do not call back into generateCode() because it will register another clinit adder.
-        //        // Instead, directly build the list here:
-        //        if (this.children[c] instanceof InlineList) {
-        //        ((InlineList)this.children[c]).generateClinitCode(clazzname, constantFieldName, mv, codeflow, true);
-        //    }
+        public void GenerateInitCode(string constantFieldName, ILGenerator gen, CodeFlow codeflow, bool nested = false)
+        {
+            LocalBuilder listLocal = null;
+            if (!nested)
+            {
+                // Get list on stack
+                GenerateLoadListCode(gen, constantFieldName);
 
-        // else
-        //    {
-        //        this.children[c].generateCode(mv, codeflow);
-        //        String lastDesc = codeflow.lastDescriptor();
-        //        if (CodeFlow.isPrimitive(lastDesc))
-        //        {
-        //            CodeFlow.insertBoxIfNecessary(mv, lastDesc.charAt(0));
-        //        }
-        //    }
-        //    mv.visitMethodInsn(INVOKEINTERFACE, "java/util/List", "add", "(Ljava/lang/Object;)Z", true);
-        //    mv.visitInsn(POP);
-        // }
+                // Save to local for easy access
+                listLocal = gen.DeclareLocal(typeof(IList));
+                gen.Emit(OpCodes.Stloc, listLocal);
+            }
+            else
+            {
+                // Create nested list to work with
+                gen.Emit(OpCodes.Newobj, _listConstr);
+                gen.Emit(OpCodes.Castclass, typeof(IList));
+            }
+
+            var childCount = ChildCount;
+            for (var c = 0; c < childCount; c++)
+            {
+                if (!nested)
+                {
+                    gen.Emit(OpCodes.Ldloc, listLocal);
+                }
+                else
+                {
+                    gen.Emit(OpCodes.Dup);
+                }
+
+                // The children might be further lists if they are not constants. In this
+                // situation do not call back into generateCode() because it will register another clinit adder.
+                // Instead, directly build the list here:
+                if (_children[c] is InlineList)
+                {
+                    ((InlineList)_children[c]).GenerateInitCode(constantFieldName, gen, codeflow, true);
+                }
+                else
+                {
+                    _children[c].GenerateCode(gen, codeflow);
+                    var lastDesc = codeflow.LastDescriptor();
+                    if (CodeFlow.IsValueType(lastDesc))
+                    {
+                        CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
+                    }
+                }
+
+                gen.Emit(OpCodes.Callvirt, _addMethod);
+
+                // Ignore int return
+                gen.Emit(OpCodes.Pop);
+            }
+        }
+
+        private void GenerateLoadListCode(ILGenerator gen, string constantFieldName)
+        {
+            // Load SpelCompiledExpression
+            gen.Emit(OpCodes.Ldarg_0);
+
+            // Get Dictionary<string, object> from CompiledExpression
+            gen.Emit(OpCodes.Ldfld, _fieldInfo);
+
+            // Get registered Field out of dictionary
+            gen.Emit(OpCodes.Ldstr, constantFieldName);
+            gen.Emit(OpCodes.Callvirt, _getItemMethod);
+        }
+
         private void CheckIfConstant()
         {
             var isConstant = true;

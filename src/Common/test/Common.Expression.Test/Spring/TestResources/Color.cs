@@ -15,10 +15,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public int RGB { get; }
 
-        public static Color Orange = new Color(1);
-        public static Color Yellow = new Color(2);
-        public static Color Green = new Color(3);
-        public static Color Red = new Color(4);
-        public static Color Blue = new Color(5);
+        public static Color Orange = new (1);
+        public static Color Yellow = new (2);
+        public static Color Green = new (3);
+        public static Color Red = new (4);
+        public static Color Blue = new (5);
     }
 }

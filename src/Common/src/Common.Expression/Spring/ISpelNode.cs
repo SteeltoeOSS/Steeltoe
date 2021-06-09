@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
 {
@@ -31,5 +30,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         ISpelNode GetChild(int index);
 
         Type GetObjectType(object obj);
+
+        void GenerateCode(ILGenerator generator, CodeFlow cf);
     }
 }

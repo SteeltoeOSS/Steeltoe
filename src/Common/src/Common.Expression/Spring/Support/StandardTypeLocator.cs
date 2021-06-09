@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
 // using System.Runtime.Loader;
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
@@ -59,7 +58,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                                     break;
                                 }
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
                                 // might be a different prefix
                             }

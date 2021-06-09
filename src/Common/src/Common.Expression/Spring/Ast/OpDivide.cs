@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
+using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -36,36 +35,30 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
                     var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
-                    _exitTypeDescriptor = "D";
+                    _exitTypeDescriptor = TypeDescriptor.D;
                     return new TypedValue(leftVal / rightVal);
                 }
                 else if (leftOperand is float || rightOperand is float)
                 {
                     var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
                     var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
-                    _exitTypeDescriptor = "F";
+                    _exitTypeDescriptor = TypeDescriptor.F;
                     return new TypedValue(leftVal / rightVal);
                 }
-
-                // else if (leftNumber instanceof BigInteger || rightNumber instanceof BigInteger) {
-                //    BigInteger leftBigInteger = NumberUtils.convertNumberToTargetClass(leftNumber, BigInteger.class);
-                // BigInteger rightBigInteger = NumberUtils.convertNumberToTargetClass(rightNumber, BigInteger.class);
-                // return new TypedValue(leftBigInteger.divide(rightBigInteger));
-                // }
 
                 // TODO: Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
                 else if (leftOperand is long || rightOperand is long)
                 {
                     var leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
                     var rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
-                    _exitTypeDescriptor = "J";
+                    _exitTypeDescriptor = TypeDescriptor.J;
                     return new TypedValue(leftVal / rightVal);
                 }
                 else if (CodeFlow.IsIntegerForNumericOp(leftOperand) || CodeFlow.IsIntegerForNumericOp(rightOperand))
                 {
                     var leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
                     var rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
-                    _exitTypeDescriptor = "I";
+                    _exitTypeDescriptor = TypeDescriptor.I;
                     return new TypedValue(leftVal / rightVal);
                 }
                 else
@@ -97,41 +90,33 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null;
         }
 
-        // public void GenerateCode(MethodVisitor mv, CodeFlow cf)
-        // {
-        //    getLeftOperand().generateCode(mv, cf);
-        //    String leftDesc = getLeftOperand().exitTypeDescriptor;
-        //    String exitDesc = this.exitTypeDescriptor;
-        //    Assert.state(exitDesc != null, "No exit type descriptor");
-        //    char targetDesc = exitDesc.charAt(0);
-        //    CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, leftDesc, targetDesc);
-        //    if (this.children.length > 1)
-        //    {
-        //        cf.enterCompilationScope();
-        //        getRightOperand().generateCode(mv, cf);
-        //        String rightDesc = getRightOperand().exitTypeDescriptor;
-        //        cf.exitCompilationScope();
-        //        CodeFlow.insertNumericUnboxOrPrimitiveTypeCoercion(mv, rightDesc, targetDesc);
-        //        switch (targetDesc)
-        //        {
-        //            case 'I':
-        //                mv.visitInsn(IDIV);
-        //                break;
-        //            case 'J':
-        //                mv.visitInsn(LDIV);
-        //                break;
-        //            case 'F':
-        //                mv.visitInsn(FDIV);
-        //                break;
-        //            case 'D':
-        //                mv.visitInsn(DDIV);
-        //                break;
-        //            default:
-        //                throw new IllegalStateException(
-        //                        "Unrecognized exit type descriptor: '" + this.exitTypeDescriptor + "'");
-        //        }
-        //    }
-        //    cf.pushDescriptor(this.exitTypeDescriptor);
-        // }
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+        {
+            LeftOperand.GenerateCode(gen, cf);
+            var leftDesc = LeftOperand.ExitDescriptor;
+            var exitDesc = _exitTypeDescriptor;
+            if (exitDesc == null)
+            {
+                throw new InvalidOperationException("No exit type descriptor");
+            }
+
+            CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
+            if (_children.Length > 1)
+            {
+                cf.EnterCompilationScope();
+                RightOperand.GenerateCode(gen, cf);
+                var rightDesc = RightOperand.ExitDescriptor;
+                cf.ExitCompilationScope();
+                CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
+                if (exitDesc != TypeDescriptor.I && exitDesc != TypeDescriptor.J && exitDesc != TypeDescriptor.F && exitDesc != TypeDescriptor.D)
+                {
+                    throw new InvalidOperationException("Unrecognized exit type descriptor: '" + _exitTypeDescriptor + "'");
+                }
+
+                gen.Emit(OpCodes.Div);
+            }
+
+            cf.PushDescriptor(_exitTypeDescriptor);
+        }
     }
 }

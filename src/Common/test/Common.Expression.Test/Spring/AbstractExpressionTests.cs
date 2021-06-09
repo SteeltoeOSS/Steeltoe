@@ -16,20 +16,20 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     {
         protected static readonly bool SHOULD_BE_WRITABLE = true;
         protected static readonly bool SHOULD_NOT_BE_WRITABLE = false;
-        protected readonly IExpressionParser parser = new SpelExpressionParser();
-        protected readonly StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
+        protected readonly IExpressionParser _parser = new SpelExpressionParser();
+        protected readonly StandardEvaluationContext _context = TestScenarioCreator.GetTestEvaluationContext();
         private static readonly bool DEBUG = false;
 
         public virtual void Evaluate(string expression, object expectedValue, Type expectedResultType)
         {
-            var expr = parser.ParseExpression(expression);
+            var expr = _parser.ParseExpression(expression);
             Assert.NotNull(expr);
             if (DEBUG)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
             }
 
-            var value = expr.GetValue(context);
+            var value = expr.GetValue(_context);
 
             // Check the return value
             if (value == null)
@@ -57,14 +57,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
         {
-            var expr = parser.ParseExpression(expression);
+            var expr = _parser.ParseExpression(expression);
             Assert.NotNull(expr);
             if (DEBUG)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
             }
 
-            var value = expr.GetValue(context, expectedResultType);
+            var value = expr.GetValue(_context, expectedResultType);
             if (value == null)
             {
                 if (expectedValue == null)
@@ -82,14 +82,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public virtual void Evaluate(string expression, object expectedValue, Type expectedClassOfResult, bool shouldBeWritable)
         {
-            var expr = parser.ParseExpression(expression);
+            var expr = _parser.ParseExpression(expression);
             Assert.NotNull(expr);
             if (DEBUG)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
             }
 
-            var value = expr.GetValue(context);
+            var value = expr.GetValue(_context);
             if (value == null)
             {
                 if (expectedValue == null)
@@ -111,7 +111,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
 
             Assert.Equal(expectedClassOfResult, resultType);
-            Assert.Equal(shouldBeWritable, expr.IsWritable(context));
+            Assert.Equal(shouldBeWritable, expr.IsWritable(_context));
         }
 
         protected static string StringValueOf(object value)
@@ -128,7 +128,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 for (var i = 0; i < len; i++)
                 {
                     indexes[dimension] = i;
-                    sb.Append("(").Append(string.Join(",", indexes)).Append(")=");
+                    sb.Append('(').Append(string.Join(",", indexes)).Append(")=");
                     var val = array.GetValue(indexes);
                     if (val == null)
                     {
@@ -139,7 +139,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                         sb.Append(val.ToString());
                     }
 
-                    sb.Append(",");
+                    sb.Append(',');
                 }
             }
             else
@@ -160,12 +160,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             sb.Append(array.GetType().GetElementType().FullName);
             for (var i = 0; i < array.Rank; i++)
             {
-                sb.Append("[").Append(array.GetLength(i)).Append("]");
+                sb.Append('[').Append(array.GetLength(i)).Append(']');
             }
 
-            sb.Append("{");
+            sb.Append('{');
             PrintDimension(sb, array, indexes, 0);
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 
@@ -190,9 +190,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 foreach (DictionaryEntry obj in asDict)
                 {
                     sb.Append(StringValueOf(obj.Key));
-                    sb.Append("=");
+                    sb.Append('=');
                     sb.Append(StringValueOf(obj.Value));
-                    sb.Append(",");
+                    sb.Append(',');
                 }
 
                 if (sb[sb.Length - 1] == ',')
@@ -200,7 +200,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return sb.ToString(0, sb.Length - 1) + "}";
                 }
 
-                sb.Append("}");
+                sb.Append('}');
                 return sb.ToString();
             }
             else if (value is IEnumerable && !(value is string))
@@ -212,12 +212,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     if (obj is IEnumerable && !(obj is string))
                     {
                         sb.Append(StringValueOf(obj));
-                        sb.Append(",");
+                        sb.Append(',');
                     }
                     else
                     {
                         sb.Append(obj.ToString());
-                        sb.Append(",");
+                        sb.Append(',');
                     }
                 }
 
@@ -226,7 +226,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     return sb.ToString(0, sb.Length - 1) + "]";
                 }
 
-                sb.Append("]");
+                sb.Append(']');
                 return sb.ToString();
             }
             else
@@ -244,15 +244,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var ex = Assert.Throws<SpelEvaluationException>(() =>
             {
-                var expr = parser.ParseExpression(expression);
+                var expr = _parser.ParseExpression(expression);
                 Assert.NotNull(expr);
                 if (expectedReturnType != null)
                 {
-                    expr.GetValue(context, expectedReturnType);
+                    expr.GetValue(_context, expectedReturnType);
                 }
                 else
                 {
-                    expr.GetValue(context);
+                    expr.GetValue(_context);
                 }
             });
             Assert.Equal(expectedMessage, ex.MessageCode);
@@ -281,7 +281,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var ex = Assert.Throws<SpelParseException>(() =>
             {
-                var expr = parser.ParseExpression(expression);
+                var expr = _parser.ParseExpression(expression);
                 if (DEBUG)
                 {
                     SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);

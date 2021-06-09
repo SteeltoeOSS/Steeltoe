@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
 {
@@ -14,7 +13,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         Type GetPropertyType();
 
-        // TODO: Add this when we support code generation
-        // void GenerateCode(string propertyName, MethodVisitor mv, CodeFlow cf);
+        void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf);
     }
 }

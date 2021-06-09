@@ -7,18 +7,19 @@ using Steeltoe.Common.Expression.Internal.Spring.Common;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
     public class SpelExpression : IExpression
     {
         // Number of times to interpret an expression before compiling it
-        private const int _INTERPRETED_COUNT_THRESHOLD = 100;
+        internal const int _INTERPRETED_COUNT_THRESHOLD = 100;
 
         // Number of times to try compiling an expression before giving up
-        private const int _FAILED_ATTEMPTS_THRESHOLD = 100;
+        internal const int _FAILED_ATTEMPTS_THRESHOLD = 100;
+
+        // Holds the compiled form of the expression (if it has been compiled)
+        internal volatile CompiledExpression _compiledAst;
 
         private readonly object _lock = new object();
         private readonly string _expression;
@@ -35,9 +36,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         // The default context is used if no override is supplied by the user
         private IEvaluationContext _evaluationContext;
-
-        // Holds the compiled form of the expression (if it has been compiled)
-        private volatile CompiledExpression _compiledAst;
 
         public SpelExpression(string expression, SpelNode ast, SpelParserOptions configuration)
         {

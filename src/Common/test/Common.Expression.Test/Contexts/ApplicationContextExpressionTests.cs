@@ -29,22 +29,28 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             collection.AddSingleton<IConfiguration>(config);
             collection.AddSingleton<TestService>((p) =>
             {
-                var tb = new TestService();
-                tb.ServiceName = "tb0";
+                var tb = new TestService
+                {
+                    ServiceName = "tb0"
+                };
                 return tb;
             });
 
             collection.AddSingleton<TestService>((p) =>
             {
-                var tb = new TestService();
-                tb.ServiceName = "tb1";
+                var tb = new TestService
+                {
+                    ServiceName = "tb1"
+                };
                 return tb;
             });
 
             collection.AddSingleton<IApplicationContext>((p) =>
             {
-                var context = new GenericApplicationContext(p, config);
-                context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
+                var context = new GenericApplicationContext(p, config)
+                {
+                    ServiceExpressionResolver = new StandardServiceExpressionResolver()
+                };
                 return context;
             });
 

@@ -114,8 +114,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var expr = parser.ParseExpression("ThrowException(#bar)");
 
-            context.SetVariable("bar", 2);
-            var ex = Assert.Throws<SystemException>(() => expr.GetValue(context));
+            _context.SetVariable("bar", 2);
+            var ex = Assert.Throws<SystemException>(() => expr.GetValue(_context));
             Assert.IsNotType<SpelEvaluationException>(ex);
         }
 
@@ -130,8 +130,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var parser = new SpelExpressionParser();
             var expr = parser.ParseExpression("ThrowException(#bar)");
 
-            context.SetVariable("bar", 4);
-            var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(context));
+            _context.SetVariable("bar", 4);
+            var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(_context));
             Assert.Contains("TestException", ex.InnerException.GetType().Name);
         }
 
@@ -235,7 +235,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestMethodOfClass()
         {
-            var expression = parser.ParseExpression("FullName");
+            var expression = _parser.ParseExpression("FullName");
             var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
             Assert.Equal("System.String", value);
         }
@@ -244,16 +244,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void InvokeMethodWithoutConversion()
         {
             var bytes = new byte[100];
-            var context = new StandardEvaluationContext(bytes);
-            context.ServiceResolver = new TestServiceResolver();
-            var expression = parser.ParseExpression("@service.HandleBytes(#root)");
+            var context = new StandardEvaluationContext(bytes)
+            {
+                ServiceResolver = new TestServiceResolver()
+            };
+            var expression = _parser.ParseExpression("@service.HandleBytes(#root)");
             var outBytes = expression.GetValue<byte[]>(context);
             Assert.Same(bytes, outBytes);
         }
 
         public class TestServiceResolver : IServiceResolver
         {
-            public BytesService Service => new BytesService();
+            public BytesService Service => new ();
 
             public object Resolve(IEvaluationContext context, string beanName)
             {
