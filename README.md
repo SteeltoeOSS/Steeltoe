@@ -112,14 +112,14 @@ These are located in the [Steeltoe](https://github.com/SteeltoeOSS/Steeltoe) rep
 
 The Steeltoe project welcomes contributions on GitHub both by filing issues and through PRs. You are also welcome to join our discussions on [Slack](https://slack.steeltoe.io/)
 
-Check out the [contributing guidelines](https://github.com/SteeltoeOSS/.github/blob/master/CONTRIBUTING.md) page to see how you can get involved and contribute to Steeltoe.
+Check out the [contributing guidelines](https://github.com/SteeltoeOSS/.github/blob/main/CONTRIBUTING.md) page to see how you can get involved and contribute to Steeltoe.
 
 Also its worth noting, the Steeltoe project has adopted the code of conduct defined by the [Contributor Covenant](https://contributor-covenant.org/).
 If you'd like more information, see the [.NET Foundation Code of Conduct](https://www.dotnetfoundation.org/code-of-conduct) write-up.
 
 ## Getting the Code
 
-The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `master` branch.
+The development of the core components of Steeltoe is done out of the [steeltoe](/) repository on the `main` branch.
 
 Maintenance branches are created after each major release (i.e. 2.x) and minor branches (i.e. 2.2.x) are created as needed for regressions, and/or security issues.
 
@@ -139,4 +139,4 @@ As a member of the [.NET Foundation](https://dotnetfoundation.org/), the Steelto
 
 ## Licenses
 
-The Steeltoe project uses the [Apache License Version 2.0](https://github.com/SteeltoeOSS/.github/blob/master/LICENSE.md) license for all of its code.  See the [contribution licensing](https://github.com/SteeltoeOSS/.github/blob/master/contributing-docs/contributing-license.md) document for more details.
+The Steeltoe project uses the [Apache License Version 2.0](https://github.com/SteeltoeOSS/.github/blob/main/LICENSE.md) license for all of its code.  See the [contribution licensing](https://github.com/SteeltoeOSS/.github/blob/main/contributing-docs/contributing-license.md) document for more details.
