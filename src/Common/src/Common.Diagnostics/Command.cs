@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Diagnostics
     /// <summary>
     /// A utility to simplify the running of system commands.
     /// </summary>
-    public class Command
+    public static class Command
     {
         /// <summary>
         /// Execute the command and return the result.
@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Diagnostics
         /// <param name="timeoutMillis">amount of time in milliseconds to wait for command to complete</param>
         /// <returns>command result</returns>
         /// <exception cref="CommandException">if a process can not be started for command</exception>
-        public async Task<CommandResult> ExecuteAsync(string command, string workingDirectory = null,
+        public static async Task<CommandResult> ExecuteAsync(string command, string workingDirectory = null,
             int timeoutMillis = -1)
         {
             using (var process = new Process())
@@ -111,16 +111,34 @@ namespace Steeltoe.Common.Diagnostics
         }
     }
 
+    /// <summary>
+    /// An simple abstraction of a command result.
+    /// </summary>
     public struct CommandResult
     {
+        /// <summary>
+        /// Gets the command exit code.
+        /// </summary>
         public int ExitCode { get; internal set; }
+
+        /// <summary>
+        /// Gets the command exit STDOUT.
+        /// </summary>
         public string Output { get; internal set; }
+
+        /// <summary>
+        /// Gets the command exit STDERR.
+        /// </summary>
         public string Error { get; internal set; }
     }
 
+    /// <summary>
+    /// The exception that is thrown when a system error occurs running a command.
+    /// </summary>
     public class CommandException : Exception
     {
-        public CommandException(string message, Exception inner) : base(message, inner)
+        /// <inheritdoc/>
+        public CommandException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

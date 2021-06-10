@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Diagnostics.Test
         [Fact]
         public async void SuccessfulCommandShouldReturn0()
         {
-            var result = await new Command().ExecuteAsync("dotnet --help");
+            var result = await Command.ExecuteAsync("dotnet --help");
             Assert.Equal(0, result.ExitCode);
             Assert.Contains("Usage: dotnet", result.Output);
         }
@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Diagnostics.Test
         [Fact]
         public async void UnsuccessfulCommandShouldNotReturn0()
         {
-            var result = await new Command().ExecuteAsync("dotnet --no-such-option");
+            var result = await Command.ExecuteAsync("dotnet --no-such-option");
             Assert.NotEqual(0, result.ExitCode);
             Assert.Contains("Unknown option: --no-such-option", result.Error);
         }
@@ -28,8 +28,7 @@ namespace Steeltoe.Common.Diagnostics.Test
         [Fact]
         public async void UnknownCommandShouldThrowException()
         {
-            var command = new Command();
-            Task Act() => command.ExecuteAsync("no-such-command");
+            Task Act() => Command.ExecuteAsync("no-such-command");
             var exc = await Assert.ThrowsAsync<CommandException>(Act);
             Assert.Contains("'no-such-command' failed to start", exc.Message);
             Assert.NotNull(exc.InnerException);
