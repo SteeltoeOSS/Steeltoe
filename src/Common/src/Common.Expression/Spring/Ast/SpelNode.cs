@@ -81,7 +81,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return null;
             }
 
-            return obj is Type ? ((Type)obj) : obj.GetType();
+            return obj is Type type ? type : obj.GetType();
         }
 
         public virtual void GenerateCode(ILGenerator gen, CodeFlow cf)

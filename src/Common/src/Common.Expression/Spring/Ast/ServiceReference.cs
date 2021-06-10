@@ -16,9 +16,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             _serviceName = serviceName;
         }
 
-        public override ITypedValue GetValueInternal(ExpressionState expressionState)
+        public override ITypedValue GetValueInternal(ExpressionState state)
         {
-            var serviceResolver = expressionState.EvaluationContext.ServiceResolver;
+            var serviceResolver = state.EvaluationContext.ServiceResolver;
             if (serviceResolver == null)
             {
                 throw new SpelEvaluationException(StartPosition, SpelMessage.NO_SERVICE_RESOLVER_REGISTERED, _serviceName);
@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             try
             {
-                return new TypedValue(serviceResolver.Resolve(expressionState.EvaluationContext, _serviceName));
+                return new TypedValue(serviceResolver.Resolve(state.EvaluationContext, _serviceName));
             }
             catch (AccessException ex)
             {

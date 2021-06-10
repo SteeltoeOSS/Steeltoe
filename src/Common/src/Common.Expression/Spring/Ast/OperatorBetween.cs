@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             var left = LeftOperand.GetValueInternal(state).Value;
             var right = RightOperand.GetValueInternal(state).Value;
-            if (!(right is IList) || ((IList)right).Count != 2)
+            if (right is not IList list1 || list1.Count != 2)
             {
                 throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.BETWEEN_RIGHT_OPERAND_MUST_BE_TWO_ELEMENT_LIST);
             }

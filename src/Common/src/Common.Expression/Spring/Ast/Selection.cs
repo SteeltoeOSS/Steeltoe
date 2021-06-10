@@ -42,11 +42,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var operand = op.Value;
             var selectionCriteria = _children[0];
 
-            if (operand is System.Collections.IDictionary)
+            if (operand is System.Collections.IDictionary mapdata)
             {
-                var mapdata = (System.Collections.IDictionary)operand;
-
-                // TODO don't lose generic info for the new map
+                // Don't lose generic info for the new map
                 var result = new Dictionary<object, object>();
                 object lastKey = null;
 
@@ -58,9 +56,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                         state.PushActiveContextObject(kvPair);
                         state.EnterScope();
                         var val = selectionCriteria.GetValueInternal(state).Value;
-                        if (val is bool)
+                        if (val is bool boolean)
                         {
-                            if ((bool)val)
+                            if (boolean)
                             {
                                 if (_variant == FIRST)
                                 {
@@ -114,9 +112,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                         state.PushActiveContextObject(new TypedValue(element));
                         state.EnterScope("index", index);
                         var val = selectionCriteria.GetValueInternal(state).Value;
-                        if (val is bool)
+                        if (val is bool boolean)
                         {
-                            if ((bool)val)
+                            if (boolean)
                             {
                                 if (_variant == FIRST)
                                 {
@@ -164,11 +162,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     if (typeDesc != null)
                     {
                         elementType = ReflectionHelper.GetElementTypeDescriptor(typeDesc);
-
-                        // if (elementTypeDesc != null)
-                        // {
-                        //    elementType = ClassUtils.resolvePrimitiveIfNecessary(elementTypeDesc);
-                        // }
                     }
 
                     if (elementType == null)
@@ -197,14 +190,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         private string GetPrefix()
         {
-            switch (_variant)
+            return _variant switch
             {
-                case ALL: return "?[";
-                case FIRST: return "^[";
-                case LAST: return "$[";
-            }
-
-            return string.Empty;
+                ALL => "?[",
+                FIRST => "^[",
+                LAST => "$[",
+                _ => string.Empty,
+            };
         }
     }
 }

@@ -89,12 +89,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     {
                         if (paramTypeClazz.Equals(superClass))
                         {
-                            result = result + 2;
+                            result += 2;
                             superClass = null;
                         }
                         else if (ClassUtils.IsAssignable(paramTypeClazz, superClass))
                         {
-                            result = result + 2;
+                            result += 2;
                             superClass = superClass.BaseType;
                         }
                         else
@@ -105,7 +105,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
                     if (paramTypeClazz.IsInterface)
                     {
-                        result = result + 1;
+                        result++;
                     }
                 }
             }
@@ -250,8 +250,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             // Check if repackaging is needed...
             if (parameterCount != args.Length ||
-                    requiredParameterTypes[parameterCount - 1] !=
-                            (args[argumentCount - 1] != null ? args[argumentCount - 1].GetType() : null))
+                    requiredParameterTypes[parameterCount - 1] != args[argumentCount - 1]?.GetType())
             {
                 var arraySize = 0;  // zero size array if nothing to pass as the varargs parameter
                 if (argumentCount >= parameterCount)
@@ -326,7 +325,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                 else
                 {
                     // Convert remaining arguments to the varargs element type
-                    var targetType = methodParam.ParameterType.GetElementType(); // new TypeDescriptor(methodParam).getElementTypeDescriptor();
+                    var targetType = methodParam.ParameterType.GetElementType();
                     if (targetType == null)
                     {
                         throw new InvalidOperationException("No element type");

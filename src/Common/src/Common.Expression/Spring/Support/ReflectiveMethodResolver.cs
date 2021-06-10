@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
             try
             {
                 var typeConverter = context.TypeConverter;
-                var type = targetObject is Type ? (Type)targetObject : targetObject.GetType();
+                var type = targetObject is Type type1 ? type1 : targetObject.GetType();
                 var methods = new List<MethodInfo>(GetMethods(type, targetObject));
 
                 // If a filter is registered for this type, call it
@@ -84,12 +84,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                         return m1pl.CompareTo(m2pl);
                     });
                 }
-
-                // Resolve any bridge methods
-                // for (var i = 0; i < methods.Count; i++)
-                // {
-                //    methods.set(i, BridgeMethodResolver.findBridgedMethod(methods.get(i)));
-                // }
 
                 // Remove duplicate methods (possible due to resolved bridge methods)
                 var methodsToIterate = new HashSet<MethodInfo>(methods);
@@ -222,24 +216,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
                 return result;
             }
-
-            // else if (Proxy.isProxyClass(type))
-            // {
-            //    Set<Method> result = new LinkedHashSet<>();
-            //    // Expose interface methods (not proxy-declared overrides) for proper vararg introspection
-            //    foreach (var ifc in type.getInterfaces())
-            //    {
-            //        Method[] methods = getMethods(ifc);
-            //        foreach (var method in methods)
-            //        {
-            //            if (IsCandidateForInvocation(method, type))
-            //            {
-            //                result.add(method);
-            //            }
-            //        }
-            //    }
-            //    return result;
-            // }
             else
             {
                 var result = new HashSet<MethodInfo>();

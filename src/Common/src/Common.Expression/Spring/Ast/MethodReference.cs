@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override bool IsCompilable()
         {
             var executorToCheck = _cachedExecutor;
-            if (executorToCheck == null || executorToCheck.HasProxyTarget() || !(executorToCheck.Get() is ReflectiveMethodExecutor))
+            if (executorToCheck == null || executorToCheck.HasProxyTarget || !(executorToCheck.Get() is ReflectiveMethodExecutor))
             {
                 return false;
             }
@@ -88,7 +88,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var method = GetTargetMethodAndType(out var classType);
             if (method.IsStatic)
             {
-                GenerateStaticMethodCode(gen, cf, method, classType);
+                GenerateStaticMethodCode(gen, cf, method);
             }
             else
             {
@@ -120,13 +120,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return CodeFlow.ToDescriptorFromObject(result);
         }
 
-        private void GenerateStaticMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo method, Type classType)
+        private void GenerateStaticMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo method)
         {
             var stackDescriptor = cf.LastDescriptor();
             Label? skipIfNullTarget = null;
             if (_nullSafe)
             {
-                skipIfNullTarget = GenerateNullCheckCode(gen, cf);
+                skipIfNullTarget = GenerateNullCheckCode(gen);
             }
 
             if (stackDescriptor != null)
@@ -164,7 +164,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             Label? skipIfNullTarget = null;
             if (_nullSafe)
             {
-                skipIfNullTarget = GenerateNullCheckCode(gen, cf);
+                skipIfNullTarget = GenerateNullCheckCode(gen);
             }
 
             if (targetType.IsValueType)
@@ -209,7 +209,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
         }
 
-        private Label GenerateNullCheckCode(ILGenerator gen, CodeFlow cf)
+        private Label GenerateNullCheckCode(ILGenerator gen)
         {
             var skipIfNullTarget = gen.DefineLabel();
             var continueTarget = gen.DefineLabel();
@@ -264,7 +264,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             // either there was no accessor or it no longer existed
             executorToUse = FindAccessorForMethod(argumentTypes, value, evaluationContext);
-            _cachedExecutor = new CachedMethodExecutor(executorToUse, value is Type ? (Type)value : null, targetType, argumentTypes);
+            _cachedExecutor = new CachedMethodExecutor(executorToUse, value is Type type ? type : null, targetType, argumentTypes);
             try
             {
                 return executorToUse.Execute(evaluationContext, value, arguments);
@@ -290,9 +290,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             if (ex.InnerException is TargetInvocationException)
             {
                 var rootCause = ex.InnerException.InnerException;
-                if (rootCause is SystemException)
+                if (rootCause is SystemException exception)
                 {
-                    throw (SystemException)rootCause;
+                    throw exception;
                 }
 
                 throw new ExpressionInvocationTargetException(StartPosition, "A problem occurred when trying to execute method '" + _name + "' on object of type [" + value.GetType().FullName + "]", rootCause);
@@ -371,7 +371,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             var method = FormatHelper.FormatMethodForMessage(_name, argumentTypes);
-            var className = FormatHelper.FormatClassNameForMessage(targetObject is Type ? ((Type)targetObject) : targetObject.GetType());
+            var className = FormatHelper.FormatClassNameForMessage(targetObject is Type type ? type : targetObject.GetType());
             if (accessException != null)
             {
                 throw new SpelEvaluationException(StartPosition, accessException, SpelMessage.PROBLEM_LOCATING_METHOD, method, className);
@@ -385,9 +385,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private void UpdateExitTypeDescriptor(object result)
         {
             var executorToCheck = _cachedExecutor;
-            if (executorToCheck != null && executorToCheck.Get() is ReflectiveMethodExecutor)
+            if (executorToCheck != null && executorToCheck.Get() is ReflectiveMethodExecutor executor)
             {
-                var method = ((ReflectiveMethodExecutor)executorToCheck.Get()).Method;
+                var method = executor.Method;
                 var descriptor = ComputeExitDescriptor(result, method.ReturnType);
                 if (_nullSafe && CodeFlow.IsValueType(descriptor))
                 {
@@ -479,13 +479,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                         ObjectUtils.NullSafeEquals(_target, target) && Equal(_argumentTypes, argumentTypes);
             }
 
-#pragma warning disable S3400 // Methods should not return constants
-            public bool HasProxyTarget()
-#pragma warning restore S3400 // Methods should not return constants
-            {
-                // return _target != null && Proxy.IsProxyClass(_target);
-                return false;
-            }
+            public bool HasProxyTarget => false;
 
             public IMethodExecutor Get()
             {

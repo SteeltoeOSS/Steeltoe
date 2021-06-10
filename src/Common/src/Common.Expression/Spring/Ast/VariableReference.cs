@@ -12,8 +12,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
     public class VariableReference : SpelNode
     {
         // Well known variables:
-        private static readonly string _THIS = "this";  // currently active context object
-        private static readonly string _ROOT = "root";  // root context object
+        private static readonly string THIS = "this";  // currently active context object
+        private static readonly string ROOT = "root";  // root context object
 
         private readonly string _name;
         private MethodInfo _method;
@@ -26,12 +26,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
-            if (_name.Equals(_THIS))
+            if (_name.Equals(THIS))
             {
                 return state.GetActiveContextObject();
             }
 
-            if (_name.Equals(_ROOT))
+            if (_name.Equals(ROOT))
             {
                 var obj = state.RootContextObject;
                 _exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
@@ -57,9 +57,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return result;
         }
 
-        public override void SetValue(ExpressionState state, object value)
+        public override void SetValue(ExpressionState state, object newValue)
         {
-            state.SetVariable(_name, value);
+            state.SetVariable(_name, newValue);
         }
 
         public override string ToStringAST()
@@ -67,9 +67,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return "#" + _name;
         }
 
-        public override bool IsWritable(ExpressionState expressionState)
+        public override bool IsWritable(ExpressionState state)
         {
-            return !(_name.Equals(_THIS) || _name.Equals(_ROOT));
+            return !(_name.Equals(THIS) || _name.Equals(ROOT));
         }
 
         public override bool IsCompilable()
@@ -79,7 +79,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            if (_name.Equals(_ROOT))
+            if (_name.Equals(ROOT))
             {
                 CodeFlow.LoadTarget(gen);
             }
@@ -96,12 +96,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         protected internal override IValueRef GetValueRef(ExpressionState state)
         {
-            if (_name.Equals(_THIS))
+            if (_name.Equals(THIS))
             {
                 return new TypedValueHolderValueRef(state.GetActiveContextObject(), this);
             }
 
-            if (_name.Equals(_ROOT))
+            if (_name.Equals(ROOT))
             {
                 return new TypedValueHolderValueRef(state.RootContextObject, this);
             }

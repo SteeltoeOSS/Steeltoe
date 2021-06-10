@@ -26,13 +26,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return BooleanTypedValue.ForValue(GetBooleanValue(state, RightOperand));
         }
 
-        // private void AssertValueNotNull(bool value)
-        // {
-        //    if (value == null)
-        //    {
-        //        throw new SpelEvaluationException(SpelMessage.TYPE_CONVERSION_ERROR, "null", "System.Boolean");
-        //    }
-        // }
         public override bool IsCompilable()
         {
             var left = LeftOperand;

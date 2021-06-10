@@ -69,9 +69,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
             }
 
-            if (leftOperand is string && rightOperand is int)
+            if (leftOperand is string && rightOperand is int integer)
             {
-                var repeats = (int)rightOperand;
+                var repeats = integer;
                 var result = new StringBuilder();
                 for (var i = 0; i < repeats; i++)
                 {

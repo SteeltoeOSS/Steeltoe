@@ -54,7 +54,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var asLong = (long)d;
                 if (asLong > int.MaxValue || leftOperand is long || rightOperand is long)
                 {
-                    return new TypedValue((long)asLong);
+                    return new TypedValue(asLong);
                 }
                 else
                 {

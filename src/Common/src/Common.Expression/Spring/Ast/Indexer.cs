@@ -586,7 +586,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                             if (accessor is ReflectivePropertyAccessor.OptimalPropertyAccessor optimalAccessor)
                             {
                                 var member = optimalAccessor.Member;
-                                _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(member is MethodInfo ? ((MethodInfo)member).ReturnType : ((FieldInfo)member).FieldType);
+                                _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(member is MethodInfo info ? info.ReturnType : ((FieldInfo)member).FieldType);
                             }
 
                             return accessor.Read(_evaluationContext, _targetObject, _name);

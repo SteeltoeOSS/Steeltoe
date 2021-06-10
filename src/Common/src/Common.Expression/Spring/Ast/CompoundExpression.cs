@@ -27,9 +27,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return result;
         }
 
-        public override void SetValue(ExpressionState state, object value)
+        public override void SetValue(ExpressionState state, object newValue)
         {
-            GetValueRef(state).SetValue(value);
+            GetValueRef(state).SetValue(newValue);
         }
 
         public override bool IsWritable(ExpressionState state)

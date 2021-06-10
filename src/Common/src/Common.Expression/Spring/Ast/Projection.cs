@@ -35,16 +35,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var operand = op.Value;
             var operandAsArray = operand as Array;
 
-            // TypeDescriptor operandTypeDescriptor = op.getTypeDescriptor();
-
             // When the input is a map, we push a special context object on the stack
             // before calling the specified operation. This special context object
             // has two fields 'key' and 'value' that refer to the map entries key
             // and value, and they can be referenced in the operation
             // eg. {'a':'y','b':'n'}.![value=='y'?key:null]" == ['a', null]
-            if (operand is IDictionary)
+            if (operand is IDictionary mapData)
             {
-                var mapData = (IDictionary)operand;
                 var result = new List<object>();
                 foreach (var entry in mapData)
                 {
@@ -61,7 +58,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     }
                 }
 
-                return new TypedValueHolderValueRef(new TypedValue(result), this);  // TODO unable to build correct type descriptor
+                return new TypedValueHolderValueRef(new TypedValue(result), this);
             }
 
             if (operand is IEnumerable)

@@ -90,7 +90,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return numberToken;
         }
 
-        public override ITypedValue GetValueInternal(ExpressionState expressionState)
+        public override ITypedValue GetValueInternal(ExpressionState state)
         {
             return GetLiteralValue();
         }

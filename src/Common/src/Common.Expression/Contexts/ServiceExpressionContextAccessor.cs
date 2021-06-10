@@ -14,10 +14,10 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             var serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out var lookupName);
             if (serviceType != null)
             {
-                return target is IServiceExpressionContext && ((IServiceExpressionContext)target).ContainsService(lookupName, serviceType);
+                return target is IServiceExpressionContext context1 && context1.ContainsService(lookupName, serviceType);
             }
 
-            return target is IServiceExpressionContext && ((IServiceExpressionContext)target).ContainsService(name);
+            return target is IServiceExpressionContext context2 && context2.ContainsService(name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)

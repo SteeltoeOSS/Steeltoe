@@ -14,11 +14,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class ConstructorReference : SpelNode
     {
-        private bool _isArrayConstructor = false;
+        private readonly bool _isArrayConstructor = false;
 
-        private SpelNode[] _dimensions;
+        private readonly SpelNode[] _dimensions;
 
-        // TODO is this caching safe - passing the expression around will mean this executor is also being passed around
+        // Is this caching safe - passing the expression around will mean this executor is also being passed around
         // The cached executor that may be reused on subsequent evaluations.
         private volatile IConstructorExecutor _cachedExecutor;
 
@@ -181,9 +181,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             try
             {
                 _cachedExecutor = executorToUse;
-                if (executorToUse is ReflectiveConstructorExecutor)
+                if (executorToUse is ReflectiveConstructorExecutor executor)
                 {
-                    _exitTypeDescriptor = CodeFlow.ToDescriptor(((ReflectiveConstructorExecutor)executorToUse).Constructor.DeclaringType);
+                    _exitTypeDescriptor = CodeFlow.ToDescriptor(executor.Constructor.DeclaringType);
                 }
 
                 return executorToUse.Execute(state.EvaluationContext, arguments);
@@ -240,7 +240,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(
                     GetChild(0).StartPosition,
                     SpelMessage.TYPE_NAME_EXPECTED_FOR_ARRAY_CONSTRUCTION,
-                    FormatHelper.FormatClassNameForMessage(intendedArrayType != null ? intendedArrayType.GetType() : null));
+                    FormatHelper.FormatClassNameForMessage(intendedArrayType?.GetType()));
             }
 
             var type = (string)intendedArrayType;

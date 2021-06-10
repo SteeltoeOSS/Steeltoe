@@ -18,7 +18,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         private static readonly ConstructorInfo _listConstr = typeof(List<object>).GetConstructor(new Type[0]);
 
         // If the list is purely literals, it is a constant value and can be computed and cached
-        private ITypedValue _constant;  // TODO must be immutable list
+        private ITypedValue _constant;
 
         public InlineList(int startPos, int endPos, params SpelNode[] args)
          : base(startPos, endPos, args)
@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             CheckIfConstant();
         }
 
-        public override ITypedValue GetValueInternal(ExpressionState expressionState)
+        public override ITypedValue GetValueInternal(ExpressionState state)
         {
             if (_constant != null)
             {
@@ -38,7 +38,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var returnValue = new List<object>(childCount);
                 for (var c = 0; c < childCount; c++)
                 {
-                    returnValue.Add(GetChild(c).GetValue(expressionState));
+                    returnValue.Add(GetChild(c).GetValue(state));
                 }
 
                 return new TypedValue(returnValue);
@@ -72,14 +72,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable() => IsConstant;
 
-        public override void GenerateCode(ILGenerator gen, CodeFlow codeflow)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            var constantFieldName = "inlineList$" + codeflow.NextFieldId();
-            codeflow.RegisterNewField(constantFieldName, new List<object>());
-            codeflow.RegisterNewInitGenerator((initGenerator, cflow) => { GenerateInitCode(constantFieldName, initGenerator, cflow); });
+            var constantFieldName = "inlineList$" + cf.NextFieldId();
+            cf.RegisterNewField(constantFieldName, new List<object>());
+            cf.RegisterNewInitGenerator((initGenerator, cflow) => { GenerateInitCode(constantFieldName, initGenerator, cflow); });
 
             GenerateLoadListCode(gen, constantFieldName);
-            codeflow.PushDescriptor(new TypeDescriptor(typeof(IList)));
+            cf.PushDescriptor(new TypeDescriptor(typeof(IList)));
         }
 
         public void GenerateInitCode(string constantFieldName, ILGenerator gen, CodeFlow codeflow, bool nested = false)
@@ -116,9 +116,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 // The children might be further lists if they are not constants. In this
                 // situation do not call back into generateCode() because it will register another clinit adder.
                 // Instead, directly build the list here:
-                if (_children[c] is InlineList)
+                if (_children[c] is InlineList list)
                 {
-                    ((InlineList)_children[c]).GenerateInitCode(constantFieldName, gen, codeflow, true);
+                    list.GenerateInitCode(constantFieldName, gen, codeflow, true);
                 }
                 else
                 {
@@ -158,9 +158,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var child = GetChild(c);
                 if (!(child is Literal))
                 {
-                    if (child is InlineList)
+                    if (child is InlineList inlineList)
                     {
-                        var inlineList = (InlineList)child;
                         if (!inlineList.IsConstant)
                         {
                             isConstant = false;
@@ -180,13 +179,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 for (var c = 0; c < childcount; c++)
                 {
                     var child = GetChild(c);
-                    if (child is Literal)
+                    if (child is Literal literal)
                     {
-                        constantList.Add(((Literal)child).GetLiteralValue().Value);
+                        constantList.Add(literal.GetLiteralValue().Value);
                     }
-                    else if (child is InlineList)
+                    else if (child is InlineList list)
                     {
-                        constantList.Add(((InlineList)child).GetConstantValue());
+                        constantList.Add(list.GetConstantValue());
                     }
                 }
 

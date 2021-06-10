@@ -84,9 +84,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_originalMethod), arguments);
                 }
 
-                // ReflectionUtils.makeAccessible(this.methodToInvoke);
                 var value = _methodToInvoke.Invoke(target, arguments);
-                return new TypedValue(value, value?.GetType() ?? _originalMethod.ReturnType); // new TypeDescriptor(new MethodParameter(this.originalMethod, -1)).Narrow(value));
+                return new TypedValue(value, value?.GetType() ?? _originalMethod.ReturnType);
             }
             catch (Exception ex)
             {

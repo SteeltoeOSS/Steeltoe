@@ -111,10 +111,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 }
             }
 
-            if (leftOperand is string && rightOperand is string)
+            if (leftOperand is string strLeft && rightOperand is string strRight)
             {
                 _exitTypeDescriptor = TypeDescriptor.STRING;
-                return new TypedValue((string)leftOperand + (string)rightOperand);
+                return new TypedValue(strLeft + strRight);
             }
 
             if (leftOperand is string)
@@ -218,9 +218,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         private void Walk(ILGenerator gen, CodeFlow cf, SpelNode operand)
         {
-            if (operand is OpPlus)
+            if (operand is OpPlus plus)
             {
-                var plus = (OpPlus)operand;
                 Walk(gen, cf, plus.LeftOperand);
                 Walk(gen, cf, plus.RightOperand);
             }

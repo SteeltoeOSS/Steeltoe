@@ -27,67 +27,56 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             // The operand is going to be read and then assigned to, we don't want to evaluate it twice.
             var lvalue = operand.GetValueRef(state);
 
-            var operandTypedValue = lvalue.GetValue();  // operand.getValueInternal(state);
+            var operandTypedValue = lvalue.GetValue();
             var operandValue = operandTypedValue.Value;
             var returnValue = operandTypedValue;
             ITypedValue newValue = null;
 
             if (IsNumber(operandValue))
             {
-                if (operandValue is decimal)
+                if (operandValue is decimal val)
                 {
-                    var val = (decimal)operandValue;
                     newValue = new TypedValue(val - 1M, operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is double)
+                else if (operandValue is double val1)
                 {
-                    var val = (double)operandValue;
-                    newValue = new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue(val1 - 1.0d, operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is float)
+                else if (operandValue is float val2)
                 {
-                    var val = (float)operandValue;
-                    newValue = new TypedValue(val - 1.0f, operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue(val2 - 1.0f, operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is long)
+                else if (operandValue is long val3)
                 {
-                    var val = (long)operandValue;
-                    newValue = new TypedValue(val - 1L, operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue(val3 - 1L, operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is int)
+                else if (operandValue is int val4)
                 {
-                    var val = (int)operandValue;
-                    newValue = new TypedValue(val - 1, operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue(val4 - 1, operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is short)
+                else if (operandValue is short val5)
                 {
-                    var val = (short)operandValue;
-                    newValue = new TypedValue((short)(val - (short)1), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((short)(val5 - (short)1), operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is byte)
+                else if (operandValue is byte val6)
                 {
-                    var val = (byte)operandValue;
-                    newValue = new TypedValue((byte)(val - (byte)1), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((byte)(val6 - (byte)1), operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is ulong)
+                else if (operandValue is ulong val7)
                 {
-                    var val = (ulong)operandValue;
-                    newValue = new TypedValue((ulong)(val - 1L), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((ulong)(val7 - 1L), operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is uint)
+                else if (operandValue is uint val8)
                 {
-                    var val = (uint)operandValue;
-                    newValue = new TypedValue((uint)(val - 1), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((uint)(val8 - 1), operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is ushort)
+                else if (operandValue is ushort val9)
                 {
-                    var val = (ushort)operandValue;
-                    newValue = new TypedValue((ushort)(val - (ushort)1), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((ushort)(val9 - (ushort)1), operandTypedValue.TypeDescriptor);
                 }
-                else if (operandValue is sbyte)
+                else if (operandValue is sbyte val10)
                 {
-                    var val = (sbyte)operandValue;
-                    newValue = new TypedValue((sbyte)(val - (sbyte)1), operandTypedValue.TypeDescriptor);
+                    newValue = new TypedValue((sbyte)(val10 - (sbyte)1), operandTypedValue.TypeDescriptor);
                 }
             }
 

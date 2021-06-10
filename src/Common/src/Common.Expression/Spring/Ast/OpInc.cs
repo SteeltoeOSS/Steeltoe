@@ -33,49 +33,49 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             if (IsNumber(value))
             {
                 var op1 = (IConvertible)value;
-                if (op1 is decimal)
+                if (op1 is decimal val1)
                 {
-                    newValue = new TypedValue(((decimal)op1) + 1M, typedValue.TypeDescriptor);
+                    newValue = new TypedValue(val1 + 1M, typedValue.TypeDescriptor);
                 }
-                else if (op1 is double)
+                else if (op1 is double val2)
                 {
-                    newValue = new TypedValue(((double)op1) + 1.0d, typedValue.TypeDescriptor);
+                    newValue = new TypedValue(val2 + 1.0d, typedValue.TypeDescriptor);
                 }
-                else if (op1 is float)
+                else if (op1 is float val3)
                 {
-                    newValue = new TypedValue(((float)op1) + 1.0f, typedValue.TypeDescriptor);
+                    newValue = new TypedValue(val3 + 1.0f, typedValue.TypeDescriptor);
                 }
-                else if (op1 is long)
+                else if (op1 is long val4)
                 {
-                    newValue = new TypedValue(((long)op1) + 1L, typedValue.TypeDescriptor);
+                    newValue = new TypedValue(val4 + 1L, typedValue.TypeDescriptor);
                 }
-                else if (op1 is int)
+                else if (op1 is int val5)
                 {
-                    newValue = new TypedValue(((int)op1) + 1, typedValue.TypeDescriptor);
+                    newValue = new TypedValue(val5 + 1, typedValue.TypeDescriptor);
                 }
-                else if (op1 is short)
+                else if (op1 is short val6)
                 {
-                    newValue = new TypedValue((short)(((short)op1) + (short)1), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((short)(val6 + (short)1), typedValue.TypeDescriptor);
                 }
-                else if (op1 is byte)
+                else if (op1 is byte val7)
                 {
-                    newValue = new TypedValue((byte)(((byte)op1) + (byte)1), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((byte)(val7 + (byte)1), typedValue.TypeDescriptor);
                 }
-                else if (op1 is ulong)
+                else if (op1 is ulong val8)
                 {
-                    newValue = new TypedValue((ulong)(((ulong)op1) + 1UL), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((ulong)(val8 + 1UL), typedValue.TypeDescriptor);
                 }
-                else if (op1 is uint)
+                else if (op1 is uint val9)
                 {
-                    newValue = new TypedValue((uint)(((uint)op1) + 1U), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((uint)(val9 + 1U), typedValue.TypeDescriptor);
                 }
-                else if (op1 is ushort)
+                else if (op1 is ushort val10)
                 {
-                    newValue = new TypedValue((ushort)(((ushort)op1) + (ushort)1), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((ushort)(val10 + (ushort)1), typedValue.TypeDescriptor);
                 }
-                else if (op1 is sbyte)
+                else if (op1 is sbyte val11)
                 {
-                    newValue = new TypedValue((sbyte)(((sbyte)op1) + (sbyte)1), typedValue.TypeDescriptor);
+                    newValue = new TypedValue((sbyte)(val11 + (sbyte)1), typedValue.TypeDescriptor);
                 }
             }
 

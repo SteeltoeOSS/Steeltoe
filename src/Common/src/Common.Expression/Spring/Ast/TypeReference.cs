@@ -28,7 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
-            // TODO possible optimization here if we cache the discovered type reference, but can we do that?
+            // Possible optimization here if we cache the discovered type reference, but can we do that?
             var typeName = (string)_children[0].GetValueInternal(state).Value;
             if (typeName == null)
             {
