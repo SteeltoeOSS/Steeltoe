@@ -25,53 +25,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var operand = leftOp.GetValueInternal(state).Value;
                 if (IsNumber(operand))
                 {
-                    if (operand is decimal val1)
+                    switch (operand)
                     {
-                        return new TypedValue(0M - val1);
-                    }
-                    else if (operand is double val2)
-                    {
-                        _exitTypeDescriptor = TypeDescriptor.D;
-                        return new TypedValue(0d - val2);
-                    }
-                    else if (operand is float val3)
-                    {
-                        _exitTypeDescriptor = TypeDescriptor.F;
-                        return new TypedValue(0f - val3);
-                    }
-                    else if (operand is long val4)
-                    {
-                        _exitTypeDescriptor = TypeDescriptor.J;
-                        return new TypedValue(0L - val4);
-                    }
-                    else if (operand is int val5)
-                    {
-                        _exitTypeDescriptor = TypeDescriptor.I;
-                        return new TypedValue(0 - val5);
-                    }
-                    else if (operand is short val6)
-                    {
-                        return new TypedValue(((short)0) - val6);
-                    }
-                    else if (operand is byte val7)
-                    {
-                        return new TypedValue(((byte)0) - val7);
-                    }
-                    else if (operand is ulong val8)
-                    {
-                        return new TypedValue(0UL - val8);
-                    }
-                    else if (operand is uint val9)
-                    {
-                        return new TypedValue(0U - val9);
-                    }
-                    else if (operand is ushort val10)
-                    {
-                        return new TypedValue(((ushort)0) - val10);
-                    }
-                    else if (operand is sbyte val11)
-                    {
-                        return new TypedValue(((sbyte)0) - val11);
+                        case decimal val: return new TypedValue(0M - val);
+                        case double val:
+                            _exitTypeDescriptor = TypeDescriptor.D;
+                            return new TypedValue(0d - val);
+                        case float val:
+                            _exitTypeDescriptor = TypeDescriptor.F;
+                            return new TypedValue(0f - val);
+                        case long val:
+                            _exitTypeDescriptor = TypeDescriptor.J;
+                            return new TypedValue(0L - val);
+                        case int val:
+                            _exitTypeDescriptor = TypeDescriptor.I;
+                            return new TypedValue(0 - val);
+                        case short val: return new TypedValue(0 - val);
+                        case byte val: return new TypedValue(0 - val);
+                        case ulong val: return new TypedValue(0UL - val);
+                        case uint val: return new TypedValue(0U - val);
+                        case ushort val: return new TypedValue(0 - val);
+                        case sbyte val: return new TypedValue(0 - val);
+                        default: return state.Operate(Operation.SUBTRACT, operand, null);
                     }
                 }
 

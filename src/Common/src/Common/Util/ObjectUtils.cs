@@ -57,103 +57,37 @@ namespace Steeltoe.Common.Util
         // Add other .NET types?
         internal static int ArrayHashCode(object o1)
         {
-            if (o1 is object[] v)
+            return o1 switch
             {
-                return ArrayItemsHashCode<object>(v);
-            }
-
-            if (o1 is bool[] v1)
-            {
-                return ArrayItemsHashCode<bool>(v1);
-            }
-
-            if (o1 is byte[] v2)
-            {
-                return ArrayItemsHashCode<byte>(v2);
-            }
-
-            if (o1 is char[] v3)
-            {
-                return ArrayItemsHashCode<char>(v3);
-            }
-
-            if (o1 is double[] v4)
-            {
-                return ArrayItemsHashCode<double>(v4);
-            }
-
-            if (o1 is float[] v5)
-            {
-                return ArrayItemsHashCode<float>(v5);
-            }
-
-            if (o1 is int[] v6)
-            {
-                return ArrayItemsHashCode<int>(v6);
-            }
-
-            if (o1 is long[] v7)
-            {
-                return ArrayItemsHashCode<long>(v7);
-            }
-
-            if (o1 is short[] v8)
-            {
-                return ArrayItemsHashCode<short>(v8);
-            }
-
-            return 0;
+                object[] v => ArrayItemsHashCode<object>(v),
+                bool[] v => ArrayItemsHashCode<bool>(v),
+                byte[] v => ArrayItemsHashCode<byte>(v),
+                char[] v => ArrayItemsHashCode<char>(v),
+                double[] v => ArrayItemsHashCode<double>(v),
+                float[] v => ArrayItemsHashCode<float>(v),
+                int[] v => ArrayItemsHashCode<int>(v),
+                long[] v => ArrayItemsHashCode<long>(v),
+                short[] v => ArrayItemsHashCode<short>(v),
+                _ => 0
+            };
         }
 
         // Add other .NET types?
         internal static bool ArrayEquals(object o1, object o2)
         {
-            if (o1 is object[] v && o2 is object[] v1)
+            return o1 switch
             {
-                return ArrayItemsEqual<object>(v, v1);
-            }
-
-            if (o1 is bool[] v2 && o2 is bool[] v3)
-            {
-                return ArrayItemsEqual<bool>(v2, v3);
-            }
-
-            if (o1 is byte[] v4 && o2 is byte[] v5)
-            {
-                return ArrayItemsEqual<byte>(v4, v5);
-            }
-
-            if (o1 is char[] v6 && o2 is char[] v7)
-            {
-                return ArrayItemsEqual<char>(v6, v7);
-            }
-
-            if (o1 is double[] v8 && o2 is double[] v9)
-            {
-                return ArrayItemsEqual<double>(v8, v9);
-            }
-
-            if (o1 is float[] v10 && o2 is float[] v11)
-            {
-                return ArrayItemsEqual<float>(v10, v11);
-            }
-
-            if (o1 is int[] v12 && o2 is int[] v13)
-            {
-                return ArrayItemsEqual<int>(v12, v13);
-            }
-
-            if (o1 is long[] v14 && o2 is long[] v15)
-            {
-                return ArrayItemsEqual<long>(v14, v15);
-            }
-
-            if (o1 is short[] v16 && o2 is short[] v17)
-            {
-                return ArrayItemsEqual<short>(v16, v17);
-            }
-
-            return false;
+                object[] v => o2 is object[] v1 && ArrayItemsEqual<object>(v, v1),
+                bool[] v => o2 is bool[] v1 && ArrayItemsEqual<bool>(v, v1),
+                byte[] v => o2 is byte[] v1 && ArrayItemsEqual<byte>(v, v1),
+                char[] v => o2 is char[] v1 && ArrayItemsEqual<char>(v, v1),
+                double[] v => o2 is double[] v1 && ArrayItemsEqual<double>(v, v1),
+                float[] v => o2 is float[] v1 && ArrayItemsEqual<float>(v, v1),
+                int[] v => o2 is int[] v1 && ArrayItemsEqual<int>(v, v1),
+                long[] v => o2 is long[] v1 && ArrayItemsEqual<long>(v, v1),
+                short[] v => o2 is short[] v1 && ArrayItemsEqual<short>(v, v1),
+                _ => false
+            };
         }
 
         internal static bool ArrayItemsEqual<T>(T[] o1, T[] o2)

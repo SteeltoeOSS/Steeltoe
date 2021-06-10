@@ -34,50 +34,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (IsNumber(operandValue))
             {
-                if (operandValue is decimal val)
+                newValue = operandValue switch
                 {
-                    newValue = new TypedValue(val - 1M, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is double val1)
-                {
-                    newValue = new TypedValue(val1 - 1.0d, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is float val2)
-                {
-                    newValue = new TypedValue(val2 - 1.0f, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is long val3)
-                {
-                    newValue = new TypedValue(val3 - 1L, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is int val4)
-                {
-                    newValue = new TypedValue(val4 - 1, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is short val5)
-                {
-                    newValue = new TypedValue((short)(val5 - (short)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is byte val6)
-                {
-                    newValue = new TypedValue((byte)(val6 - (byte)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is ulong val7)
-                {
-                    newValue = new TypedValue((ulong)(val7 - 1L), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is uint val8)
-                {
-                    newValue = new TypedValue((uint)(val8 - 1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is ushort val9)
-                {
-                    newValue = new TypedValue((ushort)(val9 - (ushort)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is sbyte val10)
-                {
-                    newValue = new TypedValue((sbyte)(val10 - (sbyte)1), operandTypedValue.TypeDescriptor);
-                }
+                    decimal val => new TypedValue(val - 1M, operandTypedValue.TypeDescriptor),
+                    double val => new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor),
+                    float val => new TypedValue(val - 1.0f, operandTypedValue.TypeDescriptor),
+                    long val => new TypedValue(val - 1L, operandTypedValue.TypeDescriptor),
+                    int val => new TypedValue(val - 1, operandTypedValue.TypeDescriptor),
+                    short val => new TypedValue((short)(val - 1), operandTypedValue.TypeDescriptor),
+                    byte val => new TypedValue((byte)(val - 1), operandTypedValue.TypeDescriptor),
+                    ulong val => new TypedValue(val - 1L, operandTypedValue.TypeDescriptor),
+                    uint val => new TypedValue(val - 1, operandTypedValue.TypeDescriptor),
+                    ushort val => new TypedValue((ushort)(val - 1), operandTypedValue.TypeDescriptor),
+                    sbyte val => new TypedValue((sbyte)(val - 1), operandTypedValue.TypeDescriptor),
+                    _ => null
+                };
             }
 
             if (newValue == null)

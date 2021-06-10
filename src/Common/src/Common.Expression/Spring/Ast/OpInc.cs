@@ -32,51 +32,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (IsNumber(value))
             {
-                var op1 = (IConvertible)value;
-                if (op1 is decimal val1)
+                newValue = (IConvertible)value switch
                 {
-                    newValue = new TypedValue(val1 + 1M, typedValue.TypeDescriptor);
-                }
-                else if (op1 is double val2)
-                {
-                    newValue = new TypedValue(val2 + 1.0d, typedValue.TypeDescriptor);
-                }
-                else if (op1 is float val3)
-                {
-                    newValue = new TypedValue(val3 + 1.0f, typedValue.TypeDescriptor);
-                }
-                else if (op1 is long val4)
-                {
-                    newValue = new TypedValue(val4 + 1L, typedValue.TypeDescriptor);
-                }
-                else if (op1 is int val5)
-                {
-                    newValue = new TypedValue(val5 + 1, typedValue.TypeDescriptor);
-                }
-                else if (op1 is short val6)
-                {
-                    newValue = new TypedValue((short)(val6 + (short)1), typedValue.TypeDescriptor);
-                }
-                else if (op1 is byte val7)
-                {
-                    newValue = new TypedValue((byte)(val7 + (byte)1), typedValue.TypeDescriptor);
-                }
-                else if (op1 is ulong val8)
-                {
-                    newValue = new TypedValue((ulong)(val8 + 1UL), typedValue.TypeDescriptor);
-                }
-                else if (op1 is uint val9)
-                {
-                    newValue = new TypedValue((uint)(val9 + 1U), typedValue.TypeDescriptor);
-                }
-                else if (op1 is ushort val10)
-                {
-                    newValue = new TypedValue((ushort)(val10 + (ushort)1), typedValue.TypeDescriptor);
-                }
-                else if (op1 is sbyte val11)
-                {
-                    newValue = new TypedValue((sbyte)(val11 + (sbyte)1), typedValue.TypeDescriptor);
-                }
+                    decimal val => new TypedValue(val + 1M, typedValue.TypeDescriptor),
+                    double val => new TypedValue(val + 1.0d, typedValue.TypeDescriptor),
+                    float val => new TypedValue(val + 1.0f, typedValue.TypeDescriptor),
+                    long val => new TypedValue(val + 1L, typedValue.TypeDescriptor),
+                    int val => new TypedValue(val + 1, typedValue.TypeDescriptor),
+                    short val => new TypedValue((short)(val + 1), typedValue.TypeDescriptor),
+                    byte val => new TypedValue((byte)(val + 1), typedValue.TypeDescriptor),
+                    ulong val => new TypedValue(val + 1UL, typedValue.TypeDescriptor),
+                    uint val => new TypedValue(val + 1U, typedValue.TypeDescriptor),
+                    ushort val => new TypedValue((ushort)(val + 1), typedValue.TypeDescriptor),
+                    sbyte val => new TypedValue((sbyte)(val + 1), typedValue.TypeDescriptor),
+                    _ => null
+                };
             }
 
             if (newValue == null)
