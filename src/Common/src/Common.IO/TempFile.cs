@@ -1,29 +1,35 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
 using System.IO;
 
 namespace Steeltoe.Common.IO
 {
-    public sealed class TempFile : TempPath
+    /// <summary>
+    /// A temporary directory.
+    /// </summary>
+    public class TempFile : TempPath
     {
-        /// <summary>
-        /// Creates a new instance of a TempFile.
-        /// </summary>
+        /// <inheritdoc/>
         public TempFile()
         {
         }
 
-        /// <summary>
-        /// Creates a new instance of a TempFile with the specified name.
-        /// </summary>
+        /// <inheritdoc/>
         public TempFile(string name) : base(name)
         {
         }
 
-        protected override void Initialize()
+        /// <summary>
+        /// Creates the temporary file.
+        /// </summary>
+        protected override void InitializePath()
         {
-            base.Initialize();
             File.Create(FullPath).Dispose();
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
