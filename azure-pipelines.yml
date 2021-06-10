@@ -132,7 +132,7 @@ jobs:
       targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
       reporttypes: Cobertura
   - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
-    condition: and(succeededOrFailed(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
+    condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
     displayName: Publish code coverage artifacts
     artifact: coverageResults-$(Agent.JobName)
   - task: SonarCloudAnalyze@1
