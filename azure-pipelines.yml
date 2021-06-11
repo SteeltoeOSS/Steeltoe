@@ -162,7 +162,7 @@ jobs:
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
   - publish: $(Build.ArtifactStagingDirectory)/packages
-    condition: eq(variables['package'], 'true')
+    condition: and(succeeded(), eq(variables['package'], 'true'))
     displayName: Publish build artifacts
     artifact: Packages
   - bash: bash <(curl -s https://codecov.io/bash)
