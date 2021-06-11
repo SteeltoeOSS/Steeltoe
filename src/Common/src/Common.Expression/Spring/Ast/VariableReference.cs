@@ -2,20 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class VariableReference : SpelNode
     {
         // Well known variables:
-        private static readonly string _THIS = "this";  // currently active context object
-        private static readonly string _ROOT = "root";  // root context object
+        private static readonly string THIS = "this";  // currently active context object
+        private static readonly string ROOT = "root";  // root context object
 
         private readonly string _name;
+        private MethodInfo _method;
 
         public VariableReference(string variableName, int startPos, int endPos)
             : base(startPos, endPos)
@@ -25,12 +26,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
-            if (_name.Equals(_THIS))
+            if (_name.Equals(THIS))
             {
                 return state.GetActiveContextObject();
             }
 
-            if (_name.Equals(_ROOT))
+            if (_name.Equals(ROOT))
             {
                 var obj = state.RootContextObject;
                 _exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
@@ -39,13 +40,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             var result = state.LookupVariable(_name);
             var value = result.Value;
-            if (value == null || !value.GetType().IsPublic)
+            if (value == null || !ReflectionHelper.IsPublic(value.GetType()))
             {
                 // If the type is not public then when generateCode produces a checkcast to it
                 // then an IllegalAccessError will occur.
                 // If resorting to Object isn't sufficient, the hierarchy could be traversed for
                 // the first public type.
-                _exitTypeDescriptor = "Ljava/lang/Object";
+                _exitTypeDescriptor = TypeDescriptor.OBJECT;
             }
             else
             {
@@ -56,9 +57,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return result;
         }
 
-        public override void SetValue(ExpressionState state, object value)
+        public override void SetValue(ExpressionState state, object newValue)
         {
-            state.SetVariable(_name, value);
+            state.SetVariable(_name, newValue);
         }
 
         public override string ToStringAST()
@@ -66,9 +67,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return "#" + _name;
         }
 
-        public override bool IsWritable(ExpressionState expressionState)
+        public override bool IsWritable(ExpressionState state)
         {
-            return !(_name.Equals(_THIS) || _name.Equals(_ROOT));
+            return !(_name.Equals(THIS) || _name.Equals(ROOT));
         }
 
         public override bool IsCompilable()
@@ -76,30 +77,31 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // if (this.name.equals(ROOT))
-            //    {
-            //        mv.visitVarInsn(ALOAD, 1);
-            //    }
-            //    else
-            //    {
-            //        mv.visitVarInsn(ALOAD, 2);
-            //        mv.visitLdcInsn(this.name);
-            //        mv.visitMethodInsn(INVOKEINTERFACE, "org/springframework/expression/EvaluationContext", "lookupVariable", "(Ljava/lang/String;)Ljava/lang/Object;", true);
-            //    }
-            //    CodeFlow.insertCheckCast(mv, this.exitTypeDescriptor);
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            if (_name.Equals(ROOT))
+            {
+                CodeFlow.LoadTarget(gen);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldarg_2);
+                gen.Emit(OpCodes.Ldstr, _name);
+                gen.Emit(OpCodes.Callvirt, GetLookUpVariableMethod());
+            }
+
+            CodeFlow.InsertCastClass(gen, _exitTypeDescriptor);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)
         {
-            if (_name.Equals(_THIS))
+            if (_name.Equals(THIS))
             {
                 return new TypedValueHolderValueRef(state.GetActiveContextObject(), this);
             }
 
-            if (_name.Equals(_ROOT))
+            if (_name.Equals(ROOT))
             {
                 return new TypedValueHolderValueRef(state.RootContextObject, this);
             }
@@ -108,6 +110,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             // a null value will mean either the value was null or the variable was not found
             return new VariableRef(_name, result, state.EvaluationContext);
+        }
+
+        private MethodInfo GetLookUpVariableMethod()
+        {
+            if (_method == null)
+            {
+                _method = typeof(IEvaluationContext).GetMethods().Single((m) => m.Name == "LookupVariable" && !m.IsGenericMethod);
+            }
+
+            return _method;
         }
 
         private class VariableRef : IValueRef

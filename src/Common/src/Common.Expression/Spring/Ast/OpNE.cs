@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -15,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public OpNE(int startPos, int endPos, params SpelNode[] operands)
         : base("!=", startPos, endPos, operands)
         {
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
@@ -44,45 +41,41 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return !dc.AreNumbers || dc.AreCompatible;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // cf.loadEvaluationContext(mv);
-            //    String leftDesc = getLeftOperand().exitTypeDescriptor;
-            //    String rightDesc = getRightOperand().exitTypeDescriptor;
-            //    boolean leftPrim = CodeFlow.isPrimitive(leftDesc);
-            //    boolean rightPrim = CodeFlow.isPrimitive(rightDesc);
+            CodeFlow.LoadEvaluationContext(gen);
+            var leftDesc = LeftOperand.ExitDescriptor;
+            var rightDesc = RightOperand.ExitDescriptor;
+            var leftPrim = CodeFlow.IsValueType(leftDesc);
+            var rightPrim = CodeFlow.IsValueType(rightDesc);
 
-            // cf.enterCompilationScope();
-            //    getLeftOperand().generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    if (leftPrim)
-            //    {
-            //        CodeFlow.insertBoxIfNecessary(mv, leftDesc.charAt(0));
-            //    }
-            //    cf.enterCompilationScope();
-            //    getRightOperand().generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    if (rightPrim)
-            //    {
-            //        CodeFlow.insertBoxIfNecessary(mv, rightDesc.charAt(0));
-            //    }
+            cf.EnterCompilationScope();
+            LeftOperand.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (leftPrim)
+            {
+                CodeFlow.InsertBoxIfNecessary(gen, leftDesc);
+            }
 
-            // String operatorClassName = typeof(Operator).getName().replace('.', '/');
-            //    String evaluationContextClassName = typeof(EvaluationContext).getName().replace('.', '/');
-            //    mv.visitMethodInsn(INVOKESTATIC, operatorClassName, "equalityCheck",
-            //            "(L" + evaluationContextClassName + ";Ljava/lang/Object;Ljava/lang/Object;)Z", false);
+            cf.EnterCompilationScope();
+            RightOperand.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (rightPrim)
+            {
+                CodeFlow.InsertBoxIfNecessary(gen, rightDesc);
+            }
 
-            // // Invert the boolean
-            //    Label notZero = new Label();
-            //    Label end = new Label();
-            //    mv.visitJumpInsn(IFNE, notZero);
-            //    mv.visitInsn(ICONST_1);
-            //    mv.visitJumpInsn(GOTO, end);
-            //    mv.visitLabel(notZero);
-            //    mv.visitInsn(ICONST_0);
-            //    mv.visitLabel(end);
+            // returns bool
+            gen.Emit(OpCodes.Call, _equalityCheck);
 
-            // cf.pushDescriptor("Z");
+            // Invert the boolean
+            var result = gen.DeclareLocal(typeof(bool));
+            gen.Emit(OpCodes.Ldc_I4_0);
+            gen.Emit(OpCodes.Ceq);
+            gen.Emit(OpCodes.Stloc, result);
+            gen.Emit(OpCodes.Ldloc, result);
+
+            cf.PushDescriptor(TypeDescriptor.Z);
         }
     }
 }

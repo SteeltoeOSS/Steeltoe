@@ -5,8 +5,6 @@
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast

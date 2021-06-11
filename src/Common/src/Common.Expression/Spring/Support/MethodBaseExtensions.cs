@@ -3,13 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
-    public static class MethodInfoExtensions
+    public static class MethodBaseExtensions
     {
         public static bool IsVarArgs(this MethodBase method)
         {
@@ -26,6 +24,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
             var lastParam = parameters[parameters.Length - 1];
             return lastParam.GetCustomAttribute<ParamArrayAttribute>() != null;
+        }
+
+        public static Type[] GetParameterTypes(this MethodBase method)
+        {
+            var param = method.GetParameters();
+            var result = new Type[param.Length];
+            for (var i = 0; i < param.Length; i++)
+            {
+                result[i] = param[i].ParameterType;
+            }
+
+            return result;
         }
     }
 }

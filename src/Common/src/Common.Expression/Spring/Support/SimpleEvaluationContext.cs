@@ -5,13 +5,12 @@
 using Steeltoe.Common.Converter;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class SimpleEvaluationContext : IEvaluationContext
     {
-        private static List<IConstructorResolver> _emptyConstrResolver = new List<IConstructorResolver>();
+        private static readonly List<IConstructorResolver> _emptyConstrResolver = new List<IConstructorResolver>();
         private readonly ITypeLocator _typeNotFoundLocator = new TypeNotFoundTypeLocator();
         private readonly ITypedValue _rootObject;
         private readonly List<IPropertyAccessor> _propertyAccessors;

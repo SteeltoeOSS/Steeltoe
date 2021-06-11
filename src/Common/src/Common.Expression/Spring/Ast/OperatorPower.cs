@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -36,11 +34,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var result = Math.Pow(leftVal, rightVal) as IConvertible;
                     return new TypedValue(result.ToDecimal(CultureInfo.InvariantCulture));
                 }
-
-                // else if (leftNumber instanceof BigInteger) {
-                //    BigInteger leftBigInteger = NumberUtils.convertNumberToTargetClass(leftNumber, typeof(BigInteger));
-                //    return new TypedValue(leftBigInteger.pow(rightNumber.intValue()));
-                // }
                 else if (leftOperand is double || rightOperand is double)
                 {
                     var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
@@ -61,7 +54,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var asLong = (long)d;
                 if (asLong > int.MaxValue || leftOperand is long || rightOperand is long)
                 {
-                    return new TypedValue((long)asLong);
+                    return new TypedValue(asLong);
                 }
                 else
                 {

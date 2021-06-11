@@ -5,8 +5,8 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Emit;
+using static Steeltoe.Common.Expression.Internal.Spring.Standard.SpelCompiledExpression;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 {
@@ -15,44 +15,25 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<SpelCompiler> _logger;
 
-        // private static readonly int _CLASSES_DEFINED_LIMIT = 100;
-
-        // A compiler is created for each classloader, it manages a child class loader of that
-        // classloader and the child is used to load the compiled expressions.
-        // private static readonly Map<ClassLoader, SpelCompiler> compilers = new ConcurrentReferenceHashMap<>();
-
-        // The child ClassLoader used to load the compiled expression classes
-        // private ChildClassLoader ccl;
-
         // Counter suffix for generated classes within this SpelCompiler instance
-        // private readonly AtomicInteger _suffixId = new AtomicInteger(1);
+        private readonly AtomicInteger _suffixId = new AtomicInteger(1);
+
         public static SpelCompiler GetCompiler(ILoggerFactory loggerFactory = null)
         {
             return new SpelCompiler(loggerFactory);
-
-            // ClassLoader clToUse = (classLoader != null ? classLoader : ClassUtils.getDefaultClassLoader());
-            // synchronized(compilers) {
-            //    SpelCompiler compiler = compilers.get(clToUse);
-            //    if (compiler == null)
-            //    {
-            //        compiler = new SpelCompiler(clToUse);
-            //        compilers.put(clToUse, compiler);
-            //    }
-            //    return compiler;
-            // }
         }
 
         public static void RevertToInterpreted(IExpression expression)
         {
-            if (expression is SpelExpression)
+            if (expression is SpelExpression expression1)
             {
-                ((SpelExpression)expression).RevertToInterpreted();
+                expression1.RevertToInterpreted();
             }
         }
 
         public static bool Compile(IExpression expression)
         {
-            return expression is SpelExpression && ((SpelExpression)expression).CompileExpression();
+            return expression is SpelExpression expression1 && expression1.CompileExpression();
         }
 
         public CompiledExpression Compile(ISpelNode expression)
@@ -71,78 +52,41 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         {
             _loggerFactory = loggerFactory;
             _logger = _loggerFactory?.CreateLogger<SpelCompiler>();
-
-            // this.ccl = new ChildClassLoader(classloader);
         }
 
         private CompiledExpression CreateExpressionClass(ISpelNode expressionToCompile)
         {
-            throw new NotImplementedException();
+            var compiledExpression = new SpelCompiledExpression(_loggerFactory);
+            var methodName = "SpelExpression" + _suffixId.GetAndIncrement();
+            var method = new DynamicMethod(methodName, typeof(object), new Type[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
+            var ilGenerator = method.GetILGenerator(4096);
+            var cf = new CodeFlow(compiledExpression);
+            try
+            {
+                expressionToCompile.GenerateCode(ilGenerator, cf);
 
-            // // Create class outline 'spel/ExNNN extends org.springframework.expression.spel.CompiledExpression'
-            //    String className = "spel/Ex" + getNextSuffix();
-            //    ClassWriter cw = new ExpressionClassWriter();
-            //    cw.visit(V1_5, ACC_PUBLIC, className, null, "org/springframework/expression/spel/CompiledExpression", null);
+                var lastDescriptor = cf.LastDescriptor();
+                CodeFlow.InsertBoxIfNecessary(ilGenerator, lastDescriptor);
+                if (lastDescriptor == TypeDescriptor.V)
+                {
+                    ilGenerator.Emit(OpCodes.Ldnull);
+                }
 
-            // // Create default constructor
-            //    MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-            //    mv.visitCode();
-            //    mv.visitVarInsn(ALOAD, 0);
-            //    mv.visitMethodInsn(INVOKESPECIAL, "org/springframework/expression/spel/CompiledExpression",
-            //            "<init>", "()V", false);
-            //    mv.visitInsn(RETURN);
-            //    mv.visitMaxs(1, 1);
-            //    mv.visitEnd();
+                ilGenerator.Emit(OpCodes.Ret);
+                compiledExpression.MethodDelegate = method.CreateDelegate(typeof(SpelExpressionDelegate));
+                var initMethod = cf.Finish(_suffixId.Value);
+                if (initMethod != null)
+                {
+                    compiledExpression.InitDelegate = initMethod.CreateDelegate(typeof(SpelExpressionInitDelegate));
+                }
 
-            // // Create getValue() method
-            //    mv = cw.visitMethod(ACC_PUBLIC, "getValue",
-            //            "(Ljava/lang/Object;Lorg/springframework/expression/EvaluationContext;)Ljava/lang/Object;", null,
-            //            new String[] { "org/springframework/expression/EvaluationException" });
-            //    mv.visitCode();
-
-            // CodeFlow cf = new CodeFlow(className, cw);
-
-            // // Ask the expression AST to generate the body of the method
-            //    try
-            //    {
-            //        expressionToCompile.generateCode(mv, cf);
-            //    }
-            //    catch (IllegalStateException ex)
-            //    {
-            //        if (logger.isDebugEnabled())
-            //        {
-            //            logger.debug(expressionToCompile.getClass().getSimpleName() +
-            //                    ".generateCode opted out of compilation: " + ex.getMessage());
-            //        }
-            //        return null;
-            //    }
-
-            // CodeFlow.insertBoxIfNecessary(mv, cf.lastDescriptor());
-            //    if ("V".equals(cf.lastDescriptor()))
-            //    {
-            //        mv.visitInsn(ACONST_NULL);
-            //    }
-            //    mv.visitInsn(ARETURN);
-
-            // mv.visitMaxs(0, 0);  // not supplied due to COMPUTE_MAXS
-            //    mv.visitEnd();
-            //    cw.visitEnd();
-
-            // cf.finish();
-
-            // byte[] data = cw.toByteArray();
-            //    // TODO need to make this conditionally occur based on a debug flag
-            //    // dump(expressionToCompile.toStringAST(), clazzName, data);
-            //    return loadClass(StringUtils.replace(className, "/", "."), data);
+                return compiledExpression;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogDebug(expressionToCompile.GetType().Name + ".GenerateCode opted out of compilation: " + ex.Message);
+                return null;
+            }
         }
-
-        // private Class<? extends CompiledExpression> LoadClass(String name, byte[] bytes)
-        // {
-        //    if (this.ccl.getClassesDefinedCount() > CLASSES_DEFINED_LIMIT)
-        //    {
-        //        this.ccl = new ChildClassLoader(this.ccl.getParent());
-        //    }
-        //    return (Class <? extends CompiledExpression >) this.ccl.defineClass(name, bytes);
-        // }
     }
 }

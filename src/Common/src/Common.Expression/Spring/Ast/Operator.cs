@@ -4,8 +4,8 @@
 
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
@@ -13,15 +13,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public abstract class Operator : SpelNode
     {
+        protected static readonly MethodInfo _equalityCheck = typeof(Operator).GetMethod(
+            "EqualityCheck",
+            new Type[] { typeof(IEvaluationContext), typeof(object), typeof(object) });
+
         protected readonly string _operatorName;
 
         // The descriptors of the runtime operand values are used if the discovered declared
         // descriptors are not providing enough information (for example a generic type
         // whose accessors seem to only be returning 'Object' - the actual descriptors may
         // indicate 'int')
-        protected string _leftActualDescriptor;
+        protected TypeDescriptor _leftActualDescriptor;
 
-        protected string _rightActualDescriptor;
+        protected TypeDescriptor _rightActualDescriptor;
 
         protected Operator(string payload, int startPos, int endPos, params SpelNode[] operands)
         : base(startPos, endPos, operands)
@@ -37,8 +41,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public static bool IsNumber(object target)
         {
-            var targetConv = target as IConvertible;
-            if (targetConv == null)
+            if (target is not IConvertible targetConv)
             {
                 return false;
             }
@@ -183,181 +186,171 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             // Supported operand types for equals (at the moment)
-            var leftDesc = _exitTypeDescriptor;
-            var rightDesc = _exitTypeDescriptor;
+            var leftDesc = left.ExitDescriptor;
+            var rightDesc = right.ExitDescriptor;
             var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
             return dc.AreNumbers && dc.AreCompatible;
         }
 
-        protected void GenerateComparisonCode(DynamicMethod mv, CodeFlow cf, int compInstruction1, int compInstruction2)
+        protected void GenerateComparisonCode(ILGenerator gen, CodeFlow cf, OpCode brToElseInstruction)
         {
-            // SpelNodeImpl left = getLeftOperand();
-            //    SpelNodeImpl right = getRightOperand();
-            //    String leftDesc = left.exitTypeDescriptor;
-            //    String rightDesc = right.exitTypeDescriptor;
-            //    Label elseTarget = new Label();
-            //    Label endOfIf = new Label();
-            //    boolean unboxLeft = !CodeFlow.isPrimitive(leftDesc);
-            //    boolean unboxRight = !CodeFlow.isPrimitive(rightDesc);
-            //    DescriptorComparison dc = DescriptorComparison.checkNumericCompatibility(
-            //            leftDesc, rightDesc, this.leftActualDescriptor, this.rightActualDescriptor);
-            //    char targetType = dc.compatibleType;  // CodeFlow.toPrimitiveTargetDesc(leftDesc);
+            var left = LeftOperand;
+            var right = RightOperand;
+            var leftDesc = left.ExitDescriptor;
+            var rightDesc = right.ExitDescriptor;
 
-            // cf.enterCompilationScope();
-            //    left.generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    if (CodeFlow.isPrimitive(leftDesc))
-            //    {
-            //        CodeFlow.insertBoxIfNecessary(mv, leftDesc);
-            //        unboxLeft = true;
-            //    }
+            var elseTarget = gen.DefineLabel();
+            var endOfIfTarget = gen.DefineLabel();
 
-            // cf.enterCompilationScope();
-            //    right.generateCode(mv, cf);
-            //    cf.exitCompilationScope();
-            //    if (CodeFlow.isPrimitive(rightDesc))
-            //    {
-            //        CodeFlow.insertBoxIfNecessary(mv, rightDesc);
-            //        unboxRight = true;
-            //    }
+            var unboxLeft = !CodeFlow.IsValueType(leftDesc);
+            var unboxRight = !CodeFlow.IsValueType(rightDesc);
 
-            // // This code block checks whether the left or right operand is null and handles
-            //    // those cases before letting the original code (that only handled actual numbers) run
-            //    Label rightIsNonNull = new Label();
-            //    mv.visitInsn(DUP);  // stack: left/right/right
-            //    mv.visitJumpInsn(IFNONNULL, rightIsNonNull);  // stack: left/right
-            //                                                  // here: RIGHT==null LEFT==unknown
-            //    mv.visitInsn(SWAP);  // right/left
-            //    Label leftNotNullRightIsNull = new Label();
-            //    mv.visitJumpInsn(IFNONNULL, leftNotNullRightIsNull);  // stack: right
-            //                                                          // here: RIGHT==null LEFT==null
-            //    mv.visitInsn(POP);  // stack: <nothing>
-            //                        // load 0 or 1 depending on comparison instruction
-            //    switch (compInstruction1)
-            //    {
-            //        case IFGE: // OpLT
-            //        case IFLE: // OpGT
-            //            mv.visitInsn(ICONST_0);  // false - null is not < or > null
-            //            break;
-            //        case IFGT: // OpLE
-            //        case IFLT: // OpGE
-            //            mv.visitInsn(ICONST_1);  // true - null is <= or >= null
-            //            break;
-            //        default:
-            //            throw new IllegalStateException("Unsupported: " + compInstruction1);
-            //    }
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(leftNotNullRightIsNull);  // stack: right
-            //                                            // RIGHT==null LEFT!=null
-            //    mv.visitInsn(POP);  // stack: <nothing>
-            //                        // load 0 or 1 depending on comparison instruction
-            //    switch (compInstruction1)
-            //    {
-            //        case IFGE: // OpLT
-            //        case IFGT: // OpLE
-            //            mv.visitInsn(ICONST_0);  // false - something is not < or <= null
-            //            break;
-            //        case IFLE: // OpGT
-            //        case IFLT: // OpGE
-            //            mv.visitInsn(ICONST_1);  // true - something is > or >= null
-            //            break;
-            //        default:
-            //            throw new IllegalStateException("Unsupported: " + compInstruction1);
-            //    }
-            //    mv.visitJumpInsn(GOTO, endOfIf);
+            cf.EnterCompilationScope();
+            left.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (CodeFlow.IsValueType(leftDesc))
+            {
+                gen.Emit(OpCodes.Box, leftDesc.Value);
+                unboxLeft = true;
+            }
 
-            // mv.visitLabel(rightIsNonNull);  // stack: left/right
-            //                                    // here: RIGHT!=null LEFT==unknown
-            //    mv.visitInsn(SWAP);  // stack: right/left
-            //    mv.visitInsn(DUP);  // stack: right/left/left
-            //    Label neitherRightNorLeftAreNull = new Label();
-            //    mv.visitJumpInsn(IFNONNULL, neitherRightNorLeftAreNull);  // stack: right/left
-            //                                                              // here: RIGHT!=null LEFT==null
-            //    mv.visitInsn(POP2);  // stack: <nothing>
-            //    switch (compInstruction1)
-            //    {
-            //        case IFGE: // OpLT
-            //        case IFGT: // OpLE
-            //            mv.visitInsn(ICONST_1);  // true - null is < or <= something
-            //            break;
-            //        case IFLE: // OpGT
-            //        case IFLT: // OpGE
-            //            mv.visitInsn(ICONST_0);  // false - null is not > or >= something
-            //            break;
-            //        default:
-            //            throw new IllegalStateException("Unsupported: " + compInstruction1);
-            //    }
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(neitherRightNorLeftAreNull);  // stack: right/left
-            //                                                // neither were null so unbox and proceed with numeric comparison
-            //    if (unboxLeft)
-            //    {
-            //        CodeFlow.insertUnboxInsns(mv, targetType, leftDesc);
-            //    }
-            //    // What we just unboxed might be a double slot item (long/double)
-            //    // so can't just use SWAP
-            //    // stack: right/left(1or2slots)
-            //    if (targetType == 'D' || targetType == 'J')
-            //    {
-            //        mv.visitInsn(DUP2_X1);
-            //        mv.visitInsn(POP2);
-            //    }
-            //    else
-            //    {
-            //        mv.visitInsn(SWAP);
-            //    }
-            //    // stack: left(1or2)/right
-            //    if (unboxRight)
-            //    {
-            //        CodeFlow.insertUnboxInsns(mv, targetType, rightDesc);
-            //    }
+            cf.EnterCompilationScope();
+            right.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (CodeFlow.IsValueType(rightDesc))
+            {
+                gen.Emit(OpCodes.Box, rightDesc.Value);
+                unboxRight = true;
+            }
 
-            // // assert: SpelCompiler.boxingCompatible(leftDesc, rightDesc)
-            //    if (targetType == 'D')
-            //    {
-            //        mv.visitInsn(DCMPG);
-            //        mv.visitJumpInsn(compInstruction1, elseTarget);
-            //    }
-            //    else if (targetType == 'F')
-            //    {
-            //        mv.visitInsn(FCMPG);
-            //        mv.visitJumpInsn(compInstruction1, elseTarget);
-            //    }
-            //    else if (targetType == 'J')
-            //    {
-            //        mv.visitInsn(LCMP);
-            //        mv.visitJumpInsn(compInstruction1, elseTarget);
-            //    }
-            //    else if (targetType == 'I')
-            //    {
-            //        mv.visitJumpInsn(compInstruction2, elseTarget);
-            //    }
-            //    else
-            //    {
-            //        throw new IllegalStateException("Unexpected descriptor " + leftDesc);
-            //    }
+            var leftLocal = gen.DeclareLocal(typeof(object));
+            var rightLocal = gen.DeclareLocal(typeof(object));
+            gen.Emit(OpCodes.Stloc, rightLocal);
+            gen.Emit(OpCodes.Stloc, leftLocal);
 
-            // // Other numbers are not yet supported (isCompilable will not have returned true)
-            //    mv.visitInsn(ICONST_1);
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(elseTarget);
-            //    mv.visitInsn(ICONST_0);
-            //    mv.visitLabel(endOfIf);
-            //    cf.pushDescriptor("Z");
+            gen.Emit(OpCodes.Ldloc, leftLocal);
+            gen.Emit(OpCodes.Ldloc, rightLocal);
+
+            // This code block checks whether the left or right operand is null and handles
+            // those cases before letting the original code (that only handled actual numbers) run
+            var rightIsNonNullTarget = gen.DefineLabel();
+
+            // stack: left/right
+            gen.Emit(OpCodes.Brtrue, rightIsNonNullTarget);
+
+            // stack: left
+            // here: RIGHT==null LEFT==unknown
+            var leftNotNullRightIsNullTarget = gen.DefineLabel();
+            gen.Emit(OpCodes.Brtrue, leftNotNullRightIsNullTarget);
+
+            // stack: empty
+            // here: RIGHT==null LEFT==null
+            // load 0 or 1 depending on comparison instruction
+            if (brToElseInstruction == OpCodes.Bge || brToElseInstruction == OpCodes.Ble)
+            {
+                gen.Emit(OpCodes.Ldc_I4_0);
+            }
+            else if (brToElseInstruction == OpCodes.Bgt || brToElseInstruction == OpCodes.Blt)
+            {
+                gen.Emit(OpCodes.Ldc_I4_1);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+            }
+
+            gen.Emit(OpCodes.Br, endOfIfTarget);
+            gen.MarkLabel(leftNotNullRightIsNullTarget);
+
+            // stack: empty
+            // RIGHT==null LEFT!=null
+            // load 0 or 1 depending on comparison instruction
+            if (brToElseInstruction == OpCodes.Bge || brToElseInstruction == OpCodes.Bgt)
+            {
+                gen.Emit(OpCodes.Ldc_I4_0);
+            }
+            else if (brToElseInstruction == OpCodes.Ble || brToElseInstruction == OpCodes.Blt)
+            {
+                gen.Emit(OpCodes.Ldc_I4_1);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+            }
+
+            gen.Emit(OpCodes.Br, endOfIfTarget);
+            gen.MarkLabel(rightIsNonNullTarget);
+
+            // stack: left
+            // here: RIGHT!=null LEFT==unknown
+            var neitherRightNorLeftAreNullTarget = gen.DefineLabel();
+            gen.Emit(OpCodes.Brtrue, neitherRightNorLeftAreNullTarget);
+
+            // stack: empty
+            // here: RIGHT!=null LEFT==null
+            if (brToElseInstruction == OpCodes.Bge || brToElseInstruction == OpCodes.Bgt)
+            {
+                gen.Emit(OpCodes.Ldc_I4_1);
+            }
+            else if (brToElseInstruction == OpCodes.Ble || brToElseInstruction == OpCodes.Blt)
+            {
+                gen.Emit(OpCodes.Ldc_I4_0);
+            }
+            else
+            {
+                throw new InvalidOperationException("Unsupported: " + brToElseInstruction);
+            }
+
+            gen.Emit(OpCodes.Br, endOfIfTarget);
+            gen.MarkLabel(neitherRightNorLeftAreNullTarget);
+
+            // stack: empty
+            // neither were null so unbox and proceed with numeric comparison
+            gen.Emit(OpCodes.Ldloc, leftLocal);
+            if (unboxLeft)
+            {
+                gen.Emit(OpCodes.Unbox_Any, leftDesc.Value);
+            }
+
+            // stack: left
+            gen.Emit(OpCodes.Ldloc, rightLocal);
+            if (unboxRight)
+            {
+                gen.Emit(OpCodes.Unbox_Any, rightDesc.Value);
+            }
+
+            // stack: left, right
+            // Br instruction
+            gen.Emit(brToElseInstruction, elseTarget);
+
+            // Stack: Empty
+            gen.Emit(OpCodes.Ldc_I4_1);
+            gen.Emit(OpCodes.Br, endOfIfTarget);
+            gen.MarkLabel(elseTarget);
+
+            // Stack: Empty
+            gen.Emit(OpCodes.Ldc_I4_0);
+            gen.MarkLabel(endOfIfTarget);
+
+            // Stack: result on stack, convert to bool
+            var result = gen.DeclareLocal(typeof(bool));
+            gen.Emit(OpCodes.Stloc, result);
+            gen.Emit(OpCodes.Ldloc, result);
+            cf.PushDescriptor(TypeDescriptor.Z);
         }
 
         protected class DescriptorComparison
         {
-            protected static readonly DescriptorComparison _NOT_NUMBERS = new DescriptorComparison(false, false, " ");
-            protected static readonly DescriptorComparison _INCOMPATIBLE_NUMBERS = new DescriptorComparison(true, false, " ");
+            protected static readonly DescriptorComparison NOT_NUMBERS = new DescriptorComparison(false, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new DescriptorComparison(true, false, TypeDescriptor.V);
 
             protected readonly bool _areNumbers;  // Were the two compared descriptor both for numbers?
 
             protected readonly bool _areCompatible;  // If they were numbers, were they compatible?
 
-            protected readonly string _compatibleType;  // When compatible, what is the descriptor of the common type
+            protected readonly TypeDescriptor _compatibleType;  // When compatible, what is the descriptor of the common type
 
-            public DescriptorComparison(bool areNumbers, bool areCompatible, string compatibleType)
+            public DescriptorComparison(bool areNumbers, bool areCompatible, TypeDescriptor compatibleType)
             {
                 _areNumbers = areNumbers;
                 _areCompatible = areCompatible;
@@ -368,7 +361,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             public bool AreCompatible => _areCompatible;
 
-            public static DescriptorComparison CheckNumericCompatibility(string leftDeclaredDescriptor, string rightDeclaredDescriptor, string leftActualDescriptor, string rightActualDescriptor)
+            public TypeDescriptor CompatibleType => _compatibleType;
+
+            public static DescriptorComparison CheckNumericCompatibility(TypeDescriptor leftDeclaredDescriptor, TypeDescriptor rightDeclaredDescriptor, TypeDescriptor leftActualDescriptor, TypeDescriptor rightActualDescriptor)
             {
                 var ld = leftDeclaredDescriptor;
                 var rd = rightDeclaredDescriptor;
@@ -393,16 +388,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     if (CodeFlow.AreBoxingCompatible(ld, rd))
                     {
-                        return new DescriptorComparison(true, true, CodeFlow.ToPrimitiveTargetDesc(ld));
+                        return new DescriptorComparison(true, true, CodeFlow.ToPrimitiveTargetDescriptor(ld));
                     }
                     else
                     {
-                        return _INCOMPATIBLE_NUMBERS;
+                        return INCOMPATIBLE_NUMBERS;
                     }
                 }
                 else
                 {
-                    return _NOT_NUMBERS;
+                    return NOT_NUMBERS;
                 }
             }
         }

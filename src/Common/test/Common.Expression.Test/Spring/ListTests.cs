@@ -139,12 +139,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private void CheckConstantList(string expressionText, bool expectedToBeConstant)
         {
-            SpelExpressionParser parser = new SpelExpressionParser();
-            SpelExpression expression = (SpelExpression)parser.ParseExpression(expressionText);
+            var parser = new SpelExpressionParser();
+            var expression = (SpelExpression)parser.ParseExpression(expressionText);
             var node = expression.AST;
-            bool condition = node is InlineList;
+            var condition = node is InlineList;
             Assert.True(condition);
-            InlineList inlineList = (InlineList)node;
+            var inlineList = (InlineList)node;
             if (expectedToBeConstant)
             {
                 Assert.True(inlineList.IsConstant);

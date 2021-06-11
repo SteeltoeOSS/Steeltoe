@@ -2,10 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -19,11 +16,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var valueWithinQuotes = value.Substring(1, value.Length - 1 - 1);
             valueWithinQuotes = valueWithinQuotes.Replace("''", "'");
             valueWithinQuotes = valueWithinQuotes.Replace("\"\"", "\"");
-
-            // valueWithinQuotes = StringUtils.replace(valueWithinQuotes, "''", "'");
-            // valueWithinQuotes = StringUtils.replace(valueWithinQuotes, "\"\"", "\"");
             _value = new TypedValue(valueWithinQuotes);
-            _exitTypeDescriptor = "Ljava/lang/String";
+            _exitTypeDescriptor = TypeDescriptor.STRING;
         }
 
         public override ITypedValue GetLiteralValue()
@@ -41,10 +35,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return true;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // mv.visitLdcInsn(this.value.getValue());
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            gen.Emit(OpCodes.Ldstr, (string)_value.Value);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -15,7 +13,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public OperatorNot(int startPos, int endPos, SpelNode operand)
         : base(startPos, endPos, operand)
         {
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
@@ -47,19 +45,25 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return child.IsCompilable() && CodeFlow.IsBooleanCompatible(child.ExitDescriptor);
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // this.children[0].generateCode(mv, cf);
-            //    cf.unboxBooleanIfNecessary(mv);
-            //    Label elseTarget = new Label();
-            //    Label endOfIf = new Label();
-            //    mv.visitJumpInsn(IFNE, elseTarget);
-            //    mv.visitInsn(ICONST_1); // TRUE
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(elseTarget);
-            //    mv.visitInsn(ICONST_0); // FALSE
-            //    mv.visitLabel(endOfIf);
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            var elseTarget = gen.DefineLabel();
+            var endIfTarget = gen.DefineLabel();
+            var result = gen.DeclareLocal(typeof(bool));
+
+            var child = _children[0];
+            child.GenerateCode(gen, cf);
+            cf.UnboxBooleanIfNecessary(gen);
+            gen.Emit(OpCodes.Brtrue, elseTarget);
+            gen.Emit(OpCodes.Ldc_I4_1);
+            gen.Emit(OpCodes.Stloc, result);
+            gen.Emit(OpCodes.Br, endIfTarget);
+            gen.MarkLabel(elseTarget);
+            gen.Emit(OpCodes.Ldc_I4_0);
+            gen.Emit(OpCodes.Stloc, result);
+            gen.MarkLabel(endIfTarget);
+            gen.Emit(OpCodes.Ldloc, result);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

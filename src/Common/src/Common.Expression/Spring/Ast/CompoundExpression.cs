@@ -5,7 +5,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -28,9 +27,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return result;
         }
 
-        public override void SetValue(ExpressionState state, object value)
+        public override void SetValue(ExpressionState state, object newValue)
         {
-            GetValueRef(state).SetValue(value);
+            GetValueRef(state).SetValue(newValue);
         }
 
         public override bool IsWritable(ExpressionState state)
@@ -62,13 +61,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return true;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // foreach (var child in _children)
-            // {
-            //    child.generateCode(mv, cf);
-            // }
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            foreach (var child in _children)
+            {
+                child.GenerateCode(gen, cf);
+            }
+
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)

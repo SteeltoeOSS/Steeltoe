@@ -206,9 +206,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                     s.Append(array[i].ToString("F1"));
                 }
             }
-            else if (o is byte[])
+            else if (o is byte[] array)
             {
-                var array = (byte[])o;
                 for (var i = 0; i < array.Length; i++)
                 {
                     if (i > 0)

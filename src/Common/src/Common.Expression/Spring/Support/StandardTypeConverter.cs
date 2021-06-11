@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Converter;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
@@ -28,30 +26,30 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         public IConversionService ConversionService { get; set; }
 
-        public bool CanConvert(Type sourceType, Type targetType)
+        public bool CanConvert(Type source, Type target)
         {
-            return ConversionService.CanConvert(sourceType, targetType);
+            return ConversionService.CanConvert(source, target);
         }
 
-        public object ConvertValue(object value, Type sourceType, Type targetType)
+        public object ConvertValue(object value, Type source, Type target)
         {
             try
             {
-                return ConversionService.Convert(value, sourceType, targetType);
+                return ConversionService.Convert(value, source, target);
             }
             catch (ConversionException ex)
             {
                 var message = "null";
-                if (sourceType != null)
+                if (source != null)
                 {
-                    message = sourceType.ToString();
+                    message = source.ToString();
                 }
                 else if (value != null)
                 {
                     message = value.GetType().FullName;
                 }
 
-                throw new SpelEvaluationException(ex, SpelMessage.TYPE_CONVERSION_ERROR, message, targetType.ToString());
+                throw new SpelEvaluationException(ex, SpelMessage.TYPE_CONVERSION_ERROR, message, target.ToString());
             }
         }
     }

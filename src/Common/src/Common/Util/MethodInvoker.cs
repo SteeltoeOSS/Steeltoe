@@ -37,7 +37,7 @@ namespace Steeltoe.Common.Util
 
                 if (args[i] != null)
                 {
-                    Type paramType = paramTypes[i];
+                    var paramType = paramTypes[i];
                     var superClass = args[i].GetType().BaseType;
                     while (superClass != null)
                     {
@@ -85,7 +85,7 @@ namespace Steeltoe.Common.Util
         {
             if (StaticMethod != null)
             {
-                int lastDotIndex = StaticMethod.LastIndexOf('.');
+                var lastDotIndex = StaticMethod.LastIndexOf('.');
                 if (lastDotIndex == -1 || lastDotIndex == StaticMethod.Length)
                 {
                     throw new ArgumentException(
@@ -160,7 +160,7 @@ namespace Steeltoe.Common.Util
         {
             var targetMethod = TargetMethod;
             var arguments = Arguments;
-            int argCount = arguments.Length;
+            var argCount = arguments.Length;
 
             var targetClass = TargetClass;
             if (targetClass == null)
@@ -168,7 +168,7 @@ namespace Steeltoe.Common.Util
                 throw new InvalidOperationException("No target class set");
             }
 
-            MethodInfo[] candidates = targetClass.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+            var candidates = targetClass.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
             var minTypeDiffWeight = int.MaxValue;
             MethodInfo matchingMethod = null;
 
@@ -176,8 +176,8 @@ namespace Steeltoe.Common.Util
             {
                 if (candidate.Name.Equals(targetMethod) && candidate.GetParameters().Length == argCount)
                 {
-                    Type[] paramTypes = GetParameterTypes(candidate);
-                    int typeDiffWeight = GetTypeDifferenceWeight(paramTypes, arguments);
+                    var paramTypes = GetParameterTypes(candidate);
+                    var typeDiffWeight = GetTypeDifferenceWeight(paramTypes, arguments);
                     if (typeDiffWeight < minTypeDiffWeight)
                     {
                         minTypeDiffWeight = typeDiffWeight;
@@ -197,7 +197,7 @@ namespace Steeltoe.Common.Util
         private Type[] GetParameterTypes(MethodInfo candidate)
         {
             var parameters = candidate.GetParameters();
-            Type[] result = new Type[parameters.Length];
+            var result = new Type[parameters.Length];
 
             for (var i = 0; i < parameters.Length; i++)
             {

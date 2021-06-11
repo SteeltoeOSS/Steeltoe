@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
 {
@@ -18,18 +17,20 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         bool IsCompilable();
 
-        object GetValue(ExpressionState expressionState);
+        object GetValue(ExpressionState state);
 
-        ITypedValue GetTypedValue(ExpressionState expressionState);
+        ITypedValue GetTypedValue(ExpressionState state);
 
-        bool IsWritable(ExpressionState expressionState);
+        bool IsWritable(ExpressionState state);
 
-        void SetValue(ExpressionState expressionState, object newValue);
+        void SetValue(ExpressionState state, object newValue);
 
         string ToStringAST();
 
         ISpelNode GetChild(int index);
 
         Type GetObjectType(object obj);
+
+        void GenerateCode(ILGenerator gen, CodeFlow cf);
     }
 }

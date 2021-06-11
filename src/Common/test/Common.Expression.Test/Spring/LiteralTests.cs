@@ -170,11 +170,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestNotWritable()
         {
-            SpelExpression expr = (SpelExpression)parser.ParseExpression("37");
+            var expr = (SpelExpression)_parser.ParseExpression("37");
             Assert.False(expr.IsWritable(new StandardEvaluationContext()));
-            expr = (SpelExpression)parser.ParseExpression("37L");
+            expr = (SpelExpression)_parser.ParseExpression("37L");
             Assert.False(expr.IsWritable(new StandardEvaluationContext()));
-            expr = (SpelExpression)parser.ParseExpression("true");
+            expr = (SpelExpression)_parser.ParseExpression("true");
             Assert.False(expr.IsWritable(new StandardEvaluationContext()));
         }
     }

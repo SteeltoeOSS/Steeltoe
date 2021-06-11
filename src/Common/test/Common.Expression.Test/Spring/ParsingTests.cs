@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 {
     public class ParsingTests
     {
-        private SpelExpressionParser parser = new SpelExpressionParser();
+        private SpelExpressionParser parser = new ();
 
         // literals
         [Fact]

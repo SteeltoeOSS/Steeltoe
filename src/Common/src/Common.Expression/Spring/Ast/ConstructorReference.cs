@@ -14,11 +14,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class ConstructorReference : SpelNode
     {
-        private bool _isArrayConstructor = false;
+        private readonly bool _isArrayConstructor = false;
 
-        private SpelNode[] _dimensions;
+        private readonly SpelNode[] _dimensions;
 
-        // TODO is this caching safe - passing the expression around will mean this executor is also being passed around
+        // Is this caching safe - passing the expression around will mean this executor is also being passed around
         // The cached executor that may be reused on subsequent evaluations.
         private volatile IConstructorExecutor _cachedExecutor;
 
@@ -72,25 +72,25 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             }
 
             var constructor = executor.Constructor;
-            return constructor.IsPublic && constructor.DeclaringType.IsPublic;
+            return constructor.IsPublic && ReflectionHelper.IsPublic(constructor.DeclaringType);
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // var executor = ((ReflectiveIConstructorExecutor)cachedExecutor);
-            // Assert.state(executor != null, "No cached executor");
+            var executor = (ReflectiveConstructorExecutor)_cachedExecutor;
+            if (executor == null)
+            {
+                throw new InvalidOperationException("No cached executor");
+            }
 
-            // Constructor constructor = executor.getConstructor();
-            // String classDesc = constructor.getDeclaringClass().getName().replace('.', '/');
-            // mv.visitTypeInsn(NEW, classDesc);
-            // mv.visitInsn(DUP);
+            var constructor = executor.Constructor;
 
-            //// children[0] is the type of the constructor, don't want to include that in argument processing
-            // var arguments = new SpelNode[this.children.length - 1];
-            // System.arraycopy(this.children, 1, arguments, 0, this.children.length - 1);
-            // generateCodeForArguments(mv, cf, constructor, arguments);
-            // mv.visitMethodInsn(INVOKESPECIAL, classDesc, "<init>", CodeFlow.createSignatureDescriptor(constructor), false);
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            // children[0] is the type of the constructor, don't want to include that in argument processing
+            var arguments = new SpelNode[_children.Length - 1];
+            Array.Copy(_children, 1, arguments, 0, _children.Length - 1);
+            GenerateCodeForArguments(gen, cf, constructor, arguments);
+            gen.Emit(OpCodes.Newobj, constructor);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         public override string ToStringAST()
@@ -124,7 +124,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var childValue = _children[i + 1].GetValueInternal(state);
                 var value = childValue.Value;
                 arguments[i] = value;
-                var valueType = value != null ? value.GetType() : typeof(object);
+                var valueType = value?.GetType();
                 argumentTypes.Add(valueType);
             }
 
@@ -181,9 +181,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             try
             {
                 _cachedExecutor = executorToUse;
-                if (executorToUse is ReflectiveConstructorExecutor)
+                if (executorToUse is ReflectiveConstructorExecutor executor)
                 {
-                    _exitTypeDescriptor = CodeFlow.ToDescriptor(((ReflectiveConstructorExecutor)executorToUse).Constructor.DeclaringType);
+                    _exitTypeDescriptor = CodeFlow.ToDescriptor(executor.Constructor.DeclaringType);
                 }
 
                 return executorToUse.Execute(state.EvaluationContext, arguments);
@@ -240,7 +240,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw new SpelEvaluationException(
                     GetChild(0).StartPosition,
                     SpelMessage.TYPE_NAME_EXPECTED_FOR_ARRAY_CONSTRUCTION,
-                    FormatHelper.FormatClassNameForMessage(intendedArrayType != null ? intendedArrayType.GetType() : null));
+                    FormatHelper.FormatClassNameForMessage(intendedArrayType?.GetType()));
             }
 
             var type = (string)intendedArrayType;

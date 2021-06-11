@@ -89,10 +89,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestSetConstruction01()
         {
-            var expected = new Hashtable();
-            expected.Add("a", "a");
-            expected.Add("b", "b");
-            expected.Add("c", "c");
+            var expected = new Hashtable
+            {
+                { "a", "a" },
+                { "b", "b" },
+                { "c", "c" }
+            };
             Evaluate("new System.Collections.Hashtable({a:'a',b:'b',c:'c'})", expected, typeof(Hashtable));
         }
 
@@ -182,15 +184,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public MapHolder()
             {
-                Foo = new Dictionary<string, string>();
-                Foo.Add("NEW", "VALUE");
-                Foo.Add("new", "value");
-                Foo.Add("T", "TV");
-                Foo.Add("t", "tv");
-                Foo.Add("abc.def", "value");
-                Foo.Add("VALUE", "37");
-                Foo.Add("value", "38");
-                Foo.Add("TV", "new");
+                Foo = new Dictionary<string, string>
+                {
+                    { "NEW", "VALUE" },
+                    { "new", "value" },
+                    { "T", "TV" },
+                    { "t", "tv" },
+                    { "abc.def", "value" },
+                    { "VALUE", "37" },
+                    { "value", "38" },
+                    { "TV", "new" }
+                };
             }
         }
     }

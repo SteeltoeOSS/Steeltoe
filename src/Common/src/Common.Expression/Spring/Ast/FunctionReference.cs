@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -36,7 +35,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             if (value.Value is not MethodInfo)
             {
-                // Possibly a static Java method registered as a function
+                // Possibly a static method registered as a function
                 throw new SpelEvaluationException(SpelMessage.FUNCTION_REFERENCE_CANNOT_BE_INVOKED, _name, value.GetType());
             }
 
@@ -69,7 +68,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return false;
             }
 
-            if (!_method.IsStatic || !_method.IsPublic || !_method.DeclaringType.IsPublic)
+            if (!_method.IsStatic || !_method.IsPublic || !ReflectionHelper.IsPublic(_method.DeclaringType))
             {
                 return false;
             }
@@ -85,15 +84,17 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return true;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // Method method = this.method;
-            // Assert.state(method != null, "No method handle");
-            // String classDesc = method.getDeclaringClass().getName().replace('.', '/');
-            // generateCodeForArguments(mv, cf, method, this.children);
-            // mv.visitMethodInsn(INVOKESTATIC, classDesc, method.getName(),
-            //        CodeFlow.createSignatureDescriptor(method), false);
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            var method = _method;
+            if (method == null)
+            {
+                throw new InvalidOperationException("No method handle");
+            }
+
+            GenerateCodeForArguments(gen, cf, method, _children);
+            gen.Emit(OpCodes.Call, method);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         private object[] GetArguments(ExpressionState state)
