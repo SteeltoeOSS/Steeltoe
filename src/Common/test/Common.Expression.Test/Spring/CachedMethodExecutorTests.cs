@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
     public class CachedMethodExecutorTests
     {
         private readonly IExpressionParser parser = new SpelExpressionParser();
-        private readonly StandardEvaluationContext context = new StandardEvaluationContext(new RootObject());
+        private readonly StandardEvaluationContext context = new (new RootObject());
 
         [Fact]
         public void TestCachedExecutionForParameters()

@@ -6,16 +6,18 @@ using Steeltoe.Common.Expression.Internal.Spring;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts
 {
     public class DictionaryAccessor : ICompilablePropertyAccessor
     {
+        private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new Type[] { typeof(object) });
+
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return target is IDictionary && ((IDictionary)target).Contains(name);
+            return target is IDictionary dictionary && dictionary.Contains(name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -40,8 +42,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var asDict = target as IDictionary;
-            if (asDict == null)
+            if (target is not IDictionary asDict)
             {
                 throw new ArgumentException("Target must be of type IDictionary");
             }
@@ -56,8 +57,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public void Write(IEvaluationContext context, object target, string name, object newValue)
         {
-            var asDict = target as IDictionary;
-            if (asDict == null)
+            if (target is not IDictionary asDict)
             {
                 throw new ArgumentException("Target must be of type IDictionary");
             }
@@ -65,19 +65,21 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             asDict[name] = newValue;
         }
 
-        public void GenerateCode(string propertyName, DynamicMethod mv, CodeFlow cf)
+        public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
         {
-            // String descriptor = cf.lastDescriptor();
-            // if (descriptor == null || !descriptor.equals("Ljava/util/Map"))
-            // {
-            //    if (descriptor == null)
-            //    {
-            //        cf.loadTarget(mv);
-            //    }
-            //    CodeFlow.insertCheckCast(mv, "Ljava/util/Map");
-            // }
-            // mv.visitLdcInsn(propertyName);
-            // mv.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
+            var descriptor = cf.LastDescriptor();
+            if (descriptor == null || descriptor.Value != typeof(IDictionary))
+            {
+                if (descriptor == null)
+                {
+                    CodeFlow.LoadTarget(gen);
+                }
+
+                gen.Emit(OpCodes.Castclass, typeof(IDictionary));
+            }
+
+            gen.Emit(OpCodes.Ldstr, propertyName);
+            gen.Emit(OpCodes.Callvirt, _getItem);
         }
 
         private class DictionaryAccessException : AccessException

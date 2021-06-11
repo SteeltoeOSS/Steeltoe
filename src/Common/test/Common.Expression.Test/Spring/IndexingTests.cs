@@ -33,8 +33,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void IndexIntoGenericPropertyContainingMap()
         {
-            var property = new Dictionary<string, string>();
-            property.Add("foo", "bar");
+            var property = new Dictionary<string, string>
+            {
+                { "foo", "bar" }
+            };
             Property = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("Property");
@@ -49,8 +51,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void IndexIntoGenericPropertyContainingMapobject()
         {
             var property = new Dictionary<string, Dictionary<string, string>>();
-            var map = new Dictionary<string, string>();
-            map.Add("foo", "bar");
+            var map = new Dictionary<string, string>
+            {
+                { "foo", "bar" }
+            };
             property.Add("property", map);
             var parser = new SpelExpressionParser();
             var context = new StandardEvaluationContext();
@@ -67,8 +71,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SetGenericPropertyContainingMap()
         {
-            var property = new Dictionary<string, string>();
-            property.Add("foo", "bar");
+            var property = new Dictionary<string, string>
+            {
+                { "foo", "bar" }
+            };
             Property = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("Property");
@@ -83,8 +89,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SetPropertyContainingMap()
         {
-            var property = new Dictionary<int, int>();
-            property.Add(9, 3);
+            var property = new Dictionary<int, int>
+            {
+                { 9, 3 }
+            };
             ParameterizedMap = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ParameterizedMap");
@@ -112,8 +120,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void IndexIntoGenericPropertyContainingList()
         {
-            var property = new List<string>();
-            property.Add("bar");
+            var property = new List<string>
+            {
+                "bar"
+            };
             Property = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("Property");
@@ -126,8 +136,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SetGenericPropertyContainingList()
         {
-            var property = new List<int>();
-            property.Add(3);
+            var property = new List<int>
+            {
+                3
+            };
             Property = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("Property");
@@ -162,8 +174,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void IndexIntoPropertyContainingList()
         {
-            var property = new List<int>();
-            property.Add(3);
+            var property = new List<int>
+            {
+                3
+            };
             ParameterizedList = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ParameterizedList");
@@ -176,8 +190,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void IndexIntoPropertyContainingListOfList()
         {
-            var property = new List<List<int>>();
-            property.Add(new List<int>() { 3 });
+            var property = new List<List<int>>
+            {
+                new List<int>() { 3 }
+            };
             ParameterizedListOfList = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ParameterizedListOfList[0]");
@@ -190,8 +206,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void SetPropertyContainingList()
         {
-            var property = new List<int>();
-            property.Add(3);
+            var property = new List<int>
+            {
+                3
+            };
             ParameterizedList = property;
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ParameterizedList");
@@ -290,9 +308,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void ResolveCollectionElementType()
         {
-            ListNotGeneric = new ArrayList(2);
-            ListNotGeneric.Add(5);
-            ListNotGeneric.Add(6);
+            ListNotGeneric = new ArrayList(2)
+            {
+                5,
+                6
+            };
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ListNotGeneric");
             Assert.Equal(typeof(ArrayList), expression.GetValueType(this));
@@ -310,9 +330,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void ResolveMapKeyValueTypes()
         {
-            MapNotGeneric = new Hashtable();
-            MapNotGeneric.Add("baseAmount", 3.11);
-            MapNotGeneric.Add("bonusAmount", 7.17);
+            MapNotGeneric = new Hashtable
+            {
+                { "baseAmount", 3.11 },
+                { "bonusAmount", 7.17 }
+            };
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("MapNotGeneric");
             Assert.Equal(typeof(Hashtable), expression.GetValueType(this));
@@ -321,8 +343,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestListOfScalar()
         {
-            ListOfScalarNotGeneric = new ArrayList(1);
-            ListOfScalarNotGeneric.Add("5");
+            ListOfScalarNotGeneric = new ArrayList(1)
+            {
+                "5"
+            };
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ListOfScalarNotGeneric[0]");
             Assert.Equal(5, expression.GetValue(this, typeof(int)));
@@ -332,8 +356,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestListsOfMap()
         {
             ListOfMapsNotGeneric = new ArrayList();
-            var map = new Hashtable();
-            map.Add("fruit", "apple");
+            var map = new Hashtable
+            {
+                { "fruit", "apple" }
+            };
             ListOfMapsNotGeneric.Add(map);
             var parser = new SpelExpressionParser();
             var expression = parser.ParseExpression("ListOfMapsNotGeneric[0]['fruit']");

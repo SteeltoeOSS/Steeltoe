@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -47,44 +45,59 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     left.ExitDescriptor != null && right.ExitDescriptor != null;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // // May reach here without it computed if all elements are literals
-            //    computeExitTypeDescriptor();
-            //    cf.enterCompilationScope();
-            //    this.children[0].generateCode(mv, cf);
-            //    String lastDesc = cf.lastDescriptor();
-            //    Assert.state(lastDesc != null, "No last descriptor");
-            //    if (!CodeFlow.isPrimitive(lastDesc))
-            //    {
-            //        CodeFlow.insertUnboxInsns(mv, 'Z', lastDesc);
-            //    }
-            //    cf.exitCompilationScope();
-            //    Label elseTarget = new Label();
-            //    Label endOfIf = new Label();
-            //    mv.visitJumpInsn(IFEQ, elseTarget);
-            //    cf.enterCompilationScope();
-            //    this.children[1].generateCode(mv, cf);
-            //    if (!CodeFlow.isPrimitive(this.exitTypeDescriptor))
-            //    {
-            //        lastDesc = cf.lastDescriptor();
-            //        Assert.state(lastDesc != null, "No last descriptor");
-            //        CodeFlow.insertBoxIfNecessary(mv, lastDesc.charAt(0));
-            //    }
-            //    cf.exitCompilationScope();
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(elseTarget);
-            //    cf.enterCompilationScope();
-            //    this.children[2].generateCode(mv, cf);
-            //    if (!CodeFlow.isPrimitive(this.exitTypeDescriptor))
-            //    {
-            //        lastDesc = cf.lastDescriptor();
-            //        Assert.state(lastDesc != null, "No last descriptor");
-            //        CodeFlow.insertBoxIfNecessary(mv, lastDesc.charAt(0));
-            //    }
-            //    cf.exitCompilationScope();
-            //    mv.visitLabel(endOfIf);
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            // May reach here without it computed if all elements are literals
+            ComputeExitTypeDescriptor();
+
+            cf.EnterCompilationScope();
+            _children[0].GenerateCode(gen, cf);
+            var lastDesc = cf.LastDescriptor() ?? throw new InvalidOperationException("No last descriptor");
+
+            if (!CodeFlow.IsValueType(lastDesc))
+            {
+                gen.Emit(OpCodes.Unbox_Any, typeof(bool));
+            }
+
+            cf.ExitCompilationScope();
+
+            var elseTarget = gen.DefineLabel();
+            var endOfIfTarget = gen.DefineLabel();
+
+            gen.Emit(OpCodes.Brfalse, elseTarget);
+            cf.EnterCompilationScope();
+            _children[1].GenerateCode(gen, cf);
+            if (!CodeFlow.IsValueType(_exitTypeDescriptor))
+            {
+                lastDesc = cf.LastDescriptor();
+                if (lastDesc == null)
+                {
+                    throw new InvalidOperationException("No last descriptor");
+                }
+
+                CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
+            }
+
+            cf.ExitCompilationScope();
+            gen.Emit(OpCodes.Br, endOfIfTarget);
+
+            gen.MarkLabel(elseTarget);
+            cf.EnterCompilationScope();
+            _children[2].GenerateCode(gen, cf);
+            if (!CodeFlow.IsValueType(_exitTypeDescriptor))
+            {
+                lastDesc = cf.LastDescriptor();
+                if (lastDesc == null)
+                {
+                    throw new InvalidOperationException("No last descriptor");
+                }
+
+                CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
+            }
+
+            cf.ExitCompilationScope();
+            gen.MarkLabel(endOfIfTarget);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         private void ComputeExitTypeDescriptor()
@@ -100,7 +113,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 else
                 {
                     // Use the easiest to compute common super type
-                    _exitTypeDescriptor = "LSystem/Object";
+                    _exitTypeDescriptor = TypeDescriptor.OBJECT;
                 }
             }
         }

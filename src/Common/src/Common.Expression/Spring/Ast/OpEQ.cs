@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -14,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public OpEQ(int startPos, int endPos, params SpelNode[] operands)
         : base("==", startPos, endPos, operands)
         {
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
@@ -37,40 +35,38 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 return false;
             }
 
-            var leftDesc = _exitTypeDescriptor;
-            var rightDesc = _exitTypeDescriptor;
+            var leftDesc = left.ExitDescriptor;
+            var rightDesc = right.ExitDescriptor;
             var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
             return !dc.AreNumbers || dc.AreCompatible;
         }
 
-        // public void GenerateCode(MethodVisitor mv, CodeFlow cf)
-        // {
-        //    cf.loadEvaluationContext(mv);
-        //    String leftDesc = getLeftOperand().exitTypeDescriptor;
-        //    String rightDesc = getRightOperand().exitTypeDescriptor;
-        //    boolean leftPrim = CodeFlow.isPrimitive(leftDesc);
-        //    boolean rightPrim = CodeFlow.isPrimitive(rightDesc);
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+        {
+            CodeFlow.LoadEvaluationContext(gen);
+            var leftDesc = LeftOperand.ExitDescriptor;
+            var rightDesc = RightOperand.ExitDescriptor;
+            var leftPrim = CodeFlow.IsValueType(leftDesc);
+            var rightPrim = CodeFlow.IsValueType(rightDesc);
 
-        // cf.enterCompilationScope();
-        //    getLeftOperand().generateCode(mv, cf);
-        //    cf.exitCompilationScope();
-        //    if (leftPrim)
-        //    {
-        //        CodeFlow.insertBoxIfNecessary(mv, leftDesc.charAt(0));
-        //    }
-        //    cf.enterCompilationScope();
-        //    getRightOperand().generateCode(mv, cf);
-        //    cf.exitCompilationScope();
-        //    if (rightPrim)
-        //    {
-        //        CodeFlow.insertBoxIfNecessary(mv, rightDesc.charAt(0));
-        //    }
+            cf.EnterCompilationScope();
+            LeftOperand.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (leftPrim)
+            {
+                CodeFlow.InsertBoxIfNecessary(gen, leftDesc);
+            }
 
-        // String operatorClassName = typeof(Operator).getName().replace('.', '/');
-        //    String evaluationContextClassName = typeof(EvaluationContext).getName().replace('.', '/');
-        //    mv.visitMethodInsn(INVOKESTATIC, operatorClassName, "equalityCheck",
-        //            "(L" + evaluationContextClassName + ";Ljava/lang/Object;Ljava/lang/Object;)Z", false);
-        //    cf.pushDescriptor("Z");
-        // }
+            cf.EnterCompilationScope();
+            RightOperand.GenerateCode(gen, cf);
+            cf.ExitCompilationScope();
+            if (rightPrim)
+            {
+                CodeFlow.InsertBoxIfNecessary(gen, rightDesc);
+            }
+
+            gen.Emit(OpCodes.Call, _equalityCheck);
+            cf.PushDescriptor(TypeDescriptor.Z);
+        }
     }
 }

@@ -4,21 +4,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 
-// using System.Runtime.Loader;
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class StandardTypeLocator : ITypeLocator
     {
-        // private readonly AssemblyLoadContext _assemblyLoadContext;
         private readonly List<string> _knownNamespacePrefixes = new List<string>(1);
 
-        // public StandardTypeLocator(AssemblyLoadContext assemblyLoadContext = null)
-        // {
-        //    _assemblyLoadContext = assemblyLoadContext ?? AssemblyLoadContext.Default;
-        //    RegisterNamespace("System");
-        // }
         public StandardTypeLocator()
         {
             _knownNamespacePrefixes.Add("System");
@@ -59,7 +51,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                                     break;
                                 }
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
                                 // might be a different prefix
                             }

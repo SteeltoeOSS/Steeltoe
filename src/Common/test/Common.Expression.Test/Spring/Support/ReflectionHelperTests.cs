@@ -17,7 +17,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         [Fact]
         public void TestUtilities()
         {
-            var expr = parser.ParseExpression("3+4+5+6+7-2") as SpelExpression;
+            var expr = _parser.ParseExpression("3+4+5+6+7-2") as SpelExpression;
             var ps = new StringWriter();
             SpelUtilities.PrintAbstractSyntaxTree(ps, expr);
             ps.Flush();
@@ -246,9 +246,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         [Fact]
         public void TestReflectivePropertyAccessor()
         {
-            ReflectivePropertyAccessor rpa = new ReflectivePropertyAccessor();
-            Tester t = new Tester();
-            t.Property = "hello";
+            var rpa = new ReflectivePropertyAccessor();
+            var t = new Tester
+            {
+                Property = "hello"
+            };
             var ctx = new StandardEvaluationContext(t);
             Assert.True(rpa.CanRead(ctx, t, "Property"));
             Assert.Equal("hello", rpa.Read(ctx, t, "Property").Value);
@@ -312,8 +314,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         public void TestOptimalReflectivePropertyAccessor()
         {
             var reflective = new ReflectivePropertyAccessor();
-            Tester tester = new Tester();
-            tester.Property = "hello";
+            var tester = new Tester
+            {
+                Property = "hello"
+            };
             var ctx = new StandardEvaluationContext(tester);
             Assert.True(reflective.CanRead(ctx, tester, "Property"));
             Assert.Equal("hello", reflective.Read(ctx, tester, "Property").Value);

@@ -23,15 +23,15 @@ namespace Steeltoe.Common.Util
         static MimeType()
         {
             // variable names refer to RFC 2616, section 2.2
-            BitArray ctl = new BitArray(128);
-            for (int i = 0; i <= 31; i++)
+            var ctl = new BitArray(128);
+            for (var i = 0; i <= 31; i++)
             {
                 ctl.Set(i, true);
             }
 
             ctl.Set(127, true);
 
-            BitArray separators = new BitArray(128);
+            var separators = new BitArray(128);
             separators.Set('(', true);
             separators.Set(')', true);
             separators.Set('<', true);
@@ -53,7 +53,7 @@ namespace Steeltoe.Common.Util
             separators.Set('\t', true);
 
             TOKEN = new BitArray(128);
-            for (int i = 0; i < 128; i++)
+            for (var i = 0; i < 128; i++)
             {
                 TOKEN.Set(i, true);
             }
@@ -108,7 +108,7 @@ namespace Steeltoe.Common.Util
             this.Subtype = subtype.ToLowerInvariant();
             if (parameters.Count > 0)
             {
-                Dictionary<string, string> map = new Dictionary<string, string>();
+                var map = new Dictionary<string, string>();
                 foreach (var p in parameters)
                 {
                     CheckParameters(p.Key, p.Value);
@@ -168,14 +168,14 @@ namespace Steeltoe.Common.Util
         {
             get
             {
-                string charset = GetParameter(PARAM_CHARSET);
+                var charset = GetParameter(PARAM_CHARSET);
                 return charset != null ? GetEncoding(Unquote(charset)) : null;
             }
         }
 
         public string GetParameter(string name)
         {
-            if (Parameters.TryGetValue(name, out string value))
+            if (Parameters.TryGetValue(name, out var value))
             {
                 return value;
             }
@@ -207,7 +207,7 @@ namespace Steeltoe.Common.Util
                 if (IsWildcardSubtype)
                 {
                     // Wildcard with suffix, e.g. application/*+xml
-                    int thisPlusIdx = Subtype.LastIndexOf('+');
+                    var thisPlusIdx = Subtype.LastIndexOf('+');
                     if (thisPlusIdx == -1)
                     {
                         return true;
@@ -215,12 +215,12 @@ namespace Steeltoe.Common.Util
                     else
                     {
                         // application/*+xml includes application/soap+xml
-                        int otherPlusIdx = other.Subtype.LastIndexOf('+');
+                        var otherPlusIdx = other.Subtype.LastIndexOf('+');
                         if (otherPlusIdx != -1)
                         {
-                            string thisSubtypeNoSuffix = Subtype.Substring(0, thisPlusIdx);
-                            string thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
-                            string otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
+                            var thisSubtypeNoSuffix = Subtype.Substring(0, thisPlusIdx);
+                            var thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
+                            var otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
                             if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) && WILDCARD_TYPE.Equals(thisSubtypeNoSuffix))
                             {
                                 return true;
@@ -254,18 +254,18 @@ namespace Steeltoe.Common.Util
                 // Wildcard with suffix? e.g. application/*+xml
                 if (IsWildcardSubtype || other.IsWildcardSubtype)
                 {
-                    int thisPlusIdx = Subtype.LastIndexOf('+');
-                    int otherPlusIdx = other.Subtype.LastIndexOf('+');
+                    var thisPlusIdx = Subtype.LastIndexOf('+');
+                    var otherPlusIdx = other.Subtype.LastIndexOf('+');
                     if (thisPlusIdx == -1 && otherPlusIdx == -1)
                     {
                         return true;
                     }
                     else if (thisPlusIdx != -1 && otherPlusIdx != -1)
                     {
-                        string thisSubtypeNoSuffix = Subtype.Substring(0, thisPlusIdx);
-                        string otherSubtypeNoSuffix = other.Subtype.Substring(0, otherPlusIdx);
-                        string thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
-                        string otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
+                        var thisSubtypeNoSuffix = Subtype.Substring(0, thisPlusIdx);
+                        var otherSubtypeNoSuffix = other.Subtype.Substring(0, otherPlusIdx);
+                        var thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
+                        var otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
                         if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) &&
                                 (WILDCARD_TYPE.Equals(thisSubtypeNoSuffix) || WILDCARD_TYPE.Equals(otherSubtypeNoSuffix)))
                         {
@@ -314,7 +314,7 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            MimeType otherType = (MimeType)other;
+            var otherType = (MimeType)other;
             return Type.Equals(otherType.Type, StringComparison.InvariantCultureIgnoreCase) &&
                     Subtype.Equals(otherType.Subtype, StringComparison.InvariantCultureIgnoreCase) &&
                     ParametersAreEqual(otherType);
@@ -322,7 +322,7 @@ namespace Steeltoe.Common.Util
 
         public override int GetHashCode()
         {
-            int result = Type.GetHashCode();
+            var result = Type.GetHashCode();
             result = (31 * result) + Subtype.GetHashCode();
             result = (31 * result) + Parameters.GetHashCode();
             return result;
@@ -330,10 +330,10 @@ namespace Steeltoe.Common.Util
 
         public override string ToString()
         {
-            string value = _tostringValue;
+            var value = _tostringValue;
             if (value == null)
             {
-                StringBuilder builder = new StringBuilder();
+                var builder = new StringBuilder();
                 AppendTo(builder);
                 value = builder.ToString();
                 _tostringValue = value;
@@ -344,7 +344,7 @@ namespace Steeltoe.Common.Util
 
         public int CompareTo(MimeType other)
         {
-            int comp = Type.CompareTo(other.Type);
+            var comp = Type.CompareTo(other.Type);
             if (comp != 0)
             {
                 return comp;
@@ -362,8 +362,8 @@ namespace Steeltoe.Common.Util
                 return comp;
             }
 
-            SortedSet<string> thisAttributes = new SortedSet<string>(Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
-            SortedSet<string> otherAttributes = new SortedSet<string>(other.Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
+            var thisAttributes = new SortedSet<string>(Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
+            var otherAttributes = new SortedSet<string>(other.Parameters.Keys, StringComparer.InvariantCultureIgnoreCase);
 
             var thisAttributesIterator = thisAttributes.GetEnumerator();
             var otherAttributesIterator = otherAttributes.GetEnumerator();
@@ -373,8 +373,8 @@ namespace Steeltoe.Common.Util
             {
                 otherAttributesIterator.MoveNext();
 
-                string thisAttribute = thisAttributesIterator.Current;
-                string otherAttribute = otherAttributesIterator.Current;
+                var thisAttribute = thisAttributesIterator.Current;
+                var otherAttribute = otherAttributesIterator.Current;
 
                 comp = comparer.Compare(thisAttribute, otherAttribute);
                 if (comp != 0)
@@ -384,8 +384,8 @@ namespace Steeltoe.Common.Util
 
                 if (PARAM_CHARSET.Equals(thisAttribute))
                 {
-                    Encoding thisCharset = Encoding;
-                    Encoding otherCharset = other.Encoding;
+                    var thisCharset = Encoding;
+                    var otherCharset = other.Encoding;
                     if (thisCharset != otherCharset)
                     {
                         if (thisCharset == null)
@@ -407,8 +407,8 @@ namespace Steeltoe.Common.Util
                 }
                 else
                 {
-                    string thisValue = Parameters[thisAttribute];
-                    string otherValue = other.Parameters[otherAttribute];
+                    var thisValue = Parameters[thisAttribute];
+                    var otherValue = other.Parameters[otherAttribute];
                     if (otherValue == null)
                     {
                         otherValue = string.Empty;
@@ -463,7 +463,7 @@ namespace Steeltoe.Common.Util
 
             foreach (var entry in Parameters)
             {
-                string key = entry.Key;
+                var key = entry.Key;
                 if (!other.Parameters.ContainsKey(key))
                 {
                     return false;
@@ -487,9 +487,9 @@ namespace Steeltoe.Common.Util
 
         private void CheckToken(string token)
         {
-            for (int i = 0; i < token.Length; i++)
+            for (var i = 0; i < token.Length; i++)
             {
-                char ch = token[i];
+                var ch = token[i];
                 if (!TOKEN.Get(ch))
                 {
                     throw new ArgumentException("Invalid token character '" + ch + "' in token \"" + token + "\"");
@@ -586,8 +586,8 @@ namespace Steeltoe.Common.Util
 
             protected int CompareParameters(T mimeType1, T mimeType2)
             {
-                int paramsSize1 = mimeType1.Parameters.Count;
-                int paramsSize2 = mimeType2.Parameters.Count;
+                var paramsSize1 = mimeType1.Parameters.Count;
+                var paramsSize2 = mimeType2.Parameters.Count;
                 return paramsSize1.CompareTo(paramsSize2); // audio/basic;level=1 < audio/basic
             }
         }

@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -18,7 +15,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             : base(payload, startPos, endPos)
         {
             _value = BooleanTypedValue.ForValue(value);
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetLiteralValue()
@@ -28,17 +25,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable() => true;
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // if (this.value == BooleanTypedValue.TRUE)
-            // {
-            //    mv.visitLdcInsn(1);
-            // }
-            // else
-            // {
-            //    mv.visitLdcInsn(0);
-            // }
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            var result = gen.DeclareLocal(typeof(bool));
+            if (_value.Equals(BooleanTypedValue.TRUE))
+            {
+                gen.Emit(OpCodes.Ldc_I4_1);
+            }
+            else
+            {
+                gen.Emit(OpCodes.Ldc_I4_0);
+            }
+
+            gen.Emit(OpCodes.Stloc, result);
+            gen.Emit(OpCodes.Ldloc, result);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

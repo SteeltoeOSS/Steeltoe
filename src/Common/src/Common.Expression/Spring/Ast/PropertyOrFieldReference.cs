@@ -9,7 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -17,7 +16,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
     {
         private readonly bool _nullSafe;
         private readonly string _name;
-        private string _originalPrimitiveExitTypeDescriptor;
+        private TypeDescriptor _originalPrimitiveExitTypeDescriptor;
         private volatile IPropertyAccessor _cachedReadAccessor;
         private volatile IPropertyAccessor _cachedWriteAccessor;
 
@@ -36,10 +35,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         {
             var tv = GetValueInternal(state.GetActiveContextObject(), state.EvaluationContext, state.Configuration.AutoGrowNullReferences);
             var accessorToUse = _cachedReadAccessor;
-            if (accessorToUse is ICompilablePropertyAccessor)
+            if (accessorToUse is ICompilablePropertyAccessor accessor)
             {
-                var accessor = (ICompilablePropertyAccessor)accessorToUse;
-                SetExitTypeDescriptor(CodeFlow.ToDescriptor(accessor.GetPropertyType()));
+                var descriptor = ComputeExitDescriptor(tv.Value, accessor.GetPropertyType());
+                SetExitTypeDescriptor(descriptor);
             }
 
             return tv;
@@ -75,7 +74,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                             return true;
                         }
                     }
-                    catch (AccessException ex)
+                    catch (AccessException)
                     {
                         // let others try
                     }
@@ -88,43 +87,40 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override bool IsCompilable()
         {
             var accessorToUse = _cachedReadAccessor;
-            return accessorToUse is ICompilablePropertyAccessor && ((ICompilablePropertyAccessor)accessorToUse).IsCompilable();
+            return accessorToUse is ICompilablePropertyAccessor accessor && accessor.IsCompilable();
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // PropertyAccessor accessorToUse = this.cachedReadAccessor;
-            //    if (!(accessorToUse is CompilablePropertyAccessor))
-            //    {
-            //        throw new IllegalStateException("Property accessor is not compilable: " + accessorToUse);
-            //    }
+            if (_cachedReadAccessor is not ICompilablePropertyAccessor accessorToUse)
+            {
+                throw new InvalidOperationException("Property accessor is not compilable: " + _cachedReadAccessor);
+            }
 
-            // Label skipIfNull = null;
-            //    if (this.nullSafe)
-            //    {
-            //        mv.visitInsn(DUP);
-            //        skipIfNull = new Label();
-            //        Label continueLabel = new Label();
-            //        mv.visitJumpInsn(IFNONNULL, continueLabel);
-            //        CodeFlow.insertCheckCast(mv, this.exitTypeDescriptor);
-            //        mv.visitJumpInsn(GOTO, skipIfNull);
-            //        mv.visitLabel(continueLabel);
-            //    }
+            Label? skipIfNullLabel = null;
+            if (_nullSafe)
+            {
+                skipIfNullLabel = gen.DefineLabel();
+                gen.Emit(OpCodes.Dup);
+                gen.Emit(OpCodes.Ldnull);
+                gen.Emit(OpCodes.Cgt_Un);
+                gen.Emit(OpCodes.Brfalse, skipIfNullLabel.Value);
+            }
 
-            // ((CompilablePropertyAccessor)accessorToUse).generateCode(this.name, mv, cf);
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            accessorToUse.GenerateCode(_name, gen, cf);
+            cf.PushDescriptor(_exitTypeDescriptor);
+            if (_originalPrimitiveExitTypeDescriptor != null)
+            {
+                // The output of the accessor is a primitive but from the block above it might be null,
+                // so to have a common stack element type at skipIfNull target it is necessary
+                // to box the primitive
+                CodeFlow.InsertBoxIfNecessary(gen, _originalPrimitiveExitTypeDescriptor);
+            }
 
-            // if (this.originalPrimitiveExitTypeDescriptor != null)
-            //    {
-            //        // The output of the accessor is a primitive but from the block above it might be null,
-            //        // so to have a common stack element type at skipIfNull target it is necessary
-            //        // to box the primitive
-            //        CodeFlow.insertBoxIfNecessary(mv, this.originalPrimitiveExitTypeDescriptor);
-            //    }
-            //    if (skipIfNull != null)
-            //    {
-            //        mv.visitLabel(skipIfNull);
-            //    }
+            if (skipIfNullLabel.HasValue)
+            {
+                gen.MarkLabel(skipIfNullLabel.Value);
+            }
         }
 
         protected internal override IValueRef GetValueRef(ExpressionState state)
@@ -132,12 +128,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return new AccessorLValue(this, state.GetActiveContextObject(), state.EvaluationContext, state.Configuration.AutoGrowNullReferences);
         }
 
-        protected internal void SetExitTypeDescriptor(string descriptor)
+        protected internal TypeDescriptor ComputeExitDescriptor(object result, Type propertyReturnType)
+        {
+            if (propertyReturnType.IsValueType)
+            {
+                return CodeFlow.ToDescriptor(propertyReturnType);
+            }
+
+            return CodeFlow.ToDescriptorFromObject(result);
+        }
+
+        protected internal void SetExitTypeDescriptor(TypeDescriptor descriptor)
         {
             // If this property or field access would return a primitive - and yet
             // it is also marked null safe - then the exit type descriptor must be
             // promoted to the box type to allow a null value to be passed on
-            if (_nullSafe && CodeFlow.IsPrimitive(descriptor))
+            if (_nullSafe && CodeFlow.IsValueType(descriptor))
             {
                 _originalPrimitiveExitTypeDescriptor = descriptor;
                 _exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
@@ -168,7 +174,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     {
                         var newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        // var newList = new List<object>();
                         WriteProperty(contextObject, evalContext, _name, newList);
                         result = ReadProperty(contextObject, evalContext, _name);
                     }
@@ -179,7 +184,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     {
                         var newMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
-                        // var newMap = new Dictionary<object, object>();
                         WriteProperty(contextObject, evalContext, _name, newMap);
                         result = ReadProperty(contextObject, evalContext, _name);
                     }
@@ -240,13 +244,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var accessorToUse = _cachedReadAccessor;
             if (accessorToUse != null)
             {
-                if (evalContext.PropertyAccessors.Contains(accessorToUse))
+                if (accessorToUse is ReflectivePropertyAccessor.OptimalPropertyAccessor || evalContext.PropertyAccessors.Contains(accessorToUse))
                 {
                     try
                     {
                         return accessorToUse.Read(evalContext, contextObject.Value, name);
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // This is OK - it may have gone stale due to a class change,
                         // let's try to get a new one and call it before giving up...
@@ -268,9 +272,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var accessor = acc;
                     if (accessor.CanRead(evalContext, contextObject.Value, name))
                     {
-                        if (accessor is ReflectivePropertyAccessor)
+                        if (accessor is ReflectivePropertyAccessor accessor1)
                         {
-                            accessor = ((ReflectivePropertyAccessor)accessor).CreateOptimalAccessor(evalContext, contextObject.Value, name);
+                            accessor = accessor1.CreateOptimalAccessor(evalContext, contextObject.Value, name);
                         }
 
                         _cachedReadAccessor = accessor;
@@ -308,14 +312,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             var accessorToUse = _cachedWriteAccessor;
             if (accessorToUse != null)
             {
-                if (evalContext.PropertyAccessors.Contains(accessorToUse))
+                if (accessorToUse is ReflectivePropertyAccessor.OptimalPropertyAccessor || evalContext.PropertyAccessors.Contains(accessorToUse))
                 {
                     try
                     {
                         accessorToUse.Write(evalContext, contextObject.Value, name, newValue);
                         return;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // This is OK - it may have gone stale due to a class change,
                         // let's try to get a new one and call it before giving up...
@@ -405,9 +409,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 var value = _ref.GetValueInternal(_contextObject, _evalContext, _autoGrowNullReferences);
                 var accessorToUse = _ref._cachedReadAccessor;
-                if (accessorToUse is ICompilablePropertyAccessor)
+                if (accessorToUse is ICompilablePropertyAccessor accessor)
                 {
-                    _ref.SetExitTypeDescriptor(CodeFlow.ToDescriptor(((ICompilablePropertyAccessor)accessorToUse).GetPropertyType()));
+                    var descriptor = _ref.ComputeExitDescriptor(value.Value, accessor.GetPropertyType());
+                    _ref.SetExitTypeDescriptor(descriptor);
                 }
 
                 return value;

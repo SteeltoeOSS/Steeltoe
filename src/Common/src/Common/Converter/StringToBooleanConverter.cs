@@ -21,7 +21,7 @@ namespace Steeltoe.Common.Converter
 
         public override bool Matches(Type sourceType, Type targetType)
         {
-            Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
+            var targetCheck = ConversionUtils.GetNullableElementType(targetType);
             return sourceType == typeof(string) && targetCheck == typeof(bool);
         }
 
@@ -32,7 +32,7 @@ namespace Steeltoe.Common.Converter
                 return null;
             }
 
-            string value = ((string)source).Trim();
+            var value = ((string)source).Trim();
             if (string.IsNullOrEmpty(value))
             {
                 return null;

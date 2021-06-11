@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -29,75 +27,28 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             // The operand is going to be read and then assigned to, we don't want to evaluate it twice.
             var lvalue = operand.GetValueRef(state);
 
-            var operandTypedValue = lvalue.GetValue();  // operand.getValueInternal(state);
+            var operandTypedValue = lvalue.GetValue();
             var operandValue = operandTypedValue.Value;
             var returnValue = operandTypedValue;
             ITypedValue newValue = null;
 
             if (IsNumber(operandValue))
             {
-                if (operandValue is decimal)
+                newValue = operandValue switch
                 {
-                    var val = (decimal)operandValue;
-                    newValue = new TypedValue(val - 1M, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is double)
-                {
-                    var val = (double)operandValue;
-                    newValue = new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is float)
-                {
-                    var val = (float)operandValue;
-                    newValue = new TypedValue(val - 1.0f, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is long)
-                {
-                    var val = (long)operandValue;
-                    newValue = new TypedValue(val - 1L, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is int)
-                {
-                    var val = (int)operandValue;
-                    newValue = new TypedValue(val - 1, operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is short)
-                {
-                    var val = (short)operandValue;
-                    newValue = new TypedValue((short)(val - (short)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is byte)
-                {
-                    var val = (byte)operandValue;
-                    newValue = new TypedValue((byte)(val - (byte)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is ulong)
-                {
-                    var val = (ulong)operandValue;
-                    newValue = new TypedValue((ulong)(val - 1L), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is uint)
-                {
-                    var val = (uint)operandValue;
-                    newValue = new TypedValue((uint)(val - 1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is ushort)
-                {
-                    var val = (ushort)operandValue;
-                    newValue = new TypedValue((ushort)(val - (ushort)1), operandTypedValue.TypeDescriptor);
-                }
-                else if (operandValue is sbyte)
-                {
-                    var val = (sbyte)operandValue;
-                    newValue = new TypedValue((sbyte)(val - (sbyte)1), operandTypedValue.TypeDescriptor);
-                }
-
-                // else
-                // {
-                //    // Unknown Number subtype -> best guess is double decrement
-                //    var val = (double)operandValue;
-                //    newValue = new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor);
-                // }
+                    decimal val => new TypedValue(val - 1M, operandTypedValue.TypeDescriptor),
+                    double val => new TypedValue(val - 1.0d, operandTypedValue.TypeDescriptor),
+                    float val => new TypedValue(val - 1.0f, operandTypedValue.TypeDescriptor),
+                    long val => new TypedValue(val - 1L, operandTypedValue.TypeDescriptor),
+                    int val => new TypedValue(val - 1, operandTypedValue.TypeDescriptor),
+                    short val => new TypedValue((short)(val - 1), operandTypedValue.TypeDescriptor),
+                    byte val => new TypedValue((byte)(val - 1), operandTypedValue.TypeDescriptor),
+                    ulong val => new TypedValue(val - 1L, operandTypedValue.TypeDescriptor),
+                    uint val => new TypedValue(val - 1, operandTypedValue.TypeDescriptor),
+                    ushort val => new TypedValue((ushort)(val - 1), operandTypedValue.TypeDescriptor),
+                    sbyte val => new TypedValue((sbyte)(val - 1), operandTypedValue.TypeDescriptor),
+                    _ => null
+                };
             }
 
             if (newValue == null)

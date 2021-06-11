@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Expression.Internal;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts
 {
@@ -91,7 +88,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
                 return false;
             }
 
-            ServiceExpressionContext otherContext = (ServiceExpressionContext)other;
+            var otherContext = (ServiceExpressionContext)other;
             return _applicationContext == otherContext._applicationContext;
         }
 

@@ -49,7 +49,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestAccessingOnNullObject()
         {
-            var expr = (SpelExpression)parser.ParseExpression("madeup");
+            var expr = (SpelExpression)_parser.ParseExpression("madeup");
             var context = new StandardEvaluationContext(null);
             var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue(context));
             Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE_ON_NULL, ex.MessageCode);
@@ -116,7 +116,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestAccessingPropertyOfClass()
         {
-            var expression = parser.ParseExpression("FullName");
+            var expression = _parser.ParseExpression("FullName");
             var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
             Assert.Equal("System.String", value);
         }
@@ -139,14 +139,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void StandardGetClassAccess()
         {
-            Assert.Equal(typeof(string).FullName, parser.ParseExpression("'a'.GetType().FullName").GetValue());
+            Assert.Equal(typeof(string).FullName, _parser.ParseExpression("'a'.GetType().FullName").GetValue());
         }
 
         [Fact]
         public void NoGetClassAccess()
         {
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("'a'.GetType().Name").GetValue(context));
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("'a'.GetType().Name").GetValue(context));
         }
 
         [Fact]
@@ -154,13 +154,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
 
-            var expr = parser.ParseExpression("Name");
+            var expr = _parser.ParseExpression("Name");
             var target = new Person("p1");
             Assert.Equal("p1", expr.GetValue(context, target));
             target.Name = "p2";
             Assert.Equal("p2", expr.GetValue(context, target));
 
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("Name='p3'").GetValue(context, target));
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("Name='p3'").GetValue(context, target));
         }
 
         [Fact]
@@ -168,13 +168,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var context = SimpleEvaluationContext.ForReadWriteDataBinding().Build();
 
-            var expr = parser.ParseExpression("Name");
+            var expr = _parser.ParseExpression("Name");
             var target = new Person("p1");
             Assert.Equal("p1", expr.GetValue(context, target));
             target.Name = "p2";
             Assert.Equal("p2", expr.GetValue(context, target));
 
-            parser.ParseExpression("Name='p3'").GetValue(context, target);
+            _parser.ParseExpression("Name='p3'").GetValue(context, target);
             Assert.Equal("p3", target.Name);
             Assert.Equal("p3", expr.GetValue(context, target));
 
@@ -190,12 +190,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var context = SimpleEvaluationContext.ForReadWriteDataBinding().WithRootObject(target).Build();
             Assert.Same(target, context.RootObject.Value);
 
-            var expr = parser.ParseExpression("Name");
+            var expr = _parser.ParseExpression("Name");
             Assert.Equal("p1", expr.GetValue(context, target));
             target.Name = "p2";
             Assert.Equal("p2", expr.GetValue(context, target));
 
-            parser.ParseExpression("Name='p3'").GetValue(context, target);
+            _parser.ParseExpression("Name='p3'").GetValue(context, target);
             Assert.Equal("p3", target.Name);
             Assert.Equal("p3", expr.GetValue(context, target));
 
@@ -209,7 +209,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
             var target = new Person("p1");
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
         }
 
         [Fact]
@@ -217,7 +217,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().WithInstanceMethods().Build();
             var target = new Person("p1");
-            Assert.Equal("1", parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+            Assert.Equal("1", _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
         }
 
         [Fact]
@@ -227,7 +227,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().
                     WithInstanceMethods().WithTypedRootObject(target, typeof(object)).Build();
 
-            Assert.Equal("1", parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+            Assert.Equal("1", _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
             Assert.Same(target, context.RootObject.Value);
             Assert.Equal(typeof(object), context.RootObject.TypeDescriptor);
         }
@@ -236,10 +236,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void PropertyAccessWithArrayIndexOutOfBounds()
         {
             var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
-            var expression = parser.ParseExpression("StringArrayOfThreeItems[3]");
+            var expression = _parser.ParseExpression("StringArrayOfThreeItems[3]");
             var ex = Assert.Throws<SpelEvaluationException>(() => expression.GetValue(context, new Inventor()));
             Assert.Equal(SpelMessage.ARRAY_INDEX_OUT_OF_BOUNDS, ex.MessageCode);
         }
+
+#pragma warning disable IDE1006 // Naming Styles
 
         private class StringyPropertyAccessor : IPropertyAccessor
         {
@@ -319,7 +321,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public ITypedValue Read(IEvaluationContext context, object target, string name)
             {
-                return new TypedValue(this.values[name]);
+                return new TypedValue(values[name]);
             }
 
             public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -331,5 +333,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
         }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

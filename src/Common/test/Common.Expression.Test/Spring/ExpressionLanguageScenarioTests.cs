@@ -58,7 +58,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // Use the standard evaluation context
             var ctx = new StandardEvaluationContext();
             ctx.SetVariable("favouriteColour", "blue");
-            List<int> primes = new List<int> { 2, 3, 5, 7, 11, 13, 17 };
+            var primes = new List<int> { 2, 3, 5, 7, 11, 13, 17 };
             ctx.SetVariable("primes", primes);
 
             var expr = parser.ParseRaw("#favouriteColour");
@@ -88,9 +88,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // Use the standard evaluation context
             var ctx = new StandardEvaluationContext();
 
-            TestClass tc = new TestClass();
-            tc.Property = 42;
-            tc.Str = "wibble";
+            var tc = new TestClass
+            {
+                Property = 42,
+                Str = "wibble"
+            };
             ctx.SetRootObject(tc);
 
             // read it, set it, read it again
@@ -185,7 +187,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class FruitColourAccessor : IPropertyAccessor
         {
-            private static Dictionary<string, Color> propertyMap = new Dictionary<string, Color>();
+            private static Dictionary<string, Color> propertyMap = new ();
 
             static FruitColourAccessor()
             {
@@ -222,7 +224,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         public class VegetableColourAccessor : IPropertyAccessor
         {
-            private static Dictionary<string, Color> propertyMap = new Dictionary<string, Color>();
+            private static Dictionary<string, Color> propertyMap = new ();
 
             static VegetableColourAccessor()
             {

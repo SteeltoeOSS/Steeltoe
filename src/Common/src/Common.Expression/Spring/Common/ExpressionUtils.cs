@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Common
 {

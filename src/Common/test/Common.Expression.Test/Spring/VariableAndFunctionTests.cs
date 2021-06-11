@@ -60,9 +60,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestCallingIllegalFunctions()
         {
-            SpelExpressionParser parser = new SpelExpressionParser();
-            StandardEvaluationContext ctx = new StandardEvaluationContext();
-            ctx.SetVariable("notStatic", this.GetType().GetMethod("NonStatic"));
+            var parser = new SpelExpressionParser();
+            var ctx = new StandardEvaluationContext();
+            ctx.SetVariable("notStatic", GetType().GetMethod("NonStatic"));
             var ex = Assert.Throws<SpelEvaluationException>(() => parser.ParseRaw("#notStatic()").GetValue(ctx));
             Assert.Equal(SpelMessage.FUNCTION_MUST_BE_STATIC, ex.MessageCode);
         }

@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts
 {
@@ -28,8 +27,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var asConfig = target as IConfiguration;
-            if (asConfig == null)
+            if (target is not IConfiguration asConfig)
             {
                 throw new ArgumentException("Target must be of type IConfiguration");
             }
