@@ -32,6 +32,7 @@ namespace Steeltoe.Common.Security.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public async Task AddPemFiles_ReloadsOnChange()
         {
             var tempFile1 = await CreateTempFileAsync("cert");
