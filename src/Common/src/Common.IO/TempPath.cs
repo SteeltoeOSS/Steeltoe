@@ -5,31 +5,24 @@
 using System;
 using System.IO;
 
-namespace Steeltoe.Common.IO
+namespace Steeltoe.Common.Utils.IO
 {
     /// <summary>
     /// An abstraction of a temporary path, such as a file.
     /// </summary>
-    public class TempPath : IDisposable
+    public abstract class TempPath : IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TempPath"/> class.
         /// </summary>
-        public TempPath() : this(Guid.NewGuid().ToString())
+        /// <param name="prefix">Temporary path prefix.</param>
+        protected TempPath(string prefix = null)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TempPath"/> class.
-        /// </summary>
-        /// <param name="name">Temporary path name.</param>
-        public TempPath(string name)
-        {
-            Name = name;
+            Name = $"{prefix ?? string.Empty}{Guid.NewGuid()}";
             FullPath = $"{Path.GetTempPath()}{Path.DirectorySeparatorChar}{Name}";
             Initialize();
         }
-        
+
         ~TempPath()
         {
             Dispose(false);
@@ -44,15 +37,6 @@ namespace Steeltoe.Common.IO
         /// Gets the name of the TempPath.
         /// </summary>
         public string Name { get; }
-
-        protected void Initialize()
-        {
-            InitializePath();
-        }
-
-        protected virtual void InitializePath()
-        {
-        }
 
         /// <summary>
         /// Ensures the temporary path is deleted.
@@ -72,6 +56,18 @@ namespace Steeltoe.Common.IO
             {
                 GC.SuppressFinalize(this);
             }
+        }
+
+        /// <summary>
+        /// Subclasses should override and perform any path initialization here.
+        /// </summary>
+        protected virtual void InitializePath()
+        {
+        }
+
+        private void Initialize()
+        {
+            InitializePath();
         }
     }
 }

@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.IO.Test
+namespace Steeltoe.Common.Utils.Test.IO
 {
     public class TempDirectoryTest
     {
@@ -20,10 +21,11 @@ namespace Steeltoe.Common.IO.Test
         }
 
         [Fact]
-        public void TempDirectoryCanBeNamed()
+        public void TempDirectoryCanBePrefixed()
         {
-            using var tempDir = new TempDirectory("Jill");
-            Assert.Equal("Jill", tempDir.Name);
+            const string prefix = "XXX-";
+            using var tempDir = new TempDirectory(prefix);
+            Assert.StartsWith(prefix, tempDir.Name);
         }
     }
 }

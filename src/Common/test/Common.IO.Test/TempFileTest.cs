@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.IO.Test
+namespace Steeltoe.Common.Utils.Test.IO
 {
     public class TempFileTest
     {
@@ -19,10 +20,11 @@ namespace Steeltoe.Common.IO.Test
         }
 
         [Fact]
-        public void TempFileCanBeNamed()
+        public void TempFileCanBePrefixed()
         {
-            using var tempFile = new TempFile("Jack");
-            Assert.Equal("Jack", tempFile.Name);
+            const string prefix = "XXX-";
+            using var tempFile = new TempFile(prefix);
+            Assert.StartsWith(prefix, tempFile.Name);
         }
     }
 }

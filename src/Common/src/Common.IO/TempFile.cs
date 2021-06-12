@@ -4,20 +4,19 @@
 
 using System.IO;
 
-namespace Steeltoe.Common.IO
+namespace Steeltoe.Common.Utils.IO
 {
     /// <summary>
     /// A temporary directory.
     /// </summary>
     public class TempFile : TempPath
     {
-        /// <inheritdoc/>
-        public TempFile()
-        {
-        }
-
-        /// <inheritdoc/>
-        public TempFile(string name) : base(name)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TempFile"/> class.
+        /// </summary>
+        /// <param name="prefix">Temporary file prefix.</param>
+        public TempFile(string prefix = null)
+            : base(prefix)
         {
         }
 
@@ -34,7 +33,7 @@ namespace Steeltoe.Common.IO
         {
             base.Dispose(disposing);
 
-            if (!(File.Exists(FullPath)))
+            if (!File.Exists(FullPath))
             {
                 return;
             }
