@@ -326,7 +326,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_InvalidUri()
+        public async Task RemoteLoadAsync_InvalidUri()
         {
             // Arrange
             var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
@@ -336,7 +336,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_HostTimesOut()
+        public async Task RemoteLoadAsync_HostTimesOut()
         {
             // Arrange
             var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings() { Timeout = 100 });
@@ -358,7 +358,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
+        public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             // Arrange
             TestConfigServerStartup.Reset();
@@ -381,7 +381,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
+        public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
         {
             // Arrange
             var envir = HostingHelpers.GetHostingEnvironment();
@@ -452,7 +452,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsGood()
+        public async Task RemoteLoadAsync_ConfigServerReturnsGood()
         {
             // Arrange
             var environment = @"

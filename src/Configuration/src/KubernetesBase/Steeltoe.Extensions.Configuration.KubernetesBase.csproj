@@ -14,4 +14,8 @@
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
 </Project>

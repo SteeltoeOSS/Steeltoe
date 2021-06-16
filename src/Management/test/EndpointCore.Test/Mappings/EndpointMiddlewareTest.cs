@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Mappings.Test
@@ -43,7 +44,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         }
 
         [Fact]
-        public async void HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
+        public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
         {
             var opts = new MappingsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
@@ -66,7 +67,7 @@ namespace Steeltoe.Management.Endpoint.Mappings.Test
         }
 
         [Fact]
-        public async void MappingsActuator_ReturnsExpectedData()
+        public async Task MappingsActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
             .UseStartup<Startup>()

@@ -88,7 +88,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             EvaluateAndCheckError("!null", SpelMessage.TYPE_CONVERSION_ERROR, 1, "null", "System.Boolean");
             EvaluateAndCheckError("null ? 'foo' : 'bar'", SpelMessage.TYPE_CONVERSION_ERROR, 0, "null", "System.Boolean");
 
-            context.TypeConverter = new StandardTypeConverter(new TestGenericConversionService());
+            _context.TypeConverter = new StandardTypeConverter(new TestGenericConversionService());
 
             Evaluate("null or true", true, typeof(bool), false);
             Evaluate("null and true", false, typeof(bool), false);

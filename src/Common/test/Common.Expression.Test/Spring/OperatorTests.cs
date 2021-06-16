@@ -393,9 +393,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Evaluate("null + 'ab'", "nullab", typeof(string));
 
             // AST:
-            var expr = (SpelExpression)parser.ParseExpression("+3");
+            var expr = (SpelExpression)_parser.ParseExpression("+3");
             Assert.Equal("+3", expr.ToStringAST());
-            expr = (SpelExpression)parser.ParseExpression("2+3");
+            expr = (SpelExpression)_parser.ParseExpression("2+3");
             Assert.Equal("(2 + 3)", expr.ToStringAST());
 
             // use as a unary operator
@@ -418,9 +418,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Evaluate("3.0f - 5.0f", -2.0f, typeof(float));
             EvaluateAndCheckError("'ab' - 2", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
             EvaluateAndCheckError("2-'ab'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
-            var expr = (SpelExpression)parser.ParseExpression("-3");
+            var expr = (SpelExpression)_parser.ParseExpression("-3");
             Assert.Equal("-3", expr.ToStringAST());
-            expr = (SpelExpression)parser.ParseExpression("2-3");
+            expr = (SpelExpression)_parser.ParseExpression("2-3");
             Assert.Equal("(2 - 3)", expr.ToStringAST());
 
             Evaluate("-5d", -5d, typeof(double));
@@ -497,40 +497,40 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestOperatorNames()
         {
-            var node = GetOperatorNode((SpelExpression)parser.ParseExpression("1==3"));
+            var node = GetOperatorNode((SpelExpression)_parser.ParseExpression("1==3"));
             Assert.Equal("==", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("1!=3"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("1!=3"));
             Assert.Equal("!=", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3/3"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3/3"));
             Assert.Equal("/", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3+3"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3+3"));
             Assert.Equal("+", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3-3"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3-3"));
             Assert.Equal("-", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3<4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3<4"));
             Assert.Equal("<", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3<=4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3<=4"));
             Assert.Equal("<=", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3*4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3*4"));
             Assert.Equal("*", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3%4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3%4"));
             Assert.Equal("%", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3>=4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3>=4"));
             Assert.Equal(">=", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3 between 4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3 between 4"));
             Assert.Equal("between", node.OperatorName);
 
-            node = GetOperatorNode((SpelExpression)parser.ParseExpression("3 ^ 4"));
+            node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3 ^ 4"));
             Assert.Equal("^", node.OperatorName);
         }
 

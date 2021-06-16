@@ -9,6 +9,7 @@ using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
+    [Obsolete("This class will be removed in a future release. Use HeapDumper instead")]
     public class LinuxHeapDumper : IHeapDumper
     {
         private readonly string _basePathOverride;

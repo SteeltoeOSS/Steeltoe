@@ -6,6 +6,7 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
@@ -25,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
         }
 
         [Fact]
-        public async void GetPermissionsAsyncTest()
+        public async Task GetPermissionsAsyncTest()
         {
             var cloudOpts = new CloudFoundryEndpointOptions();
             var mgmtOpts = new CloudFoundryManagementOptions();
@@ -36,7 +37,7 @@ namespace Steeltoe.Management.Endpoint.Test.CloudFoundry
         }
 
         [Fact]
-        public async void GetPermissionsTest()
+        public async Task GetPermissionsTest()
         {
             var cloudOpts = new CloudFoundryEndpointOptions();
             var mgmtOpts = new CloudFoundryManagementOptions();

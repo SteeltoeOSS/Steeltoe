@@ -134,15 +134,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestClashingWithSuffixes()
         {
             // Just wanting to use the prefix or suffix within the template:
-            var ex = parser.ParseExpression("hello ${3+4} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+            var ex = _parser.ParseExpression("hello ${3+4} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
             var s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
             Assert.Equal("hello 7 world", s);
 
-            ex = parser.ParseExpression("hello ${3+4} wo${'${'}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+            ex = _parser.ParseExpression("hello ${3+4} wo${'${'}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
             s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
             Assert.Equal("hello 7 wo${rld", s);
 
-            ex = parser.ParseExpression("hello ${3+4} wo}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+            ex = _parser.ParseExpression("hello ${3+4} wo}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
             s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
             Assert.Equal("hello 7 wo}rld", s);
         }
@@ -150,21 +150,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestParsingNormalExpressionThroughTemplateParser()
         {
-            var expr = parser.ParseExpression("1+2+3");
+            var expr = _parser.ParseExpression("1+2+3");
             Assert.Equal(6, expr.GetValue());
         }
 
         [Fact]
         public void TestErrorCases()
         {
-            var pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${'world'", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+            var pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${'world'", DEFAULT_TEMPLATE_PARSER_CONTEXT));
 
             Assert.Equal("No ending suffix '}' for expression starting at character 6: ${'world'", pex.SimpleMessage);
             Assert.Equal("hello ${'world'", pex.ExpressionString);
 
-            pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${'wibble'${'world'}", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+            pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${'wibble'${'world'}", DEFAULT_TEMPLATE_PARSER_CONTEXT));
             Assert.Equal("No ending suffix '}' for expression starting at character 6: ${'wibble'${'world'}", pex.SimpleMessage);
-            pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${} world", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+            pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${} world", DEFAULT_TEMPLATE_PARSER_CONTEXT));
             Assert.Equal("No expression defined within delimiter '${}' at character 6", pex.SimpleMessage);
         }
 

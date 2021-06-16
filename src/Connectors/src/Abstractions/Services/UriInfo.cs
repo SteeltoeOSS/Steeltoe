@@ -27,7 +27,7 @@ namespace Steeltoe.Connector.Services
             UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
         }
 
-        public UriInfo(string uristring, bool urlEncodedCredentials = false)
+        public UriInfo(string uristring)
         {
             var uri = MakeUri(uristring);
             if (uri != null)
@@ -43,17 +43,8 @@ namespace Steeltoe.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
 
                 var userinfo = GetUserInfo(uri.UserInfo);
-
-                if (urlEncodedCredentials)
-                {
-                    UserName = WebUtility.UrlDecode(userinfo[0]);
-                    Password = WebUtility.UrlDecode(userinfo[1]);
-                }
-                else
-                {
-                    UserName = userinfo[0];
-                    Password = userinfo[1];
-                }
+                UserName = userinfo[0];
+                Password = userinfo[1];
             }
 
             UriString = uristring;
@@ -75,8 +66,8 @@ namespace Steeltoe.Connector.Services
                 Query = GetQuery(uri.PathAndQuery);
             }
 
-            UserName = username;
-            Password = password;
+            UserName = WebUtility.UrlEncode(username);
+            Password = WebUtility.UrlEncode(password);
             UriString = uristring;
         }
 
@@ -98,18 +89,9 @@ namespace Steeltoe.Connector.Services
 
         public string UriString { get; internal protected set; }
 
-        public Uri Uri
-        {
-            get
-            {
-                return MakeUri(UriString);
-            }
-        }
+        public Uri Uri => MakeUri(UriString);
 
-        public override string ToString()
-        {
-            return UriString;
-        }
+        public override string ToString() => UriString;
 
         protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
         {

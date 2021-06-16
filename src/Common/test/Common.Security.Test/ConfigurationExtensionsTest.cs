@@ -32,6 +32,7 @@ namespace Steeltoe.Common.Security.Test
         }
 
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public async Task AddPemFiles_ReloadsOnChange()
         {
             var tempFile1 = await CreateTempFileAsync("cert");
@@ -49,7 +50,7 @@ namespace Steeltoe.Common.Security.Test
             if (config["certificate"] == null)
             {
                 // wait a little longer
-                await Task.Delay(2000);
+                await Task.Delay(4000);
             }
 
             Assert.Equal("cert2", config["certificate"]);

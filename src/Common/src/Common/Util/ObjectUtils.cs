@@ -54,106 +54,40 @@ namespace Steeltoe.Common.Util
             return obj.GetHashCode();
         }
 
-        // TODO: Add other .NET types
+        // Add other .NET types?
         internal static int ArrayHashCode(object o1)
         {
-            if (o1 is object[])
+            return o1 switch
             {
-                return ArrayItemsHashCode<object>((object[])o1);
-            }
-
-            if (o1 is bool[])
-            {
-                return ArrayItemsHashCode<bool>((bool[])o1);
-            }
-
-            if (o1 is byte[])
-            {
-                return ArrayItemsHashCode<byte>((byte[])o1);
-            }
-
-            if (o1 is char[])
-            {
-                return ArrayItemsHashCode<char>((char[])o1);
-            }
-
-            if (o1 is double[])
-            {
-                return ArrayItemsHashCode<double>((double[])o1);
-            }
-
-            if (o1 is float[])
-            {
-                return ArrayItemsHashCode<float>((float[])o1);
-            }
-
-            if (o1 is int[])
-            {
-                return ArrayItemsHashCode<int>((int[])o1);
-            }
-
-            if (o1 is long[])
-            {
-                return ArrayItemsHashCode<long>((long[])o1);
-            }
-
-            if (o1 is short[])
-            {
-                return ArrayItemsHashCode<short>((short[])o1);
-            }
-
-            return 0;
+                object[] v => ArrayItemsHashCode<object>(v),
+                bool[] v => ArrayItemsHashCode<bool>(v),
+                byte[] v => ArrayItemsHashCode<byte>(v),
+                char[] v => ArrayItemsHashCode<char>(v),
+                double[] v => ArrayItemsHashCode<double>(v),
+                float[] v => ArrayItemsHashCode<float>(v),
+                int[] v => ArrayItemsHashCode<int>(v),
+                long[] v => ArrayItemsHashCode<long>(v),
+                short[] v => ArrayItemsHashCode<short>(v),
+                _ => 0
+            };
         }
 
-        // TODO: Add other .NET types
+        // Add other .NET types?
         internal static bool ArrayEquals(object o1, object o2)
         {
-            if (o1 is object[] && o2 is object[])
+            return o1 switch
             {
-                return ArrayItemsEqual<object>((object[])o1, (object[])o2);
-            }
-
-            if (o1 is bool[] && o2 is bool[])
-            {
-                return ArrayItemsEqual<bool>((bool[])o1, (bool[])o2);
-            }
-
-            if (o1 is byte[] && o2 is byte[])
-            {
-                return ArrayItemsEqual<byte>((byte[])o1, (byte[])o2);
-            }
-
-            if (o1 is char[] && o2 is char[])
-            {
-                return ArrayItemsEqual<char>((char[])o1, (char[])o2);
-            }
-
-            if (o1 is double[] && o2 is double[])
-            {
-                return ArrayItemsEqual<double>((double[])o1, (double[])o2);
-            }
-
-            if (o1 is float[] && o2 is float[])
-            {
-                return ArrayItemsEqual<float>((float[])o1, (float[])o2);
-            }
-
-            if (o1 is int[] && o2 is int[])
-            {
-                return ArrayItemsEqual<int>((int[])o1, (int[])o2);
-            }
-
-            if (o1 is long[] && o2 is long[])
-            {
-                return ArrayItemsEqual<long>((long[])o1, (long[])o2);
-            }
-
-            if (o1 is short[] && o2 is short[])
-            {
-                return ArrayItemsEqual<short>((short[])o1, (short[])o2);
-            }
-
-            return false;
+                object[] v => o2 is object[] v1 && ArrayItemsEqual<object>(v, v1),
+                bool[] v => o2 is bool[] v1 && ArrayItemsEqual<bool>(v, v1),
+                byte[] v => o2 is byte[] v1 && ArrayItemsEqual<byte>(v, v1),
+                char[] v => o2 is char[] v1 && ArrayItemsEqual<char>(v, v1),
+                double[] v => o2 is double[] v1 && ArrayItemsEqual<double>(v, v1),
+                float[] v => o2 is float[] v1 && ArrayItemsEqual<float>(v, v1),
+                int[] v => o2 is int[] v1 && ArrayItemsEqual<int>(v, v1),
+                long[] v => o2 is long[] v1 && ArrayItemsEqual<long>(v, v1),
+                short[] v => o2 is short[] v1 && ArrayItemsEqual<short>(v, v1),
+                _ => false
+            };
         }
 
         internal static bool ArrayItemsEqual<T>(T[] o1, T[] o2)
@@ -173,10 +107,10 @@ namespace Steeltoe.Common.Util
                 return false;
             }
 
-            for (int i = 0; i < o1.Length; i++)
+            for (var i = 0; i < o1.Length; i++)
             {
-                T item1 = o1[i];
-                T item2 = o2[i];
+                var item1 = o1[i];
+                var item2 = o2[i];
                 if (!(item1 == null ? item2 == null : item1.Equals(item2)))
                 {
                     return false;
@@ -193,8 +127,8 @@ namespace Steeltoe.Common.Util
                 return 0;
             }
 
-            int hash = INITIAL_HASH;
-            foreach (T element in array)
+            var hash = INITIAL_HASH;
+            foreach (var element in array)
             {
                 hash = (MULTIPLIER * hash) + NullSafeHashCode(element);
             }

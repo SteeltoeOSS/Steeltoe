@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
 
@@ -11,6 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class TypeReference : SpelNode
     {
+        private static readonly MethodInfo _getTypeFromHandle = typeof(Type).GetMethod("GetTypeFromHandle", BindingFlags.Static | BindingFlags.Public);
         private readonly int _dimensions;
         private Type _type;
 
@@ -27,7 +28,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override ITypedValue GetValueInternal(ExpressionState state)
         {
-            // TODO possible optimization here if we cache the discovered type reference, but can we do that?
+            // Possible optimization here if we cache the discovered type reference, but can we do that?
             var typeName = (string)_children[0].GetValueInternal(state).Value;
             if (typeName == null)
             {
@@ -41,7 +42,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     // It is a primitive type
                     var atype = MakeArrayIfNecessary(tc.Type);
-                    _exitTypeDescriptor = "LSystem/Type";
+                    _exitTypeDescriptor = TypeDescriptor.TYPE;
                     _type = atype;
                     return new TypedValue(atype);
                 }
@@ -49,7 +50,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
             var clazz = state.FindType(typeName);
             clazz = MakeArrayIfNecessary(clazz);
-            _exitTypeDescriptor = "LSystem/Type";
+            _exitTypeDescriptor = TypeDescriptor.TYPE;
             _type = clazz;
             return new TypedValue(clazz);
         }
@@ -72,50 +73,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             return _exitTypeDescriptor != null;
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // // TODO Future optimization - if followed by a static method call, skip generating code here
-            //    Assert.state(this.type != null, "No type available");
-            //    if (this.type.isPrimitive())
-            //    {
-            //        if (this.type == Boolean.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Boolean", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Byte.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Byte", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Character.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Character", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Double.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Double", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Float.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Float", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Integer.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Integer", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Long.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Long", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //        else if (this.type == Short.TYPE)
-            //        {
-            //            mv.visitFieldInsn(GETSTATIC, "java/lang/Short", "TYPE", "Ljava/lang/Class;");
-            //        }
-            //    }
-            //    else
-            //    {
-            //        mv.visitLdcInsn(Type.getType(this.type));
-            //    }
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            if (_type == null)
+            {
+                throw new InvalidOperationException("No type available");
+            }
+
+            gen.Emit(OpCodes.Ldtoken, _type);
+            gen.Emit(OpCodes.Call, _getTypeFromHandle);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         private Type MakeArrayIfNecessary(Type clazz)

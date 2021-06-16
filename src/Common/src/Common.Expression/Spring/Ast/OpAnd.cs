@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -15,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public OpAnd(int startPos, int endPos, params SpelNode[] operands)
             : base("and", startPos, endPos, operands)
         {
-            _exitTypeDescriptor = "Z";
+            _exitTypeDescriptor = TypeDescriptor.Z;
         }
 
         public override ITypedValue GetValueInternal(ExpressionState state)
@@ -38,25 +35,30 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
         }
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
             // // Pseudo: if (!leftOperandValue) { result=false; } else { result=rightOperandValue; }
-            //    Label elseTarget = new Label();
-            //    Label endOfIf = new Label();
-            //    cf.enterCompilationScope();
-            //    getLeftOperand().generateCode(mv, cf);
-            //    cf.unboxBooleanIfNecessary(mv);
-            //    cf.exitCompilationScope();
-            //    mv.visitJumpInsn(IFNE, elseTarget);
-            //    mv.visitLdcInsn(0); // FALSE
-            //    mv.visitJumpInsn(GOTO, endOfIf);
-            //    mv.visitLabel(elseTarget);
-            //    cf.enterCompilationScope();
-            //    getRightOperand().generateCode(mv, cf);
-            //    cf.unboxBooleanIfNecessary(mv);
-            //    cf.exitCompilationScope();
-            //    mv.visitLabel(endOfIf);
-            //    cf.pushDescriptor(this.exitTypeDescriptor);
+            var elseTarget = gen.DefineLabel();
+            var endIfTarget = gen.DefineLabel();
+            var result = gen.DeclareLocal(typeof(bool));
+
+            cf.EnterCompilationScope();
+            LeftOperand.GenerateCode(gen, cf);
+            cf.UnboxBooleanIfNecessary(gen);
+            cf.ExitCompilationScope();
+            gen.Emit(OpCodes.Brtrue, elseTarget);
+            gen.Emit(OpCodes.Ldc_I4_0);
+            gen.Emit(OpCodes.Stloc, result);
+            gen.Emit(OpCodes.Br, endIfTarget);
+            gen.MarkLabel(elseTarget);
+            cf.EnterCompilationScope();
+            RightOperand.GenerateCode(gen, cf);
+            cf.UnboxBooleanIfNecessary(gen);
+            cf.ExitCompilationScope();
+            gen.Emit(OpCodes.Stloc, result);
+            gen.MarkLabel(endIfTarget);
+            gen.Emit(OpCodes.Ldloc, result);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
 
         private bool GetBooleanValue(ExpressionState state, SpelNode operand)
@@ -64,8 +66,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             try
             {
                 var value = operand.GetValue<bool>(state);
-
-                // AssertValueNotNull(value);
                 return value;
             }
             catch (SpelEvaluationException ex)
@@ -74,13 +74,5 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 throw;
             }
         }
-
-        // private void AssertValueNotNull(bool value)
-        // {
-        //    if (value == null)
-        //    {
-        //        throw new SpelEvaluationException(SpelMessage.TYPE_CONVERSION_ERROR, "null", "System.Boolean");
-        //    }
-        // }
     }
 }

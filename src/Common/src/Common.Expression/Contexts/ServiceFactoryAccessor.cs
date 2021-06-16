@@ -5,7 +5,6 @@
 using Steeltoe.Common.Contexts;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts
 {
@@ -16,10 +15,10 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
             var serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out var lookupName);
             if (serviceType != null)
             {
-                return target is IApplicationContext && ((IApplicationContext)target).ContainsService(lookupName, serviceType);
+                return target is IApplicationContext context1 && context1.ContainsService(lookupName, serviceType);
             }
 
-            return target is IApplicationContext && ((IApplicationContext)target).ContainsService(name);
+            return target is IApplicationContext context2 && context2.ContainsService(name);
         }
 
         public bool CanWrite(IEvaluationContext context, object target, string name)
@@ -34,8 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            var targetContext = target as IApplicationContext;
-            if (targetContext == null)
+            if (target is not IApplicationContext targetContext)
             {
                 throw new InvalidOperationException("target must be of type IApplicationContext");
             }

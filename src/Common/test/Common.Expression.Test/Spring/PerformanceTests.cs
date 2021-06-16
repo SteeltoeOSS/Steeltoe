@@ -11,14 +11,14 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Common.Expression.Internal.Spring
 {
+#pragma warning disable xUnit1004 // Test methods should not be skipped
     public class PerformanceTests
     {
-        public static readonly int ITERATIONS = 10000;
-        public static readonly bool Report = true;
-        private static readonly bool DEBUG = false;
-        private static IExpressionParser parser = new SpelExpressionParser();
-        private static IEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
-        private ITestOutputHelper _output;
+        private static readonly int _iterations = 10000;
+        private static readonly bool _debug = false;
+        private static readonly IExpressionParser _parser = new SpelExpressionParser();
+        private static readonly IEvaluationContext _eContext = TestScenarioCreator.GetTestEvaluationContext();
+        private readonly ITestOutputHelper _output;
 
         public PerformanceTests(ITestOutputHelper output)
         {
@@ -33,39 +33,39 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             IExpression expr;
 
             // warmup
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr = parser.ParseExpression("PlaceOfBirth.City");
+                expr = _parser.ParseExpression("PlaceOfBirth.City");
                 Assert.NotNull(expr);
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr = parser.ParseExpression("PlaceOfBirth.City");
+                expr = _parser.ParseExpression("PlaceOfBirth.City");
                 Assert.NotNull(expr);
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var freshParseTime = endtime - starttime;
-            if (DEBUG)
+            if (_debug)
             {
                 _output.WriteLine("PropertyAccess: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
             }
 
-            expr = parser.ParseExpression("PlaceOfBirth.City");
+            expr = _parser.ParseExpression("PlaceOfBirth.City");
             Assert.NotNull(expr);
             starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var reuseTime = endtime - starttime;
-            if (DEBUG)
+            if (_debug)
             {
                 _output.WriteLine("PropertyAccess: Time for just evaluation x 10000: " + reuseTime + "ms");
             }
@@ -86,39 +86,39 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             IExpression expr;
 
             // warmup
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr = parser.ParseExpression("get_PlaceOfBirth().get_City()");
+                expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
                 Assert.NotNull(expr);
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr = parser.ParseExpression("get_PlaceOfBirth().get_City()");
+                expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
                 Assert.NotNull(expr);
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var freshParseTime = endtime - starttime;
-            if (DEBUG)
+            if (_debug)
             {
                 _output.WriteLine("MethodExpression: Time for parsing and evaluation x 10000: " + freshParseTime + "ms");
             }
 
-            expr = parser.ParseExpression("get_PlaceOfBirth().get_City()");
+            expr = _parser.ParseExpression("get_PlaceOfBirth().get_City()");
             Assert.NotNull(expr);
             starttime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            for (var i = 0; i < ITERATIONS; i++)
+            for (var i = 0; i < _iterations; i++)
             {
-                expr.GetValue(eContext);
+                expr.GetValue(_eContext);
             }
 
             endtime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var reuseTime = endtime - starttime;
-            if (DEBUG)
+            if (_debug)
             {
                 _output.WriteLine("MethodExpression: Time for just evaluation x 10000: " + reuseTime + "ms");
             }
@@ -131,4 +131,5 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             }
         }
     }
+#pragma warning restore xUnit1004 // Test methods should not be skipped
 }

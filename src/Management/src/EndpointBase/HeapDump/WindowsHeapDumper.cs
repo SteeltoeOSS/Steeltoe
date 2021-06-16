@@ -28,6 +28,11 @@ namespace Steeltoe.Management.Endpoint.HeapDump
 
         public string DumpHeap()
         {
+            if (!string.IsNullOrEmpty(_options.HeapDumpType))
+            {
+                _logger?.LogWarning("Heap dump type was specified in options but can't currently be set for .NET Core apps on Windows");
+            }
+
             string fileName = CreateFileName();
             int curProcessId = Process.GetCurrentProcess().Id;
             Process process = Process.GetProcessById(curProcessId);

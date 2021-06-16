@@ -70,17 +70,17 @@ namespace Steeltoe.Common.Converter
                 targetClass.Name));
         }
 
+        internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass)
+        {
+            return GetValidatedMember(targetClass, sourceClass) != null;
+        }
+
         private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
         {
             return new HashSet<(Type Source, Type Target)>()
             {
                 (typeof(object), typeof(object))
             };
-        }
-
-        private static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass)
-        {
-            return GetValidatedMember(targetClass, sourceClass) != null;
         }
 
         private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)

@@ -20,7 +20,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             CheckIfConstant();
         }
 
-        public override ITypedValue GetValueInternal(ExpressionState expressionState)
+        public override ITypedValue GetValueInternal(ExpressionState state)
         {
             if (_constant != null)
             {
@@ -32,20 +32,19 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var childcount = ChildCount;
                 for (var c = 0; c < childcount; c++)
                 {
-                    // TODO allow for key being PropertyOrFieldReference like Indexer on maps
+                    // Allow for key being PropertyOrFieldReference like Indexer on maps
                     var keyChild = GetChild(c++);
                     object key = null;
-                    if (keyChild is PropertyOrFieldReference)
+                    if (keyChild is PropertyOrFieldReference reference)
                     {
-                        var reference = (PropertyOrFieldReference)keyChild;
                         key = reference.Name;
                     }
                     else
                     {
-                        key = keyChild.GetValue(expressionState);
+                        key = keyChild.GetValue(state);
                     }
 
-                    var value = GetChild(c).GetValue(expressionState);
+                    var value = GetChild(c).GetValue(state);
                     returnValue[key] = value;
                 }
 
@@ -93,18 +92,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 var child = GetChild(c);
                 if (!(child is Literal))
                 {
-                    if (child is InlineList)
+                    if (child is InlineList inlineList)
                     {
-                        var inlineList = (InlineList)child;
                         if (!inlineList.IsConstant)
                         {
                             isConstant = false;
                             break;
                         }
                     }
-                    else if (child is InlineMap)
+                    else if (child is InlineMap inlineMap)
                     {
-                        var inlineMap = (InlineMap)child;
                         if (!inlineMap.IsConstant)
                         {
                             isConstant = false;
@@ -129,30 +126,30 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var valueChild = GetChild(c);
                     object key = null;
                     object value = null;
-                    if (keyChild is Literal)
+                    if (keyChild is Literal literal)
                     {
-                        key = ((Literal)keyChild).GetLiteralValue().Value;
+                        key = literal.GetLiteralValue().Value;
                     }
-                    else if (keyChild is PropertyOrFieldReference)
+                    else if (keyChild is PropertyOrFieldReference reference)
                     {
-                        key = ((PropertyOrFieldReference)keyChild).Name;
+                        key = reference.Name;
                     }
                     else
                     {
                         return;
                     }
 
-                    if (valueChild is Literal)
+                    if (valueChild is Literal literal1)
                     {
-                        value = ((Literal)valueChild).GetLiteralValue().Value;
+                        value = literal1.GetLiteralValue().Value;
                     }
-                    else if (valueChild is InlineList)
+                    else if (valueChild is InlineList list)
                     {
-                        value = ((InlineList)valueChild).GetConstantValue();
+                        value = list.GetConstantValue();
                     }
-                    else if (valueChild is InlineMap)
+                    else if (valueChild is InlineMap map)
                     {
-                        value = ((InlineMap)valueChild).GetConstantValue();
+                        value = map.GetConstantValue();
                     }
 
                     constantMap[key] = value;

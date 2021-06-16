@@ -27,19 +27,19 @@ namespace Steeltoe.Common.Expression.Internal
 
         public Type TypeDescriptor { get; }
 
-        public override bool Equals(object other)
+        public override bool Equals(object obj)
         {
-            if (this == other)
+            if (this == obj)
             {
                 return true;
             }
 
-            if (!(other is TypedValue))
+            if (!(obj is TypedValue))
             {
                 return false;
             }
 
-            var otherTv = (TypedValue)other;
+            var otherTv = (TypedValue)obj;
 
             return ObjectUtils.NullSafeEquals(Value, otherTv.Value) &&
                     ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||

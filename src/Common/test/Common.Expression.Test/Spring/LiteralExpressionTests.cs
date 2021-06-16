@@ -46,7 +46,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestGetValueType()
         {
-            LiteralExpression lEx = new LiteralExpression("somevalue");
+            var lEx = new LiteralExpression("somevalue");
             Assert.Equal(typeof(string), lEx.GetValueType());
             Assert.Equal(typeof(string), lEx.GetValueType(new StandardEvaluationContext()));
             Assert.Equal(typeof(string), lEx.GetValueType(new Rooty()));

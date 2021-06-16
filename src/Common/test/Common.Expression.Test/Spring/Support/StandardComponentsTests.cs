@@ -14,7 +14,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         [Fact]
         public void TestStandardEvaluationContext()
         {
-            StandardEvaluationContext context = new StandardEvaluationContext();
+            var context = new StandardEvaluationContext();
             Assert.NotNull(context.TypeComparator);
 
             var tc = new StandardTypeComparator();
@@ -37,7 +37,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
         [Fact]
         public void TestStandardTypeLocator()
         {
-            StandardTypeLocator tl = new StandardTypeLocator();
+            var tl = new StandardTypeLocator();
             var prefixes = tl.ImportPrefixes;
             Assert.Single(prefixes);
             tl.RegisterImport("System.Collections");

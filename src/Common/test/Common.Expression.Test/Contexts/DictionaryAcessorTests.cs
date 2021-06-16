@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
             // avoiding inserting checkcast because first part of expression returns a Map
             ex = sep.ParseExpression("Map.foo");
-            MapGetter mapGetter = new MapGetter();
+            var mapGetter = new MapGetter();
             Assert.Equal("bar", ex.GetValue(sec, mapGetter));
 
             // assertThat(SpelCompiler.compile(ex)).isTrue();
@@ -54,23 +54,29 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
 
         private Dictionary<string, object> GetSimpleTestDictionary()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
+            var map = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
             return map;
         }
 
         private Dictionary<string, Dictionary<string, object>> GetNestedTestDictionary()
         {
-            var map = new Dictionary<string, object>();
-            map.Add("foo", "bar");
-            var map2 = new Dictionary<string, Dictionary<string, object>>();
-            map2.Add("aaa", map);
+            var map = new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            };
+            var map2 = new Dictionary<string, Dictionary<string, object>>
+            {
+                { "aaa", map }
+            };
             return map2;
         }
 
         public class MapGetter
         {
-            private Dictionary<string, object> _map = new Dictionary<string, object>();
+            private Dictionary<string, object> _map = new ();
 
             public MapGetter()
             {

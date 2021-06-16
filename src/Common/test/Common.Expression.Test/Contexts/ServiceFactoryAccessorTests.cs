@@ -38,8 +38,10 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         public void TestServiceAccess()
         {
             var appContext = serviceProvider.GetService<IApplicationContext>();
-            var context = new StandardEvaluationContext();
-            context.ServiceResolver = new ServiceFactoryResolver(appContext);
+            var context = new StandardEvaluationContext
+            {
+                ServiceResolver = new ServiceFactoryResolver(appContext)
+            };
 
             var car = appContext.GetService<Car>();
             var boat = appContext.GetService<Boat>();

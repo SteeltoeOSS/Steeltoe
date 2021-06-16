@@ -23,7 +23,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         }
 
         [Fact]
-        public async void GetLeaderStatusAsync_ReturnsExpected()
+        public async Task GetLeaderStatusAsync_ReturnsExpected()
         {
             var statusResult = Task.FromResult("thestatus");
             var clientMoq = new Mock<IConsulClient>();
@@ -37,7 +37,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test
         }
 
         [Fact]
-        public async void GetCatalogServicesAsync_ReturnsExpected()
+        public async Task GetCatalogServicesAsync_ReturnsExpected()
         {
             var queryResult = new QueryResult<Dictionary<string, string[]>>()
             {

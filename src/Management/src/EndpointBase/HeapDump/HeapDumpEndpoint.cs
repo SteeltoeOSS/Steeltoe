@@ -24,13 +24,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump
             _logger = logger;
         }
 
-        public new IHeapDumpOptions Options
-        {
-            get
-            {
-                return options as IHeapDumpOptions;
-            }
-        }
+        public new IHeapDumpOptions Options => options as IHeapDumpOptions;
 
         public override string Invoke()
         {

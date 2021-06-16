@@ -12,7 +12,7 @@ using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
@@ -112,7 +112,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
@@ -131,7 +131,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();
@@ -147,7 +147,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
             var mopts = new CloudFoundryManagementOptions();

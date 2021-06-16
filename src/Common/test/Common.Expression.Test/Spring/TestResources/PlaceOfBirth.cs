@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
 
         public PlaceOfBirth(string str)
         {
-            this.city = str;
+            city = str;
         }
 
         public int DoubleIt(int i)
@@ -38,7 +38,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
                 return false;
             }
 
-            PlaceOfBirth oPOB = (PlaceOfBirth)o;
+            var oPOB = (PlaceOfBirth)o;
             return city.Equals(oPOB.city);
         }
 

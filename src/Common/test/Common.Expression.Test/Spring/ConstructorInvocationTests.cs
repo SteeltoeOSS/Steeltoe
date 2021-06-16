@@ -33,7 +33,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // On 2 it will throw a RuntimeException
             // On 3 it will exit normally
             // In each case it increments the Tester field 'counter' when invoked
-            SpelExpressionParser parser = new SpelExpressionParser();
+            var parser = new SpelExpressionParser();
             var expr = parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.ConstructorInvocationTests$Tester(#bar).I");
 
             // Normal exit
@@ -87,10 +87,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestAddingConstructorResolvers()
         {
-            StandardEvaluationContext ctx = new StandardEvaluationContext();
+            var ctx = new StandardEvaluationContext();
 
             // reflective constructor accessor is the only one by default
-            List<IConstructorResolver> constructorResolvers = ctx.ConstructorResolvers;
+            var constructorResolvers = ctx.ConstructorResolvers;
             Assert.Single(constructorResolvers);
 
             var dummy = new DummyConstructorResolver();
@@ -161,6 +161,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Evaluate("new String(3.0d)", "3.0", typeof(string));
         }
 
+#pragma warning disable IDE1006 // Naming Styles
+
         public class DummyConstructorResolver : IConstructorResolver
         {
             public IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes)
@@ -207,5 +209,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             {
             }
         }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }

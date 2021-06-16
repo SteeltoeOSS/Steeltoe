@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Management.Endpoint.ContentNegotiation.Test.TestStartupExtensions;
 
@@ -61,7 +62,7 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
 
         [Theory]
         [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
-        public async void EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
+        public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
         {
             // arrange a server and client
             var builder = new WebHostBuilder()

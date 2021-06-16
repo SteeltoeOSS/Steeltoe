@@ -2,10 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
 using System.Reflection.Emit;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
@@ -17,7 +14,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             : base(payload, startPos, endPos)
         {
             _value = new TypedValue(value);
-            _exitTypeDescriptor = "F";
+            _exitTypeDescriptor = TypeDescriptor.F;
         }
 
         public override ITypedValue GetLiteralValue()
@@ -27,10 +24,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         public override bool IsCompilable() => true;
 
-        public override void GenerateCode(DynamicMethod mv, CodeFlow cf)
+        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
         {
-            // mv.visitLdcInsn(this._value.getValue());
-            // cf.pushDescriptor(this.exitTypeDescriptor);
+            gen.Emit(OpCodes.Ldc_R4, (float)_value.Value);
+            cf.PushDescriptor(_exitTypeDescriptor);
         }
     }
 }

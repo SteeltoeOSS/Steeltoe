@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Common
 {
@@ -133,22 +131,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common
 
         object IExpression.GetValue()
         {
-            return this.GetValue();
+            return GetValue();
         }
 
         object IExpression.GetValue(object rootObject)
         {
-            return this.GetValue(rootObject);
+            return GetValue(rootObject);
         }
 
         object IExpression.GetValue(IEvaluationContext context)
         {
-            return this.GetValue(context);
+            return GetValue(context);
         }
 
         object IExpression.GetValue(IEvaluationContext context, object rootObject)
         {
-            return this.GetValue(context, rootObject);
+            return GetValue(context, rootObject);
         }
     }
 }

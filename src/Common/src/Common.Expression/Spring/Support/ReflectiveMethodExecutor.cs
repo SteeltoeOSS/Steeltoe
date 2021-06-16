@@ -4,9 +4,7 @@
 
 using Steeltoe.Common.Util;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
@@ -53,7 +51,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 
         private Type DiscoverPublicDeclaringClass(MethodInfo method, Type clazz)
         {
-            if (clazz.IsPublic)
+            if (ReflectionHelper.IsPublic(clazz))
             {
                 try
                 {
@@ -86,9 +84,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_originalMethod), arguments);
                 }
 
-                // ReflectionUtils.makeAccessible(this.methodToInvoke);
                 var value = _methodToInvoke.Invoke(target, arguments);
-                return new TypedValue(value, value?.GetType() ?? _originalMethod.ReturnType); // new TypeDescriptor(new MethodParameter(this.originalMethod, -1)).Narrow(value));
+                return new TypedValue(value, value?.GetType() ?? _originalMethod.ReturnType);
             }
             catch (Exception ex)
             {

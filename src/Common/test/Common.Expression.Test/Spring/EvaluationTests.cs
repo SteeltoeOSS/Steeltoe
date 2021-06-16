@@ -176,7 +176,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         {
             var pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
             var expression = "'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches \'" + pattern + "\'";
-            var expr = parser.ParseExpression(expression);
+            var expr = _parser.ParseExpression(expression);
             var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue());
             Assert.IsType<RegexMatchTimeoutException>(ex.InnerException);
             Assert.Equal(SpelMessage.FLAWED_PATTERN, ex.MessageCode);
@@ -258,7 +258,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestConstructorInvocation06()
         {
             // repeated evaluation to drive use of cached executor
-            var e = (SpelExpression)parser.ParseExpression("new String('wibble')");
+            var e = (SpelExpression)_parser.ParseExpression("new String('wibble')");
             var newstring = e.GetValue<string>();
             Assert.Equal("wibble", newstring);
             newstring = e.GetValue<string>();
@@ -299,31 +299,31 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestUnaryNotWithNullValue()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("!null").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("!null").GetValue());
         }
 
         [Fact]
         public void TestAndWithNullValueOnLeft()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("null and true").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("null and true").GetValue());
         }
 
         [Fact]
         public void TestAndWithNullValueOnRight()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("true and null").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("true and null").GetValue());
         }
 
         [Fact]
         public void TestOrWithNullValueOnLeft()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("null or false").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("null or false").GetValue());
         }
 
         [Fact]
         public void TestOrWithNullValueOnRight()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("false or null").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("false or null").GetValue());
         }
 
         // assignment
@@ -355,8 +355,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestTernaryOperator04()
         {
-            var e = parser.ParseExpression("1>2?3:4");
-            Assert.False(e.IsWritable(context));
+            var e = _parser.ParseExpression("1>2?3:4");
+            Assert.False(e.IsWritable(_context));
         }
 
         [Fact]
@@ -371,7 +371,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestTernaryOperatorWithNullValue()
         {
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("null ? 0 : 1").GetValue());
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("null ? 0 : 1").GetValue());
         }
 
         [Fact]
@@ -446,7 +446,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestTypeReferencesAndQualifiedIdentifierCaching()
         {
-            var e = (SpelExpression)parser.ParseExpression("T(System.String)");
+            var e = (SpelExpression)_parser.ParseExpression("T(System.String)");
             Assert.False(e.IsWritable(new StandardEvaluationContext()));
             Assert.Equal("T(System.String)", e.ToStringAST());
             Assert.Equal(typeof(string), e.GetValue(typeof(Type)));
@@ -459,7 +459,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void OperatorVariants()
         {
-            var e = (SpelExpression)parser.ParseExpression("#a < #b");
+            var e = (SpelExpression)_parser.ParseExpression("#a < #b");
             var ctx = new StandardEvaluationContext();
             ctx.SetVariable("a", (short)3);
             ctx.SetVariable("b", (short)6);
@@ -525,15 +525,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         [Fact]
         public void TestAdvancedNumerics()
         {
-            var twentyFour = parser.ParseExpression("2.0 * 3e0 * 4").GetValue(typeof(int));
+            var twentyFour = _parser.ParseExpression("2.0 * 3e0 * 4").GetValue(typeof(int));
             Assert.Equal(24, twentyFour);
-            var one = parser.ParseExpression("8.0 / 5e0 % 2").GetValue<double>();
+            var one = _parser.ParseExpression("8.0 / 5e0 % 2").GetValue<double>();
             Assert.InRange((float)one, 1.6f, 1.6f);
-            var o = parser.ParseExpression("8.0 / 5e0 % 2").GetValue<int>();
+            var o = _parser.ParseExpression("8.0 / 5e0 % 2").GetValue<int>();
             Assert.Equal(2, o);
-            var sixteen = parser.ParseExpression("-2 ^ 4").GetValue<int>();
+            var sixteen = _parser.ParseExpression("-2 ^ 4").GetValue<int>();
             Assert.Equal(16, sixteen);
-            var minusFortyFive = parser.ParseExpression("1+2-3*8^2/2/2").GetValue<int>();
+            var minusFortyFive = _parser.ParseExpression("1+2-3*8^2/2/2").GetValue<int>();
             Assert.Equal(-45, minusFortyFive);
         }
 
@@ -541,23 +541,23 @@ namespace Steeltoe.Common.Expression.Internal.Spring
         public void TestComparison()
         {
             var context = TestScenarioCreator.GetTestEvaluationContext();
-            var trueValue = parser.ParseExpression("T(DateTime) == BirthDate.GetType()").GetValue<bool>(context);
+            var trueValue = _parser.ParseExpression("T(DateTime) == BirthDate.GetType()").GetValue<bool>(context);
             Assert.True(trueValue);
         }
 
         [Fact]
         public void TestResolvingList()
         {
-            StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
-            Assert.Throws<SpelEvaluationException>(() => parser.ParseExpression("T(List)!=null").GetValue<bool>(context));
+            var context = TestScenarioCreator.GetTestEvaluationContext();
+            Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("T(List)!=null").GetValue<bool>(context));
             ((StandardTypeLocator)context.TypeLocator).RegisterImport("System.Collections");
-            Assert.True(parser.ParseExpression("T(ArrayList)!=null").GetValue<bool>(context));
+            Assert.True(_parser.ParseExpression("T(ArrayList)!=null").GetValue<bool>(context));
         }
 
         [Fact]
         public void TestResolvingString()
         {
-            var stringClass = parser.ParseExpression("T(String)").GetValue<Type>();
+            var stringClass = _parser.ParseExpression("T(String)").GetValue<Type>();
             Assert.Equal(typeof(string), stringClass);
         }
 
@@ -607,8 +607,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             var context = new StandardEvaluationContext();
 
             // Register a custom MethodResolver...
-            var customResolvers = new List<IMethodResolver>();
-            customResolvers.Add(new CustomMethodResolver());
+            var customResolvers = new List<IMethodResolver>
+            {
+                new CustomMethodResolver()
+            };
             context.MethodResolvers = customResolvers;
 
             // or simply...
@@ -1190,7 +1192,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             // foo.iii == 99
             e = parser.ParseExpression("Foo.Iii++");
             Assert.Equal(99, helper.Foo.Iii);
-            int return_foo_iii = e.GetValue<int>(ctx);
+            var return_foo_iii = e.GetValue<int>(ctx);
             Assert.Equal(99, return_foo_iii);
             Assert.Equal(100, helper.Foo.Iii);
 
@@ -1347,6 +1349,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Equal(messageCode, ex.MessageCode);
         }
 
+        #region Test Classes
+        #pragma warning disable IDE1006 // Naming Styles
+        #pragma warning disable IDE0044 // Add readonly modifier
+
         public class MyServiceResolver : IServiceResolver
         {
             public object Resolve(IEvaluationContext context, string serviceName)
@@ -1369,7 +1375,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public long Lll = 66666L;
             public int Iii = 42;
             public short Sss = (short)15;
-            public Spr9751_2 Foo = new Spr9751_2();
+            public Spr9751_2 Foo = new ();
 
             public int[] IntArray = new int[] { 1, 2, 3, 4, 5 };
             public int Index1 = 2;
@@ -1388,8 +1394,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 IntegerArray[2] = 3;
                 IntegerArray[3] = 4;
                 IntegerArray[4] = 5;
-                ListOfStrings = new List<string>();
-                ListOfStrings.Add("abc");
+                ListOfStrings = new List<string>
+                {
+                    "abc"
+                };
             }
 
             public static bool IsEven(int i)
@@ -1440,6 +1448,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             public Dictionary<string, int> MapStringToInteger;
             public List<string> List;
             public IList List2;
+
             private IDictionary _map2 = null;
             private Foo _wibble2 = null;
             private List<string> _foo;
@@ -1461,5 +1470,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public Foo Wibble2 => _wibble2;
         }
+
+        #pragma warning restore IDE0044 // Add readonly modifier
+        #pragma warning restore IDE1006 // Naming Styles
+        #endregion Test Classes
     }
 }

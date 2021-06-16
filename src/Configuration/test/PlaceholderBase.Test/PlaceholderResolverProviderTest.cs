@@ -126,7 +126,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("nokeyvalue", val);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void GetReloadToken_ReturnsExpected_NotifyChanges()
         {
             // Arrange
@@ -210,7 +212,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("value1", holder.Configuration["key1"]);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void Load_ReloadsConfiguration()
         {
             // Arrange

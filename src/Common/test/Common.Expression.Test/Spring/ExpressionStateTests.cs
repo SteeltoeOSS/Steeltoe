@@ -178,9 +178,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             Assert.Null(state.LookupLocalVariable("foo"));
             Assert.Null(state.LookupLocalVariable("goo"));
 
-            var m = new Dictionary<string, object>();
-            m.Add("foo", 34);
-            m.Add("goo", "abc");
+            var m = new Dictionary<string, object>
+            {
+                { "foo", 34 },
+                { "goo", "abc" }
+            };
 
             state.EnterScope(m);
             Assert.Equal(34, state.LookupLocalVariable("foo"));

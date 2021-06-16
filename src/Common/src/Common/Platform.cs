@@ -22,6 +22,8 @@ namespace Steeltoe.Common
 
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+        public static bool IsOSX => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+
         /// <summary>
         /// Gets a value indicating whether or not the application appears to be running in a container
         /// </summary>

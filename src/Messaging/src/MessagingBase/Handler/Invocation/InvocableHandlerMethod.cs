@@ -4,7 +4,9 @@
 
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Handler.Invocation
 {
@@ -95,7 +97,22 @@ namespace Steeltoe.Messaging.Handler.Invocation
                     throw new InvalidOperationException(FormatInvokeError("Argument count mismatch", args), new TargetParameterCountException());
                 }
 
-                return _invoker(_handler, args);
+                var result = _invoker(_handler, args);
+
+                if (result is Task)
+                {
+                    var resultAsTask = result as Task;
+
+                    var isAsyncMethod = Method.CustomAttributes
+                        .Any(x => x.AttributeType.Name == nameof(System.Runtime.CompilerServices.AsyncStateMachineAttribute));
+
+                    if (isAsyncMethod)
+                    {
+                        resultAsTask.Wait();
+                    }
+                }
+
+                return result;
             }
             catch (Exception ex) when (ex is InvalidCastException)
             {
