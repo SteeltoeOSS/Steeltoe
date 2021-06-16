@@ -32,5 +32,37 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             var value = config["foo:bar"];
             Assert.Equal("value", value);
         }
+
+        [Fact]
+        public void AddSpringBootCmd_ThrowsIfConfigBuilderNull()
+        {
+            // Arrange
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+
+            // Act and Assert
+            Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(null, configurationBuilder.Build()));
+
+            Assert.Throws<ArgumentNullException>(() => SpringBootConfigurationBuilderExtensions.AddSpringBootCmd(configurationBuilder, null));
+        }
+
+        [Fact]
+        public void AddSpringBootCmd_AddKeys()
+        {
+            var config1 = new ConfigurationBuilder()
+                .AddCommandLine(new string[] { "spring.foo.bar=value", "spring.bar.foo=value2", "bar.foo=value3" })
+                .Build();
+
+            var builder = new ConfigurationBuilder()
+                 .AddSpringBootCmd(config1);
+
+            var config = builder.Build();
+            var value = config["spring:foo:bar"];
+            Assert.Equal("value", value);
+
+            value = config["spring:bar:foo"];
+            Assert.Equal("value2", value);
+
+            Assert.Null(config["bar:foo"]);
+        }
     }
 }

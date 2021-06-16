@@ -16,7 +16,7 @@ using Steeltoe.Extensions.Configuration.SpringBootEnv;
         static void Main(string[] args)
         {
             var host = Host.CreateDefaultBuilder()
-                        .ConfigureAppConfiguration(conf => conf.AddSpringBootEnvSource())
+                        .ConfigureAppConfiguration(conf => conf.AddSpringBootEnv())
                         .Build();
             var config = host.Services.GetService(typeof(IConfiguration)) as IConfiguration;
             

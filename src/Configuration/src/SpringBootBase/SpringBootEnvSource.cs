@@ -12,17 +12,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
     /// </summary>
     public class SpringBootEnvSource : IConfigurationSource
     {
-        internal ILoggerFactory _loggerFactory;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SpringBootEnvSource"/> class.
-        /// </summary>
-        /// <param name="logFactory">the logger factory to use</param>
-        public SpringBootEnvSource(ILoggerFactory logFactory = null)
-        {
-            _loggerFactory = logFactory;
-        }
-
         /// <summary>
         /// Builds a <see cref="SpringBootEnvProvider"/> from the sources.
         /// </summary>
@@ -30,7 +19,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
         /// <returns>the SpringBootEnv provider</returns>
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
-            return new SpringBootEnvProvider(_loggerFactory);
+            return new SpringBootEnvProvider();
         }
     }
 }

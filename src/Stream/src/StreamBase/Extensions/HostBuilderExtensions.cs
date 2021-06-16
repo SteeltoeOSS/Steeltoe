@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
@@ -18,8 +19,17 @@ namespace Steeltoe.Stream.Extensions
     {
         public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
         {
-            return builder
-                .ConfigureAppConfiguration(cb => cb.AddSpringBootEnv())
+            return builder.ConfigureSpringBoot()
+                .ConfigureServices((context, services) =>
+                {
+                    services.AddStreamServices<T>(context.Configuration);
+                    services.AddHostedService<StreamLifeCycleService>();
+                });
+        }
+
+        public static IWebHostBuilder AddStreamServices<T>(this IWebHostBuilder builder)
+        {
+            return builder.ConfigureSpringBoot()
                 .ConfigureServices((context, services) =>
                 {
                     services.AddStreamServices<T>(context.Configuration);
