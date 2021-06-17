@@ -104,7 +104,8 @@ namespace Steeltoe.Stream.Binder
                 outboundTarget,
                 producerMessageHandler is ILifecycle lifecycle ? lifecycle : null,
                 producerOptions,
-                producerDestination);
+                producerDestination,
+                _logger);
 
             _producerBindingExist = true;
             return binding;
@@ -163,7 +164,8 @@ namespace Steeltoe.Stream.Binder
                             inputTarget,
                             consumerEndpoint is ILifecycle consumerEpLifeCycle ? consumerEpLifeCycle : null,
                             consumerOptions,
-                            destination);
+                            destination,
+                            _logger);
 
                 return binding;
             }
@@ -674,6 +676,7 @@ namespace Steeltoe.Stream.Binder
             private readonly AbstractMessageChannelBinder _binder;
             private readonly IProducerOptions _options;
             private readonly IProducerDestination _producerDestination;
+            private ILogger _logger;
 
             public DefaultProducingMessageChannelBinding(
                 AbstractMessageChannelBinder binder,
@@ -681,15 +684,16 @@ namespace Steeltoe.Stream.Binder
                 IMessageChannel target,
                 ILifecycle lifecycle,
                 IProducerOptions options,
-                IProducerDestination producerDestination)
+                IProducerDestination producerDestination,
+                ILogger logger = null)
                 : base(destination, target, lifecycle)
             {
                 _binder = binder;
                 _options = options;
                 _producerDestination = producerDestination;
+                _logger = logger;
             }
 
-            // @Override
             public override IDictionary<string, object> ExtendedInfo
             {
                 get => DoGetExtendedInfo(Name, _options);
@@ -706,9 +710,9 @@ namespace Steeltoe.Stream.Binder
                 {
                     _binder.DestroyErrorInfrastructure(_producerDestination);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // Log
+                    _logger?.LogError(ex, ex.Message);
                 }
 
                 _binder.AfterUnbindProducer(_producerDestination, _options);
@@ -720,6 +724,7 @@ namespace Steeltoe.Stream.Binder
             private readonly AbstractMessageChannelBinder _binder;
             private readonly IConsumerOptions _options;
             private readonly IConsumerDestination _destination;
+            private readonly ILogger _logger;
 
             public DefaultConsumerMessageChannelBinding(
                 AbstractMessageChannelBinder binder,
@@ -728,12 +733,14 @@ namespace Steeltoe.Stream.Binder
                 IMessageChannel inputChannel,
                 ILifecycle lifecycle,
                 IConsumerOptions options,
-                IConsumerDestination consumerDestination)
+                IConsumerDestination consumerDestination,
+                ILogger logger)
                 : base(name, group, inputChannel, lifecycle)
             {
                 _binder = binder;
                 _options = options;
                 _destination = consumerDestination;
+                _logger = logger;
             }
 
             public override IDictionary<string, object> ExtendedInfo
@@ -748,18 +755,18 @@ namespace Steeltoe.Stream.Binder
 
             protected override void AfterUnbind()
             {
-                // TODO: Figure out IDisposable/Closeable usage
-                // try
-                // {
-                //    if (Endpoint is IDisposable)
-                //    {
-                //        ((IDisposable)Endpoint).Dispose();
-                //    }
-                // }
-                // catch (Exception)
-                // {
-                //    // Log
-                // }
+                try
+                {
+                    if (Endpoint is IDisposable)
+                    {
+                        ((IDisposable)Endpoint).Dispose();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, ex.Message);
+                }
+
                 _binder.AfterUnbindConsumer(_destination, Group, _options);
                 _binder.DestroyErrorInfrastructure(_destination, Group, _options);
             }

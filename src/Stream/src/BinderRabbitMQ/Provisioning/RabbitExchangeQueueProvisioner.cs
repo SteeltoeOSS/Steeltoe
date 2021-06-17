@@ -2,12 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Integration.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -18,9 +16,7 @@ using Steeltoe.Stream.Provisioning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
-using BinderConfig = Steeltoe.Stream.Binder.Rabbit.Config;
 using RabbitConfig = Steeltoe.Messaging.RabbitMQ.Config;
 
 namespace Steeltoe.Stream.Binder.Rabbit.Provisioning

@@ -102,7 +102,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             // TODO: Add this to IBinder interface -> OnInit() code
         }
 
-        public void Destroy()
+        public override void Dispose()
         {
             ConnectionFactory?.Destroy();
         }
