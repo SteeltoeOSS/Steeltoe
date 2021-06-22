@@ -1,14 +1,14 @@
 # Configuration SpringBoot Env .NET Configuration Provider
 
-This project contains a SpringApplicationJSON configuration provider. This is helpful for environments friendly to Spring Boot applications like SCDF where configuration is provided as a json string inside a single env variable that looks like 
-`{"spring.cloud.stream.input.binding":"barfoo"}`.
+This project contains configuration providers for environments friendly to Spring Boot applications like SCDF. The configuration may be provided as a json string inside a single env variable that looks like 
+`{"spring.cloud.stream.input.binding":"barfoo"}` or as a Command line parameter that looks like `spring.cloud.stream.input.binding=barfoo`.
 For more information on how to use this component see the online [Steeltoe documentation](https://steeltoe.io/).
 
 ```
 
 # Program.cs
 
-using Steeltoe.Extensions.Configuration.SpringBootEnv;
+using Steeltoe.Extensions.Configuration.SpringBoot;
 
 ... 
     class Program
@@ -16,8 +16,12 @@ using Steeltoe.Extensions.Configuration.SpringBootEnv;
         static void Main(string[] args)
         {
             var host = Host.CreateDefaultBuilder()
-                        .ConfigureAppConfiguration(conf => conf.AddSpringBootEnv())
+                        .ConfigureAppConfiguration((ctx, conf) => {
+                                            conf.AddSpringBootEnv(); // Can be used together or independently
+                                            conf.AddSpringBootCmd(ctx.Configuration);
+                                            })
                         .Build();
+
             var config = host.Services.GetService(typeof(IConfiguration)) as IConfiguration;
             
             Console.WriteLine(config.GetValue<string>("spring:cloud:stream:input:binding"));
@@ -26,10 +30,20 @@ using Steeltoe.Extensions.Configuration.SpringBootEnv;
         }
     }
 
-# Windows Command
+# Windows Command 
+## Using SPRING_APPLICATION_JSON
+
 c:\projects\sample> set SPRING_APPLICATION_JSON={"spring.cloud.stream.input.binding":"barfoo"}
 c:\projects\sample> dotnet run
 barfoo
 info: Microsoft.Hosting.Lifetime[0]
-      Application started. Press Ctrl+C to shut down.
+...
+
+## Using Command Line Args
+
+c:\projects\sample> dotnet run -- spring.cloud.stream.input.binding=barfoo
+barfoo
+info: Microsoft.Hosting.Lifetime[0]
+...
 ```
+
