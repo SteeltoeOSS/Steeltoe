@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
         /// </summary>
         /// <param name="builder"><see cref="IWebHostBuilder"/></param>
         /// <returns>The same instance of the <see cref="IWebHostBuilder"/> for chaining.</returns>
-        public static IWebHostBuilder ConfigureSpringBoot(this IWebHostBuilder builder)
+        public static IWebHostBuilder AddSpringBootConfiguration(this IWebHostBuilder builder)
         {
             if (builder == null)
             {

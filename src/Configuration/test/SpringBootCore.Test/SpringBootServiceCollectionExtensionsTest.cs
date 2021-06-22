@@ -25,8 +25,8 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             IWebHostBuilder webHostBuilder = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.ConfigureSpringBoot(builder));
-            ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.ConfigureSpringBoot(webHostBuilder));
+            var ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(builder));
+            ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webHostBuilder));
         }
 
         [Fact]
@@ -37,7 +37,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
 
             var hostBuilder = new WebHostBuilder()
                        .UseStartup<TestServerStartup>()
-                       .ConfigureSpringBoot();
+                       .AddSpringBootConfiguration();
 
             using var server = new TestServer(hostBuilder);
             var services = TestServerStartup.ServiceProvider;
@@ -56,7 +56,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             // Arrange
             var hostBuilder = WebHost.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
                        .UseStartup<TestServerStartup>()
-                       .ConfigureSpringBoot();
+                       .AddSpringBootConfiguration();
 
             using var server = new TestServer(hostBuilder);
 
@@ -78,7 +78,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
             var hostBuilder = new HostBuilder()
-                       .ConfigureSpringBoot();
+                       .AddSpringBootConfiguration();
             var host = hostBuilder.Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         {
             // Arrange
             var hostBuilder = Host.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
-                       .ConfigureSpringBoot();
+                       .AddSpringBootConfiguration();
 
             using var host = hostBuilder.Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();

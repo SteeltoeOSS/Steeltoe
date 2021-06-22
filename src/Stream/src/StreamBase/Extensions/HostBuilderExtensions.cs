@@ -19,7 +19,7 @@ namespace Steeltoe.Stream.Extensions
     {
         public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
         {
-            return builder.ConfigureSpringBoot()
+            return builder.AddSpringBootConfiguration()
                 .ConfigureServices((context, services) =>
                 {
                     services.AddStreamServices<T>(context.Configuration);
@@ -29,7 +29,7 @@ namespace Steeltoe.Stream.Extensions
 
         public static IWebHostBuilder AddStreamServices<T>(this IWebHostBuilder builder)
         {
-            return builder.ConfigureSpringBoot()
+            return builder.AddSpringBootConfiguration()
                 .ConfigureServices((context, services) =>
                 {
                     services.AddStreamServices<T>(context.Configuration);
