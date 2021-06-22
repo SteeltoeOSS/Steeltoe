@@ -79,5 +79,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
                 Assert.Equal("TestPassword", rabbitOptions.Password);
             }
         }
+
+        [Fact]
+        public void HostShouldSendCommandLineArgs()
+        {
+            var hostBuilder = RabbitHost.CreateDefaultBuilder(new string[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
+
+            using (var host = hostBuilder.Start())
+            {
+                var config = host.Services.GetService<IConfiguration>();
+
+                Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
+            }
+        }
     }
 }

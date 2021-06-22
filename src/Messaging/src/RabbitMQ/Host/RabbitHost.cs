@@ -16,6 +16,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         public static IHostBuilder CreateDefaultBuilder() =>
             new RabbitHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
 
+        public static IHostBuilder CreateDefaultBuilder(string[] args) =>
+            new RabbitHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+
         public IServiceProvider Services => _host.Services;
 
         private readonly IHost _host;
