@@ -25,8 +25,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var source = new SpringBootEnvSource();
-            builder.Add(source);
+            builder.Add(new SpringBootEnvSource());
 
             return builder;
         }
