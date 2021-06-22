@@ -9,7 +9,7 @@ using System;
 
 namespace Steeltoe.Stream.StubBinder1
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
     public class StubBinder1 : IBinder<object>
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {

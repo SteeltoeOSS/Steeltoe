@@ -734,7 +734,7 @@ namespace Steeltoe.Stream.Binder
                 ILifecycle lifecycle,
                 IConsumerOptions options,
                 IConsumerDestination consumerDestination,
-                ILogger logger)
+                ILogger logger = null)
                 : base(name, group, inputChannel, lifecycle)
             {
                 _binder = binder;

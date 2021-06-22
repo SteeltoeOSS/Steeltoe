@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace Steeltoe.Stream.Binder
 {
-#pragma warning disable S3881 // "IDisposable" should be implemented correctly
+#pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
     public class DefaultBinderFactory : IBinderFactory, IDisposable
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
     {
