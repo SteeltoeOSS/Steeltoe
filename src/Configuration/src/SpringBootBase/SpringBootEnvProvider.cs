@@ -31,7 +31,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
         }
 
         /// <summary>
-        /// Translates and loads the new keys
+        /// Maps SPRING_APPLICATION_JSON into key:value pairs
         /// </summary>
         public override void Load()
         {

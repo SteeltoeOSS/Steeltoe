@@ -38,8 +38,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
             foreach (var kvp in enumerable)
             {
                 var key = kvp.Key;
-                if (key.StartsWith(_keyPrefix, StringComparison.OrdinalIgnoreCase)
-                    && key.Contains('.'))
+                if (key.StartsWith(_keyPrefix, StringComparison.OrdinalIgnoreCase))
                 {
                     var nk = key.Replace('.', ':');
                     Data[nk] = kvp.Value;
