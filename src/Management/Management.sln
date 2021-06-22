@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28729.10
@@ -84,6 +84,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Management.KubernetesCore.Test", "test\KubernetesCore.Test\Steeltoe.Management.KubernetesCore.Test.csproj", "{9C4D7E41-7CED-4463-AD08-1A95BBF2D7DD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Logging.DynamicSerilogCore", "..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj", "{D9250B38-5792-4534-BC15-E345E95E68F1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry", "src\OpenTelemetry\Steeltoe.OpenTelemetry.csproj", "{55EB7E6C-B412-4961-B457-3E7FBD040D45}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Api", "src\OpenTelemetry.Api\Steeltoe.OpenTelemetry.Api.csproj", "{79502185-9B42-43BA-B56D-843FF448DA27}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Tests", "test\OpenTelemetry.Tests\Steeltoe.OpenTelemetry.Tests.csproj", "{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -211,6 +217,18 @@ Global
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D9250B38-5792-4534-BC15-E345E95E68F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55EB7E6C-B412-4961-B457-3E7FBD040D45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55EB7E6C-B412-4961-B457-3E7FBD040D45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55EB7E6C-B412-4961-B457-3E7FBD040D45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55EB7E6C-B412-4961-B457-3E7FBD040D45}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79502185-9B42-43BA-B56D-843FF448DA27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79502185-9B42-43BA-B56D-843FF448DA27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79502185-9B42-43BA-B56D-843FF448DA27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79502185-9B42-43BA-B56D-843FF448DA27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -246,6 +264,9 @@ Global
 		{B42F1632-D935-4CCA-9CB8-2F346B21C8E3} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
 		{9C4D7E41-7CED-4463-AD08-1A95BBF2D7DD} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 		{D9250B38-5792-4534-BC15-E345E95E68F1} = {402D8CB5-C3C3-47E0-BEB3-63D0975E5109}
+		{55EB7E6C-B412-4961-B457-3E7FBD040D45} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{79502185-9B42-43BA-B56D-843FF448DA27} = {B86A4082-6F42-4BFC-A1F2-83CC422AD493}
+		{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2} = {8B4CE682-9C0B-4849-813B-E43BE098FCE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7949396C-4BFF-4834-9BC2-F3A345E9CCE5}

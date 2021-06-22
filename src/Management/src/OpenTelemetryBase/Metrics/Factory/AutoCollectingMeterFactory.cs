@@ -89,7 +89,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             }
             catch (Exception ex)
             {
-                var s = ex.Message;
+                _ = ex.Message;
             }
         }
     }

@@ -11,13 +11,11 @@ namespace Steeltoe.Management.Tracing
 {
     public class TracingLogProcessor : IDynamicMessageProcessor
     {
-        private readonly ITracing _tracing;
         private readonly ITracingOptions _options;
 
-        public TracingLogProcessor(ITracingOptions options, ITracing tracing)
+        public TracingLogProcessor(ITracingOptions options)
         {
             _options = options;
-            _tracing = tracing;
         }
 
         public string Process(string inputLogMessage)
@@ -32,10 +30,6 @@ namespace Steeltoe.Management.Tracing
                 sb.Append(",");
 
                 var traceId = context.TraceId.ToHexString();
-                if (traceId.Length > 16 && _options.UseShortTraceIds)
-                {
-                    traceId = traceId.Substring(traceId.Length - 16, 16);
-                }
 
                 sb.Append(traceId);
                 sb.Append(",");
@@ -71,7 +65,7 @@ namespace Steeltoe.Management.Tracing
 
         protected internal TelemetrySpan GetCurrentSpan()
         {
-            var span = _tracing.Tracer?.CurrentSpan;
+            var span = Tracer.CurrentSpan;
             if (span == null || !span.Context.IsValid)
             {
                 return null;

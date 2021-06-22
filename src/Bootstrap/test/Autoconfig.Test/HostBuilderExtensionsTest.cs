@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 using Serilog.Core;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.Options;
@@ -27,7 +28,7 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -312,16 +313,20 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 
             // Act
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
-            var observers = host.Services.GetServices<IDiagnosticObserver>();
 
             // Assert
-            Assert.NotNull(host.Services.GetService<IDiagnosticsManager>());
             Assert.NotNull(host.Services.GetService<IHostedService>());
             Assert.NotNull(host.Services.GetService<ITracingOptions>());
-            var list = observers.ToList();
-            Assert.Equal(5, list.Count);
-            Assert.NotNull(host.Services.GetService<ITracing>());
+            var tracerProvider = host.Services.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
             Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
+
+            // confirm instrumentation(s) were added as expected
+            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Equal(2, instrumentations.Count);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
         }
 
         [Fact]

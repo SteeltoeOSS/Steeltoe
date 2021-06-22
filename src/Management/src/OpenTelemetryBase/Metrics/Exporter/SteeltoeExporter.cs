@@ -48,7 +48,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         public List<ProcessedMetric<long>> GetAndClearLongMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<long>> current = LongMetrics;
+            var current = LongMetrics;
             LongMetrics = new List<ProcessedMetric<long>>();
             return current;
         }
@@ -56,7 +56,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         public List<ProcessedMetric<double>> GetAndClearDoubleMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<double>> current = DoubleMetrics;
+            var current = DoubleMetrics;
             DoubleMetrics = new List<ProcessedMetric<double>>();
             return current;
         }

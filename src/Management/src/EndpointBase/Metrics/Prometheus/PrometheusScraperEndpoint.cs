@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
-using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -17,14 +16,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-        }
-
-        public new IEndpointOptions Options
-        {
-            get
-            {
-                return options as IEndpointOptions;
-            }
         }
 
         public override string Invoke()

@@ -104,7 +104,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var requestCount = processor.GetMetricByName<long>("http.desktop.client.request.count");
             Assert.NotNull(requestCount);
             Assert.Equal(2, requestCount.Sum);
-
             act.Stop();
         }
 

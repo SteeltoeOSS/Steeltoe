@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
-using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Collections.Generic;
 using Xunit;
 
@@ -16,56 +16,32 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void Process_NoCurrentSpan_DoesNothing()
         {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:tracing:name"] = "foobar",
-                ["management:tracing:ingressIgnorePattern"] = "pattern",
-                ["management:tracing:egressIgnorePattern"] = "pattern",
-                ["management:tracing:maxNumberOfAttributes"] = "100",
-                ["management:tracing:maxNumberOfAnnotations"] = "100",
-                ["management:tracing:maxNumberOfMessageEvents"] = "100",
-                ["management:tracing:maxNumberOfLinks"] = "100",
-                ["management:tracing:alwaysSample"] = "true",
-                ["management:tracing:neverSample"] = "true",
-                ["management:tracing:useShortTraceIds"] = "true",
-            };
+            // Arrange
+            using var openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+            var opts = new TracingOptions(null, new ConfigurationBuilder().Build());
+            var processor = new TracingLogProcessor(opts);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(appsettings);
-            var opts = new TracingOptions(null, builder.Build());
-
-            var tracing = new OpenTelemetryTracing(opts);
-            var processor = new TracingLogProcessor(opts, tracing);
+            // Act
             var result = processor.Process("InputLogMessage");
+
+            // Assert
             Assert.Equal("InputLogMessage", result);
         }
 
         [Fact]
         public void Process_CurrentSpan_ReturnsExpected()
         {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:tracing:name"] = "foobar",
-                ["management:tracing:ingressIgnorePattern"] = "pattern",
-                ["management:tracing:egressIgnorePattern"] = "pattern",
-                ["management:tracing:maxNumberOfAttributes"] = "100",
-                ["management:tracing:maxNumberOfAnnotations"] = "100",
-                ["management:tracing:maxNumberOfMessageEvents"] = "100",
-                ["management:tracing:maxNumberOfLinks"] = "100",
-                ["management:tracing:alwaysSample"] = "true",
-                ["management:tracing:neverSample"] = "false",
-                ["management:tracing:useShortTraceIds"] = "false",
-            };
+            // Arrange
+            using var openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+            var config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string> { ["management:tracing:name"] = "foobar" });
+            var processor = new TracingLogProcessor(new TracingOptions(new ApplicationInstanceInfo(config), config));
+            var tracer = TracerProvider.Default.GetTracer("tracername");
+            var span = tracer.StartActiveSpan("spanName");
 
-            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
-
-            var tracing = new OpenTelemetryTracing(opts);
-            tracing.Tracer.StartActiveSpan("spanName", out var span);
-
-            var processor = new TracingLogProcessor(opts, tracing);
+            // Act
             var result = processor.Process("InputLogMessage");
 
+            // Assert
             Assert.Contains("InputLogMessage", result);
             Assert.Contains("[", result);
             Assert.Contains("]", result);
@@ -73,7 +49,7 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains(span.Context.SpanId.ToHexString(), result);
             Assert.Contains("foobar", result);
 
-            tracing.Tracer.StartActiveSpan("spanName2", span, out var childSpan);
+            var childSpan = tracer.StartActiveSpan("spanName2", SpanKind.Internal, span);
 
             result = processor.Process("InputLogMessage2");
 
@@ -84,46 +60,6 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Contains(childSpan.Context.SpanId.ToHexString(), result);
 
             // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
-            Assert.Contains("foobar", result);
-        }
-
-        [Fact]
-        public void Process_UseShortTraceIds()
-        {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:tracing:name"] = "foobar",
-                ["management:tracing:ingressIgnorePattern"] = "pattern",
-                ["management:tracing:egressIgnorePattern"] = "pattern",
-                ["management:tracing:maxNumberOfAttributes"] = "100",
-                ["management:tracing:maxNumberOfAnnotations"] = "100",
-                ["management:tracing:maxNumberOfMessageEvents"] = "100",
-                ["management:tracing:maxNumberOfLinks"] = "100",
-                ["management:tracing:alwaysSample"] = "true",
-                ["management:tracing:neverSample"] = "false",
-                ["management:tracing:useShortTraceIds"] = "true",
-            };
-
-            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
-
-            var tracing = new OpenTelemetryTracing(opts);
-            tracing.Tracer.StartActiveSpan("spanName", out var span);
-
-            var processor = new TracingLogProcessor(opts, tracing);
-            var result = processor.Process("InputLogMessage");
-
-            Assert.Contains("InputLogMessage", result);
-            Assert.Contains("[", result);
-            Assert.Contains("]", result);
-
-            var full = span.Context.TraceId.ToHexString();
-            var shorty = full.Substring(full.Length - 16, 16);
-
-            Assert.Contains(shorty, result);
-            Assert.DoesNotContain(full, result);
-
-            Assert.Contains(span.Context.SpanId.ToHexString(), result);
             Assert.Contains("foobar", result);
         }
     }

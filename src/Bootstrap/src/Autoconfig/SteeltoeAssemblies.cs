@@ -31,6 +31,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         public const string Steeltoe_Management_EndpointCore = "Steeltoe.Management.EndpointCore";
         public const string Steeltoe_Management_KubernetesCore = "Steeltoe.Management.KubernetesCore";
         public const string Steeltoe_Management_TaskCore = "Steeltoe.Management.TaskCore";
+        public const string Steeltoe_Management_TracingBase = "Steeltoe.Management.TracingBase";
         public const string Steeltoe_Management_TracingCore = "Steeltoe.Management.TracingCore";
         public const string Steeltoe_Security_Authentication_CloudFoundryCore = "Steeltoe.Security.Authentication.CloudFoundryCore";
         public const string Steeltoe_Security_Authentication_MtlsCore = "Steeltoe.Security.Authentication.MtlsCore";

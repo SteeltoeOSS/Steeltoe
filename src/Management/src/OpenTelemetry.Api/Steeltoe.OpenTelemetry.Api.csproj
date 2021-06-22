@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
+    <Description>Intended for use within Steeltoe until a stable version of OpenTelemetry Metrics is available</Description>
+    <RootNamespace>Steeltoe.OpenTelemetry</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <Import Project="..\..\..\..\versions.props" />
+  <ItemGroup>
+    <PackageReference Include="OpenTelemetry.Api" Version="$(OpenTelemetryVersion)" />
+  </ItemGroup>
+
+</Project>

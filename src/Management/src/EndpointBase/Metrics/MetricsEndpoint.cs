@@ -28,13 +28,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _logger = logger;
         }
 
-        public new IMetricsEndpointOptions Options
-        {
-            get
-            {
-                return options as IMetricsEndpointOptions;
-            }
-        }
+        public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
         public override IMetricsResponse Invoke(MetricsRequest request)
         {
