@@ -11,7 +11,6 @@ using Steeltoe.Integration.Endpoint;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
@@ -37,6 +36,11 @@ namespace Steeltoe.Stream.TestBinder
         public override string ServiceName { get; set; } = "testbinder";
 
         public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
+
+        public override void Dispose()
+        {
+            // Nothing to do here
+        }
 
         protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
         {

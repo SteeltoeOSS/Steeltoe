@@ -10,11 +10,11 @@ namespace Steeltoe.Stream.Binding
     {
         bool Supports(Type resultType, Type bindingTarget);
 
-        IDisposable Adapt(object streamListenerResult, object bindingTarget);  // TODO: IDisposable vs IClosable????
+        IDisposable Adapt(object streamListenerResult, object bindingTarget);
     }
 
     public interface IStreamListenerResultAdapter<in R, in B> : IStreamListenerResultAdapter
     {
-        IDisposable Adapt(R streamListenerResult, B bindingTarget);  // TODO: IDisposable vs IClosable????
+        IDisposable Adapt(R streamListenerResult, B bindingTarget);
     }
 }
