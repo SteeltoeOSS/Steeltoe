@@ -218,7 +218,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
             if (type == ExchangeType.TOPIC)
             {
-                return new FanoutExchange(name);
+                return new TopicExchange(name);
             }
 
             if (type == ExchangeType.SYSTEM)
