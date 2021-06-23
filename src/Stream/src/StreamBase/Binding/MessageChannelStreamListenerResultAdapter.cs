@@ -49,7 +49,7 @@ namespace Steeltoe.Stream.Binding
         {
             public void Dispose()
             {
-                // TODO: Figure out disposable usage in streams
+                // Nothing to do here
             }
         }
     }

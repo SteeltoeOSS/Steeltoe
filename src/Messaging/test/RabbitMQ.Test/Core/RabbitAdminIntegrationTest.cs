@@ -427,7 +427,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             var dif = t2 - t1;
             Assert.InRange(dif, 950, 1250);
             var config = await GetExchange(exchangeName);
-            Assert.Equal("direct", config.GetValue<string>("x-delayed-type"));
+            Assert.Equal("direct", config.GetValue<string>("x-delayed-type") ?? config.GetValue<string>("arguments:x-delayed-type"));
             Assert.Equal("x-delayed-message", config.GetValue<string>("type"));
         }
 
