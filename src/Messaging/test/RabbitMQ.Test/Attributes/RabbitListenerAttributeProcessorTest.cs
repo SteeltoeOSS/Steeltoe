@@ -199,6 +199,34 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
         }
 
+        [Fact]
+        public void CreateExchangeReturnsCorrectType()
+        {
+            // Arrange
+            var services = new ServiceCollection();
+
+            // Act and assert
+            RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, null, typeof(TestTarget));
+            var exchanges = services.BuildServiceProvider().GetServices<IExchange>();
+            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.DIRECT);
+            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.TOPIC);
+            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.FANOUT);
+            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.HEADERS);
+            Assert.Contains(exchanges, (ex) => ex.Type == ExchangeType.SYSTEM);
+        }
+
+        public class TestTarget
+        {
+            [DeclareExchange(Name ="test", Type = ExchangeType.DIRECT)]
+            [DeclareExchange(Name = "test", Type = ExchangeType.TOPIC)]
+            [DeclareExchange(Name = "test", Type = ExchangeType.FANOUT)]
+            [DeclareExchange(Name = "test", Type = ExchangeType.HEADERS)]
+            [DeclareExchange(Name = "test", Type = ExchangeType.SYSTEM)]
+            public void Method()
+            {
+            }
+        }
+
         public class Config
         {
             public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
