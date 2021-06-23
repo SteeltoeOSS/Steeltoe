@@ -495,7 +495,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             var consumer = consumerArg;
 
-            _logger?.LogWarning("basicConsume failed, scheduling consumer " + consumer == null ? "for queue " + queue.ToString() : consumer.ToString() + " for restart", e);
+            _logger?.LogWarning(e, $"basicConsume failed, scheduling consumer {consumer?.ToString() ?? "for queue " + queue.ToString()} for restart");
 
             if (consumer == null)
             {

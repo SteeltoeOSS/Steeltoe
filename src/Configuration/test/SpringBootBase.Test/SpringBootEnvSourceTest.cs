@@ -11,15 +11,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
     public class SpringBootEnvSourceTest
     {
         [Fact]
-        public void Constructors__InitializesDefaults()
-        {
-            ILoggerFactory factory = new LoggerFactory();
-
-            var source = new SpringBootEnvSource(factory);
-            Assert.Equal(factory, source._loggerFactory);
-        }
-
-        [Fact]
         public void Build__ReturnsProvider()
         {
             // Arrange

@@ -3,8 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot
 {
@@ -15,17 +17,27 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
         /// Configuration keys in '.' delimited style are also converted to a format understood by .NET
         /// </summary>
         /// <param name="builder">the configuration builder</param>
-        /// <param name="loggerFactory">the logger factory to use</param>
         /// <returns>builder</returns>
-        public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder, ILoggerFactory loggerFactory = null)
+        public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            var source = new SpringBootEnvSource(loggerFactory);
-            builder.Add(source);
+            builder.Add(new SpringBootEnvSource());
+
+            return builder;
+        }
+
+        public static IConfigurationBuilder AddSpringBootCmd(this IConfigurationBuilder builder, IConfiguration configuration)
+        {
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.Add(new SpringBootCmdSource(configuration));
 
             return builder;
         }

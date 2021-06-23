@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
-using System;
 using System.Text;
+using System.Text.Json;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -15,10 +14,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void TryGet_Flat()
         {
-            var prov = new SpringBootEnvProvider()
-            {
-                SpringApplicationJson = "{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}"
-            };
+            var prov = new SpringBootEnvProvider("{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
             prov.Load();
             prov.TryGet("management:metrics:tags:application:type", out var value);
             Assert.NotNull(value);
@@ -28,20 +24,18 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void TryGet_Tree()
         {
-            var prov = new SpringBootEnvProvider()
-            {
-                SpringApplicationJson =
-                    @"{
-                        ""a.b.c"": {
-                                     ""e.f"": {
-                                                ""g"":""h"",
-                                                ""i.j"":""k""
-                                              }
-                                   },
-                        ""l.m.n"": ""o"",
-                        ""p"": null
-                    }"
-            };
+            var configString = @"{
+                    ""a.b.c"": {
+                                    ""e.f"": {
+                                            ""g"":""h"",
+                                            ""i.j"":""k""
+                                            }
+                                },
+                    ""l.m.n"": ""o"",
+                    ""p"": null
+                }";
+
+            var prov = new SpringBootEnvProvider(configString);
 
             prov.Load();
             prov.TryGet("a:b:c:e:f:i:j", out var value);
@@ -53,19 +47,11 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         }
 
         [Fact]
-        public void TryGet_Malformed()
+        public void Provider_Throws_For_Malformed()
         {
-            var testOutputHelper = new TestOutputHelper();
+            var prov = new SpringBootEnvProvider("{\"a\":}");
 
-            var prov = new SpringBootEnvProvider(new XunitLoggerFactory(testOutputHelper))
-            {
-                SpringApplicationJson =
-                    @"{""test\"":}"
-            };
-
-            prov.Load();
-
-            Assert.Contains("SPRING_APPLICATION_JSON", testOutputHelper.Output);
+            Assert.ThrowsAny<JsonException>(() => prov.Load());
         }
 
         private class TestOutputHelper : ITestOutputHelper

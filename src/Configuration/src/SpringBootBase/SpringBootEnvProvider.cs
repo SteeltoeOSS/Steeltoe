@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -14,58 +15,41 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
     /// <summary>
     /// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET compatible form
     /// </summary>
-    public class SpringBootEnvProvider : ConfigurationProvider
+    public class SpringBootEnvProvider : JsonStreamConfigurationProvider
     {
-        internal ILogger<SpringBootEnvProvider> _logger;
-
         private const string SPRING_APPLICATION_JSON = "SPRING_APPLICATION_JSON";
-
-        internal string SpringApplicationJson { get; set; }
+        private readonly string _springApplicationJson;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SpringBootEnvProvider"/> class.
         /// </summary>
-        /// <param name="logFactory">the logger factory to use</param>
-        public SpringBootEnvProvider(ILoggerFactory logFactory = null)
+        /// <param name="springApplicationJson"> The Json string to parse </param>
+        public SpringBootEnvProvider(string springApplicationJson = null)
+            : base(new JsonStreamConfigurationSource())
         {
-            _logger = logFactory?.CreateLogger<SpringBootEnvProvider>();
-            SpringApplicationJson = Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
+            _springApplicationJson = springApplicationJson;
         }
 
         /// <summary>
-        /// Expands and loads the new keys
+        /// Maps SPRING_APPLICATION_JSON into key:value pairs
         /// </summary>
         public override void Load()
         {
-            try
+            var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
+            if (!string.IsNullOrEmpty(json))
             {
-                if (!string.IsNullOrEmpty(SpringApplicationJson))
+                Source.Stream = GetMemoryStream(json);
+                base.Load();
+                var keys = new List<string>(Data.Keys);
+                foreach (var key in keys)
                 {
-                    var builder = new ConfigurationBuilder();
-                    builder.Add(new JsonStreamConfigurationSource()
+                    var value = Data[key];
+                    if (key.Contains('.') && value != null)
                     {
-                        Stream = GetMemoryStream(SpringApplicationJson)
-                    });
-
-                    var servicesData = builder.Build();
-                    if (servicesData != null)
-                    {
-                        foreach (var child in servicesData.GetChildren())
-                        {
-                            if (child.Key.Contains('.') && child.Value != null)
-                            {
-                                var nk = child.Key.Replace('.', ':');
-                                Data[nk] = child.Value;
-                            }
-
-                            RExpand(child);
-                        }
+                        var nk = key.Replace('.', ':');
+                        Data[nk] = value;
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex, "Error reading configuration from " + SPRING_APPLICATION_JSON);
             }
         }
 
@@ -77,20 +61,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot
             textWriter.Flush();
             memStream.Seek(0, SeekOrigin.Begin);
             return memStream;
-        }
-
-        private void RExpand(IConfigurationSection section)
-        {
-            foreach (var child in section.GetChildren())
-            {
-                if (child.Key.Contains('.') && child.Value != null)
-                {
-                    var nk = child.Path.Replace('.', ':');
-                    Data[nk] = child.Value;
-                }
-
-                RExpand(child);
-            }
         }
     }
 }
