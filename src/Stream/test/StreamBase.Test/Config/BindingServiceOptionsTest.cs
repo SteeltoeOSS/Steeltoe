@@ -41,7 +41,7 @@ namespace Steeltoe.Stream.Config
                 { "spring:cloud:stream:bindings:input:consumer:defaultRetryable", "false" },
                 { "spring:cloud:stream:bindings:input:consumer:instanceIndex", "10" },
                 { "spring:cloud:stream:bindings:input:consumer:instanceCount", "10" },
-                { "spring:cloud:stream:bindings:input:consumer:retryableExceptions", "notused" },
+                { "spring:cloud:stream:bindings:input:consumer:retryableExceptions:0", "notused" },
                 { "spring:cloud:stream:bindings:input:consumer:useNativeDecoding", "true" },
                 { "spring:cloud:stream:bindings:output:destination", "outputdestination" },
                 { "spring:cloud:stream:bindings:output:group", "outputgroup" },
@@ -53,7 +53,7 @@ namespace Steeltoe.Stream.Config
                 { "spring:cloud:stream:bindings:output:producer:partitionKeyExtractorName", "partitionKeyExtractorName" },
                 { "spring:cloud:stream:bindings:output:producer:partitionSelectorName", "partitionSelectorName" },
                 { "spring:cloud:stream:bindings:output:producer:partitionCount", "10" },
-                { "spring:cloud:stream:bindings:output:producer:requiredGroups", "requiredGroups" },
+                { "spring:cloud:stream:bindings:output:producer:requiredGroups:0", "requiredGroups" },
                 { "spring:cloud:stream:bindings:output:producer:headerMode", "headers" },
                 { "spring:cloud:stream:bindings:output:producer:useNativeEncoding", "true" },
                 { "spring:cloud:stream:bindings:output:producer:errorChannelEnabled", "true" },
@@ -67,18 +67,64 @@ namespace Steeltoe.Stream.Config
             var options = new BindingServiceOptions(config);
             options.PostProcess();
 
+            Assert.Equal(100, options.InstanceCount);
+            Assert.Equal(1, options.InstanceIndex);
+            Assert.Equal("dynamicDestinations", options.DynamicDestinations[0]);
+            Assert.Equal("defaultBinder", options.DefaultBinder);
+            Assert.Equal(true, options.OverrideCloudConnectors);
+            Assert.Equal(500, options.BindingRetryInterval);
+
+            Assert.NotNull(options.Default);
+            Assert.Equal("destination", options.Default.Destination);
+            Assert.Equal("group", options.Default.Group);
+            Assert.Equal("contentType", options.Default.ContentType);
+            Assert.Equal("binder", options.Default.Binder);
+
             var input = options.GetBindingOptions("input");
+
             Assert.NotNull(input);
+            Assert.Equal("inputdestination", input.Destination);
+            Assert.Equal("inputgroup", input.Group);
+            Assert.Equal("inputcontentType", input.ContentType);
+            Assert.Equal("inputbinder", input.Binder);
+            Assert.Equal(false, input.Consumer.AutoStartup);
+            Assert.Equal(10, input.Consumer.Concurrency);
+            Assert.Equal(true, input.Consumer.Partitioned);
+            Assert.Equal(HeaderMode.Headers, input.Consumer.HeaderMode);
+            Assert.Equal(10, input.Consumer.MaxAttempts);
+            Assert.Equal(10, input.Consumer.BackOffInitialInterval);
+            Assert.Equal(10, input.Consumer.BackOffMaxInterval);
+            Assert.Equal(5.0, input.Consumer.BackOffMultiplier);
+            Assert.Equal(false, input.Consumer.DefaultRetryable);
+            Assert.Equal(10, input.Consumer.InstanceIndex);
+            Assert.Equal(10, input.Consumer.InstanceCount);
+            Assert.Equal(new List<string> { "notused" }, input.Consumer.RetryableExceptions);
+            Assert.Equal(true, input.Consumer.UseNativeDecoding);
 
-            // TODO: Verify all values
             var output = options.GetBindingOptions("output");
-            Assert.NotNull(output);
 
-            // TODO: Verify all values
-            var binder = options.Binders["foobar"];
-            Assert.NotNull(binder);
+            Assert.Equal("outputdestination", output.Destination);
+            Assert.Equal("outputgroup", output.Group);
+            Assert.Equal("outputcontentType", output.ContentType);
+            Assert.Equal("outputbinder", output.Binder);
+            Assert.Equal(false, output.Producer.AutoStartup);
+            Assert.Equal("partitionKeyExpression", output.Producer.PartitionKeyExpression);
+            Assert.Equal("partitionSelectorExpression", output.Producer.PartitionSelectorExpression);
+            Assert.Equal("partitionKeyExtractorName", output.Producer.PartitionKeyExtractorName);
+            Assert.Equal("partitionSelectorName", output.Producer.PartitionSelectorName);
+            Assert.Equal(10, output.Producer.PartitionCount);
+            Assert.Equal("requiredGroups", output.Producer.RequiredGroups[0]);
+            Assert.Equal(HeaderMode.Headers, output.Producer.HeaderMode);
+            Assert.Equal(true, output.Producer.UseNativeEncoding);
+            Assert.Equal(true, output.Producer.ErrorChannelEnabled);
 
-            // TODO: Verify all values
+            var foobar = options.Binders["foobar"];
+            Assert.NotNull(foobar);
+
+            Assert.Equal(false, foobar.InheritEnvironment);
+            Assert.Equal(false, foobar.DefaultCandidate);
+            Assert.Equal("value1", foobar.Environment["key1"]);
+            Assert.Equal("value2", foobar.Environment["key2"]);
         }
 
         [Fact]
