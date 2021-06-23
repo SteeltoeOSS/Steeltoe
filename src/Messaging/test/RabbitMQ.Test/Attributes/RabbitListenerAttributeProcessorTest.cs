@@ -198,7 +198,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             var queues = new List<IQueue>() { queue1, queue2 };
             var excep = await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
         }
-        
+
         [Fact]
         public void CreateExchangeReturnsCorrectType()
         {
@@ -226,7 +226,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
             }
         }
-        
+
         public class Config
         {
             public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
