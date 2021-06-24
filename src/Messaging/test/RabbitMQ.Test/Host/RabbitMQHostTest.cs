@@ -13,14 +13,14 @@ using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host
 {
-    public class RabbitHostTest
+    public class RabbitMQHostTest
     {
         [Fact]
         public void HostCanBeStarted()
         {
             MockRabbitHostedService hostedService;
 
-            using (var host = RabbitHost.CreateDefaultBuilder()
+            using (var host = RabbitMQHost.CreateDefaultBuilder()
                                 .ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>())
                                 .Start())
             {
@@ -40,7 +40,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostShouldInitializeServices()
         {
-            using (var host = RabbitHost.CreateDefaultBuilder().Start())
+            using (var host = RabbitMQHost.CreateDefaultBuilder().Start())
             {
                 var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
                 var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
@@ -53,7 +53,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostShouldAddRabbitOptionsConfiguration()
         {
-            var hostBuilder = RabbitHost.CreateDefaultBuilder();
+            var hostBuilder = RabbitMQHost.CreateDefaultBuilder();
 
             var appSettings = new Dictionary<string, string>()
             {
@@ -83,7 +83,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         [Fact]
         public void HostShouldSendCommandLineArgs()
         {
-            var hostBuilder = RabbitHost.CreateDefaultBuilder(new string[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
+            var hostBuilder = RabbitMQHost.CreateDefaultBuilder(new string[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
 
             using (var host = hostBuilder.Start())
             {

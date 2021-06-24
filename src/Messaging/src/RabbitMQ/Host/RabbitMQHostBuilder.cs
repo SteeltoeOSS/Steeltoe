@@ -13,13 +13,13 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host
 {
-    public class RabbitHostBuilder : IHostBuilder
+    public class RabbitMQHostBuilder : IHostBuilder
     {
         public IDictionary<object, object> Properties => _hostbuilder.Properties;
 
         private readonly IHostBuilder _hostbuilder;
 
-        public RabbitHostBuilder(IHostBuilder hostbuilder)
+        public RabbitMQHostBuilder(IHostBuilder hostbuilder)
         {
             _hostbuilder = hostbuilder;
 
@@ -43,7 +43,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
         {
             var host = _hostbuilder.Build();
 
-            return new RabbitHost(host);
+            return new RabbitMQHost(host);
         }
 
         public IHostBuilder ConfigureAppConfiguration(Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
