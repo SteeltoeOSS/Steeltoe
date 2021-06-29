@@ -28,7 +28,7 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using Steeltoe.Management.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
