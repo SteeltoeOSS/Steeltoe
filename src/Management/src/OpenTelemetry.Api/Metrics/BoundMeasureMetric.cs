@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Metrics
@@ -32,12 +31,5 @@ namespace OpenTelemetry.Metrics
         /// <param name="context">the associated span context.</param>
         /// <param name="value">the measurement to be recorded.</param>
         public abstract void Record(in SpanContext context, T value);
-
-        /// <summary>
-        /// Record the given value to the bound measure metric.
-        /// </summary>
-        /// <param name="context">the associated distributed context.</param>
-        /// <param name="value">the measurement to be recorded.</param>
-        public abstract void Record(in DistributedContext context, T value);
     }
 }

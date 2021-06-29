@@ -30,14 +30,14 @@ namespace OpenTelemetry.Metrics.Aggregators
 
         public override void Checkpoint()
         {
-            Interlocked.Exchange(ref this.checkpoint, this.value);
+            Interlocked.Exchange(ref checkpoint, value);
         }
 
         public override MetricData<double> ToMetricData()
         {
             return new SumData<double>
             {
-                Sum = this.checkpoint,
+                Sum = checkpoint,
                 Timestamp = DateTime.UtcNow,
             };
         }
@@ -49,7 +49,7 @@ namespace OpenTelemetry.Metrics.Aggregators
 
         public override void Update(double newValue)
         {
-            Interlocked.Exchange(ref this.value, newValue);
+            Interlocked.Exchange(ref value, newValue);
         }
     }
 }

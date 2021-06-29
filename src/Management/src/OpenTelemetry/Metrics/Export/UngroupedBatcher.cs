@@ -45,12 +45,12 @@ namespace OpenTelemetry.Metrics.Export
             this.exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             // TODO make this thread safe.
-            this.longMetrics = new List<Metric<long>>();
-            this.doubleMetrics = new List<Metric<double>>();
+            longMetrics = new List<Metric<long>>();
+            doubleMetrics = new List<Metric<double>>();
             this.aggregationInterval = aggregationInterval;
-            this.cts = new CancellationTokenSource();
-            this.worker = Task.Factory.StartNew(
-                s => this.Worker((CancellationToken)s), this.cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
+            cts = new CancellationTokenSource();
+            worker = Task.Factory.StartNew(
+                s => Worker((CancellationToken)s), cts.Token).ContinueWith((task) => Console.WriteLine("error"), TaskContinuationOptions.OnlyOnFaulted);
         }
 
         /// <summary>
@@ -66,37 +66,37 @@ namespace OpenTelemetry.Metrics.Export
         {
             var metric = new Metric<long>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType());
             metric.Data = aggregator.ToMetricData();
-            this.longMetrics.Add(metric);
+            longMetrics.Add(metric);
         }
 
         public override void Process(string meterName, string metricName, LabelSet labelSet, Aggregator<double> aggregator)
         {
             var metric = new Metric<double>(meterName, metricName, meterName + metricName, labelSet.Labels, aggregator.GetAggregationType());
             metric.Data = aggregator.ToMetricData();
-            this.doubleMetrics.Add(metric);
+            doubleMetrics.Add(metric);
         }
 
         private async Task Worker(CancellationToken cancellationToken)
         {
             try
             {
-                await Task.Delay(this.aggregationInterval, cancellationToken).ConfigureAwait(false);
+                await Task.Delay(aggregationInterval, cancellationToken).ConfigureAwait(false);
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     var sw = Stopwatch.StartNew();
 
-                    if (this.longMetrics.Count > 0)
+                    if (longMetrics.Count > 0)
                     {
-                        var metricToExport = this.longMetrics;
-                        this.longMetrics = new List<Metric<long>>();
-                        await this.exporter.ExportAsync<long>(metricToExport, cancellationToken);
+                        var metricToExport = longMetrics;
+                        longMetrics = new List<Metric<long>>();
+                        await exporter.ExportAsync<long>(metricToExport, cancellationToken);
                     }
 
-                    if (this.doubleMetrics.Count > 0)
+                    if (doubleMetrics.Count > 0)
                     {
-                        var metricToExport = this.doubleMetrics;
-                        this.doubleMetrics = new List<Metric<double>>();
-                        await this.exporter.ExportAsync<double>(metricToExport, cancellationToken);
+                        var metricToExport = doubleMetrics;
+                        doubleMetrics = new List<Metric<double>>();
+                        await exporter.ExportAsync<double>(metricToExport, cancellationToken);
                     }
 
                     if (cancellationToken.IsCancellationRequested)
@@ -104,7 +104,7 @@ namespace OpenTelemetry.Metrics.Export
                         return;
                     }
 
-                    var remainingWait = this.aggregationInterval - sw.Elapsed;
+                    var remainingWait = aggregationInterval - sw.Elapsed;
                     if (remainingWait > TimeSpan.Zero)
                     {
                         await Task.Delay(remainingWait, cancellationToken).ConfigureAwait(false);

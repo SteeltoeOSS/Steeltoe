@@ -15,7 +15,6 @@
 // </copyright>
 
 using System;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using OpenTelemetry.Metrics.Export;
 
@@ -32,14 +31,14 @@ namespace OpenTelemetry.Metrics.Aggregators
         public override void Checkpoint()
         {
             // checkpoints the current running sum into checkpoint, and starts counting again.
-            this.checkPoint = Interlocked.Exchange(ref this.sum, 0);
+            checkPoint = Interlocked.Exchange(ref sum, 0);
         }
 
         public override MetricData<long> ToMetricData()
         {
             return new SumData<long>
             {
-                Sum = this.checkPoint,
+                Sum = checkPoint,
                 Timestamp = DateTime.UtcNow,
             };
         }
@@ -52,7 +51,7 @@ namespace OpenTelemetry.Metrics.Aggregators
         public override void Update(long value)
         {
             // Adds value to the running total in a thread safe manner.
-            Interlocked.Add(ref this.sum, value);
+            Interlocked.Add(ref sum, value);
         }
     }
 }

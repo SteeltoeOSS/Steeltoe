@@ -27,16 +27,16 @@ namespace OpenTelemetry.Metrics
 
         public MeasureMetricSdk(string name)
         {
-            this.metricName = name;
+            metricName = name;
         }
 
         public override BoundMeasureMetric<T> Bind(LabelSet labelset)
         {
-            if (!this.measureBoundInstruments.TryGetValue(labelset, out var boundInstrument))
+            if (!measureBoundInstruments.TryGetValue(labelset, out var boundInstrument))
             {
-                boundInstrument = this.CreateMetric();
+                boundInstrument = CreateMetric();
 
-                this.measureBoundInstruments.Add(labelset, boundInstrument);
+                measureBoundInstruments.Add(labelset, boundInstrument);
             }
 
             return boundInstrument;
@@ -44,12 +44,12 @@ namespace OpenTelemetry.Metrics
 
         public override BoundMeasureMetric<T> Bind(IEnumerable<KeyValuePair<string, string>> labels)
         {
-            return this.Bind(new LabelSetSdk(labels));
+            return Bind(new LabelSetSdk(labels));
         }
 
         internal IDictionary<LabelSet, BoundMeasureMetricSdkBase<T>> GetAllBoundInstruments()
         {
-            return this.measureBoundInstruments;
+            return measureBoundInstruments;
         }
 
         protected abstract BoundMeasureMetricSdkBase<T> CreateMetric();

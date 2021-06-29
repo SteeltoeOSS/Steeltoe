@@ -48,12 +48,12 @@ namespace OpenTelemetry.Metrics
 
         public void Collect()
         {
-            lock (this.collectLock)
+            lock (collectLock)
             {
                 // collect all pending metric updates and send to batcher.
                 // must sync to prevent multiple Collect occuring at same time.
                 var boundInstrumentsToRemove = new List<LabelSet>();
-                foreach (var longCounter in this.longCounters)
+                foreach (var longCounter in longCounters)
                 {
                     var metricName = longCounter.Key;
                     var counterInstrument = longCounter.Value;
@@ -62,7 +62,7 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
 
                         // Updates so far are pushed to Processor/Exporter.
                         // Adjust status accordinly.
@@ -96,7 +96,7 @@ namespace OpenTelemetry.Metrics
                     boundInstrumentsToRemove.Clear();
                 }
 
-                foreach (var doubleCounter in this.doubleCounters)
+                foreach (var doubleCounter in doubleCounters)
                 {
                     var metricName = doubleCounter.Key;
                     var counterInstrument = doubleCounter.Value;
@@ -105,7 +105,7 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
 
                         // Updates so far are pushed to Processor/Exporter.
                         // Adjust status accordinly.
@@ -139,7 +139,7 @@ namespace OpenTelemetry.Metrics
                     boundInstrumentsToRemove.Clear();
                 }
 
-                foreach (var longMeasure in this.longMeasures)
+                foreach (var longMeasure in longMeasures)
                 {
                     var metricName = longMeasure.Key;
                     var measureInstrument = longMeasure.Value;
@@ -148,11 +148,11 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
                     }
                 }
 
-                foreach (var doubleMeasure in this.doubleMeasures)
+                foreach (var doubleMeasure in doubleMeasures)
                 {
                     var metricName = doubleMeasure.Key;
                     var measureInstrument = doubleMeasure.Value;
@@ -161,11 +161,11 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
                     }
                 }
 
-                foreach (var longObserver in this.longObservers)
+                foreach (var longObserver in longObservers)
                 {
                     var metricName = longObserver.Key;
                     var observerInstrument = longObserver.Value;
@@ -184,11 +184,11 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
                     }
                 }
 
-                foreach (var doubleObserver in this.doubleObservers)
+                foreach (var doubleObserver in doubleObservers)
                 {
                     var metricName = doubleObserver.Key;
                     var observerInstrument = doubleObserver.Value;
@@ -207,7 +207,7 @@ namespace OpenTelemetry.Metrics
                         var labelSet = handle.Key;
                         var aggregator = handle.Value.GetAggregator();
                         aggregator.Checkpoint();
-                        this.metricProcessor.Process(this.meterName, metricName, labelSet, aggregator);
+                        metricProcessor.Process(meterName, metricName, labelSet, aggregator);
                     }
                 }
             }
@@ -215,11 +215,11 @@ namespace OpenTelemetry.Metrics
 
         public override CounterMetric<long> CreateInt64Counter(string name, bool monotonic = true)
         {
-            if (!this.longCounters.TryGetValue(name, out var counter))
+            if (!longCounters.TryGetValue(name, out var counter))
             {
                 counter = new Int64CounterMetricSdk(name);
 
-                this.longCounters.Add(name, counter);
+                longCounters.Add(name, counter);
             }
 
             return counter;
@@ -227,10 +227,10 @@ namespace OpenTelemetry.Metrics
 
         public override CounterMetric<double> CreateDoubleCounter(string name, bool monotonic = true)
         {
-            if (!this.doubleCounters.TryGetValue(name, out var counter))
+            if (!doubleCounters.TryGetValue(name, out var counter))
             {
                 counter = new DoubleCounterMetricSdk(name);
-                this.doubleCounters.Add(name, counter);
+                doubleCounters.Add(name, counter);
             }
 
             return counter;
@@ -238,11 +238,11 @@ namespace OpenTelemetry.Metrics
 
         public override MeasureMetric<double> CreateDoubleMeasure(string name, bool absolute = true)
         {
-            if (!this.doubleMeasures.TryGetValue(name, out var measure))
+            if (!doubleMeasures.TryGetValue(name, out var measure))
             {
                 measure = new DoubleMeasureMetricSdk(name);
 
-                this.doubleMeasures.Add(name, measure);
+                doubleMeasures.Add(name, measure);
             }
 
             return measure;
@@ -250,11 +250,11 @@ namespace OpenTelemetry.Metrics
 
         public override MeasureMetric<long> CreateInt64Measure(string name, bool absolute = true)
         {
-            if (!this.longMeasures.TryGetValue(name, out var measure))
+            if (!longMeasures.TryGetValue(name, out var measure))
             {
                 measure = new Int64MeasureMetricSdk(name);
 
-                this.longMeasures.Add(name, measure);
+                longMeasures.Add(name, measure);
             }
 
             return measure;
@@ -263,10 +263,10 @@ namespace OpenTelemetry.Metrics
         /// <inheritdoc/>
         public override Int64ObserverMetric CreateInt64Observer(string name, Action<Int64ObserverMetric> callback, bool absolute = true)
         {
-            if (!this.longObservers.TryGetValue(name, out var observer))
+            if (!longObservers.TryGetValue(name, out var observer))
             {
                 observer = new Int64ObserverMetricSdk(name, callback);
-                this.longObservers.Add(name, observer);
+                longObservers.Add(name, observer);
             }
 
             return observer;
@@ -275,10 +275,10 @@ namespace OpenTelemetry.Metrics
         /// <inheritdoc/>
         public override DoubleObserverMetric CreateDoubleObserver(string name, Action<DoubleObserverMetric> callback, bool absolute = true)
         {
-            if (!this.doubleObservers.TryGetValue(name, out var observer))
+            if (!doubleObservers.TryGetValue(name, out var observer))
             {
                 observer = new DoubleObserverMetricSdk(name, callback);
-                this.doubleObservers.Add(name, observer);
+                doubleObservers.Add(name, observer);
             }
 
             return observer;

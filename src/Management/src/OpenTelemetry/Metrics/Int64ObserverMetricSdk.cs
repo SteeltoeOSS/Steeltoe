@@ -28,18 +28,18 @@ namespace OpenTelemetry.Metrics
 
         public Int64ObserverMetricSdk(string name, Action<Int64ObserverMetric> callback)
         {
-            this.metricName = name;
+            metricName = name;
             this.callback = callback;
         }
 
         public override void Observe(long value, LabelSet labelset)
         {
-            if (!this.observerHandles.TryGetValue(labelset, out var boundInstrument))
+            if (!observerHandles.TryGetValue(labelset, out var boundInstrument))
             {
                 boundInstrument = new Int64ObserverMetricHandleSdk();
 
                 // TODO cleanup of handle/aggregator.   Issue #530
-                this.observerHandles.Add(labelset, boundInstrument);
+                observerHandles.Add(labelset, boundInstrument);
             }
 
             boundInstrument.Observe(value);
@@ -47,17 +47,17 @@ namespace OpenTelemetry.Metrics
 
         public override void Observe(long value, IEnumerable<KeyValuePair<string, string>> labels)
         {
-            this.Observe(value, new LabelSetSdk(labels));
+            Observe(value, new LabelSetSdk(labels));
         }
 
         public void InvokeCallback()
         {
-            this.callback(this);
+            callback(this);
         }
 
         internal IDictionary<LabelSet, Int64ObserverMetricHandleSdk> GetAllHandles()
         {
-            return this.observerHandles;
+            return observerHandles;
         }
     }
 }

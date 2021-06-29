@@ -37,8 +37,8 @@ namespace OpenTelemetry.Metrics
         /// <param name="labels">labels from which labelset should be constructed.</param>
         internal LabelSetSdk(IEnumerable<KeyValuePair<string, string>> labels)
         {
-            this.Labels = SortAndDedup(labels);
-            this.labelSetEncoded = GetLabelSetEncoded(this.Labels);
+            Labels = SortAndDedup(labels);
+            labelSetEncoded = GetLabelSetEncoded(Labels);
         }
 
         /// <summary>
@@ -50,13 +50,13 @@ namespace OpenTelemetry.Metrics
         /// <inheritdoc/>
         public override int GetHashCode()
         {
-            return this.labelSetEncoded.GetHashCode();
+            return labelSetEncoded.GetHashCode();
         }
 
         /// <inheritdoc/>
         public override bool Equals(object obj)
         {
-            return this.labelSetEncoded.Equals(((LabelSetSdk)obj).labelSetEncoded);
+            return labelSetEncoded.Equals(((LabelSetSdk)obj).labelSetEncoded);
         }
 
         private static IEnumerable<KeyValuePair<string, string>> SortAndDedup(IEnumerable<KeyValuePair<string, string>> labels)

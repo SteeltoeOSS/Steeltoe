@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Metrics
@@ -29,15 +28,10 @@ namespace OpenTelemetry.Metrics
         /// <summary>
         /// No op measure bound instrument instance.
         /// </summary>
-        public static readonly NoOpBoundMeasureMetric<T> Instance = new NoOpBoundMeasureMetric<T>();
+        public static readonly NoOpBoundMeasureMetric<T> Instance = new();
 
         /// <inheritdoc/>
         public override void Record(in SpanContext context, T value)
-        {
-        }
-
-        /// <inheritdoc/>
-        public override void Record(in DistributedContext context, T value)
         {
         }
     }

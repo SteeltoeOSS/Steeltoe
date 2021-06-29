@@ -37,7 +37,7 @@ namespace OpenTelemetry.Metrics.Configuration
                 this.metricProcessor = metricProcessor;
             }
 
-            this.defaultMeter = new MeterSdk(string.Empty, this.metricProcessor);
+            defaultMeter = new MeterSdk(string.Empty, this.metricProcessor);
         }
 
         public static MeterFactory Create(MetricProcessor metricProcessor)
@@ -49,32 +49,21 @@ namespace OpenTelemetry.Metrics.Configuration
         {
             if (string.IsNullOrEmpty(name))
             {
-                return this.defaultMeter;
+                return defaultMeter;
             }
 
-            lock (this.lck)
+            lock (lck)
             {
                 var key = new MeterRegistryKey(name, version);
-                if (!this.meterRegistry.TryGetValue(key, out var meter))
+                if (!meterRegistry.TryGetValue(key, out var meter))
                 {
-                    meter = this.defaultMeter = new MeterSdk(name, this.metricProcessor);
+                    meter = defaultMeter = new MeterSdk(name, metricProcessor);
 
-                    this.meterRegistry.Add(key, meter);
+                    meterRegistry.Add(key, meter);
                 }
 
                 return meter;
             }
-        }
-
-        private static IEnumerable<KeyValuePair<string, string>> CreateLibraryResourceLabels(string name, string version)
-        {
-            var labels = new Dictionary<string, string> { { "name", name } };
-            if (!string.IsNullOrEmpty(version))
-            {
-                labels.Add("version", version);
-            }
-
-            return labels;
         }
 
         private readonly struct MeterRegistryKey

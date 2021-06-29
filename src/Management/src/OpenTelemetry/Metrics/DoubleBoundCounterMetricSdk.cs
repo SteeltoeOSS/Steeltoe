@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Context;
 using OpenTelemetry.Metrics.Aggregators;
 using OpenTelemetry.Trace;
 
@@ -31,17 +30,12 @@ namespace OpenTelemetry.Metrics
 
         public override void Add(in SpanContext context, double value)
         {
-            this.sumAggregator.Update(value);
-        }
-
-        public override void Add(in DistributedContext context, double value)
-        {
-            this.sumAggregator.Update(value);
+            sumAggregator.Update(value);
         }
 
         public override Aggregator<double> GetAggregator()
         {
-            return this.sumAggregator;
+            return sumAggregator;
         }
     }
 }

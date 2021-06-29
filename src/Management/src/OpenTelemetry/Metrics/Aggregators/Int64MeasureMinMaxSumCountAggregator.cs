@@ -31,7 +31,7 @@ namespace OpenTelemetry.Metrics.Aggregators
 
         public override void Checkpoint()
         {
-            this.checkPoint = Interlocked.Exchange(ref this.summary, new LongSummary());
+            checkPoint = Interlocked.Exchange(ref summary, new LongSummary());
         }
 
         public override AggregationType GetAggregationType()
@@ -43,22 +43,22 @@ namespace OpenTelemetry.Metrics.Aggregators
         {
             return new SummaryData<long>
             {
-                Count = this.checkPoint.Count,
-                Sum = this.checkPoint.Sum,
-                Min = this.checkPoint.Min,
-                Max = this.checkPoint.Max,
+                Count = checkPoint.Count,
+                Sum = checkPoint.Sum,
+                Min = checkPoint.Min,
+                Max = checkPoint.Max,
                 Timestamp = DateTime.UtcNow,
             };
         }
 
         public override void Update(long value)
         {
-            lock (this.updateLock)
+            lock (updateLock)
             {
-                this.summary.Count++;
-                this.summary.Sum += value;
-                this.summary.Max = Math.Max(this.summary.Max, value);
-                this.summary.Min = Math.Min(this.summary.Min, value);
+                summary.Count++;
+                summary.Sum += value;
+                summary.Max = Math.Max(summary.Max, value);
+                summary.Min = Math.Min(summary.Min, value);
             }
         }
 
@@ -71,8 +71,8 @@ namespace OpenTelemetry.Metrics.Aggregators
 
             public LongSummary()
             {
-                this.Min = long.MaxValue;
-                this.Max = long.MinValue;
+                Min = long.MaxValue;
+                Max = long.MinValue;
             }
         }
     }

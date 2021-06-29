@@ -31,11 +31,11 @@ namespace OpenTelemetry.Metrics.Export
             IEnumerable<KeyValuePair<string, string>> labels,
             AggregationType type)
         {
-            this.MetricNamespace = metricNamespace;
-            this.MetricName = metricName;
-            this.MetricDescription = desc;
-            this.Labels = labels;
-            this.AggregationType = type;
+            MetricNamespace = metricNamespace;
+            MetricName = metricName;
+            MetricDescription = desc;
+            Labels = labels;
+            AggregationType = type;
         }
 
         public string MetricNamespace { get; private set; }

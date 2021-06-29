@@ -32,14 +32,14 @@ namespace OpenTelemetry.Metrics.Aggregators
         public override void Checkpoint()
         {
             // checkpoints the current running sum into checkpoint, and starts counting again.
-            this.checkPoint = Interlocked.Exchange(ref this.sum, 0.0);
+            checkPoint = Interlocked.Exchange(ref sum, 0.0);
         }
 
         public override MetricData<double> ToMetricData()
         {
             return new SumData<double>
             {
-                Sum = this.checkPoint,
+                Sum = checkPoint,
                 Timestamp = DateTime.UtcNow,
             };
         }
@@ -55,10 +55,10 @@ namespace OpenTelemetry.Metrics.Aggregators
             double initialTotal, computedTotal;
             do
             {
-                initialTotal = this.sum;
+                initialTotal = sum;
                 computedTotal = initialTotal + value;
             }
-            while (initialTotal != Interlocked.CompareExchange(ref this.sum, computedTotal, initialTotal));
+            while (initialTotal != Interlocked.CompareExchange(ref sum, computedTotal, initialTotal));
         }
     }
 }

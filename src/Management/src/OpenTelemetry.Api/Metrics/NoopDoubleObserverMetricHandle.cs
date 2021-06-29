@@ -24,7 +24,7 @@ namespace OpenTelemetry.Metrics
         /// <summary>
         /// No op observer handle instance.
         /// </summary>
-        public static readonly NoOpDoubleObserverMetricHandle Instance = new NoOpDoubleObserverMetricHandle();
+        public static readonly NoOpDoubleObserverMetricHandle Instance = new();
 
         /// <inheritdoc/>
         public override void Observe(double value)

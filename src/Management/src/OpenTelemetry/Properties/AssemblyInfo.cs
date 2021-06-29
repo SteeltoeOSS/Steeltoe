@@ -16,6 +16,6 @@
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.Management.OpenTelemetryBase" + AssemblyInfo.PublicKey)]
-[assembly: InternalsVisibleTo("Steeltoe.OpenTelemetry.Tests" + AssemblyInfo.PublicKey)]
-[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2" + AssemblyInfo.MoqPublicKey)]
+[assembly: InternalsVisibleTo("Steeltoe.Management.OpenTelemetryBase")]
+[assembly: InternalsVisibleTo("Steeltoe.OpenTelemetry.Tests")]
+[assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]

@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using System;
 using System.Diagnostics.Tracing;
 
 namespace OpenTelemetry.Internal
@@ -26,12 +25,12 @@ namespace OpenTelemetry.Internal
     [EventSource(Name = "OpenTelemetry-Api")]
     internal class OpenTelemetryApiEventSource : EventSource
     {
-        public static OpenTelemetryApiEventSource Log = new OpenTelemetryApiEventSource();
+        public static OpenTelemetryApiEventSource Log = new();
 
         [Event(7, Message = "Calling method '{0}' with invalid argument '{1}', issue '{2}'.", Level = EventLevel.Warning)]
         public void InvalidArgument(string methodName, string argumentName, string issue)
         {
-            this.WriteEvent(7, methodName, argumentName, issue);
+            WriteEvent(7, methodName, argumentName, issue);
         }
     }
 }

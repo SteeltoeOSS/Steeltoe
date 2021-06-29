@@ -25,7 +25,7 @@ namespace OpenTelemetry.Metrics
 
         internal BoundCounterMetricSdkBase(RecordStatus recordStatus)
         {
-            this.Status = recordStatus;
+            Status = recordStatus;
         }
 
         public abstract Aggregator<T> GetAggregator();

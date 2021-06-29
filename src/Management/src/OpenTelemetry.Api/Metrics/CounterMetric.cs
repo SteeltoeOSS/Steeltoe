@@ -14,9 +14,8 @@
 // limitations under the License.
 // </copyright>
 
-using System.Collections.Generic;
-using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
+using System.Collections.Generic;
 
 namespace OpenTelemetry.Metrics
 {
@@ -42,22 +41,6 @@ namespace OpenTelemetry.Metrics
         /// <param name="value">value by which the counter should be incremented.</param>
         /// <param name="labels">The labels or dimensions associated with this value.</param>
         public abstract void Add(in SpanContext context, T value, IEnumerable<KeyValuePair<string, string>> labels);
-
-        /// <summary>
-        /// Adds or Increments the counter.
-        /// </summary>
-        /// <param name="context">the associated distributed context.</param>
-        /// <param name="value">value by which the counter should be incremented.</param>
-        /// <param name="labelset">The labelset associated with this value.</param>
-        public abstract void Add(in DistributedContext context, T value, LabelSet labelset);
-
-        /// <summary>
-        /// Adds or Increments the counter.
-        /// </summary>
-        /// <param name="context">the associated distributed context.</param>
-        /// <param name="value">value by which the counter should be incremented.</param>
-        /// <param name="labels">The labels or dimensions associated with this value.</param>
-        public abstract void Add(in DistributedContext context, T value, IEnumerable<KeyValuePair<string, string>> labels);
 
         /// <summary>
         /// Gets the bound counter metric with given labelset.

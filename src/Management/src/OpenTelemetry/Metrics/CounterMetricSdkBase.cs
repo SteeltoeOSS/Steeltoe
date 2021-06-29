@@ -32,37 +32,37 @@ namespace OpenTelemetry.Metrics
 
         protected CounterMetricSdkBase(string name)
         {
-            this.metricName = name;
+            metricName = name;
         }
 
         public IDictionary<LabelSet, BoundCounterMetricSdkBase<T>> GetAllBoundInstruments()
         {
-            return this.counterBoundInstruments;
+            return counterBoundInstruments;
         }
 
         public override BoundCounterMetric<T> Bind(LabelSet labelset)
         {
             // user making Bind call means record is not shortlived.
-            return this.Bind(labelset, isShortLived: false);
+            return Bind(labelset, isShortLived: false);
         }
 
         public override BoundCounterMetric<T> Bind(IEnumerable<KeyValuePair<string, string>> labels)
         {
             // user making Bind call means record is not shortlived.
-            return this.Bind(new LabelSetSdk(labels), isShortLived: false);
+            return Bind(new LabelSetSdk(labels), isShortLived: false);
         }
 
         internal BoundCounterMetric<T> Bind(LabelSet labelset, bool isShortLived)
         {
             BoundCounterMetricSdkBase<T> boundInstrument;
 
-            lock (this.bindUnbindLock)
+            lock (bindUnbindLock)
             {
-                if (!this.counterBoundInstruments.TryGetValue(labelset, out boundInstrument))
+                if (!counterBoundInstruments.TryGetValue(labelset, out boundInstrument))
                 {
                     var recStatus = isShortLived ? RecordStatus.UpdatePending : RecordStatus.Bound;
-                    boundInstrument = this.CreateMetric(recStatus);
-                    this.counterBoundInstruments.Add(labelset, boundInstrument);
+                    boundInstrument = CreateMetric(recStatus);
+                    counterBoundInstruments.Add(labelset, boundInstrument);
                 }
             }
 
@@ -97,13 +97,13 @@ namespace OpenTelemetry.Metrics
                      *
                      */
 
-                    lock (this.bindUnbindLock)
+                    lock (bindUnbindLock)
                     {
                         boundInstrument.Status = RecordStatus.UpdatePending;
 
-                        if (!this.counterBoundInstruments.ContainsKey(labelset))
+                        if (!counterBoundInstruments.ContainsKey(labelset))
                         {
-                            this.counterBoundInstruments.Add(labelset, boundInstrument);
+                            counterBoundInstruments.Add(labelset, boundInstrument);
                         }
                     }
 
@@ -116,15 +116,15 @@ namespace OpenTelemetry.Metrics
 
         internal void UnBind(LabelSet labelSet)
         {
-            lock (this.bindUnbindLock)
+            lock (bindUnbindLock)
             {
-                if (this.counterBoundInstruments.TryGetValue(labelSet, out var boundInstrument))
+                if (counterBoundInstruments.TryGetValue(labelSet, out var boundInstrument))
                 {
                     // Check status again, inside lock as an instrument update
                     // might have occured which promoted this record.
                     if (boundInstrument.Status == RecordStatus.CandidateForRemoval)
                     {
-                        this.counterBoundInstruments.Remove(labelSet);
+                        counterBoundInstruments.Remove(labelSet);
                     }
                 }
             }

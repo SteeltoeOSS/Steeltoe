@@ -13,6 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // </copyright>
+
 namespace OpenTelemetry.Metrics
 {
     /// <summary>
@@ -20,8 +21,8 @@ namespace OpenTelemetry.Metrics
     /// </summary>
     public class MeterFactoryBase
     {
-        private static NoOpMeter noOpMeter = new NoOpMeter();
-        private static MeterFactoryBase defaultFactory = new MeterFactoryBase();
+        private static NoOpMeter noOpMeter = new();
+        private static MeterFactoryBase defaultFactory = new();
 
         /// <summary>
         /// Gets the dafult instance of a <see cref="MeterFactoryBase"/>.

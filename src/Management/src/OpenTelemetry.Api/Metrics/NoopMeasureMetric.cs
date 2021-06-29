@@ -28,7 +28,7 @@ namespace OpenTelemetry.Metrics
         /// <summary>
         /// No op measure instance.
         /// </summary>
-        public static readonly NoOpMeasureMetric<T> Instance = new NoOpMeasureMetric<T>();
+        public static readonly NoOpMeasureMetric<T> Instance = new();
 
         /// <inheritdoc/>
         public override BoundMeasureMetric<T> Bind(LabelSet labelset)

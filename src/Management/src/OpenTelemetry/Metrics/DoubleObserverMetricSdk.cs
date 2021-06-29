@@ -28,18 +28,18 @@ namespace OpenTelemetry.Metrics
 
         public DoubleObserverMetricSdk(string name, Action<DoubleObserverMetric> callback)
         {
-            this.metricName = name;
+            metricName = name;
             this.callback = callback;
         }
 
         public override void Observe(double value, LabelSet labelset)
         {
-            if (!this.observerHandles.TryGetValue(labelset, out var boundInstrument))
+            if (!observerHandles.TryGetValue(labelset, out var boundInstrument))
             {
                 boundInstrument = new DoubleObserverMetricHandleSdk();
 
                 // TODO cleanup of handle/aggregator.   Issue #530
-                this.observerHandles.Add(labelset, boundInstrument);
+                observerHandles.Add(labelset, boundInstrument);
             }
 
             boundInstrument.Observe(value);
@@ -47,17 +47,17 @@ namespace OpenTelemetry.Metrics
 
         public override void Observe(double value, IEnumerable<KeyValuePair<string, string>> labels)
         {
-            this.Observe(value, new LabelSetSdk(labels));
+            Observe(value, new LabelSetSdk(labels));
         }
 
         public void InvokeCallback()
         {
-            this.callback(this);
+            callback(this);
         }
 
         internal IDictionary<LabelSet, DoubleObserverMetricHandleSdk> GetAllHandles()
         {
-            return this.observerHandles;
+            return observerHandles;
         }
     }
 }

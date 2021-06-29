@@ -14,7 +14,6 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Context;
 using OpenTelemetry.Trace;
 
 namespace OpenTelemetry.Metrics
@@ -32,12 +31,5 @@ namespace OpenTelemetry.Metrics
         /// <param name="context">the associated span context.</param>
         /// <param name="value">value by which the bound counter metric should be added.</param>
         public abstract void Add(in SpanContext context, T value);
-
-        /// <summary>
-        /// Adds the given value to the bound counter metric.
-        /// </summary>
-        /// <param name="context">the associated distributed context.</param>
-        /// <param name="value">value by which the bound counter metric should be added.</param>
-        public abstract void Add(in DistributedContext context, T value);
     }
 }

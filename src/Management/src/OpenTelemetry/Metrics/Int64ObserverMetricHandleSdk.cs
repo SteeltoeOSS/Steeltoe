@@ -24,12 +24,12 @@ namespace OpenTelemetry.Metrics
 
         public override void Observe(long value)
         {
-            this.aggregator.Update(value);
+            aggregator.Update(value);
         }
 
         internal Int64LastValueAggregator GetAggregator()
         {
-            return this.aggregator;
+            return aggregator;
         }
     }
 }

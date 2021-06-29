@@ -311,7 +311,33 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         }
 
         [Fact]
-        public void Tracing_IsAutowired()
+        public void TracingBase_IsAutowired()
+        {
+            // Arrange
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingBase });
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+
+            // Act
+            var host = hostBuilder.AddSteeltoe(exclusions).Build();
+            var tracerProvider = host.Services.GetService<TracerProvider>();
+
+            // Assert
+            Assert.NotNull(host.Services.GetService<IHostedService>());
+            Assert.NotNull(host.Services.GetService<ITracingOptions>());
+            Assert.NotNull(tracerProvider);
+            Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
+
+            // confirm instrumentation(s) were added as expected
+            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Single(instrumentations);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+            Assert.DoesNotContain(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        }
+
+        [Fact]
+        public void TracingCore_IsAutowired()
         {
             // Arrange
             var exclusions = SteeltoeAssemblies.AllAssemblies
