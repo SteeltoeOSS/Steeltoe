@@ -3,12 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     public class RabbitMQServiceInfoFactoryTest
     {
@@ -25,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             Assert.NotNull(s);
 
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -46,7 +47,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -67,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -90,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -114,7 +115,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -142,7 +143,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new RabbitMQServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -233,12 +234,12 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
-            var opt = new CloudFoundryServicesOptions();
-            var section = config.GetSection(CloudFoundryServicesOptions.CONFIGURATION_PREFIX);
+            var opt = new CloudFoundryServicesOptions(config);
+            var section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
             section.Bind(opt);
             Assert.Single(opt.Services);
 
-            return opt.Services.First().Value[0];
+            return opt.Services.First().Value.First();
         }
     }
 }

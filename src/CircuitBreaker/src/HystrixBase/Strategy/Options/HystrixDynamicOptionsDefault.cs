@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
 {

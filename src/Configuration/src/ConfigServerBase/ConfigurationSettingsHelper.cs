@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -179,7 +178,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetClientSecret(string configPrefix, IConfiguration config)
         {
-           return GetSetting(
+           return ConfigurationValuesHelper.GetSetting(
                "credentials:client_secret",
                config,
                ConfigServerClientSettings.DEFAULT_CLIENT_SECRET,
@@ -191,7 +190,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetClientId(string configPrefix, IConfiguration config)
         {
-            return GetSetting(
+            return ConfigurationValuesHelper.GetSetting(
                 "credentials:client_id",
                 config,
                 ConfigServerClientSettings.DEFAULT_CLIENT_ID,
@@ -203,7 +202,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetAccessTokenUri(string configPrefix, IConfiguration config)
         {
-            return GetSetting(
+            return ConfigurationValuesHelper.GetSetting(
                 "credentials:access_token_uri",
                 config,
                 ConfigServerClientSettings.DEFAULT_ACCESS_TOKEN_URI,
@@ -215,7 +214,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetApplicationName(string configPrefix, IConfiguration config, string defName)
         {
-            return GetSetting(
+            return ConfigurationValuesHelper.GetSetting(
                 "name",
                 config,
                 defName,
@@ -226,7 +225,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         private static string GetCloudFoundryUri(string configPrefix, IConfiguration config, string def)
         {
-            return GetSetting(
+            return ConfigurationValuesHelper.GetSetting(
                 "credentials:uri",
                 config,
                 def,
@@ -234,29 +233,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 VCAP_SERVICES_CONFIGSERVER_PREFIX,
                 VCAP_SERVICES_CONFIGSERVER30_PREFIX,
                 VCAP_SERVICES_CONFIGSERVERALT_PREFIX);
-        }
-
-        /// <summary>
-        /// Get setting from config searching the given configPrefix keys in order. Returns the first element with key.
-        /// </summary>
-        /// <param name="key">The key of the element to return.</param>
-        /// <param name="config">IConfiguration to search through.</param>
-        /// <param name="defaultValue">The default Value if no configuration is found.</param>
-        /// <param name="configPrefixes">The prefixes to search for in given order.</param>
-        /// <returns>Config value</returns>
-        private static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
-        {
-            foreach (var prefix in configPrefixes)
-            {
-                var section = config.GetSection(prefix);
-                var result = section.GetValue<string>(key);
-                if (!string.IsNullOrEmpty(result))
-                {
-                    return result;
-                }
-            }
-
-            return defaultValue;
         }
     }
 }

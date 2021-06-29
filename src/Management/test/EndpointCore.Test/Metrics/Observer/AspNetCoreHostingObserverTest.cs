@@ -4,13 +4,10 @@
 
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,25 +18,25 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
     public class AspNetCoreHostingObserverTest : BaseTest
     {
-        [Fact]
-        public void Constructor_RegistersExpectedViews()
-        {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+        // Pending views API
+        /* [Fact]
+           public void Constructor_RegistersExpectedViews()
+           {
+               var options = new MetricsEndpointOptions();
+               var stats = new OpenCensusStats();
+               var tags = new OpenCensusTags();
+               var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
 
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
-            Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
-        }
+               Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.time")));
+               Assert.NotNull(stats.ViewManager.GetView(ViewName.Create("http.server.request.count")));
+           }*/
 
         [Fact]
         public void ShouldIgnore_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var obs = new AspNetCoreHostingObserver(options, stats, tags, null);
+            var options = new MetricsObserverOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var obs = new AspNetCoreHostingObserver(options, stats, null);
 
             Assert.True(obs.ShouldIgnoreRequest("/cloudfoundryapplication/info"));
             Assert.True(obs.ShouldIgnoreRequest("/cloudfoundryapplication/health"));
@@ -59,10 +56,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void ProcessEvent_IgnoresNulls()
         {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+            var options = new MetricsObserverOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new AspNetCoreHostingObserver(options, stats, null);
 
             observer.ProcessEvent("foobar", null);
             observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
@@ -76,10 +72,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         [Fact]
         public void GetException_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+            var options = new MetricsObserverOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new AspNetCoreHostingObserver(options, stats, null);
 
             var context = GetHttpRequestMessage();
             var exception = observer.GetException(context);
@@ -97,12 +92,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
         }
 
         [Fact]
-        public void GetTagContext_ReturnsExpected()
+        public void GetLabelSets_ReturnsExpected()
         {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+            var options = new MetricsObserverOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new AspNetCoreHostingObserver(options, stats, null);
 
             var context = GetHttpRequestMessage();
             var exceptionHandlerFeature = new ExceptionHandlerFeature()
@@ -113,22 +107,23 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
             context.Response.StatusCode = 404;
 
-            var tagContext = observer.GetTagContext(context);
+            var tagContext = observer.GetLabelSets(context);
             var tagValues = tagContext.ToList();
-            tagValues.Contains(Tag.Create(TagKey.Create("exception"), TagValue.Create("ArgumentNullException")));
-            tagValues.Contains(Tag.Create(TagKey.Create("uri"), TagValue.Create("/foobar")));
-            tagValues.Contains(Tag.Create(TagKey.Create("status"), TagValue.Create("404")));
-            tagValues.Contains(Tag.Create(TagKey.Create("method"), TagValue.Create("GET")));
+            tagValues.Contains(KeyValuePair.Create("exception", "ArgumentNullException"));
+            tagValues.Contains(KeyValuePair.Create("uri", "/foobar"));
+            tagValues.Contains(KeyValuePair.Create("status", "404"));
+            tagValues.Contains(KeyValuePair.Create("method", "GET"));
         }
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
         public void HandleStopEvent_RecordsStats()
         {
-            var options = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tags = new OpenCensusTags();
-            var observer = new AspNetCoreHostingObserver(options, stats, tags, null);
+            var options = new MetricsObserverOptions();
+            var stats = new TestOpenTelemetryMetrics();
+            var observer = new AspNetCoreHostingObserver(options, stats, null);
+            var factory = stats.Factory;
+            var processor = stats.Processor;
 
             var context = GetHttpRequestMessage();
             var exceptionHandlerFeature = new ExceptionHandlerFeature()
@@ -147,11 +142,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, context);
             observer.HandleStopEvent(act, context);
 
-            var reqData = stats.ViewManager.GetView(ViewName.Create("http.server.request.time"));
-            var aggData1 = reqData.SumWithTags() as IDistributionData;
-            Assert.Equal(2, aggData1.Count);
-            Assert.True(aggData1.Mean > 1000.00);
-            Assert.True(aggData1.Max > 1000.00);
+            factory.CollectAllMetrics();
+            var requestTime = processor.GetMetricByName<double>("http.server.request.time");
+            Assert.NotNull(requestTime);
+            Assert.Equal(2, requestTime.Count);
+            Assert.True(requestTime.Sum / 2 > 1000.00);
+            Assert.True(requestTime.Max > 1000.00);
 
             act.Stop();
         }

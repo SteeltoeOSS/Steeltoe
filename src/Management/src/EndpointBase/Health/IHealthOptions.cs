@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
@@ -13,5 +14,7 @@ namespace Steeltoe.Management.Endpoint.Health
         EndpointClaim Claim { get; set; }
 
         string Role { get; set; }
+
+        public Dictionary<string, HealthGroupOptions> Groups { get; set; }
     }
 }

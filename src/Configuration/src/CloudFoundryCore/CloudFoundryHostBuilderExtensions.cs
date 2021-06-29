@@ -5,114 +5,45 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry
 {
     public static class CloudFoundryHostBuilderExtensions
     {
         /// <summary>
-        /// Enable the application to listen on port(s) provided by the environment at runtime
-        /// </summary>
-        /// <param name="webHostBuilder">Your WebHostBuilder</param>
-        /// <param name="runLocalPort">Set the port number with code so you don't need to set environment variables locally</param>
-        /// <returns>Your WebHostBuilder, now listening on port(s) found in the environment or passed in</returns>
-        /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
-        [Obsolete("This extension will be removed in a future release. Please use Steeltoe.Common.Hosting.UseCloudHosting() instead")]
-        public static IWebHostBuilder UseCloudFoundryHosting(this IWebHostBuilder webHostBuilder, int? runLocalPort = null)
-        {
-            if (webHostBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(webHostBuilder));
-            }
-
-            var urls = new List<string>();
-
-            var portStr = Environment.GetEnvironmentVariable("PORT");
-            if (!string.IsNullOrWhiteSpace(portStr))
-            {
-                if (int.TryParse(portStr, out var port))
-                {
-                    urls.Add($"http://*:{port}");
-                }
-            }
-            else if (runLocalPort != null)
-            {
-                urls.Add($"http://*:{runLocalPort}");
-            }
-
-            if (urls.Count > 0)
-            {
-                webHostBuilder.UseUrls(urls.ToArray());
-            }
-
-            return webHostBuilder;
-        }
-
-#if NETCOREAPP3_1 || NET5_0
-        /// <summary>
-        /// Enable the application to listen on port(s) provided by the environment at runtime
-        /// </summary>
-        /// <param name="hostBuilder">Your HostBuilder</param>
-        /// <param name="runLocalPort">Set the port number with code so you don't need to set environment variables locally</param>
-        /// <returns>Your HostBuilder, now listening on port(s) found in the environment or passed in</returns>
-        /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
-        [Obsolete("This extension will be removed in a future release. Please use Steeltoe.Common.Hosting.UseCloudHosting() instead")]
-        public static IHostBuilder UseCloudFoundryHosting(this IHostBuilder hostBuilder, int? runLocalPort = null)
-        {
-            if (hostBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(hostBuilder));
-            }
-
-            var urls = new List<string>();
-
-            var portStr = Environment.GetEnvironmentVariable("PORT");
-            if (!string.IsNullOrWhiteSpace(portStr))
-            {
-                if (int.TryParse(portStr, out var port))
-                {
-                    urls.Add($"http://*:{port}");
-                }
-            }
-            else if (runLocalPort != null)
-            {
-                urls.Add($"http://*:{runLocalPort}");
-            }
-
-            if (urls.Count > 0)
-            {
-                hostBuilder.ConfigureWebHost(configure => configure.UseUrls(urls.ToArray()));
-            }
-
-            return hostBuilder;
-        }
-#endif
-
-        /// <summary>
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
+        [Obsolete("This method has been removed, please use AddCloudFoundryConfiguration instead", true)]
         public static IWebHostBuilder AddCloudFoundry(this IWebHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryConfiguration();
 
         /// <summary>
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your WebHostBuilder</param>
-        [Obsolete("This method will be removed in a future release, please use AddCloudFoundryConfiguration instead")]
+        [Obsolete("This method has been removed, please use AddCloudFoundryConfiguration instead", true)]
         public static IHostBuilder AddCloudFoundry(this IHostBuilder hostBuilder) => hostBuilder.AddCloudFoundryConfiguration();
 
         /// <summary>
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your HostBuilder</param>
-        public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder) => hostBuilder.ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); });
+        public static IWebHostBuilder AddCloudFoundryConfiguration(this IWebHostBuilder hostBuilder)
+        {
+            return hostBuilder
+                .ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); })
+                .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        }
 
         /// <summary>
         /// Add Cloud Foundry Configuration Provider
         /// </summary>
         /// <param name="hostBuilder">Your WebHostBuilder</param>
-        public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder) => hostBuilder.ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); });
+        public static IHostBuilder AddCloudFoundryConfiguration(this IHostBuilder hostBuilder)
+        {
+            return hostBuilder
+                .ConfigureAppConfiguration((context, config) => { config.AddCloudFoundry(); })
+                .ConfigureServices((context, serviceCollection) => serviceCollection.RegisterCloudFoundryApplicationInstanceInfo());
+        }
     }
 }

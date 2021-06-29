@@ -13,6 +13,8 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Security;
@@ -188,7 +190,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal readonly HystrixCommandExecutionHook _executionHook;
         protected internal readonly HystrixCommandMetrics _metrics;
         protected internal readonly HystrixEventNotifier _eventNotifier;
-        protected internal readonly IHystrixCircuitBreaker _circuitBreaker;
+        protected internal readonly ICircuitBreaker _circuitBreaker;
         protected internal readonly IHystrixThreadPool _threadPool;
         protected internal readonly SemaphoreSlim _fallbackSemaphoreOverride;
         protected internal readonly SemaphoreSlim _executionSemaphoreOverride;
@@ -200,7 +202,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal CancellationTokenSource _timeoutTcs;
         protected internal CancellationToken _token;
         protected internal CancellationToken _usersToken;
-        protected internal volatile ExecutionResult _executionResult = ExecutionResult.EMPTY; // state on shared execution
+        protected internal volatile ExecutionResult _executionResult = EMPTY; // state on shared execution
         protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
 
         protected readonly AtomicCommandState commandState = new AtomicCommandState(CommandState.NOT_STARTED);
@@ -218,7 +220,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             IHystrixCommandGroupKey group,
             IHystrixCommandKey key,
             IHystrixThreadPoolKey threadPoolKey,
-            IHystrixCircuitBreaker circuitBreaker,
+            ICircuitBreaker circuitBreaker,
             IHystrixThreadPool threadPool,
             IHystrixCommandOptions commandOptionsDefaults,
             IHystrixThreadPoolOptions threadPoolOptionsDefaults,
@@ -378,9 +380,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        protected static IHystrixCircuitBreaker InitCircuitBreaker(
+        protected static ICircuitBreaker InitCircuitBreaker(
             bool enabled,
-            IHystrixCircuitBreaker fromConstructor,
+            ICircuitBreaker fromConstructor,
             IHystrixCommandGroupKey groupKey,
             IHystrixCommandKey commandKey,
             IHystrixCommandOptions properties,
@@ -453,8 +455,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             /* this is a stateful object so can only be used once */
             if (!commandState.CompareAndSet(CommandState.NOT_STARTED, CommandState.OBSERVABLE_CHAIN_CREATED))
             {
-                var ex = new InvalidOperationException(
-                    "This instance can only be executed once. Please instantiate a new instance.");
+                var ex = new InvalidOperationException("This instance can only be executed once. Please instantiate a new instance.");
                 throw new HystrixRuntimeException(
                     FailureType.BAD_REQUEST_EXCEPTION,
                     GetType(),
@@ -1603,7 +1604,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         public Exception ExecutionException => _executionResult.ExecutionException;
 
-        internal IHystrixCircuitBreaker CircuitBreaker => _circuitBreaker;
+        internal ICircuitBreaker CircuitBreaker => _circuitBreaker;
 
         protected virtual string CacheKey => null;
 

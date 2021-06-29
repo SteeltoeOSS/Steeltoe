@@ -4,11 +4,10 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -18,29 +17,20 @@ namespace Steeltoe.Management.Endpoint.Metrics
     {
         private readonly RequestDelegate _next;
 
-        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, null, false, logger)
+        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger)
         {
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, ILogger<MetricsEndpointMiddleware> logger = null)
-            : base(endpoint, null, false, logger)
+        public Task Invoke(HttpContext context)
         {
-            _next = next;
-        }
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+            {
+                return HandleMetricsRequestAsync(context);
+            }
 
-        public async Task Invoke(HttpContext context)
-        {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
-            {
-                await HandleMetricsRequestAsync(context).ConfigureAwait(false);
-            }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+            return Task.CompletedTask;
         }
 
         public override string HandleRequest(MetricsRequest arg)
@@ -93,17 +83,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 return GetMetricName(request, _endpoint.Path);
             }
 
-            var paths = new List<string>(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Id}".Replace("//", "/")));
-            foreach (var path in paths.Distinct())
-            {
-                var metricName = GetMetricName(request, path);
-                if (metricName != null)
-                {
-                    return metricName;
-                }
-            }
+            var path = $"{_mgmtOptions.Path}/{_endpoint.Id}".Replace("//", "/");
+            var metricName = GetMetricName(request, path);
 
-            return null;
+            return metricName;
         }
 
         protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)

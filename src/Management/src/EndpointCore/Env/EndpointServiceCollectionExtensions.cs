@@ -17,28 +17,23 @@ namespace Steeltoe.Management.Endpoint.Env
         /// Adds components of the Env actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for settings starting with management:endpoints:env)</param>
+        public static void AddEnvActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
-#if NETCOREAPP3_1
             services.TryAddSingleton<IHostEnvironment>((provider) =>
             {
                 var service = provider.GetRequiredService<IHostEnvironment>();
-#else
-            services.TryAddSingleton<IHostingEnvironment>((provider) =>
-            {
-                var service = provider.GetRequiredService<IHostingEnvironment>();
-#endif
                 return new GenericHostingEnvironment()
                 {
                     EnvironmentName = service.EnvironmentName,
@@ -48,11 +43,9 @@ namespace Steeltoe.Management.Endpoint.Env
                 };
             });
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            var options = new EnvEndpointOptions(config);
-            services.TryAddSingleton<IEnvOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<EnvEndpoint>();
+            services.AddActuatorManagementOptions(config);
+            services.AddEnvActuatorServices(config);
+            services.AddActuatorEndpointMapping<EnvEndpoint>();
         }
     }
 }

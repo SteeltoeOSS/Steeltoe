@@ -11,8 +11,8 @@ using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
@@ -197,82 +197,48 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public void Deserialize_EmptyStream()
+        public async Task Deserialize_GoodJsonAsync()
         {
             // Arrange
-            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
-            var stream = new MemoryStream();
-
-            // Act and Assert
-            Assert.Null(provider.Deserialize(stream));
-        }
-
-        [Fact]
-        public void Deserialize_BadJson()
-        {
-            // Arrange (propertySources array bad!)
-            var environment = @"
+            var environment = new ConfigEnvironment
+            {
+                Name = "testname",
+                Label = "testlabel",
+                Profiles = new List<string> { "Production" },
+                Version = "testversion",
+                State = "teststate",
+                PropertySources = new List<PropertySource>
                 {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""key1"": ""value1"",
-                                ""key2"": 10
-                            }
+                    new PropertySource
+                    {
+                        Name = "source",
+                        Source = new Dictionary<string, object>
+                        {
+                            { "key1", "value1" },
+                            { "key2", 10 }
                         }
-    
-                }";
-            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
-            var stream = TestHelpers.StringToStream(environment);
+                    }
+                }
+            };
+            var provider = new ConfigServerConfigurationProvider();
+            var content = JsonContent.Create(environment);
 
             // Act and Assert
-            var env = provider.Deserialize(stream);
-            Assert.Null(env);
-        }
-
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            // Arrange
-            var environment = @"
-                {
-                    ""name"": ""testname"",
-                    ""profiles"": [""Production""],
-                    ""label"": ""testlabel"",
-                    ""version"": ""testversion"",
-                    ""propertySources"": [ 
-                        { 
-                            ""name"": ""source"",
-                            ""source"": {
-                                ""key1"": ""value1"",
-                                ""key2"": 10
-                            }
-                        }
-                    ]
-                }";
-            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
-            var stream = TestHelpers.StringToStream(environment);
-
-            // Act and Assert
-            var env = provider.Deserialize(stream);
+            var env = await content.ReadFromJsonAsync<ConfigEnvironment>(provider.SerializerOptions);
             Assert.NotNull(env);
             Assert.Equal("testname", env.Name);
             Assert.NotNull(env.Profiles);
             Assert.Single(env.Profiles);
             Assert.Equal("testlabel", env.Label);
             Assert.Equal("testversion", env.Version);
+            Assert.Equal("teststate", env.State);
             Assert.NotNull(env.PropertySources);
             Assert.Single(env.PropertySources);
             Assert.Equal("source", env.PropertySources[0].Name);
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
-            Assert.Equal("value1", env.PropertySources[0].Source["key1"]);
-            Assert.Equal(10L, env.PropertySources[0].Source["key2"]);
+            Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
+            Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()));
         }
 
         [Fact]
@@ -280,7 +246,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void AddPropertySource_ChangesDataDictionary()
         {
             // Arrange
-            IDictionary<string, object> properties = new Dictionary<string, object>
+            var properties = new Dictionary<string, object>
             {
                 ["a.b.c.d"] = "value1",
                 ["a"] = "value2",
@@ -360,7 +326,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_InvalidUri()
+        public async Task RemoteLoadAsync_InvalidUri()
         {
             // Arrange
             var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
@@ -370,10 +336,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_HostTimesOut()
+        public async Task RemoteLoadAsync_HostTimesOut()
         {
             // Arrange
-            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings());
+            var provider = new ConfigServerConfigurationProvider(new ConfigServerClientSettings() { Timeout = 100 });
 
             // Act and Assert
             try
@@ -392,7 +358,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
+        public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
         {
             // Arrange
             TestConfigServerStartup.Reset();
@@ -415,7 +381,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
+        public async Task RemoteLoadAsync_ConfigServerReturnsLessThanBadRequest()
         {
             // Arrange
             var envir = HostingHelpers.GetHostingEnvironment();
@@ -486,7 +452,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         }
 
         [Fact]
-        public async void RemoteLoadAsync_ConfigServerReturnsGood()
+        public async Task RemoteLoadAsync_ConfigServerReturnsGood()
         {
             // Arrange
             var environment = @"
@@ -534,8 +500,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.Equal("source", env.PropertySources[0].Name);
             Assert.NotNull(env.PropertySources[0].Source);
             Assert.Equal(2, env.PropertySources[0].Source.Count);
-            Assert.Equal("value1", env.PropertySources[0].Source["key1"]);
-            Assert.Equal(10L, env.PropertySources[0].Source["key2"]);
+            Assert.Equal("value1", env.PropertySources[0].Source["key1"].ToString());
+            Assert.Equal(10L, long.Parse(env.PropertySources[0].Source["key2"].ToString()));
         }
 
         [Fact]
@@ -722,7 +688,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 Uri = "http://localhost:8888",
                 Name = "myName",
                 FailFast = true,
-                RetryEnabled = true
+                RetryEnabled = true,
+                RetryInitialInterval = 10,
+                Timeout = 10
             };
             server.BaseAddress = new Uri(settings.Uri);
             var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
@@ -783,18 +751,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Arrange
             var environment = @"
                     {
-                        'name': 'testname',
-                        'profiles': ['Production'],
-                        'label': 'testlabel',
-                        'version': 'testversion',
-                        'propertySources': [ 
+                        ""name"": ""testname"",
+                        ""profiles"": [""Production""],
+                        ""label"": ""testlabel"",
+                        ""version"": ""testversion"",
+                        ""propertySources"": [ 
                             { 
-                                'name': 'source',
-                                'source': {
-                                            'featureToggles.ShowModule[0]': 'FT1',
-                                            'featureToggles.ShowModule[1]': 'FT2',
-                                            'featureToggles.ShowModule[2]': 'FT3',
-                                            'enableSettings':'true'
+                                ""name"": ""source"",
+                                ""source"": {
+                                            ""featureToggles.ShowModule[0]"": ""FT1"",
+                                            ""featureToggles.ShowModule[1]"": ""FT2"",
+                                            ""featureToggles.ShowModule[2]"": ""FT3"",
+                                            ""enableSettings"":""true""
                                     }
                             }
                         ]
@@ -829,15 +797,15 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = @"
                 {
-                    'name': 'testname',
-                    'profiles': ['Production'],
-                    'label': 'testlabel',
-                    'version': 'testversion',
-                    'propertySources': [ 
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
                         { 
-                            'name': 'source',
-                            'source': {
-                                'featureToggles.ShowModule[0]': 'none'
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""featureToggles.ShowModule[0]"": ""none""
                             }
                         }
                     ]
@@ -845,9 +813,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             provider.Load();
             Assert.True(provider.TryGet("featureToggles:ShowModule:0", out var val));
             Assert.Equal("none", val);
-            Assert.False(provider.TryGet("featureToggles:ShowModule:1", out val));
-            Assert.False(provider.TryGet("featureToggles:ShowModule:2", out val));
-            Assert.False(provider.TryGet("enableSettings", out val));
+            Assert.False(provider.TryGet("featureToggles:ShowModule:1", out _));
+            Assert.False(provider.TryGet("featureToggles:ShowModule:2", out _));
+            Assert.False(provider.TryGet("enableSettings", out _));
         }
 
         [Fact]
@@ -1148,7 +1116,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var values = new Dictionary<string, string>()
             {
                 { "spring:cloud:config:discovery:enabled", "True" },
-                { "spring:cloud:config:failFast", "True" }
+                { "spring:cloud:config:failFast", "True" },
+                { "eureka:client:eurekaServer:retryCount", "0" }
             };
 
             IConfiguration configuration = new ConfigurationBuilder()
@@ -1159,7 +1128,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             {
                 Uri = "http://localhost:8888/",
                 Name = "foo",
-                Environment = "development"
+                Environment = "development",
+                Timeout = 10
             };
             var source = new ConfigServerConfigurationSource(settings, configuration);
             var provider = new ConfigServerConfigurationProvider(source);

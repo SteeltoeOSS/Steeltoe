@@ -20,12 +20,18 @@ namespace Steeltoe.Management.Endpoint.Trace
         /// Adds components of the Trace actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add trace to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:trace)</param>
-        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace)</param>
+        public static void AddTraceActuator(this IServiceCollection services, IConfiguration config = null)
         {
-            services.AddTraceActuator(config, MediaTypeVersion.V1);
+            services.AddTraceActuator(config, MediaTypeVersion.V2);
         }
 
+        /// <summary>
+        /// Adds components of the Trace actuator to Microsoft-DI
+        /// </summary>
+        /// <param name="services">Service collection to add trace to</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace)</param>
+        /// <param name="version"><see cref="MediaTypeVersion"/> to use in responses</param>
         public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
         {
             if (services == null)
@@ -33,6 +39,7 @@ namespace Steeltoe.Management.Endpoint.Trace
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -40,23 +47,20 @@ namespace Steeltoe.Management.Endpoint.Trace
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
+            services.AddTraceActuatorServices(config, version);
+
             switch (version)
             {
                 case MediaTypeVersion.V1:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, TraceDiagnosticObserver>());
                     services.TryAddSingleton<ITraceRepository>((p) => p.GetServices<IDiagnosticObserver>().OfType<TraceDiagnosticObserver>().Single());
-                    var options = new TraceEndpointOptions(config);
-                    services.TryAddSingleton<ITraceOptions>(options);
-                    services.RegisterEndpointOptions(options);
-                    services.TryAddSingleton<TraceEndpoint>();
+                    services.AddActuatorEndpointMapping<TraceEndpoint>();
                     break;
                 default:
                     services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
-                    var options2 = new HttpTraceEndpointOptions(config);
-                    services.TryAddSingleton<ITraceOptions>(options2);
-                    services.RegisterEndpointOptions(options2);
-                    services.TryAddSingleton(p => new HttpTraceEndpoint(options2, p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+                    services.TryAddSingleton(p => new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+                    services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                     break;
             }
         }

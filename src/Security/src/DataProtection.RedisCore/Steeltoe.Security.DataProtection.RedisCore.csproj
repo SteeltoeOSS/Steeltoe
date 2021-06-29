@@ -1,10 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>ASP.NET Core DataProtection Redis Key Store</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Security.DataProtection.RedisCore</AssemblyName>
-    <PackageId>Steeltoe.Security.DataProtection.RedisCore</PackageId>
-    <PackageTags>CloudFoundry;ASPNET Core;Security;DataProtection;Redis</PackageTags>
+    <RootNamespace>Steeltoe.Security.DataProtection.Redis</RootNamespace>
+    <Description>Support for storing data protection keys in Redis.</Description>
+    <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

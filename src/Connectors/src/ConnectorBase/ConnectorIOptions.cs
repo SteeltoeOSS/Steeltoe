@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.CloudFoundry.Connector
+namespace Steeltoe.Connector
 {
     public class ConnectorIOptions<T> : IOptions<T>
         where T : class, new()

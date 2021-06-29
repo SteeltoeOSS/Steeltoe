@@ -3,16 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -27,38 +25,39 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         internal const string STOP_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Stop";
         internal const string STOPEX_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
 
-        private readonly ITagKey _statusTagKey = TagKey.Create("status");
-        private readonly ITagKey _uriTagKey = TagKey.Create("uri");
-        private readonly ITagKey _methodTagKey = TagKey.Create("method");
-        private readonly ITagKey _clientTagKey = TagKey.Create("clientName");
+        private readonly string _statusTagKey = "status";
+        private readonly string _uriTagKey = "uri";
+        private readonly string _methodTagKey = "method";
+        private readonly string _clientTagKey = "clientName";
 
-        private readonly IMeasureDouble _clientTimeMeasure;
-        private readonly IMeasureLong _clientCountMeasure;
+        private readonly MeasureMetric<double> _clientTimeMeasure;
+        private readonly MeasureMetric<long> _clientCountMeasure;
 
-        public HttpClientDesktopObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger<HttpClientDesktopObserver> logger)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
+        public HttpClientDesktopObserver(IMetricsObserverOptions options, IStats stats, ILogger<HttpClientDesktopObserver> logger)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.EgressIgnorePattern);
 
-            _clientTimeMeasure = MeasureDouble.Create("client.desk.totalTime", "Total request time", MeasureUnit.MilliSeconds);
-            _clientCountMeasure = MeasureLong.Create("client.core.totalRequests", "Total request count", "count");
+            _clientTimeMeasure = Meter.CreateDoubleMeasure("http.desktop.client.request.time");
+            _clientCountMeasure = Meter.CreateInt64Measure("http.desktop.client.request.count");
 
-            var view = View.Create(
+            // Bring back views when available
+            /*var view = View.Create(
                     ViewName.Create("http.desktop.client.request.time"),
                     "Total request time",
-                    _clientTimeMeasure,
+                    clientTimeMeasure,
                     Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-                    new List<ITagKey>() { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey });
+                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
 
             ViewManager.RegisterView(view);
 
             view = View.Create(
                     ViewName.Create("http.desktop.client.request.count"),
                     "Total request counts",
-                    _clientCountMeasure,
+                    clientCountMeasure,
                     Sum.Create(),
-                    new List<ITagKey>() { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey });
-            ViewManager.RegisterView(view);
+                    new List<ITagKey>() { statusTagKey, uriTagKey, methodTagKey, clientTagKey });
+            ViewManager.RegisterView(view);*/
         }
 
         public override void ProcessEvent(string evnt, object arg)
@@ -114,27 +113,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (current.Duration.TotalMilliseconds > 0)
             {
-                var tagContext = GetTagContext(request, statusCode);
-                StatsRecorder
-                    .NewMeasureMap()
-                    .Put(_clientTimeMeasure, current.Duration.TotalMilliseconds)
-                    .Put(_clientCountMeasure, 1)
-                    .Record(tagContext);
+                var labels = GetLabels(request, statusCode);
+                _clientTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labels);
+                _clientCountMeasure.Record(default(SpanContext), 1, labels);
             }
         }
 
-        protected internal ITagContext GetTagContext(HttpWebRequest request, HttpStatusCode status)
+        protected internal List<KeyValuePair<string, string>> GetLabels(HttpWebRequest request, HttpStatusCode statusCode)
         {
-            var uri = request.RequestUri.ToString();
-            var statusCode = status.ToString();
-
-            return Tagger
-                .EmptyBuilder
-                .Put(_uriTagKey, TagValue.Create(uri))
-                .Put(_statusTagKey, TagValue.Create(statusCode))
-                .Put(_clientTagKey, TagValue.Create(request.RequestUri.Host))
-                .Put(_methodTagKey, TagValue.Create(request.Method.ToString()))
-                .Build();
+            return new Dictionary<string, string>()
+                    {
+                        { _uriTagKey, request.RequestUri.ToString() },
+                        { _statusTagKey, statusCode.ToString() },
+                        { _clientTagKey, request.RequestUri.Host },
+                        { _methodTagKey, request.Method }
+                    }.ToList();
         }
     }
 }

@@ -5,10 +5,9 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Security.DataProtection.CredHub;
 using System;
 
-namespace Steeltoe.Security.DataProtection.CredHubCore
+namespace Steeltoe.Security.DataProtection.CredHub
 {
     public static class CredHubHostBuilderExtensions
     {

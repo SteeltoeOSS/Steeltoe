@@ -6,19 +6,18 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NET5_0
-using MySqlConnector;
-#else
+#if NETCOREAPP3_1
 using MySql.Data.MySqlClient;
+#else
+using MySqlConnector;
 #endif
-using Steeltoe.CloudFoundry.Connector.EFCore.Test;
-using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
+namespace Steeltoe.Connector.MySql.EFCore.Test
 {
     public class MySqlDbContextOptionsExtensionsTest
     {
@@ -97,17 +96,17 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-#if NET5_0
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
+#if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+#else
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
             Assert.NotNull(service);
             var con = service.Database.GetDbConnection();
             Assert.NotNull(con);
-            Assert.NotNull(con as MySqlConnection);
+            Assert.True(con is MySqlConnection);
         }
 
 #if NET5_0
@@ -181,10 +180,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act
-#if NET5_0
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
+#if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
+#else
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
             // Assert
@@ -218,10 +217,10 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act and Assert
-#if NET5_0
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
+#if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+#else
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
             var built = services.BuildServiceProvider();

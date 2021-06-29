@@ -7,14 +7,13 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test
 {
     public class RedisCacheServiceCollectionExtensionsTest
     {

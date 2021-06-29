@@ -6,16 +6,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector;
-using Steeltoe.CloudFoundry.Connector.Oracle;
-using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
+namespace Steeltoe.Connector.Oracle
 {
     public static class OracleProviderServiceCollectionExtensions
     {
@@ -25,11 +23,10 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection</remarks>
-        public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -54,11 +51,10 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">cloud foundry service name binding</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection</remarks>
-        public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -83,7 +79,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
 
         private static void DoAdd(IServiceCollection services, OracleServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks)
         {
-            var oracleConnection = ConnectorHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
+            var oracleConnection = ReflectionHelpers.FindType(OracleTypeLocator.Assemblies, OracleTypeLocator.ConnectionTypeNames);
             var oracleConfig = new OracleProviderConnectorOptions(config);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, oracleConnection);
             services.Add(new ServiceDescriptor(typeof(IDbConnection), factory.Create, contextLifetime));
@@ -91,7 +87,7 @@ namespace Steeltoe.CloudFoundry.ConnectorCore.Oracle
 
             if (!services.Any(s => s.ServiceType == typeof(HealthCheckService)) || addSteeltoeHealthChecks)
             {
-                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), ServiceLifetime.Singleton));
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), ServiceLifetime.Singleton));
             }
         }
     }

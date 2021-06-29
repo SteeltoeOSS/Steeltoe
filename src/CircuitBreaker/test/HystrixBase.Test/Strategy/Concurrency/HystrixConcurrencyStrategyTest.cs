@@ -4,8 +4,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
-using System;
+using Steeltoe.Common.Util;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using System.Threading.Tasks;

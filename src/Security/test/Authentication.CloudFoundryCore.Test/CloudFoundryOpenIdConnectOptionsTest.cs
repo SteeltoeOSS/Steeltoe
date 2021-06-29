@@ -22,11 +22,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
             Assert.Equal(new PathString("/signin-cloudfoundry"), opts.CallbackPath);
             Assert.True(opts.ValidateCertificates);
-#if NETCOREAPP3_1 || NET5_0
             Assert.Equal(19, opts.ClaimActions.Count());
-#else
-            Assert.Equal(21, opts.ClaimActions.Count());
-#endif
             Assert.Equal(CookieAuthenticationDefaults.AuthenticationScheme, opts.SignInScheme);
             Assert.False(opts.SaveTokens);
         }

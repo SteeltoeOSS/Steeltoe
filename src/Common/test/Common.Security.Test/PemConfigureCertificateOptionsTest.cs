@@ -3,17 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test
 {
     public class PemConfigureCertificateOptionsTest
     {
-        // possibly related https://github.com/dotnet/corefx/issues/11046
         [Fact]
-        [Trait("Category", "SkipOnLinux")]
-        [Trait("Category", "SkipOnMacOS")]
         public void AddPemFiles_ReadsFiles_CreatesCertificate()
         {
             var config = new ConfigurationBuilder()
@@ -25,7 +22,7 @@ namespace Steeltoe.Common.Security.Test
             var opts = new CertificateOptions();
             pemConfig.Configure(opts);
             Assert.NotNull(opts.Certificate);
-            Assert.Equal(Options.DefaultName, opts.Name);
+            Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
             Assert.True(opts.Certificate.HasPrivateKey);
         }
     }

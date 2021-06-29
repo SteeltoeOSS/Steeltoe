@@ -2,20 +2,30 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
+using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Endpoint.Test.Infrastructure;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
     public class MetricsEndpointTest : BaseTest
     {
+        private readonly ITestOutputHelper _output;
+
+        public MetricsEndpointTest(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void Constructor_ThrowsIfNulls()
         {
@@ -26,145 +36,99 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         [Fact]
         public void Invoke_WithNullMetricsRequest_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            SetupStats(stats);
+            using (var tc = new TestContext(_output))
+            {
+                SetupStats(out var exporter);
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(exporter);
+                };
 
-            var ep = new MetricsEndpoint(opts, stats);
-            var result = ep.Invoke(null);
-            Assert.NotNull(result);
-            Assert.IsType<MetricsListNamesResponse>(result);
-            var resp = result as MetricsListNamesResponse;
-            Assert.NotEmpty(resp.Names);
-            Assert.Contains("http.server.requests", resp.Names);
-            Assert.Contains("jvm.memory.used", resp.Names);
-            Assert.Equal(2, resp.Names.Count);
+                var ep = tc.GetService<IMetricsEndpoint>();
+                var result = ep.Invoke(null);
+                Assert.NotNull(result);
+                Assert.IsType<MetricsListNamesResponse>(result);
+                var resp = result as MetricsListNamesResponse;
+                Assert.NotEmpty(resp.Names);
+                Assert.Contains("http.server.requests", resp.Names);
+                Assert.Contains("jvm.memory.used", resp.Names);
+                Assert.Equal(2, resp.Names.Count);
+            }
 
-            opts = new MetricsEndpointOptions();
-            stats = new OpenCensusStats();
+            using (var tc = new TestContext(_output))
+            {
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(new SteeltoeExporter());
+                };
 
-            ep = new MetricsEndpoint(opts, stats);
-            result = ep.Invoke(null);
-            Assert.NotNull(result);
+                var ep = tc.GetService<IMetricsEndpoint>();
+                var result = ep.Invoke(null);
+                Assert.NotNull(result);
 
-            Assert.IsType<MetricsListNamesResponse>(result);
-            resp = result as MetricsListNamesResponse;
-            Assert.Empty(resp.Names);
+                Assert.IsType<MetricsListNamesResponse>(result);
+                var resp = result as MetricsListNamesResponse;
+                Assert.Empty(resp.Names);
+            }
         }
 
         [Fact]
         public void Invoke_WithMetricsRequest_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
-
-            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
-            SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
-
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
-
-            long allKeyssum = 0;
-            for (var i = 0; i < 10; i++)
+            using (var tc = new TestContext(_output))
             {
-                allKeyssum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
+
+                var ep = tc.GetService<IMetricsEndpoint>();
+                var testMeasure = stats.Meter.CreateDoubleMeasure("test.test1");
+                long allKeyssum = 0;
+                var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+
+                for (var i = 0; i < 10; i++)
+                {
+                    allKeyssum += i;
+                    testMeasure.Record(default(SpanContext), i, labels);
+                }
+
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
+
+                var req = new MetricsRequest("test.test1", labels);
+                var resp = ep.Invoke(req) as MetricsResponse;
+                Assert.NotNull(resp);
+
+                Assert.Equal("test.test1", resp.Name);
+
+                Assert.NotNull(resp.Measurements);
+                Assert.Equal(2, resp.Measurements.Count);
+
+                var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.VALUE);
+                Assert.NotNull(sample);
+                Assert.Equal((double)allKeyssum / 10, sample.Value);
+
+                Assert.NotNull(resp.AvailableTags);
+                Assert.Equal(3, resp.AvailableTags.Count);
+
+                req = new MetricsRequest("foo.bar", labels);
+                resp = ep.Invoke(req) as MetricsResponse;
+                Assert.Null(resp);
             }
-
-            var alltags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
-            };
-
-            var req = new MetricsRequest("test.test1", alltags);
-            var resp = ep.Invoke(req) as MetricsResponse;
-            Assert.NotNull(resp);
-
-            Assert.Equal("test.test1", resp.Name);
-
-            Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
-            var sample = resp.Measurements[0];
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-            Assert.Equal(allKeyssum, sample.Value);
-
-            Assert.NotNull(resp.AvailableTags);
-            Assert.Equal(3, resp.AvailableTags.Count);
-
-            req = new MetricsRequest("foo.bar", alltags);
-            resp = ep.Invoke(req) as MetricsResponse;
-            Assert.Null(resp);
         }
 
-        [Fact]
-        public void GetTagValuesInColumnOrder_ReturnsExpected()
-        {
-            var tags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("foo", "bar"),
-                new KeyValuePair<string, string>("aaa", "bbb")
-            };
-
-            var columns = new List<ITagKey>()
-            {
-                TagKey.Create("foo"),
-                TagKey.Create("aaa")
-            };
-
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
-            var result = ep.GetTagValuesInColumnOrder(columns, tags);
-
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-            Assert.Equal(TagValue.Create("bar"), result[0]);
-            Assert.Equal(TagValue.Create("bbb"), result[1]);
-
-            // Invalid tagkey provided
-            columns = new List<ITagKey>()
-            {
-                TagKey.Create("bar"),
-                TagKey.Create("aaa")
-            };
-
-            result = ep.GetTagValuesInColumnOrder(columns, tags);
-            Assert.Null(result);
-
-            // aaa column not provided
-            columns = new List<ITagKey>()
-            {
-                TagKey.Create("foo"),
-                TagKey.Create("aaa"),
-                TagKey.Create("bbb"),
-            };
-            tags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("foo", "bar"),
-                new KeyValuePair<string, string>("bbb", "bbb")
-            };
-            result = ep.GetTagValuesInColumnOrder(columns, tags);
-            Assert.Equal(3, result.Count);
-            Assert.Equal(TagValue.Create("bar"), result[0]);
-            Assert.Null(result[1]);
-            Assert.Equal(TagValue.Create("bbb"), result[2]);
-        }
-
+        /* TODO: Support other aggregations
         [Fact]
         public void GetStatistic_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
+            var exporter = new SteeltoeExporter();
+            var ep = new MetricsEndpoint(opts, exporter);
 
             var m1 = MeasureDouble.Create("test.totalTime", "test", MeasureUnit.Seconds);
             var result = ep.GetStatistic(Sum.Create(), m1);
@@ -190,410 +154,467 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             result = ep.GetStatistic(Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })), m6);
             Assert.Equal(MetricStatistic.TOTAL, result);
         }
+        */
 
         [Fact]
-        public void GetMetricSamples_ReturnsExpected()
+        public void GetMetricSamples_ReturnsExpectedCounter()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
+            using (var tc = new TestContext(_output))
+            {
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
 
-            SetupTestView(stats, Sum.Create(), null, "test.test1");
-            var viewData = stats.ViewManager.GetView(ViewName.Create("test.test1"));
-            IAggregationData aggData = SumDataDouble.Create(100);
+                var ep = tc.GetService<MetricsEndpoint>();
 
-            Assert.NotNull(viewData);
-            var result = ep.GetMetricSamples(aggData, viewData);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            var sample = result[0];
-            Assert.Equal(100, sample.Value);
-            Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
+                var counter = stats.Meter.CreateDoubleCounter("test.test1");
+                counter.Add(default(SpanContext), 100, LabelSet.BlankLabelSet);
 
-            SetupTestView(stats, Sum.Create(), null, "test.test2");
-            viewData = stats.ViewManager.GetView(ViewName.Create("test.test2"));
-            aggData = SumDataLong.Create(100);
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
 
-            Assert.NotNull(viewData);
-            result = ep.GetMetricSamples(aggData, viewData);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(100, sample.Value);
-            Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
-
-            SetupTestView(stats, Count.Create(), null, "test.test3");
-            viewData = stats.ViewManager.GetView(ViewName.Create("test.test3"));
-            aggData = CountData.Create(100);
-
-            Assert.NotNull(viewData);
-            result = ep.GetMetricSamples(aggData, viewData);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(100, sample.Value);
-            Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
-
-            SetupTestView(stats, Mean.Create(), null, "test.test4");
-            viewData = stats.ViewManager.GetView(ViewName.Create("test.test4"));
-            aggData = MeanData.Create(100, 50, 1, 500);
-
-            Assert.NotNull(viewData);
-            result = ep.GetMetricSamples(aggData, viewData);
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count);
-            sample = result[0];
-            Assert.Equal(50, sample.Value);
-            Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
-            sample = result[1];
-            Assert.Equal(100 * 50, sample.Value);
-            Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
-
-            SetupTestView(stats, Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 10.0, 20.0 })), null, "test.test5");
-            viewData = stats.ViewManager.GetView(ViewName.Create("test.test5"));
-            aggData = DistributionData.Create(100, 50, 5, 200, 5, new List<long>() { 10, 20, 20 });
-
-            Assert.NotNull(viewData);
-            result = ep.GetMetricSamples(aggData, viewData);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
-
-            sample = result[0];
-            Assert.Equal(50, sample.Value);
-            Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
-
-            sample = result[1];
-            Assert.Equal(200, sample.Value);
-            Assert.Equal(MetricStatistic.MAX, sample.Statistic);
-
-            sample = result[2];
-            Assert.Equal(100 * 50, sample.Value);
-            Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
+                ep.GetMetricsCollection(out var measurements, out _);
+                Assert.NotNull(measurements);
+                Assert.Single(measurements.Values);
+                var sample = measurements.Values.FirstOrDefault()[0];
+                Assert.Equal(100, sample.Value);
+                Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
+            }
         }
 
         [Fact]
+        public void GetMetricSamples_ReturnsExpectedMeasure()
+        {
+            using (var tc = new TestContext(_output))
+            {
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
+
+                var ep = tc.GetService<MetricsEndpoint>();
+
+                var measure = stats.Meter.CreateDoubleMeasure("test.test3");
+                measure.Record(default(SpanContext), 100, LabelSet.BlankLabelSet);
+
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
+
+                ep.GetMetricsCollection(out var measurements, out _);
+                Assert.Single(measurements.Values);
+                var sample = measurements.Values.FirstOrDefault()[0];
+                Assert.Equal(100, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+            }
+        }
+
+        // TODO: Support other aggregations
+        /*
+        SetupTestView(stats, Sum.Create(), null, "test.test2");
+        viewData = stats.ViewManager.GetView(ViewName.Create("test.test2"));
+        aggData = SumDataLong.Create(100);
+
+        Assert.NotNull(viewData);
+        result = ep.GetMetricSamples(aggData, viewData);
+        Assert.NotNull(result);
+        Assert.Single(result);
+        sample = result[0];
+        Assert.Equal(100, sample.Value);
+        Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
+
+        SetupTestView(stats, Mean.Create(), null, "test.test4");
+        viewData = stats.ViewManager.GetView(ViewName.Create("test.test4"));
+        aggData = MeanData.Create(100, 50, 1, 500);
+
+        Assert.NotNull(viewData);
+        result = ep.GetMetricSamples(aggData, viewData);
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+        sample = result[0];
+        Assert.Equal(50, sample.Value);
+        Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
+        sample = result[1];
+        Assert.Equal(100 * 50, sample.Value);
+        Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
+
+        SetupTestView(stats, Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 10.0, 20.0 })), null, "test.test5");
+        viewData = stats.ViewManager.GetView(ViewName.Create("test.test5"));
+        aggData = DistributionData.Create(100, 50, 5, 200, 5, new List<long>() { 10, 20, 20 });
+
+        Assert.NotNull(viewData);
+        result = ep.GetMetricSamples(aggData, viewData);
+        Assert.NotNull(result);
+        Assert.Equal(3, result.Count);
+
+        sample = result[0];
+        Assert.Equal(50, sample.Value);
+        Assert.Equal(MetricStatistic.COUNT, sample.Statistic);
+
+        sample = result[1];
+        Assert.Equal(200, sample.Value);
+        Assert.Equal(MetricStatistic.MAX, sample.Statistic);
+
+        sample = result[2];
+        Assert.Equal(100 * 50, sample.Value);
+        Assert.Equal(MetricStatistic.TOTALTIME, sample.Statistic);
+     }
+     */
+        [Fact]
         public void GetAvailableTags_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
-
-            SetupTestView(stats, Sum.Create(), null, "test.test1");
-            var viewData = stats.ViewManager.GetView(ViewName.Create("test.test1"));
-
-            var dict = new Dictionary<TagValues, IAggregationData>()
+            using (var tc = new TestContext(_output))
             {
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
                 {
-                TagValues.Create(new List<ITagValue>()
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
+
+                var ep = tc.GetService<MetricsEndpoint>();
+
+                var counter = stats.Meter.CreateDoubleCounter("test.test1");
+
+                var v1Tags = new Dictionary<string, string>()
                 {
-                    TagValue.Create("v1"), TagValue.Create("v1"), TagValue.Create("v1")
-                }),
-                SumDataDouble.Create(1)
-                },
+                    { "a", "v1" },
+                    { "b", "v1" },
+                    { "c", "v1" }
+                };
+
+                var v2Tags = new Dictionary<string, string>()
                 {
-                TagValues.Create(new List<ITagValue>()
-                {
-                    TagValue.Create("v2"), TagValue.Create("v2"), TagValue.Create("v2")
-                }),
-                SumDataDouble.Create(1)
-                }
-            };
+                    { "a", "v2" },
+                    { "b", "v2" },
+                    { "c", "v2" }
+                };
 
-            var result = ep.GetAvailableTags(viewData.View.Columns, dict);
+                counter.Add(default(SpanContext), 1, v1Tags);
+                counter.Add(default(SpanContext), 1, v2Tags);
 
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
 
-            var tag = result[0];
-            Assert.Equal("a", tag.Tag);
-            Assert.Contains("v1", tag.Values);
-            Assert.Contains("v2", tag.Values);
+                ep.GetMetricsCollection(out _, out var tagDictionary);
 
-            tag = result[1];
-            Assert.Equal("b", tag.Tag);
-            Assert.Contains("v1", tag.Values);
-            Assert.Contains("v2", tag.Values);
+                Assert.NotNull(tagDictionary);
+                Assert.Single(tagDictionary.Values);
 
-            tag = result[2];
-            Assert.Equal("c", tag.Tag);
-            Assert.Contains("v1", tag.Values);
-            Assert.Contains("v2", tag.Values);
+                var tags = tagDictionary["test.test1"];
 
-            dict = new Dictionary<TagValues, IAggregationData>();
-            result = ep.GetAvailableTags(viewData.View.Columns, dict);
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count);
+                Assert.Equal(3, tags.Count);
 
-            tag = result[0];
-            Assert.Equal("a", tag.Tag);
-            Assert.Empty(tag.Values);
+                var tag = tags[0];
+                Assert.NotNull(tag);
+                Assert.Contains("v1", tag.Values);
+                Assert.Contains("v2", tag.Values);
 
-            tag = result[1];
-            Assert.Equal("b", tag.Tag);
-            Assert.Empty(tag.Values);
+                tag = tags[1];
+                Assert.Equal("b", tag.Tag);
+                Assert.Contains("v1", tag.Values);
+                Assert.Contains("v2", tag.Values);
 
-            tag = result[2];
-            Assert.Equal("c", tag.Tag);
-            Assert.Empty(tag.Values);
+                tag = tags[2];
+                Assert.Equal("c", tag.Tag);
+                Assert.Contains("v1", tag.Values);
+                Assert.Contains("v2", tag.Values);
+
+                var counter2 = stats.Meter.CreateDoubleCounter("test.test2");
+
+                counter2.Add(default(SpanContext), 1, LabelSet.BlankLabelSet);
+
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
+
+                ep.GetMetricsCollection(out _, out tagDictionary);
+
+                Assert.NotNull(tagDictionary);
+                Assert.Single(tagDictionary.Values);
+
+                tags = tagDictionary["test.test2"];
+                Assert.Empty(tags);
+            }
         }
 
         [Fact]
         public void GetMetricMeasurements_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
-
-            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
-            SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
-
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
-
-            var context2 = tagger
-                 .EmptyBuilder
-                 .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                 .Build();
-
-            var context3 = tagger
-                 .EmptyBuilder
-                 .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                 .Build();
-
-            var context4 = tagger
-                 .EmptyBuilder
-                 .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                 .Build();
-
-            long allKeyssum = 0;
-            for (var i = 0; i < 10; i++)
+            using (var tc = new TestContext(_output))
             {
-                allKeyssum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
+
+                var ep = tc.GetService<MetricsEndpoint>();
+
+                var testMeasure = stats.Meter.CreateDoubleMeasure("test.test1");
+                var context1 = new Dictionary<string, string>()
+                {
+                    { "a", "v1" },
+                    { "b", "v1" },
+                    { "c", "v1" }
+                };
+                var context2 = new Dictionary<string, string>()
+                {
+                    { "a", "v1" },
+                };
+                var context3 = new Dictionary<string, string>()
+                {
+                    { "b", "v1" },
+                };
+                var context4 = new Dictionary<string, string>()
+                {
+                    { "c", "v1" },
+                };
+
+                long allKeyssum = 0;
+                for (var i = 0; i < 10; i++)
+                {
+                    allKeyssum += i;
+                    testMeasure.Record(default(SpanContext), i, context1);
+                }
+
+                long asum = 0;
+                for (var i = 0; i < 10; i++)
+                {
+                    asum += i;
+                    testMeasure.Record(default(SpanContext), i, context2);
+                }
+
+                long bsum = 0;
+                for (var i = 0; i < 10; i++)
+                {
+                    bsum += i;
+                    testMeasure.Record(default(SpanContext), i, context3);
+                }
+
+                long csum = 0;
+                for (var i = 0; i < 10; i++)
+                {
+                    csum += i;
+                    testMeasure.Record(default(SpanContext), i, context4);
+                }
+
+                var alltags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("a", "v1"),
+                    new KeyValuePair<string, string>("b", "v1"),
+                    new KeyValuePair<string, string>("c", "v1")
+                };
+
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
+                ep.GetMetricsCollection(out var measurements, out var tags);
+                Assert.NotNull(measurements);
+                var measurement = measurements["test.test1"];
+                Assert.Equal(8, measurement.Count);
+                var sample = measurement[0];
+                Assert.Equal((double)allKeyssum / 10, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = measurement[1];
+                Assert.Equal(allKeyssum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var atags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("a", "v1"),
+                };
+
+                var result = ep.GetMetricSamplesByTags(measurements, "test.test1", atags);
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+                sample = result[0];
+                Assert.Equal((double)(allKeyssum + asum) / 20, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+                Assert.Equal(allKeyssum + asum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var btags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("b", "v1"),
+                };
+
+                result = ep.GetMetricSamplesByTags(measurements, "test.test1", btags);
+
+                Assert.NotNull(result);
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+
+                sample = result[0];
+                Assert.Equal((double)(allKeyssum + bsum) / 20, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+
+                Assert.Equal(allKeyssum + bsum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var ctags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("c", "v1"),
+                };
+
+                result = ep.GetMetricSamplesByTags(measurements, "test.test1", ctags);
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+
+                sample = result[0];
+                Assert.Equal((double)(allKeyssum + csum) / 20, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+                Assert.Equal(allKeyssum + csum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var abtags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("a", "v1"),
+                    new KeyValuePair<string, string>("b", "v1"),
+                };
+
+                result = ep.GetMetricSamplesByTags(measurements, "test.test1", abtags);
+
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+
+                sample = result[0];
+                Assert.Equal((double)allKeyssum / 10, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+                Assert.Equal(allKeyssum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var actags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("a", "v1"),
+                    new KeyValuePair<string, string>("c", "v1"),
+                };
+                result = ep.GetMetricSamplesByTags(measurements, "test.test1", actags);
+
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+
+                sample = result[0];
+                Assert.Equal((double)allKeyssum / 10, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+                Assert.Equal(allKeyssum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+
+                var bctags = new List<KeyValuePair<string, string>>()
+                {
+                    new KeyValuePair<string, string>("b", "v1"),
+                    new KeyValuePair<string, string>("c", "v1"),
+                };
+                result = ep.GetMetricSamplesByTags(measurements, "test.test1", bctags);
+
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
+
+                sample = result[0];
+                Assert.Equal((double)allKeyssum / 10, sample.Value);
+                Assert.Equal(MetricStatistic.VALUE, sample.Statistic);
+
+                sample = result[1];
+                Assert.Equal(allKeyssum, sample.Value);
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
             }
-
-            long asum = 0;
-            for (var i = 0; i < 10; i++)
-            {
-                asum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context2);
-            }
-
-            long bsum = 0;
-            for (var i = 0; i < 10; i++)
-            {
-                bsum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context3);
-            }
-
-            long csum = 0;
-            for (var i = 0; i < 10; i++)
-            {
-                csum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context4);
-            }
-
-            var alltags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
-            };
-
-            var viewData = stats.ViewManager.GetView(ViewName.Create("test.test1"));
-            var result = ep.GetMetricMeasurements(viewData, alltags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            var sample = result[0];
-            Assert.Equal(allKeyssum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var atags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, atags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum + asum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var btags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("b", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, btags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum + bsum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var ctags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("c", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, ctags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum + csum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var abtags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, abtags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var actags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("c", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, actags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-
-            var bctags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1"),
-            };
-
-            result = ep.GetMetricMeasurements(viewData, bctags);
-            Assert.NotNull(result);
-            Assert.Single(result);
-            sample = result[0];
-            Assert.Equal(allKeyssum, sample.Value);
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
         }
 
         [Fact]
         public void GetMetric_ReturnsExpected()
         {
-            var opts = new MetricsEndpointOptions();
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
-
-            var testMeasure = MeasureDouble.Create("test.total", "test", MeasureUnit.Bytes);
-            SetupTestView(stats, Sum.Create(), testMeasure, "test.test1");
-
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
-
-            long allKeyssum = 0;
-            for (var i = 0; i < 10; i++)
+            using (var tc = new TestContext(_output))
             {
-                allKeyssum += i;
-                stats.StatsRecorder.NewMeasureMap().Put(testMeasure, i).Record(context1);
+                var stats = new TestOpenTelemetryMetrics();
+                tc.AdditionalServices = (services, configuration) =>
+                {
+                    services.AddMetricsActuatorServices(configuration);
+                    services.AddSingleton(stats.Exporter);
+                };
+
+                var ep = tc.GetService<IMetricsEndpoint>();
+
+                var testMeasure = stats.Meter.CreateDoubleMeasure("test.total");
+                var labels = new Dictionary<string, string>() { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } }.ToList();
+
+                long allKeyssum = 0;
+                for (var i = 0; i < 10; i++)
+                {
+                    allKeyssum += i;
+                    testMeasure.Record(default(SpanContext), i, labels);
+                }
+
+                stats.Factory.CollectAllMetrics();
+                stats.Processor.ExportMetrics();
+                var req = new MetricsRequest("test.total", labels);
+
+                var resp = ep.Invoke(req) as MetricsResponse;
+
+                Assert.NotNull(resp);
+
+                Assert.Equal("test.total", resp.Name);
+
+                Assert.NotNull(resp.Measurements);
+                Assert.Equal(2, resp.Measurements.Count);
+                var sample = resp.Measurements[1];
+                Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+                Assert.Equal(allKeyssum, sample.Value);
+
+                Assert.NotNull(resp.AvailableTags);
+                Assert.Equal(3, resp.AvailableTags.Count);
             }
-
-            var alltags = new List<KeyValuePair<string, string>>()
-            {
-                new KeyValuePair<string, string>("a", "v1"),
-                new KeyValuePair<string, string>("b", "v1"),
-                new KeyValuePair<string, string>("c", "v1")
-            };
-
-            var req = new MetricsRequest("test.test1", alltags);
-            var resp = ep.GetMetric(req);
-            Assert.NotNull(resp);
-
-            Assert.Equal("test.test1", resp.Name);
-
-            Assert.NotNull(resp.Measurements);
-            Assert.Single(resp.Measurements);
-            var sample = resp.Measurements[0];
-            Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-            Assert.Equal(allKeyssum, sample.Value);
-
-            Assert.NotNull(resp.AvailableTags);
-            Assert.Equal(3, resp.AvailableTags.Count);
         }
 
-        private void SetupStats(OpenCensusStats stats)
+        private void SetupStats(out SteeltoeExporter exporter)
         {
-            var exceptionKey = TagKey.Create("exception");
-            var methodKey = TagKey.Create("method");
-            var uriKey = TagKey.Create("uri");
-            var statusKey = TagKey.Create("status");
+            var stats = new TestOpenTelemetryMetrics();
+            var meter = stats.Meter;
+            exporter = stats.Exporter;
 
-            var httpServerRquestMeasure = MeasureDouble.Create("server.totalTime", "server request times", MeasureUnit.MilliSeconds);
+            var httpServerRquestMeasure = meter.CreateDoubleMeasure("http.server.requests");
+            httpServerRquestMeasure.Record(default(SpanContext), 10, GetServerLabels());
 
-            var httpServerRequestsViewName = ViewName.Create("http.server.requests");
-            var httpServerRequestsView = View.Create(
-                                        httpServerRequestsViewName,
-                                        "server request times",
-                                        httpServerRquestMeasure,
-                                        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 2.0 })),
-                                        new List<ITagKey>() { exceptionKey, methodKey, uriKey, statusKey });
+            var memoryUsageMeasure = meter.CreateDoubleMeasure("jvm.memory.used");
+            memoryUsageMeasure.Record(default(SpanContext), 10, GetMemoryLabels());
 
-            stats.ViewManager.RegisterView(httpServerRequestsView);
-
-            var area = TagKey.Create("area");
-            var id = TagKey.Create("id");
-
-            var memoryUsageMeasure = MeasureDouble.Create("memory.value", "memory usage", MeasureUnit.Bytes);
-
-            var memoryUsageName = ViewName.Create("jvm.memory.used");
-            var memoryUsageView = View.Create(
-                                        memoryUsageName,
-                                        "memory usage",
-                                        memoryUsageMeasure,
-                                        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1000.0, 10000.0, 100000.0, 1000000.0, 10000000.0, 100000000.0 })),
-                                        new List<ITagKey>() { area, id });
-
-            stats.ViewManager.RegisterView(memoryUsageView);
+            stats.Factory.CollectAllMetrics();
+            stats.Processor.ExportMetrics();
         }
 
-        private void SetupTestView(OpenCensusStats stats, IAggregation agg,  IMeasure measure = null, string viewName = "test.test")
+        private List<KeyValuePair<string, string>> GetMemoryLabels()
         {
-            var aKey = TagKey.Create("a");
-            var bKey = TagKey.Create("b");
-            var cKey = TagKey.Create("c");
+            var labels = new List<KeyValuePair<string, string>>();
 
-            if (measure == null)
-            {
-                measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.MilliSeconds);
-            }
+            labels.Add(KeyValuePair.Create("area", string.Empty));
+            labels.Add(KeyValuePair.Create("id", string.Empty));
 
-            var testViewName = ViewName.Create(viewName);
-            var testView = View.Create(
-                                        testViewName,
-                                        "test",
-                                        measure,
-                                        agg,
-                                        new List<ITagKey>() { aKey, bKey, cKey });
+            return labels;
+        }
 
-            stats.ViewManager.RegisterView(testView);
+        private List<KeyValuePair<string, string>> GetServerLabels()
+        {
+            var labels = new List<KeyValuePair<string, string>>();
+
+            labels.Add(KeyValuePair.Create("exception", string.Empty));
+            labels.Add(KeyValuePair.Create("method", string.Empty));
+            labels.Add(KeyValuePair.Create("uri", string.Empty));
+            labels.Add(KeyValuePair.Create("status", string.Empty));
+
+            return labels;
         }
     }
 }

@@ -8,15 +8,23 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Health
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class HealthStartupFilter : IStartupFilter
     {
+        public static void InitializeAvailability(IServiceProvider serviceProvider)
+            => serviceProvider.InitializeAvailability();
+
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
-                app.UseHealthActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<HealthEndpointCore>();
+                });
+
+                InitializeAvailability(app.ApplicationServices);
             };
         }
     }

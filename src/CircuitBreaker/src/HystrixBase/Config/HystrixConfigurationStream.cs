@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -50,7 +51,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config
             return INSTANCE;
         }
 
-         // Return a ref-counted stream that will only do work when at least one subscriber is present
+        // Return a ref-counted stream that will only do work when at least one subscriber is present
         public IObservable<HystrixConfiguration> Observe()
         {
             return _allConfigurationStream;

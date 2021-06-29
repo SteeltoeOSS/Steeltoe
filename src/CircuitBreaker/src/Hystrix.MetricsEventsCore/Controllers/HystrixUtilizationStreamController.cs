@@ -22,8 +22,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         private HystrixUtilizationStreamController(IObservable<HystrixUtilization> observable)
             : base(observable.Map((utilization) =>
             {
-                 return SerialHystrixUtilization.ToJsonString(utilization);
-             }))
+                return SerialHystrixUtilization.ToJsonString(utilization);
+            }))
         {
         }
 

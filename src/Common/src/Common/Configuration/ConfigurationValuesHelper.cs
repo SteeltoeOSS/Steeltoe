@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 
 namespace Steeltoe.Common.Configuration
 {
@@ -26,6 +27,50 @@ namespace Steeltoe.Common.Configuration
             }
 
             return def;
+        }
+
+        /// <summary>
+        /// Get setting from config searching the given configPrefix keys in order. Returns the first element with key.
+        /// </summary>
+        /// <param name="key">The key of the element to return.</param>
+        /// <param name="config">IConfiguration to search through.</param>
+        /// <param name="defaultValue">The default Value if no configuration is found.</param>
+        /// <param name="configPrefixes">The prefixes to search for in given order.</param>
+        /// <returns>Config value</returns>
+        public static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
+        {
+            foreach (var prefix in configPrefixes)
+            {
+                var section = config.GetSection(prefix);
+                var result = section.GetValue<string>(key);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
+            }
+
+            return defaultValue;
+        }
+
+        /// <summary>
+        /// Get a setting from config by searching the given keys in order. Returns the first match.
+        /// </summary>
+        /// <param name="config">IConfiguration to search through.</param>
+        /// <param name="defaultValue">The default Value if no configuration is found.</param>
+        /// <param name="configKeys">The fully-qualified keys to search for in given order.</param>
+        /// <returns>Value from config or default (if not found)</returns>
+        public static string GetPreferredSetting(IConfiguration config, string defaultValue, params string[] configKeys)
+        {
+            foreach (var key in configKeys.Where(c => !string.IsNullOrEmpty(c)))
+            {
+                var result = config.GetValue<string>(key);
+                if (!string.IsNullOrEmpty(result))
+                {
+                    return result;
+                }
+            }
+
+            return defaultValue;
         }
 
         public static int GetInt(string key, IConfiguration config, IConfiguration resolve, int def)

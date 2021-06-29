@@ -31,7 +31,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
+                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
+                { "eureka:client:eurekaServer:retryCount", "0" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
@@ -50,14 +51,17 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
+                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" },
+                { "eureka:client:eurekaServer:retryCount", "1" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
             var settings = new ConfigServerClientSettings()
             {
-                RetryEnabled = true
+                RetryEnabled = true,
+                Timeout = 10,
+                RetryAttempts = 1
             };
             var service = new ConfigServerDiscoveryService(config, settings);
             var method = service.FindGetInstancesMethod();
@@ -71,12 +75,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var values = new Dictionary<string, string>()
             {
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
+                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
+                { "eureka:client:eurekaServer:retryCount", "0" }
             };
             var builder = new ConfigurationBuilder();
             builder.AddInMemoryCollection(values);
             var config = builder.Build();
-            var settings = new ConfigServerClientSettings();
+            var settings = new ConfigServerClientSettings() { RetryEnabled = false, Timeout = 10 };
 
             var service = new ConfigServerDiscoveryService(config, settings);
             var result = service.GetConfigServerInstances();

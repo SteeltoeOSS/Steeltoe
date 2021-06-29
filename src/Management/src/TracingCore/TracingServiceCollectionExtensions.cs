@@ -6,9 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Trace.Configuration;
+using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace.Exporter.Zipkin;
 using Steeltoe.Management.Tracing.Observer;
 using System;
 
@@ -16,32 +19,31 @@ namespace Steeltoe.Management.Tracing
 {
     public static class TracingServiceCollectionExtensions
     {
-        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config)
+        public static void AddDistributedTracing(this IServiceCollection services, IConfiguration config = null, Action<TracerBuilder> configureTracer = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            if (config == null)
+            if ((config ?? services.BuildServiceProvider().GetService<IConfiguration>()) == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
+            var appInstanceInfo = services.GetApplicationInstanceInfo();
+
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, TracingService>());
 
-            services.TryAddSingleton<ITracingOptions>((p) =>
+            services.TryAddSingleton<ITracingOptions>((serviceProvider) =>
             {
-#if NETCOREAPP3_1
-                var h = p.GetRequiredService<IHostEnvironment>();
-#else
-                if (!(p.GetService<Microsoft.AspNetCore.Hosting.IHostingEnvironment>() is IHostingEnvironment h))
-                {
-                    h = p.GetRequiredService<IHostingEnvironment>();
-                }
-#endif
-                return new TracingOptions(h.ApplicationName, config);
+                return new TracingOptions(appInstanceInfo, config ?? serviceProvider.GetRequiredService<IConfiguration>());
+            });
+
+            services.TryAddSingleton<ITraceExporterOptions>((serviceProvider) =>
+            {
+                return new TraceExporterOptions(appInstanceInfo, config ?? serviceProvider.GetRequiredService<IConfiguration>());
             });
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
@@ -50,8 +52,21 @@ namespace Steeltoe.Management.Tracing
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
-            services.TryAddSingleton<ITracing, OpenCensusTracing>();
+
+            services.TryAddSingleton<ITracing>((p) => { return new OpenTelemetryTracing(p.GetService<ITracingOptions>(), configureTracer); });
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
+        }
+
+        public static void UseZipkinWithTraceOptions(this TracerBuilder builder, IServiceCollection services)
+        {
+            var options = services.BuildServiceProvider().GetService<ITraceExporterOptions>();
+            builder.UseZipkin(zipkinOptions =>
+            {
+                zipkinOptions.Endpoint = new Uri(options.Endpoint);
+                zipkinOptions.ServiceName = options.ServiceName;
+                zipkinOptions.TimeoutSeconds = new TimeSpan(0, 0, options.TimeoutSeconds);
+                zipkinOptions.UseShortTraceIds = options.UseShortTraceIds;
+            });
         }
     }
 }

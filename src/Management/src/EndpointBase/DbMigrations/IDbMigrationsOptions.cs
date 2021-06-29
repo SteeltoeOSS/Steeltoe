@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint;
-
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public interface IDbMigrationsOptions : IEndpointOptions
     {

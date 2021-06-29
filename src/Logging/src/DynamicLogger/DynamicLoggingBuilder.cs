@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -21,15 +20,15 @@ namespace Steeltoe.Extensions.Logging
         /// Adds Dynamic Console Logger Provider
         /// </summary>
         /// <param name="builder">Your ILoggingBuilder</param>
-        /// <param name="ensureCleanSetup">If true removes any <see cref="ConsoleLoggerProvider"/>, ensures logging config classes are available</param>
-        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder, bool ensureCleanSetup = false)
+        public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
         {
             if (builder == null)
             {
                 throw new ArgumentNullException(nameof(builder));
             }
 
-            if (ensureCleanSetup)
+            // only run if an IDynamicLoggerProvider hasn't already been added
+            if (!builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
             {
                 // remove the original ConsoleLoggerProvider to prevent duplicate logging
                 var serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
@@ -43,13 +42,14 @@ namespace Steeltoe.Extensions.Logging
                 {
                     builder.AddConfiguration();
                 }
+
+                builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
+                builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
+                builder.Services.AddSingleton((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             }
 
-            builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
-            builder.Services.AddSingleton((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
             return builder;
         }
 

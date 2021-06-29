@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
-#pragma warning disable CS0612 // Type or member is obsolete
 namespace Steeltoe.Management.Endpoint.Test
 {
     public class ManagementEndpointOptionsTest : BaseTest
@@ -45,7 +47,15 @@ namespace Steeltoe.Management.Endpoint.Test
             Assert.False(opts.Enabled);
             Assert.Equal("/management", opts.Path);
         }
+
+        [Fact]
+        public void IsExposedCorrectly()
+        {
+            var mgmtOptions = new ActuatorManagementOptions();
+            mgmtOptions.Exposure.Exclude = new string[] { "*" }.ToList();
+
+            var options = new InfoEndpointOptions();
+            Assert.False(options.IsExposed(mgmtOptions));
+        }
     }
 }
-
-#pragma warning restore CS0612 // Type or member is obsolete

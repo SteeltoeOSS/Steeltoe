@@ -29,7 +29,6 @@ namespace Steeltoe.Common.Hosting
             return webHostBuilder.BindToPorts(runLocalHttpPort, runLocalHttpsPort);
         }
 
-#if NETCOREAPP3_1
         /// <summary>
         /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
         /// </summary>
@@ -47,7 +46,6 @@ namespace Steeltoe.Common.Hosting
 
             return hostBuilder.ConfigureWebHost(configure => configure.BindToPorts(runLocalHttpPort, runLocalHttpsPort));
         }
-#endif
 
         private static IWebHostBuilder BindToPorts(this IWebHostBuilder webHostBuilder, int? runLocalHttpPort, int? runLocalHttpsPort)
         {
@@ -74,6 +72,12 @@ namespace Steeltoe.Common.Hosting
                         urls.Add($"https://*:{ports[1]}");
                     }
                 }
+            }
+            else if (Platform.IsKubernetes)
+            {
+                var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+                var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
+                urls.Add($"http://*:{foundPort ?? "80"}");
             }
             else
             {

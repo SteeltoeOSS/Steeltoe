@@ -4,7 +4,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -350,7 +350,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
             var shorts = new List<Task<int>>();
             foreach (var cmd in shortCircuited)
             {
-                 shorts.Add(cmd.ExecuteAsync());
+                shorts.Add(cmd.ExecuteAsync());
             }
 
             Task.WaitAll(shorts.ToArray());
@@ -367,7 +367,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
+        public async Task TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             var groupKey = HystrixCommandGroupKeyDefault.AsKey("ThreadPool-Concurrency-I");
             var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool-Concurrency-I");

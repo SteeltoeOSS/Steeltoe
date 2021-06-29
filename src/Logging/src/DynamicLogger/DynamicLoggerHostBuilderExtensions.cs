@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Hosting;
 using System;
 
-namespace Steeltoe.Extensions.Logging.DynamicLogger
+namespace Steeltoe.Extensions.Logging
 {
     public static class DynamicLoggerHostBuilderExtensions
     {
@@ -21,7 +21,7 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger
                 throw new ArgumentNullException(nameof(hostBuilder));
             }
 
-            return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole(true));
+            return hostBuilder.ConfigureLogging((context, configureLogging) => configureLogging.AddDynamicConsole());
         }
     }
 }

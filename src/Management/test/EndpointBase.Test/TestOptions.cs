@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Security;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -23,6 +23,10 @@ namespace Steeltoe.Management.Endpoint.Test
         public bool IsSensitive => throw new System.NotImplementedException();
 
         public bool? Sensitive => throw new System.NotImplementedException();
+
+        public IEnumerable<string> AllowedVerbs { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+        public bool ExactMatch { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
         public bool IsAccessAllowed(Permissions permissions)
         {

@@ -231,3 +231,4 @@ project.lock.json
 Pivotal.GemFire.dll
 pivnet*
 pivotal*.zip
+GeneratedCertificates/

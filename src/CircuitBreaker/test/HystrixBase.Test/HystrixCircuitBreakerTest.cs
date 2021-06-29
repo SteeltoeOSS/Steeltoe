@@ -4,14 +4,12 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +28,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitAsync()
         {
             var key = "cmd-A";
@@ -77,7 +74,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnFailuresAboveThreshold()
         {
             var key = "cmd-B";
@@ -119,7 +115,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitDoesNotTripOnFailuresBelowThreshold()
         {
             var key = "cmd-C";
@@ -161,7 +156,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeouts()
         {
             var key = "cmd-D";
@@ -193,7 +187,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestTripCircuitOnTimeoutsAboveThreshold()
         {
             var key = "cmd-E";
@@ -240,7 +233,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestSingleTestOnOpenCircuitAfterTimeWindow()
         {
             var key = "cmd-F";
@@ -283,7 +275,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitClosedAfterSuccess()
         {
             var key = "cmd-G";
@@ -340,7 +331,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestMultipleTimeWindowRetriesBeforeClosingCircuit()
         {
             var key = "cmd-H";
@@ -496,7 +486,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             }
         }
 
-        public class TestCircuitBreaker : IHystrixCircuitBreaker
+        public class TestCircuitBreaker : ICircuitBreaker
         {
             private readonly HystrixCommandMetrics metrics;
             private bool forceShortCircuit = false;

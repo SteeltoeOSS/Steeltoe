@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
@@ -14,6 +15,8 @@ namespace Steeltoe.Management.Endpoint.Loggers
             : base()
         {
             Id = "loggers";
+            AllowedVerbs = new List<string> { "Get", "Post" };
+            ExactMatch = false;
         }
 
         public LoggersEndpointOptions(IConfiguration config)
@@ -23,6 +26,9 @@ namespace Steeltoe.Management.Endpoint.Loggers
             {
                 Id = "loggers";
             }
+
+            AllowedVerbs = new List<string> { "Get", "Post" };
+            ExactMatch = false;
         }
     }
 }

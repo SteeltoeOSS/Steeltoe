@@ -5,12 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Hystrix.Test
+namespace Steeltoe.Connector.Hystrix.Test
 {
     public class HystrixProviderServiceCollectionExtensionsTest
     {

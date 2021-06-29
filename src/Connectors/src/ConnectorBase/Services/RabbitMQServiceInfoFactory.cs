@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Collections.Generic;
+using Steeltoe.Extensions.Configuration;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     public class RabbitMQServiceInfoFactory : ServiceInfoFactory
     {
@@ -18,9 +17,9 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
         }
 
-        public override bool Accept(Service binding)
+        public override bool Accepts(Service binding)
         {
-            var result = base.Accept(binding);
+            var result = base.Accepts(binding);
             if (result)
             {
                 result = !HystrixRabbitMQServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);

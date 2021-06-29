@@ -5,16 +5,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.EndpointBase;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Steeltoe.Management.EndpointCore.ContentNegotiation
+namespace Steeltoe.Management.Endpoint.ContentNegotiation
 {
     public static class ContentNegotiationExtensions
     {
@@ -23,7 +16,7 @@ namespace Steeltoe.Management.EndpointCore.ContentNegotiation
             context.Response.Headers.SetContentType(context.Request.Headers, logger);
         }
 
-        public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders,  string contentType)
+        public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
         {
             logger?.LogTrace("setting contentType to {0}", contentType);
             var logTrace = logger?.IsEnabled(LogLevel.Trace);

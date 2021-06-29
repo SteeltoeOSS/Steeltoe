@@ -25,7 +25,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         {
         }
 
-        public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, Action run = null,  Action fallback = null, ILogger logger = null)
+        public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, Action run = null, Action fallback = null, ILogger logger = null)
             : this(group, null, threadPool, null, null, null, null, null, null, null, null, null, run, fallback, logger)
         {
         }
@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             IHystrixCommandGroupKey group,
             IHystrixCommandKey key,
             IHystrixThreadPoolKey threadPoolKey,
-            IHystrixCircuitBreaker circuitBreaker,
+            ICircuitBreaker circuitBreaker,
             IHystrixThreadPool threadPool,
             IHystrixCommandOptions commandOptionsDefaults,
             IHystrixThreadPoolOptions threadPoolOptionsDefaults,
@@ -150,7 +150,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             IHystrixCommandGroupKey group,
             IHystrixCommandKey key,
             IHystrixThreadPoolKey threadPoolKey,
-            IHystrixCircuitBreaker circuitBreaker,
+            ICircuitBreaker circuitBreaker,
             IHystrixThreadPool threadPool,
             IHystrixCommandOptions commandOptionsDefaults,
             IHystrixThreadPoolOptions threadPoolOptionsDefaults,

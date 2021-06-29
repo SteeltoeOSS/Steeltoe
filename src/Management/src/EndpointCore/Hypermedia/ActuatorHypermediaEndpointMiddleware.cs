@@ -4,51 +4,43 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
-#pragma warning disable CS0618 // Type or member is obsolete
     public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, string>
-#pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly RequestDelegate _next;
 
-        public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions.OfType<ActuatorManagementOptions>(), logger: logger)
+        public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
         }
 
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
-                await HandleCloudFoundryRequestAsync(context).ConfigureAwait(false);
+                var serialInfo = HandleRequest(_endpoint, GetRequestUri(context.Request), _logger);
+                _logger?.LogDebug("Returning: {0}", serialInfo);
+
+                context.HandleContentNegotiation(_logger);
+                return context.Response.WriteAsync(serialInfo);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return Task.CompletedTask;
         }
 
-        protected internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest(GetRequestUri(context.Request));
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-
-            context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
-        }
-
-        protected internal string GetRequestUri(HttpRequest request)
+        private static string GetRequestUri(HttpRequest request)
         {
             var scheme = request.Scheme;
 
@@ -67,6 +59,32 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             {
                 return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
             }
+        }
+
+        private static string HandleRequest(IEndpoint<Links, string> endpoint, string requestUri, ILogger logger)
+        {
+            var result = endpoint.Invoke(requestUri);
+            return Serialize(result, logger);
+        }
+
+        private static string Serialize<TResult>(TResult result, ILogger logger)
+        {
+            try
+            {
+                var serializeOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                    IgnoreNullValues = true,
+                };
+
+                return JsonSerializer.Serialize(result, serializeOptions);
+            }
+            catch (Exception e)
+            {
+                logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            }
+
+            return string.Empty;
         }
     }
 }

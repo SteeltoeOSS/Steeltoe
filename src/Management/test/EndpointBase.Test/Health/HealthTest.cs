@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -27,7 +26,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_Default_ReturnsExpected()
         {
-            var health = new HealthCheckResult();
+            var health = new HealthEndpointResponse(null);
             var json = Serialize(health);
             Assert.Equal("{\"status\":\"UNKNOWN\"}", json);
         }
@@ -35,7 +34,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Serialize_WithDetails_ReturnsExpected()
         {
-            var health = new HealthCheckResult()
+            var health = new HealthEndpointResponse(null)
             {
                 Status = HealthStatus.OUT_OF_SERVICE,
                 Description = "Test",
@@ -47,21 +46,22 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 }
             };
             var json = Serialize(health);
+
             Assert.Equal("{\"status\":\"OUT_OF_SERVICE\",\"description\":\"Test\",\"details\":{\"item1\":{\"stringProperty\":\"Testdata\",\"intProperty\":100,\"boolProperty\":true},\"item2\":\"String\",\"item3\":false}}", json);
         }
 
-        private string Serialize(HealthCheckResult result)
+        private string Serialize(HealthEndpointResponse result)
         {
             try
             {
-                var serializerSettings = new JsonSerializerSettings()
+                var options = new JsonSerializerOptions()
                 {
-                    NullValueHandling = NullValueHandling.Ignore,
-                    ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                    IgnoreNullValues = true,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 };
-                serializerSettings.Converters.Add(new HealthJsonConverter());
+                options.Converters.Add(new HealthConverter());
 
-                return JsonConvert.SerializeObject(result, serializerSettings);
+                return JsonSerializer.Serialize(result, options);
             }
             catch (Exception)
             {

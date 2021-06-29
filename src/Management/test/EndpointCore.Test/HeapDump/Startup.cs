@@ -20,13 +20,18 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddHeapDumpActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHeapDumpActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<HeapDumpEndpoint>();
+            });
         }
     }
 }

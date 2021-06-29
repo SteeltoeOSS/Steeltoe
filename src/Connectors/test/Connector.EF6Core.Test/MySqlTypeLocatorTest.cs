@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.Connector.MySql;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6Core.MySql.Test
+namespace Steeltoe.Connector.EF6Core.MySql.Test
 {
     public class MySqlTypeLocatorTest
     {

@@ -50,9 +50,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             CollapserKey = collapserKey;
         }
 
-        // we can return a static version since it's immutable
-        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
-
         public sealed class EventCounts
         {
             private readonly BitArray _events;

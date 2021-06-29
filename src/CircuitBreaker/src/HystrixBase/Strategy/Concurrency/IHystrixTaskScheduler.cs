@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 {
     public interface IHystrixTaskScheduler : IDisposable
     {
-        int CurrentActiveCount { get;  }
+        int CurrentActiveCount { get; }
 
         int CurrentCompletedTaskCount { get; }
 
@@ -16,7 +16,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
 
         int CurrentLargestPoolSize { get; }
 
-        int CurrentMaximumPoolSize { get;  }
+        int CurrentMaximumPoolSize { get; }
 
         int CurrentPoolSize { get; }
 

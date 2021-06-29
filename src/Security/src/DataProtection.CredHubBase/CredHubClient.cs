@@ -3,36 +3,35 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
+using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.DataProtection.CredHub
 {
     public class CredHubClient : ICredHubClient
     {
+        internal JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions
+        {
+            IgnoreNullValues = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true
+        };
+
         private const int DEFAULT_TIMEOUT = 3000;
 
         private static HttpClient _httpClient;
         private static HttpClientHandler _httpClientHandler;
         private static ILogger _logger;
         private static string _baseCredHubUrl;
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
-        {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            NullValueHandling = NullValueHandling.Ignore
-        };
 
         private readonly bool _validateCertificates;
 
@@ -84,30 +83,24 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 }
 
                 // login to UAA
-                var header = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{options.ClientId}:{options.ClientSecret}")));
-                _httpClient.DefaultRequestHeaders.Authorization = header;
-                var postParams = new List<KeyValuePair<string, string>>
-                {
-                    new KeyValuePair<string, string>("grant_type", "client_credentials"),
-                    new KeyValuePair<string, string>("response_type", "token")
-                };
-                var response = await _httpClient.PostAsync(tokenUri, new FormUrlEncodedContent(postParams)).ConfigureAwait(false);
+                var token = await HttpClientHelper.GetAccessToken(
+                    tokenUri,
+                    options.ClientId,
+                    options.ClientSecret,
+                    additionalParams: new Dictionary<string, string> { { "response_type", "token" } },
+                    httpClient: _httpClient,
+                    logger: _logger);
 
-                if (response.IsSuccessStatusCode)
+                if (token is object)
                 {
-                    _logger?.LogTrace(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-
                     // set the token
-                    var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", payload.Value<string>("access_token"));
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
                     return this;
                 }
                 else
                 {
-                    _logger?.LogCritical($"Authentication with UAA Server failed, status code: {response.StatusCode}");
-                    _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                    throw new AuthenticationException($"Authentication with UAA Server failed, status code: {response.StatusCode}");
+                    throw new AuthenticationException($"Authentication with UAA Server failed");
                 }
             }
             finally
@@ -123,8 +116,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
-#pragma warning disable CS0618 // Type or member is obsolete
-                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, _serializerSettings).ConfigureAwait(false);
+                var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
 
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
@@ -142,8 +134,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
 
-#pragma warning disable CS0618 // Type or member is obsolete
-                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, _serializerSettings).ConfigureAwait(false);
+                var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
 #pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
@@ -222,8 +213,8 @@ namespace Steeltoe.Security.DataProtection.CredHub
             HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
             try
             {
-                _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data{id}");
-                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data/{id}").ConfigureAwait(false);
+                _logger?.LogTrace($"About to GET {_baseCredHubUrl}v1/data/{id}");
+                var response = await _httpClient.GetAsync($"{_baseCredHubUrl}v1/data/{id}").ConfigureAwait(false);
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
             }
             finally
@@ -410,9 +401,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/permissions");
                 var newPermissions = new CredentialPermissions { CredentialName = name, Permissions = permissions };
-#pragma warning disable CS0618 // Type or member is obsolete
-                _ = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, _serializerSettings).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
+                _ = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, SerializerOptions).ConfigureAwait(false);
 
                 return await GetPermissionsAsync(name).ConfigureAwait(false);
             }
@@ -495,9 +484,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
         {
             if (response.IsSuccessStatusCode)
             {
-#pragma warning disable CS0618 // Type or member is obsolete
-                return await response.Content.ReadAsJsonAsync<T>().ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
+                return await response.Content.ReadFromJsonAsync<T>(SerializerOptions).ConfigureAwait(false);
             }
             else
             {

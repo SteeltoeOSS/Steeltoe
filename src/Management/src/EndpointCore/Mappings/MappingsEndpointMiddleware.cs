@@ -9,15 +9,11 @@ using Microsoft.AspNetCore.Mvc.ActionConstraints;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-#if NETSTANDARD2_0
-using Microsoft.AspNetCore.Mvc.Internal;
-#endif
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Constraints;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,12 +31,13 @@ namespace Steeltoe.Management.Endpoint.Mappings
         public MappingsEndpointMiddleware(
             RequestDelegate next,
             IMappingsOptions options,
-            IEnumerable<IManagementOptions> mgmtOptions,
+            IManagementOptions mgmtOptions,
+            MappingsEndpoint endpoint,
             IRouteMappings routeMappings = null,
             IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
             IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
             ILogger<MappingsEndpointMiddleware> logger = null)
-            : base(mgmtOptions, logger: logger)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = options;
@@ -49,36 +46,17 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _apiDescriptionProviders = apiDescriptionProviders;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public MappingsEndpointMiddleware(
-            RequestDelegate next,
-            IMappingsOptions options,
-            IRouteMappings routeMappings = null,
-            IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
-            IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
-            ILogger<MappingsEndpointMiddleware> logger = null)
-            : base(logger: logger)
+        public Task Invoke(HttpContext context)
         {
-            _next = next;
-            _options = options;
-            _routeMappings = routeMappings;
-            _actionDescriptorCollectionProvider = actionDescriptorCollectionProvider;
-            _apiDescriptionProviders = apiDescriptionProviders;
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+            {
+                return HandleMappingsRequestAsync(context);
+            }
+
+            return Task.CompletedTask;
         }
 
-        public async Task Invoke(HttpContext context)
-        {
-            if (IsMappingsRequest(context))
-            {
-                await HandleMappingsRequestAsync(context).ConfigureAwait(false);
-            }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
-        }
-
-        protected internal async Task HandleMappingsRequestAsync(HttpContext context)
+        protected internal Task HandleMappingsRequestAsync(HttpContext context)
         {
             var result = GetApplicationMappings(context);
             var serialInfo = Serialize(result);
@@ -86,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
             _logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal ApplicationMappings GetApplicationMappings(HttpContext context)
@@ -105,35 +83,6 @@ namespace Steeltoe.Management.Endpoint.Mappings
 
             var contextMappings = new ContextMappings(desc);
             return new ApplicationMappings(contextMappings);
-        }
-
-        protected internal bool IsMappingsRequest(HttpContext context)
-        {
-            if (!context.Request.Method.Equals("GET"))
-            {
-                return false;
-            }
-
-            var paths = new List<string>();
-            if (_mgmtOptions != null)
-            {
-                paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_options.Id}"));
-            }
-            else
-            {
-                paths.Add(_options.Path);
-            }
-
-            foreach (var path in paths.Distinct())
-            {
-                var pathString = new PathString(path);
-                if (context.Request.Path.Equals(pathString))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
@@ -323,20 +272,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 return new ApiDescriptionProviderContext(new List<ActionDescriptor>());
             }
 
-#if NETSTANDARD2_0
-            foreach (var action in actionDescriptors)
-            {
-                // This is required in order for OnProvidersExecuting() to work
-                var apiExplorerActionData = new ApiDescriptionActionData()
-                {
-                    GroupName = "Steeltoe"
-                };
-                action.SetProperty(apiExplorerActionData);
-            }
-#endif
-
             var context = new ApiDescriptionProviderContext(actionDescriptors);
-
             foreach (var provider in _apiDescriptionProviders)
             {
                 provider.OnProvidersExecuting(context);

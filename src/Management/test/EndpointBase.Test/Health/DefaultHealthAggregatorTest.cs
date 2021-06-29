@@ -5,6 +5,7 @@
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test
@@ -55,16 +56,17 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
         {
-            var contribs = new List<IHealthContributor>()
+            var contribs = new List<IHealthContributor>();
+            for (var i = 0; i < 10; i++)
             {
-                new UpContributor(),
-                new UpContributor()
-            };
+                contribs.Add(new UpContributor());
+            }
+
             var agg = new DefaultHealthAggregator();
             var result = agg.Aggregate(contribs);
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.UP, result.Status);
-            Assert.Contains("Up-1", result.Details.Keys);
+            Assert.Contains("Up-9", result.Details.Keys);
         }
 
         [Fact]
@@ -81,6 +83,25 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(result);
             Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
             Assert.NotNull(result.Details);
+        }
+
+        [Fact]
+        public void AggregatesInParallel()
+        {
+            var t = new Stopwatch();
+            var contribs = new List<IHealthContributor>()
+            {
+                new UpContributor(500),
+                new UpContributor(500),
+                new UpContributor(500)
+            };
+            var agg = new DefaultHealthAggregator();
+            t.Start();
+            var result = agg.Aggregate(contribs);
+            t.Stop();
+            Assert.NotNull(result);
+            Assert.Equal(HealthStatus.UP, result.Status);
+            Assert.InRange(t.ElapsedMilliseconds, 450, 1200);
         }
     }
 }

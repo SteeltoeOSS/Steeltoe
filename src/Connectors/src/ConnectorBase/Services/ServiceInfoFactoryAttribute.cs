@@ -4,10 +4,10 @@
 
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     [AttributeUsage(AttributeTargets.Class)]
-    public class ServiceInfoFactoryAttribute : Attribute
+    public sealed class ServiceInfoFactoryAttribute : Attribute
     {
     }
 }

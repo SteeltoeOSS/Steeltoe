@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using HdrHistogram;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
 using System;
 using System.Collections.Concurrent;
 
@@ -57,7 +57,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 
         private RollingCommandLatencyDistributionStream(IHystrixCommandKey commandKey, int numPercentileBuckets, int percentileBucketSizeInMs)
             : base(HystrixCommandCompletionStream.GetInstance(commandKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
-            {
+        {
         }
     }
 }

@@ -3,34 +3,27 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.CloudFoundry;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
 {
     /// <summary>
     /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
     /// </summary>
-#pragma warning disable CS0618 // Type or member is obsolete
-    public class ActuatorEndpoint : AbstractEndpoint<Links, string>
-#pragma warning restore CS0618 // Type or member is obsolete
+    public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
     {
         private readonly ILogger<ActuatorEndpoint> _logger;
-        private readonly IManagementOptions _mgmtOption;
+        private readonly ActuatorManagementOptions _mgmtOption;
 
-        public ActuatorEndpoint(IActuatorHypermediaOptions options, IEnumerable<IManagementOptions> mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+        public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
         {
-            _mgmtOption = mgmtOptions?.OfType<ActuatorManagementOptions>().Single();
+            _mgmtOption = mgmtOptions;
             _logger = logger;
         }
 
         protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
 
-#pragma warning disable CS0618 // Type or member is obsolete
         public override Links Invoke(string baseUrl)
-#pragma warning restore CS0618 // Type or member is obsolete
         {
             var service = new HypermediaService(_mgmtOption, options, _logger);
             return service.Invoke(baseUrl);

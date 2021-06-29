@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
-using Steeltoe.Management.Census.Trace.Propagation;
+using Steeltoe.Management.OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace.Propagation;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Threading;
@@ -19,7 +18,7 @@ namespace Steeltoe.Management.Tracing.Observer
         internal const string START_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Start";
         internal const string STOP_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Stop";
         internal const string STOPEX_EVENT = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
-        internal ConcurrentDictionary<HttpWebRequest, SpanContext> Pending = new ConcurrentDictionary<HttpWebRequest, SpanContext>();
+        internal ConcurrentDictionary<HttpWebRequest, TelemetrySpan> Pending = new ConcurrentDictionary<HttpWebRequest, TelemetrySpan>();
 
         private const string DIAGNOSTIC_NAME = "System.Net.Http.Desktop";
         private const string OBSERVER_NAME = "HttpClientDesktopObserver";
@@ -77,14 +76,11 @@ namespace Steeltoe.Management.Tracing.Observer
 
         protected internal void HandleStopEvent(HttpWebRequest request, HttpStatusCode statusCode, WebHeaderCollection headers)
         {
-            if (!Pending.TryRemove(request, out var spanContext))
+            if (!Pending.TryRemove(request, out var span))
             {
                 Logger?.LogDebug("HandleStopEvent: Missing span context");
                 return;
             }
-
-            var span = spanContext.Active;
-            var scope = spanContext.ActiveScope;
 
             if (span != null)
             {
@@ -94,7 +90,7 @@ namespace Steeltoe.Management.Tracing.Observer
                     span.PutHttpResponseHeadersAttribute(headers);
                 }
 
-                scope.Dispose();
+                span.End();
             }
         }
 
@@ -115,28 +111,25 @@ namespace Steeltoe.Management.Tracing.Observer
             var spanName = ExtractSpanName(request);
 
             var parentSpan = GetCurrentSpan();
-            ISpan started;
-            IScope scope;
+
+            TelemetrySpan started;
             if (parentSpan != null)
             {
-                scope = Tracer.SpanBuilderWithExplicitParent(spanName, parentSpan)
-                    .StartScopedSpan(out started);
+                Tracer.StartActiveSpan(spanName, parentSpan, SpanKind.Client, out started);
             }
             else
             {
-                scope = Tracer.SpanBuilder(spanName)
-                   .StartScopedSpan(out started);
+                Tracer.StartActiveSpan(spanName, SpanKind.Client, out started);
             }
 
-            var existing = Pending.GetOrAdd(request, new SpanContext(started, scope));
+            var existing = Pending.GetOrAdd(request, started);
 
             if (existing != started)
             {
                 Logger?.LogWarning("Existing span context existed for web request");
             }
 
-            started.PutClientSpanKindAttribute()
-                .PutHttpRawUrlAttribute(request.RequestUri.ToString())
+            started.PutHttpRawUrlAttribute(request.RequestUri.ToString())
                 .PutHttpMethodAttribute(request.Method.ToString())
                 .PutHttpHostAttribute(request.RequestUri.Host, request.RequestUri.Port)
                 .PutHttpPathAttribute(request.RequestUri.AbsolutePath);
@@ -149,11 +142,11 @@ namespace Steeltoe.Management.Tracing.Observer
             InjectTraceContext(request, parentSpan);
         }
 
-        protected internal void InjectTraceContext(HttpWebRequest message, ISpan parentSpan)
+        protected internal void InjectTraceContext(HttpWebRequest message, TelemetrySpan parentSpan)
         {
             // Expects the currentspan to be the span to inject into
             var headers = message.Headers;
-            Propagation.Inject(Tracer.CurrentSpan.Context, headers, (c, k, v) =>
+            TextFormat.Inject(Tracer.CurrentSpan.Context, headers, (c, k, v) =>
             {
                 if (k == B3Constants.XB3TraceId && v.Length > 16 && Options.UseShortTraceIds)
                 {
@@ -170,7 +163,7 @@ namespace Steeltoe.Management.Tracing.Observer
 
             if (parentSpan != null)
             {
-                headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToLowerBase16());
+                headers.Add(B3Constants.XB3ParentSpanId, parentSpan.Context.SpanId.ToHexString());
             }
         }
 

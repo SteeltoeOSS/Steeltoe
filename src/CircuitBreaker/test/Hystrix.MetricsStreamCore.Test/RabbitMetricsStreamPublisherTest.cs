@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
+using Steeltoe.Connector.Hystrix;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test

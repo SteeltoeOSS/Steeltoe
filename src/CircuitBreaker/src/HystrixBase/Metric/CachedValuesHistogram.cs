@@ -94,13 +94,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             }
         }
 
-         // Return the cached value only
+        // Return the cached value only
         public int GetMean()
         {
             return _mean;
         }
 
-         // Return the cached value if available. Otherwise, we need to synchronize access to the underlying {@link Histogram}
+        // Return the cached value if available. Otherwise, we need to synchronize access to the underlying {@link Histogram}
         public int GetValueAtPercentile(double percentile)
         {
             var permyriad = (int)percentile * 100;

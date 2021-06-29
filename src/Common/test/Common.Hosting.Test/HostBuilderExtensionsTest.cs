@@ -139,7 +139,6 @@ namespace Steeltoe.Common.Hosting.Test
             Assert.Contains("https://*:5001", addresses.Addresses);
         }
 
-#if NETCOREAPP3_1
         [Fact]
         public void UseCloudHosting_GenericHost_Default8080()
         {
@@ -178,6 +177,9 @@ namespace Steeltoe.Common.Hosting.Test
         }
 
         [Fact]
+#if NET5_0
+        [Trait("Category", "SkipOnMacOS")] // for .NET 5, this test produces an admin prompt on OSX
+#endif
         public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
         {
             // Arrange
@@ -195,6 +197,5 @@ namespace Steeltoe.Common.Hosting.Test
             using var host = hostBuilder.Build();
             host.Start();
         }
-#endif
     }
 }

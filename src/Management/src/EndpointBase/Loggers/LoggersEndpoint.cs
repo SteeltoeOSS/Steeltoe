@@ -3,22 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-#if NETSTANDARD2_0
-using Newtonsoft.Json;
-#endif
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-#if NETSTANDARD2_1
 using System.Text.Json;
-#endif
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
-    public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>
+    public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
     {
         private static readonly List<string> Levels = new List<string>()
         {
@@ -34,7 +29,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         private readonly ILogger<LoggersEndpoint> _logger;
         private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
-        public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider, ILogger<LoggersEndpoint> logger = null)
+        public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
             : base(options)
         {
             _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
@@ -118,14 +113,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
         {
             try
             {
-#if NETSTANDARD2_1
                 return (Dictionary<string, string>)JsonSerializer.DeserializeAsync(stream, typeof(Dictionary<string, string>)).GetAwaiter().GetResult();
-#else
-                var serializer = new JsonSerializer();
-                using var sr = new StreamReader(stream);
-                using var jsonTextReader = new JsonTextReader(sr);
-                return serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
-#endif
             }
             catch (Exception e)
             {

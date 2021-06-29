@@ -5,7 +5,7 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.CosmosDb
+namespace Steeltoe.Connector.CosmosDb
 {
     /// <summary>
     /// Assemblies and types used for interacting with CosmosDbDB

@@ -163,7 +163,7 @@ namespace Steeltoe.Common.Http.Test
         [Fact]
         public void GetAccessToken_ThrowsNulls()
         {
-            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken(null, null, null));
+            Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken(string.Empty, null, null));
             Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", null, null));
             Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", "clientid", null));
         }

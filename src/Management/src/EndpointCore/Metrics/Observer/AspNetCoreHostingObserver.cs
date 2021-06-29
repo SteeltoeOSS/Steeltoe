@@ -5,13 +5,10 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -26,39 +23,40 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private const string OBSERVER_NAME = "AspNetCoreHostingObserver";
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
 
-        private readonly ITagKey _statusTagKey = TagKey.Create("status");
-        private readonly ITagKey _exceptionTagKey = TagKey.Create("exception");
-        private readonly ITagKey _methodTagKey = TagKey.Create("method");
-        private readonly ITagKey _uriTagKey = TagKey.Create("uri");
+        private readonly string _statusTagKey = "status";
+        private readonly string _exceptionTagKey = "exception";
+        private readonly string _methodTagKey = "method";
+        private readonly string _uriTagKey = "uri";
 
-        private readonly IMeasureDouble _responseTimeMeasure;
-        private readonly IMeasureLong _serverCountMeasure;
+        private readonly MeasureMetric<double> _responseTimeMeasure;
+        private readonly CounterMetric<long> _serverCountMeasure;
 
-        public AspNetCoreHostingObserver(IMetricsOptions options, IStats censusStats, ITags censusTags, ILogger<AspNetCoreHostingObserver> logger)
-            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, censusStats, censusTags, logger)
+        public AspNetCoreHostingObserver(IMetricsObserverOptions options, IStats stats, ILogger<AspNetCoreHostingObserver> logger)
+            : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, stats, logger)
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
 
-            _responseTimeMeasure = MeasureDouble.Create("server.core.totalTime", "Total request time", MeasureUnit.MilliSeconds);
-            _serverCountMeasure = MeasureLong.Create("server.core.totalRequests", "Total request count", "count");
+            this._responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
+            this._serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
+            /*
+            //var view = View.Create(
+            //        ViewName.Create("http.server.request.time"),
+            //        "Total request time",
+            //        responseTimeMeasure,
+            //        Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
+            //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
 
-            var view = View.Create(
-                    ViewName.Create("http.server.request.time"),
-                    "Total request time",
-                    _responseTimeMeasure,
-                    Distribution.Create(BucketBoundaries.Create(new List<double>() { 0.0, 1.0, 5.0, 10.0, 100.0 })),
-                    new List<ITagKey>() { _statusTagKey, _exceptionTagKey, _methodTagKey, _uriTagKey });
+            //ViewManager.RegisterView(view);
 
-            ViewManager.RegisterView(view);
+            //view = View.Create(
+            //        ViewName.Create("http.server.request.count"),
+            //        "Total request counts",
+            //        serverCountMeasure,
+            //        Sum.Create(),
+            //        new List<ITagKey>() { statusTagKey, exceptionTagKey, methodTagKey, uriTagKey });
 
-            view = View.Create(
-                    ViewName.Create("http.server.request.count"),
-                    "Total request counts",
-                    _serverCountMeasure,
-                    Sum.Create(),
-                    new List<ITagKey>() { _statusTagKey, _exceptionTagKey, _methodTagKey, _uriTagKey });
-
-            ViewManager.RegisterView(view);
+            //ViewManager.RegisterView(view);
+            */
         }
 
         public override void ProcessEvent(string evnt, object arg)
@@ -99,28 +97,27 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             if (current.Duration.TotalMilliseconds > 0)
             {
-                var tagContext = GetTagContext(arg);
-                StatsRecorder
-                    .NewMeasureMap()
-                    .Put(_responseTimeMeasure, current.Duration.TotalMilliseconds)
-                    .Put(_serverCountMeasure, 1)
-                    .Record(tagContext);
+                var labelSets = GetLabelSets(arg); // Todo: Used bound labelsets
+
+                _serverCountMeasure.Add(default(SpanContext), 1, labelSets);
+                labelSets.Add(new KeyValuePair<string, string>("TimeUnit", "ms"));
+                _responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
             }
         }
 
-        protected internal ITagContext GetTagContext(HttpContext arg)
+        protected internal List<KeyValuePair<string, string>> GetLabelSets(HttpContext arg)
         {
             var uri = arg.Request.Path.ToString();
             var statusCode = arg.Response.StatusCode.ToString();
             var exception = GetException(arg);
 
-            return Tagger
-                .EmptyBuilder
-                .Put(_uriTagKey, TagValue.Create(uri))
-                .Put(_statusTagKey, TagValue.Create(statusCode))
-                .Put(_exceptionTagKey, TagValue.Create(exception))
-                .Put(_methodTagKey, TagValue.Create(arg.Request.Method))
-                .Build();
+            var tagValues = new List<KeyValuePair<string, string>>();
+            tagValues.Add(new KeyValuePair<string, string>(_uriTagKey, uri));
+            tagValues.Add(new KeyValuePair<string, string>(_statusTagKey, statusCode));
+            tagValues.Add(new KeyValuePair<string, string>(_exceptionTagKey, exception));
+            tagValues.Add(new KeyValuePair<string, string>(_methodTagKey, arg.Request.Method));
+
+            return tagValues;
         }
 
         protected internal string GetException(HttpContext arg)

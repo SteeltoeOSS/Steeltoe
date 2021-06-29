@@ -2,25 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Endpoint.Metrics.Prometheus;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
-using System.IO;
-using System.Text;
+using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class PrometheusScraperEndpoint : AbstractEndpoint<string>
+    public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
-        private readonly ILogger<PrometheusScraperEndpoint> _logger;
-        private readonly IStats _stats;
+        private readonly PrometheusExporter _exporter;
+        private string _cachedMetrics;
 
-        public PrometheusScraperEndpoint(IPrometheusOptions options, IStats stats,  ILogger<PrometheusScraperEndpoint> logger = null)
+        public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, PrometheusExporter exporter)
             : base(options)
         {
-            _stats = stats ?? throw new ArgumentNullException(nameof(stats));
-            _logger = logger;
+            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         }
 
         public new IEndpointOptions Options
@@ -33,56 +29,14 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         public override string Invoke()
         {
-            string returnValue;
-            using var output = new MemoryStream();
-            using (var writer = new StreamWriter(output))
+            var metrics = _exporter.GetMetricsCollection();
+
+            if (!string.IsNullOrEmpty(metrics))
             {
-                foreach (var view in _stats.ViewManager.AllExportedViews)
-                {
-                    var data = _stats.ViewManager.GetView(view.Name);
-
-                    var builder = new PrometheusMetricBuilder()
-                        .WithName(data.View.Name.AsString)
-                        .WithDescription(data.View.Description);
-
-                    builder = data.View.Aggregation.Match<PrometheusMetricBuilder>(
-                        (agg) => { return builder.WithType("gauge"); }, // Func<ISum, M> p0
-                        (agg) => { return builder.WithType("counter"); }, // Func< ICount, M > p1,
-                        (agg) => { return builder.WithType("histogram"); }, // Func<IMean, M> p2,
-                        (agg) => { return builder.WithType("histogram"); }, // Func< IDistribution, M > p3,
-                        (agg) => { return builder.WithType("gauge"); }, // Func<ILastValue, M> p4,
-                        (agg) => { return builder.WithType("gauge"); }); // Func< IAggregation, M > p6)
-
-                    foreach (var value in data.AggregationMap)
-                    {
-                        var metricValueBuilder = builder.AddValue();
-
-                        // TODO: This is not optimal. Need to refactor to split builder into separate functions
-                        metricValueBuilder =
-                            value.Value.Match<PrometheusMetricBuilder.PrometheusMetricValueBuilder>(
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue,
-                                metricValueBuilder.WithValue);
-
-                        for (var i = 0; i < value.Key.Values.Count; i++)
-                        {
-                            metricValueBuilder.WithLabel(data.View.Columns[i].Name, value.Key.Values[i].AsString);
-                        }
-                    }
-
-                    builder.Write(writer);
-                }
-
-                writer.Flush();
-                returnValue = Encoding.Default.GetString(output.ToArray());
+                _cachedMetrics = metrics;
             }
 
-            return returnValue;
+            return _cachedMetrics;
         }
     }
 }

@@ -8,6 +8,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
@@ -22,6 +23,16 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             services.AddSingleton<HystrixDashboardStream>(HystrixDashboardStream.GetInstance());
+        }
+
+        public static void AddHystrixMetricsEventSource(this IServiceCollection services)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            services.AddHostedService<HystrixEventSourceService>();
         }
 
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)

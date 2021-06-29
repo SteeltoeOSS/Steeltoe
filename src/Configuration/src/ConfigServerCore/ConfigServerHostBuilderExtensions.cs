@@ -5,8 +5,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer
 {
@@ -54,44 +52,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             });
 
             return hostBuilder;
-        }
-
-        /// <summary>
-        /// Enable the application to listen on port(s) provided by the environment at runtime
-        /// </summary>
-        /// <param name="webHostBuilder">Your WebHostBuilder</param>
-        /// <param name="runLocalPort">Set the port number with code so you don't need to set environment variables locally</param>
-        /// <returns>Your WebHostBuilder, now listening on port(s) found in the environment or passed in</returns>
-        /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
-        [Obsolete("This extension will be removed in a future release. Please use Steeltoe.Common.Hosting.UseCloudHosting() instead")]
-        public static IWebHostBuilder UseCloudFoundryHosting(this IWebHostBuilder webHostBuilder, int? runLocalPort = null)
-        {
-            if (webHostBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(webHostBuilder));
-            }
-
-            var urls = new List<string>();
-
-            var portStr = Environment.GetEnvironmentVariable("PORT");
-            if (!string.IsNullOrWhiteSpace(portStr))
-            {
-                if (int.TryParse(portStr, out var port))
-                {
-                    urls.Add($"http://*:{port}");
-                }
-            }
-            else if (runLocalPort != null)
-            {
-                urls.Add($"http://*:{runLocalPort}");
-            }
-
-            if (urls.Count > 0)
-            {
-                webHostBuilder.UseUrls(urls.ToArray());
-            }
-
-            return webHostBuilder;
         }
     }
 }

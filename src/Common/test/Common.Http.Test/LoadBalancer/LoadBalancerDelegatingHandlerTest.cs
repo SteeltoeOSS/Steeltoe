@@ -7,7 +7,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Http.LoadBalancer.Test
@@ -22,7 +22,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         }
 
         [Fact]
-        public async void ResolvesUri_TracksStats_WithProvidedLoadBalancer()
+        public async Task ResolvesUri_TracksStats_WithProvidedLoadBalancer()
         {
             // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
@@ -39,7 +39,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         }
 
         [Fact]
-        public async void DoesntTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
+        public async Task DoesntTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
         {
             // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
@@ -55,7 +55,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         }
 
         [Fact]
-        public async void TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
+        public async Task TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
         {
             // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");

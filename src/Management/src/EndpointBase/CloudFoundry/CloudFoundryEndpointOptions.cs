@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
@@ -33,8 +32,5 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
         public string ApplicationId { get; set; }
 
         public string CloudFoundryApi { get; set; }
-
-        [Obsolete("Use Exposure Options instead.")]
-        public override bool DefaultSensitive => false;
     }
 }

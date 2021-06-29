@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
@@ -35,10 +35,20 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         };
 
         [Fact]
-        public async void HandleCloudFoundryRequestAsync_ReturnsExpected()
+        public void RoutesByPathAndVerb()
+        {
+            var options = new HypermediaEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/cloudfoundryapplication", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
+
+        [Fact]
+        public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
         {
             var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
+            var mgmtOptions = new CloudFoundryManagementOptions();
+            mgmtOptions.EndpointOptions.Add(opts);
             var ep = new TestCloudFoundryEndpoint(opts, mgmtOptions);
 
             var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
@@ -52,7 +62,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ReturnsExpectedData()
+        public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -60,22 +70,18 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-            Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var json = await result.Content.ReadAsStringAsync();
-            Assert.NotNull(json);
-#pragma warning disable CS0618 // Type or member is obsolete
-            var links = JsonConvert.DeserializeObject<Links>(json);
-#pragma warning restore CS0618 // Type or member is obsolete
+            var options = GetSerializerOptions();
+            options.PropertyNameCaseInsensitive = true;
+            var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
             Assert.NotNull(links);
             Assert.True(links._links.ContainsKey("self"));
-            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].href);
+            Assert.Equal("http://localhost/cloudfoundryapplication", links._links["self"].Href.ToString());
             Assert.True(links._links.ContainsKey("info"));
-            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].href);
+            Assert.Equal("http://localhost/cloudfoundryapplication/info", links._links["info"].Href.ToString());
         }
 
         [Fact]
-        public async void CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
+        public async Task CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
         {
             // arrange a server and client
             var builder = new WebHostBuilder()
@@ -91,32 +97,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
 
             // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
-        }
-
-        [Fact]
-        public void CloudFoundryEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new CloudFoundryEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
-            var ep = new CloudFoundryEndpoint(opts, mgmtOptions);
-            var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-        }
-
-        [Fact]
-        public void HypermediaEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
-        {
-            var opts = new HypermediaEndpointOptions();
-            var mgmtOptions = TestHelper.GetManagementOptions(opts);
-            var ep = new ActuatorEndpoint(opts, mgmtOptions);
-            var middle = new ActuatorHypermediaEndpointMiddleware(null, ep, mgmtOptions);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/actuator"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/actuator"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/actuator/badpath"));
         }
 
         private HttpContext CreateRequest(string method, string path)

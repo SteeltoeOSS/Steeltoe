@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Azure.Cosmos;
+using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.CosmosDb.Test
+namespace Steeltoe.Connector.CosmosDb.Test
 {
     public class CosmosDbConnectorFactoryTest
     {
@@ -18,7 +19,7 @@ namespace Steeltoe.CloudFoundry.Connector.CosmosDb.Test
             CosmosDbServiceInfo si = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(Azure.Cosmos.CosmosClient)));
+            var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorFactory(si, config, typeof(CosmosClient)));
             Assert.Contains(nameof(config), ex.Message);
         }
 
@@ -34,7 +35,7 @@ namespace Steeltoe.CloudFoundry.Connector.CosmosDb.Test
                 DatabaseLink = "databaseLink"
             };
 
-            var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(Azure.Cosmos.CosmosClient));
+            var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(CosmosClient));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
         }
@@ -44,6 +45,7 @@ namespace Steeltoe.CloudFoundry.Connector.CosmosDb.Test
         {
             // Arrange
             CosmosDbConnectorOptions config = null;
+
             CosmosDbServiceInfo si = null;
 
             // Act and Assert
@@ -69,7 +71,6 @@ namespace Steeltoe.CloudFoundry.Connector.CosmosDb.Test
             var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(Microsoft.Azure.Cosmos.CosmosClient));
             var connection = factory.Create(null);
             Assert.NotNull(connection);
-
             CosmosDbTypeLocator.ClientOptionsTypeNames = optionsTypes;
         }
     }

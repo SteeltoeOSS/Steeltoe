@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Common Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common</AssemblyName>
-    <PackageId>Steeltoe.Common</PackageId>
+    <Description>Steeltoe common library</Description>
     <PackageTags>NET Core;NET Framework</PackageTags>
   </PropertyGroup>
 
@@ -13,15 +11,16 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="$(ExtensionsVersion)" />
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
+    <PackageReference Include="System.Reflection.MetadataLoadContext" Version="$(SystemReflectionVersion)" />
     <PackageReference Include="System.Text.Json" Version="$(SystemJsonVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Diagnostics\" />
-    <Folder Include="Reflection\" />
+    <ProjectReference Include="..\Abstractions\Steeltoe.Common.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

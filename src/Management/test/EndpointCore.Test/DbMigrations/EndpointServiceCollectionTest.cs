@@ -5,9 +5,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
 using Steeltoe.Management.Endpoint.Test;
-using Steeltoe.Management.EndpointBase.DbMigrations;
 using System;
 using System.Collections.Generic;
 using Xunit;

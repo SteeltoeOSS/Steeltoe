@@ -20,13 +20,18 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddRefreshActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseRefreshActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<RefreshEndpoint>();
+            });
         }
     }
 }

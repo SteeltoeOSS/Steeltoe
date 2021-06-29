@@ -4,12 +4,9 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
@@ -18,49 +15,36 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
     /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
     /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
     /// </summary>
-#pragma warning disable CS0618 // Type or member is obsolete
     public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
-#pragma warning restore CS0618 // Type or member is obsolete
     {
         private readonly ICloudFoundryOptions _options;
         private readonly RequestDelegate _next;
 
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions?.OfType<CloudFoundryManagementOptions>(), logger: logger)
+        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger: logger)
         {
             _next = next;
             _options = endpoint.Options as ICloudFoundryOptions;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, logger: logger)
-        {
-            _next = next;
-            _options = endpoint.Options as ICloudFoundryOptions;
-        }
-
-        public async Task Invoke(HttpContext context)
+        public Task Invoke(HttpContext context)
         {
             _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
             {
-                await HandleCloudFoundryRequestAsync(context).ConfigureAwait(false);
+                return HandleCloudFoundryRequestAsync(context);
             }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+
+            return Task.CompletedTask;
         }
 
-        protected internal async Task HandleCloudFoundryRequestAsync(HttpContext context)
+        protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
         {
             var serialInfo = HandleRequest(GetRequestUri(context.Request));
             _logger?.LogDebug("Returning: {0}", serialInfo);
-
             context.HandleContentNegotiation(_logger);
-            await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
+            return context.Response.WriteAsync(serialInfo);
         }
 
         protected internal string GetRequestUri(HttpRequest request)

@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.CloudFoundry.Connector.Test
+namespace Steeltoe.Connector.Test
 {
     internal class TestServiceConfiguration : AbstractServiceConnectorOptions
     {

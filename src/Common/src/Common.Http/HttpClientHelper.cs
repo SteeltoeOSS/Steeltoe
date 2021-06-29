@@ -3,10 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -15,13 +14,14 @@ using System.Reflection;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http
 {
     public static class HttpClientHelper
     {
-        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).FileVersion}";
+        public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
         private const int DEFAULT_GETACCESSTOKEN_TIMEOUT = 10000; // Milliseconds
         private const bool DEFAULT_VALIDATE_CERTIFICATES = true;
@@ -30,12 +30,23 @@ namespace Steeltoe.Common.Http
 
         private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (sender, cert, chain, sslPolicyErrors) => true;
 
-        public static HttpClient GetHttpClient(bool validateCertificates, int timeout)
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(bool validateCertificates, int timeoutMillis)
         {
-            return GetHttpClient(validateCertificates, null, timeout);
+            return GetHttpClient(validateCertificates, null, timeoutMillis);
         }
 
-        public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeout)
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not remote certificates should be validated</param>
+        /// <param name="handler">A pre-defined <see cref="HttpClientHandler"/></param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeoutMillis)
         {
             HttpClient client;
             if (Platform.IsFullFramework)
@@ -61,11 +72,30 @@ namespace Steeltoe.Common.Http
                 }
             }
 
-            client.Timeout = TimeSpan.FromMilliseconds(timeout);
+            client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
             client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
             return client;
         }
 
+        /// <summary>
+        /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>
+        /// </summary>
+        /// <param name="handler">A pre-defined <see cref="HttpMessageHandler"/></param>
+        /// <param name="timeoutMillis">Timeout in milliseconds</param>
+        public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeoutMillis = 1500)
+        {
+            var client = handler == null ? new HttpClient() : new HttpClient(handler);
+            client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
+            client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
+            return client;
+        }
+
+        /// <summary>
+        /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not certificates should be validated</param>
+        /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
+        /// <param name="prevValidator">Pre-existing certificate validation callback</param>
         public static void ConfigureCertificateValidation(
             bool validateCertificates,
             out SecurityProtocolType protocolType,
@@ -87,15 +117,12 @@ namespace Steeltoe.Common.Http
             }
         }
 
-        [Obsolete("This method has a spelling error and will be removed, use 'ConfigureCertificateValidation'")]
-        public static void ConfigureCertificateValidatation(
-            bool validateCertificates,
-            out SecurityProtocolType protocolType,
-            out RemoteCertificateValidationCallback prevValidator)
-        {
-            ConfigureCertificateValidation(validateCertificates, out protocolType, out prevValidator);
-        }
-
+        /// <summary>
+        /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework"/>
+        /// </summary>
+        /// <param name="validateCertificates">Whether or not certificates should be validated</param>
+        /// <param name="protocolType"><see cref="SecurityProtocolType"/></param>
+        /// <param name="prevValidator">Pre-existing certificate validation callback</param>
         public static void RestoreCertificateValidation(
             bool validateCertificates,
             SecurityProtocolType protocolType,
@@ -123,6 +150,12 @@ namespace Steeltoe.Common.Http
             return Convert.ToBase64String(Encoding.ASCII.GetBytes(user + ":" + password));
         }
 
+        /// <summary>
+        /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+        /// </summary>
+        /// <param name="method"><see cref="HttpMethod"/></param>
+        /// <param name="requestUri">The remote Uri</param>
+        /// <param name="getAccessToken">A means of including a bearer token</param>
         public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
         {
             var request = GetRequestMessage(method, requestUri, null, null);
@@ -141,6 +174,13 @@ namespace Steeltoe.Common.Http
             return request;
         }
 
+        /// <summary>
+        /// Creates an <see cref="HttpRequestMessage" /> from the provided information
+        /// </summary>
+        /// <param name="method"><see cref="HttpMethod"/></param>
+        /// <param name="requestUri">The remote Uri</param>
+        /// <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty</param>
+        /// <param name="password">Optional Basic Auth Password</param>
         public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
         {
             if (method == null)
@@ -171,10 +211,29 @@ namespace Steeltoe.Common.Http
             string clientSecret,
             int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
             bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
-            ILogger logger = null,
-            HttpClient httpClient = null)
+            HttpClient httpClient = null,
+            ILogger logger = null)
         {
             if (string.IsNullOrEmpty(accessTokenUri))
+            {
+                throw new ArgumentException(nameof(accessTokenUri));
+            }
+
+            var parsedUri = new Uri(accessTokenUri);
+            return GetAccessToken(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
+        }
+
+        public static Task<string> GetAccessToken(
+            Uri accessTokenUri,
+            string clientId,
+            string clientSecret,
+            int timeout = DEFAULT_GETACCESSTOKEN_TIMEOUT,
+            bool validateCertificates = DEFAULT_VALIDATE_CERTIFICATES,
+            Dictionary<string, string> additionalParams = null,
+            HttpClient httpClient = null,
+            ILogger logger = null)
+        {
+            if (accessTokenUri is null)
             {
                 throw new ArgumentException(nameof(accessTokenUri));
             }
@@ -189,26 +248,27 @@ namespace Steeltoe.Common.Http
                 throw new ArgumentException(nameof(clientSecret));
             }
 
-            var parsedUri = new Uri(accessTokenUri);
-
-            if (!parsedUri.IsWellFormedOriginalString())
+            if (!accessTokenUri.IsWellFormedOriginalString())
             {
                 throw new ArgumentException("Access token Uri is not well formed", nameof(accessTokenUri));
             }
 
-            httpClient ??= GetHttpClient(validateCertificates, timeout);
-            return GetAccessTokenInternal(parsedUri, clientId, clientSecret, validateCertificates, httpClient, logger);
+            return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
         }
 
         private static async Task<string> GetAccessTokenInternal(
             Uri accessTokenUri,
             string clientId,
             string clientSecret,
+            int timeout,
             bool validateCertificates,
             HttpClient httpClient,
+            Dictionary<string, string> additionalParams,
             ILogger logger)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
+            logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
+            var client = httpClient ?? GetHttpClient(validateCertificates, timeout);
 
             // If certificate validation is disabled, inject a callback to handle properly
             ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
@@ -216,15 +276,16 @@ namespace Steeltoe.Common.Http
             var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
             request.Headers.Authorization = auth;
 
-            request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                { "grant_type", "client_credentials" }
-            });
+            var reqparams = additionalParams is null
+                ? new Dictionary<string, string> { { "grant_type", "client_credentials" } }
+                : new Dictionary<string, string>(additionalParams) { { "grant_type", "client_credentials" } };
+
+            request.Content = new FormUrlEncodedContent(reqparams);
 
             try
             {
-                using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
-                if (response.StatusCode != HttpStatusCode.OK)
+                using var response = await client.SendAsync(request).ConfigureAwait(false);
+                if (!response.IsSuccessStatusCode)
                 {
                     logger?.LogInformation(
                         "GetAccessToken returned status: {0} while obtaining access token from: {1}",
@@ -233,9 +294,15 @@ namespace Steeltoe.Common.Http
                     return null;
                 }
 
-                var payload = JObject.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-                var token = payload.Value<string>("access_token");
-                return token;
+                var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+                var token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
+
+                if (httpClient is null)
+                {
+                    client.Dispose();
+                }
+
+                return token.ToString();
             }
             catch (Exception e)
             {

@@ -20,7 +20,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         protected internal ILoggerFactory _logFactory;
         protected internal ILogger _logger;
 
-        private static readonly string[] _discoveryServiceAssemblies = new string[] { "Steeltoe.Discovery.EurekaBase" };
+        private static readonly string[] _discoveryServiceAssemblies = new string[] { "Steeltoe.Discovery.Eureka" };
         private static readonly string[] _discoveryServiceTypeNames = new string[] { "Steeltoe.Discovery.Eureka.EurekaClientService" };
 
         internal ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)

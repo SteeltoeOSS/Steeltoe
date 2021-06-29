@@ -4,13 +4,12 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Oracle;
-using Steeltoe.CloudFoundry.Connector.Oracle.EF6;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Oracle;
+using Steeltoe.Connector.Oracle.EF6;
+using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.EF6Core
+namespace Steeltoe.Connector.EF6Core
 {
     public static class OracleDbContextServiceCollectionExtensions
     {
@@ -21,9 +20,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
         /// <param name="services">Service Collection</param>
         /// <param name="config">Application Configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -49,9 +47,8 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
         /// <param name="config">Application Configuration</param>
         /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {

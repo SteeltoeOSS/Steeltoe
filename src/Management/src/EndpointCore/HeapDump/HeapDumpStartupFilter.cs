@@ -8,15 +8,18 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.HeapDump
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class HeapDumpStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
-                app.UseHeapDumpActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<HeapDumpEndpoint>();
+                });
             };
         }
     }

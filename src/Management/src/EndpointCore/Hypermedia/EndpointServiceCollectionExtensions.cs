@@ -12,30 +12,39 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddHypermediaActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config));
+            }
+
+            services.AddActuatorManagementOptions(config);
+            services.AddHypermediaActuatorServices(config);
+            services.AddActuatorEndpointMapping<ActuatorEndpoint>();
+        }
+
+        public static void AddActuatorManagementOptions(this IServiceCollection services, IConfiguration config = null)
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-
-            services.TryAddSingleton<IActuatorHypermediaOptions>(provider =>
-            {
-                var mgmtOptions = provider
-                    .GetServices<IManagementOptions>().Single(m => m.GetType() == typeof(ActuatorManagementOptions));
-                var opts = new HypermediaEndpointOptions(config);
-                mgmtOptions.EndpointOptions.Add(opts);
-                return opts;
-            });
-
-            services.TryAddSingleton<ActuatorEndpoint>();
+            services.TryAddSingleton(provider => provider.GetServices<IManagementOptions>().OfType<ActuatorManagementOptions>().First());
         }
     }
 }

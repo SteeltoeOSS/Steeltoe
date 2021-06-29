@@ -1,11 +1,11 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 using System.Collections.Generic;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     public class CosmosDbServiceInfoFactory : ServiceInfoFactory
     {
@@ -26,7 +26,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services
             };
         }
 
-        public override bool Accept(Service binding)
+        public override bool Accepts(Service binding)
         {
             return (TagsMatch(binding) || LabelStartsWithTag(binding))
                 && IsNotMongoDb(binding);

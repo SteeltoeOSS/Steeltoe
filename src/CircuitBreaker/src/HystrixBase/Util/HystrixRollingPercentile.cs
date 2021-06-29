@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Util;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -124,10 +125,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             _currentPercentileSnapshot = new PercentileSnapshot(_buckets.Array);
         }
 
-        private PercentileSnapshot CurrentPercentileSnapshot
-        {
-            get { return _currentPercentileSnapshot; }
-        }
+        private PercentileSnapshot CurrentPercentileSnapshot => _currentPercentileSnapshot;
 
         private readonly object _newBucketLock = new object();
 
@@ -590,10 +588,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 get { return _state.Value._size; }
             }
 
-            public Bucket PeekLast
-            {
-                get { return _state.Value.Tail; }
-            }
+            public Bucket PeekLast => _state.Value.Tail;
 
             IEnumerator IEnumerable.GetEnumerator()
             {
@@ -606,10 +601,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
                 return list.AsReadOnly().GetEnumerator();
             }
 
-            public Bucket[] Array
-            {
-                get { return _state.Value.Array; }
-            }
+            public Bucket[] Array => _state.Value.Array;
         }
 
         internal class Bucket

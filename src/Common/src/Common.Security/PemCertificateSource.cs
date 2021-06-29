@@ -3,11 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using System;
 using System.IO;
 
 namespace Steeltoe.Common.Security
 {
-    public class PemCertificateSource : IConfigurationSource
+    public class PemCertificateSource : ICertificateSource
     {
         private readonly string _certFilePath;
         private readonly string _keyFilePath;
@@ -17,6 +18,8 @@ namespace Steeltoe.Common.Security
             _certFilePath = Path.GetFullPath(certFilePath);
             _keyFilePath = Path.GetFullPath(keyFilePath);
         }
+
+        public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
 
         public IConfigurationProvider Build(IConfigurationBuilder builder)
         {
@@ -55,6 +58,8 @@ namespace Steeltoe.Common.Security
 #pragma warning disable SA1402 // File may only contain a single class
     internal class FileSource : FileConfigurationSource
     {
+        internal string BasePath { get; set; }
+
         internal string Key { get; }
 
         public FileSource(string key)

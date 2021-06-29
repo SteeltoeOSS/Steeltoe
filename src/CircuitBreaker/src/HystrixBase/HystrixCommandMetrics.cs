@@ -7,6 +7,8 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Extensions.Logging;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Linq;
 using Xunit;
@@ -37,7 +37,7 @@ namespace Steeltoe.Management.Tracing.Test
         {
             var services = new ServiceCollection();
             var config = GetConfiguration();
-
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             services.AddOptions();
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddDistributedTracing(config);

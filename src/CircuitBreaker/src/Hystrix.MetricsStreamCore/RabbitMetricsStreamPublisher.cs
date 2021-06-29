@@ -6,8 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.CloudFoundry.Connector.Hystrix;
-using Steeltoe.Common.Discovery;
+using Steeltoe.Connector.Hystrix;
+using Steeltoe.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Net.Security;
@@ -32,7 +32,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
             if (sslOption != null && sslOption.Enabled)
             {
                 logger?.LogInformation("Hystrix Metrics using TLS");
-                sslOption.Version = SslProtocols.Tls12;
+                sslOption.Version = SslProtocols.Tls12 | SslProtocols.Tls13;
                 if (!this.options.Validate_Certificates)
                 {
                     logger?.LogInformation("Hystrix Metrics disabling certificate validation");

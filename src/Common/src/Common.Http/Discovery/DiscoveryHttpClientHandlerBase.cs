@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Discovery;
 using System;
 using System.Threading.Tasks;
 

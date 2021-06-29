@@ -7,14 +7,13 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
+namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 {
     public class PlaceholderServiceCollectionExtensionsTest
     {
@@ -122,7 +121,6 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
 
-#if NETCOREAPP3_1
         [Fact]
         public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
         {
@@ -166,6 +164,5 @@ namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
             var config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
-#endif
     }
 }

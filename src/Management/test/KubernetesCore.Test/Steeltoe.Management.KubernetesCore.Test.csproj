@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedtest.props" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" />
+    <ProjectReference Include="..\EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
+  </ItemGroup>
+
+</Project>

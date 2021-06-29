@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
-    public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>
+    public class DbMigrationsEndpoint : AbstractEndpoint<Dictionary<string, DbMigrationsDescriptor>>, IDbMigrationsEndpoint
     {
         /// <summary>
         /// Hacky class to allow mocking migration methods in unit tests
@@ -78,9 +78,10 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
                     .Where(type => !type.IsAbstract && type.AsType() != _dbContextType && _dbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
                     .Select(typeInfo => typeInfo.AsType())
                     .ToList();
+            var scope = _container.CreateScope().ServiceProvider;
             foreach (var contextType in knownEfContexts)
             {
-                var dbContext = _container.GetService(contextType);
+                var dbContext = scope.GetService(contextType);
                 if (dbContext == null)
                 {
                     continue;

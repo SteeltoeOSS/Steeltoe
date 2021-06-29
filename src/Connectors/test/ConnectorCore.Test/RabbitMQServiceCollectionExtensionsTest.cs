@@ -5,13 +5,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.RabbitMQ.Test
+namespace Steeltoe.Connector.RabbitMQ.Test
 {
     public class RabbitMQServiceCollectionExtensionsTest
     {

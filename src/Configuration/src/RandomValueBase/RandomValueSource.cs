@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration.RandomValue
 {
     /// <summary>
     /// Configuration source used in creating a <see cref="RandomValueProvider"/> that generates random numbers

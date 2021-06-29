@@ -6,6 +6,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -32,7 +33,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSuccess()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
@@ -50,7 +50,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionMultipleTimes()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
@@ -83,7 +82,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHystrixFailureWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
@@ -108,7 +106,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
@@ -133,7 +130,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
@@ -148,7 +144,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionRejectionWithFallbackException()
         {
             var threads = new List<Thread>();
@@ -197,7 +192,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionFailureWithFallbackFailure()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
@@ -224,7 +218,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestQueueSuccess()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
@@ -239,7 +232,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueKnownFailureWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.HYSTRIX_FAILURE, FallbackResultTest.UNIMPLEMENTED);
@@ -264,7 +256,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueUnknownFailureWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.UNIMPLEMENTED);
@@ -289,7 +280,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestQueueFailureWithFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.SUCCESS);
@@ -313,7 +303,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueueFailureWithFallbackFailure()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.FAILURE, FallbackResultTest.FAILURE);
@@ -337,7 +326,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestObserveSuccess()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
@@ -369,7 +357,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCallbackThreadForThreadIsolation()
         {
             var commandThread = new AtomicReference<Thread>();
@@ -429,7 +416,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCallbackThreadForSemaphoreIsolation()
         {
             var commandThread = new AtomicReference<Thread>();
@@ -475,7 +461,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCircuitBreakerReportsOpenIfForcedOpen()
         {
             var opts = new HystrixCommandOptions()
@@ -492,7 +477,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCircuitBreakerReportsClosedIfForcedClosed()
         {
             var opts = new HystrixCommandOptions()
@@ -509,7 +493,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
         {
             var key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
@@ -583,7 +566,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSuccessWithCircuitBreakerDisabled()
         {
             var command = GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS);
@@ -597,7 +579,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutWithNoFallback()
         {
             var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
@@ -638,7 +619,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutWithFallback()
         {
             var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
@@ -657,7 +637,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutFallbackFailure()
         {
             var command = GetLatentCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
@@ -692,7 +671,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCountersOnExecutionTimeout()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
@@ -717,7 +695,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueuedExecutionTimeoutWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
@@ -745,7 +722,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestQueuedExecutionTimeoutWithFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
@@ -756,7 +732,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             AssertSaneHystrixRequestLog(1);
         }
 
-        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
         public async Task TestQueuedExecutionTimeoutFallbackFailure()
         {
@@ -782,7 +757,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutWithNoFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.UNIMPLEMENTED, 50);
@@ -816,7 +790,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutWithFallback()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.SUCCESS, 50);
@@ -829,7 +802,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservedExecutionTimeoutFallbackFailure()
         {
             var command = GetCommand(ExecutionIsolationStrategy.THREAD, ExecutionResultTest.SUCCESS, 200, FallbackResultTest.FAILURE, 50);
@@ -861,7 +833,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestShortCircuitFallbackCounter()
         {
             var circuitBreaker = new TestCircuitBreaker().SetForceShortCircuit(true);
@@ -884,7 +855,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadWithNoFallback()
         {
             var key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
@@ -946,7 +916,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedThreadWithFallback()
         {
             var key = HystrixCommandKeyDefault.AsKey("Rejection-Fallback");
@@ -987,7 +956,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadWithFallbackFailure()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1046,7 +1014,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestRejectedThreadUsingQueueSize()
         {
             var key = HystrixCommandKeyDefault.AsKey("Rejection-B");
@@ -1106,7 +1073,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestDisabledTimeoutWorks()
         {
             var cmd = new CommandWithDisabledTimeout(100, 900);
@@ -1121,7 +1087,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestFallbackSemaphore()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1171,7 +1136,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public async Task TestExecutionSemaphoreWithQueue()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1236,7 +1200,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionSemaphoreWithExecution()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1312,7 +1275,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestRejectedExecutionSemaphoreWithFallbackViaExecute()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1376,7 +1338,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
+
         public void TestRejectedExecutionSemaphoreWithFallbackViaObserve()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1868,7 +1830,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestNoRequestCacheOnTimeoutThrowsException()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1946,7 +1907,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
+
         public void TestRequestCacheOnTimeoutCausesNullPointerException()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -1966,7 +1927,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             var command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
             var f = command5.ExecuteAsync(); // return from cache #4
 
-                                                    // the bug is that we're getting a null Future back, rather than a Future that returns false
+            // the bug is that we're getting a null Future back, rather than a Future that returns false
             Assert.NotNull(f);
             Assert.False(f.Result);
 
@@ -1986,7 +1947,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
+
         public void TestRequestCacheOnTimeoutThrowsException()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -2064,7 +2025,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
+
         public async Task TestRequestCacheOnThreadRejectionThrowsException()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -2552,7 +2513,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionTimeoutValue()
         {
             var properties = new HystrixCommandOptions()
@@ -2572,7 +2532,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestObservableTimeoutNoFallbackThreadContext()
         {
             var latch = new CountdownEvent(1);
@@ -2627,7 +2586,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExceptionConvertedToBadRequestExceptionInExecutionHookBypassesCircuitBreaker()
         {
             var circuitBreaker = new TestCircuitBreaker();
@@ -2654,7 +2612,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestInterruptFutureOnTimeout()
         {
             // given
@@ -2669,7 +2626,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestInterruptObserveOnTimeout()
         {
             // given
@@ -2684,7 +2640,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestInterruptToObservableOnTimeout()
         {
             // given
@@ -2699,7 +2654,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCancelFutureWithInterruption()
         {
             // given
@@ -2726,20 +2680,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestChainedCommand()
         {
             Assert.True(new TestChainedCommandPrimaryCommand(new TestCircuitBreaker()).Execute() == 2);
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestSlowFallback()
         {
             Assert.True(new TestSlowFallbackPrimaryCommand(new TestCircuitBreaker()).Execute() == 1);
         }
 
-        // [Trait("Category", "FlakyOnHostedAgents")]
         [Fact]
         public void TestSemaphoreThreadSafety()
         {
@@ -2802,7 +2753,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestCancelledTasksInQueueGetRemoved()
         {
             var key = HystrixCommandKeyDefault.AsKey("Cancellation-A");
@@ -3804,7 +3754,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutNoFallbackRunSuccess()
         {
             AssertHooksOnFailure(
@@ -3829,7 +3778,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutSuccessfulFallbackRunSuccess()
         {
             AssertHooksOnSuccess(
@@ -3854,7 +3802,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutUnsuccessfulFallbackRunSuccess()
         {
             AssertHooksOnFailure(
@@ -3880,7 +3827,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutNoFallbackRunFailure()
         {
             AssertHooksOnFailure(
@@ -3904,7 +3850,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutSuccessfulFallbackRunFailure()
         {
             AssertHooksOnSuccess(
@@ -3929,7 +3874,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadTimeoutUnsuccessfulFallbackRunFailure()
         {
             AssertHooksOnFailure(
@@ -3955,7 +3899,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullNoFallback()
         {
             SingleThreadedPoolWithQueue pool = null;
@@ -3994,7 +3937,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullSuccessfulFallback()
         {
             SingleThreadedPoolWithQueue pool = null;
@@ -4037,7 +3979,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
 
         [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
         public void TestExecutionHookThreadPoolQueueFullUnsuccessfulFallback()
         {
             SingleThreadedPoolWithQueue pool = null;

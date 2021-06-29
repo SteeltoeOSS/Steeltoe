@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class MonitorInfo : LockInfo
     {
-        [JsonProperty("lockedStackDepth")]
+        [JsonPropertyName("lockedStackDepth")]
         public int LockedStackDepth { get; set; }
 
-        [JsonProperty("lockedStackFrame")]
+        [JsonPropertyName("lockedStackFrame")]
         public StackTraceElement LockedStackFrame { get; set; }
     }
 }

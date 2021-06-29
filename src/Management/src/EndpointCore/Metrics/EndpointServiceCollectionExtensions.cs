@@ -6,25 +6,30 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Metrics.Export;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics.Observer;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
+using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
+using System.Diagnostics.Tracing;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
     public static class EndpointServiceCollectionExtensions
     {
-        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddMetricsActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -32,28 +37,30 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            var options = new MetricsEndpointOptions(config);
-            services.TryAddSingleton<IMetricsOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+            services.AddActuatorManagementOptions(config);
+            services.AddMetricsActuatorServices(config);
 
-            services.TryAddSingleton<IStats, OpenCensusStats>();
-            services.TryAddSingleton<ITags, OpenCensusTags>();
+            var observerOptions = new MetricsObserverOptions(config);
+            services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-            services.TryAddSingleton<MetricsEndpoint>();
+            AddMetricsObservers(services, observerOptions);
+
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, SteeltoeExporter>());
+            services.AddOpenTelemetry();
+
+            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<SteeltoeExporter>().SingleOrDefault());
+            services.AddActuatorEndpointMapping<MetricsEndpoint>();
         }
 
-        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config)
+        public static void AddPrometheusActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -61,23 +68,75 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
             services.TryAddSingleton<IDiagnosticsManager, DiagnosticsManager>();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IHostedService, DiagnosticServices>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IPolledDiagnosticSource, CLRRuntimeSource>());
 
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
 
-            var metricsOptions = new MetricsEndpointOptions(config);
-            services.TryAddSingleton<IMetricsOptions>(metricsOptions);
+            var metricsEndpointOptions = new MetricsEndpointOptions(config);
+            services.TryAddSingleton<IMetricsEndpointOptions>(metricsEndpointOptions);
 
-            var options = new PrometheusEndpointOptions(config);
-            services.TryAddSingleton<IPrometheusOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, CLRRuntimeObserver>());
+            var observerOptions = new MetricsObserverOptions(config);
+            services.TryAddSingleton<IMetricsObserverOptions>(observerOptions);
 
-            services.TryAddSingleton<IStats, OpenCensusStats>();
-            services.TryAddSingleton<ITags, OpenCensusTags>();
+            services.AddPrometheusActuatorServices(config);
 
-            services.TryAddSingleton<PrometheusScraperEndpoint>();
+            AddMetricsObservers(services, observerOptions);
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricExporter, PrometheusExporter>());
+            services.AddOpenTelemetry();
+            services.TryAddSingleton((provider) => provider.GetServices<MetricExporter>().OfType<PrometheusExporter>().SingleOrDefault());
+            services.AddActuatorEndpointMapping<PrometheusScraperEndpoint>();
+        }
+
+        private static void AddMetricsObservers(IServiceCollection services, MetricsObserverOptions observerOptions)
+        {
+            if (observerOptions.AspNetCoreHosting)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());
+            }
+
+            if (observerOptions.HttpClientCore)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientCoreObserver>());
+            }
+
+            if (observerOptions.HttpClientDesktop)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpClientDesktopObserver>());
+            }
+
+            if (observerOptions.GCEvents)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, GCEventsListener>());
+            }
+
+            if (observerOptions.EventCounterEvents)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, EventCounterListener>());
+            }
+
+            if (observerOptions.ThreadPoolEvents)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, ThreadPoolEventsListener>());
+            }
+
+            if (observerOptions.HystrixEvents)
+            {
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<EventListener, HystrixEventsListener>());
+            }
+        }
+
+        private static void AddOpenTelemetry(this IServiceCollection services)
+        {
+            services.TryAddSingleton<MultiExporter>();
+            services.TryAddSingleton((provider) =>
+            {
+                var exporter = provider.GetService<MultiExporter>();
+                return new SteeltoeProcessor(exporter); // TODO: Capture from options when OTel Configuration is finalized
+            });
+            services.TryAddSingleton<IStats>((provider) =>
+            {
+                var processor = provider.GetService<SteeltoeProcessor>();
+                return new OpenTelemetryMetrics(processor, TimeSpan.FromSeconds(3));
+            });
         }
     }
 }

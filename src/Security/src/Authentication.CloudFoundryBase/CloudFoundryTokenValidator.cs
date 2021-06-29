@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
 {

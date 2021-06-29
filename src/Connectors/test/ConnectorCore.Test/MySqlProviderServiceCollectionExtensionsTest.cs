@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -13,7 +11,7 @@ using System.Collections.Generic;
 using System.Data;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.Connector.MySql.Test
 {
     /// <summary>
     /// Tests for the extension method that adds both the DbConnection and the health check
@@ -197,7 +195,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // Act
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             // Assert
             Assert.NotNull(healthContributor);
@@ -218,7 +216,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // Act
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             // Assert
             Assert.Null(healthContributor);
@@ -239,7 +237,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.Test
 
             // Act
             MySqlProviderServiceCollectionExtensions.AddMySqlConnection(services, config, addSteeltoeHealthChecks: true);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalHealthContributor;
+            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
             // Assert
             Assert.NotNull(healthContributor);

@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
-    internal class HystrixCircuitBreakerImpl : IHystrixCircuitBreaker
+    internal class HystrixCircuitBreakerImpl : ICircuitBreaker
     {
         private readonly IHystrixCommandOptions _options;
         private readonly HystrixCommandMetrics _metrics;

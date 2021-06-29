@@ -3,20 +3,23 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.MongoDb.Test;
-using Steeltoe.CloudFoundry.Connector.MySql.Test;
-using Steeltoe.CloudFoundry.Connector.PostgreSql;
-using Steeltoe.CloudFoundry.Connector.PostgreSql.Test;
-using Steeltoe.CloudFoundry.Connector.RabbitMQ;
-using Steeltoe.CloudFoundry.Connector.Redis;
-using Steeltoe.CloudFoundry.Connector.Redis.Test;
-using Steeltoe.CloudFoundry.Connector.SqlServer;
-using Steeltoe.CloudFoundry.Connector.SqlServer.Test;
+using Steeltoe.Connector.MongoDb;
+using Steeltoe.Connector.MongoDb.Test;
+using Steeltoe.Connector.MySql;
+using Steeltoe.Connector.MySql.Test;
+using Steeltoe.Connector.PostgreSql;
+using Steeltoe.Connector.PostgreSql.Test;
+using Steeltoe.Connector.RabbitMQ;
+using Steeltoe.Connector.Redis;
+using Steeltoe.Connector.Redis.Test;
+using Steeltoe.Connector.Services;
+using Steeltoe.Connector.SqlServer;
+using Steeltoe.Connector.SqlServer.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test
+namespace Steeltoe.Connector.Test
 {
     public class ConnectionStringManagerTest
     {
@@ -34,6 +37,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void MysqlConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
             var config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
@@ -51,13 +55,14 @@ namespace Steeltoe.CloudFoundry.Connector.Test
             var connInfo = cm.Get<PostgresConnectionInfo>();
 
             Assert.NotNull(connInfo);
-            Assert.Equal("Host=localhost;Port=5432;", connInfo.ConnectionString);
+            Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30;", connInfo.ConnectionString);
             Assert.Equal("Postgres", connInfo.Name);
         }
 
         [Fact]
         public void PostgresConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
             var connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
@@ -80,6 +85,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void SqlServerConnectionInfo_ByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
@@ -103,6 +109,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void RedisConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
@@ -137,6 +144,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test
         [Fact]
         public void MongoDbConnectionInfoByName()
         {
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
 
             var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
@@ -144,6 +152,63 @@ namespace Steeltoe.CloudFoundry.Connector.Test
 
             Assert.NotNull(connInfo);
             Assert.Equal("MongoDb-steeltoe", connInfo.Name);
+        }
+
+        [Theory]
+        [InlineData("cosMosdb")]
+        [InlineData("cosmosdb-readonly")]
+        [InlineData("mongodb")]
+        [InlineData("mYsql")]
+        [InlineData("oracle")]
+        [InlineData("postgres")]
+        [InlineData("rabbitmq")]
+        [InlineData("redis")]
+        [InlineData("sqlserver")]
+        public void IConnectionInfoTypeFoundByName(string value)
+        {
+            var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
+            Assert.StartsWith(value, manager.GetByTypeName(value).Name, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        [Theory]
+        [InlineData("squirrelQL")]
+        [InlineData("anyqueue")]
+        public void ConnectionTypeLocatorThrowsOnUnknown(string value)
+        {
+            var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
+            var exception = Assert.Throws<ConnectorException>(() => manager.GetByTypeName(value));
+            Assert.Contains(value, exception.Message);
+        }
+
+        [Fact]
+        public void ConnectionTypeLocatorFindsTypeFromServiceInfo()
+        {
+            var cosmosInfo = new CosmosDbServiceInfo("id");
+            var mongoInfo = new MongoDbServiceInfo("id", "mongodb://host");
+            var mysqlInfo = new MySqlServiceInfo("id", "mysql://host");
+            var oracleInfo = new OracleServiceInfo("id", "oracle://host");
+            var postgresInfo = new PostgresServiceInfo("id", "postgres://host");
+            var rabbitMqInfo = new RabbitMQServiceInfo("id", "rabbitmq://host");
+            var redisInfo = new RedisServiceInfo("id", "redis://host");
+            var sqlInfo = new SqlServerServiceInfo("id", "sqlserver://host");
+            var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
+
+            Assert.StartsWith("CosmosDb", manager.GetFromServiceInfo(cosmosInfo).Name);
+            Assert.StartsWith("MongoDb", manager.GetFromServiceInfo(mongoInfo).Name);
+            Assert.StartsWith("MySql", manager.GetFromServiceInfo(mysqlInfo).Name);
+            Assert.StartsWith("Oracle", manager.GetFromServiceInfo(oracleInfo).Name);
+            Assert.StartsWith("Postgres", manager.GetFromServiceInfo(postgresInfo).Name);
+            Assert.StartsWith("RabbitMQ", manager.GetFromServiceInfo(rabbitMqInfo).Name);
+            Assert.StartsWith("Redis", manager.GetFromServiceInfo(redisInfo).Name);
+            Assert.StartsWith("SqlServer", manager.GetFromServiceInfo(sqlInfo).Name);
+        }
+
+        [Fact]
+        public void ConnectionTypeLocatorFromInfoThrowsOnUnknown()
+        {
+            var manager = new ConnectionStringManager(new ConfigurationBuilder().Build());
+            var exception = Assert.Throws<ConnectorException>(() => manager.GetFromServiceInfo(new DB2ServiceInfo("id", "http://idk")));
+            Assert.Contains("DB2ServiceInfo", exception.Message);
         }
     }
 }

@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test
@@ -61,7 +63,7 @@ namespace Steeltoe.Common.Http.Test
         }
 
         [Fact]
-        public async void LookupServiceAsync_NonDefaultPort_ReturnsOriginalURI()
+        public async Task LookupServiceAsync_NonDefaultPort_ReturnsOriginalURI()
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
@@ -74,7 +76,7 @@ namespace Steeltoe.Common.Http.Test
         }
 
         [Fact]
-        public async void LookupServiceAsync_DoesntFindService_ReturnsOriginalURI()
+        public async Task LookupServiceAsync_DoesntFindService_ReturnsOriginalURI()
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient();
@@ -87,7 +89,7 @@ namespace Steeltoe.Common.Http.Test
         }
 
         [Fact]
-        public async void LookupServiceAsync_FindsService_ReturnsURI()
+        public async Task LookupServiceAsync_FindsService_ReturnsURI()
         {
             // Arrange
             IDiscoveryClient client = new TestDiscoveryClient(new TestServiceInstance(new Uri("https://foundit:5555")));

@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
-using System;
+using Steeltoe.Common;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix

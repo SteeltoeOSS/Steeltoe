@@ -5,7 +5,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.CloudFoundry.Connector
+namespace Steeltoe.Connector
 {
     [Serializable]
     public class ConnectorException : Exception

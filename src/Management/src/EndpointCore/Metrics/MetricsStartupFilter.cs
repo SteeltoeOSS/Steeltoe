@@ -8,15 +8,18 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class MetricsStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
-                app.UseMetricsActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<MetricsEndpoint>();
+                });
             };
         }
     }

@@ -4,7 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
+using Steeltoe.Common.Security;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.IO;
@@ -59,6 +59,24 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
+        }
+
+        [Fact]
+        public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
+        {
+            // Arrange
+            var configurationBuilder = new ConfigurationBuilder();
+            var settings = new ConfigServerClientSettings() { Timeout = 10 };
+
+            // Act and Assert
+            configurationBuilder
+                .AddPemFiles("instance.crt", "instance.key")
+                .AddConfigServer(settings);
+            configurationBuilder.Build();
+
+            var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+            Assert.NotNull(configServerSource);
+            Assert.NotNull(configServerSource.DefaultSettings.ClientCertificate);
         }
 
         [Fact]
@@ -435,7 +453,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapservices);
-            var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings" };
+            var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
             // Act
             configurationBuilder
@@ -466,7 +484,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 Label = "testConfigLabel",
                 Environment = "testEnv",
                 Username = "testUser",
-                Password = "testPassword"
+                Password = "testPassword",
+                Timeout = 10,
+                RetryEnabled = false
             };
             var builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 

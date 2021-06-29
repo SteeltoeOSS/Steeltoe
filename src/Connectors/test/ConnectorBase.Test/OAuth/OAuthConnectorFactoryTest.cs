@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.OAuth.Test
+namespace Steeltoe.Connector.OAuth.Test
 {
     public class OAuthConnectorFactoryTest
     {

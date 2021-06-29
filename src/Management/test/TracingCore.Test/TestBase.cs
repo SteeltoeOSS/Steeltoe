@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.Tracing.Test
@@ -30,15 +30,10 @@ namespace Steeltoe.Management.Tracing.Test
             return builder.Build();
         }
 
-        protected Span GetCurrentSpan(ITracer tracer)
+        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
         {
             var span = tracer.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
-            {
-                return null;
-            }
-
-            return span as Span;
+            return span.Context.IsValid ? span : null;
         }
     }
 }

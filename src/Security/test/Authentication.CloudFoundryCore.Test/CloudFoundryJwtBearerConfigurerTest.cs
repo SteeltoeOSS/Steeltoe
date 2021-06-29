@@ -3,8 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Steeltoe.CloudFoundry.Connector.Services;
-
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test

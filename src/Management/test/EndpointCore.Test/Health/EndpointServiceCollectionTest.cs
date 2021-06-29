@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Test;
@@ -21,18 +22,16 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         public void AddHealthActuator_ThrowsOnNulls()
         {
             // Arrange
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
-            var config2 = new ConfigurationBuilder().Build();
+            IServiceCollection services = new ServiceCollection();
+            var config = new ConfigurationBuilder().Build();
             IHealthAggregator aggregator = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-            var ex3 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(services2, config2, aggregator));
+            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
+            Assert.Equal("services", ex.ParamName);
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator());
+            Assert.Equal("config", ex2.ParamName);
+            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator(config, aggregator));
             Assert.Contains(nameof(aggregator), ex3.Message);
         }
 
@@ -93,7 +92,9 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             var contribs = serviceProvider.GetServices<IHealthContributor>();
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
-            Assert.Single(contribsList);
+            Assert.Equal(3, contribsList.Count);
+            var availability = serviceProvider.GetService<ApplicationAvailability>();
+            Assert.NotNull(availability);
         }
 
         [Fact]
@@ -106,11 +107,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             Assert.NotNull(contribs);
             var contribsList = contribs.ToList();
             Assert.Single(contribsList);
-        }
-
-        private int IOptionsMonitor<T>()
-        {
-            throw new NotImplementedException();
         }
     }
 }

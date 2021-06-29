@@ -26,31 +26,6 @@ namespace Steeltoe.Management.Endpoint.Health
             };
         }
 
-        public static MicrosoftHealthStatus ToHealthStatus(this HealthStatus status)
-        {
-            return status switch
-            {
-                HealthStatus.UP => MicrosoftHealthStatus.Healthy,
-                HealthStatus.WARNING => MicrosoftHealthStatus.Degraded,
-                _ => MicrosoftHealthStatus.Unhealthy,
-            };
-        }
-
-        public static Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult ToHealthCheckResult(this HealthCheckResult result)
-        {
-            return new Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult(result.Status.ToHealthStatus(), result.Description, null, result.Details);
-        }
-
-        public static HealthCheckResult ToHealthCheckResult(this Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult result)
-        {
-            return new Common.HealthChecks.HealthCheckResult()
-            {
-                Status = result.Status.ToHealthStatus(),
-                Description = result.Description,
-                Details = result.Data.ToDictionary(t => t.Key, t => t.Value)
-            };
-        }
-
         public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)
         {
             var context = new HealthCheckContext { Registration = registration };
@@ -59,16 +34,11 @@ namespace Steeltoe.Management.Endpoint.Health
             {
                 var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
                 var status = res.Status.ToHealthStatus();
-                healthCheckResult = new HealthCheckResult()
-                {
-                    Status = status,
-                    Description = res.Description,
-                };
-                healthCheckResult.Details = new Dictionary<string, object>((IDictionary<string, object>)res.Data)
-                {
-                    { "status", status.ToString() },
-                    { "description", res.Description }
-                };
+                healthCheckResult.Status = status; // Only used for aggregate doesn't get reported
+                healthCheckResult.Description = res.Description;
+                healthCheckResult.Details = new Dictionary<string, object>(res.Data);
+                healthCheckResult.Details.Add("status", status.ToString());
+                healthCheckResult.Details.Add("description", res.Description);
 
                 if (res.Exception != null && !string.IsNullOrEmpty(res.Exception.Message))
                 {

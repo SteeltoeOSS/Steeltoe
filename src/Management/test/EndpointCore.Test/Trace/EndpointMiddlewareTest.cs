@@ -8,11 +8,14 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test
@@ -26,15 +29,15 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:trace:enabled"] = "true",
         };
 
         [Fact]
-        public async void HandleTraceRequestAsync_ReturnsExpected()
+        public async Task HandleTraceRequestAsync_ReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
             var obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -48,10 +51,11 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        public async void HandleTraceRequestAsync_OtherPathReturnsExpected()
+        public async Task HandleTraceRequestAsync_OtherPathReturnsExpected()
         {
             var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
             var obs = new TraceDiagnosticObserver(opts);
             var ep = new TestTraceEndpoint(opts, obs);
@@ -65,7 +69,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
         }
 
         [Fact]
-        public async void TraceActuator_ReturnsExpectedData()
+        public async Task TraceActuator_ReturnsExpectedData()
         {
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -78,24 +82,30 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/trace");
+            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/httptrace");
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             var json = await result.Content.ReadAsStringAsync();
             Assert.NotNull(json);
         }
 
         [Fact]
-        public void TraceEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void RoutesByPathAndVerb()
         {
-            var opts = new TraceEndpointOptions();
-            var mopts = TestHelpers.GetManagementOptions(opts);
-            var obs = new TraceDiagnosticObserver(opts);
-            var ep = new TraceEndpoint(opts, obs);
-            var middle = new TraceEndpointMiddleware(null, ep, mopts);
+            var options = new HttpTraceEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/httptrace", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/httptrace", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
+        }
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/trace"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+        [Fact]
+        public void RoutesByPathAndVerbTrace()
+        {
+            var options = new TraceEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/trace", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/trace", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

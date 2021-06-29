@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Steeltoe.CircuitBreaker.HystrixBase.Util
 {

@@ -4,12 +4,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
+namespace Steeltoe.Connector.PostgreSql.EFCore
 {
     public static class PostgresDbContextOptionsExtensions
     {
@@ -67,7 +68,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
             var connection = GetConnection(config);
 
-            return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
+            return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
         public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
@@ -90,7 +91,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
 
             var connection = GetConnection(config, serviceName);
 
-            return DoUseNpgsql<TContext>(optionsBuilder, connection, npgsqlOptionsAction);
+            return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
         }
 
         public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
@@ -136,7 +137,7 @@ namespace Steeltoe.CloudFoundry.Connector.PostgreSql.EFCore
                 throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
             }
 
-            var result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, npgsqlOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseNpgsql extension, connection: {0}", connection));

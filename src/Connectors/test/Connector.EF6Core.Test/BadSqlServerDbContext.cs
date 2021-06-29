@@ -4,7 +4,7 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
+namespace Steeltoe.Connector.SqlServer.EF6.Test
 {
     public class BadSqlServerDbContext : DbContext
     {

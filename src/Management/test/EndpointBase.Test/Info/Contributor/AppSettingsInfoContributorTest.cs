@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -13,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
     public class AppSettingsInfoContributorTest : BaseTest
     {
         [Fact]
-        public void ConstributeWithConfigNull()
+        public void ContributeWithConfigNull()
         {
             var contributor = new AppSettingsInfoContributor(null);
             var builder = new InfoBuilder();

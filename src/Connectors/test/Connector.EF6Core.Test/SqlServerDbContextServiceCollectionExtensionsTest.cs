@@ -4,13 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
-using System.Data.Entity;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
+namespace Steeltoe.Connector.SqlServer.EF6.Test
 {
     public class SqlServerDbContextServiceCollectionExtensionsTest
     {
@@ -28,10 +26,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
             Assert.Contains(nameof(services), ex2.Message);
         }
 
@@ -43,10 +41,10 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             IConfigurationRoot config = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config, "foobar"));
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
             Assert.Contains(nameof(config), ex2.Message);
         }
 
@@ -59,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             string serviceName = null;
 
             // Act and Assert
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config, serviceName));
+            var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
 
@@ -71,7 +69,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config);
+            services.AddDbContext<GoodSqlServerDbContext>(config);
 
             var service = services.BuildServiceProvider().GetService<GoodSqlServerDbContext>();
             Assert.NotNull(service);
@@ -85,7 +83,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config, "foobar"));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
 
@@ -103,7 +101,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             var config = builder.Build();
 
             // Act and Assert
-            var ex = Assert.Throws<ConnectorException>(() => SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config));
+            var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains("Multiple", ex.Message);
         }
 
@@ -120,8 +118,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             var config = builder.Build();
 
             // Act and Assert
-            SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config);
-            SqlServerDbContextServiceCollectionExtensions.AddDbContext<Good2SqlServerDbContext>(services, config);
+            services.AddDbContext<GoodSqlServerDbContext>(config);
+            services.AddDbContext<Good2SqlServerDbContext>(config);
 
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodSqlServerDbContext>();

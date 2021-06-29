@@ -8,15 +8,18 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Loggers
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class LoggersStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
-                app.UseLoggersActuator();
-
                 next(app);
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<LoggersEndpoint>();
+                });
             };
         }
     }

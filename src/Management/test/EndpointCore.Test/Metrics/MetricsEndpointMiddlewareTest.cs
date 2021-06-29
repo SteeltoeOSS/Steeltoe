@@ -3,17 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenCensus.Stats;
-using OpenCensus.Stats.Aggregations;
-using OpenCensus.Stats.Measures;
-using OpenCensus.Tags;
-using Steeltoe.Management.Census.Stats;
+using OpenTelemetry.Trace;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
@@ -24,10 +23,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void ParseTag_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            var mopts = new ActuatorManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             Assert.Null(middle.ParseTag("foobar"));
@@ -40,10 +39,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void ParseTags_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            var mopts = new ActuatorManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class", "?foo=key:value");
@@ -74,10 +73,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void GetMetricName_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -94,14 +93,12 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         public void GetMetricName_ReturnsExpected_When_ManagementPath_Is_Slash()
         {
             var opts = new MetricsEndpointOptions();
+            var mopts = new ActuatorManagementOptions();
+            mopts.Path = "/";
 
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            mopts.EndpointOptions.Add(opts);
 
-            var amOpts = mopts.Where(m => m.GetType() == typeof(ActuatorManagementOptions)).FirstOrDefault() as ActuatorManagementOptions;
-            amOpts.Path = "/";
-
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context1 = CreateRequest("GET", "/metrics");
@@ -115,13 +112,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetMetricsNames_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics");
@@ -134,13 +131,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetSpecificNonExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
 
-            var ep = new MetricsEndpoint(opts, stats);
+            var ep = new MetricsEndpoint(opts, new SteeltoeExporter());
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
             var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/foo.bar");
@@ -150,20 +147,21 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
         }
 
         [Fact]
-        public async void HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
+        public async Task HandleMetricsRequestAsync_GetSpecificExistingMetric_ReturnsExpected()
         {
             var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
-            var ep = new MetricsEndpoint(opts, stats);
+            var mopts = new CloudFoundryManagementOptions();
+            mopts.EndpointOptions.Add(opts);
+            var stats = new TestOpenTelemetryMetrics();
+            var exporter = stats.Exporter;
 
             SetupTestView(stats);
 
+            var ep = new MetricsEndpoint(opts, exporter);
+
             var middle = new MetricsEndpointMiddleware(null, ep, mopts);
 
-            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test.test", "?tag=a:v1");
+            var context = CreateRequest("GET", "/cloudfoundryapplication/metrics/test", "?tag=a:v1");
 
             await middle.HandleMetricsRequestAsync(context);
             Assert.Equal(200, context.Response.StatusCode);
@@ -171,26 +169,17 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             context.Response.Body.Seek(0, SeekOrigin.Begin);
             var rdr = new StreamReader(context.Response.Body);
             var json = await rdr.ReadToEndAsync();
-            Assert.Equal("{\"name\":\"test.test\",\"measurements\":[{\"statistic\":\"TOTAL\",\"value\":45.0}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
+            Assert.Equal("{\"name\":\"test\",\"measurements\":[{\"statistic\":\"VALUE\",\"value\":4.5},{\"statistic\":\"TOTAL\",\"value\":45}],\"availableTags\":[{\"tag\":\"a\",\"values\":[\"v1\"]},{\"tag\":\"b\",\"values\":[\"v1\"]},{\"tag\":\"c\",\"values\":[\"v1\"]}]}", json);
         }
 
         [Fact]
-        public void MetricsEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void RoutesByPathAndVerb()
         {
-            var opts = new MetricsEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var stats = new OpenCensusStats();
-            var ep = new MetricsEndpoint(opts, stats);
-            var middle = new MetricsEndpointMiddleware(null, ep, mopts);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
-            Assert.False(middle.RequestVerbAndPathMatch("POST", "/cloudfoundryapplication/metrics"));
-            Assert.False(middle.RequestVerbAndPathMatch("DELETE", "/cloudfoundryapplication/metrics"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics/Foo.Bar.Class?tag=key:value&tag=key1:value1"));
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/metrics?tag=key:value&tag=key1:value1"));
+            var options = new MetricsEndpointOptions();
+            Assert.False(options.ExactMatch);
+            Assert.Equal("/actuator/metrics/{**_}", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/metrics/{**_}", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path, string query = null)
@@ -212,39 +201,22 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             return context;
         }
 
-        private void SetupTestView(OpenCensusStats stats)
+        private void SetupTestView(TestOpenTelemetryMetrics stats)
         {
-            var tagsComponent = new TagsComponent();
-            var tagger = tagsComponent.Tagger;
+            var measure = stats.Meter.CreateDoubleMeasure("test");
 
-            var aKey = TagKey.Create("a");
-            var bKey = TagKey.Create("b");
-            var cKey = TagKey.Create("c");
-
-            var viewName = "test.test";
-            var measure = MeasureDouble.Create(Guid.NewGuid().ToString(), "test", MeasureUnit.Bytes);
-
-            var testViewName = ViewName.Create(viewName);
-            var testView = View.Create(
-                                        testViewName,
-                                        "test",
-                                        measure,
-                                        Sum.Create(),
-                                        new List<ITagKey>() { aKey, bKey, cKey });
-
-            stats.ViewManager.RegisterView(testView);
-
-            var context1 = tagger
-                .EmptyBuilder
-                .Put(TagKey.Create("a"), TagValue.Create("v1"))
-                .Put(TagKey.Create("b"), TagValue.Create("v1"))
-                .Put(TagKey.Create("c"), TagValue.Create("v1"))
-                .Build();
+            var labels = new List<KeyValuePair<string, string>>();
+            labels.Add(KeyValuePair.Create("a", "v1"));
+            labels.Add(KeyValuePair.Create("b", "v1"));
+            labels.Add(KeyValuePair.Create("c", "v1"));
 
             for (var i = 0; i < 10; i++)
             {
-                stats.StatsRecorder.NewMeasureMap().Put(measure, i).Record(context1);
+                measure.Record(default(SpanContext), i, labels);
             }
+
+            stats.Factory.CollectAllMetrics();
+            stats.Processor.ExportMetrics();
         }
     }
 }

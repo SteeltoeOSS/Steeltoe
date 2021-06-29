@@ -4,7 +4,7 @@
 
 namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
 {
-    public class NoOpCircuitBreaker : IHystrixCircuitBreaker
+    public class NoOpCircuitBreaker : ICircuitBreaker
     {
         public void MarkSuccess()
         {

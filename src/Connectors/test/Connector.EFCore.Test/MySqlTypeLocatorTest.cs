@@ -4,7 +4,7 @@
 
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.Test
+namespace Steeltoe.Connector.MySql.Test
 {
     /// <summary>
     /// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.

@@ -4,11 +4,11 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore.Test;
+using Steeltoe.Connector.EFCore.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore.Test
+namespace Steeltoe.Connector.Oracle.EFCore.Test
 {
     public class OracleDbContextOptionsExtensionsTest
     {

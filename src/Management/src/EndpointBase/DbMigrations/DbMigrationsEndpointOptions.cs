@@ -3,11 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Management.Endpoint;
-using Steeltoe.Management.Endpoint.Security;
 using System;
 
-namespace Steeltoe.Management.EndpointBase.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations
 {
     public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
     {

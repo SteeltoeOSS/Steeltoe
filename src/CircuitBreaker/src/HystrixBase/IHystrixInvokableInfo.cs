@@ -47,7 +47,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
         bool IsResponseSemaphoreRejected { get; }
 
-        bool IsResponseThreadPoolRejected { get;  }
+        bool IsResponseThreadPoolRejected { get; }
 
         List<HystrixEventType> ExecutionEvents { get; }
 

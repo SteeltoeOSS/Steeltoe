@@ -22,8 +22,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
         private HystrixConfigStreamController(IObservable<HystrixConfiguration> observable)
             : base(observable.Map((hystrixConfiguration) =>
             {
-                 return SerialHystrixConfiguration.ToJsonString(hystrixConfiguration);
-             }))
+                return SerialHystrixConfiguration.ToJsonString(hystrixConfiguration);
+            }))
         {
         }
 

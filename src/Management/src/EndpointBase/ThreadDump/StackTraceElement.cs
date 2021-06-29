@@ -2,25 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
     public class StackTraceElement
     {
-        [JsonProperty("className")]
+        [JsonPropertyName("className")]
         public string ClassName { get; set; }
 
-        [JsonProperty("fileName")]
+        [JsonPropertyName("fileName")]
         public string FileName { get; set; }
 
-        [JsonProperty("lineNumber")]
+        [JsonPropertyName("lineNumber")]
         public int LineNumber { get; set; }
 
-        [JsonProperty("methodName")]
+        [JsonPropertyName("methodName")]
         public string MethodName { get; set; }
 
-        [JsonProperty("nativeMethod")]
+        [JsonPropertyName("nativeMethod")]
         public bool IsNativeMethod { get; set; }
     }
 }

@@ -2,10 +2,29 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public static class MongoDbTestHelpers
     {
+        /// <summary>
+        /// Sample User-Provided Service
+        /// </summary>
+        public static string Single_UserProvidedService = @"
+            {
+                ""user-provided"": [{
+                    ""name"": ""mongodb-user-provided-service"",
+                    ""instance_name"": ""mongodb-user-provided-service"",
+                    ""binding_name"": null,
+                    ""credentials"": {
+                        ""uri"": ""mongodb://user:password@host:28000/testdb""
+                    },
+                    ""syslog_drain_url"": """",
+                    ""volume_mounts"": [],
+                    ""label"": ""user-provided"",
+                    ""tags"": []
+                }]
+            }";
+
         /// <summary>
         /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF
         /// </summary>

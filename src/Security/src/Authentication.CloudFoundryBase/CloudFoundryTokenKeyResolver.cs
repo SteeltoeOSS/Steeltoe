@@ -8,10 +8,8 @@ using Steeltoe.Common.Http;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry
@@ -23,6 +21,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         private readonly string _jwtKeyUrl;
         private readonly HttpMessageHandler _httpHandler;
         private readonly bool _validateCertificates;
+        private HttpClient _httpClient;
 
         public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
         {
@@ -110,12 +109,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
         public virtual HttpClient GetHttpClient()
         {
-            if (_httpHandler != null)
+            if (_httpClient == null)
             {
-                return new HttpClient(_httpHandler);
+                if (_httpHandler is null)
+                {
+                    const int DefaultHttpClientTimeoutMillis = 100000;
+                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, DefaultHttpClientTimeoutMillis);
+                }
+                else
+                {
+                    _httpClient = HttpClientHelper.GetHttpClient(_httpHandler);
+                }
             }
 
-            return new HttpClient();
+            return _httpClient;
         }
 
         private void TrimKey(JsonWebKey key, byte[] existing)

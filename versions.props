@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup Condition="'$(TF_BUILD)' != 'true'">
-    <VersionPrefix>2.5.4</VersionPrefix>
+    <VersionPrefix>3.1.0</VersionPrefix>
   </PropertyGroup>
   <PropertyGroup>
     <CoreFxVersion>4.4.0</CoreFxVersion>
@@ -15,8 +15,10 @@
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>4.7.1</SystemDiagnosticsVersion>
     <SystemJsonVersion>4.6.0</SystemJsonVersion>
+    <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
     <WebInfrastructureVersion>1.0.0</WebInfrastructureVersion>
+    <KubernetesClientVersion>2.0.16</KubernetesClientVersion>
     <MongoDbClientVersion>2.5.0</MongoDbClientVersion>
 
     <MySqlCoreVersion>8.0.9-dmr</MySqlCoreVersion>
@@ -37,7 +39,7 @@
     <JsonNetVersion>11.0.2</JsonNetVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
-    <OpenCensusVersion>0.1.0-alpha-42253</OpenCensusVersion>
+    <OpenTelemetryVersion>0.2.0-alpha.220</OpenTelemetryVersion>
     <RabbitClientVersion>5.0.1</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <TestSdkVersion>16.9.1</TestSdkVersion>
@@ -52,26 +54,23 @@
     <HealthChecksRedisVersion>2.2.3</HealthChecksRedisVersion>
     <HealthChecksSqlServerVersion>2.2.0</HealthChecksSqlServerVersion>
 
-    <SonarAnalyzerVersion>8.19.0.28253</SonarAnalyzerVersion>
+    <SonarAnalyzerVersion>8.22.0.31243</SonarAnalyzerVersion>
     <SourceLinkGitHubVersion>1.0.0</SourceLinkGitHubVersion>
     <StyleCopVersion>1.1.118</StyleCopVersion>
-  </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
-    <AspNetVersion>5.2.4</AspNetVersion>
-    <OwinVersion>4.0.0</OwinVersion>
-    <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
-    <AspNetCoreVersion>2.1.0</AspNetCoreVersion>
-    <EFCoreTestVersion>2.1.0</EFCoreTestVersion>
-    <EF6Version>6.2.0</EF6Version>
-    <NpgsqlEFCoreVersion>2.1.0</NpgsqlEFCoreVersion>
-    <PomeloEFCoreVersion>2.1.0</PomeloEFCoreVersion>
-    <OracleEFCoreVersion>2.19.30</OracleEFCoreVersion>
-    <ExtensionsVersion>2.2.0</ExtensionsVersion>
-    <HealthChecksVersion>2.2.0</HealthChecksVersion>
-    <LoggingVersion>2.2.0</LoggingVersion>
+    <EF6Version>6.3.0</EF6Version>
+
+    <PollyVersion>7.1.1</PollyVersion>
+    <PollyContribVersion>1.0.0</PollyContribVersion>
+    <CastleCoreVersion>4.4.0</CastleCoreVersion>
+    <RuntimeLoaderVersion>4.3.0</RuntimeLoaderVersion>
+
+    <ExtensionsVersion>3.1.0</ExtensionsVersion>
+    <HealthChecksVersion>3.1.0</HealthChecksVersion>
+    <LoggingVersion>3.1.0</LoggingVersion>
+    <LightweightEmitVersion>4.7.0</LightweightEmitVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'netstandard2.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
     <EFCoreTestVersion>3.1.6</EFCoreTestVersion>
     <EF6Version>6.3.0</EF6Version>
@@ -79,9 +78,6 @@
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
-    <ExtensionsVersion>3.1.0</ExtensionsVersion>
-    <HealthChecksVersion>3.1.0</HealthChecksVersion>
-    <LoggingVersion>3.1.0</LoggingVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
@@ -91,6 +87,5 @@
     <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
     <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
-    <ExtensionsVersion>5.0.0</ExtensionsVersion>
   </PropertyGroup>
 </Project>

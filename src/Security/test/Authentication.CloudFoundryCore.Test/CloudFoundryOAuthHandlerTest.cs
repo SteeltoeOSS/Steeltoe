@@ -7,17 +7,13 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-#if !NETCOREAPP3_1 && !NET5_0
-using Newtonsoft.Json.Linq;
-#endif
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
-#if NETCOREAPP3_1 || NET5_0
 using System.Text.Json;
-#endif
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test
@@ -25,7 +21,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
     public class CloudFoundryOAuthHandlerTest
     {
         [Fact]
-        public async void ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
+        public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -56,7 +52,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void ExchangeCodeAsync_SendsTokenRequest_ReturnsErrorResponse()
+        public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsErrorResponse()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
@@ -117,13 +113,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             var testHandler = GetTestHandler(opts);
 
-#if NETCOREAPP3_1 || NET5_0
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
-#else
-            var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-            var tokens = OAuthTokenResponse.Success(payload);
-#endif
             var parameters = testHandler.GetTokenInfoRequestParameters(tokens);
             Assert.NotNull(parameters);
 
@@ -140,13 +131,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             };
             var testHandler = GetTestHandler(opts);
 
-#if NETCOREAPP3_1 || NET5_0
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
-#else
-            var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-            var tokens = OAuthTokenResponse.Success(payload);
-#endif
 
             var message = testHandler.GetTokenInfoRequestMessage(tokens);
             Assert.NotNull(message);
@@ -158,7 +144,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         }
 
         [Fact]
-        public async void CreateTicketAsync_SendsTokenInfoRequest_ReturnsValidTokenInfo()
+        public async Task CreateTicketAsync_SendsTokenInfoRequest_ReturnsValidTokenInfo()
         {
             var handler = new TestMessageHandler();
             var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
@@ -176,13 +162,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             var identity = new ClaimsIdentity();
 
-#if NETCOREAPP3_1 || NET5_0
             var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
             var tokens = OAuthTokenResponse.Success(payload);
-#else
-            var payload = JObject.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-            var tokens = OAuthTokenResponse.Success(payload);
-#endif
             var resp = await testHandler.TestCreateTicketAsync(identity, new AuthenticationProperties(), tokens);
 
             Assert.NotNull(handler.LastRequest);

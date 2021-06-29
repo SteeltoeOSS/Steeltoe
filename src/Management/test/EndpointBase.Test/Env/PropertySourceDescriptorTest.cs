@@ -33,7 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             };
             var propDesc = new PropertySourceDescriptor("name", properties);
             var result = Serialize(propDesc);
-            Assert.Equal("{\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}},\"name\":\"name\"}", result);
+            Assert.Equal("{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}", result);
         }
     }
 }

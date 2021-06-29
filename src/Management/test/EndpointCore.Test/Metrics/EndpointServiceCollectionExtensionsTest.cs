@@ -7,10 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Stats;
-using Steeltoe.Management.Census.Tags;
 using Steeltoe.Management.Endpoint.Test;
 using System;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using Xunit;
 
@@ -50,22 +49,16 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             Assert.NotNull(mgr);
             var hst = serviceProvider.GetService<IHostedService>();
             Assert.NotNull(hst);
-            var opts = serviceProvider.GetService<IMetricsOptions>();
+            var opts = serviceProvider.GetService<IMetricsObserverOptions>();
             Assert.NotNull(opts);
 
             var observers = serviceProvider.GetServices<IDiagnosticObserver>();
             var list = observers.ToList();
-            Assert.Equal(2, list.Count);
+            Assert.Single(list);
 
-            var polled = serviceProvider.GetServices<IPolledDiagnosticSource>();
+            var polled = serviceProvider.GetServices<EventListener>();
             var list2 = polled.ToList();
-            Assert.Single(list2);
-
-            var stats = serviceProvider.GetService<IStats>();
-            Assert.NotNull(stats);
-
-            var tags = serviceProvider.GetService<ITags>();
-            Assert.NotNull(tags);
+            Assert.Equal(2, list2.Count);
 
             var ep = serviceProvider.GetService<MetricsEndpoint>();
             Assert.NotNull(ep);

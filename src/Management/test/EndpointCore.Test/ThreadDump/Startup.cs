@@ -20,13 +20,18 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRouting();
             services.AddCloudFoundryActuator(Configuration);
             services.AddThreadDumpActuator(Configuration);
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseThreadDumpActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<ThreadDumpEndpoint_v2>();
+            });
         }
     }
 }

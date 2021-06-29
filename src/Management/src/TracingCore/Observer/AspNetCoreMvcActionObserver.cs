@@ -6,10 +6,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System.Threading;
 
 namespace Steeltoe.Management.Tracing.Observer
@@ -21,14 +20,14 @@ namespace Steeltoe.Management.Tracing.Observer
 
         private const string OBSERVER_NAME = "AspNetCoreMvcActionDiagnosticObserver";
 
-        private static readonly AsyncLocal<SpanContext> ActiveValue = new AsyncLocal<SpanContext>();
+        private static readonly AsyncLocal<TelemetrySpan> ActiveValue = new AsyncLocal<TelemetrySpan>();
 
         public AspNetCoreMvcActionObserver(ITracingOptions options, ITracing tracing, ILogger<AspNetCoreMvcActionObserver> logger = null)
             : base(OBSERVER_NAME, options, tracing, logger)
         {
         }
 
-        protected internal SpanContext Active
+        protected internal TelemetrySpan Active
         {
             get
             {
@@ -89,29 +88,24 @@ namespace Steeltoe.Management.Tracing.Observer
             }
 
             var spanName = ExtractSpanName(descriptor);
-            var scope = Tracer.SpanBuilder(spanName).StartScopedSpan(out var span);
+            Tracer.StartActiveSpan(spanName, SpanKind.Server, out var span);
 
             span.PutMvcControllerClass(ExtractControllerName(descriptor))
-                .PutServerSpanKindAttribute()
                 .PutMvcControllerAction(ExtractActionName(descriptor));
 
-            ActiveValue.Value = new SpanContext(span, scope);
+            ActiveValue.Value = span;
         }
 
         protected internal virtual void HandleAfterActionEvent()
         {
-            var spanContext = ActiveValue.Value;
-            if (spanContext == null)
+            var span = ActiveValue.Value;
+            if (span == null)
             {
                 Logger?.LogDebug("HandleAfterActionEvent: Missing span context");
                 return;
             }
 
-            var scope = spanContext.ActiveScope;
-            if (scope != null)
-            {
-                scope.Dispose();
-            }
+            span.End();
 
             ActiveValue.Value = null;
         }

@@ -4,13 +4,11 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using Steeltoe.Management.EndpointCore.ContentNegotiation;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Loggers
@@ -19,29 +17,20 @@ namespace Steeltoe.Management.Endpoint.Loggers
     {
         private readonly RequestDelegate _next;
 
-        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IEnumerable<IManagementOptions> mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<LoggersEndpointMiddleware> logger = null)
+            : base(endpoint, mgmtOptions, logger)
         {
             _next = next;
         }
 
-        [Obsolete("Use newer constructor that passes in IManagementOptions instead")]
-        public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, ILogger<LoggersEndpointMiddleware> logger = null)
-            : base(endpoint, new List<HttpMethod> { HttpMethod.Get, HttpMethod.Post }, false, logger)
+        public Task Invoke(HttpContext context)
         {
-            _next = next;
-        }
+            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+            {
+                return HandleLoggersRequestAsync(context);
+            }
 
-        public async Task Invoke(HttpContext context)
-        {
-            if (RequestVerbAndPathMatch(context.Request.Method, context.Request.Path.Value))
-            {
-                await HandleLoggersRequestAsync(context).ConfigureAwait(false);
-            }
-            else
-            {
-                await _next(context).ConfigureAwait(false);
-            }
+            return Task.CompletedTask;
         }
 
         protected internal async Task HandleLoggersRequestAsync(HttpContext context)
@@ -60,7 +49,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
                 }
                 else
                 {
-                    paths.AddRange(_mgmtOptions.Select(opt => $"{opt.Path}/{_endpoint.Path}".Replace("//", "/")));
+                    paths.Add($"{_mgmtOptions.Path}/{_endpoint.Path}".Replace("//", "/"));
                 }
 
                 foreach (var path in paths.Distinct())

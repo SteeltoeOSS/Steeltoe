@@ -4,9 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
+using System.Runtime.InteropServices;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump
 {
@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         /// Adds components of the Thread Dump actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:dump)</param>
+        public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config = null)
         {
-            services.AddThreadDumpActuator(config, MediaTypeVersion.V1);
+            services.AddThreadDumpActuator(config, MediaTypeVersion.V2);
         }
 
         public static void AddThreadDumpActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
@@ -29,30 +29,23 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            var options = new ThreadDumpEndpointOptions(config);
+            services.AddActuatorManagementOptions(config);
+            services.AddThreadDumpActuatorServices(config, version);
+
             if (version == MediaTypeVersion.V1)
             {
-                services.TryAddSingleton<ThreadDumpEndpoint>();
+                services.AddActuatorEndpointMapping<ThreadDumpEndpoint>();
             }
             else
             {
-                if (options.Id == "dump")
-                {
-                    options.Id = "threaddump";
-                }
-
-                services.TryAddSingleton<ThreadDumpEndpoint_v2>();
+                services.AddActuatorEndpointMapping<ThreadDumpEndpoint_v2>();
             }
-
-            services.TryAddSingleton<IThreadDumpOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<IThreadDumper, ThreadDumper>();
         }
     }
 }

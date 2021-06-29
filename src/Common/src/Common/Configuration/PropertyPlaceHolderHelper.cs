@@ -20,6 +20,7 @@ namespace Steeltoe.Common.Configuration
     {
         private const string PREFIX = "${";
         private const string SUFFIX = "}";
+        private const string SIMPLE_PREFIX = "{";
         private const string SEPARATOR = "?";
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace Steeltoe.Common.Configuration
             // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
             foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(PREFIX) && e.Value.Contains(SUFFIX)))
             {
-                logger?.LogTrace("Found a property placeholder '{0}' to resolve for key '{1}", entry.Value, entry.Key);
+                logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
                 resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
             }
 
@@ -71,9 +72,14 @@ namespace Steeltoe.Common.Configuration
                 return property;
             }
 
+            var startIndex = property.IndexOf(PREFIX);
+            if (startIndex == -1)
+            {
+                return property;
+            }
+
             var result = new StringBuilder(property);
 
-            var startIndex = property.IndexOf(PREFIX);
             while (startIndex != -1)
             {
                 var endIndex = FindEndIndex(result, startIndex);
@@ -129,7 +135,7 @@ namespace Steeltoe.Common.Configuration
                         // previously resolved placeholder value.
                         propVal = ParseStringValue(propVal, config, visitedPlaceHolders);
                         result.Replace(startIndex, endIndex + SUFFIX.Length, propVal);
-                        logger?.LogDebug("Resolved placeholder '{0}'", placeholder);
+                        logger?.LogDebug("Resolved placeholder '{placeholder}'", placeholder);
                         startIndex = result.IndexOf(PREFIX, startIndex + propVal.Length);
                     }
                     else
@@ -167,7 +173,7 @@ namespace Steeltoe.Common.Configuration
                         return index;
                     }
                 }
-                else if (SubstringMatch(property, index, PREFIX))
+                else if (SubstringMatch(property, index, SIMPLE_PREFIX))
                 {
                     withinNestedPlaceholder++;
                     index += PREFIX.Length;
@@ -183,10 +189,14 @@ namespace Steeltoe.Common.Configuration
 
         private static bool SubstringMatch(StringBuilder str, int index, string substring)
         {
-            for (var j = 0; j < substring.Length; j++)
+            if (index + substring.Length > str.Length)
             {
-                var i = index + j;
-                if (i >= str.Length || str[i] != substring[j])
+                return false;
+            }
+
+            for (var i = 0; i < substring.Length; i++)
+            {
+                if (str[index + i] != substring[i])
                 {
                     return false;
                 }

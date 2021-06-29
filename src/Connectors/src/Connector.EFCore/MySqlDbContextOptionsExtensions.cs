@@ -4,12 +4,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
+namespace Steeltoe.Connector.MySql.EFCore
 {
     public static class MySqlDbContextOptionsExtensions
     {
@@ -187,7 +188,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
             else
             {
                 // If the server version wasn't passed in, use the EF Core lib to autodetect it (this is the part that creates an extra connection)
-                serverVersion ??= ConnectorHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new Type[] { typeof(string) }).Invoke(null, new[] { connection });
+                serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new Type[] { typeof(string) }).Invoke(null, new[] { connection });
                 useMethod = FindUseSqlMethod(extensionType, new Type[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
                 parms = new object[] { builder, connection, serverVersion, mySqlOptionsAction };
             }
@@ -197,7 +198,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore
                 throw new ConnectorException("Unable to find UseMySql extension, are you missing MySql EntityFramework Core assembly");
             }
 
-            var result = ConnectorHelpers.Invoke(useMethod, null, parms);
+            var result = ReflectionHelpers.Invoke(useMethod, null, parms);
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseMySql extension, connection: {0}", connection));

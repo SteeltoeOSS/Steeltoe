@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.Services
+namespace Steeltoe.Connector.Services
 {
     public class Tags
     {
@@ -29,22 +30,11 @@ namespace Steeltoe.CloudFoundry.Connector.Services
         {
         }
 
-        public string[] Values { get; internal protected set; }
+        public IEnumerable<string> Values { get; internal protected set; }
 
-        public bool ContainsOne(string[] tags)
+        public bool ContainsOne(IEnumerable<string> tags)
         {
-            if (tags != null && Values != null)
-            {
-                foreach (var value in Values)
-                {
-                    if (tags.Contains(value))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
+            return tags != null && Values != null && tags.Intersect(Values).Any();
         }
 
         public bool Contains(string tag)

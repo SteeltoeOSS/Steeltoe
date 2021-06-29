@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     public class OracleServiceInfoFactoryTest
     {
@@ -30,7 +30,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new OracleServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new OracleServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -74,7 +74,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new OracleServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new OracleServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
             };
             var factory = new OracleServiceInfoFactory();
             var info = factory.Create(s) as OracleServiceInfo;
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
             Assert.NotNull(info);
             Assert.Equal("oracleService", info.Id);
             Assert.Equal("7E1LxXnlH2hhlPVt", info.Password);

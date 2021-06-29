@@ -22,11 +22,17 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         {
             services.AddCloudFoundryActuator(Configuration);
             services.AddEnvActuator(Configuration);
+            services.AddRouting();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseEnvActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+                endpoints.Map<EnvEndpoint>();
+            });
         }
     }
 }

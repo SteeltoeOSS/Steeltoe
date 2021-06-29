@@ -3,27 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Metrics;
 using System;
+using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
     public class BaseTest : IDisposable
     {
-        public BaseTest()
-        {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ManagementOptions.SetInstance(null);
-#pragma warning restore CS0618 // Type or member is obsolete
-        }
-
         public virtual void Dispose()
         {
-#pragma warning disable CS0618 // Type or member is obsolete
-            ManagementOptions.SetInstance(null);
-#pragma warning restore CS0618 // Type or member is obsolete
             DiagnosticsManager.Instance.Dispose();
         }
 
@@ -35,23 +26,21 @@ namespace Steeltoe.Management.Endpoint.Test
 
         public string Serialize<T>(T value)
         {
-            return JsonConvert.SerializeObject(
+            return JsonSerializer.Serialize(
                 value,
-                GetSerializerSettings());
+                GetSerializerOptions());
         }
 
-        public JsonSerializer GetSerializer()
+        public JsonSerializerOptions GetSerializerOptions()
         {
-            return JsonSerializer.Create(GetSerializerSettings());
-        }
-
-        public JsonSerializerSettings GetSerializerSettings()
-        {
-            return new JsonSerializerSettings()
+            var options = new JsonSerializerOptions()
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IgnoreNullValues = true
             };
+            options.Converters.Add(new HealthConverter());
+            options.Converters.Add(new MetricsResponseConverter());
+            return options;
         }
     }
 }

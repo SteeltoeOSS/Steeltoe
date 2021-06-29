@@ -14,9 +14,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
     /// </summary>
     public static class ConfigServerConfigurationBuilderExtensionsCore
     {
-#if NETCOREAPP3_1
         [Obsolete("IHostingEnvironment is obsolete")]
-#endif
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
         {
             if (environment == null)
@@ -27,9 +25,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
         }
 
-#if NETCOREAPP3_1
         [Obsolete("IHostingEnvironment is obsolete")]
-#endif
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
         {
             if (environment == null)
@@ -40,7 +36,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
         }
 
-#if NETCOREAPP3_1
         public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment, ILoggerFactory logFactory = null)
         {
             if (environment == null)
@@ -50,7 +45,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
         }
-#endif
 
         private static IConfigurationBuilder DoAddConfigServer(IConfigurationBuilder configurationBuilder, string applicationName, string environmentName, ILoggerFactory logFactory)
         {

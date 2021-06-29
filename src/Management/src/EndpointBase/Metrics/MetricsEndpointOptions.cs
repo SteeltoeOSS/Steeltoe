@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
-    public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsOptions
+    public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointOptions
     {
         internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:metrics";
         internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
@@ -18,6 +18,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             Id = "metrics";
             IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
             EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+            ExactMatch = false;
         }
 
         public MetricsEndpointOptions(IConfiguration config)
@@ -37,6 +38,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
             {
                 EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
             }
+
+            ExactMatch = false;
         }
 
         public string IngressIgnorePattern { get; set; }

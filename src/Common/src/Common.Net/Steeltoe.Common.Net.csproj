@@ -1,9 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Common Library</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.Common.Net</AssemblyName>
-    <PackageId>Steeltoe.Common.Net</PackageId>
+    <Description>Steeltoe common library for network interaction</Description>
     <PackageTags>NET Core;NET Framework</PackageTags>
   </PropertyGroup>
 

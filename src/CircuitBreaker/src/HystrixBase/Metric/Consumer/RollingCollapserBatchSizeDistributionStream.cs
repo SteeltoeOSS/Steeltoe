@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using HdrHistogram;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common;
 using System;
 using System.Collections.Concurrent;
 

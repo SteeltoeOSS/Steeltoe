@@ -8,13 +8,18 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test
@@ -28,27 +33,34 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:heapdump:enabled"] = "true"
         };
 
         [Fact]
-        public async void HandleHeapDumpRequestAsync_ReturnsExpected()
+        public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
                 var opts = new HeapDumpEndpointOptions();
-                var mopts = TestHelper.GetManagementOptions(opts);
+                var mopts = new ActuatorManagementOptions();
+                mopts.EndpointOptions.Add(opts);
 
                 IServiceCollection serviceCollection = new ServiceCollection();
                 serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
                 var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-                var logger1 = loggerFactory.CreateLogger<HeapDumper>();
+                var logger1 = loggerFactory.CreateLogger<WindowsHeapDumper>();
                 var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
                 var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+                var logger4 = loggerFactory.CreateLogger<HeapDumper>();
 
-                var obs = new HeapDumper(opts, logger: logger1);
+                // WindowsHeapDumper should be used with .NET Core 3.1 on Windows. HeapDumper should be used with Linux and .NET 5 on Windows
+                var obs = (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
+                            ? new WindowsHeapDumper(opts, logger: logger1)
+                            : !Platform.IsOSX
+                                ? (IHeapDumper)new HeapDumper(opts, logger: logger4)
+                                : throw new InvalidOperationException("Unsupported Platfornm");
+
                 var ep = new HeapDumpEndpoint(opts, obs, logger2);
                 var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
                 var context = CreateRequest("GET", "/heapdump");
@@ -58,12 +70,16 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 await context.Response.Body.ReadAsync(buffer, 0, 1024);
                 Assert.NotEqual(0, buffer[0]);
             }
+            else
+            {
+                return;
+            }
         }
 
         [Fact]
-        public async void HeapDumpActuator_ReturnsExpectedData()
+        public async Task HeapDumpActuator_ReturnsExpectedData()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
                 var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
@@ -97,17 +113,13 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         }
 
         [Fact]
-        public void HeapDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public void RoutesByPathAndVerb()
         {
-            var opts = new HeapDumpEndpointOptions();
-            var mopts = TestHelper.GetManagementOptions(opts);
-            var obs = new HeapDumper(opts);
-            var ep = new HeapDumpEndpoint(opts, obs);
-            var middle = new HeapDumpEndpointMiddleware(null, ep, mopts);
-
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/cloudfoundryapplication/heapdump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/cloudfoundryapplication/badpath"));
+            var options = new HeapDumpEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/heapdump", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/heapdump", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

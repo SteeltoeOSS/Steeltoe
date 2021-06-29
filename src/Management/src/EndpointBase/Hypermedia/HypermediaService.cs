@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using System;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia
@@ -21,7 +20,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-#pragma warning disable CS0618 // Type or member is obsolete
         public Links Invoke(string baseUrl)
         {
             var endpointOptions = _mgmtOptions.EndpointOptions;
@@ -47,14 +45,17 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(opt.Id) && !links._links.ContainsKey(opt.Id))
+                    if (!string.IsNullOrEmpty(opt.Id))
                     {
-                        var linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
-                        links._links.Add(opt.Id, new Link(linkPath));
-                    }
-                    else if (links._links.ContainsKey(opt.Id))
-                    {
-                        _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        if (!links._links.ContainsKey(opt.Id))
+                        {
+                            var linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
+                            links._links.Add(opt.Id, new Link(linkPath));
+                        }
+                        else if (links._links.ContainsKey(opt.Id))
+                        {
+                            _logger?.LogWarning("Duplicate endpoint id detected: {DuplicateEndpointId}", opt.Id);
+                        }
                     }
                 }
             }
@@ -62,5 +63,4 @@ namespace Steeltoe.Management.Endpoint.Hypermedia
             return links;
         }
     }
-#pragma warning restore CS0618 // Type or member is obsolete
 }

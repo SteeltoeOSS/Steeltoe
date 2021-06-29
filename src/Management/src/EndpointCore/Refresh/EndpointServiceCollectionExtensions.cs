@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
 
@@ -16,24 +15,23 @@ namespace Steeltoe.Management.Endpoint.Refresh
         /// Adds components of the Refresh actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add actuator to</param>
-        /// <param name="config">Application configuration (this actuator looks for settings starting with management:endpoints:dump)</param>
-        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:refresh)</param>
+        public static void AddRefreshActuator(this IServiceCollection services, IConfiguration config = null)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            var options = new RefreshEndpointOptions(config);
-            services.TryAddSingleton<IRefreshOptions>(options);
-            services.RegisterEndpointOptions(options);
-            services.TryAddSingleton<RefreshEndpoint>();
+            services.AddActuatorManagementOptions(config);
+            services.AddRefreshActuatorServices(config);
+            services.AddActuatorEndpointMapping<RefreshEndpoint>();
         }
     }
 }

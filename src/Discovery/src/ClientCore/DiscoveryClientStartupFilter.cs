@@ -17,9 +17,9 @@ namespace Steeltoe.Discovery.Client
         {
             return app =>
             {
-                 next(app);
+                next(app);
 
-                 app.UseDiscoveryClient();
+                app.UseDiscoveryClient();
             };
         }
     }

@@ -66,12 +66,12 @@ namespace Steeltoe.Management.Endpoint
             return mgmtContext == null || endpoint.Options.IsExposed(mgmtContext);
         }
 
-        public static bool RequestVerbAndPathMatch(this IEndpoint endpoint, string httpMethod, string requestPath, IEnumerable<HttpMethod> allowedMethods, IEnumerable<IManagementOptions> mgmtOptions, bool exactMatch)
+        public static bool ShouldInvoke(this IEndpoint endpoint, IManagementOptions mgmtContext, ILogger logger = null)
         {
-            return endpoint.RequestPathMatches(requestPath, mgmtOptions, out var matchingMgmtContext, exactMatch)
-                && endpoint.IsEnabled(matchingMgmtContext)
-                && endpoint.IsExposed(matchingMgmtContext)
-                && allowedMethods.Any(m => m.Method.Equals(httpMethod));
+            var enabled = endpoint.IsEnabled(mgmtContext);
+            var exposed = endpoint.IsExposed(mgmtContext);
+            logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {mgmtContext.Path}, enabled: {enabled}, exposed: {exposed}");
+            return enabled && exposed;
         }
 
         public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> mgmtOptions, string requestPath, ILogger logger = null)
@@ -103,35 +103,27 @@ namespace Steeltoe.Management.Endpoint
             }
         }
 
-        private static bool RequestPathMatches(this IEndpoint endpoint, string requestPath, IEnumerable<IManagementOptions> mgmtOptions, out IManagementOptions matchingContext, bool exactMatch = true)
+        public static string GetContextPath(this IEndpointOptions options, IManagementOptions mgmtContext)
         {
-            matchingContext = null;
-            var endpointPath = endpoint.Path;
-
-            if (mgmtOptions == null)
+            var contextPath = mgmtContext.Path;
+            if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(options.Path))
             {
-                return exactMatch ? requestPath.Equals(endpointPath) : requestPath.StartsWith(endpointPath);
+                contextPath += "/";
             }
-            else
-            {
-                foreach (var context in mgmtOptions)
-                {
-                    var contextPath = context.Path;
-                    if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(endpointPath))
-                    {
-                        contextPath += "/";
-                    }
 
-                    var fullPath = contextPath + endpointPath;
-                    if (exactMatch ? requestPath.Equals(fullPath) : requestPath.StartsWith(fullPath))
-                    {
-                        matchingContext = context;
-                        return true;
-                    }
+            contextPath += options.Path;
+
+            if (!options.ExactMatch)
+            {
+                if (!contextPath.EndsWith("/"))
+                {
+                    contextPath += "/";
                 }
 
-                return false;
+                contextPath += "{**_}";
             }
+
+            return contextPath;
         }
     }
 }

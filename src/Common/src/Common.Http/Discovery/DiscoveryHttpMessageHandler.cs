@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.LoadBalancer;
+using Steeltoe.Discovery;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -24,9 +26,10 @@ namespace Steeltoe.Common.Http.Discovery
         /// </summary>
         /// <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration)</param>
         /// <param name="logger">ILogger for capturing logs from Discovery operations</param>
-        public DiscoveryHttpMessageHandler(IDiscoveryClient discoveryClient, ILogger<DiscoveryHttpClientHandler> logger = null)
+        /// <param name="loadBalancer">The load balancer to use</param>
+        public DiscoveryHttpMessageHandler(IDiscoveryClient discoveryClient, ILogger<DiscoveryHttpClientHandler> logger = null, ILoadBalancer loadBalancer = null)
         {
-            _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger);
+            _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger, loadBalancer);
             _logger = logger;
         }
 

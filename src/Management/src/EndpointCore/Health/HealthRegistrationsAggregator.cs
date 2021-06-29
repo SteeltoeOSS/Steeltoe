@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Concurrent;
@@ -17,14 +15,14 @@ namespace Steeltoe.Management.Endpoint.Health
 {
     public class HealthRegistrationsAggregator : DefaultHealthAggregator, IHealthRegistrationsAggregator
     {
-        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> healthServiceOptions, IServiceProvider serviceProvider)
+        public HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider)
         {
             // TODO: consider re-writing to run this call to base aggregator in parallel with below checks
             // get results from DefaultHealthAggregator first
             var aggregatorResult = Aggregate(contributors);
 
             // if there aren't any MSFT interfaced health checks, return now
-            if (healthServiceOptions == null)
+            if (healthCheckRegistrations == null)
             {
                 return aggregatorResult;
             }
@@ -33,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Health
             var keyList = new ConcurrentBag<string>(contributors.Select(x => x.Id));
 
             // run all HealthCheckRegistration checks in parallel
-            Parallel.ForEach(healthServiceOptions.CurrentValue.Registrations, registration =>
+            Parallel.ForEach(healthCheckRegistrations, registration =>
             {
                 var contributorName = GetKey(keyList, registration.Name);
                 HealthCheckResult healthCheckResult = null;

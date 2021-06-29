@@ -8,15 +8,19 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry
 {
+    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
     public class CloudFoundryActuatorStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
         {
             return app =>
             {
-                app.UseCloudFoundryActuator();
-
                 next(app);
+
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.Map<CloudFoundryEndpoint>();
+                });
             };
         }
     }

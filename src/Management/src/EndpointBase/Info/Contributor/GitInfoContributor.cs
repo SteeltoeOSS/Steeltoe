@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using System.IO;

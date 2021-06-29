@@ -18,11 +18,26 @@ namespace Steeltoe.Common
 
         public static bool IsNetCore => RuntimeInformation.FrameworkDescription.StartsWith(NET_CORE);
 
+        public static bool IsLinux => RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+
         public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
-        public static bool IsCloudFoundry => Environment.GetEnvironmentVariable(VCAP_APPLICATION) != null;
+        public static bool IsOSX => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
 
-        public static bool IsKubernetes => Environment.GetEnvironmentVariable(KUBERNETES_HOST) != null;
+        /// <summary>
+        /// Gets a value indicating whether or not the application appears to be running in a container
+        /// </summary>
+        public static bool IsContainerized => Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+
+        /// <summary>
+        /// Gets a value indicating whether or not the platform is Cloud Foundry by checking if VCAP_APPLICATION has been set
+        /// </summary>
+        public static bool IsCloudFoundry => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VCAP_APPLICATION));
+
+        /// <summary>
+        /// Gets a value indicating whether or not the platform is Kubernetes by checking if KUBERNETES_HOST has been set
+        /// </summary>
+        public static bool IsKubernetes => !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(KUBERNETES_HOST));
 
         /// <summary>
         /// Gets a value indicating whether an app is running on a cloud provider. Currently supports Cloud Foundry and Kubernetes

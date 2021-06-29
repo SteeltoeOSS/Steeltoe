@@ -35,7 +35,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             };
             var desc = new EnvironmentDescriptor(profiles, propDescs);
             var result = Serialize(desc);
-            Assert.Equal("{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}},\"name\":\"name\"}]}", result);
+            Assert.Equal("{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}]}", result);
         }
     }
 }

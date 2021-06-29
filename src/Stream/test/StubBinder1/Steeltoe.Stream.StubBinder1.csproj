@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>
+      Steeltoe Stream StubBinder1
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <RootNamespace>Steeltoe.Stream.StubBinder1</RootNamespace>
+    <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\StreamBase\Steeltoe.Stream.StreamBase.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -6,13 +6,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
-using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Redis
+namespace Steeltoe.Connector.Redis
 {
     public static class RedisCacheServiceCollectionExtensions
     {
@@ -23,11 +22,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// </summary>
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {
@@ -48,11 +46,10 @@ namespace Steeltoe.CloudFoundry.Connector.Redis
         /// <param name="services">Service collection to add to</param>
         /// <param name="config">App configuration</param>
         /// <param name="serviceName">Name of service to add</param>
-        /// <param name="logFactory">logger factory</param>
         /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist</param>
         /// <returns>IServiceCollection for chaining</returns>
         /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
-        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, ILoggerFactory logFactory = null, bool addSteeltoeHealthChecks = false)
+        public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, bool addSteeltoeHealthChecks = false)
         {
             if (services == null)
             {

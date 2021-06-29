@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CloudFoundry.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Services
+namespace Steeltoe.Connector.Services.Test
 {
     public class RedisServiceInfoTest
     {
@@ -63,7 +62,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
         [InlineData("rediss")]
         public void Constructor_CreatesExpected_WithSchema(string scheme)
         {
-            var uri = $"{scheme}://:joes_password@localhost:6380/";
+            _ = $"{scheme}://:joes_password@localhost:6380/";
             var redisInfo = new RedisServiceInfo("myId", scheme, "localhost", 1527, "joes_password");
 
             Assert.Equal("myId", redisInfo.Id);

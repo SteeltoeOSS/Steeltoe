@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -47,17 +48,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 out var protocolType,
                 out var prevValidator);
 
-            HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
+                return await _httpClient.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
                 HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
             }
-
-            return response;
         }
 
         /// <summary>
@@ -72,8 +70,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             if (response.IsSuccessStatusCode)
             {
                 _logger?.LogTrace("Successfully exchanged auth code for a token");
-#pragma warning disable CS0618 // Type or member is obsolete
-                var tokens = await response.Content.ReadAsJsonAsync<OpenIdTokenResponse>().ConfigureAwait(false);
+                var tokens = JsonSerializer.Deserialize<OpenIdTokenResponse>(await response.Content.ReadAsStringAsync());
 #pragma warning restore CS0618 // Type or member is obsolete
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
@@ -104,17 +101,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 
             HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out var protocolType, out var prevValidator);
 
-            HttpResponseMessage response;
             try
             {
-                response = await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
+                return await _httpClient.SendAsync(requestMessage).ConfigureAwait(false);
             }
             finally
             {
                 HttpClientHelper.RestoreCertificateValidation(_options.ValidateCertificates, protocolType, prevValidator);
             }
-
-            return response;
         }
 
         /// <summary>

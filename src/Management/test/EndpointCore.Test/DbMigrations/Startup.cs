@@ -8,7 +8,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using Steeltoe.Management.Endpoint.CloudFoundry;
-using Steeltoe.Management.EndpointBase.DbMigrations;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations.Test
 {
@@ -32,11 +31,17 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test
             helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
             helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
             services.AddSingleton(helper);
+            services.AddRouting();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            app.UseDbMigrationsActuator();
+            app.UseRouting();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+                endpoints.Map<DbMigrationsEndpoint>();
+            });
         }
     }
 }

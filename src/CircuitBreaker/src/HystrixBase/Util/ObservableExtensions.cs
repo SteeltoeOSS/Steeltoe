@@ -24,4 +24,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             return source.Finally(action);
         }
     }
-    }
+}

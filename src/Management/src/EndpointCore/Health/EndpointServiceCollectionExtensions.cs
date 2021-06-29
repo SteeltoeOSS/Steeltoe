@@ -5,8 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Steeltoe.Common.Availability;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using System;
@@ -20,20 +20,25 @@ namespace Steeltoe.Management.Endpoint.Health
         /// Adds components of the Health actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
-        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config)
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null)
         {
-            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), GetDefaultHealthContributors());
+            services.AddHealthActuator(config, new HealthRegistrationsAggregator(), DefaultHealthContributors);
         }
 
         /// <summary>
         /// Adds components of the Health actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
-        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="contributors">Contributors to application health</param>
-        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, params Type[] contributors)
+        public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null, params Type[] contributors)
         {
+            if (services is null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
             services.AddHealthActuator(config, new HealthRegistrationsAggregator(), contributors);
         }
 
@@ -41,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health
         /// Adds components of the Health actuator to Microsoft-DI
         /// </summary>
         /// <param name="services">Service collection to add health to</param>
-        /// <param name="config">Application configuration (this actuator looks for a settings starting with management:endpoints:health)</param>
+        /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health)</param>
         /// <param name="aggregator">Custom health aggregator</param>
         /// <param name="contributors">Contributors to application health</param>
         public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
@@ -51,6 +56,7 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(services));
             }
 
+            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config));
@@ -61,16 +67,15 @@ namespace Steeltoe.Management.Endpoint.Health
                 throw new ArgumentNullException(nameof(aggregator));
             }
 
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new ActuatorManagementOptions(config)));
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IManagementOptions>(new CloudFoundryManagementOptions(config)));
+            services.AddActuatorManagementOptions(config);
+            services.AddHealthActuatorServices(config);
 
-            var options = new HealthEndpointOptions(config);
-            services.TryAddSingleton<IHealthOptions>(options);
-            services.RegisterEndpointOptions(options);
             AddHealthContributors(services, contributors);
 
-            services.TryAddSingleton<IHealthAggregator>(aggregator);
+            services.TryAddSingleton(aggregator);
             services.TryAddScoped<HealthEndpointCore>();
+            services.AddActuatorEndpointMapping<HealthEndpointCore>();
+            services.TryAddSingleton<ApplicationAvailability>();
         }
 
         public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
@@ -84,12 +89,6 @@ namespace Steeltoe.Management.Endpoint.Health
             services.TryAddEnumerable(descriptors);
         }
 
-        internal static Type[] GetDefaultHealthContributors()
-        {
-            return new Type[]
-            {
-                typeof(DiskSpaceContributor)
-            };
-        }
+        internal static Type[] DefaultHealthContributors => new Type[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
     }
 }

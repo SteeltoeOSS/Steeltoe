@@ -2,11 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Connector;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.ConnectorBase.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.ConnectorCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.ConnectorAutofac.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.EFCore.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.Connector.EF6Core.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.CloudFoundry.GemFireConnector.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.Autoconfig.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.ConnectorBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.ConnectorCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.CloudFoundry.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.EFCore.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connector.EF6Core.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.GemFireConnector.Test")]
+[assembly: InternalsVisibleTo("External.Connector.Test")]
+[assembly: ServiceInfoFactoryAssembly]
+[assembly: ConnectionInfoAssembly]

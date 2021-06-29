@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CloudFoundry.Connector.Services;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
+using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Test.Services
+namespace Steeltoe.Connector.Services.Test
 {
     public class SsoServiceInfoFactoryTest
     {
@@ -16,7 +16,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             var s = new Service()
             {
                 Label = "p-identity",
-                Tags = System.Array.Empty<string>(),
+                Tags = Array.Empty<string>(),
                 Name = "mySSO",
                 Plan = "sso",
                 Credentials = new Credential()
@@ -27,7 +27,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                 }
             };
             var factory = new SsoServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -36,7 +36,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             var s = new Service()
             {
                 Label = "user-provided",
-                Tags = System.Array.Empty<string>(),
+                Tags = Array.Empty<string>(),
                 Name = "mySSO",
                 Credentials = new Credential()
                 {
@@ -46,7 +46,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                 }
             };
             var factory = new SsoServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
                 }
             };
             var factory = new SsoServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
@@ -79,7 +79,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             var s = new Service()
             {
                 Label = "p-identity",
-                Tags = System.Array.Empty<string>(),
+                Tags = Array.Empty<string>(),
                 Name = "mySSO",
                 Plan = "sso",
                 Credentials = new Credential()
@@ -104,7 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.Test.Services
             var s = new Service()
             {
                 Label = "user-provided",
-                Tags = System.Array.Empty<string>(),
+                Tags = Array.Empty<string>(),
                 Name = "mySSO",
                 Credentials = new Credential()
                 {

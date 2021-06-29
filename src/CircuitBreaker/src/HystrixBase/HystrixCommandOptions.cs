@@ -7,12 +7,6 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix
 {
-    public enum ExecutionIsolationStrategy
-    {
-        THREAD,
-        SEMAPHORE
-    }
-
     public class HystrixCommandOptions : HystrixBaseOptions, IHystrixCommandOptions
     {
         internal const int Default_MetricsRollingStatisticalWindow = 10000; // default => statisticalWindow: 10000 = 10 seconds (and default of 10 buckets so each bucket is 1 second)

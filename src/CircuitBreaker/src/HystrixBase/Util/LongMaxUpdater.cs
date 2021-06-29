@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
@@ -27,10 +27,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        public long Max
-        {
-            get { return _value.Value;  }
-        }
+        public long Max => _value.Value;
 
         public void Reset()
         {

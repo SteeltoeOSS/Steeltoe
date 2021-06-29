@@ -31,26 +31,31 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
         [Fact]
         public void AddHeapDumpActuator_AddsCorrectServices()
         {
-            var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
+            if (EndpointServiceCollectionExtensions.IsHeapDumpSupported())
             {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:heapdump:enabled"] = "false"
-            };
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
-            var config = configurationBuilder.Build();
+                var services = new ServiceCollection();
+                var appSettings = new Dictionary<string, string>()
+                {
+                    ["management:endpoints:enabled"] = "false",
+                    ["management:endpoints:path"] = "/cloudfoundryapplication",
+                    ["management:endpoints:heapdump:enabled"] = "false",
+                    ["management:endpoints:heapdump:HeapDumpType"] = "Normal"
+                };
+                var configurationBuilder = new ConfigurationBuilder();
+                configurationBuilder.AddInMemoryCollection(appSettings);
+                var config = configurationBuilder.Build();
 
-            services.AddHeapDumpActuator(config);
+                services.AddHeapDumpActuator(config);
 
-            var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IHeapDumpOptions>();
-            Assert.NotNull(options);
-            var repo = serviceProvider.GetService<IHeapDumper>();
-            Assert.NotNull(repo);
-            var ep = serviceProvider.GetService<HeapDumpEndpoint>();
-            Assert.NotNull(ep);
+                var serviceProvider = services.BuildServiceProvider();
+                var options = serviceProvider.GetService<IHeapDumpOptions>();
+                Assert.NotNull(options);
+                Assert.Equal("Normal", options.HeapDumpType);
+                var repo = serviceProvider.GetService<IHeapDumper>();
+                Assert.NotNull(repo);
+                var ep = serviceProvider.GetService<HeapDumpEndpoint>();
+                Assert.NotNull(ep);
+            }
         }
     }
 }

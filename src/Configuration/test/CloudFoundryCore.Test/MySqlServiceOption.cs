@@ -2,11 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
+
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
-    public class MySqlServiceOption : AbstractServiceOptions
+    public class MySqlServiceOption : CloudFoundryServicesOptions
     {
         public MySqlServiceOption()
+            : base()
+        {
+        }
+
+        public MySqlServiceOption(IConfiguration config)
+            : base(config)
         {
         }
 

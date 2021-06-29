@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  
+  <PropertyGroup>
+    <Description>
+      Steeltoe Stream Abstractions
+      **PLEASE NOTE** This package is experimental and is not production-ready.
+    </Description>
+    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <RootNamespace>Steeltoe.Stream</RootNamespace>
+    <AssemblyName>Steeltoe.Stream.Abstractions</AssemblyName>
+    <PackageId>Steeltoe.Stream.Abstractions</PackageId>
+    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
+  </PropertyGroup>
+  
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Messaging\src\Abstractions\Steeltoe.Messaging.Abstractions.csproj" />
+  </ItemGroup>
+</Project>

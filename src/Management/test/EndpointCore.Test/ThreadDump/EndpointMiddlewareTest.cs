@@ -7,13 +7,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump.Test
@@ -27,21 +30,22 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
             ["Logging:LogLevel:Pivotal"] = "Information",
             ["Logging:LogLevel:Steeltoe"] = "Information",
             ["management:endpoints:enabled"] = "true",
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:dump:enabled"] = "true",
         };
 
         [Fact]
-        public async void HandleThreadDumpRequestAsync_ReturnsExpected()
+        public async Task HandleThreadDumpRequestAsync_ReturnsExpected()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var opts = new ThreadDumpEndpointOptions();
-                var mopts = TestHelper.GetManagementOptions(opts);
 
-                var obs = new ThreadDumper(opts);
+                var mgmtOptions = new ActuatorManagementOptions();
+                mgmtOptions.EndpointOptions.Add(opts);
+
+                ThreadDumper obs = new ThreadDumper(opts);
                 var ep = new ThreadDumpEndpoint(opts, obs);
-                var middle = new ThreadDumpEndpointMiddleware(null, ep, mopts);
+                var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
                 var context = CreateRequest("GET", "/dump");
                 await middle.HandleThreadDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -53,12 +57,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         }
 
         [Fact]
-        public async void ThreadDumpActuator_ReturnsExpectedData()
+        public async Task ThreadDumpActuator_ReturnsExpectedData()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (Platform.IsWindows)
             {
                 var builder = new WebHostBuilder()
-                .UseStartup<Startup>()
+                .UseStartup<StartupV1>()
                 .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
                 .ConfigureLogging((webhostContext, loggingBuilder) =>
                 {
@@ -79,23 +83,39 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
         }
 
         [Fact]
-        public void ThreadDumpEndpointMiddleware_PathAndVerbMatching_ReturnsExpected()
+        public async Task ThreadDumpActuatorv2_ReturnsExpectedData()
         {
-            var actOptions = new ActuatorManagementOptions()
+            if (Platform.IsWindows)
             {
-                Path = "/",
-                Exposure = new Exposure { Include = new List<string> { "*" } }
-            };
+                var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(AppSettings))
+                .ConfigureLogging((webhostContext, loggingBuilder) =>
+                {
+                    loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                    loggingBuilder.AddDynamicConsole();
+                });
 
-            var opts = new ThreadDumpEndpointOptions();
-            actOptions.EndpointOptions.Add(opts);
-            var obs = new ThreadDumper(opts);
-            var ep = new ThreadDumpEndpoint(opts, obs);
-            var middle = new ThreadDumpEndpointMiddleware(null, ep, new List<IManagementOptions> { actOptions });
+                using var server = new TestServer(builder);
+                var client = server.CreateClient();
+                var result = await client.GetAsync("http://localhost/cloudfoundryapplication/threaddump");
+                Assert.Equal(HttpStatusCode.OK, result.StatusCode);
+                var json = await result.Content.ReadAsStringAsync();
+                Assert.NotNull(json);
+                Assert.NotEqual("{}", json);
+                Assert.StartsWith("{", json);
+                Assert.EndsWith("}", json);
+            }
+        }
 
-            Assert.True(middle.RequestVerbAndPathMatch("GET", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("PUT", "/dump"));
-            Assert.False(middle.RequestVerbAndPathMatch("GET", "/badpath"));
+        [Fact]
+        public void RoutesByPathAndVerb()
+        {
+            var options = new ThreadDumpEndpointOptions();
+            Assert.True(options.ExactMatch);
+            Assert.Equal("/actuator/dump", options.GetContextPath(new ActuatorManagementOptions()));
+            Assert.Equal("/cloudfoundryapplication/dump", options.GetContextPath(new CloudFoundryManagementOptions()));
+            Assert.Null(options.AllowedVerbs);
         }
 
         private HttpContext CreateRequest(string method, string path)

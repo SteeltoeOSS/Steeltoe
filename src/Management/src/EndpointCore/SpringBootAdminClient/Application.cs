@@ -2,37 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
     internal class Application
     {
-        [JsonProperty("name")]
+        [JsonPropertyName("name")]
         public string Name { get; set; }
 
-        [JsonProperty("managementUrl")]
+        [JsonPropertyName("managementUrl")]
         public Uri ManagementUrl { get; set; }
 
-        [JsonProperty("healthUrl")]
+        [JsonPropertyName("healthUrl")]
         public Uri HealthUrl { get; set; }
 
-        [JsonProperty("serviceUrl")]
+        [JsonPropertyName("serviceUrl")]
         public Uri ServiceUrl { get; set; }
 
-        [JsonProperty("metadata")]
-        public Metadata Metadata { get; set; }
-    }
-
-#pragma warning disable SA1402 // File may only contain a single type
-    internal class Metadata
-#pragma warning restore SA1402 // File may only contain a single type
-    {
-        [JsonProperty("startup")]
-        public DateTimeOffset Startup { get; set; }
+        [JsonPropertyName("metadata")]
+        public Dictionary<string, object> Metadata { get; set; }
     }
 
 #pragma warning disable SA1402 // File may only contain a single type

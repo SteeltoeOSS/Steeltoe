@@ -3,13 +3,14 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
+using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Info
 {
-    public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>
+    public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoEndpoint
     {
         private readonly IList<IInfoContributor> _contributors;
         private readonly ILogger<InfoEndpoint> _logger;

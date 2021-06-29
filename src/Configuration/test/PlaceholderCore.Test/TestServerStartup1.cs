@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.PlaceholderCore.Test
+namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 {
     public class TestServerStartup1
     {

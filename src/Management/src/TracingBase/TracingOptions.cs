@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Common;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 
 namespace Steeltoe.Management.Tracing
@@ -12,11 +12,11 @@ namespace Steeltoe.Management.Tracing
     public class TracingOptions : ITracingOptions
     {
         internal const string CONFIG_PREFIX = "management:tracing";
-        internal const string SPRING_APPLICATION_PREFIX = "spring:application";
         internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
         internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
+        private IApplicationInstanceInfo _applicationInstanceInfo;
 
-        public TracingOptions(string defaultName, IConfiguration config)
+        public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
         {
             if (config == null)
             {
@@ -29,10 +29,7 @@ namespace Steeltoe.Management.Tracing
                 section.Bind(this);
             }
 
-            if (string.IsNullOrEmpty(Name))
-            {
-                Name = GetApplicationName(defaultName, config);
-            }
+            _applicationInstanceInfo = appInfo;
 
             if (string.IsNullOrEmpty(IngressIgnorePattern))
             {
@@ -49,7 +46,7 @@ namespace Steeltoe.Management.Tracing
         {
         }
 
-        public string Name { get; set; }
+        public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, CONFIG_PREFIX + ":name");
 
         public string IngressIgnorePattern { get; set; }
 
@@ -68,35 +65,5 @@ namespace Steeltoe.Management.Tracing
         public bool NeverSample { get; set; }
 
         public bool UseShortTraceIds { get; set; } = true;
-
-        internal string GetApplicationName(string defaultName, IConfiguration config)
-        {
-            var section = config.GetSection(CloudFoundryApplicationOptions.CONFIGURATION_PREFIX);
-            if (section != null)
-            {
-                var appOptions = new CloudFoundryApplicationOptions(section);
-                if (!string.IsNullOrEmpty(appOptions.Name))
-                {
-                    return appOptions.Name;
-                }
-            }
-
-            section = config.GetSection(SPRING_APPLICATION_PREFIX);
-            if (section != null)
-            {
-                var name = section["name"];
-                if (!string.IsNullOrEmpty(name))
-                {
-                    return name;
-                }
-            }
-
-            if (!string.IsNullOrEmpty(defaultName))
-            {
-                return defaultName;
-            }
-
-            return "Unknown";
-        }
     }
 }

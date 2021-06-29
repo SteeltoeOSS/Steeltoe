@@ -4,11 +4,10 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -274,7 +273,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test
 
         [Fact]
         [Trait("Category", "FlakyOnHostedAgents")]
-        public async void TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
+        public async Task TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
         {
             var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");
             var latch = new CountdownEvent(1);

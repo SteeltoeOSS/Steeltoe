@@ -5,7 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;

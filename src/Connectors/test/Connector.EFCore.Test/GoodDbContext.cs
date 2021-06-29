@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Steeltoe.CloudFoundry.Connector.EFCore.Test
+namespace Steeltoe.Connector.EFCore.Test
 {
     internal class GoodDbContext : DbContext
     {

@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenCensus.Common;
-using OpenCensus.Trace;
-using OpenCensus.Trace.Propagation;
+using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
-using Steeltoe.Management.Census.Trace;
+using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
 using System.Text.RegularExpressions;
 
@@ -17,9 +16,9 @@ namespace Steeltoe.Management.Tracing.Observer
     {
         protected ITracing Tracing { get; }
 
-        protected ITextFormat Propagation { get; }
+        protected ITextFormat TextFormat { get; }
 
-        protected ITracer Tracer { get; }
+        protected Tracer Tracer { get; }
 
         protected ITracingOptions Options { get; }
 
@@ -30,7 +29,7 @@ namespace Steeltoe.Management.Tracing.Observer
         {
             Options = options;
             Tracing = tracing;
-            Propagation = tracing.PropagationComponent.TextFormat;
+            TextFormat = tracing.TextFormat;
             Tracer = tracing.Tracer;
             PathMatcher = new Regex(options.EgressIgnorePattern);
         }
@@ -60,28 +59,11 @@ namespace Steeltoe.Management.Tracing.Observer
             return string.Empty;
         }
 
-        protected internal ISpan GetCurrentSpan()
+        protected internal TelemetrySpan GetCurrentSpan()
         {
             var span = Tracer.CurrentSpan;
-            if (span.Context == OpenCensus.Trace.SpanContext.Invalid)
-            {
-                return null;
-            }
 
-            return span;
-        }
-
-        public class SpanContext
-        {
-            public SpanContext(ISpan active, IScope activeScope)
-            {
-                Active = active;
-                ActiveScope = activeScope;
-            }
-
-            public ISpan Active { get; }
-
-            public IScope ActiveScope { get; }
+            return span.Context.IsValid ? span : null;
         }
     }
 }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
     public class PlaceholderResolverProviderTest
     {
         [Fact]
-        public void Constructor__ThrowsIfConfigNull()
+        public void Constructor_ThrowsIfConfigNull()
         {
             // Arrange
             IConfiguration configuration = null;
@@ -27,7 +26,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         }
 
         [Fact]
-        public void Constructor__ThrowsIfListIConfigurationProviderNull()
+        public void Constructor_ThrowsIfListIConfigurationProviderNull()
         {
             // Arrange
             IList<IConfigurationProvider> providers = null;
@@ -127,7 +126,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("nokeyvalue", val);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void GetReloadToken_ReturnsExpected_NotifyChanges()
         {
             // Arrange
@@ -211,7 +212,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             Assert.Equal("value1", holder.Configuration["key1"]);
         }
 
+        // Mac issue https://github.com/dotnet/runtime/issues/30056
         [Fact]
+        [Trait("Category", "SkipOnMacOS")]
         public void Load_ReloadsConfiguration()
         {
             // Arrange

@@ -4,12 +4,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
+namespace Steeltoe.Connector.Oracle.EFCore
 {
     public static class OracleDbContextOptionsExtensions
     {
@@ -103,7 +104,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle.EFCore
                 throw new ConnectorException("Unable to find UseOracle extension, are you missing Oracle EntityFramework Core assembly");
             }
 
-            var result = ConnectorHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { optionsBuilder, connection, oracleOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseOracle extension, connection: {0}", connection));

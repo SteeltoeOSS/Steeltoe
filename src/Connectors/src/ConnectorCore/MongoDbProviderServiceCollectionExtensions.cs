@@ -6,12 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.Services;
 using System;
 using System.Linq;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb
+namespace Steeltoe.Connector.MongoDb
 {
     public static class MongoDbProviderServiceCollectionExtensions
     {
@@ -85,7 +86,7 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb
                 services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new MongoDbHealthContributor(clientFactory, ctx.GetService<ILogger<MongoDbHealthContributor>>()), ServiceLifetime.Singleton));
             }
 
-            var mongoInfo = ConnectorHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);
+            var mongoInfo = ReflectionHelpers.FindType(MongoDbTypeLocator.Assemblies, MongoDbTypeLocator.MongoConnectionInfo);
             var urlFactory = new MongoDbConnectorFactory(info, mongoOptions, mongoInfo);
             services.Add(new ServiceDescriptor(mongoInfo, urlFactory.Create, contextLifetime));
         }

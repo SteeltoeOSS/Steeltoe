@@ -4,7 +4,7 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.CloudFoundry.Connector.Oracle.EF6.Test
+namespace Steeltoe.Connector.Oracle.EF6.Test
 {
     public class BadOracleDbContext : DbContext
     {

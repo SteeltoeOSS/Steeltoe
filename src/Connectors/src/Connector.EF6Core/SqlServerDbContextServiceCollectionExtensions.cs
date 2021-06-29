@@ -4,11 +4,10 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
+namespace Steeltoe.Connector.SqlServer.EF6
 {
     public static class SqlServerDbContextServiceCollectionExtensions
     {
@@ -19,9 +18,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
         /// <param name="services">Service Collection</param>
         /// <param name="config">Application Configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">Logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {
@@ -47,9 +45,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
         /// <param name="config">Application Configuration</param>
         /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <param name="logFactory">Logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
         {
             if (services == null)
             {

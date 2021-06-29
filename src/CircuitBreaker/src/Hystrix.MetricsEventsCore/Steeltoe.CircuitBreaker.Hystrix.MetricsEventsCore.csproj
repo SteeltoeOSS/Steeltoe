@@ -1,10 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe Neflix Hystrix Metrics Event Stream ASP.NET Core</Description>
-    <TargetFrameworks>netstandard2.0;netcoreapp3.1</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore</PackageId>
-    <PackageTags>ASPNET Core;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <PackageTags>aspnetcore;Circuit Breaker;Spring;Spring Cloud;Spring Cloud Hystrix;Hystrix</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -14,11 +12,8 @@
     <ProjectReference Include="..\HystrixBase\Steeltoe.CircuitBreaker.HystrixBase.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 
   <ItemGroup>

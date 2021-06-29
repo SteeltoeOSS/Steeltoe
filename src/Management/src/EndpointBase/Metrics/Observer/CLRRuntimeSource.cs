@@ -11,6 +11,7 @@ using System.Threading;
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
     // Note: This class to be removed when xplat in-process CLR events are supported.
+    [Obsolete("Use EventListeners instead")]
     public class CLRRuntimeSource : IPolledDiagnosticSource
     {
         public struct HeapMetrics

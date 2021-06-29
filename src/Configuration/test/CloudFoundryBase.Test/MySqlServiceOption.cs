@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 {
-    public class MySqlServiceOption : AbstractServiceOptions
+    public class MySqlServiceOption : CloudFoundryServicesOptions
     {
         public MySqlServiceOption()
         {

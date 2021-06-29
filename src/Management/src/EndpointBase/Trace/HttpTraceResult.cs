@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Trace
 {
@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         private readonly List<TraceResult> _list;
 
-        [JsonProperty("traces")]
+        [JsonPropertyName("traces")]
         public List<HttpTrace> Traces { get; }
 
         public HttpTraceResult(List<HttpTrace> traces)
@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Endpoint.Trace
     {
         public long Timestamp { get; }
 
-        public Principal Principal { get;  }
+        public Principal Principal { get; }
 
         public Session Session { get; }
 

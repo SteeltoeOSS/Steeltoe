@@ -50,9 +50,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
             var serviceProvider = services.BuildServiceProvider();
             var options = serviceProvider.GetService<ITraceOptions>();
             Assert.NotNull(options);
-            var repo = serviceProvider.GetService<ITraceRepository>();
-            Assert.NotNull(repo);
-            var ep = serviceProvider.GetService<TraceEndpoint>();
+            var ep = serviceProvider.GetService<HttpTraceEndpoint>();
             Assert.NotNull(ep);
             listener.Dispose();
         }

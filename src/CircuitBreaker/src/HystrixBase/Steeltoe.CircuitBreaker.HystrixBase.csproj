@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>Steeltoe Neflix Hystrix Client - Base Package</Description>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <AssemblyName>Steeltoe.CircuitBreaker.HystrixBase</AssemblyName>
-    <PackageId>Steeltoe.CircuitBreaker.HystrixBase</PackageId>
+    <RootNamespace>Steeltoe.CircuitBreaker.Hystrix</RootNamespace>
+    <Description>An implementation of Neflix's Hystrix, for .NET</Description>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
   </PropertyGroup>
 
@@ -13,12 +12,12 @@
   <ItemGroup>
     <PackageReference Include="HdrHistogram" Version="$(HdrHistogramVersion)" />
     <PackageReference Include="Newtonsoft.Json" Version="$(JsonNetVersion)" />
-    <PackageReference Include="System.Reactive" Version="$(ReactiveVersion)" />
-    <PackageReference Include="System.Reactive.Observable.Aliases" Version="$(ReactiveVersion)" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Abstractions\Steeltoe.CircuitBreaker.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\Abstractions\Steeltoe.Discovery.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

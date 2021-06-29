@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Mappings
 {
@@ -46,13 +46,13 @@ namespace Steeltoe.Management.Endpoint.Mappings
             Handler = CreateHandlerString(routeHandler);
         }
 
-        [JsonProperty("handler")]
+        [JsonPropertyName("handler")]
         public string Handler { get; }
 
-        [JsonProperty("predicate")]
+        [JsonPropertyName("predicate")]
         public string Predicate { get; }
 
-        [JsonProperty("details")]
+        [JsonPropertyName("details")]
         public object Details { get; } // Always null for .NET
 
         private string CreateHandlerString(MethodInfo actionHandlerMethod)

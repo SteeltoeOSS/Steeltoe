@@ -4,12 +4,13 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Steeltoe.CloudFoundry.Connector.EFCore;
-using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.Reflection;
+using Steeltoe.Connector.EFCore;
+using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
+namespace Steeltoe.Connector.SqlServer.EFCore
 {
     public static class SqlServerDbContextOptionsExtensions
     {
@@ -137,7 +138,7 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EFCore
                 throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
             }
 
-            var result = ConnectorHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
+            var result = ReflectionHelpers.Invoke(useMethod, null, new object[] { builder, connection, sqlServerOptionsAction });
             if (result == null)
             {
                 throw new ConnectorException(string.Format("Failed to invoke UseSqlServer extension, connection: {0}", connection));

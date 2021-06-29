@@ -4,16 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using Steeltoe.CloudFoundry.Connector.Test;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
+namespace Steeltoe.Connector.MongoDb.Test
 {
     public class MongoDbProviderServiceCollectionExtensionsTest
     {
@@ -182,6 +179,31 @@ namespace Steeltoe.CloudFoundry.Connector.MongoDb.Test
             Assert.Contains(new MongoServerAddress("d5584e9-mongodb-1.node.dc1.a9s-mongodb-consul", 27017), connSettings.Servers);
             Assert.Contains(new MongoServerAddress("d5584e9-mongodb-2.node.dc1.a9s-mongodb-consul", 27017), connSettings.Servers);
             Assert.Equal("a9s-brk-usr-e74b9538ae5dcf04500eb0fc18907338d4610f30", connSettings.Credential.Username);
+        }
+
+        [Fact]
+        public void AddMongoClient_With_UPS_VCAPs_AddsMongoClient()
+        {
+            // Arrange
+            IServiceCollection services = new ServiceCollection();
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.Single_UserProvidedService);
+            var builder = new ConfigurationBuilder();
+            builder.AddCloudFoundry();
+            var config = builder.Build();
+
+            // Act
+            services.AddMongoClient(config);
+            var service = services.BuildServiceProvider().GetService<MongoClient>();
+            var serviceByInterface = services.BuildServiceProvider().GetService<IMongoClient>();
+
+            // Assert
+            Assert.NotNull(service);
+            Assert.NotNull(serviceByInterface);
+            var connSettings = service.Settings;
+            Assert.Equal(28000, connSettings.Server.Port);
+            Assert.Equal("host", connSettings.Server.Host);
+            Assert.Equal("user", connSettings.Credential.Username);
         }
 
         [Fact]

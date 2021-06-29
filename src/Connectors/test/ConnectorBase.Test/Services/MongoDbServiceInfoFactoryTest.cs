@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.Extensions.Configuration;
 using Xunit;
 
-namespace Steeltoe.CloudFoundry.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test
 {
     public class MongoDbServiceInfoFactoryTest
     {
@@ -29,7 +29,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new MongoDbServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -52,7 +52,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new MongoDbServiceInfoFactory();
-            Assert.True(factory.Accept(s));
+            Assert.True(factory.Accepts(s));
         }
 
         [Fact]
@@ -76,7 +76,7 @@ namespace Steeltoe.CloudFoundry.Connector.Services.Test
                 }
             };
             var factory = new MongoDbServiceInfoFactory();
-            Assert.False(factory.Accept(s));
+            Assert.False(factory.Accepts(s));
         }
 
         [Fact]
