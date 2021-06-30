@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
@@ -1186,6 +1187,84 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             public Uri Uri { get; private set; }
 
             public IDictionary<string, string> Metadata { get; private set; }
+        }
+
+        [Fact]
+        public void Reload_And_Bind_Without_Throwing_Exception()
+        {
+            // Arrange
+            var environment = @"
+                {
+                    ""name"": ""testname"",
+                    ""profiles"": [""Production""],
+                    ""label"": ""testlabel"",
+                    ""version"": ""testversion"",
+                    ""propertySources"": [ 
+                        { 
+                            ""name"": ""source"",
+                            ""source"": {
+                                ""name"": ""my-app"",
+                                ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                            }
+                        }
+                    ]
+                }";
+
+            TestConfigServerStartup.Reset();
+            TestConfigServerStartup.Response = environment;
+            var hostingEnvironment = HostingHelpers.GetHostingEnvironment();
+            var hostBuilder = new WebHostBuilder()
+                .UseStartup<TestConfigServerStartup>()
+                .UseEnvironment(hostingEnvironment.EnvironmentName);
+
+            var settings = new ConfigServerClientSettings
+            {
+                Uri = "http://localhost:8888",
+                Name = "myName"
+            };
+
+            var server = new TestServer(hostBuilder)
+            {
+                BaseAddress = new Uri(settings.Uri)
+            };
+
+            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+
+            var configurationBuilder = new ConfigurationBuilder();
+
+            configurationBuilder.Add(new TestConfigServerConfigurationSource(provider));
+
+            var configuration = configurationBuilder.Build();
+
+            // Act
+            TestOptions options = null;
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+            void ReloadLoop()
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    configuration.Reload();
+                }
+            }
+
+            _ = Task.Run(ReloadLoop);
+
+            while (!cts.IsCancellationRequested)
+            {
+                options = configuration.Get<TestOptions>();
+            }
+
+            // Assert
+            Assert.Equal("my-app", options.Name);
+            Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
+        }
+
+        private sealed class TestOptions
+        {
+            public string Name { get; set; }
+
+            public string Version { get; set; }
         }
     }
 }
