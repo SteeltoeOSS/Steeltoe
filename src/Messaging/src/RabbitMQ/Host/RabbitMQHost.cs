@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host
 {
-    public sealed class RabbitHost : IHost
+    public sealed class RabbitMQHost : IHost
     {
         public static IHostBuilder CreateDefaultBuilder() =>
-            new RabbitHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
+            new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
 
         public static IHostBuilder CreateDefaultBuilder(string[] args) =>
-            new RabbitHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+            new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
 
         public IServiceProvider Services => _host.Services;
 
         private readonly IHost _host;
 
-        public RabbitHost(IHost host)
+        public RabbitMQHost(IHost host)
         {
             _host = host;
         }
