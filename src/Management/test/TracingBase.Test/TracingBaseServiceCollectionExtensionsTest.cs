@@ -27,7 +27,6 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void AddDistributedTracing_ConfiguresExpectedDefaults()
         {
-            Assert.Equal("OpenTelemetry.Context.Propagation.NoopTextMapPropagator", Propagators.DefaultTextMapPropagator.GetType().FullName);
             var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
             var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
