@@ -19,6 +19,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
+    [Obsolete]
     public class PrometheusEndpointMiddlewareTest : BaseTest
     {
         [Fact]

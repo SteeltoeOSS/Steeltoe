@@ -7,9 +7,11 @@ using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using Steeltoe.Management.OpenTelemetry.Stats;
+using System;
 
 namespace Steeltoe.Management.EndpointBase.Test.Metrics
 {
+    [Obsolete]
     public class TestOpenTelemetryMetrics : IStats
     {
         public TestOpenTelemetryMetrics()

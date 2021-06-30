@@ -18,6 +18,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetry\Steeltoe.OpenTelemetry.csproj" PrivateAssets="all" />
   </ItemGroup>
 </Project>

@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics.Export;
+using System;
 using System.Collections.Generic;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class ProcessedMetric<T> : Metric<T>
     {
         public ProcessedMetric(

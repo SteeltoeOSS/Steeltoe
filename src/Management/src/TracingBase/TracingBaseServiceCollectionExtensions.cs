@@ -13,6 +13,7 @@ using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing
@@ -59,7 +60,8 @@ namespace Steeltoe.Management.Tracing
 
                     if (traceOpts.PropagationType.Equals("B3", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        Sdk.SetDefaultTextMapPropagator(new B3Propagator(traceOpts.SingleB3Header));
+                        var propagators = new List<TextMapPropagator> { new B3Propagator(traceOpts.SingleB3Header), new BaggagePropagator() };
+                        Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
                     }
 
                     // To Discuss: Should these remain Steeltoe options or downstream set directly?

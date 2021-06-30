@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [System.Obsolete]
     public class EventCounterListenerTest : BaseTest
     {
         [Fact]

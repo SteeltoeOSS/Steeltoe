@@ -7,6 +7,7 @@ using System;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
         private readonly PrometheusExporter _exporter;
@@ -30,4 +31,5 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return _cachedMetrics;
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
@@ -26,6 +27,7 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void AddDistributedTracing_ConfiguresExpectedDefaults()
         {
+            Assert.Equal("OpenTelemetry.Context.Propagation.NoopTextMapPropagator", Propagators.DefaultTextMapPropagator.GetType().FullName);
             var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
             var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
@@ -45,6 +47,13 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.NotNull(instrumentations);
             Assert.Single(instrumentations);
             Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+
+            Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+            var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
+            var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
+            Assert.Equal(2, props.Count);
+            Assert.Contains(props, p => p is B3Propagator);
+            Assert.Contains(props, p => p is BaggagePropagator);
         }
     }
 }

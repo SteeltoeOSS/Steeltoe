@@ -10,6 +10,7 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Stats
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class OpenTelemetryMetrics : IStats
     {
         private static readonly Lazy<OpenTelemetryMetrics> _asSingleton = new (() => new OpenTelemetryMetrics());

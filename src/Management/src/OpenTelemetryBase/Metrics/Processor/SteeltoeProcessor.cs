@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class SteeltoeProcessor : MetricProcessor
     {
         internal List<ProcessedMetric<long>> LongMetrics;

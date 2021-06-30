@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Api", "src\OpenTelemetry.Api\Steeltoe.OpenTelemetry.Api.csproj", "{79502185-9B42-43BA-B56D-843FF448DA27}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Tests", "test\OpenTelemetry.Tests\Steeltoe.OpenTelemetry.Tests.csproj", "{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.OpenTelemetry.Test", "test\OpenTelemetry.Test\Steeltoe.OpenTelemetry.Test.csproj", "{7CF527D8-E1A3-4A4F-8DB8-0607706DC3C2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

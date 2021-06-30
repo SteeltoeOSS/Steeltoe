@@ -36,7 +36,6 @@
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogBase\Steeltoe.Extensions.Logging.DynamicSerilogBase.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicSerilogCore\Steeltoe.Extensions.Logging.DynamicSerilogCore.csproj" />
-    <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.OpenTelemetry.csproj" />
     <ProjectReference Include="..\..\src\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />
     <ProjectReference Include="..\EndpointBase.Test\Steeltoe.Management.EndpointBase.Test.csproj" />
   </ItemGroup>

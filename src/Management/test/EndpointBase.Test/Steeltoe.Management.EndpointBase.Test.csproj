@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Configuration\src\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
-    <ProjectReference Include="..\..\src\OpenTelemetry\Steeltoe.OpenTelemetry.csproj" />
     <ProjectReference Include="..\..\src\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
   </ItemGroup>
 

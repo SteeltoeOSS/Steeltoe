@@ -20,6 +20,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Metrics
 {
+    [Obsolete]
     public class MultiExporterTest
     {
         [Fact]

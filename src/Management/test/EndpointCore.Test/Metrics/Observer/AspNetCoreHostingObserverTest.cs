@@ -16,6 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class AspNetCoreHostingObserverTest : BaseTest
     {
         // Pending views API

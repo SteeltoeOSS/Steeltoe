@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class HttpClientDesktopObserverTest : BaseTest
     {
         // Bring back with Views API

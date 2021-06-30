@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using OpenTelemetry.Metrics.Export;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -12,6 +13,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
     /// <summary>
     /// Helper to write metrics collection from exporter in Prometheus format.
     /// </summary>
+    [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public static class PrometheusExporterExtensions
     {
         /// <summary>
