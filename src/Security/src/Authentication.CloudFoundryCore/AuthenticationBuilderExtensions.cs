@@ -276,9 +276,37 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
         /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
         public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder)
+            => builder.AddCloudFoundryIdentityCertificate(CertificateAuthenticationDefaults.AuthenticationScheme);
+
+        /// <summary>
+        /// Adds Certificate authentication middleware and configuration to use platform identity certificates
+        /// </summary>
+        /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
+        /// <param name="configurer">Used to configure the options</param>
+        /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
+        public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder, Action<MutualTlsAuthenticationOptions> configurer)
+            => builder.AddCloudFoundryIdentityCertificate(CertificateAuthenticationDefaults.AuthenticationScheme, configurer);
+
+        /// <summary>
+        /// Adds Certificate authentication middleware and configuration to use platform identity certificates
+        /// </summary>
+        /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
+        /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="JwtBearerDefaults.AuthenticationScheme"/></param>
+        /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
+        public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder, string authenticationScheme)
+            => builder.AddCloudFoundryIdentityCertificate(authenticationScheme, null);
+
+        /// <summary>
+        /// Adds Certificate authentication middleware and configuration to use platform identity certificates
+        /// </summary>
+        /// <param name="builder">Your <see cref="AuthenticationBuilder"/></param>
+        /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="JwtBearerDefaults.AuthenticationScheme"/></param>
+        /// <param name="configurer">Used to configure the options</param>
+        /// <returns><see cref="AuthenticationBuilder"/> configured to use application identity certificates</returns>
+        public static AuthenticationBuilder AddCloudFoundryIdentityCertificate(this AuthenticationBuilder builder, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer)
         {
             var logger = builder.Services.BuildServiceProvider().GetService<ILogger<CloudFoundryInstanceCertificate>>();
-            builder.AddMutualTls(options =>
+            builder.AddMutualTls(authenticationScheme, options =>
             {
                 options.Events = new CertificateAuthenticationEvents()
                 {
@@ -299,6 +327,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                         return Task.CompletedTask;
                     }
                 };
+                configurer?.Invoke(options);
             });
             return builder;
         }
