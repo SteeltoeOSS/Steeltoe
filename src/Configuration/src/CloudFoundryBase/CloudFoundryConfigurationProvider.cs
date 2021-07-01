@@ -41,29 +41,31 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
             return memStream;
         }
 
-        internal void AddDiegoVariables()
+        internal void AddDiegoVariables(IDictionary<string, string> data)
         {
-            if (!Data.ContainsKey("vcap:application:instance_id"))
+            if (!data.ContainsKey("vcap:application:instance_id"))
             {
-                Data["vcap:application:instance_id"] = !string.IsNullOrEmpty(_settingsReader.InstanceId) ? _settingsReader.InstanceId : "-1";
+                data["vcap:application:instance_id"] = !string.IsNullOrEmpty(_settingsReader.InstanceId) ? _settingsReader.InstanceId : "-1";
             }
 
-            if (!Data.ContainsKey("vcap:application:instance_index"))
+            if (!data.ContainsKey("vcap:application:instance_index"))
             {
-                Data["vcap:application:instance_index"] = !string.IsNullOrEmpty(_settingsReader.InstanceIndex) ? _settingsReader.InstanceIndex : "-1";
+                data["vcap:application:instance_index"] = !string.IsNullOrEmpty(_settingsReader.InstanceIndex) ? _settingsReader.InstanceIndex : "-1";
             }
 
-            if (!Data.ContainsKey("vcap:application:port"))
+            if (!data.ContainsKey("vcap:application:port"))
             {
-                Data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
+                data["vcap:application:port"] = !string.IsNullOrEmpty(_settingsReader.InstancePort) ? _settingsReader.InstancePort : "-1";
             }
 
-            Data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
-            Data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
+            data["vcap:application:instance_ip"] = _settingsReader.InstanceIp;
+            data["vcap:application:internal_ip"] = _settingsReader.InstanceInternalIp;
         }
 
         private void Process()
         {
+            var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
             var appJson = _settingsReader.ApplicationJson;
             if (!string.IsNullOrEmpty(appJson))
             {
@@ -74,8 +76,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
                 if (applicationData != null)
                 {
-                    LoadData("vcap:application", applicationData.GetChildren());
-                    AddDiegoVariables();
+                    LoadData("vcap:application", applicationData.GetChildren(), data);
+                    AddDiegoVariables(data);
                 }
             }
 
@@ -89,12 +91,14 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
                 if (servicesData != null)
                 {
-                    LoadData("vcap:services", servicesData.GetChildren());
+                    LoadData("vcap:services", servicesData.GetChildren(), data);
                 }
             }
+
+            Data = data;
         }
 
-        private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections)
+        private void LoadData(string prefix, IEnumerable<IConfigurationSection> sections, IDictionary<string, string> data)
         {
             if (sections == null || !sections.Any())
             {
@@ -103,12 +107,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
 
             foreach (var section in sections)
             {
-                LoadSection(prefix, section);
-                LoadData(prefix, section.GetChildren());
+                LoadSection(prefix, section, data);
+                LoadData(prefix, section.GetChildren(), data);
             }
         }
 
-        private void LoadSection(string prefix, IConfigurationSection section)
+        private void LoadSection(string prefix, IConfigurationSection section, IDictionary<string, string> data)
         {
             if (section == null)
             {
@@ -120,7 +124,7 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
                 return;
             }
 
-            Data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
+            data[prefix + ConfigurationPath.KeyDelimiter + section.Path] = section.Value;
         }
     }
 }
