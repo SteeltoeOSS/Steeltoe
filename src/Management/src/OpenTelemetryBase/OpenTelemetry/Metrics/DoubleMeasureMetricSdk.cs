@@ -19,7 +19,7 @@
 
 using System;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal class DoubleMeasureMetricSdk : MeasureMetricSdk<double>

@@ -19,7 +19,7 @@
 
 using System;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
 #pragma warning disable S2326 // Unused type parameters should be removed
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]

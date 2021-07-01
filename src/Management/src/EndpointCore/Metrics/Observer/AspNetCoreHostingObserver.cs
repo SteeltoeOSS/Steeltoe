@@ -5,9 +5,8 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Common.Diagnostics;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;

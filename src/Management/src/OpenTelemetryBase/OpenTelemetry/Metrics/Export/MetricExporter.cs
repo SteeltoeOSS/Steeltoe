@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public abstract class MetricExporter

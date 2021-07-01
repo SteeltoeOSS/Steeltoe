@@ -22,7 +22,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// LabelSet implementation.

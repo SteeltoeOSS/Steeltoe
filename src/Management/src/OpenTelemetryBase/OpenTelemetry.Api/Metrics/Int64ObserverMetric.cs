@@ -20,7 +20,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// Observer instrument for Int64 values.

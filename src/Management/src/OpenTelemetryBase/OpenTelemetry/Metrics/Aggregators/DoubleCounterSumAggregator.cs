@@ -17,11 +17,11 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using System;
 using System.Threading;
 
-namespace OpenTelemetry.Metrics.Aggregators
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Aggregators
 {
     /// <summary>
     /// Basic aggregator which calculates a Sum from individual measurements.

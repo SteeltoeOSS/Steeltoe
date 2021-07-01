@@ -19,7 +19,7 @@
 
 using System;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class SumData<T> : MetricData<T>

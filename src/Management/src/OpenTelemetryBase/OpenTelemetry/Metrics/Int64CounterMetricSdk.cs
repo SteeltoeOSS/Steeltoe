@@ -21,7 +21,7 @@ using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal class Int64CounterMetricSdk : CounterMetricSdkBase<long>

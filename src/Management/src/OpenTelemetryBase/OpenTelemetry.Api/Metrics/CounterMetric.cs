@@ -21,7 +21,7 @@ using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// Counter instrument.

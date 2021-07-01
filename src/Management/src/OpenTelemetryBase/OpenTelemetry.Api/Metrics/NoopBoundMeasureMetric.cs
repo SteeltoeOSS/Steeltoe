@@ -20,7 +20,7 @@
 using OpenTelemetry.Trace;
 using System;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// No op measure handle.

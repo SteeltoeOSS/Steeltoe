@@ -21,7 +21,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal abstract class MeasureMetricSdk<T> : MeasureMetric<T>

@@ -15,15 +15,15 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Metrics.Configuration;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Configuration;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace OpenTelemetry.Metrics.Test
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Test
 {
     [Obsolete]
     public class MetricsTest

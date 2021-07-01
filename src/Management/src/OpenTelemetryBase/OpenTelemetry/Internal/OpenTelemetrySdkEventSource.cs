@@ -21,8 +21,11 @@ using System;
 using System.Diagnostics.Tracing;
 using System.Globalization;
 using System.Threading;
+#pragma warning disable CS0618 // Type or member is obsolete
+using static Steeltoe.Management.OpenTelemetry.Metrics.Export.MetricExporter;
+#pragma warning restore CS0618 // Type or member is obsolete
 
-namespace OpenTelemetry.Internal
+namespace Steeltoe.Management.OpenTelemetry.Internal
 {
     /// <summary>
     /// EventSource implementation for OpenTelemetry SDK implementation.

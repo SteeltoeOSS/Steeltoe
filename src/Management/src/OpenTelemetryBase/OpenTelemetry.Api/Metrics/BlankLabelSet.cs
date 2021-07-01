@@ -19,7 +19,7 @@
 
 using System;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// Blank or no-op labelset.

@@ -15,13 +15,13 @@
 // limitations under the License.
 // </copyright>
 
-using OpenTelemetry.Metrics.Aggregators;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Aggregators;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using System;
 using System.Threading;
 using Xunit;
 
-namespace OpenTelemetry.Metrics.Test
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Test
 {
     [Obsolete]
     public class CounterAggregatorTest

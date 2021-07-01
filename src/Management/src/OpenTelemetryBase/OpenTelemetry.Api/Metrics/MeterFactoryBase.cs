@@ -19,7 +19,7 @@
 
 using System;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// Creates Meters for an instrumentation library.

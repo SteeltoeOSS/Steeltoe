@@ -17,10 +17,10 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-using OpenTelemetry.Metrics.Aggregators;
+using Steeltoe.Management.OpenTelemetry.Metrics.Aggregators;
 using System;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal class NoOpMetricProcessor : MetricProcessor

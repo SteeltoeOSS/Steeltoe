@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace OpenTelemetry.Metrics.Test
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Test
 {
     [Obsolete]
     public class LabelSetTest

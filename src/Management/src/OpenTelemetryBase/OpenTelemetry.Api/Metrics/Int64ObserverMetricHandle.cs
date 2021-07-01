@@ -17,7 +17,7 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     /// <summary>
     /// Handle to the metrics observer with the defined <see cref="LabelSet"/>.

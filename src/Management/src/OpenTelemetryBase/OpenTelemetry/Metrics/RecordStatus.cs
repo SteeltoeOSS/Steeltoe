@@ -17,7 +17,7 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     internal enum RecordStatus
     {

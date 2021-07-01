@@ -17,11 +17,11 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-using OpenTelemetry.Metrics.Aggregators;
 using OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Metrics.Aggregators;
 using System;
 
-namespace OpenTelemetry.Metrics
+namespace Steeltoe.Management.OpenTelemetry.Metrics
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     internal class Int64BoundCounterMetricSdk : BoundCounterMetricSdkBase<long>

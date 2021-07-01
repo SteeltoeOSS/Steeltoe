@@ -17,14 +17,14 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-using OpenTelemetry.Metrics.Aggregators;
+using Steeltoe.Management.OpenTelemetry.Metrics.Aggregators;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
     /// <summary>
     /// Batcher which retains all dimensions/labels.

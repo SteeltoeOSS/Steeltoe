@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Export;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;

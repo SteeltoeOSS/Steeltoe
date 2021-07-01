@@ -20,7 +20,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace OpenTelemetry.Metrics.Export
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Export
 {
     /// <summary>
     /// This class would evolve to become the export record.

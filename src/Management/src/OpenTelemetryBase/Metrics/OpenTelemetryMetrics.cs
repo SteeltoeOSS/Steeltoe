@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Configuration;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Configuration;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using System;
 

@@ -17,10 +17,10 @@
 // </copyright>
 #pragma warning restore SA1636 // File header copyright text should match
 
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using System;
 
-namespace OpenTelemetry.Metrics.Aggregators
+namespace Steeltoe.Management.OpenTelemetry.Metrics.Aggregators
 {
     [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public abstract class Aggregator<T>

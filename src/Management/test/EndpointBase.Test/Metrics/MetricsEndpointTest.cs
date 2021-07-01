@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
