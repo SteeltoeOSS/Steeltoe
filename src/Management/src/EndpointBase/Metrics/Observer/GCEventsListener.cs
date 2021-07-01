@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
         private const string GCHeapStats = "GCHeapStats_V1";
+        private const string GCHeapStatsV2 = "GCHeapStats_V2";
         private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
         private const string GENERATION_TAGVALUE_NAME = "gen";
 
@@ -50,7 +50,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
             try
             {
-                if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture))
+                if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture) || eventData.EventName.Equals(GCHeapStatsV2, StringComparison.InvariantCulture))
                 {
                     ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, _ignorePayloadNames);
                     RecordAdditionalMetrics(eventData);
@@ -72,10 +72,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
         private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
         {
-            long totalMemory = GC.GetTotalMemory(false);
-            _memoryUsed.Record(default(SpanContext), totalMemory, _memoryLabels);
-            List<long> counts = new List<long>(GC.MaxGeneration);
-            for (int i = 0; i < GC.MaxGeneration; i++)
+            var totalMemory = GC.GetTotalMemory(false);
+            _memoryUsed.Record(default, totalMemory, _memoryLabels);
+            var counts = new List<long>(GC.MaxGeneration);
+            for (var i = 0; i < GC.MaxGeneration; i++)
             {
                 var count = (long)GC.CollectionCount(i);
                 counts.Add(count);
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
 
                 var genKeylabelSet = new List<KeyValuePair<string, string>>()
                     { new KeyValuePair<string, string>(_generationKey, GENERATION_TAGVALUE_NAME + i) };
-                _collectionCount.Record(default(SpanContext), count, genKeylabelSet);
+                _collectionCount.Record(default, count, genKeylabelSet);
             }
 
             _previousCollectionCounts = counts;

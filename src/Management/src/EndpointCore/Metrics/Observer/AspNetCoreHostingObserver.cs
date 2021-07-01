@@ -38,8 +38,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         {
             PathMatcher = new Regex(options.IngressIgnorePattern);
 
-            this._responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.request.time");
-            this._serverCountMeasure = Meter.CreateInt64Counter("http.server.request.count");
+            _responseTimeMeasure = Meter.CreateDoubleMeasure("http.server.requests.seconds");
+            _serverCountMeasure = Meter.CreateInt64Counter("http.server.requests.count");
             /*
             //var view = View.Create(
             //        ViewName.Create("http.server.request.time"),
@@ -101,9 +101,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             {
                 var labelSets = GetLabelSets(arg); // Todo: Used bound labelsets
 
-                _serverCountMeasure.Add(default(SpanContext), 1, labelSets);
-                labelSets.Add(new KeyValuePair<string, string>("TimeUnit", "ms"));
-                _responseTimeMeasure.Record(default(SpanContext), current.Duration.TotalMilliseconds, labelSets);
+                _serverCountMeasure.Add(default, 1, labelSets);
+                _responseTimeMeasure.Record(default, current.Duration.TotalSeconds, labelSets);
             }
         }
 
@@ -113,11 +112,13 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             var statusCode = arg.Response.StatusCode.ToString();
             var exception = GetException(arg);
 
-            var tagValues = new List<KeyValuePair<string, string>>();
-            tagValues.Add(new KeyValuePair<string, string>(_uriTagKey, uri));
-            tagValues.Add(new KeyValuePair<string, string>(_statusTagKey, statusCode));
-            tagValues.Add(new KeyValuePair<string, string>(_exceptionTagKey, exception));
-            tagValues.Add(new KeyValuePair<string, string>(_methodTagKey, arg.Request.Method));
+            var tagValues = new List<KeyValuePair<string, string>>
+            {
+                new KeyValuePair<string, string>(_uriTagKey, uri),
+                new KeyValuePair<string, string>(_statusTagKey, statusCode),
+                new KeyValuePair<string, string>(_exceptionTagKey, exception),
+                new KeyValuePair<string, string>(_methodTagKey, arg.Request.Method)
+            };
 
             return tagValues;
         }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
@@ -23,8 +22,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly string _eventSourceName = "System.Runtime";
         private readonly string _eventName = "EventCounters";
 
-        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
-        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
+        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ();
+        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ();
 
         public EventCounterListener(IStats stats, ILogger<EventCounterListener> logger = null)
         {
@@ -138,14 +137,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateDoubleMeasure($"{name}"));
-                doubleMetric.Record(default(SpanContext), doubleValue.Value, labelSet);
+                doubleMetric.Record(default, doubleValue.Value, labelSet);
             }
             else if (longValue.HasValue)
             {
                 var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateInt64Measure($"{name}"));
-                longMetric.Record(default(SpanContext), longValue.Value, labelSet);
+                longMetric.Record(default, longValue.Value, labelSet);
             }
         }
     }
