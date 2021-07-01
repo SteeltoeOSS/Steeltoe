@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
@@ -44,8 +45,10 @@ namespace Steeltoe.Management.Endpoint.Metrics
             }
         }
 
+        /// <inheritdoc/>
         public string IngressIgnorePattern { get; set; }
 
+        /// <inheritdoc/>
         public string EgressIgnorePattern { get; set; }
 
         public bool AspNetCoreHosting { get; set; } = true;
@@ -61,5 +64,8 @@ namespace Steeltoe.Management.Endpoint.Metrics
         public bool HttpClientDesktop { get; set; } = false;
 
         public bool HystrixEvents { get; set; } = false;
+
+        /// <inheritdoc/>
+        public List<string> ExcludedMetrics { get; set; } = new List<string>();
     }
 }

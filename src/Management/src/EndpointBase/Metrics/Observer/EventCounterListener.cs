@@ -11,6 +11,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Globalization;
+using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
@@ -21,13 +22,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         private readonly ILogger<EventCounterListener> _logger;
         private readonly string _eventSourceName = "System.Runtime";
         private readonly string _eventName = "EventCounters";
+        private readonly IMetricsObserverOptions _options;
 
         private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ();
         private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ();
 
-        public EventCounterListener(IStats stats, ILogger<EventCounterListener> logger = null)
+        public EventCounterListener(IStats stats, IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
         }
 
@@ -86,13 +89,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             long? longValue = null;
             var counterName = string.Empty;
             var labelSet = new List<KeyValuePair<string, string>>();
+            var excludedMetric = false;
             foreach (var payload in eventPayload)
             {
+                if (excludedMetric)
+                {
+                    break;
+                }
+
                 var key = payload.Key;
                 switch (key)
                 {
                     case var kn when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                         counterName = payload.Value.ToString();
+                        if (_options.ExcludedMetrics.Contains(counterName))
+                        {
+                            excludedMetric = true;
+                        }
+
                         break;
                     case var kn when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
                         var counterDisplayName = payload.Value.ToString();
