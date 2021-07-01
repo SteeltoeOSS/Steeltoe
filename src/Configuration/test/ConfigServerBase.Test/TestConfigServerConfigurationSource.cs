@@ -4,7 +4,7 @@
 
 ﻿using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+﻿namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class TestConfigServerConfigurationSource : IConfigurationSource
     {
