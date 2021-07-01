@@ -62,5 +62,39 @@ namespace Steeltoe.Management.Tracing.Test
             // Assert.Contains(span.Context.SpanId.ToHexString(), result);  TODO: ParentID not supported
             Assert.Contains("foobar", result);
         }
+
+        [Fact]
+        public void Process_UseShortTraceIds()
+        {
+            // Arrange
+            var appsettings = new Dictionary<string, string>()
+            {
+                ["management:tracing:name"] = "foobar",
+                ["management:tracing:useShortTraceIds"] = "true",
+            };
+            var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+            var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
+
+            using var openTelemetry = Sdk.CreateTracerProviderBuilder().AddSource("tracername").Build();
+            var tracer = TracerProvider.Default.GetTracer("tracername");
+            var span = tracer.StartActiveSpan("spanName");
+            var processor = new TracingLogProcessor(opts);
+
+            // Act
+            var result = processor.Process("InputLogMessage");
+
+            Assert.Contains("InputLogMessage", result);
+            Assert.Contains("[", result);
+            Assert.Contains("]", result);
+
+            var full = span.Context.TraceId.ToHexString();
+            var shorty = full.Substring(full.Length - 16, 16);
+
+            Assert.Contains(shorty, result);
+            Assert.DoesNotContain(full, result);
+
+            Assert.Contains(span.Context.SpanId.ToHexString(), result);
+            Assert.Contains("foobar", result);
+        }
     }
 }

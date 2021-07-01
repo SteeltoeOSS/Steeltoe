@@ -34,8 +34,9 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         bool NeverSample { get; }
 
         /// <summary>
-        /// Gets a value indicating whether trace ids should be truncated from 16 to 8 bytes
+        /// Gets a value indicating whether trace ids should be truncated from 16 to 8 bytes in logs
         /// </summary>
+        /// <remarks>This setting will NOT affect exported traces</remarks>
         bool UseShortTraceIds { get; }
 
         /// <summary>

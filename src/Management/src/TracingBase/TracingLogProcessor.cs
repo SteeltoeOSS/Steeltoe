@@ -30,6 +30,10 @@ namespace Steeltoe.Management.Tracing
                 sb.Append(",");
 
                 var traceId = context.TraceId.ToHexString();
+                if (traceId.Length > 16 && _options.UseShortTraceIds)
+                {
+                    traceId = traceId.Substring(traceId.Length - 16, 16);
+                }
 
                 sb.Append(traceId);
                 sb.Append(",");
