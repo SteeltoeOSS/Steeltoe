@@ -10,6 +10,8 @@ using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
@@ -261,16 +263,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                             "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                         if (updateDictionary)
                         {
-                            var newData = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                            var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
                             if (!string.IsNullOrEmpty(env.State))
                             {
-                                newData["spring:cloud:config:client:state"] = env.State;
+                                data["spring:cloud:config:client:state"] = env.State;
                             }
 
                             if (!string.IsNullOrEmpty(env.Version))
                             {
-                                newData["spring:cloud:config:client:version"] = env.Version;
+                                data["spring:cloud:config:client:version"] = env.Version;
                             }
 
                             var sources = env.PropertySources;
@@ -279,14 +281,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                                 var index = sources.Count - 1;
                                 for (; index >= 0; index--)
                                 {
-                                    AddPropertySource(sources[index], newData);
+                                    AddPropertySource(sources[index], data);
                                 }
                             }
 
-                            Data = newData;
-
                             // Adds client settings (e.g spring:cloud:config:uri, etc) back to the (new) Data dictionary
-                            AddConfigServerClientSettings();
+                            AddConfigServerClientSettings(data);
+
+                            Data = data;
                         }
 
                         return env;
@@ -417,40 +419,52 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         }
 
         /// <summary>
-        /// Adds the client settings for the Configuration Server to the data dictionary
+        /// Adds the client settings for the Configuration Server to the Data dictionary
         /// </summary>
         protected internal virtual void AddConfigServerClientSettings()
         {
+            var data = Data.ToDictionary(entry => entry.Key, entry => entry.Value, StringComparer.OrdinalIgnoreCase);
+
+            AddConfigServerClientSettings(data);
+
+            Data = data;
+        }
+
+        /// <summary>
+        /// Adds the client settings for the Configuration Server to the data dictionary
+        /// </summary>
+        protected internal virtual void AddConfigServerClientSettings(IDictionary<string, string> data)
+        {
             var culture = CultureInfo.InvariantCulture;
-            Data["spring:cloud:config:enabled"] = _settings.Enabled.ToString(culture);
-            Data["spring:cloud:config:failFast"] = _settings.FailFast.ToString(culture);
-            Data["spring:cloud:config:env"] = _settings.Environment;
-            Data["spring:cloud:config:label"] = _settings.Label;
-            Data["spring:cloud:config:name"] = _settings.Name;
-            Data["spring:cloud:config:password"] = _settings.Password;
-            Data["spring:cloud:config:uri"] = _settings.Uri;
-            Data["spring:cloud:config:username"] = _settings.Username;
-            Data["spring:cloud:config:token"] = _settings.Token;
-            Data["spring:cloud:config:timeout"] = _settings.Timeout.ToString(culture);
-            Data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString(culture);
-            Data["spring:cloud:config:retry:enabled"] = _settings.RetryEnabled.ToString(culture);
-            Data["spring:cloud:config:retry:maxAttempts"] = _settings.RetryAttempts.ToString(culture);
-            Data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString(culture);
-            Data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString(culture);
-            Data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString(culture);
+            data["spring:cloud:config:enabled"] = _settings.Enabled.ToString(culture);
+            data["spring:cloud:config:failFast"] = _settings.FailFast.ToString(culture);
+            data["spring:cloud:config:env"] = _settings.Environment;
+            data["spring:cloud:config:label"] = _settings.Label;
+            data["spring:cloud:config:name"] = _settings.Name;
+            data["spring:cloud:config:password"] = _settings.Password;
+            data["spring:cloud:config:uri"] = _settings.Uri;
+            data["spring:cloud:config:username"] = _settings.Username;
+            data["spring:cloud:config:token"] = _settings.Token;
+            data["spring:cloud:config:timeout"] = _settings.Timeout.ToString(culture);
+            data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString(culture);
+            data["spring:cloud:config:retry:enabled"] = _settings.RetryEnabled.ToString(culture);
+            data["spring:cloud:config:retry:maxAttempts"] = _settings.RetryAttempts.ToString(culture);
+            data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString(culture);
+            data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString(culture);
+            data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString(culture);
 
-            Data["spring:cloud:config:access_token_uri"] = _settings.AccessTokenUri;
-            Data["spring:cloud:config:client_secret"] = _settings.ClientSecret;
-            Data["spring:cloud:config:client_id"] = _settings.ClientId;
-            Data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString(culture);
-            Data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString(culture);
-            Data["spring:cloud:config:disableTokenRenewal"] = _settings.DisableTokenRenewal.ToString(culture);
+            data["spring:cloud:config:access_token_uri"] = _settings.AccessTokenUri;
+            data["spring:cloud:config:client_secret"] = _settings.ClientSecret;
+            data["spring:cloud:config:client_id"] = _settings.ClientId;
+            data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString(culture);
+            data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString(culture);
+            data["spring:cloud:config:disableTokenRenewal"] = _settings.DisableTokenRenewal.ToString(culture);
 
-            Data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString(culture);
-            Data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString(culture);
+            data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString(culture);
+            data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString(culture);
 
-            Data["spring:cloud:config:health:enabled"] = _settings.HealthEnabled.ToString(culture);
-            Data["spring:cloud:config:health:timeToLive"] = _settings.HealthTimeToLive.ToString(culture);
+            data["spring:cloud:config:health:enabled"] = _settings.HealthEnabled.ToString(culture);
+            data["spring:cloud:config:health:timeToLive"] = _settings.HealthTimeToLive.ToString(culture);
         }
 
         protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
