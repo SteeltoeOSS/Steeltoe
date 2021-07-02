@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
@@ -172,6 +175,54 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Assert.Equal("mysql://9vD0Mtk3wFFuaaaY:Cjn4HsAiKV8sImst@192.168.0.97:3306/cf_0f5dda44_e678_4727_993f_30e6d455cc31?reconnect=true", dict["vcap:services:p-mysql:0:credentials:uri"]);
             Assert.Equal("mySql2", dict["vcap:services:p-mysql:1:name"]);
             Assert.Equal("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true", dict["vcap:services:p-mysql:1:credentials:uri"]);
+        }
+
+        [Fact]
+        public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
+        {
+            // Arrange
+            var environment = @"
+                {
+                    ""name"": ""my-app"",
+                    ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
+                }";
+
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment);
+
+            var configurationBuilder = new ConfigurationBuilder();
+            configurationBuilder.AddCloudFoundry();
+
+            var configuration = configurationBuilder.Build();
+
+            // Act
+            VcapApp options = null;
+
+            using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
+            void ReloadLoop()
+            {
+                while (!cts.IsCancellationRequested)
+                {
+                    configuration.Reload();
+                }
+            }
+
+            _ = Task.Run(ReloadLoop);
+
+            while (!cts.IsCancellationRequested)
+            {
+                options = configuration.GetSection("vcap:application").Get<VcapApp>();
+            }
+
+            // Assert
+            Assert.Equal("my-app", options.Name);
+            Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
+        }
+
+        private sealed class VcapApp
+        {
+            public string Name { get; set; }
+
+            public string Version { get; set; }
         }
     }
 }
