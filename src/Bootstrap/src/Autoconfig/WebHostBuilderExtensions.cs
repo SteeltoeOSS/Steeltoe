@@ -269,7 +269,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireCloudFoundryContainerIdentity(this IWebHostBuilder hostBuilder) => hostBuilder
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity())
-            .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth(host.Configuration))
+            .ConfigureServices((host, svc) => svc.AddCloudFoundryCertificateAuth())
             .Log(LogMessages.WireCloudFoundryContainerIdentity);
     }
 }
