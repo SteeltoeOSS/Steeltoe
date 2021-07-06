@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
@@ -141,22 +142,14 @@ namespace Steeltoe.Bootstrap.Autoconfig
             return hostBuilder;
         }
 
-        private static bool IsAssemblyLoaded(string typeName)
+        private static bool IsAssemblyLoaded(string assemblyName)
         {
-            if (_excludedAssemblies.Contains(typeName))
+            if (_excludedAssemblies.Contains(assemblyName))
             {
                 return false;
             }
 
-            try
-            {
-                Assembly.Load(typeName);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return ReflectionHelpers.IsAssemblyLoaded(assemblyName);
         }
 
         private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
@@ -253,40 +246,12 @@ namespace Steeltoe.Bootstrap.Autoconfig
             hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDistributedTracingBase(this IHostBuilder hostBuilder)
-        {
-            hostBuilder
-                .ConfigureServices((host, svc) =>
-                {
-                    if (IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin"))
-                    {
-                        svc.AddDistributedTracing(builder => builder.AddZipkinExporter());
-                    }
-                    else
-                    {
-                        svc.AddDistributedTracing();
-                    }
-                })
-                .Log(LogMessages.WireDistributedTracing);
-        }
+        private static void WireDistributedTracingBase(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDistributedTracingCore(this IHostBuilder hostBuilder)
-        {
-            hostBuilder
-                .ConfigureServices((host, svc) =>
-                {
-                    if (IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin"))
-                    {
-                        svc.AddDistributedTracingAspNetCore(builder => builder.AddZipkinExporter());
-                    }
-                    else
-                    {
-                        svc.AddDistributedTracingAspNetCore();
-                    }
-                })
-                .Log(LogMessages.WireDistributedTracing);
-        }
+        private static void WireDistributedTracingCore(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
 #pragma warning disable CS0618 // Type or member is obsolete

@@ -12,6 +12,9 @@
   <ItemGroup>
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="$(OpenTelemetryInstrumentationVersion)" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="$(OpenTelemetryInstrumentationVersion)" />
+    <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
+    <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
   </ItemGroup>
   
   <ItemGroup>

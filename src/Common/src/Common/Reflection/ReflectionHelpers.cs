@@ -15,6 +15,24 @@ namespace Steeltoe.Common.Reflection
     public static class ReflectionHelpers
     {
         /// <summary>
+        /// Try to load an assembly
+        /// </summary>
+        /// <param name="assembly">Name of the assembly</param>
+        /// <returns>Boolean indicating success/failure of finding the assembly</returns>
+        public static bool IsAssemblyLoaded(string assembly)
+        {
+            try
+            {
+                Assembly.Load(assembly);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Find an assembly
         /// </summary>
         /// <param name="name">Name of the assembly to find</param>

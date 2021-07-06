@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
@@ -46,6 +47,21 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(2, instrumentations.Count);
             Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
             Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        }
+
+        // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
+        [Fact]
+        public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
+        {
+            var services = new ServiceCollection().AddSingleton(GetConfiguration());
+
+            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+            var hst = serviceProvider.GetService<IHostedService>();
+            Assert.NotNull(hst);
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+
+            Assert.NotNull(serviceProvider.GetService<OtlpExporterOptions>());
         }
     }
 }

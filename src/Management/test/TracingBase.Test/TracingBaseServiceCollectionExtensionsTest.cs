@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
@@ -53,6 +54,22 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(2, props.Count);
             Assert.Contains(props, p => p is B3Propagator);
             Assert.Contains(props, p => p is BaggagePropagator);
+        }
+
+        // this test should find Jaeger and Zipkin exporters, see TracingCore.Test for OTLP
+        [Fact]
+        public void AddDistributedTracing_WiresIncludedExporters()
+        {
+            var services = new ServiceCollection().AddSingleton(GetConfiguration());
+
+            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+            var hst = serviceProvider.GetService<IHostedService>();
+            Assert.NotNull(hst);
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+
+            Assert.NotNull(serviceProvider.GetService<ZipkinExporterOptions>());
+            Assert.NotNull(serviceProvider.GetService<JaegerExporterOptions>());
         }
     }
 }

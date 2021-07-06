@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+
 namespace Steeltoe.Management.OpenTelemetry.Trace
 {
     public interface ITracingOptions
@@ -22,6 +24,11 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         /// </summary>
         /// <remarks>Default value: "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*"</remarks>
         string EgressIgnorePattern { get; }
+
+        /// <summary>
+        /// Gets the maximum payload size in bytes. Default value: 4096.
+        /// </summary>
+        int MaxPayloadSizeInBytes { get; }
 
         /// <summary>
         /// Gets a value indicating whether traces should ALWAYS be captured
@@ -55,5 +62,10 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         /// Gets a value indicating whether GRPC requests should participate in tracing
         /// </summary>
         bool EnableGrpcAspNetCoreSupport { get; }
+
+        /// <summary>
+        /// Gets a value representing the endpoint used for exporting traces
+        /// </summary>
+        Uri ExporterEndpoint { get; }
     }
 }

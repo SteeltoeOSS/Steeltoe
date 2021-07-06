@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
+using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
@@ -45,6 +47,25 @@ namespace Steeltoe.Management.Tracing
             services.TryAddSingleton<ITracingOptions>((serviceProvider) => new TracingOptions(serviceProvider.GetRequiredService<IApplicationInstanceInfo>(), serviceProvider.GetRequiredService<IConfiguration>()));
             services.TryAddSingleton<IDynamicMessageProcessor, TracingLogProcessor>();
 
+            var exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
+            var exportToJaeger = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
+            var exportToOtlp = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
+
+            if (exportToZipkin)
+            {
+                ConfigureZipkinOptions(services);
+            }
+
+            if (exportToJaeger)
+            {
+                ConfigureJaegerOptions(services);
+            }
+
+            if (exportToOtlp)
+            {
+                ConfigureOtlpOptions(services);
+            }
+
             services.AddOpenTelemetryTracing(builder =>
             {
                 builder.Configure((serviceProvider, deferredBuilder) =>
@@ -53,10 +74,10 @@ namespace Steeltoe.Management.Tracing
                     var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                     deferredBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
                     deferredBuilder.AddHttpClientInstrumentation(options =>
-                        {
-                            var pathMatcher = new Regex(traceOpts.EgressIgnorePattern);
-                            options.Filter += req => !pathMatcher.IsMatch(req.RequestUri.PathAndQuery);
-                        });
+                    {
+                        var pathMatcher = new Regex(traceOpts.EgressIgnorePattern);
+                        options.Filter += req => !pathMatcher.IsMatch(req.RequestUri.PathAndQuery);
+                    });
 
                     if (traceOpts.PropagationType.Equals("B3", StringComparison.InvariantCultureIgnoreCase))
                     {
@@ -64,7 +85,6 @@ namespace Steeltoe.Management.Tracing
                         Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(propagators));
                     }
 
-                    // To Discuss: Should these remain Steeltoe options or downstream set directly?
                     if (traceOpts.NeverSample)
                     {
                         deferredBuilder.SetSampler<AlwaysOffSampler>();
@@ -75,10 +95,85 @@ namespace Steeltoe.Management.Tracing
                     }
                 });
 
+                if (exportToZipkin)
+                {
+                    AddZipkinExporter(builder);
+                }
+
+                if (exportToJaeger)
+                {
+                    AddJaegerExporter(builder);
+                }
+
+                if (exportToOtlp)
+                {
+                    AddOtlpExporter(builder);
+                }
+
                 action?.Invoke(builder);
             });
 
             return services;
         }
+
+        private static void ConfigureZipkinOptions(IServiceCollection services)
+        {
+            services.AddSingleton((serviceProvider) =>
+            {
+                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
+                var options = new ZipkinExporterOptions
+                {
+                    UseShortTraceIds = traceOpts.UseShortTraceIds,
+                    MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes
+                };
+                if (traceOpts.ExporterEndpoint != null)
+                {
+                    options.Endpoint = traceOpts.ExporterEndpoint;
+                }
+
+                return options;
+            });
+        }
+
+        private static void AddZipkinExporter(TracerProviderBuilder builder) => builder.AddZipkinExporter();
+
+        private static void ConfigureJaegerOptions(IServiceCollection services)
+        {
+            services.AddSingleton((serviceProvider) =>
+            {
+                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
+                var options = new JaegerExporterOptions
+                {
+                    MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes
+                };
+
+                if (traceOpts.ExporterEndpoint != null)
+                {
+                    options.AgentHost = traceOpts.ExporterEndpoint.Host;
+                    options.AgentPort = traceOpts.ExporterEndpoint.Port;
+                }
+
+                return options;
+            });
+        }
+
+        private static void AddJaegerExporter(TracerProviderBuilder builder) => builder.AddJaegerExporter();
+
+        private static void ConfigureOtlpOptions(IServiceCollection services)
+        {
+            services.AddSingleton((serviceProvider) =>
+            {
+                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
+                var options = new OtlpExporterOptions();
+                if (traceOpts.ExporterEndpoint != null)
+                {
+                    options.Endpoint = traceOpts.ExporterEndpoint;
+                }
+
+                return options;
+            });
+        }
+
+        private static void AddOtlpExporter(TracerProviderBuilder builder) => builder.AddOtlpExporter();
     }
 }

@@ -14,6 +14,7 @@ namespace Steeltoe.Management.Tracing
         internal const string CONFIG_PREFIX = "management:tracing";
         internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
         internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
+        internal const int DefaultMaxPayloadSizeInBytes = 4096;
         private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
         public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
@@ -56,6 +57,9 @@ namespace Steeltoe.Management.Tracing
         public string EgressIgnorePattern { get; set; }
 
         /// <inheritdoc />
+        public int MaxPayloadSizeInBytes { get; set; } = DefaultMaxPayloadSizeInBytes;
+
+        /// <inheritdoc />
         public bool AlwaysSample { get; set; }
 
         /// <inheritdoc />
@@ -72,5 +76,8 @@ namespace Steeltoe.Management.Tracing
 
         /// <inheritdoc />
         public bool EnableGrpcAspNetCoreSupport { get; set; } = true;
+
+        /// <inheritdoc />
+        public Uri ExporterEndpoint { get; set; }
     }
 }

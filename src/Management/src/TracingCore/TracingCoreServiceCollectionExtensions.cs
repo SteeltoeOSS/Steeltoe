@@ -3,12 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Options;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Trace;
 using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing
@@ -35,20 +34,13 @@ namespace Steeltoe.Management.Tracing
                 throw new ArgumentNullException(nameof(services));
             }
 
-            action += (builder) =>
+            action += builder => builder.AddAspNetCoreInstrumentation();
+
+            services.AddOptions<AspNetCoreInstrumentationOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
             {
-                builder.AddAspNetCoreInstrumentation();
-            };
-            services.TryAddSingleton(serviceProvider =>
-            {
-                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                 var pathMatcher = new Regex(traceOpts.IngressIgnorePattern);
-                var options = new AspNetCoreInstrumentationOptions()
-                {
-                    EnableGrpcAspNetCoreSupport = traceOpts.EnableGrpcAspNetCoreSupport
-                };
+                options.EnableGrpcAspNetCoreSupport = traceOpts.EnableGrpcAspNetCoreSupport;
                 options.Filter += context => !pathMatcher.IsMatch(context.Request.Path);
-                return Options.Create(options);
             });
 
             return services.AddDistributedTracing(action);
