@@ -41,6 +41,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             services.AddSingleton<IPostConfigureOptions<MutualTlsAuthenticationOptions>, MutualTlsAuthenticationOptionsPostConfigurer>();
             services.AddOptions<CertificateOptions>();
             services.AddSingleton<ICertificateRotationService, CertificateRotationService>();
+            services.AddHostedService<CertificateRotationHostedService>();
             services.AddSingleton<IAuthorizationHandler, CloudFoundryCertificateIdentityAuthorizationHandler>();
             services.AddCertificateForwarding(opt => opt.CertificateHeader = "X-Forwarded-Client-Cert");
         }
