@@ -16,7 +16,7 @@ namespace Steeltoe.Management.OpenTelemetry.Trace
         /// <summary>
         /// Gets a regex pattern for requests coming into this application that should not be traced
         /// </summary>
-        /// <remarks>Default value: "/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif"</remarks>
+        /// <remarks>Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif"</remarks>
         string IngressIgnorePattern { get; }
 
         /// <summary>

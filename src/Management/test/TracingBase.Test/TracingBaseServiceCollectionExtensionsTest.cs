@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
@@ -68,8 +69,8 @@ namespace Steeltoe.Management.Tracing.Test
             var tracerProvider = serviceProvider.GetService<TracerProvider>();
             Assert.NotNull(tracerProvider);
 
-            Assert.NotNull(serviceProvider.GetService<ZipkinExporterOptions>());
-            Assert.NotNull(serviceProvider.GetService<JaegerExporterOptions>());
+            Assert.NotNull(serviceProvider.GetService<IOptions<ZipkinExporterOptions>>());
+            Assert.NotNull(serviceProvider.GetService<IOptions<JaegerExporterOptions>>());
         }
     }
 }

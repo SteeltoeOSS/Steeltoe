@@ -118,20 +118,15 @@ namespace Steeltoe.Management.Tracing
 
         private static void ConfigureZipkinOptions(IServiceCollection services)
         {
-            services.AddSingleton((serviceProvider) =>
+            services.AddOptions<ZipkinExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
             {
-                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
-                var options = new ZipkinExporterOptions
-                {
-                    UseShortTraceIds = traceOpts.UseShortTraceIds,
-                    MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes
-                };
+                options.UseShortTraceIds = traceOpts.UseShortTraceIds;
+                options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
+
                 if (traceOpts.ExporterEndpoint != null)
                 {
                     options.Endpoint = traceOpts.ExporterEndpoint;
                 }
-
-                return options;
             });
         }
 
@@ -139,21 +134,15 @@ namespace Steeltoe.Management.Tracing
 
         private static void ConfigureJaegerOptions(IServiceCollection services)
         {
-            services.AddSingleton((serviceProvider) =>
+            services.AddOptions<JaegerExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
             {
-                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
-                var options = new JaegerExporterOptions
-                {
-                    MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes
-                };
+                options.MaxPayloadSizeInBytes = traceOpts.MaxPayloadSizeInBytes;
 
                 if (traceOpts.ExporterEndpoint != null)
                 {
                     options.AgentHost = traceOpts.ExporterEndpoint.Host;
                     options.AgentPort = traceOpts.ExporterEndpoint.Port;
                 }
-
-                return options;
             });
         }
 
@@ -161,16 +150,12 @@ namespace Steeltoe.Management.Tracing
 
         private static void ConfigureOtlpOptions(IServiceCollection services)
         {
-            services.AddSingleton((serviceProvider) =>
+            services.AddOptions<OtlpExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
             {
-                var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
-                var options = new OtlpExporterOptions();
                 if (traceOpts.ExporterEndpoint != null)
                 {
                     options.Endpoint = traceOpts.ExporterEndpoint;
                 }
-
-                return options;
             });
         }
 
