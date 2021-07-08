@@ -12,9 +12,10 @@ namespace Steeltoe.Management.Tracing
     public class TracingOptions : ITracingOptions
     {
         internal const string CONFIG_PREFIX = "management:tracing";
-        internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
-        internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
-        private IApplicationInstanceInfo _applicationInstanceInfo;
+        internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+        internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
+        internal const int DefaultMaxPayloadSizeInBytes = 4096;
+        private readonly IApplicationInstanceInfo _applicationInstanceInfo;
 
         public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
         {
@@ -46,24 +47,37 @@ namespace Steeltoe.Management.Tracing
         {
         }
 
+        /// <inheritdoc />
         public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, CONFIG_PREFIX + ":name");
 
+        /// <inheritdoc />
         public string IngressIgnorePattern { get; set; }
 
+        /// <inheritdoc />
         public string EgressIgnorePattern { get; set; }
 
-        public int MaxNumberOfAttributes { get; set; }
+        /// <inheritdoc />
+        public int MaxPayloadSizeInBytes { get; set; } = DefaultMaxPayloadSizeInBytes;
 
-        public int MaxNumberOfAnnotations { get; set; }
-
-        public int MaxNumberOfMessageEvents { get; set; }
-
-        public int MaxNumberOfLinks { get; set; }
-
+        /// <inheritdoc />
         public bool AlwaysSample { get; set; }
 
+        /// <inheritdoc />
         public bool NeverSample { get; set; }
 
-        public bool UseShortTraceIds { get; set; } = true;
+        /// <inheritdoc />
+        public bool UseShortTraceIds { get; set; }
+
+        /// <inheritdoc />
+        public string PropagationType { get; set; } = "B3";
+
+        /// <inheritdoc />
+        public bool SingleB3Header { get; set; } = true;
+
+        /// <inheritdoc />
+        public bool EnableGrpcAspNetCoreSupport { get; set; } = true;
+
+        /// <inheritdoc />
+        public Uri ExporterEndpoint { get; set; }
     }
 }

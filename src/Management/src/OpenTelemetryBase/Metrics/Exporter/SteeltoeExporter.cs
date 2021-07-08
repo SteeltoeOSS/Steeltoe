@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
 {
+    [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class SteeltoeExporter : MetricExporter
     {
         public SteeltoeExporter()
@@ -48,7 +50,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         public List<ProcessedMetric<long>> GetAndClearLongMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<long>> current = LongMetrics;
+            var current = LongMetrics;
             LongMetrics = new List<ProcessedMetric<long>>();
             return current;
         }
@@ -56,7 +58,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Exporter
         public List<ProcessedMetric<double>> GetAndClearDoubleMetrics()
         {
             // TODO harden this so as to not lose data if Export fails.
-            List<ProcessedMetric<double>> current = DoubleMetrics;
+            var current = DoubleMetrics;
             DoubleMetrics = new List<ProcessedMetric<double>>();
             return current;
         }

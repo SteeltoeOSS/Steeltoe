@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Aggregators;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Aggregators;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class SteeltoeProcessor : MetricProcessor
     {
         internal List<ProcessedMetric<long>> LongMetrics;
@@ -23,7 +23,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         private readonly MetricExporter _exporter;
         private readonly Task _worker;
         private readonly TimeSpan _exportInterval;
-        private CancellationTokenSource _cts;
+        private readonly CancellationTokenSource _cts;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SteeltoeProcessor"/> class.
@@ -32,11 +32,11 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
         /// <param name="exportInterval">Interval at which metrics are pushed to Exporter.</param>
         public SteeltoeProcessor(MetricExporter exporter, TimeSpan exportInterval)
         {
-            this._exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+            _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
 
             LongMetrics = new List<ProcessedMetric<long>>();
             DoubleMetrics = new List<ProcessedMetric<double>>();
-            this._exportInterval = exportInterval;
+            _exportInterval = exportInterval;
             _cts = new CancellationTokenSource();
 
             if (exportInterval < TimeSpan.MaxValue)
@@ -233,7 +233,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Processor
             }
             catch (Exception ex)
             {
-                var s = ex.Message;
+                _ = ex.Message;
             }
         }
     }

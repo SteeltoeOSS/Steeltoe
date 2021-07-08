@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Concurrent;
@@ -15,6 +15,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class EventSourceListener : EventListener
     {
         protected ConcurrentDictionary<string, MeasureMetric<long>> LongMeasureMetrics { get; set; }

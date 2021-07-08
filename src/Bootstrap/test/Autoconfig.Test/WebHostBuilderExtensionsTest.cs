@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OpenTelemetry.Trace;
 using Serilog.Core;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Common.Options;
@@ -310,7 +311,33 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
         }
 
         [Fact]
-        public void Tracing_IsAutowired()
+        public void TracingBase_IsAutowired()
+        {
+            // Arrange
+            var exclusions = SteeltoeAssemblies.AllAssemblies
+                .Except(new List<string> { SteeltoeAssemblies.Steeltoe_Management_TracingBase });
+            var hostBuilder = new WebHostBuilder().Configure((b) => { });
+
+            // Act
+            var host = hostBuilder.AddSteeltoe(exclusions).Build();
+            var tracerProvider = host.Services.GetService<TracerProvider>();
+
+            // Assert
+            Assert.NotNull(host.Services.GetService<IHostedService>());
+            Assert.NotNull(host.Services.GetService<ITracingOptions>());
+            Assert.NotNull(tracerProvider);
+            Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
+
+            // confirm instrumentation(s) were added as expected
+            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Single(instrumentations);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+            Assert.DoesNotContain(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
+        }
+
+        [Fact]
+        public void TracingCore_IsAutowired()
         {
             // Arrange
             var exclusions = SteeltoeAssemblies.AllAssemblies
@@ -319,16 +346,20 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
 
             // Act
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
-            var observers = host.Services.GetServices<IDiagnosticObserver>();
+            var tracerProvider = host.Services.GetService<TracerProvider>();
 
             // Assert
-            Assert.NotNull(host.Services.GetService<IDiagnosticsManager>());
             Assert.NotNull(host.Services.GetService<IHostedService>());
             Assert.NotNull(host.Services.GetService<ITracingOptions>());
-            var list = observers.ToList();
-            Assert.Equal(5, list.Count);
-            Assert.NotNull(host.Services.GetService<ITracing>());
+            Assert.NotNull(tracerProvider);
             Assert.NotNull(host.Services.GetService<IDynamicMessageProcessor>());
+
+            // confirm instrumentation(s) were added as expected
+            var instrumentations = tracerProvider.GetType().GetField("instrumentations", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(tracerProvider) as List<object>;
+            Assert.NotNull(instrumentations);
+            Assert.Equal(2, instrumentations.Count);
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
         }
 
         [Fact]

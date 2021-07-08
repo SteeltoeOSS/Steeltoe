@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
@@ -12,6 +12,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest>, IMetricsEndpoint
     {
         private readonly SteeltoeExporter _exporter;
@@ -28,13 +29,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
             _logger = logger;
         }
 
-        public new IMetricsEndpointOptions Options
-        {
-            get
-            {
-                return options as IMetricsEndpointOptions;
-            }
-        }
+        public new IMetricsEndpointOptions Options => options as IMetricsEndpointOptions;
 
         public override IMetricsResponse Invoke(MetricsRequest request)
         {
@@ -62,36 +57,36 @@ namespace Steeltoe.Management.Endpoint.Metrics
         {
             IEnumerable<MetricSample> filtered = measurements[metricName];
             var sampleList = new List<MetricSample>();
-            if (tags != null && tags.Count() > 0)
+            if (tags != null && tags.Any())
             {
                 filtered = filtered.Where(sample => tags.All(rt => sample.Tags.Any(sampleTag => rt.Key == sampleTag.Key && rt.Value == sampleTag.Value)));
             }
 
-            Func<MetricSample, MetricSample, MetricSample> sumAggregator = (current, next) => new MetricSample(current.Statistic, current.Value + next.Value, current.Tags);
+            static MetricSample SumAggregator(MetricSample current, MetricSample next) => new (current.Statistic, current.Value + next.Value, current.Tags);
 
             var valueSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.VALUE);
             if (valueSamples.Any())
             {
-                var sample = valueSamples.Aggregate(sumAggregator);
+                var sample = valueSamples.Aggregate(SumAggregator);
                 sampleList.Add(new MetricSample(MetricStatistic.VALUE, sample.Value / valueSamples.Count(), sample.Tags));
             }
 
             var totalSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL);
             if (totalSamples.Any())
             {
-                sampleList.Add(totalSamples.Aggregate(sumAggregator));
+                sampleList.Add(totalSamples.Aggregate(SumAggregator));
             }
 
             var totalTimeSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.TOTAL_TIME);
             if (totalTimeSamples.Any())
             {
-                sampleList.Add(totalTimeSamples.Aggregate(sumAggregator));
+                sampleList.Add(totalTimeSamples.Aggregate(SumAggregator));
             }
 
             var countSamples = filtered.Where(sample => sample.Statistic == MetricStatistic.COUNT);
             if (countSamples.Any())
             {
-                sampleList.Add(countSamples.Aggregate(sumAggregator));
+                sampleList.Add(countSamples.Aggregate(SumAggregator));
             }
 
             return sampleList;
@@ -243,6 +238,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
                 }
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 
         protected internal class MetricDictionary<T>
             : Dictionary<string, T>

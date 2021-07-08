@@ -8,7 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
 using Steeltoe.Connector.MySql;
@@ -131,27 +133,23 @@ namespace Steeltoe.Bootstrap.Autoconfig
                 hostBuilder.WireIfLoaded(WireAllActuators, SteeltoeAssemblies.Steeltoe_Management_EndpointCore);
             }
 
-            hostBuilder.WireIfLoaded(WireDistributedTracing, SteeltoeAssemblies.Steeltoe_Management_TracingCore);
+            if (!hostBuilder.WireIfLoaded(WireDistributedTracingCore, SteeltoeAssemblies.Steeltoe_Management_TracingCore))
+            {
+                hostBuilder.WireIfLoaded(WireDistributedTracingBase, SteeltoeAssemblies.Steeltoe_Management_TracingBase);
+            }
+
             hostBuilder.WireIfLoaded(WireCloudFoundryContainerIdentity, SteeltoeAssemblies.Steeltoe_Security_Authentication_CloudFoundryCore);
             return hostBuilder;
         }
 
-        private static bool IsAssemblyLoaded(string typeName)
+        private static bool IsAssemblyLoaded(string assemblyName)
         {
-            if (_excludedAssemblies.Contains(typeName))
+            if (_excludedAssemblies.Contains(assemblyName))
             {
                 return false;
             }
 
-            try
-            {
-                Assembly.Load(typeName);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return ReflectionHelpers.IsAssemblyLoaded(assemblyName);
         }
 
         private static bool WireIfLoaded(this IHostBuilder hostBuilder, Action<IHostBuilder> action, params string[] assembly)
@@ -248,8 +246,12 @@ namespace Steeltoe.Bootstrap.Autoconfig
             hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static void WireDistributedTracing(this IHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing(host.Configuration)).Log(LogMessages.WireDistributedTracing);
+        private static void WireDistributedTracingBase(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracing()).Log(LogMessages.WireDistributedTracing);
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void WireDistributedTracingCore(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDistributedTracingAspNetCore()).Log(LogMessages.WireDistributedTracing);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
 #pragma warning disable CS0618 // Type or member is obsolete
