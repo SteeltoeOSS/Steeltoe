@@ -6,17 +6,15 @@ using Microsoft.Extensions.Hosting;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Discovery.Client
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream
 {
-    internal class DiscoveryClientService : IHostedService
+    public class HystrixMetricStreamService : IHostedService
     {
-        private readonly IDiscoveryLifecycle _applicationLifetime;
-        private readonly IDiscoveryClient _discoveryClient;
+        private readonly RabbitMetricsStreamPublisher _streamPublisher;
 
-        public DiscoveryClientService(IDiscoveryClient client, IDiscoveryLifecycle applicationLifetime = null)
+        public HystrixMetricStreamService(RabbitMetricsStreamPublisher streamPublisher)
         {
-            _applicationLifetime = applicationLifetime;
-            _discoveryClient = client;
+            _streamPublisher = streamPublisher;
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
@@ -26,7 +24,7 @@ namespace Steeltoe.Discovery.Client
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _discoveryClient.ShutdownAsync();
+            return Task.CompletedTask;
         }
     }
 }

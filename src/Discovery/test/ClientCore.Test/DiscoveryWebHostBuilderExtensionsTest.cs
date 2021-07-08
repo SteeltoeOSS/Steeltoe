@@ -43,13 +43,12 @@ namespace Steeltoe.Discovery.Client.Test
             // Act
             var host = hostBuilder.AddDiscoveryClient().Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-            var filters = host.Services.GetServices<IStartupFilter>();
+            var hostedService = host.Services.GetService<IHostedService>();
 
             // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
-            Assert.NotEmpty(filters);
-            Assert.Contains(filters, f => f.GetType() == typeof(DiscoveryClientStartupFilter));
+            Assert.IsType<DiscoveryClientService>(hostedService);
         }
 
         [Fact]
@@ -61,13 +60,12 @@ namespace Steeltoe.Discovery.Client.Test
             // Act
             var host = hostBuilder.AddDiscoveryClient().Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-            var filters = host.Services.GetServices<IStartupFilter>();
+            var hostedService = host.Services.GetService<IHostedService>();
 
             // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
-            Assert.NotEmpty(filters);
-            Assert.Contains(filters, f => f.GetType() == typeof(DiscoveryClientStartupFilter));
+            Assert.IsType<DiscoveryClientService>(hostedService);
         }
 
         [Fact]
@@ -79,13 +77,12 @@ namespace Steeltoe.Discovery.Client.Test
             // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-            var filters = host.Services.GetServices<IStartupFilter>();
+            var hostedService = host.Services.GetService<IHostedService>();
 
             // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
-            Assert.NotEmpty(filters);
-            Assert.Contains(filters, f => f.GetType() == typeof(DiscoveryClientStartupFilter));
+            Assert.IsType<DiscoveryClientService>(hostedService);
         }
 
         [Fact]
@@ -97,13 +94,12 @@ namespace Steeltoe.Discovery.Client.Test
             // Act
             var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
             var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-            var filters = host.Services.GetServices<IStartupFilter>();
+            var hostedService = host.Services.GetService<IHostedService>();
 
             // Assert
             Assert.Single(discoveryClient);
             Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());
-            Assert.NotEmpty(filters);
-            Assert.Contains(filters, f => f.GetType() == typeof(DiscoveryClientStartupFilter));
+            Assert.IsType<DiscoveryClientService>(hostedService);
         }
     }
 }

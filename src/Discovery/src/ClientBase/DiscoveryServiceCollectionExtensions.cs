@@ -28,10 +28,8 @@ namespace Steeltoe.Discovery.Client
         /// </summary>
         /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
         /// <param name="config">Application configuration</param>
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null)
-        {
-            return services.AddDiscoveryClient(config, null);
-        }
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config = null) =>
+            services.AddDiscoveryClient(config, null);
 
         /// <summary>
         /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
@@ -40,10 +38,8 @@ namespace Steeltoe.Discovery.Client
         /// <param name="services"><see cref="IServiceCollection"/> to configure</param>
         /// <param name="config">Application configuration</param>
         /// <param name="lifecycle">Add custom code for app shutdown events</param>
-        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null)
-        {
-            return services.AddDiscoveryClient(config, null, lifecycle);
-        }
+        public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, IDiscoveryLifecycle lifecycle = null) =>
+            services.AddDiscoveryClient(config, null, lifecycle);
 
         /// <summary>
         /// Adds service discovery to your application. Uses reflection to determine which clients are available and configured.
@@ -122,7 +118,7 @@ namespace Steeltoe.Discovery.Client
             serviceCollection.AddSingleton<IServiceInstanceProvider>(p => p.GetService<IDiscoveryClient>());
             serviceCollection.AddHttpClient("DiscoveryRandom").AddRandomLoadBalancer();
             serviceCollection.AddHttpClient("DiscoveryRoundRobin").AddRoundRobinLoadBalancer();
-            serviceCollection.TryAddSingleton<IDiscoveryLifecycle, ApplicationLifecycle>();
+            serviceCollection.AddSingleton<IHostedService, DiscoveryClientService>();
             return serviceCollection;
         }
 
@@ -199,6 +195,7 @@ namespace Steeltoe.Discovery.Client
 
         private static bool IsRecognizedDiscoveryService(IServiceInfo info) => info is EurekaServiceInfo;
 
+        [Obsolete("This functionality is now performed by DiscoveryClientService")]
         public class ApplicationLifecycle : IDiscoveryLifecycle
         {
             public ApplicationLifecycle(IHostApplicationLifetime lifeCycle, IDiscoveryClient client)

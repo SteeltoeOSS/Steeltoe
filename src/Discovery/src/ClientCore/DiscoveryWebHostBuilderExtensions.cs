@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
 using System;
@@ -21,14 +20,8 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IWebHostBuilder AddDiscoveryClient(this IWebHostBuilder hostBuilder)
-        {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                    collection
-                        .AddDiscoveryClient()
-                        .AddTransient<IStartupFilter, DiscoveryClientStartupFilter>());
-        }
+        public static IWebHostBuilder AddDiscoveryClient(this IWebHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((context, collection) => collection.AddDiscoveryClient());
 
         /// <summary>
         /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
@@ -39,13 +32,7 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
-        {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                    collection
-                        .AddServiceDiscovery(optionsAction)
-                        .AddTransient<IStartupFilter, DiscoveryClientStartupFilter>());
-        }
+        public static IWebHostBuilder AddServiceDiscovery(this IWebHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction) =>
+            hostBuilder.ConfigureServices((context, collection) => collection.AddServiceDiscovery(optionsAction));
     }
 }

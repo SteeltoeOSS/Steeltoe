@@ -11,6 +11,7 @@ namespace Steeltoe.Discovery.Client
     /// <summary>
     /// Provides an alternate means of activating the Discovery client. Use this filter in place of calling UseDiscoveryClient in Startup.Configure().
     /// </summary>
+    [Obsolete("This functionality is now handled by DiscoveryClientService, this class will be removed in a future release")]
     public class DiscoveryClientStartupFilter : IStartupFilter
     {
         public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)

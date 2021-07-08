@@ -18,6 +18,7 @@ using System.Net.Http.Json;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 {
+    [Obsolete("This extension will be removed in a future release, please use SpringBootAdminClientHostedService instead")]
     public static class SpringBootAdminApplicationBuilderExtensions
     {
         private const int ConnectionTimeoutMs = 100000;
