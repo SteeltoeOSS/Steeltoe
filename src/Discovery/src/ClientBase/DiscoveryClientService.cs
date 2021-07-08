@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Client
         private readonly IDiscoveryLifecycle _applicationLifetime;
         private readonly IDiscoveryClient _discoveryClient;
 
-        internal DiscoveryClientService(IDiscoveryLifecycle applicationLifetime, IDiscoveryClient client)
+        public DiscoveryClientService(IDiscoveryClient client, IDiscoveryLifecycle applicationLifetime = null)
         {
             _applicationLifetime = applicationLifetime;
             _discoveryClient = client;

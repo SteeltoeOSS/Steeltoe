@@ -26,10 +26,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());
             Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream());
+            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(null));
             Assert.Contains(nameof(services), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams());
+            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(null));
             Assert.Contains(nameof(services), ex3.Message);
 
             var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream());
@@ -49,7 +49,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         {
             IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixMetricsStream();
+            services.AddHystrixMetricsStream(null);
 
             Assert.NotNull(services.BuildServiceProvider().GetService<HystrixDashboardStream>());
         }
@@ -99,7 +99,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         {
             IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixMonitoringStreams();
+            services.AddHystrixMonitoringStreams(null);
             var sp = services.BuildServiceProvider();
 
             Assert.NotNull(sp.GetService<HystrixDashboardStream>());

@@ -19,6 +19,7 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test
     public class SpringBootAdminAppBuilderExtensionsTest
     {
         [Fact]
+        [Obsolete]
         public void SpringBootAdminClient_EndToEnd()
         {
             var appsettings = new Dictionary<string, string>()

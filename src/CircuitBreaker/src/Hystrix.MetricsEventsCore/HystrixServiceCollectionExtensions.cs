@@ -16,11 +16,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixServiceCollectionExtensions
     {
-        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
+        // this config param is still here to share the signature used in MetricsStreamCore
         public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
-            => AddHystrixMetricsStream(services);
-
-        public static void AddHystrixMetricsStream(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -37,7 +34,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddHystrixMetricsStream();
+            services.AddHystrixMetricsStream(null);
             services.AddHostedService<HystrixEventSourceService>();
         }
 
@@ -83,18 +80,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             services.AddSingleton(HystrixConfigurationStream.GetInstance());
         }
 
-        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
+        // this config param is still here to share the signature used in MetricsStreamCore
         public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
-            => AddHystrixMonitoringStreams(services);
-
-        public static void AddHystrixMonitoringStreams(this IServiceCollection services)
         {
             if (services == null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddHystrixMetricsStream();
+            services.AddHystrixMetricsStream(config);
             services.AddHystrixConfigStream();
             services.AddHystrixRequestEventStream();
             services.AddHystrixUtilizationStream();

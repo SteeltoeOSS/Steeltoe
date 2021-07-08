@@ -26,18 +26,18 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
 
         internal static RegistrationResult RegistrationResult { get; set; }
 
-        public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient, ILogger logger = null)
+        public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger logger = null)
         {
             _options = options;
             _mgmtOptions = mgmtOptions;
             _healthOptions = healthOptions;
-            _httpClient = httpClient;
+            _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMS);
             _logger = logger ?? NullLogger.Instance;
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            _logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
+            _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
             var basePath = _options.BasePath.TrimEnd('/');
             var app = new Application()
             {

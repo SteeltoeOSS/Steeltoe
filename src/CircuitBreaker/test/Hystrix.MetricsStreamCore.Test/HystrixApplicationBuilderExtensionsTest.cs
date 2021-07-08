@@ -11,6 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
     public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
     {
         [Fact]
+        [Obsolete]
         public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
         {
             IApplicationBuilder builder = null;

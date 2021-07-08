@@ -34,7 +34,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
         }
 
+        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
         public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
+            => AddHystrixRequestEventStream(services);
+
+        public static void AddHystrixRequestEventStream(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -42,10 +46,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             services.AddSingleton(HystrixRequestEventsStream.GetInstance());
-            services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
         }
 
+        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
         public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
+            => AddHystrixUtilizationStream(services);
+
+        public static void AddHystrixUtilizationStream(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -53,10 +60,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             services.AddSingleton(HystrixUtilizationStream.GetInstance());
-            services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
         }
 
+        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
         public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
+            => AddHystrixConfigStream(services);
+
+        public static void AddHystrixConfigStream(this IServiceCollection services)
         {
             if (services == null)
             {
@@ -64,7 +74,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             services.AddSingleton(HystrixConfigurationStream.GetInstance());
-            services.TryAddSingleton<IHostedService, HystrixMetricStreamService>();
         }
 
         public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
@@ -75,9 +84,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
 
             services.AddHystrixMetricsStream(config);
-            services.AddHystrixConfigStream(config);
-            services.AddHystrixRequestEventStream(config);
-            services.AddHystrixUtilizationStream(config);
+            services.AddHystrixConfigStream();
+            services.AddHystrixRequestEventStream();
+            services.AddHystrixUtilizationStream();
         }
     }
 }
