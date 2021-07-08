@@ -23,7 +23,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCloudFoundryCertificateAuth(Configuration);
+            services.AddCloudFoundryCertificateAuth();
         }
 
         public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)

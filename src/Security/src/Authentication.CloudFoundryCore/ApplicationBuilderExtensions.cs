@@ -15,6 +15,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// Enable certificate rotation and forwarding
         /// </summary>
         /// <param name="app">The <see cref="IApplicationBuilder"/></param>
+        [Obsolete("Certificate rotation should be activated by CertificateRotationService and UseCertificateForwarding can be called directly instead of using this method.")]
         public static IApplicationBuilder UseCloudFoundryContainerIdentity(this IApplicationBuilder app)
         {
             if (app == null)
@@ -36,7 +37,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         public static IApplicationBuilder UseCloudFoundryCertificateAuth(this IApplicationBuilder app, ForwardedHeadersOptions forwardedHeaders = null)
         {
             app.UseForwardedHeaders(forwardedHeaders ?? new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto });
-            app.UseCloudFoundryContainerIdentity();
+            app.UseCertificateForwarding();
             app.UseAuthentication();
             app.UseAuthorization();
 
