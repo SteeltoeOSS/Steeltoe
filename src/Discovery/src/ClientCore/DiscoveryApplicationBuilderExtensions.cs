@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Steeltoe.Discovery.Client
 {
@@ -12,6 +13,7 @@ namespace Steeltoe.Discovery.Client
         /// <summary>
         /// Activates the configured <see cref="IDiscoveryClient"/> and registers shutdown events via <see cref="IDiscoveryLifecycle"/>
         /// </summary>
+        [Obsolete("This functionality is now handled by DiscoveryClientService, this class will be removed in a future release")]
         public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
         {
             _ = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();

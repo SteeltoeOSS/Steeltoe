@@ -243,7 +243,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDiscoveryClient(this IWebHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient().AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>()))).Log(LogMessages.WireDiscoveryClient);
+            hostBuilder.ConfigureServices((host, svc) => svc.AddDiscoveryClient()).Log(LogMessages.WireDiscoveryClient);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireDistributedTracingBase(this IWebHostBuilder hostBuilder) =>

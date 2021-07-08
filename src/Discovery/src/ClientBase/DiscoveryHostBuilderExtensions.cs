@@ -21,14 +21,8 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IHostBuilder AddDiscoveryClient(this IHostBuilder hostBuilder)
-        {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                    collection
-                        .AddDiscoveryClient()
-                        .AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>())));
-        }
+        public static IHostBuilder AddDiscoveryClient(this IHostBuilder hostBuilder) =>
+            hostBuilder.ConfigureServices((context, collection) => collection.AddDiscoveryClient());
 
         /// <summary>
         /// Adds service discovery to your application. This method can be used in place of configuration via your Startup class.<para />
@@ -39,13 +33,7 @@ namespace Steeltoe.Discovery.Client
         /// <remarks>Also configures named HttpClients "DiscoveryRandom" and "DiscoveryRoundRobin" for automatic injection</remarks>
         /// <exception cref="AmbiguousMatchException">Thrown if multiple IDiscoveryClient implementations are configured</exception>
         /// <exception cref="ConnectorException">Thrown if no service info with expected name or type are found or when multiple service infos are found and a single was expected</exception>
-        public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction)
-        {
-            return hostBuilder
-                .ConfigureServices((context, collection) =>
-                    collection
-                        .AddServiceDiscovery(optionsAction)
-                        .AddHostedService(services => new DiscoveryClientService(services.GetRequiredService<IDiscoveryLifecycle>())));
-        }
+        public static IHostBuilder AddServiceDiscovery(this IHostBuilder hostBuilder, Action<DiscoveryClientBuilder> optionsAction) =>
+            hostBuilder.ConfigureServices((context, collection) => collection.AddServiceDiscovery(optionsAction));
     }
 }
