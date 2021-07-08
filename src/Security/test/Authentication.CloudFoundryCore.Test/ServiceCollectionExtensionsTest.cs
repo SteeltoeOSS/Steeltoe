@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Security.Authentication.Mtls;
 using System;
 using Xunit;
 
@@ -22,10 +23,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var sColl = new ServiceCollection();
 
             // act & assert
-            var servicesException = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddCloudFoundryCertificateAuth(null, null));
-            var configException = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddCloudFoundryCertificateAuth(sColl, null));
+            var servicesException = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddCloudFoundryCertificateAuth(null));
             Assert.Equal("services", servicesException.ParamName);
-            Assert.Equal("configuration", configException.ParamName);
         }
 
         [Fact]
@@ -35,15 +34,22 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var services = new ServiceCollection();
             var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
             services.AddSingleton<IConfiguration>(config);
+            services.AddLogging();
 
             // act
-            services.AddCloudFoundryCertificateAuth(config);
+            services.AddCloudFoundryCertificateAuth();
             var provider = services.BuildServiceProvider();
 
             // assert
             Assert.NotNull(provider.GetRequiredService<IOptions<CertificateOptions>>());
             Assert.NotNull(provider.GetRequiredService<ICertificateRotationService>());
             Assert.NotNull(provider.GetRequiredService<IAuthorizationHandler>());
+            var mtlsOpts = provider.GetRequiredService<IOptions<MutualTlsAuthenticationOptions>>();
+            Assert.NotNull(mtlsOpts);
+
+            // confirm Events was set (in MutualTlsAuthenticationOptionsPostConfigurer.cs) vs being null by default
+            Assert.NotNull(mtlsOpts.Value.Events);
+            Assert.Null(new MutualTlsAuthenticationOptions().Events);
         }
     }
 }
