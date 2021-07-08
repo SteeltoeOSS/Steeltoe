@@ -23,12 +23,8 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.Equal(TracingOptions.DEFAULT_INGRESS_IGNORE_PATTERN, opts.IngressIgnorePattern);
             Assert.False(opts.AlwaysSample);
             Assert.False(opts.NeverSample);
-            Assert.True(opts.UseShortTraceIds);
+            Assert.False(opts.UseShortTraceIds);
             Assert.Equal(TracingOptions.DEFAULT_EGRESS_IGNORE_PATTERN, opts.EgressIgnorePattern);
-            Assert.Equal(0, opts.MaxNumberOfAnnotations);
-            Assert.Equal(0, opts.MaxNumberOfAttributes);
-            Assert.Equal(0, opts.MaxNumberOfLinks);
-            Assert.Equal(0, opts.MaxNumberOfMessageEvents);
         }
 
         [Fact]
@@ -46,10 +42,6 @@ namespace Steeltoe.Management.Tracing.Test
                 ["management:tracing:name"] = "foobar",
                 ["management:tracing:ingressIgnorePattern"] = "pattern",
                 ["management:tracing:egressIgnorePattern"] = "pattern",
-                ["management:tracing:maxNumberOfAttributes"] = "100",
-                ["management:tracing:maxNumberOfAnnotations"] = "100",
-                ["management:tracing:maxNumberOfMessageEvents"] = "100",
-                ["management:tracing:maxNumberOfLinks"] = "100",
                 ["management:tracing:alwaysSample"] = "true",
                 ["management:tracing:neverSample"] = "true",
                 ["management:tracing:useShortTraceIds"] = "true",
@@ -64,10 +56,6 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.True(opts.NeverSample);
             Assert.True(opts.UseShortTraceIds);
             Assert.Equal("pattern", opts.EgressIgnorePattern);
-            Assert.Equal(100, opts.MaxNumberOfAnnotations);
-            Assert.Equal(100, opts.MaxNumberOfAttributes);
-            Assert.Equal(100, opts.MaxNumberOfLinks);
-            Assert.Equal(100, opts.MaxNumberOfMessageEvents);
         }
 
         [Fact]
@@ -104,7 +92,7 @@ namespace Steeltoe.Management.Tracing.Test
             opts = new TracingOptions(appInstanceInfo, config);
             Assert.Equal("ManagementName", opts.Name);
 
-            // management:tracing name trumps all else
+            // management:tracing name beats all else
             appsettings.Add("management:tracing:name", "ManagementTracingName");
             config = builder.Build();
             appInstanceInfo = new ApplicationInstanceInfo(config);

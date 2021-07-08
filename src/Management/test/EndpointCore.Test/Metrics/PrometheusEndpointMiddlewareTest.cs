@@ -3,10 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
+using Steeltoe.Management.OpenTelemetry.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using Steeltoe.Management.OpenTelemetry.Metrics.Factory;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
@@ -15,10 +16,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
-using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
+    [Obsolete]
     public class PrometheusEndpointMiddlewareTest : BaseTest
     {
         [Fact]

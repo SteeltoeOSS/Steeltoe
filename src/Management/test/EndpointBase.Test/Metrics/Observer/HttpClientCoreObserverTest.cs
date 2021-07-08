@@ -15,6 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class HttpClientCoreObserverTest : BaseTest
     {
         // TODO: Pending View API

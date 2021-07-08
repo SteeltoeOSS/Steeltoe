@@ -4,10 +4,10 @@
 
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
-using PrometheusExporter = Steeltoe.Management.OpenTelemetry.Metrics.Exporter.PrometheusExporter;
 
 namespace Steeltoe.Management.Endpoint.Metrics
 {
+#pragma warning disable CS0618 // Type or member is obsolete
     public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusScraperEndpoint
     {
         private readonly PrometheusExporter _exporter;
@@ -17,14 +17,6 @@ namespace Steeltoe.Management.Endpoint.Metrics
             : base(options)
         {
             _exporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
-        }
-
-        public new IEndpointOptions Options
-        {
-            get
-            {
-                return options as IEndpointOptions;
-            }
         }
 
         public override string Invoke()
@@ -39,4 +31,5 @@ namespace Steeltoe.Management.Endpoint.Metrics
             return _cachedMetrics;
         }
     }
+#pragma warning restore CS0618 // Type or member is obsolete
 }

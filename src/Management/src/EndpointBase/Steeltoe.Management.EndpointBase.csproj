@@ -33,4 +33,4 @@
     <ProjectReference Include="..\Diagnostics\Steeltoe.Management.Diagnostics.csproj" />
     <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
-  </Project>
+</Project>

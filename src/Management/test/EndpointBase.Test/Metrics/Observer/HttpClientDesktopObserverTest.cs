@@ -14,6 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class HttpClientDesktopObserverTest : BaseTest
     {
         // Bring back with Views API
@@ -104,7 +105,6 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             var requestCount = processor.GetMetricByName<long>("http.desktop.client.request.count");
             Assert.NotNull(requestCount);
             Assert.Equal(2, requestCount.Sum);
-
             act.Stop();
         }
 
