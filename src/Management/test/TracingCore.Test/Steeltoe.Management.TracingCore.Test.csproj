@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TracingCore\Steeltoe.Management.TracingCore.csproj" />
+    <ProjectReference Include="..\TracingBase.Test\Steeltoe.Management.TracingBase.Test.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
   </ItemGroup>
 </Project>

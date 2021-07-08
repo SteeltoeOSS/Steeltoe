@@ -2,9 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Endpoint</RootNamespace>
-    <Description>Package for using Steeltoe management endpoints with ASP.NET Core.
-      **PLEASE NOTE** This package depends on a pre-release version of OpenTelemetry. You may need to add "https://www.myget.org/F/opentelemetry/api/v3/index.json" to your nuget.config if the package is not found.
-    </Description>
+    <Description>Package for using Steeltoe management endpoints with ASP.NET Core.</Description>
     <PackageTags>Spring Cloud;Actuator;Management;Monitoring</PackageTags>
   </PropertyGroup>
 
@@ -14,7 +12,6 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="$(HealthChecksVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
-    <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="$(SystemDiagnosticsVersion)" />
     <PackageReference Include="System.Net.Http.Json" Version="3.2.1" />
   </ItemGroup>
 
@@ -27,6 +24,5 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
     <ProjectReference Include="..\EndpointBase\Steeltoe.Management.EndpointBase.csproj" />
-    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
 </Project>

@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Generic;
@@ -23,6 +23,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
     /// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
     /// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
     /// </summary>
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class ThreadPoolEventsListener : EventSourceListener
     {
         private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";

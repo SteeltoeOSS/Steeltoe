@@ -3,11 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Steeltoe.Management.EndpointBase.Test.Metrics;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Metrics.Exporter;
 using System;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
+    [Obsolete]
     public class MetricsEndpointTest : BaseTest
     {
         private readonly ITestOutputHelper _output;
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 for (var i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default(SpanContext), i, labels);
+                    testMeasure.Record(default, i, labels);
                 }
 
                 stats.Factory.CollectAllMetrics();
@@ -171,7 +171,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 var ep = tc.GetService<MetricsEndpoint>();
 
                 var counter = stats.Meter.CreateDoubleCounter("test.test1");
-                counter.Add(default(SpanContext), 100, LabelSet.BlankLabelSet);
+                counter.Add(default, 100, LabelSet.BlankLabelSet);
 
                 stats.Factory.CollectAllMetrics();
                 stats.Processor.ExportMetrics();
@@ -200,7 +200,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 var ep = tc.GetService<MetricsEndpoint>();
 
                 var measure = stats.Meter.CreateDoubleMeasure("test.test3");
-                measure.Record(default(SpanContext), 100, LabelSet.BlankLabelSet);
+                measure.Record(default, 100, LabelSet.BlankLabelSet);
 
                 stats.Factory.CollectAllMetrics();
                 stats.Processor.ExportMetrics();
@@ -294,8 +294,8 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                     { "c", "v2" }
                 };
 
-                counter.Add(default(SpanContext), 1, v1Tags);
-                counter.Add(default(SpanContext), 1, v2Tags);
+                counter.Add(default, 1, v1Tags);
+                counter.Add(default, 1, v2Tags);
 
                 stats.Factory.CollectAllMetrics();
                 stats.Processor.ExportMetrics();
@@ -326,7 +326,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
 
                 var counter2 = stats.Meter.CreateDoubleCounter("test.test2");
 
-                counter2.Add(default(SpanContext), 1, LabelSet.BlankLabelSet);
+                counter2.Add(default, 1, LabelSet.BlankLabelSet);
 
                 stats.Factory.CollectAllMetrics();
                 stats.Processor.ExportMetrics();
@@ -379,28 +379,28 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 for (var i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default(SpanContext), i, context1);
+                    testMeasure.Record(default, i, context1);
                 }
 
                 long asum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     asum += i;
-                    testMeasure.Record(default(SpanContext), i, context2);
+                    testMeasure.Record(default, i, context2);
                 }
 
                 long bsum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     bsum += i;
-                    testMeasure.Record(default(SpanContext), i, context3);
+                    testMeasure.Record(default, i, context3);
                 }
 
                 long csum = 0;
                 for (var i = 0; i < 10; i++)
                 {
                     csum += i;
-                    testMeasure.Record(default(SpanContext), i, context4);
+                    testMeasure.Record(default, i, context4);
                 }
 
                 var alltags = new List<KeyValuePair<string, string>>()
@@ -555,7 +555,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
                 for (var i = 0; i < 10; i++)
                 {
                     allKeyssum += i;
-                    testMeasure.Record(default(SpanContext), i, labels);
+                    testMeasure.Record(default, i, labels);
                 }
 
                 stats.Factory.CollectAllMetrics();
@@ -586,10 +586,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Test
             exporter = stats.Exporter;
 
             var httpServerRquestMeasure = meter.CreateDoubleMeasure("http.server.requests");
-            httpServerRquestMeasure.Record(default(SpanContext), 10, GetServerLabels());
+            httpServerRquestMeasure.Record(default, 10, GetServerLabels());
 
             var memoryUsageMeasure = meter.CreateDoubleMeasure("jvm.memory.used");
-            memoryUsageMeasure.Record(default(SpanContext), 10, GetMemoryLabels());
+            memoryUsageMeasure.Record(default, 10, GetMemoryLabels());
 
             stats.Factory.CollectAllMetrics();
             stats.Processor.ExportMetrics();

@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Metrics.Configuration;
-using OpenTelemetry.Metrics.Export;
+using Steeltoe.Management.OpenTelemetry.Metrics.Configuration;
+using Steeltoe.Management.OpenTelemetry.Metrics.Export;
 using Steeltoe.Management.OpenTelemetry.Metrics.Processor;
 using System;
 using System.Collections.Generic;
@@ -14,10 +13,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
 {
+    [Obsolete("OpenTelemetry Metrics API is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class AutoCollectingMeterFactory : MeterFactoryBase
     {
-        private readonly HashSet<(string, string)> _meterRegistryKeySet = new HashSet<(string, string)>();
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly HashSet<(string, string)> _meterRegistryKeySet = new ();
+        private readonly CancellationTokenSource _cts = new ();
         private readonly Task _worker;
         private readonly MetricProcessor _processor;
 
@@ -39,10 +39,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             }
         }
 
-        public static AutoCollectingMeterFactory Create(MetricProcessor processor)
-        {
-            return new AutoCollectingMeterFactory(processor, TimeSpan.MaxValue);
-        }
+        public static AutoCollectingMeterFactory Create(MetricProcessor processor) => new AutoCollectingMeterFactory(processor, TimeSpan.MaxValue);
 
         public override Meter GetMeter(string name, string version = null)
         {
@@ -89,7 +86,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             }
             catch (Exception ex)
             {
-                var s = ex.Message;
+                _ = ex.Message;
             }
         }
     }

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using System;

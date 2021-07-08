@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Stats;
 using System;
 using System.Collections.Concurrent;
@@ -15,19 +14,22 @@ using System.Globalization;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer
 {
+    [Obsolete("Steeltoe uses the OpenTelemetry Metrics API, which is not considered stable yet, see https://github.com/SteeltoeOSS/Steeltoe/issues/711 more information")]
     public class EventCounterListener : EventListener
     {
         private readonly IStats _stats;
         private readonly ILogger<EventCounterListener> _logger;
         private readonly string _eventSourceName = "System.Runtime";
         private readonly string _eventName = "EventCounters";
+        private readonly IMetricsObserverOptions _options;
 
-        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<double>>();
-        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ConcurrentDictionary<string, MeasureMetric<long>>();
+        private ConcurrentDictionary<string, MeasureMetric<double>> _doubleMeasureMetrics = new ();
+        private ConcurrentDictionary<string, MeasureMetric<long>> _longMeasureMetrics = new ();
 
-        public EventCounterListener(IStats stats, ILogger<EventCounterListener> logger = null)
+        public EventCounterListener(IStats stats, IMetricsObserverOptions options, ILogger<EventCounterListener> logger = null)
         {
             _stats = stats ?? throw new ArgumentNullException(nameof(stats));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
             _logger = logger;
         }
 
@@ -86,13 +88,24 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
             long? longValue = null;
             var counterName = string.Empty;
             var labelSet = new List<KeyValuePair<string, string>>();
+            var excludedMetric = false;
             foreach (var payload in eventPayload)
             {
+                if (excludedMetric)
+                {
+                    break;
+                }
+
                 var key = payload.Key;
                 switch (key)
                 {
                     case var kn when key.Equals("Name", StringComparison.OrdinalIgnoreCase):
                         counterName = payload.Value.ToString();
+                        if (_options.ExcludedMetrics.Contains(counterName))
+                        {
+                            excludedMetric = true;
+                        }
+
                         break;
                     case var kn when key.Equals("DisplayName", StringComparison.OrdinalIgnoreCase):
                         var counterDisplayName = payload.Value.ToString();
@@ -137,14 +150,14 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
                 var doubleMetric = _doubleMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateDoubleMeasure($"{name}"));
-                doubleMetric.Record(default(SpanContext), doubleValue.Value, labelSet);
+                doubleMetric.Record(default, doubleValue.Value, labelSet);
             }
             else if (longValue.HasValue)
             {
                 var longMetric = _longMeasureMetrics.GetOrAddEx(
                     metricName,
                     (name) => _stats.Meter.CreateInt64Measure($"{name}"));
-                longMetric.Record(default(SpanContext), longValue.Value, labelSet);
+                longMetric.Record(default, longValue.Value, labelSet);
             }
         }
     }

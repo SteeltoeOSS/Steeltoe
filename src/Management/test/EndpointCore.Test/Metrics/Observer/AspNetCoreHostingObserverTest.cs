@@ -16,6 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
 {
+    [Obsolete]
     public class AspNetCoreHostingObserverTest : BaseTest
     {
         // Pending views API
@@ -143,11 +144,11 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test
             observer.HandleStopEvent(act, context);
 
             factory.CollectAllMetrics();
-            var requestTime = processor.GetMetricByName<double>("http.server.request.time");
+            var requestTime = processor.GetMetricByName<double>("http.server.requests.seconds");
             Assert.NotNull(requestTime);
             Assert.Equal(2, requestTime.Count);
-            Assert.True(requestTime.Sum / 2 > 1000.00);
-            Assert.True(requestTime.Max > 1000.00);
+            Assert.True(requestTime.Sum / 2 > 1);
+            Assert.True(requestTime.Max > 1);
 
             act.Stop();
         }

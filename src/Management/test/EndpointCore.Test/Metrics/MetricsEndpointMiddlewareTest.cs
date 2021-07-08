@@ -17,6 +17,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test
 {
+    [Obsolete]
     public class MetricsEndpointMiddlewareTest : BaseTest
     {
         [Fact]

@@ -2,9 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
     <RootNamespace>Steeltoe.Management.Tracing</RootNamespace>
-    <Description>Add distributed tracing to ASP.NET Core applications
-      **PLEASE NOTE** This package depends on a pre-release version of OpenTelemetry. You may need to add "https://www.myget.org/F/opentelemetry/api/v3/index.json" to your nuget.config if the package is not found.
-    </Description>
+    <Description>Add distributed tracing to ASP.NET Core applications</Description>
     <PackageTags>aspnetcore;management;monitoring;metrics;Distributed Trace</PackageTags>
   </PropertyGroup>
 
@@ -13,14 +11,10 @@
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="$(OpenTelemetryInstrumentationVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
-    <ProjectReference Include="..\..\..\Logging\src\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
     <ProjectReference Include="..\TracingBase\Steeltoe.Management.TracingBase.csproj" />
-    <ProjectReference Include="..\Abstractions\Steeltoe.Management.Abstractions.csproj" />
-    <ProjectReference Include="..\OpenTelemetryBase\Steeltoe.Management.OpenTelemetryBase.csproj" />
   </ItemGroup>
 </Project>
