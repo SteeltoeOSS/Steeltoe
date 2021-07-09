@@ -72,5 +72,25 @@ namespace Steeltoe.Management.Tracing.Test
             Assert.NotNull(serviceProvider.GetService<IOptions<ZipkinExporterOptions>>());
             Assert.NotNull(serviceProvider.GetService<IOptions<JaegerExporterOptions>>());
         }
+
+        [Fact]
+        public void AddDistributedTracing_ConfiguresSamplers()
+        {
+            // test AlwaysOn
+            var services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string> { { "Management:Tracing:AlwaysSample", "true" } }));
+            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+            var hst = serviceProvider.GetService<IHostedService>();
+            Assert.NotNull(hst);
+            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+
+            // test AlwaysOff
+            services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string> { { "Management:Tracing:NeverSample", "true" } }));
+            serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+            hst = serviceProvider.GetService<IHostedService>();
+            Assert.NotNull(hst);
+            tracerProvider = serviceProvider.GetService<TracerProvider>();
+            Assert.NotNull(tracerProvider);
+        }
     }
 }

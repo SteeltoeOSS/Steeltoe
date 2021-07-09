@@ -17,9 +17,12 @@ namespace Steeltoe.Management.Tracing.Test
             return opts;
         }
 
-        public virtual IConfiguration GetConfiguration()
+        public virtual IConfiguration GetConfiguration() =>
+            GetConfiguration(new Dictionary<string, string>());
+
+        public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
             => new ConfigurationBuilder()
-                    .AddInMemoryCollection(new Dictionary<string, string> { { "management:tracing:name", "foobar" } })
+                    .AddInMemoryCollection(new Dictionary<string, string>(moreSettings) { { "management:tracing:name", "foobar" } })
                     .Build();
 
         protected TelemetrySpan GetCurrentSpan(Tracer tracer)
