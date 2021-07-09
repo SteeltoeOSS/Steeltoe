@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Exporter;
@@ -72,6 +73,8 @@ namespace Steeltoe.Management.Tracing
                 {
                     var appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>().ApplicationNameInContext(SteeltoeComponent.Management, TracingOptions.CONFIG_PREFIX + ":name");
                     var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
+                    var logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
+                    logger?.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.", exportToZipkin, exportToJaeger, exportToOtlp);
                     deferredBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
                     deferredBuilder.AddHttpClientInstrumentation(options =>
                     {
@@ -87,11 +90,11 @@ namespace Steeltoe.Management.Tracing
 
                     if (traceOpts.NeverSample)
                     {
-                        deferredBuilder.SetSampler<AlwaysOffSampler>();
+                        deferredBuilder.SetSampler(new AlwaysOffSampler());
                     }
                     else if (traceOpts.AlwaysSample)
                     {
-                        deferredBuilder.SetSampler<AlwaysOnSampler>();
+                        deferredBuilder.SetSampler(new AlwaysOnSampler());
                     }
                 });
 
