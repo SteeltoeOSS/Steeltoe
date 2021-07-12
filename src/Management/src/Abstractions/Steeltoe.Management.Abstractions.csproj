@@ -3,7 +3,7 @@
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Management</RootNamespace>
     <Description>Abstractions for application management and monitoring</Description>
-    <PackageTags>management;monitoring;actuator;Spring Cloud;</PackageTags>
+    <PackageTags></PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
