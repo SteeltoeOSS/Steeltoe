@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Serilog;
 using Serilog.Core;
+using Serilog.Extensions.Logging;
 using System;
 using System.Linq;
 
@@ -68,6 +69,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             builder.Services.AddSingleton(logger);
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, SerilogDynamicProvider>());
             builder.Services.AddSingleton((p) => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
+            builder.Services.AddSingleton<ILoggerFactory>(services => new SerilogLoggerFactory(logger, false));
             return builder;
         }
 

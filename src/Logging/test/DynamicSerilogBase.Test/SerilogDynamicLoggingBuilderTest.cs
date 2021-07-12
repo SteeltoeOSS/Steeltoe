@@ -31,10 +31,9 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             // arrange
             var appsettings = new Dictionary<string, string>()
             {
-                ["Logging:IncludeScopes"] = "false",
-                ["Logging:LogLevel:Default"] = "Information",
-                ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
+                ["Serilog:MinimumLevel:Default"] = "Information" 
             };
+
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
