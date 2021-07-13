@@ -21,6 +21,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         private readonly string _jwtKeyUrl;
         private readonly HttpMessageHandler _httpHandler;
         private readonly bool _validateCertificates;
+        private readonly int _httpClientTimeoutMillis;
         private HttpClient _httpClient;
 
         public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
@@ -33,6 +34,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             _jwtKeyUrl = jwtKeyUrl;
             _httpHandler = httpHandler;
             _validateCertificates = validateCertificates;
+            _httpClientTimeoutMillis = 100000;
+        }
+
+        public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates, int httpClientTimeoutMS)
+        {
+            if (string.IsNullOrEmpty(jwtKeyUrl))
+            {
+                throw new ArgumentException(nameof(jwtKeyUrl));
+            }
+
+            _jwtKeyUrl = jwtKeyUrl;
+            _httpHandler = httpHandler;
+            _validateCertificates = validateCertificates;
+            _httpClientTimeoutMillis = httpClientTimeoutMS;
         }
 
         public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
@@ -113,8 +128,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 if (_httpHandler is null)
                 {
-                    const int DefaultHttpClientTimeoutMillis = 100000;
-                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, DefaultHttpClientTimeoutMillis);
+                    _httpClient = HttpClientHelper.GetHttpClient(_validateCertificates, _httpClientTimeoutMillis);
                 }
                 else
                 {
