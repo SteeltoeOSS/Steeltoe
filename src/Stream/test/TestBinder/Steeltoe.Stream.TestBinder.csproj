@@ -1,14 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <Description>
-      Steeltoe Stream Test Binder
-      **PLEASE NOTE** This package is experimental and is not production-ready.  </Description>
     <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
-    <RootNamespace>Steeltoe.Stream.TestBinder</RootNamespace>
-    <AssemblyName>Steeltoe.Stream.TestBinder</AssemblyName>
-    <PackageId>Steeltoe.Stream.TestBinder</PackageId>
-    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   
