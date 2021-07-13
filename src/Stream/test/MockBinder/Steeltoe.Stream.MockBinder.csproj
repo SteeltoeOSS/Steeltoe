@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <Description>
-      Steeltoe Stream MockBinder
-      **PLEASE NOTE** This package is experimental and is not production-ready.
-    </Description>
     <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
-    <RootNamespace>Steeltoe.Stream.MockBinder</RootNamespace>
-    <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud</PackageTags>
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   

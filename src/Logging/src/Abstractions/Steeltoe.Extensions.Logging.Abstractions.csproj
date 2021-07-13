@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Logging</RootNamespace>
-    <Description>Abstractions used in dynamic logging</Description>
-    <PackageTags>logging;dynamiclogging;management;monitoring;Spring Boot</PackageTags>
+    <Description>Abstractions for use with dynamic logging</Description>
+    <PackageTags></PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

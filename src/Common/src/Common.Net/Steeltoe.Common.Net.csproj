@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <Description>Steeltoe common library for network interaction</Description>
-    <PackageTags>NET Core;NET Framework</PackageTags>
+    <PackageTags></PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
