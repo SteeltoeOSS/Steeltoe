@@ -41,6 +41,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
         /// </summary>
         public bool ValidateCertificates { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the timeout (in ms) for calls to the auth server
+        /// </summary>
+        public int Timeout { get; set; } = 100000;
+
         internal AuthServerOptions BaseOptions(string updatedClientId)
         {
             return new AuthServerOptions
@@ -48,7 +53,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
                 ClientId = updatedClientId ?? ClientId,
                 ClientSecret = ClientSecret,
                 ValidateCertificates = ValidateCertificates,
-                AuthorizationUrl = Authority
+                AuthorizationUrl = Authority,
+                ClientTimeout = Timeout
             };
         }
     }

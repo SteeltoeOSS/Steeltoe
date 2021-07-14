@@ -32,6 +32,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             set { Validate_Certificates = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the timeout (in ms) for calls to the auth server
+        /// </summary>
+        public int Timeout { get; set; } = 100000;
+
         public void SetEndpoints(string authDomain)
         {
             JwtKeyUrl = (!string.IsNullOrWhiteSpace(authDomain)) ?
