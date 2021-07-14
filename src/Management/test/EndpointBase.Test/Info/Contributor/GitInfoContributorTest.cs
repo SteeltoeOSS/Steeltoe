@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using System;
@@ -80,19 +81,17 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
             Assert.True(gitDict.ContainsKey("remote"));
             Assert.True(gitDict.ContainsKey("tags"));
 
-            // Verify times are correctly converted
             var gitDict2 = gitDict["build"] as Dictionary<string, object>;
             Assert.NotNull(gitDict2);
             Assert.True(gitDict2.ContainsKey("time"));
             var time = gitDict2["time"];
-            Assert.Equal(1499884839000, time);
+            Assert.Equal("2017-07-12T12:40:39-0600", time);
 
-            // Verify times are correctly converted
             var gitDict3 = gitDict["commit"] as Dictionary<string, object>;
             Assert.NotNull(gitDict3);
             Assert.True(gitDict3.ContainsKey("time"));
             time = gitDict3["time"];
-            Assert.Equal(1496926022000, time);
+            Assert.Equal("2017-06-08T06:47:02-0600", time);
         }
     }
 }
