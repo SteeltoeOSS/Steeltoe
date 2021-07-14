@@ -16,8 +16,6 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
 
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
         private readonly string _propFile;
         private readonly ILogger _logger;
 
@@ -79,21 +77,6 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
             }
 
             return null;
-        }
-
-        protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
-        {
-            var keyToInsert = key;
-            object valueToInsert = value;
-
-            if ("time".Equals(key))
-            {
-                var dt = DateTime.Parse(value);
-                var utc = dt.ToUniversalTime();
-                valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
-            }
-
-            dict[keyToInsert] = valueToInsert;
         }
     }
 }
