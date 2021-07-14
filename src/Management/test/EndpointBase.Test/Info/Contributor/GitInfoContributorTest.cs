@@ -81,17 +81,17 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
             Assert.True(gitDict.ContainsKey("remote"));
             Assert.True(gitDict.ContainsKey("tags"));
 
-            var gitDict2 = gitDict["build"] as Dictionary<string, object>;
-            Assert.NotNull(gitDict2);
-            Assert.True(gitDict2.ContainsKey("time"));
-            var time = gitDict2["time"];
-            Assert.Equal("2017-07-12T12:40:39-0600", time);
+            var gitBuildDict = gitDict["build"] as Dictionary<string, object>;
+            Assert.NotNull(gitBuildDict);
+            Assert.True(gitBuildDict.ContainsKey("time"));
+            var gitBuildTime = gitBuildDict["time"];
+            Assert.Equal("2017-07-12T12:40:39-0600", gitBuildTime);
 
-            var gitDict3 = gitDict["commit"] as Dictionary<string, object>;
-            Assert.NotNull(gitDict3);
-            Assert.True(gitDict3.ContainsKey("time"));
-            time = gitDict3["time"];
-            Assert.Equal("2017-06-08T06:47:02-0600", time);
+            var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
+            Assert.NotNull(gitCommitDict);
+            Assert.True(gitCommitDict.ContainsKey("time"));
+            var gitCommitTime = gitCommitDict["time"];
+            Assert.Equal("2017-06-08T06:47:02-0600", gitCommitTime);
         }
     }
 }
