@@ -84,14 +84,18 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
             var gitBuildDict = gitDict["build"] as Dictionary<string, object>;
             Assert.NotNull(gitBuildDict);
             Assert.True(gitBuildDict.ContainsKey("time"));
+
+            // Verify that datetime values are normalized correctly
             var gitBuildTime = gitBuildDict["time"];
-            Assert.Equal("2017-07-12T12:40:39-0600", gitBuildTime);
+            Assert.Equal("2017-07-12T20:40:39Z", gitBuildTime);
 
             var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
             Assert.NotNull(gitCommitDict);
             Assert.True(gitCommitDict.ContainsKey("time"));
+
+            // Verify that datetime values are normalized correctly
             var gitCommitTime = gitCommitDict["time"];
-            Assert.Equal("2017-06-08T06:47:02-0600", gitCommitTime);
+            Assert.Equal("2017-06-08T14:47:02Z", gitCommitTime);
         }
     }
 }
