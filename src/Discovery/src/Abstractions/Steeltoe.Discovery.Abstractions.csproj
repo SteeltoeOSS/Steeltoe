@@ -2,8 +2,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Discovery</RootNamespace>
-    <Description>Service registration and discovery abstractions</Description>
-    <PackageTags>service discovery;service registry;Spring Cloud;</PackageTags>
+    <Description>Abstractions for service registration and discovery</Description>
+    <PackageTags></PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

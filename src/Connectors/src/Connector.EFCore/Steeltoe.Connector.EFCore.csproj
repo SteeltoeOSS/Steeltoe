@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Description>Package for using CloudFoundry Connectors with Entity Framework Core</Description>
-    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;aspetcore;services</PackageTags>
+    <Description>Package for using Steeltoe Connectors with Entity Framework Core</Description>
+    <PackageTags>connectors;EFCore;EntityFrameworkCore;EF;Entity Framework Core;entity-framework-core;services</PackageTags>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />

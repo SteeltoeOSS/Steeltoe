@@ -1,18 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
   <PropertyGroup>
-    <Description>
-      Steeltoe Integration Abstractions
-      **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
-    </Description>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Integration</RootNamespace>
-    <PackageTags>Integration, NET Core, Spring, Spring Cloud</PackageTags>
+    <Description>
+      Abstractions for use with Steeltoe Integration libraries
+      **PLEASE NOTE** The public API of this package is subject to change and is not recommended for direct use outside of Steeltoe.
+    </Description>
+    <PackageTags></PackageTags>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
-
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Messaging\src\MessagingBase\Steeltoe.Messaging.MessagingBase.csproj" />

@@ -64,7 +64,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             parameters.IssuerValidator = tokenValidator.ValidateIssuer;
             parameters.AudienceValidator = tokenValidator.ValidateAudience;
 
-            var tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates);
+            CloudFoundryTokenKeyResolver tkr;
+            if (options is null)
+            {
+                tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates);
+            }
+            else
+            {
+                tkr = new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates, options.ClientTimeout);
+            }
+
             parameters.IssuerSigningKeyResolver = tkr.ResolveSigningKey;
 
             return parameters;

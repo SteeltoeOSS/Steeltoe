@@ -71,7 +71,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
             {
                 _logger?.LogTrace("Successfully exchanged auth code for a token");
                 var tokens = JsonSerializer.Deserialize<OpenIdTokenResponse>(await response.Content.ReadAsStringAsync());
-#pragma warning restore CS0618 // Type or member is obsolete
 #if DEBUG
                 _logger?.LogTrace("Identity token received: {identityToken}", tokens.IdentityToken);
                 _logger?.LogTrace("Access token received: {accessToken}", tokens.AccessToken);

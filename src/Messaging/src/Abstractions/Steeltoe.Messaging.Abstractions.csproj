@@ -1,10 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  
-  <PropertyGroup>
-    <Description>Steeltoe Messaging Abstractions</Description>
+    <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
-    <PackageTags>Messaging, ASPNET Core, Spring, Spring Cloud</PackageTags>
+    <Description>Abstractions for use with Steeltoe Messaging</Description>
+    <PackageTags></PackageTags>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />

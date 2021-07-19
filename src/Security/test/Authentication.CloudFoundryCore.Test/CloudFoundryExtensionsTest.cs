@@ -4,8 +4,10 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -128,7 +130,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Environment.SetEnvironmentVariable("openIdConfigResponse", openIdConfigResponse);
             Environment.SetEnvironmentVariable("jwksResponse", jwksResponse);
 
-            var builder = GetHostBuilder<TestServerOpenIdStartup>();
+            var builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string> { { "security:oauth2:client:Timeout", "9999" } });
             using var server = new TestServer(builder);
             var client = server.CreateClient();
             var result = await client.GetAsync("http://localhost/");
@@ -160,13 +162,18 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
 
-        private IWebHostBuilder GetHostBuilder<T>()
+        private IWebHostBuilder GetHostBuilder<T>(Dictionary<string, string> appsettings = null)
             where T : class
         {
             return new WebHostBuilder()
                 .UseStartup<T>()
                 .ConfigureAppConfiguration((context, builder) =>
                 {
+                    if (appsettings is not null)
+                    {
+                        builder.AddInMemoryCollection(appsettings);
+                    }
+
                     builder.AddCloudFoundry();
                 })
                 .UseEnvironment("development");

@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
   <PropertyGroup>
-    <OutputType>Library</OutputType>
     <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Bootstrap.Autoconfig</RootNamespace>
-    <Description>**EXPERIMENTAL** Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
-    <PackageTags>Autoconfiguration</PackageTags>
-    <IsPackable>true</IsPackable>
+    <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
+    <PackageTags>Autoconfiguration;automatic configuration;application bootstrapping</PackageTags>
   </PropertyGroup>
+
+  <Import Project="..\..\..\..\versions.props" />
+  <Import Project="..\..\..\..\sharedproject.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="$(ExtensionsVersion)" />
