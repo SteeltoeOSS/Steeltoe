@@ -15,7 +15,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// </summary>
         /// <param name="hostBuilder">The <see cref="IWebHostBuilder"/> to configure</param>
         /// <param name="configureLogger">The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" /></param>
-        /// <param name="preserveStaticLogger">Indicates whether to preserve the value of <see cref="Log.Logger"/>.</param>
+        /// <param name="preserveStaticLogger">Not Supported!</param>
         /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider</param>
         /// <returns>The <see cref="IWebHostBuilder"/></returns>
         public static IWebHostBuilder AddDynamicSerilog(
@@ -27,13 +27,18 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             return hostBuilder
                 .ConfigureLogging((hostContext, logBuilder) =>
                 {
-                    var loggerConfiguration = SerilogConfigurationExtensions.GetDefaultSerilogConfiguration(hostContext.Configuration);
+                    LoggerConfiguration loggerConfiguration = null;
                     if (configureLogger is object)
                     {
+                        loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(hostContext.Configuration);
                         configureLogger(hostContext, loggerConfiguration);
-                    }
 
-                    logBuilder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger, preserveDefaultConsole);
+                        logBuilder.AddDynamicSerilog(loggerConfiguration, preserveStaticLogger, preserveDefaultConsole);
+                    }
+                    else
+                    {
+                        logBuilder.AddDynamicSerilog(hostContext.Configuration, null, false);
+                    }
                 });
         }
 

@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Serilog;
+using Serilog.Events;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -16,7 +18,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
     {
         private static readonly Dictionary<string, string> Appsettings = new Dictionary<string, string>()
         {
-            { "Serilog:MinimumLevel:Default", "Verbose" }, // Sets level of root logger so has to be higher than any sub logger
+            { "Serilog:MinimumLevel:Default", "Verbose" },
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
             { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
             { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
@@ -31,7 +33,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             // arrange
             var appsettings = new Dictionary<string, string>()
             {
-                ["Serilog:MinimumLevel:Default"] = "Information" 
+                ["Serilog:MinimumLevel:Default"] = "Information"
             };
 
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();

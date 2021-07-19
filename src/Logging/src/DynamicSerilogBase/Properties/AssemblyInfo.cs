@@ -5,3 +5,5 @@
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicSerilogCore")]
+[assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicSerilogBase.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicSerilogCore.Test")]

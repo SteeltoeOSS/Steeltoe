@@ -14,13 +14,23 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         /// </summary>
         /// <param name="configuration"><see cref="IConfiguration"/></param>
         /// <returns>What Steeltoe considers to be a default <see cref="LoggerConfiguration" /></returns>
-        internal static LoggerConfiguration GetDefaultSerilogConfiguration(IConfiguration configuration) => new LoggerConfiguration().ReadFrom.Configuration(configuration).WriteToConsole();
+        internal static LoggerConfiguration GetDefaultSerilogConfiguration(IConfiguration configuration) => new LoggerConfiguration().ReadFrom.Configuration(configuration);
 
         /// <summary>
-        /// Calls .WriteTo.Console() for now, could be enhanced (via reflection) to make sure there's only one ConsoleSink
+        /// Clear all the levels from serilog configuration. This extension is used to clear the levels in serilog, after capturing them into steeltoe config
+        /// and using steeltoe config to control the verbosity.
         /// </summary>
-        /// <param name="loggerConfiguration"><see cref="LoggerConfiguration"/></param>
-        /// <returns><see cref="LoggerConfiguration" /> that writes to console</returns>
-        internal static LoggerConfiguration WriteToConsole(this LoggerConfiguration loggerConfiguration) => loggerConfiguration.WriteTo.Console();
+        /// <param name="loggerConfiguration">The <see cref="LoggerConfiguration"/></param>
+        /// <param name="minimumLevel">The Steeltoe <see cref="MinimumLevel"/></param>
+        /// <returns>The <see cref="LoggerConfiguration"/> that is cleared</returns>
+        internal static LoggerConfiguration ClearLevels(this LoggerConfiguration loggerConfiguration, MinimumLevel minimumLevel)
+        {
+            foreach (var overrideLevel in minimumLevel.Override)
+            {
+                loggerConfiguration.MinimumLevel.Override(overrideLevel.Key, Serilog.Events.LogEventLevel.Verbose);
+            }
+
+            return loggerConfiguration.MinimumLevel.Verbose();
+        }
     }
 }

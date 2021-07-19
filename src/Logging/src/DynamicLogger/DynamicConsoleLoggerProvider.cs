@@ -15,16 +15,16 @@ namespace Steeltoe.Extensions.Logging
     [ProviderAlias("Dynamic")]
     public class DynamicConsoleLoggerProvider : IDynamicLoggerProvider
     {
-        private static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
+        protected static readonly Func<string, LogLevel, bool> _falseFilter = (cat, level) => false;
 
-        private readonly ConcurrentDictionary<string, LogLevel> _originalLevels = new ConcurrentDictionary<string, LogLevel>();
-        private readonly ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
+        protected readonly ConcurrentDictionary<string, LogLevel> _originalLevels = new ConcurrentDictionary<string, LogLevel>();
+        protected readonly ConcurrentDictionary<string, Func<string, LogLevel, bool>> _runningFilters = new ConcurrentDictionary<string, Func<string, LogLevel, bool>>();
 
-        private readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        protected readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+        protected Func<string, LogLevel, bool> _filter = _falseFilter;
         private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
-        private Func<string, LogLevel, bool> _filter = _falseFilter;
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ConcurrentDictionary<string, DynamicConsoleLogger>();
-        private ConsoleLoggerProvider _delegate;
+        private ILoggerProvider _delegate;
 
         private bool _disposed = false;
 
@@ -40,6 +40,12 @@ namespace Steeltoe.Extensions.Logging
             _delegate = new ConsoleLoggerProvider(options);
             _messageProcessors = messageProcessors;
             SetFiltersFromOptions();
+        }
+
+        public DynamicConsoleLoggerProvider(Func<ILoggerProvider> delegateLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        {
+            _messageProcessors = messageProcessors;
+            _delegate = delegateLogger();
         }
 
         /// <summary>
@@ -168,7 +174,7 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private void SetFiltersFromOptions()
+        protected void SetFiltersFromOptions()
         {
             foreach (var rule in _filterOptions.CurrentValue.Rules.Where(p => string.IsNullOrEmpty(p.ProviderName) || p.ProviderName == "Console" || p.ProviderName == "Logging"))
             {

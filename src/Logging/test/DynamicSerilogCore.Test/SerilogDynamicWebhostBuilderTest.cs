@@ -4,18 +4,54 @@
 
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicWebhostBuilderTest
     {
+        public static ILogEventSink[] GetSinks(object logger)
+        {
+            var loggerField = logger.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+            var logger2 = loggerField.GetValue(logger);
+            var loggersField = logger2.GetType().GetProperty("Loggers");
+            var loggersvalueArray = loggersField.GetValue(logger2) as System.Array;
+
+            var loggersvaluearrayItem = loggersvalueArray.GetValue(0);
+            var dynamicLoggerField = loggersvaluearrayItem.GetType().GetProperty("Logger");
+            var dynamiclogger = dynamicLoggerField.GetValue(loggersvaluearrayItem) as DynamicConsoleLogger;
+
+            var logger3field = dynamiclogger.Delegate.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+            var serilogger = logger3field.GetValue(dynamiclogger.Delegate);
+
+            var loggerSinksField = serilogger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+            var serilogger2 = loggerSinksField.GetValue(serilogger);
+
+            var serilogger2SinksField = serilogger2.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+            var serilogger3 = serilogger2SinksField.GetValue(serilogger2);
+
+            var serilogger3SinksField = serilogger3.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+            var aggregatedSinks = serilogger3SinksField.GetValue(serilogger3);
+
+            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
+            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
+            return sinks;
+        }
+
+        public SerilogDynamicWebhostBuilderTest()
+        {
+            SerilogDynamicProvider.ClearLogger();
+        }
+
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
@@ -31,82 +67,48 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                         .MinimumLevel.Error()
                         .Enrich.WithExceptionDetails()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                        .WriteTo.Sink(testSink, LogEventLevel.Error);
+                        .WriteTo.Sink(testSink);
                 })
                 .Build();
 
+            Thread.Sleep(1000);
+
             // assert
             var logs = testSink.GetLogs();
+
             Assert.NotEmpty(logs);
             Assert.Contains("error", logs);
             Assert.DoesNotContain("info", logs);
         }
 
         [Fact]
-        public void AddDynamicSerilog_Default_AddsConsole()
-        {
-            // act
-            var host = new WebHostBuilder()
-                .UseStartup<Startup>()
-                .AddDynamicSerilog()
-                .Build();
-
-            // assert
-            var logger = (Logger)host.Services.GetService(typeof(Logger));
-            var loggerSinksField = logger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-            var aggregatedSinks = loggerSinksField.GetValue(logger);
-            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
-            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
-            Assert.Single(sinks);
-            Assert.Equal("Serilog.Sinks.SystemConsole.ConsoleSink", sinks.First().GetType().FullName);
-        }
-
-        [Fact]
-        public void AddDynamicSerilog_ReadsConfig_AddsConsole()
+        public void OnlyApplicableFilters_AreApplied_via_Options()
         {
             // arrange
-            var appSettings = new Dictionary<string, string> { { "Serilog:WriteTo:0:Name", "Console" } };
+            var appsettings = new Dictionary<string, string>()
+            {
+                { "Serilog:Using:0", "Steeltoe.Extensions.Logging.DynamicSerilogCore.Test" },
+                { "Serilog:MinimumLevel:Default", "Error" },
+                { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
+                { "Serilog:WriteTo:Name", "TestSink" }
+            };
 
             // act
             var host = new WebHostBuilder()
-                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings))
-                .UseStartup<Startup>()
-                .AddDynamicSerilog()
-                .Build();
+               .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appsettings))
+               .UseStartup<Startup>()
+               .AddDynamicSerilog()
+               .Build();
 
-            // assert
-            var logger = (Logger)host.Services.GetService(typeof(Logger));
-            var loggerSinksField = logger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-            var aggregatedSinks = loggerSinksField.GetValue(logger);
-            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
-            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
-            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.SystemConsole.ConsoleSink");
-        }
+            var logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebhostBuilderTest>));
+            var sinks = SerilogDynamicWebhostBuilderTest.GetSinks(logger);
+            Assert.NotNull(sinks);
+            var testSink = sinks.Where(x => x.GetType() == typeof(TestSink)).FirstOrDefault() as TestSink;
 
-        [Fact]
-        public void AddDynamicSerilog_ReadsConfig_AlwaysIncludesConsole()
-        {
-            // arrange
-            var appSettings = new Dictionary<string, string> { { "Serilog:WriteTo:0:Name", "Debug" } };
-
-            // act
-            var host = new WebHostBuilder()
-                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appSettings))
-                .UseStartup<Startup>()
-                .AddDynamicSerilog()
-                .Build();
-
-            // assert
-            var logger = (Logger)host.Services.GetService(typeof(Logger));
-            var loggerSinksField = logger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-            var aggregatedSinks = loggerSinksField.GetValue(logger);
-            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
-            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
-
-            // note: there could be two here without the logic in SerilogConfigurationExtensions.AddConsoleIfNoSinksFound
-            Assert.Equal(2, sinks.Count());
-            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.SystemConsole.ConsoleSink");
-            Assert.Contains(sinks, s => s.GetType().FullName == "Serilog.Sinks.Debug.DebugSink");
+            var logs = testSink.GetLogs();
+            Assert.NotEmpty(logs);
+            Assert.Contains("error", logs);
+            Assert.DoesNotContain("info", logs);
         }
     }
 }
