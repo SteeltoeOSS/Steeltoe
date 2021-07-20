@@ -15,6 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -67,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
-            var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, object>>>("http://localhost/management/infomanagement", GetSerializerOptions());
+            var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement", GetSerializerOptions());
             Assert.NotNull(dict);
 
             Assert.Equal(6, dict.Count);
@@ -92,7 +93,9 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.True(gitNode.ContainsKey("dirty"));
             Assert.True(gitNode.ContainsKey("remote"));
             Assert.True(gitNode.ContainsKey("tags"));
-        }
+            var commitInfo = gitNode["commit"].TryGetProperty("time", out var time);
+            Assert.Equal("2017-06-08T08:47:02Z", time.GetString());
+         }
 
         [Fact]
         public void RoutesByPathAndVerb()
