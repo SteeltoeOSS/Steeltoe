@@ -18,8 +18,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
         private const string GITPROPERTIES_FILE = "git.properties";
         private const string DATETIME_OUTPUT_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
-        private readonly List<string> DATETIME_INPUT_KEYS = new List<string> { "time" };
-        
+        private static readonly List<string> DATETIME_INPUT_KEYS = new List<string> { "time" };
         private readonly string _propFile;
         private readonly ILogger _logger;
 
