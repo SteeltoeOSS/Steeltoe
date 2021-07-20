@@ -398,7 +398,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         {
             var appSettings = new Dictionary<string, string>
             {
-                { "Serilog:MinimumLevel:Default", "Information" }, // Sets level of root logger so has to be higher than any sub logger
+                { "Serilog:MinimumLevel:Default", "Information" },
                 { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
                 { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
                 { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
