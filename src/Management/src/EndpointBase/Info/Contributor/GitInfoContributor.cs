@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor
@@ -15,9 +16,9 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
     {
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
+        private const string DATETIME_OUTPUT_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
+        private static readonly List<string> DATETIME_INPUT_KEYS = new List<string> { "time" };
         private readonly string _propFile;
         private readonly ILogger _logger;
 
@@ -83,17 +84,15 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
         {
-            var keyToInsert = key;
-            object valueToInsert = value;
+            var valueToInsert = value;
 
-            if ("time".Equals(key))
+            if (DATETIME_INPUT_KEYS.Contains(key))
             {
-                var dt = DateTime.Parse(value);
-                var utc = dt.ToUniversalTime();
-                valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
+                // Normalize datetime values to ISO8601 format
+                valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).ToString(DATETIME_OUTPUT_FORMAT);
             }
 
-            dict[keyToInsert] = valueToInsert;
+            dict[key] = valueToInsert;
         }
     }
 }
