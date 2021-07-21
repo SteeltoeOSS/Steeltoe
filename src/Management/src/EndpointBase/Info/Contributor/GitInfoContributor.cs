@@ -89,7 +89,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
             if (DATETIME_INPUT_KEYS.Contains(key))
             {
                 // Normalize datetime values to ISO8601 format
-                valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture).ToString(DATETIME_OUTPUT_FORMAT);
+                valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).ToString(DATETIME_OUTPUT_FORMAT);
             }
 
             dict[key] = valueToInsert;

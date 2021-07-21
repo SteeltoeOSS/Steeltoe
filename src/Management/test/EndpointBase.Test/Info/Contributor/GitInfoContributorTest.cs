@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
 
             // Verify that datetime values are normalized correctly
             var gitBuildTime = gitBuildDict["time"];
-            Assert.Equal("2017-07-12T20:40:39Z", gitBuildTime);
+            Assert.Equal("2017-07-12T18:40:39Z", gitBuildTime);
 
             var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
             Assert.NotNull(gitCommitDict);
@@ -95,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
 
             // Verify that datetime values are normalized correctly
             var gitCommitTime = gitCommitDict["time"];
-            Assert.Equal("2017-06-08T14:47:02Z", gitCommitTime);
+            Assert.Equal("2017-06-08T12:47:02Z", gitCommitTime);
         }
     }
 }

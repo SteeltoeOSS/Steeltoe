@@ -93,8 +93,10 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             Assert.True(gitNode.ContainsKey("dirty"));
             Assert.True(gitNode.ContainsKey("remote"));
             Assert.True(gitNode.ContainsKey("tags"));
-            var commitInfo = gitNode["commit"].TryGetProperty("time", out var time);
-            Assert.Equal("2017-06-08T08:47:02Z", time.GetString());
+            var buildInfo = gitNode["build"].TryGetProperty("time", out var bTime);
+            Assert.Equal("2017-07-12T18:40:39Z", bTime.GetString());
+            var commitInfo = gitNode["commit"].TryGetProperty("time", out var cTime);
+            Assert.Equal("2017-06-08T12:47:02Z", cTime.GetString());
          }
 
         [Fact]
