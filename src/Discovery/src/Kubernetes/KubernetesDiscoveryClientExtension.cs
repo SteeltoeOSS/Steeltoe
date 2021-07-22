@@ -45,9 +45,8 @@ namespace Steeltoe.Discovery.Kubernetes
         private static void AddKubernetesServices(IServiceCollection services)
         {
             services.AddKubernetesClient();
-            services.PostConfigure<KubernetesDiscoveryOptions>(options =>
+            services.AddOptions<KubernetesDiscoveryOptions>().PostConfigure<KubernetesApplicationOptions>((options, appOptions) =>
             {
-                var appOptions = services.GetKubernetesApplicationOptions() as KubernetesApplicationOptions;
                 options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, appOptions.KubernetesRoot + ":discovery:servicename");
                 if (options.Namespace == "default" && appOptions.NameSpace != "default")
                 {
