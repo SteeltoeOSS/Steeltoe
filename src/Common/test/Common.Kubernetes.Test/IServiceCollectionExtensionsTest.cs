@@ -27,7 +27,8 @@ namespace Steeltoe.Common.Kubernetes.Test
             // arrange
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            Assert.NotNull(serviceCollection.GetApplicationInstanceInfo());
+            serviceCollection.RegisterDefaultApplicationInstanceInfo();
+            Assert.NotNull(serviceCollection.BuildServiceProvider().GetService<IApplicationInstanceInfo>());
 
             // act
             serviceCollection.AddKubernetesApplicationInstanceInfo();
