@@ -31,7 +31,7 @@ namespace Steeltoe.Management.Kubernetes
             {
                 if (podUtilities == null)
                 {
-                    services.AddKubernetesApplicationInstanceInfo();
+                    services.AddKubernetesClient();
                     services.AddSingleton<IPodUtilities, StandardPodUtilities>();
                 }
                 else
