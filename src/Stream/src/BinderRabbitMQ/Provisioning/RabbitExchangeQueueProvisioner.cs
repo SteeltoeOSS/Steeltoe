@@ -51,7 +51,6 @@ namespace Steeltoe.Stream.Binder.Rabbit.Provisioning
         {
             Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
 
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
             _autoDeclareContext = applicationContext;
             _logger = logger;
             Admin.ApplicationContext = _autoDeclareContext;

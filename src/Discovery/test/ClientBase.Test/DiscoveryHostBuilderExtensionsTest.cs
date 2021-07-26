@@ -21,7 +21,7 @@ namespace Steeltoe.Discovery.Client.Test
         private static readonly Dictionary<string, string> EurekaSettings = new Dictionary<string, string>()
         {
             ["eureka:client:shouldRegister"] = "true",
-            ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
+            ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "0",
             ["eureka:client:eurekaServer:retryCount"] = "0",
         };
 

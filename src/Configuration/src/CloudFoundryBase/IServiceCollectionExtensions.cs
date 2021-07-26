@@ -18,15 +18,16 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry
         public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection serviceCollection)
         {
             var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
-            if (appInfo != null)
+            if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
             {
-                serviceCollection.Remove(appInfo);
-            }
+                if (appInfo != null)
+                {
+                    serviceCollection.Remove(appInfo);
+                }
 
-            var sp = serviceCollection.BuildServiceProvider();
-            var config = sp.GetRequiredService<IConfiguration>();
-            var newAppInfo = new CloudFoundryApplicationOptions(config);
-            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), newAppInfo);
+                serviceCollection.AddSingleton(typeof(CloudFoundryApplicationOptions), serviceProvider => new CloudFoundryApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+                serviceCollection.AddSingleton<IApplicationInstanceInfo>(serviceProvider => serviceProvider.GetRequiredService<CloudFoundryApplicationOptions>());
+            }
 
             return serviceCollection;
         }
