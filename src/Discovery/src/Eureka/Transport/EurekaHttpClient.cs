@@ -87,6 +87,11 @@ namespace Steeltoe.Discovery.Eureka.Transport
 
         private async Task<EurekaHttpResponse> RegisterAsyncInternal(InstanceInfo info)
         {
+            if ((Platform.IsContainerized || Platform.IsCloudHosted) && info.HostName.Equals("localhost", StringComparison.InvariantCultureIgnoreCase))
+            {
+                _logger?.LogWarning("Registering with hostname 'localhost' in containerized or cloud environments may not be valid. Please configure Eureka:Instance:HostName with a non-localhost address");
+            }
+
             var candidateServiceUrls = GetServiceUrlCandidates();
             var indx = 0;
             string serviceUrl = null;
