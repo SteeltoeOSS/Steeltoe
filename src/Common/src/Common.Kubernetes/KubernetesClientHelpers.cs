@@ -36,10 +36,12 @@ namespace Steeltoe.Common.Kubernetes
             catch (KubeConfigException e)
             {
                 // couldn't locate .kube\config or user-identified files. use an empty config object and fall back on user-defined Action to set the configuration
-                logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration using files at configured or default location, creating an empty config...");
+                logger?.LogWarning(e, "Failed to build KubernetesClientConfiguration, creating an empty config...");
             }
 
-            kubernetesClientConfiguration?.Invoke(k8sConfig ?? new KubernetesClientConfiguration());
+            // BuildDefaultConfig() doesn't set a host if KubeConfigException is thrown
+            k8sConfig ??= new KubernetesClientConfiguration() { Host = "http://localhost:8080" };
+            kubernetesClientConfiguration?.Invoke(k8sConfig);
 
             return new k8s.Kubernetes(k8sConfig);
         }

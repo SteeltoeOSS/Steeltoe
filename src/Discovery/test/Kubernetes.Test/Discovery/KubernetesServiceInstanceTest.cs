@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Kubernetes.Test.Discovery
         private KubernetesServiceInstance AssertServiceInstance(bool secure)
         {
             var address = new V1EndpointAddress { Ip = "1.2.3.4" };
-            var port = new V1EndpointPort { Port = 8080 };
+            var port = new Corev1EndpointPort { Port = 8080 };
             var instance = new KubernetesServiceInstance("123", "myString", address, port, new Dictionary<string, string>(), secure);
             Assert.Equal(expected: "123", actual: instance.InstanceId);
             Assert.Equal(expected: "myString", actual: instance.ServiceId);
