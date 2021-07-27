@@ -444,6 +444,7 @@ namespace Steeltoe.Discovery.Eureka
                 _logger.LogDebug("Renew {Application}/{Instance} returned: {StatusCode}", inst.AppName, inst.InstanceId, resp.StatusCode);
                 if (resp.StatusCode == HttpStatusCode.NotFound)
                 {
+                    _logger.LogWarning("Eureka heartbeat came back with 404 status. This could happen if Eureka was offline during app startup. Attempting to (re)register now.");
                     return await RegisterAsync().ConfigureAwait(false);
                 }
 
