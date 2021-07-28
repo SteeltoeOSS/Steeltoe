@@ -26,26 +26,29 @@ namespace Steeltoe.Discovery.Consul
         /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var config = serviceProvider.GetRequiredService<IConfiguration>();
-            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
-            ConfigureConsulServices(services, config, netOptions);
+            ConfigureConsulServices(services);
             AddConsulServices(services);
         }
 
         public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
-        {
-            return configuration.GetSection(CONSUL_PREFIX).GetChildren().Any();
-        }
+            => configuration.GetSection(CONSUL_PREFIX).GetChildren().Any();
 
-        private static void ConfigureConsulServices(IServiceCollection services, IConfiguration config, InetOptions netOptions)
+        private static void ConfigureConsulServices(IServiceCollection services)
         {
-            var consulSection = config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX);
-            services.Configure<ConsulOptions>(consulSection);
-            services.PostConfigure<ConsulOptions>(options => ConsulPostConfigurer.ValidateConsulOptions(options));
-            var consulDiscoverySection = config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX);
-            services.Configure<ConsulDiscoveryOptions>(consulDiscoverySection);
-            services.PostConfigure<ConsulDiscoveryOptions>(options => ConsulPostConfigurer.UpdateDiscoveryOptions(config, options, netOptions));
+            services
+                .AddOptions<ConsulOptions>()
+                .Configure<IConfiguration>((options, config) => config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX).Bind(options))
+                .PostConfigure(options => ConsulPostConfigurer.ValidateConsulOptions(options));
+
+            services
+                .AddOptions<ConsulDiscoveryOptions>()
+                .Configure<IConfiguration>((options, config) => config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(options))
+                .PostConfigure<IConfiguration>((options, config) =>
+                {
+                    var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
+                    ConsulPostConfigurer.UpdateDiscoveryOptions(config, options, netOptions);
+                });
+
             services.TryAddSingleton(serviceProvider =>
             {
                 var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
@@ -66,7 +69,7 @@ namespace Steeltoe.Discovery.Consul
             services.AddSingleton<IConsulRegistration>((p) =>
             {
                 var opts = p.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-                var appInfo = services.GetApplicationInstanceInfo();
+                var appInfo = p.GetService<IApplicationInstanceInfo>();
                 return ConsulRegistration.CreateRegistration(opts.Value, appInfo);
             });
             services.AddSingleton<IConsulServiceRegistrar, ConsulServiceRegistrar>();

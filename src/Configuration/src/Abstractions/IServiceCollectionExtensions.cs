@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration
@@ -16,6 +17,7 @@ namespace Steeltoe.Extensions.Configuration
         /// </summary>
         /// <param name="serviceCollection">Collection of configured services</param>
         /// <returns>Relevant <see cref="IServicesInfo" /></returns>
+        [Obsolete("This method builds a temporary service provider and should not be used")]
         public static IServicesInfo GetServicesInfo(this IServiceCollection serviceCollection)
         {
             var sp = serviceCollection.BuildServiceProvider();

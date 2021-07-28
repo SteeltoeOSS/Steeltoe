@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Common.Reflection;
@@ -52,6 +53,7 @@ namespace Steeltoe.Discovery.Client
         public static IServiceCollection AddDiscoveryClient(this IServiceCollection services, IConfiguration config, string serviceName = null, IDiscoveryLifecycle lifecycle = null)
         {
             Action<DiscoveryClientBuilder> builderAction = null;
+
             config ??= services.BuildServiceProvider().GetRequiredService<IConfiguration>();
             var info = string.IsNullOrEmpty(serviceName)
                 ? GetSingletonDiscoveryServiceInfo(config)
@@ -112,6 +114,7 @@ namespace Steeltoe.Discovery.Client
                 builderAction = (builder) => builder.Extensions.Add(new NoOpDiscoveryClientExtension());
             }
 
+            serviceCollection.RegisterDefaultApplicationInstanceInfo();
             ApplyDiscoveryOptions(serviceCollection, builderAction);
 
             serviceCollection.TryAddTransient<DiscoveryHttpMessageHandler>();
@@ -175,6 +178,7 @@ namespace Steeltoe.Discovery.Client
 
             if (builder.Extensions.Count > 1)
             {
+                // TODO: don't BuildServiceProvider() here
                 var config = serviceCollection.BuildServiceProvider().GetRequiredService<IConfiguration>();
                 var configured = builder.Extensions.Where(ext => ext.IsConfigured(config, GetSingletonDiscoveryServiceInfo(config)));
                 if (!configured.Any() || configured.Count() > 1)

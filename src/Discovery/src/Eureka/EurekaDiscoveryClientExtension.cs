@@ -39,16 +39,7 @@ namespace Steeltoe.Discovery.Eureka
         /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var config = serviceProvider.GetRequiredService<IConfiguration>();
-            var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
-
-            ServiceInfoName ??= config.GetValue<string>("eureka:serviceInfoName");
-            var info = string.IsNullOrEmpty(ServiceInfoName)
-                ? GetSingletonDiscoveryServiceInfo(config)
-                : GetNamedDiscoveryServiceInfo(config, ServiceInfoName);
-
-            ConfigureEurekaServices(services, config, info, netOptions);
+            ConfigureEurekaServices(services);
             AddEurekaServices(services);
         }
 
@@ -57,30 +48,32 @@ namespace Steeltoe.Discovery.Eureka
             return configuration.GetSection(EUREKA_PREFIX).GetChildren().Any() || serviceInfo is EurekaServiceInfo;
         }
 
-        private static void ConfigureEurekaServices(IServiceCollection services, IConfiguration config, IServiceInfo info, InetOptions netOptions)
+        private void ConfigureEurekaServices(IServiceCollection services)
         {
-            var einfo = info as EurekaServiceInfo;
-            var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
-            services.Configure<EurekaClientOptions>(clientSection);
-            services.PostConfigure<EurekaClientOptions>((options) =>
-            {
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options);
-            });
-
-            var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
-            services.Configure<EurekaInstanceOptions>(instSection);
-            services.PostConfigure<EurekaInstanceOptions>((options) =>
-            {
-                IApplicationInstanceInfo appInfo = null;
-                if (einfo?.ApplicationInfo == null)
+            services
+                .AddOptions<EurekaClientOptions>()
+                .Configure<IConfiguration>((options, config) =>
                 {
-                    appInfo = services.GetApplicationInstanceInfo();
-                }
+                    config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX).Bind(options);
+                })
+                .PostConfigure<IConfiguration>((options, config) =>
+                {
+                    var info = GetServiceInfo(config);
+                    EurekaPostConfigurer.UpdateConfiguration(config, info, options);
+                });
 
-                options.NetUtils = new InetUtils(netOptions);
-                options.ApplyNetUtils();
-                EurekaPostConfigurer.UpdateConfiguration(config, einfo, options, einfo?.ApplicationInfo ?? appInfo);
-            });
+            services
+                .AddOptions<EurekaInstanceOptions>()
+                .Configure<IConfiguration>((options, config) => config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(options))
+                .PostConfigure<IConfiguration, IApplicationInstanceInfo>((options, config, appInfo) =>
+                {
+                    var inetOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
+                    options.NetUtils = new InetUtils(inetOptions);
+                    options.ApplyNetUtils();
+                    var info = GetServiceInfo(config);
+                    EurekaPostConfigurer.UpdateConfiguration(config, info, options, info?.ApplicationInfo ?? appInfo);
+                });
+
             services.TryAddSingleton(serviceProvider =>
             {
                 var clientOptions = serviceProvider.GetRequiredService<IOptions<EurekaClientOptions>>();
@@ -88,7 +81,7 @@ namespace Steeltoe.Discovery.Eureka
             });
         }
 
-        private static void AddEurekaServices(IServiceCollection services)
+        private void AddEurekaServices(IServiceCollection services)
         {
             services.AddSingleton<EurekaApplicationInfoManager>();
             services.AddSingleton<EurekaDiscoveryManager>();
@@ -108,13 +101,23 @@ namespace Steeltoe.Discovery.Eureka
 
             services.AddSingleton<IHealthContributor, EurekaServerHealthContributor>();
 
-            var serviceProvider = services.BuildServiceProvider();
-            var certOptions = serviceProvider.GetService<IOptions<CertificateOptions>>();
-            var existingHandler = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            var certOptions = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IConfigureOptions<CertificateOptions>));
+            var existingHandler = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IHttpClientHandlerProvider));
+
             if (certOptions is object && existingHandler is null)
             {
                 services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
             }
+        }
+
+        private EurekaServiceInfo GetServiceInfo(IConfiguration config)
+        {
+            ServiceInfoName ??= config.GetValue<string>("eureka:serviceInfoName");
+            var info = string.IsNullOrEmpty(ServiceInfoName)
+                ? GetSingletonDiscoveryServiceInfo(config)
+                : GetNamedDiscoveryServiceInfo(config, ServiceInfoName);
+
+            return info as EurekaServiceInfo;
         }
     }
 }
