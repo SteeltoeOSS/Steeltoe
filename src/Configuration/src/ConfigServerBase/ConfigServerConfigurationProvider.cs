@@ -381,12 +381,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
         {
             _loggerFactory = loggerFactory;
             _logger = _loggerFactory?.CreateLogger<ConfigServerConfigurationProvider>();
-            await _configServerDiscoveryService?.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
+            if (_configServerDiscoveryService is not null)
+            {
+                await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
+            }
         }
 
         internal async Task ShutdownAsync()
         {
-            await _configServerDiscoveryService?.ShutdownAsync();
+            if (_configServerDiscoveryService is not null)
+            {
+                await _configServerDiscoveryService.ShutdownAsync();
+            }
         }
 
         /// <summary>

@@ -60,6 +60,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             services.AddDiscoveryClient(_configuration);
             var startupServiceProvider = services.BuildServiceProvider();
             _discoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
+            _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", _discoveryClient.GetType());
         }
 
         internal IEnumerable<IServiceInstance> GetConfigServerInstances()

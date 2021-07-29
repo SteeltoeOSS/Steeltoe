@@ -38,7 +38,8 @@ namespace Steeltoe.Discovery.Eureka
         {
             if ((Platform.IsContainerized || Platform.IsCloudHosted) &&
                 si == null &&
-                clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfig.Default_ServerServiceUrl.TrimEnd('/')))
+                clientOptions.EurekaServerServiceUrls.Contains(EurekaClientConfig.Default_ServerServiceUrl.TrimEnd('/')) &&
+                (clientOptions.Enabled || clientOptions.ShouldRegisterWithEureka || clientOptions.ShouldFetchRegistry))
             {
                 throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.Default_ServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
             }

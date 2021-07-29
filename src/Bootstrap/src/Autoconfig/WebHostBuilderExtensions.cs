@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Kubernetes;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
@@ -202,7 +203,10 @@ namespace Steeltoe.Bootstrap.Autoconfig
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireKubernetesConfiguration(this IWebHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory)).Log(LogMessages.WireKubernetesConfiguration);
+            hostBuilder
+                .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory))
+                .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesApplicationInstanceInfo())
+                .Log(LogMessages.WireKubernetesConfiguration);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireRandomValueProvider(this IWebHostBuilder hostBuilder) =>
