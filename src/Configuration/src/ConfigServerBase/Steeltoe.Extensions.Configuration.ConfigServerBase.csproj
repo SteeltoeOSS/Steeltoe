@@ -17,5 +17,6 @@
     <ProjectReference Include="..\..\..\Common\src\Common.Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\CloudFoundryBase\Steeltoe.Extensions.Configuration.CloudFoundryBase.csproj" />
     <ProjectReference Include="..\PlaceholderBase\Steeltoe.Extensions.Configuration.PlaceholderBase.csproj" />
+    <ProjectReference Include="..\..\..\Discovery\src\ClientBase\Steeltoe.Discovery.ClientBase.csproj" PrivateAssets="All" />
   </ItemGroup>
 </Project>

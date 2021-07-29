@@ -5,12 +5,14 @@
 #pragma warning disable 0436
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using OpenTelemetry.Trace;
 using Steeltoe.Common;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.MongoDb;
@@ -20,7 +22,6 @@ using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Redis;
 using Steeltoe.Connector.SqlServer;
-using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Extensions.Configuration.ConfigServer;
@@ -184,7 +185,16 @@ namespace Steeltoe.Bootstrap.Autoconfig
         #region Config Providers
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireConfigServer(this IWebHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddConfigServer(_loggerFactory)).Log(LogMessages.WireConfigServer);
+            hostBuilder
+                .ConfigureAppConfiguration(cfg => cfg.AddConfigServer(_loggerFactory))
+                .ConfigureServices((context, services) =>
+                {
+                    services.ConfigureConfigServerClientOptions(context.Configuration);
+                    services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
+                    services.TryAddSingleton<IHostedService, ConfigServerHostedService>();
+                    services.TryAddSingleton<IHealthContributor, ConfigServerHealthContributor>();
+                })
+                .Log(LogMessages.WireConfigServer);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireCloudFoundryConfiguration(this IWebHostBuilder hostBuilder) =>

@@ -6,11 +6,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http;
+using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -138,6 +138,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal ILogger Logger => _logger;
 
+        internal ConfigServerDiscoveryService _configServerDiscoveryService;
+
         /// <summary>
         /// Loads configuration data from the Spring Cloud Configuration Server as specified by
         /// the <see cref="Settings"/>
@@ -179,8 +181,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             if (IsDiscoveryFirstEnabled())
             {
-                var discoveryService = new ConfigServerDiscoveryService(_configuration, _settings, _loggerFactory);
-                DiscoverServerInstances(discoveryService);
+                _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, _settings, _loggerFactory);
+                DiscoverServerInstances();
             }
 
             // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
@@ -320,10 +322,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        internal void DiscoverServerInstances(ConfigServerDiscoveryService discoveryService)
+        internal void DiscoverServerInstances()
         {
-            var instances = discoveryService.GetConfigServerInstances();
-            if (instances == null || instances.Count == 0)
+            var instances = _configServerDiscoveryService.GetConfigServerInstances();
+            if (!instances.Any())
             {
                 if (_settings.FailFast)
                 {
@@ -336,7 +338,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             UpdateSettingsFromDiscovery(instances, _settings);
         }
 
-        internal void UpdateSettingsFromDiscovery(IList<IServiceInstance> instances, ConfigServerClientSettings settings)
+        internal void UpdateSettingsFromDiscovery(IEnumerable<IServiceInstance> instances, ConfigServerClientSettings settings)
         {
             var endpoints = new StringBuilder();
             foreach (var instance in instances)
@@ -373,6 +375,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 var uris = endpoints.ToString(0, endpoints.Length - 1);
                 settings.Uri = uris;
             }
+        }
+
+        internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+            _logger = _loggerFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            await _configServerDiscoveryService?.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
+        }
+
+        internal async Task ShutdownAsync()
+        {
+            await _configServerDiscoveryService?.ShutdownAsync();
         }
 
         /// <summary>
