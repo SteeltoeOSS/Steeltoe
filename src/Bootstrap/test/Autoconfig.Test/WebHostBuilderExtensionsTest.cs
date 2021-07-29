@@ -24,6 +24,7 @@ using Steeltoe.Extensions.Configuration.Kubernetes;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using Steeltoe.Extensions.Configuration.RandomValue;
 using Steeltoe.Extensions.Logging;
+using Steeltoe.Extensions.Logging.DynamicSerilog;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
@@ -185,13 +186,9 @@ namespace Steeltoe.Bootstrap.Autoconfig.Test
             var host = hostBuilder.AddSteeltoe(exclusions).Build();
 
             // Assert
-            var logger = (Logger)host.Services.GetService(typeof(Logger));
-            var loggerSinksField = logger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-            var aggregatedSinks = loggerSinksField.GetValue(logger);
-            var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
-            var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
-            Assert.Single(sinks);
-            Assert.Equal("Serilog.Sinks.SystemConsole.ConsoleSink", sinks.First().GetType().FullName);
+            var loggerProvider = (IDynamicLoggerProvider)host.Services.GetService(typeof(IDynamicLoggerProvider));
+
+            Assert.IsType<SerilogDynamicProvider>(loggerProvider);
         }
 
         [Fact]

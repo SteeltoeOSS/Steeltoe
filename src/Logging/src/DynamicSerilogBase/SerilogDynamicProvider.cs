@@ -6,21 +6,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
-    public class SerilogDynamicProvider : DynamicConsoleLoggerProvider
+    public class SerilogDynamicProvider : DefaultDynamicLoggerProvider
     {
         private static readonly object _sync = new ();
         private static Serilog.Core.Logger _serilogger;
-        private readonly SerilogOptions _serilogOptions;
 
         public SerilogDynamicProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
-            : base(() => GetDelegateLogger(serilogOptionsMonitor), messageProcessors)
+            : base(() => GetDelegateLogger(serilogOptionsMonitor), GetInitialLevelsFromOptions(serilogOptionsMonitor), messageProcessors)
         {
-            _serilogOptions = serilogOptionsMonitor?.CurrentValue ?? throw new ArgumentNullException(nameof(serilogOptionsMonitor));
-
-            SetFiltersFromOptions();
         }
 
         /// <summary>
@@ -45,18 +42,27 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             return new Serilog.Extensions.Logging.SerilogLoggerProvider(_serilogger);
         }
 
-        private new void SetFiltersFromOptions()
+        private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
         {
-            var defaultLevel = (LogLevel)_serilogOptions.MinimumLevel.Default;
-            _originalLevels.TryAdd("Default", defaultLevel);
-            _filter = (category, level) => level >= defaultLevel;
+            var serilogOptions = serilogOptionsMonitor.CurrentValue;
+            var defaultLevel = (LogLevel)serilogOptions.MinimumLevel.Default;
+            var originalLevels = new Dictionary<string, LogLevel>();
+            var runningLevelFilters = new Dictionary<string, Filter>();
+            originalLevels["Default"] = defaultLevel;
 
-            foreach (var overrideLevel in _serilogOptions.MinimumLevel.Override)
+            foreach (var overrideLevel in serilogOptions.MinimumLevel.Override)
             {
                 var logLevel = (LogLevel)overrideLevel.Value;
-                _originalLevels.TryAdd(overrideLevel.Key, logLevel);
-                _runningFilters.TryAdd(overrideLevel.Key, (category, level) => level >= logLevel);
+                originalLevels[overrideLevel.Key] = logLevel;
+                runningLevelFilters[overrideLevel.Key] = (category, level) => level >= logLevel;
             }
+
+            return new InitialLevels
+            {
+                DefaultLevelFilter = (category, level) => level >= defaultLevel,
+                RunningLevelFilters = runningLevelFilters,
+                OriginalLevels = originalLevels
+            };
         }
     }
 }

@@ -21,6 +21,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Logging.Abstractions.csproj" />
-    <ProjectReference Include="..\DynamicLogger\Steeltoe.Extensions.Logging.DynamicLogger.csproj" />
   </ItemGroup>
 </Project>

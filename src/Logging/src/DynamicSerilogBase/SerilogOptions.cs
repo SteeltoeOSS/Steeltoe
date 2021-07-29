@@ -75,6 +75,12 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         }
 
         public Serilog.LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
+
+        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+        public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+
+        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+        public IEnumerable<string> FullnameExclusions => new List<string>();
     }
 
 #pragma warning disable SA1402 // File may only contain a single class
