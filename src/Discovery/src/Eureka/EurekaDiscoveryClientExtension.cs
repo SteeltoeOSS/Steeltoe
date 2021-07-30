@@ -57,9 +57,9 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX).Bind(options);
 
-                    // Eureka is enabled by default. If eureka:client:enabled was not set then double-check spring:cloud:discovery:enabled
+                    // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
                     if (options.Enabled &&
-                        string.IsNullOrEmpty(config.GetValue<string>(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX + ":enabled")) &&
+                        config.GetValue<bool?>(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX + ":enabled") is null &&
                         config.GetValue<bool?>(_springDiscoveryEnabled) == false)
                     {
                         options.Enabled = false;

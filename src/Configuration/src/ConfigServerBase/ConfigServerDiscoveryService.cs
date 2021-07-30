@@ -70,7 +70,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
             IEnumerable<IServiceInstance> instances;
             do
             {
-                instances = null;
                 try
                 {
                     _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);

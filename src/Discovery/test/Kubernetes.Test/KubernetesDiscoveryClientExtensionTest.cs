@@ -5,27 +5,25 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System;
+using Steeltoe.Discovery.Kubernetes.Discovery;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Kubernetes.Test
 {
-    public class EurekaDiscoveryClientExtensionTest
+    public class KubernetesDiscoveryClientExtensionTest
     {
         [Fact]
         public void ClientEnabledByDefault()
         {
             // arrange
             var services = new ServiceCollection();
-            var ext = new EurekaDiscoveryClientExtension();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
             // act
-            ext.ConfigureEurekaServices(services);
+            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
             // assert
             Assert.True(clientOptions.Value.Enabled);
@@ -36,36 +34,34 @@ namespace Steeltoe.Discovery.Eureka.Test
         {
             // arrange
             var services = new ServiceCollection();
-            var ext = new EurekaDiscoveryClientExtension();
             var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
             // act
-            ext.ConfigureEurekaServices(services);
+            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
             // assert
             Assert.False(clientOptions.Value.Enabled);
         }
 
         [Fact]
-        public void ClientFavorsEurekaClientEnabled()
+        public void ClientFavorsKubernetesDiscoveryEnabled()
         {
             // arrange
             var services = new ServiceCollection();
-            var ext = new EurekaDiscoveryClientExtension();
             var appSettings = new Dictionary<string, string>
             {
                 { "spring:cloud:discovery:enabled", "false" },
-                { "eureka:client:enabled", "true" }
+                { "spring:cloud:kubernetes:discovery:enabled", "true" }
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
             // act
-            ext.ConfigureEurekaServices(services);
+            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
+            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
             // assert
             Assert.True(clientOptions.Value.Enabled);
