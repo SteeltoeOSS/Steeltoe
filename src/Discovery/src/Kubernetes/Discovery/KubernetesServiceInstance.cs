@@ -17,7 +17,14 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
         private const string Coln = ":";
 
         private V1EndpointAddress _endpointAddress;
+
+#if NETSTANDARD2_0
         private V1EndpointPort _endpointPort;
+#endif
+
+#if NETSTANDARD2_1
+        private Corev1EndpointPort _endpointPort;
+#endif
 
         public string InstanceId { get; }
 
@@ -33,6 +40,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
 
         public IDictionary<string, string> Metadata { get; }
 
+#if NETSTANDARD2_0
         public KubernetesServiceInstance(
             string instanceId,
             string serviceId,
@@ -48,6 +56,25 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
             IsSecure = isSecure;
             Metadata = metadata;
         }
+#endif
+
+#if NETSTANDARD2_1
+        public KubernetesServiceInstance(
+            string instanceId,
+            string serviceId,
+            V1EndpointAddress endpointAddress,
+            Corev1EndpointPort endpointPort,
+            IDictionary<string, string> metadata,
+            bool isSecure)
+        {
+            InstanceId = instanceId;
+            ServiceId = serviceId;
+            _endpointAddress = endpointAddress;
+            _endpointPort = endpointPort;
+            IsSecure = isSecure;
+            Metadata = metadata;
+        }
+#endif
 
         public string GetScheme()
         {

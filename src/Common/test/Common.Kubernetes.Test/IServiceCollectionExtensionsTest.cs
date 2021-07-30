@@ -27,7 +27,8 @@ namespace Steeltoe.Common.Kubernetes.Test
             // arrange
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-            Assert.NotNull(serviceCollection.GetApplicationInstanceInfo());
+            serviceCollection.RegisterDefaultApplicationInstanceInfo();
+            Assert.NotNull(serviceCollection.BuildServiceProvider().GetService<IApplicationInstanceInfo>());
 
             // act
             serviceCollection.AddKubernetesApplicationInstanceInfo();
@@ -41,6 +42,7 @@ namespace Steeltoe.Common.Kubernetes.Test
         }
 
         [Fact]
+        [Obsolete]
         public void GetKubernetesApplicationOptions_ThrowsOnNull()
         {
             var ex = Assert.Throws<ArgumentNullException>(() => IServiceCollectionExtensions.GetKubernetesApplicationOptions(null));
@@ -48,6 +50,7 @@ namespace Steeltoe.Common.Kubernetes.Test
         }
 
         [Fact]
+        [Obsolete]
         public void GetKubernetesApplicationOptions_ReturnsAndAddsOptions()
         {
             // arrange
@@ -61,7 +64,6 @@ namespace Steeltoe.Common.Kubernetes.Test
             // assert
             Assert.NotNull(options);
             Assert.Single(appInfos);
-            Assert.Equal(options, appInfos.FirstOrDefault());
             Assert.IsType<KubernetesApplicationOptions>(options);
             Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, options.ApplicationName);
         }
@@ -82,8 +84,9 @@ namespace Steeltoe.Common.Kubernetes.Test
 
             // act
             serviceCollection.AddKubernetesClient();
-            var client = serviceCollection.BuildServiceProvider().GetService<IKubernetes>();
-            var appInfos = serviceCollection.BuildServiceProvider().GetServices<IApplicationInstanceInfo>();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
+            var client = serviceProvider.GetService<IKubernetes>();
+            var appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
 
             // assert
             Assert.NotNull(client);

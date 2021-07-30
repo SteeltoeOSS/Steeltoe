@@ -19,8 +19,7 @@ namespace Steeltoe.Discovery.Client.SimpleClients
         /// <inheritdoc/>
         public void ApplyServices(IServiceCollection services)
         {
-            var configuration = services.BuildServiceProvider().GetRequiredService<IConfiguration>();
-            services.Configure<List<ConfigurationServiceInstance>>(configuration.GetSection(CONFIG_PREFIX));
+            services.AddOptions<List<ConfigurationServiceInstance>>().Configure<IConfiguration>((options, configuration) => configuration.GetSection(CONFIG_PREFIX).Bind(options));
             services.AddSingleton<IDiscoveryClient>((serviceProvider) => new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
         }
 

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using System;
@@ -80,19 +81,21 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
             Assert.True(gitDict.ContainsKey("remote"));
             Assert.True(gitDict.ContainsKey("tags"));
 
-            // Verify times are correctly converted
-            var gitDict2 = gitDict["build"] as Dictionary<string, object>;
-            Assert.NotNull(gitDict2);
-            Assert.True(gitDict2.ContainsKey("time"));
-            var time = gitDict2["time"];
-            Assert.Equal(1499884839000, time);
+            var gitBuildDict = gitDict["build"] as Dictionary<string, object>;
+            Assert.NotNull(gitBuildDict);
+            Assert.True(gitBuildDict.ContainsKey("time"));
 
-            // Verify times are correctly converted
-            var gitDict3 = gitDict["commit"] as Dictionary<string, object>;
-            Assert.NotNull(gitDict3);
-            Assert.True(gitDict3.ContainsKey("time"));
-            time = gitDict3["time"];
-            Assert.Equal(1496926022000, time);
+            // Verify that datetime values are normalized correctly
+            var gitBuildTime = gitBuildDict["time"];
+            Assert.Equal("2017-07-12T18:40:39Z", gitBuildTime);
+
+            var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
+            Assert.NotNull(gitCommitDict);
+            Assert.True(gitCommitDict.ContainsKey("time"));
+
+            // Verify that datetime values are normalized correctly
+            var gitCommitTime = gitCommitDict["time"];
+            Assert.Equal("2017-06-08T12:47:02Z", gitCommitTime);
         }
     }
 }
