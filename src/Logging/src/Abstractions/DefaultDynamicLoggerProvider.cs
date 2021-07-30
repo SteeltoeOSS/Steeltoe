@@ -18,14 +18,14 @@ namespace Steeltoe.Extensions.Logging
         private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
         private readonly ConcurrentDictionary<string, Filter> _runningFilters = new ();
 
-        private Func<string, LogLevel, bool> _filter = _falseFilter;
         private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
+        private Func<string, LogLevel, bool> _filter = _falseFilter;
         private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ();
         private ILoggerProvider _delegate;
 
         private bool _disposed = false;
 
-        public DefaultDynamicLoggerProvider( Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+        public DefaultDynamicLoggerProvider(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
         {
             _delegate = getDelegateLogger?.Invoke() ?? throw new ArgumentNullException(nameof(getDelegateLogger));
             _originalLevels = new ConcurrentDictionary<string, LogLevel>(initialLevels.OriginalLevels ?? throw new ArgumentNullException(nameof(initialLevels.OriginalLevels)));
