@@ -379,8 +379,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
         internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, ILoggerFactory loggerFactory)
         {
-            _loggerFactory = loggerFactory;
-            _logger = _loggerFactory?.CreateLogger<ConfigServerConfigurationProvider>();
+            if (loggerFactory is not null)
+            {
+                _loggerFactory = loggerFactory;
+                _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+            }
+
             if (_configServerDiscoveryService is not null)
             {
                 await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);

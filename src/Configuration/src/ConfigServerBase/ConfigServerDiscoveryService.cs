@@ -46,7 +46,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
             }
 
-            // override register settings so that we register the app twice
+            // force settings to make sure we don't register the app here
             var cfgBuilder = new ConfigurationBuilder()
                 .AddConfiguration(_configuration)
                 .AddInMemoryCollection(
@@ -58,7 +58,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             services.AddSingleton<IConfiguration>(cfgBuilder.Build());
             services.AddDiscoveryClient(_configuration);
-            var startupServiceProvider = services.BuildServiceProvider();
+
+            using var startupServiceProvider = services.BuildServiceProvider();
             _discoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
             _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", _discoveryClient.GetType());
         }
