@@ -517,7 +517,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Extensions
         {
             services.AddSingleton<IConnectionFactory>(provider =>
             {
-                var rabbitConnectionFactory = provider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+                using var scope = provider.CreateScope();
+                var rabbitConnectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
                 IConnectionFactory instance =
                     (rabbitConnectionFactory is not null && typeof(F) == typeof(CachingConnectionFactory)) ?
