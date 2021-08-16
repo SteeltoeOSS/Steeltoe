@@ -7,9 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Lifecycle;
+using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using System.Collections.Generic;
 using Xunit;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host
 {
@@ -90,6 +92,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Host
                 var config = host.Services.GetService<IConfiguration>();
 
                 Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
+            }
+        }
+
+        [Fact]
+        public void ShouldWorkWithRabbitMQConnection()
+        {
+            using (var host = RabbitMQHost.CreateDefaultBuilder()
+                                .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
+                                .Start())
+            {
+                var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
+
+                Assert.NotNull(connectionFactory);
             }
         }
     }
