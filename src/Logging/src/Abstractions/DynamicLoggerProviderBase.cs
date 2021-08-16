@@ -11,7 +11,7 @@ using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Extensions.Logging
 {
-    public class DefaultDynamicLoggerProvider : IDynamicLoggerProvider
+    public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     {
         private static readonly Filter _falseFilter = (cat, level) => false;
 
@@ -20,12 +20,19 @@ namespace Steeltoe.Extensions.Logging
 
         private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
         private Func<string, LogLevel, bool> _filter = _falseFilter;
-        private ConcurrentDictionary<string, DynamicConsoleLogger> _loggers = new ();
+        private ConcurrentDictionary<string, MessageProcessingLogger> _loggers = new ();
         private ILoggerProvider _delegate;
 
         private bool _disposed = false;
 
-        public DefaultDynamicLoggerProvider(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase"/> class.
+        /// Contains base functionality for DynamicLoggerProvider.
+        /// </summary>
+        /// <param name="getDelegateLogger">Function to a delegate Logger</param>
+        /// <param name="initialLevels">Set the initialial filter levels</param>
+        /// <param name="messageProcessors">Any <see cref="IDynamicMessageProcessor" /> Messageprocesors </param>
+        public DynamicLoggerProviderBase(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
         {
             _delegate = getDelegateLogger?.Invoke() ?? throw new ArgumentNullException(nameof(getDelegateLogger));
             _originalLevels = new ConcurrentDictionary<string, LogLevel>(initialLevels.OriginalLevels ?? throw new ArgumentNullException(nameof(initialLevels.OriginalLevels)));
@@ -161,10 +168,10 @@ namespace Steeltoe.Extensions.Logging
             }
         }
 
-        private DynamicConsoleLogger CreateLoggerImplementation(string name)
+        private MessageProcessingLogger CreateLoggerImplementation(string name)
         {
             var logger = _delegate.CreateLogger(name);
-            return new DynamicConsoleLogger(logger, _messageProcessors) { Filter = GetFilter(name), Name = name };
+            return new MessageProcessingLogger(logger, _messageProcessors) { Filter = GetFilter(name), Name = name };
         }
 
         /// <summary>

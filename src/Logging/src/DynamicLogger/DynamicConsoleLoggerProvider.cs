@@ -14,7 +14,7 @@ using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 namespace Steeltoe.Extensions.Logging
 {
     [ProviderAlias("Dynamic")]
-    public class DynamicConsoleLoggerProvider : DefaultDynamicLoggerProvider
+    public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
     {
         protected readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
 
@@ -25,11 +25,11 @@ namespace Steeltoe.Extensions.Logging
         /// <param name="filterOptions">Logger filters</param>
         /// <param name="messageProcessors">message processors to apply to message</param>
         public DynamicConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
-        : base(() => new ConsoleLoggerProvider(options), GetInitialLevelsFromOptions(options, filterOptions), messageProcessors)
+        : base(() => new ConsoleLoggerProvider(options), GetInitialLevelsFromOptions(filterOptions), messageProcessors)
         {
         }
 
-        private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions)
+        private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<LoggerFilterOptions> filterOptions)
         {
             var runningLevelFilters = new Dictionary<string, Func<string, LogLevel, bool>>();
             var originalLevels = new Dictionary<string, LogLevel>();

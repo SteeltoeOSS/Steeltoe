@@ -10,7 +10,7 @@ using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
-    public class SerilogDynamicProvider : DefaultDynamicLoggerProvider
+    public class SerilogDynamicProvider : DynamicLoggerProviderBase
     {
         private static readonly object _sync = new ();
         private static Serilog.Core.Logger _serilogger;

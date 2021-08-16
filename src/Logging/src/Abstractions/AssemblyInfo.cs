@@ -3,5 +3,3 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("Steeltoe.Extensions.Logging.DynamicLogger")]
