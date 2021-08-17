@@ -16,7 +16,6 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
     {
         private const string GITSETTINGS_PREFIX = "git";
         private const string GITPROPERTIES_FILE = "git.properties";
-        private const string DATETIME_OUTPUT_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
         private static readonly List<string> DATETIME_INPUT_KEYS = new List<string> { "time" };
         private readonly string _propFile;
@@ -84,12 +83,12 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor
 
         protected override void AddKeyValue(Dictionary<string, object> dict, string key, string value)
         {
-            var valueToInsert = value;
+            object valueToInsert = value;
 
             if (DATETIME_INPUT_KEYS.Contains(key))
             {
                 // Normalize datetime values to ISO8601 format
-                valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal).ToString(DATETIME_OUTPUT_FORMAT);
+                valueToInsert = DateTime.Parse(value, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
             }
 
             dict[key] = valueToInsert;
