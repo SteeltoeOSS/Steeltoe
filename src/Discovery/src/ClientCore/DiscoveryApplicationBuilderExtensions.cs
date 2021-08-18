@@ -13,7 +13,7 @@ namespace Steeltoe.Discovery.Client
         /// <summary>
         /// Activates the configured <see cref="IDiscoveryClient"/> and registers shutdown events via <see cref="IDiscoveryLifecycle"/>
         /// </summary>
-        [Obsolete("This functionality is now handled by DiscoveryClientService, this class will be removed in a future release")]
+        [Obsolete("This method call is no longer needed, you should remove it.")]
         public static IApplicationBuilder UseDiscoveryClient(this IApplicationBuilder app)
         {
             _ = app.ApplicationServices.GetRequiredService<IDiscoveryClient>();
