@@ -14,6 +14,11 @@ using Steeltoe.Common.Net;
 using Steeltoe.Common.Options;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
+#if NETSTANDARD2_1_OR_GREATER
+using Steeltoe.Management.Endpoint.Health;
+using Steeltoe.Management.Endpoint.Hypermedia;
+using Steeltoe.Management.Endpoint.Info;
+#endif
 using System;
 using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
@@ -65,11 +70,36 @@ namespace Steeltoe.Discovery.Eureka
             services
                 .AddOptions<EurekaInstanceOptions>()
                 .Configure<IConfiguration>((options, config) => config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(options))
-                .PostConfigure<IConfiguration, IApplicationInstanceInfo>((options, config, appInfo) =>
+                .PostConfigure<IServiceProvider>((options, serviceProvider) =>
                 {
+                    var config = serviceProvider.GetRequiredService<IConfiguration>();
+                    var appInfo = serviceProvider.GetRequiredService<IApplicationInstanceInfo>();
                     var inetOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
                     options.NetUtils = new InetUtils(inetOptions);
                     options.ApplyNetUtils();
+#if NETSTANDARD2_1_OR_GREATER
+                    var mgmtOptions = serviceProvider.GetService<ActuatorManagementOptions>();
+                    if (mgmtOptions is object)
+                    {
+                        if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":HealthCheckUrlPath")))
+                        {
+                            var healthOptions = serviceProvider.GetService<IHealthOptions>();
+                            if (healthOptions is object)
+                            {
+                                options.HealthCheckUrlPath = mgmtOptions.Path + '/' + healthOptions.Path.TrimStart('/');
+                            }
+                        }
+
+                        if (string.IsNullOrEmpty(config.GetValue<string>(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX + ":StatusPageUrlPath")))
+                        {
+                            var infoOptions = serviceProvider.GetService<IInfoOptions>();
+                            if (infoOptions is object)
+                            {
+                                options.StatusPageUrlPath = mgmtOptions.Path + '/' + infoOptions.Path.TrimStart('/');
+                            }
+                        }
+                    }
+#endif
                     var info = GetServiceInfo(config);
                     EurekaPostConfigurer.UpdateConfiguration(config, info, options, info?.ApplicationInfo ?? appInfo);
                 });
