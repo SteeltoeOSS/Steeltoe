@@ -21,9 +21,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
                 { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
                 { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
-                { "Serilog:SubloggerConfigKeyExclusions:0", "Enrichers" },
-                { "Serilog:SubloggerConfigKeyExclusions:1", "WriteTo" },
-                { "Serilog:SubloggerConfigKeyExclusions:2", "MinimumLevel" },
             };
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
@@ -36,6 +33,25 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             Assert.Equal(LogEventLevel.Warning, serilogOptions.MinimumLevel.Override["Microsoft"]);
             Assert.Equal(LogEventLevel.Information, serilogOptions.MinimumLevel.Override["Steeltoe"]);
             Assert.Equal(LogEventLevel.Verbose, serilogOptions.MinimumLevel.Override["Steeltoe.Extensions"]);
+            Assert.NotNull(serilogOptions.GetSerilogConfiguration());
+        }
+
+        [Fact]
+        public void SerilogOptions_Set_Correctly_When_MinimumLevel_Is_String()
+        {
+            // arrange
+            var appSettings = new Dictionary<string, string>
+            {
+                { "Serilog:MinimumLevel", "Error" }
+            };
+            var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+
+            // act
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(builder.Build());
+
+            // assert
+            Assert.Equal(LogEventLevel.Error, serilogOptions.MinimumLevel.Default);
             Assert.NotNull(serilogOptions.GetSerilogConfiguration());
         }
 

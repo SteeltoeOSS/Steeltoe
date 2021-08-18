@@ -39,11 +39,11 @@ namespace Steeltoe.Extensions.Logging
                 originalLevels[rule.CategoryName ?? "Default"] = rule.LogLevel ?? LogLevel.None;
                 if (rule.CategoryName == "Default" || string.IsNullOrEmpty(rule.CategoryName))
                 {
-                    filter = (category, level) => level >= rule.LogLevel;
+                    filter = (category, level) => level >= (rule.LogLevel ?? LogLevel.None);
                 }
                 else
                 {
-                    runningLevelFilters[rule.CategoryName] = (category, level) => level >= rule.LogLevel;
+                    runningLevelFilters[rule.CategoryName] = (category, level) => level >= (rule.LogLevel ?? LogLevel.None);
                 }
             }
 

@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog
 {
@@ -46,7 +46,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
             }
 
             MinimumLevel.Override ??= new Dictionary<string, LogEventLevel>();
-            _serilogConfiguration = SerilogConfigurationExtensions.GetDefaultSerilogConfiguration(configuration).ClearLevels(MinimumLevel);
+            _serilogConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration).ClearLevels(MinimumLevel);
         }
 
         // Capture Serilog configuration provided programmatically using reflection

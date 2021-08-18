@@ -10,13 +10,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
     internal static class SerilogConfigurationExtensions
     {
         /// <summary>
-        /// Create a new LoggerConfiguration that reads from IConfiguration and adds a Console Sink
-        /// </summary>
-        /// <param name="configuration"><see cref="IConfiguration"/></param>
-        /// <returns>What Steeltoe considers to be a default <see cref="LoggerConfiguration" /></returns>
-        internal static LoggerConfiguration GetDefaultSerilogConfiguration(IConfiguration configuration) => new LoggerConfiguration().ReadFrom.Configuration(configuration);
-
-        /// <summary>
         /// Clear all the levels from serilog configuration. This extension is used to clear the levels in serilog, after capturing them into steeltoe config
         /// and using steeltoe config to control the verbosity.
         /// </summary>
