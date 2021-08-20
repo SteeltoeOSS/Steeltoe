@@ -20,7 +20,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             // arrange
             var services = new ServiceCollection();
             var ext = new EurekaDiscoveryClientExtension();
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            var appSettings = new Dictionary<string, string> { { "eureka:client:serviceurl", "http://testhost/eureka" } };
+            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
             // act
             ext.ConfigureEurekaServices(services);
@@ -37,7 +38,11 @@ namespace Steeltoe.Discovery.Eureka.Test
             // arrange
             var services = new ServiceCollection();
             var ext = new EurekaDiscoveryClientExtension();
-            var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
+            var appSettings = new Dictionary<string, string>
+            {
+                { "spring:cloud:discovery:enabled", "false" },
+                { "eureka:client:serviceurl", "http://testhost/eureka" }
+            };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
             // act
@@ -58,7 +63,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             var appSettings = new Dictionary<string, string>
             {
                 { "spring:cloud:discovery:enabled", "false" },
-                { "eureka:client:enabled", "true" }
+                { "eureka:client:enabled", "true" },
+                { "eureka:client:serviceurl", "http://testhost/eureka" }
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
