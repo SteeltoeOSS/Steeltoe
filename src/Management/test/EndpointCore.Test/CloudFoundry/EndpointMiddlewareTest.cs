@@ -99,6 +99,39 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
         }
 
+        [Fact]
+        public async Task CloudFoundryOptions_UseDefaultJsonSerializerOptions()
+        {
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(appSettings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+
+            Assert.Contains("2017-07-12T18:40:39Z", response);
+            Assert.Contains("2017-06-08T12:47:02Z", response);
+        }
+
+        [Fact]
+        public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
+        {
+            Dictionary<string, string> settings = new (appSettings) { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((builderContext, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+
+            Assert.Contains("1499884839000", response);
+            Assert.DoesNotContain("2017-07-12T18:40:39Z", response);
+            Assert.Contains("1496926022000", response);
+            Assert.DoesNotContain("2017-06-08T12:47:02Z", response);
+        }
+
         private HttpContext CreateRequest(string method, string path)
         {
             HttpContext context = new DefaultHttpContext

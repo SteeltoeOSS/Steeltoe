@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Xunit;
 
@@ -87,7 +87,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
 
             // Verify that datetime values are normalized correctly
             var gitBuildTime = gitBuildDict["time"];
-            Assert.Equal("2017-07-12T18:40:39Z", gitBuildTime);
+            Assert.Equal(DateTime.Parse("2017-07-12T18:40:39Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitBuildTime);
 
             var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
             Assert.NotNull(gitCommitDict);
@@ -95,7 +95,7 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
 
             // Verify that datetime values are normalized correctly
             var gitCommitTime = gitCommitDict["time"];
-            Assert.Equal("2017-06-08T12:47:02Z", gitCommitTime);
+            Assert.Equal(DateTime.Parse("2017-06-08T12:47:02Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitCommitTime);
         }
     }
 }
