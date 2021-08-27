@@ -19,12 +19,12 @@ The following table shows the releases that are currently supported:
 | ---------------- | ------------       | ---------------- | --- | --------------------  |
 | 3.1.x            | In Progress        | TBD              | TBD | .NET Core 3.1 (LTS), .NET 5 |
 | 3.0.x            | August 24, 2020    | August 31, 2022  | No  | .NET Core 3.1 (LTS), .NET 5 |
-| 2.5.x            | October 15, 2020   | October 31, 2023 | Yes | .NET Standard 2.1, .NET Core 3.1(LTS) |
-| 2.4.x            | November 13, 2019  | December 31, 2021| No  | .NET Standard 2.1, .NET Core 3.1(LTS) |
-| 2.3.x            | August 21, 2019    | December 31, 2021| No  | .NET Standard 2.1, .NET Core 3.1(LTS) |
-| 2.2.x            | March 15, 2019     | December 31, 2021| No  | .NET Standard 2.1, .NET Core 3.1(LTS) |
-| 2.1.x            | August 18, 2018    | December 31, 2021| No  | .NET Standard 2.1, .NET Core 3.1(LTS) |
-| 2.0.x            | February 15, 2018  | December 31, 2021| No  | .NET Standard 2.1, .NET Core 3.1(LTS) |
+| 2.5.x            | October 15, 2020   | October 31, 2023 | Yes | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
+| 2.4.x            | November 13, 2019  | December 31, 2021| No  | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
+| 2.3.x            | August 21, 2019    | December 31, 2021| No  | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
+| 2.2.x            | March 15, 2019     | December 31, 2021| No  | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
+| 2.1.x            | August 18, 2018    | December 31, 2021| No  | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
+| 2.0.x            | February 15, 2018  | December 31, 2021| No  | .NET Framework 4.6.1+, .NET Core 3.1(LTS) |
 
 
 ### End of Life Releases
