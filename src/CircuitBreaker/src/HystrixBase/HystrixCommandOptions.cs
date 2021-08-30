@@ -58,7 +58,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             : this(defaults, dynamic)
         {
             CommandKey = key;
-            CircuitBreakerEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker.enabled", Default_CircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
+            CircuitBreakerEnabled = GetBoolean(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:enabled", Default_CircuitBreakerEnabled, defaults?.CircuitBreakerEnabled);
             CircuitBreakerRequestVolumeThreshold = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:requestVolumeThreshold", Default_CircuitBreakerRequestVolumeThreshold, defaults?.CircuitBreakerRequestVolumeThreshold);
             CircuitBreakerSleepWindowInMilliseconds = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:sleepWindowInMilliseconds", Default_CircuitBreakerSleepWindowInMilliseconds, defaults?.CircuitBreakerSleepWindowInMilliseconds);
             CircuitBreakerErrorThresholdPercentage = GetInteger(HYSTRIX_COMMAND_PREFIX, key.Name, "circuitBreaker:errorThresholdPercentage", Default_CircuitBreakerErrorThresholdPercentage, defaults?.CircuitBreakerErrorThresholdPercentage);
