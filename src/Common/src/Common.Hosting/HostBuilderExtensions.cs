@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Steeltoe.Common.Hosting
 {
     public static class HostBuilderExtensions
     {
+        public const string DEFAULT_URL = "http://*:8080";
+
         /// <summary>
         /// Configure the application to listen on port(s) provided by the environment at runtime. Defaults to port 8080.
         /// </summary>
@@ -36,7 +39,10 @@ namespace Steeltoe.Common.Hosting
         /// <param name="runLocalHttpPort">Set the Http port number with code so you don't need to set environment variables locally</param>
         /// <param name="runLocalHttpsPort">Set the Https port number with code so you don't need to set environment variables locally</param>
         /// <returns>Your HostBuilder, now listening on port(s) found in the environment or passed in</returns>
-        /// <remarks>runLocalPort parameter will not be used if an environment variable PORT is found</remarks>
+        /// <remarks>
+        /// runLocalPort parameter will not be used if an environment variable PORT is found<br /><br />
+        /// THIS EXTENSION IS NOT COMPATIBLE WITH IIS EXPRESS
+        /// </remarks>
         public static IHostBuilder UseCloudHosting(this IHostBuilder hostBuilder, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
         {
             if (hostBuilder == null)
@@ -55,53 +61,75 @@ namespace Steeltoe.Common.Hosting
             var aspnetUrls = Environment.GetEnvironmentVariable("ASPNETCORE_URLS");
             if (!string.IsNullOrWhiteSpace(portStr))
             {
-                if (int.TryParse(portStr, out var port))
-                {
-                    urls.Add($"http://*:{port}");
-                }
-                else if (portStr.Contains(";"))
-                {
-                    if (!string.IsNullOrEmpty(aspnetUrls))
-                    {
-                        urls.AddRange(aspnetUrls.Split(';'));
-                    }
-                    else
-                    {
-                        var ports = portStr.Split(';');
-                        urls.Add($"http://*:{ports[0]}");
-                        urls.Add($"https://*:{ports[1]}");
-                    }
-                }
+                AddPortAndAspNetCoreUrls(urls, portStr, aspnetUrls);
             }
             else if (Platform.IsKubernetes)
             {
-                var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
-                var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
-                urls.Add($"http://*:{foundPort ?? "80"}");
+                AddFromKubernetesEnv(urls);
             }
             else
             {
-                if (runLocalHttpPort != null)
-                {
-                    urls.Add($"http://*:{runLocalHttpPort}");
-                }
-
-                if (runLocalHttpsPort != null)
-                {
-                    urls.Add($"https://*:{runLocalHttpsPort}");
-                }
+                AddRunLocalPorts(urls, runLocalHttpPort, runLocalHttpsPort);
             }
 
-            if (urls.Count > 0)
+            if (urls.Any())
             {
+                // setting ASPNETCORE_URLS should only be needed to override launchSettings.json
+                if (string.IsNullOrWhiteSpace(portStr) && !Platform.IsKubernetes)
+                {
+                    Environment.SetEnvironmentVariable("ASPNETCORE_URLS", string.Join(";", urls));
+                }
+
                 webHostBuilder.UseUrls(urls.ToArray());
             }
             else
             {
-                webHostBuilder.UseUrls(new string[] { "http://*:8080" });
+                Environment.SetEnvironmentVariable("ASPNETCORE_URLS", DEFAULT_URL);
+                webHostBuilder.UseUrls(new string[] { DEFAULT_URL });
             }
 
             return webHostBuilder;
+        }
+
+        private static void AddPortAndAspNetCoreUrls(List<string> urls, string portStr, string aspnetUrls)
+        {
+            if (int.TryParse(portStr, out var port))
+            {
+                urls.Add($"http://*:{port}");
+            }
+            else if (portStr.Contains(";"))
+            {
+                if (!string.IsNullOrEmpty(aspnetUrls))
+                {
+                    urls.AddRange(aspnetUrls.Split(';'));
+                }
+                else
+                {
+                    var ports = portStr.Split(';');
+                    urls.Add($"http://*:{ports[0]}");
+                    urls.Add($"https://*:{ports[1]}");
+                }
+            }
+        }
+
+        private static void AddFromKubernetesEnv(List<string> urls)
+        {
+            var appname = Environment.GetEnvironmentVariable("HOSTNAME").Split("-")[0].ToUpperInvariant();
+            var foundPort = Environment.GetEnvironmentVariable(appname + "_SERVICE_PORT_HTTP");
+            urls.Add($"http://*:{foundPort ?? "80"}");
+        }
+
+        private static void AddRunLocalPorts(List<string> urls, int? runLocalHttpPort = null, int? runLocalHttpsPort = null)
+        {
+            if (runLocalHttpPort != null)
+            {
+                urls.Add($"http://*:{runLocalHttpPort}");
+            }
+
+            if (runLocalHttpsPort != null)
+            {
+                urls.Add($"https://*:{runLocalHttpsPort}");
+            }
         }
     }
 }

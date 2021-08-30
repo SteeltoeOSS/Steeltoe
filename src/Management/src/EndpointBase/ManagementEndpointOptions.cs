@@ -5,6 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint
 {
@@ -31,6 +34,15 @@ namespace Steeltoe.Management.Endpoint
             if (section != null)
             {
                 section.Bind(this);
+                foreach (var converterTypeName in CustomJsonConverters ?? Array.Empty<string>())
+                {
+                    var converterType = Type.GetType(converterTypeName);
+                    if (converterType != null)
+                    {
+                        var converterInstance = (JsonConverter)Activator.CreateInstance(converterType);
+                        SerializerOptions.Converters.Add(converterInstance);
+                    }
+                }
             }
         }
 
@@ -43,5 +55,12 @@ namespace Steeltoe.Management.Endpoint
         public List<IEndpointOptions> EndpointOptions { get; set; }
 
         public bool UseStatusCodeFromResponse { get; set; } = true;
+
+        public JsonSerializerOptions SerializerOptions { get; set; } = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+
+        /// <summary>
+        /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonCoverters
+        /// </summary>
+        public string[] CustomJsonConverters { get; set; }
     }
 }
