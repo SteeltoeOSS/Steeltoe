@@ -607,20 +607,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
         {
             // Arrange
-            var envir = HostingHelpers.GetHostingEnvironment();
-            TestConfigServerStartup.Reset();
-            TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
-            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
             var settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888, http://localhost:8888 ",
+                Uri = "http://localhost:8888,http://localhost:8888",
                 Name = "myName",
                 FailFast = true
             };
+            var envir = HostingHelpers.GetHostingEnvironment();
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            using var server = new TestServer(builder);
             server.BaseAddress = new Uri("http://localhost:8888");
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
+            TestConfigServerStartup.Reset();
+            TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
