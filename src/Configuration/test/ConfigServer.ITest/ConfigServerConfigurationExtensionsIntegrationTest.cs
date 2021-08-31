@@ -105,7 +105,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
             using var server = new TestServer(builder);
-            var client = server.CreateClient();
+            using var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
             Assert.Equal(
@@ -194,7 +194,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
                 using var server = new TestServer(builder);
-                var client = server.CreateClient();
+                using var client = server.CreateClient();
                 var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal(
@@ -289,7 +289,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running)
                 using var server = new TestServer(builder);
-                var client = server.CreateClient();
+                using var client = server.CreateClient();
                 var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal(
@@ -437,7 +437,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
             using var server = new TestServer(builder);
-            var client = server.CreateClient();
+            using var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
 
             // after switching to newer config server image, the health response has changed to
