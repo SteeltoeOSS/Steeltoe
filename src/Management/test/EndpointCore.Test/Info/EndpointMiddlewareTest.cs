@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private readonly Dictionary<string, string> appSettings = new Dictionary<string, string>()
+        private readonly Dictionary<string, string> _appSettings = new ()
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
@@ -64,7 +64,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             // in the Startup class
             var builder = new WebHostBuilder()
                 .UseStartup<Startup>()
-                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(appSettings));
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(_appSettings));
 
             using var server = new TestServer(builder);
             var client = server.CreateClient();
@@ -98,6 +98,26 @@ namespace Steeltoe.Management.Endpoint.Info.Test
             var commitInfo = gitNode["commit"].TryGetProperty("time", out var cTime);
             Assert.Equal("2017-06-08T12:47:02Z", cTime.GetString());
          }
+
+        [Fact]
+        public async Task InfoActuator_UsesCustomJsonSerializerOptions()
+        {
+            // Note: This test pulls in from git.properties and appsettings created
+            // in the Startup class
+            Dictionary<string, string> settings = new () { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
+            var builder = new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureAppConfiguration((context, config) => config.AddInMemoryCollection(settings));
+
+            using var server = new TestServer(builder);
+            var client = server.CreateClient();
+            var response = await client.GetStringAsync("http://localhost/actuator/info");
+
+            Assert.Contains("1499884839000", response);
+            Assert.DoesNotContain("2017-07-12T18:40:39Z", response);
+            Assert.Contains("1496926022000", response);
+            Assert.DoesNotContain("2017-06-08T12:47:02Z", response);
+        }
 
         [Fact]
         public void RoutesByPathAndVerb()

@@ -184,7 +184,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         #region Config Providers
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireConfigServer(this IHostBuilder hostBuilder) =>
-            hostBuilder.ConfigureAppConfiguration(cfg => cfg.AddConfigServer(_loggerFactory)).Log(LogMessages.WireConfigServer);
+            hostBuilder.ConfigureAppConfiguration((context, cfg) => cfg.AddConfigServer(context.HostingEnvironment, _loggerFactory)).Log(LogMessages.WireConfigServer);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireCloudFoundryConfiguration(this IHostBuilder hostBuilder) =>
