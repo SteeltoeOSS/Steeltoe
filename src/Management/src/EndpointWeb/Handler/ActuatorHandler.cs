@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Security;
 using System;
@@ -65,7 +66,9 @@ namespace Steeltoe.Management.Endpoint.Handler
                 scheme = headerScheme;
             }
 
-            if ((scheme == "http" && request.Url.Port == 80) || (scheme == "https" && request.Url.Port == 443))
+            if ((scheme == "http" && request.Url.Port == 80) ||
+                (scheme == "https" && request.Url.Port == 443) ||
+                Platform.IsCloudFoundry)
             {
                 return $"{scheme}://{request.Url.Host}{request.Path}";
             }
