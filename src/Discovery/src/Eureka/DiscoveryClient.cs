@@ -93,7 +93,6 @@ namespace Steeltoe.Discovery.Eureka
         }
 
         public event EventHandler<Applications> OnApplicationsChange;
-        
 
         public Application GetApplication(string appName)
         {
