@@ -92,6 +92,9 @@ namespace Steeltoe.Discovery.Eureka
             _startupLogger = logFactory?.CreateLogger("Startup." + this.GetType().FullName) ?? NullLogger.Instance;
         }
 
+        public event EventHandler<Applications> OnApplicationsChange;
+        
+
         public Application GetApplication(string appName)
         {
             if (string.IsNullOrEmpty(appName))
@@ -493,6 +496,7 @@ namespace Steeltoe.Discovery.Eureka
             {
                 // Log
                 LastGoodFullRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
+                OnApplicationsChange?.Invoke(this, fetched);
                 return fetched;
             }
             else
@@ -535,6 +539,7 @@ namespace Steeltoe.Discovery.Eureka
                 {
                     _localRegionApps.AppsHashCode = delta.AppsHashCode;
                     LastGoodDeltaRegistryFetchTimestamp = DateTime.UtcNow.Ticks;
+                    OnApplicationsChange?.Invoke(this, delta);
                     return _localRegionApps;
                 }
             }
