@@ -8,11 +8,17 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging
 {
-    public class DynamicConsoleLogger : ILogger
+    public class MessageProcessingLogger : ILogger
     {
         private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
-        internal DynamicConsoleLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="MessageProcessingLogger"/> class.
+        /// Wraps an ILogger and decorates log messages via <see cref="IDynamicMessageProcessor"/>
+        /// </summary>
+        /// <param name="iLogger">The <see cref="ILogger"/> being wrapped</param>
+        /// <param name="messageProcessors">The list of <see cref="IDynamicMessageProcessor"/>s</param>
+        public MessageProcessingLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         {
             _messageProcessors = messageProcessors;
             Delegate = iLogger;
