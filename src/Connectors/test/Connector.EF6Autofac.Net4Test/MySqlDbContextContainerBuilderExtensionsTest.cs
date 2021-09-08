@@ -4,6 +4,8 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.Common.HealthChecks;
 using System;
 using Xunit;
 
@@ -44,10 +46,13 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             var regBuilder = container.RegisterMySqlDbContext<GoodMySqlDbContext>(config);
             var services = container.Build();
             var dbConn = services.Resolve<GoodMySqlDbContext>();
+            var health = services.Resolve<IHealthContributor>();
 
             // assert
             Assert.NotNull(dbConn);
             Assert.IsType<GoodMySqlDbContext>(dbConn);
+            Assert.NotNull(health);
+            Assert.IsType<RelationalHealthContributor>(health);
         }
     }
 }

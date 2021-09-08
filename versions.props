@@ -23,7 +23,7 @@
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <SqlClientVersion>4.5.0</SqlClientVersion>
+    <SqlClientVersion>4.8.1</SqlClientVersion>
     <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
     <StackExchangeVersion>2.0.513</StackExchangeVersion>
 
