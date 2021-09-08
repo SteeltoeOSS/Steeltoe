@@ -8,14 +8,6 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     public static class TestHelpers
     {
-        public static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-
-            return tempFile;
-        }
-
         public static Stream StringToStream(string str)
         {
             var memStream = new MemoryStream();

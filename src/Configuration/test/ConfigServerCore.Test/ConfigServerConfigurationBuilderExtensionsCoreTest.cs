@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using System;
 using System.Collections.Generic;
@@ -111,7 +112,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -166,7 +168,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                       }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -202,7 +205,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                       }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -243,7 +247,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
       </cloud>
     </spring>
 </settings>";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -287,7 +292,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
     username=myUsername
     password=myPassword
 ";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -388,7 +394,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
 
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
@@ -479,20 +486,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                         }
                     }
                 }";
-            var tempPath = Path.GetTempPath();
-            var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
             var appsettingsfileName = Path.GetFileName(appsettingsPath);
 
-            var vcapAppPath = TestHelpers.CreateTempFile(vcap_application);
+            var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
             var vcapAppfileName = Path.GetFileName(vcapAppPath);
 
-            var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
+            var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
             var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(tempPath);
+            configurationBuilder.SetBasePath(sandbox.FullPath);
             configurationBuilder.AddJsonFile(appsettingsfileName);
             configurationBuilder.AddJsonFile(vcapAppfileName);
             configurationBuilder.AddJsonFile(vcapServicesfileName);
@@ -587,20 +594,20 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
                         }
                     }
                 }";
-            var tempPath = Path.GetTempPath();
-            var appsettingsPath = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
             var appsettingsfileName = Path.GetFileName(appsettingsPath);
 
-            var vcapAppPath = TestHelpers.CreateTempFile(vcap_application);
+            var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
             var vcapAppfileName = Path.GetFileName(vcapAppPath);
 
-            var vcapServicesPath = TestHelpers.CreateTempFile(vcap_services);
+            var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
             var vcapServicesfileName = Path.GetFileName(vcapServicesPath);
 
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(tempPath);
+            configurationBuilder.SetBasePath(sandbox.FullPath);
             configurationBuilder.AddJsonFile(appsettingsfileName);
             configurationBuilder.AddJsonFile(vcapAppfileName);
             configurationBuilder.AddJsonFile(vcapServicesfileName);

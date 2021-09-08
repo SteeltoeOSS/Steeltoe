@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
@@ -111,7 +112,8 @@ namespace Steeltoe.Discovery.Eureka.Test
                         }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();

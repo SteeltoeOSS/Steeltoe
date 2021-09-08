@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
@@ -23,7 +24,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
                         }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(json);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", json);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new ConfigurationBuilder();
