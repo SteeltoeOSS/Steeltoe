@@ -91,16 +91,16 @@ namespace Steeltoe.Discovery.Client.Test
             // Arrange
             var appsettings = @"
 {
-    'spring': {
-        'application': {
-            'name': 'myName'
+    ""spring"": {
+        ""application"": {
+            ""name"": ""myName""
         },
     },
-    'eureka': {
-        'client': {
-            'shouldFetchRegistry': false,
-            'shouldRegisterWithEureka': false,
-            'serviceUrl': 'http://localhost:8761/eureka/'
+    ""eureka"": {
+        ""client"": {
+            ""shouldFetchRegistry"": false,
+            ""shouldRegisterWithEureka"": false,
+            ""serviceUrl"": ""http://localhost:8761/eureka/""
         }
     }
 }";

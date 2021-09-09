@@ -57,7 +57,7 @@
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461'">
     <AspNetVersion>5.2.4</AspNetVersion>
     <OwinVersion>4.0.0</OwinVersion>
     <OwinOAuthVersion>4.0.0</OwinOAuthVersion>

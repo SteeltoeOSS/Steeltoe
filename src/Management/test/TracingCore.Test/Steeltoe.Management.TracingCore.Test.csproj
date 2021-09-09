@@ -1,9 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition="! $(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>net461;netcoreapp2.1;netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp3.1;net5.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -18,7 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 </Project>
