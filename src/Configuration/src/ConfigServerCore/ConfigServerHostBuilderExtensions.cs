@@ -3,6 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -26,6 +29,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             hostBuilder.ConfigureServices((services) =>
             {
+                services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
+                services.AddSingleton<IHostedService, ConfigServerHostedService>();
                 services.AddConfigServerHealthContributor();
             });
 
@@ -48,6 +53,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
 
             hostBuilder.ConfigureServices((services) =>
             {
+                services.TryAddSingleton(serviceProvider => serviceProvider.GetRequiredService<IConfiguration>() as IConfigurationRoot);
+                services.AddSingleton<IHostedService, ConfigServerHostedService>();
                 services.AddConfigServerHealthContributor();
             });
 

@@ -600,7 +600,9 @@ namespace Steeltoe.Discovery.Eureka
                 ReturnUpInstancesOnly = ClientConfig.ShouldFilterOnlyUpInstances
             };
 
-            if (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry)
+            // TODO: add Enabled to IEurekaClientConfig
+            var eurekaClientConfig = ClientConfig as EurekaClientConfig;
+            if (!eurekaClientConfig.Enabled || (!ClientConfig.ShouldRegisterWithEureka && !ClientConfig.ShouldFetchRegistry))
             {
                 return;
             }

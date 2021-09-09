@@ -22,6 +22,7 @@ namespace Steeltoe.Discovery.Consul
     public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
     {
         public const string CONSUL_PREFIX = "consul";
+        private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
 
         /// <inheritdoc />
         public void ApplyServices(IServiceCollection services)
@@ -33,7 +34,7 @@ namespace Steeltoe.Discovery.Consul
         public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
             => configuration.GetSection(CONSUL_PREFIX).GetChildren().Any();
 
-        private static void ConfigureConsulServices(IServiceCollection services)
+        internal static void ConfigureConsulServices(IServiceCollection services)
         {
             services
                 .AddOptions<ConsulOptions>()
@@ -42,7 +43,18 @@ namespace Steeltoe.Discovery.Consul
 
             services
                 .AddOptions<ConsulDiscoveryOptions>()
-                .Configure<IConfiguration>((options, config) => config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(options))
+                .Configure<IConfiguration>((options, config) =>
+                {
+                    config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(options);
+
+                    // Consul is enabled by default. If consul:discovery:enabled was not set then check spring:cloud:discovery:enabled
+                    if (options.Enabled &&
+                        config.GetValue<bool?>(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    {
+                        options.Enabled = false;
+                    }
+                })
                 .PostConfigure<IConfiguration>((options, config) =>
                 {
                     var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
