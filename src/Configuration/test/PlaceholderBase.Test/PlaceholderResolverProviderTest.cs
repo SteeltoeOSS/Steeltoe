@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Utils.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -160,7 +161,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings1);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings1);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -246,7 +248,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings1);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings1);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();

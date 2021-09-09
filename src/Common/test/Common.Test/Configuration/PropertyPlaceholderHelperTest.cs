@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Utils.IO;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -237,7 +238,8 @@ namespace Steeltoe.Common.Configuration.Test
         }
     }
 }";
-            var path = CreateTempFile(json1);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("json", json1);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new ConfigurationBuilder();
@@ -290,13 +292,6 @@ namespace Steeltoe.Common.Configuration.Test
             // assert
             Assert.Contains(resolved, f => f.Key == "foo");
             Assert.Equal(string.Empty, resolved.First(k => k.Key == "foo").Value);
-        }
-
-        private static string CreateTempFile(string contents)
-        {
-            var tempFile = Path.GetTempFileName();
-            File.WriteAllText(tempFile, contents);
-            return tempFile;
         }
     }
 }

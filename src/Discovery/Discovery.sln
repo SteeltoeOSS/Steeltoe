@@ -69,6 +69,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connecto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.CloudFoundry", "..\Connectors\src\CloudFoundry\Steeltoe.Connector.CloudFoundry.csproj", "{17ECD43C-70AA-494B-865D-BBE2F0378EE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{55A893A9-C40F-4BFE-821D-87CA38CA7035}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -355,6 +357,18 @@ Global
 		{17ECD43C-70AA-494B-865D-BBE2F0378EE6}.Release|x64.Build.0 = Release|Any CPU
 		{17ECD43C-70AA-494B-865D-BBE2F0378EE6}.Release|x86.ActiveCfg = Release|Any CPU
 		{17ECD43C-70AA-494B-865D-BBE2F0378EE6}.Release|x86.Build.0 = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|x64.Build.0 = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Debug|x86.Build.0 = Debug|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x64.ActiveCfg = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x64.Build.0 = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x86.ActiveCfg = Release|Any CPU
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -383,6 +397,7 @@ Global
 		{EB232992-9F47-48EA-9776-EC7DD94ECC09} = {482BD4E0-A909-403B-B83A-D1D6377E0022}
 		{B23B13F4-D766-464A-812C-F4669C47892E} = {26A62999-E553-40B7-B393-2195557F6D8B}
 		{17ECD43C-70AA-494B-865D-BBE2F0378EE6} = {26A62999-E553-40B7-B393-2195557F6D8B}
+		{55A893A9-C40F-4BFE-821D-87CA38CA7035} = {26A62999-E553-40B7-B393-2195557F6D8B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09301AE1-862F-43FC-9E71-732151D4CDDF}

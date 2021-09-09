@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
@@ -99,16 +100,15 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 Assert.Equal("application/octet-stream", contentType.Single());
                 Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
-                var tempFile = Path.GetTempFileName();
-                var fs = new FileStream(tempFile, FileMode.Create);
+                using var tempFile = new TempFile();
+                var fs = new FileStream(tempFile.FullPath, FileMode.Create);
                 var input = await result.Content.ReadAsStreamAsync();
                 await input.CopyToAsync(fs);
                 fs.Close();
 
-                var fs2 = File.Open(tempFile, FileMode.Open);
+                var fs2 = File.Open(tempFile.FullPath, FileMode.Open);
                 Assert.NotEqual(0, fs2.Length);
                 fs2.Close();
-                File.Delete(tempFile);
             }
         }
 

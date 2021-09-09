@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Utils.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -86,7 +87,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             string directory = Path.GetDirectoryName(path);
             string fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
@@ -120,9 +122,10 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
       </cloud>
     </spring>
 </settings>";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
@@ -147,9 +150,10 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 [spring:cloud:config]
     name=${spring:bar:name?noName}
 ";
-            var path = TestHelpers.CreateTempFile(appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
@@ -218,14 +222,15 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
     {
                             "--spring:line:name=${spring:json:name?noName}"
     };
-            var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
-            string jsonfileName = Path.GetFileName(jsonpath);
-            var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
-            string xmlfileName = Path.GetFileName(xmlpath);
-            var inipath = TestHelpers.CreateTempFile(appsettingsIni);
-            string inifileName = Path.GetFileName(inipath);
+            using var sandbox = new Sandbox();
+            var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+            var jsonfileName = Path.GetFileName(jsonpath);
+            var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+            var xmlfileName = Path.GetFileName(xmlpath);
+            var inipath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
+            var inifileName = Path.GetFileName(inipath);
 
-            string directory = Path.GetDirectoryName(jsonpath);
+            var directory = Path.GetDirectoryName(jsonpath);
             ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 

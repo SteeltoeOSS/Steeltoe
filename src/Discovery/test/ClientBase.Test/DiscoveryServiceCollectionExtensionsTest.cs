@@ -11,6 +11,7 @@ using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector;
 using Steeltoe.Discovery.Client.SimpleClients;
 using Steeltoe.Discovery.Consul;
@@ -51,7 +52,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -261,7 +263,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -387,7 +390,8 @@ namespace Steeltoe.Discovery.Client.Test
         ]
     }
 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var sCollection = new ServiceCollection()
                 .AddOptions()
                 .AddSingleton<IConfiguration>(
@@ -427,7 +431,8 @@ namespace Steeltoe.Discovery.Client.Test
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
