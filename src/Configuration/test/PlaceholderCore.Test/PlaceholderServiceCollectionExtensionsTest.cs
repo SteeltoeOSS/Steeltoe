@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Steeltoe.Common.Utils.IO;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -94,11 +95,12 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             {
                 "--spring:line:name=${spring:json:name?noName}"
             };
-            var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
+            using var sandbox = new Sandbox();
+            var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
             var jsonfileName = Path.GetFileName(jsonpath);
-            var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
+            var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
             var xmlfileName = Path.GetFileName(xmlpath);
-            var inipath = TestHelpers.CreateTempFile(appsettingsIni);
+            var inipath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
             var inifileName = Path.GetFileName(inipath);
 
             var directory = Path.GetDirectoryName(jsonpath);
@@ -145,9 +147,10 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
                         </xml>
                     </spring>
                 </settings>";
-            var jsonpath = TestHelpers.CreateTempFile(appsettingsJson);
+            using var sandbox = new Sandbox();
+            var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
             var jsonfileName = Path.GetFileName(jsonpath);
-            var xmlpath = TestHelpers.CreateTempFile(appsettingsXml);
+            var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
             var xmlfileName = Path.GetFileName(xmlpath);
             var directory = Path.GetDirectoryName(jsonpath);
 

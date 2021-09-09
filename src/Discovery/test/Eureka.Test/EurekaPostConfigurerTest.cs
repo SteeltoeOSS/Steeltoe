@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -182,10 +183,10 @@ namespace Steeltoe.Discovery.Eureka.Test
                         }
                     }
                 }";
-            var basePath = Path.GetTempPath();
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(basePath);
+            configurationBuilder.SetBasePath(sandbox.FullPath);
             configurationBuilder.AddJsonFile(Path.GetFileName(path));
             var config = configurationBuilder.Build();
 
@@ -392,7 +393,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -597,7 +599,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
             Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -803,7 +806,8 @@ namespace Steeltoe.Discovery.Eureka.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
             Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
             Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();

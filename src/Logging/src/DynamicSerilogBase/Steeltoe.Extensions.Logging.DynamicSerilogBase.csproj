@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
-    <Description>Steeltoe library for enabling dynamic management of Serilog. Includes Console sink.</Description>
+    <Description>Steeltoe library for enabling dynamic management of Serilog.</Description>
     <PackageTags>logging;dynamic logging;serilog;management;monitoring;Spring Cloud;</PackageTags>
     <RootNamespace>Steeltoe.Extensions.Logging.DynamicSerilog</RootNamespace>
   </PropertyGroup>

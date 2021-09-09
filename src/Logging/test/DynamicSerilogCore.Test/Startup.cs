@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -12,7 +13,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
     {
         private readonly ILogger<Startup> _logger;
 
-        public Startup(ILogger<Startup> logger)
+        public Startup(ILogger<Startup> logger, IConfiguration configuration)
         {
             _logger = logger;
         }

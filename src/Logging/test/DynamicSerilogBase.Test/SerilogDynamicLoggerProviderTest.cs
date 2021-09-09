@@ -4,7 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Serilog.Context;
+using Steeltoe.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -15,6 +17,11 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicLoggerProviderTest
     {
+        public SerilogDynamicLoggerProviderTest()
+        {
+            SerilogDynamicProvider.ClearLogger();
+        }
+
         [Fact]
         public void Create_CreatesCorrectLogger()
         {
@@ -144,7 +151,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             var logConfig = provider.GetLoggerConfigurations();
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
@@ -166,7 +173,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             // assert I
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Information), logConfig);
@@ -179,7 +186,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             // assert II
             Assert.Equal(6, logConfig.Count);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), logConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Trace), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D", null, LogLevel.Trace), logConfig);
             Assert.Contains(new DynamicLoggerConfiguration("A.B.C", LogLevel.Information, LogLevel.Trace), logConfig);
@@ -197,12 +204,12 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
-            provider.SetLogLevel("Default", LogLevel.Information);
+            provider.SetLogLevel("Default", LogLevel.Trace);
             var updatedLogConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
         }
 
         [Fact]
@@ -215,15 +222,15 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             var originalLogConfig = provider.GetLoggerConfigurations();
 
             // act
-            provider.SetLogLevel("Default", LogLevel.Information);
+            provider.SetLogLevel("Default", LogLevel.Debug);
             var updatedLogConfig = provider.GetLoggerConfigurations();
             provider.SetLogLevel("Default", null);
             var resetConfig = provider.GetLoggerConfigurations();
 
             // assert
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), originalLogConfig);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Information), updatedLogConfig);
-            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Trace, LogLevel.Trace), resetConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Debug), updatedLogConfig);
+            Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), resetConfig);
         }
 
         [Fact]
@@ -231,6 +238,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         {
             // arrange
             var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
+
             var fac = new LoggerFactory();
             fac.AddProvider(provider);
             var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
@@ -249,9 +257,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
                 logger.LogInformation("Carries property A = 1, again");
             }
-
-            // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
 
             var logged = unConsole.ToString();
 
@@ -278,13 +283,10 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             using var unConsole = new ConsoleOutputBorrower();
             logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
 
-            // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
-
             var logged = unConsole.ToString();
 
-            // assert I
-            Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
+            // assert
+            Assert.Contains(@"Info { Info1 = information1, Info2 = information2 }", logged);
         }
 
         [Fact]
@@ -300,9 +302,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
-
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
 
                 var logged = unConsole.ToString();
 
@@ -321,9 +320,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             {
                 WriteLogEntries(logger);
 
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
-
                 var logged2 = unConsole.ToString();
 
                 // assert II
@@ -340,9 +336,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
-
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
 
                 var logged3 = unConsole.ToString();
 
@@ -361,13 +354,10 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             {
                 WriteLogEntries(logger);
 
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
-
                 var logged4 = unConsole.ToString();
 
                 // assert IV
-                Assert.Contains("Critical message", logged4); // Serilog lowest level is Fatal == Critical
+                Assert.DoesNotContain("Critical message", logged4);
                 Assert.DoesNotContain("Error message", logged4);
                 Assert.DoesNotContain("Warning message", logged4);
                 Assert.DoesNotContain("Informational message", logged4);
@@ -376,13 +366,10 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             }
 
             // act V - reset the rules, expect Info and above to work
-            provider.SetLogLevel("A", LogLevel.Information); // Only works with serilog for configured values
+            provider.SetLogLevel("A", null);
             using (var unConsole = new ConsoleOutputBorrower())
             {
                 WriteLogEntries(logger);
-
-                // pause the thread to allow the logging to happen
-                Thread.Sleep(100);
 
                 var logged5 = unConsole.ToString();
 
@@ -407,11 +394,11 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             logger.LogTrace("Trace message");
         }
 
-        private IConfiguration GetConfiguration()
+        private IOptionsMonitor<SerilogOptions> GetConfiguration()
         {
             var appSettings = new Dictionary<string, string>
             {
-                { "Serilog:MinimumLevel:Default", "Verbose" }, // Sets level of root logger so has to be higher than any sub logger
+                { "Serilog:MinimumLevel:Default", "Information" },
                 { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
                 { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
                 { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
@@ -421,14 +408,21 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
             };
 
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-            return builder.Build();
+            var configuration = builder.Build();
+
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(configuration);
+            return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
         }
 
-        private IConfiguration GetConfigurationFromFile()
+        private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
         {
             var builder = new ConfigurationBuilder()
               .AddJsonFile("serilogSettings.json");
-            return builder.Build();
+            var configuration = builder.Build();
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(configuration);
+            return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
         }
     }
 }

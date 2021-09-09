@@ -59,6 +59,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "External.Connector.Test", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorBase", "src\ConnectorBase\Steeltoe.Connector.ConnectorBase.csproj", "{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{B0A47904-1C27-4380-9327-986F762B0250}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -285,6 +287,18 @@ Global
 		{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}.Release|x64.Build.0 = Release|Any CPU
 		{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}.Release|x86.ActiveCfg = Release|Any CPU
 		{EDB042A3-A6DB-4400-84C4-DF467FA01B8C}.Release|x86.Build.0 = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|x64.Build.0 = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Debug|x86.Build.0 = Debug|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|x64.ActiveCfg = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|x64.Build.0 = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|x86.ActiveCfg = Release|Any CPU
+		{B0A47904-1C27-4380-9327-986F762B0250}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -308,6 +322,7 @@ Global
 		{63A327F6-01CB-4001-BCF5-88A62D498351} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{0D1C5F38-D7E4-4F14-BD51-90064CE89C95} = {1CEE3AF7-DC06-4BBE-B28D-62FB1BD4A7A5}
 		{EDB042A3-A6DB-4400-84C4-DF467FA01B8C} = {9BB0395E-B595-4B95-89ED-F55AF12B4EE7}
+		{B0A47904-1C27-4380-9327-986F762B0250} = {4F6282E5-97B9-4655-8E67-7DF32320FE0C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {112EBBFA-82B9-483E-B258-8611B70B3A3A}

@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj" />
   </ItemGroup>
 

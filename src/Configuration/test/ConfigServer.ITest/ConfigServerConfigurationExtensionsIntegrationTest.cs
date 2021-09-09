@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
+using Steeltoe.Common.Utils.IO;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -47,7 +48,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -90,7 +92,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
@@ -105,7 +108,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
             using var server = new TestServer(builder);
-            var client = server.CreateClient();
+            using var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
             Assert.Equal(
@@ -178,7 +181,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appSettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appSettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
@@ -194,7 +198,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
                 using var server = new TestServer(builder);
-                var client = server.CreateClient();
+                using var client = server.CreateClient();
                 var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal(
@@ -273,7 +277,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                         }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appSettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appSettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
@@ -289,7 +294,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
             {
                 // Act and Assert (TestServer expects Spring Cloud Config server to be running)
                 using var server = new TestServer(builder);
-                var client = server.CreateClient();
+                using var client = server.CreateClient();
                 var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
                 Assert.Equal(
@@ -380,7 +385,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var configurationBuilder = new ConfigurationBuilder();
@@ -423,7 +429,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       }
                     }
                 }";
-            var path = TestHelpers.CreateTempFile(appsettings);
+            using var sandbox = new Sandbox();
+            var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
             var builder = new WebHostBuilder()
@@ -437,7 +444,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
 
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
             using var server = new TestServer(builder);
-            var client = server.CreateClient();
+            using var client = server.CreateClient();
             var result = await client.GetStringAsync("http://localhost/Home/Health");
 
             // after switching to newer config server image, the health response has changed to

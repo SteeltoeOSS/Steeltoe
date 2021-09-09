@@ -58,6 +58,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.Connecto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Connector.ConnectorCore", "..\Connectors\src\ConnectorCore\Steeltoe.Connector.ConnectorCore.csproj", "{37523CE9-4DFB-48E1-B67D-5BAFA29DCAB6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Steeltoe.Common.Utils", "..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj", "{C15351D9-6B2F-4247-99DB-500068946211}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +134,10 @@ Global
 		{37523CE9-4DFB-48E1-B67D-5BAFA29DCAB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37523CE9-4DFB-48E1-B67D-5BAFA29DCAB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{37523CE9-4DFB-48E1-B67D-5BAFA29DCAB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C15351D9-6B2F-4247-99DB-500068946211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C15351D9-6B2F-4247-99DB-500068946211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C15351D9-6B2F-4247-99DB-500068946211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C15351D9-6B2F-4247-99DB-500068946211}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -154,6 +160,7 @@ Global
 		{8CA25152-E409-422A-90C0-47E78C23B0C8} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
 		{F96734B2-A894-40A9-887E-ED2853525165} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
 		{37523CE9-4DFB-48E1-B67D-5BAFA29DCAB6} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
+		{C15351D9-6B2F-4247-99DB-500068946211} = {EC6EA876-8354-44BE-8D5A-BA70E835985F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {58720A8A-389C-477F-BD36-2DB217BAF674}

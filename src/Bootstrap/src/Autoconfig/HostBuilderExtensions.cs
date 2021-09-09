@@ -187,7 +187,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void WireConfigServer(this IHostBuilder hostBuilder) =>
             hostBuilder
-                .ConfigureAppConfiguration(cfg => cfg.AddConfigServer(_loggerFactory))
+                .ConfigureAppConfiguration((context, cfg) => cfg.AddConfigServer(context.HostingEnvironment, _loggerFactory))
                 .ConfigureServices((context, services) =>
                 {
                     services.ConfigureConfigServerClientOptions(context.Configuration);
