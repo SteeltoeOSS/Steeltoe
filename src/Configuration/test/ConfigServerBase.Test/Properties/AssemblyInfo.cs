@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery;
-using Steeltoe.Discovery.Kubernetes;
-using System.Runtime.CompilerServices;
+using Steeltoe.Discovery.Eureka;
 
-[assembly: InternalsVisibleTo("Steeltoe.Discovery.Kubernetes.Test")]
-
-[assembly: DiscoveryClientAssembly(typeof(KubernetesDiscoveryClientExtension))]
+[assembly: DiscoveryClientAssembly(typeof(TestDiscoveryClientExtension))]

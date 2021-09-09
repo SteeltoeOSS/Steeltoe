@@ -1077,8 +1077,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             };
             var source = new ConfigServerConfigurationSource(settings, configuration);
             var provider = new ConfigServerConfigurationProvider(source);
-            var service = new ConfigServerDiscoveryService(configuration, settings);
-            Assert.Throws<ConfigServerException>(() => provider.DiscoverServerInstances(service));
+
+            var exception = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
+            Assert.StartsWith("Could not locate config server via discovery", exception.Message);
         }
 
         private class TestServiceInfo : IServiceInstance

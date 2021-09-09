@@ -28,6 +28,7 @@ namespace Steeltoe.Discovery.Eureka
     public class EurekaDiscoveryClientExtension : IDiscoveryClientExtension
     {
         public const string EUREKA_PREFIX = "eureka";
+        private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
 
         public string ServiceInfoName { get; private set; }
 
@@ -53,13 +54,21 @@ namespace Steeltoe.Discovery.Eureka
             return configuration.GetSection(EUREKA_PREFIX).GetChildren().Any() || serviceInfo is EurekaServiceInfo;
         }
 
-        private void ConfigureEurekaServices(IServiceCollection services)
+        internal void ConfigureEurekaServices(IServiceCollection services)
         {
             services
                 .AddOptions<EurekaClientOptions>()
                 .Configure<IConfiguration>((options, config) =>
                 {
                     config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX).Bind(options);
+
+                    // Eureka is enabled by default. If eureka:client:enabled was not set then check spring:cloud:discovery:enabled
+                    if (options.Enabled &&
+                        config.GetValue<bool?>(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX + ":enabled") is null &&
+                        config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    {
+                        options.Enabled = false;
+                    }
                 })
                 .PostConfigure<IConfiguration>((options, config) =>
                 {

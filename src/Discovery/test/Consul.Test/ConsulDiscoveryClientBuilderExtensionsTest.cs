@@ -20,7 +20,8 @@ namespace Steeltoe.Discovery.Consul.Test
                 { "spring:cloud:inet:skipReverseDnsLookup", "true" },
                 { "consul:discovery:useNetUtils", "true" },
                 { "consul:discovery:register", "false" },
-                { "consul:discovery:deregister", "false" }
+                { "consul:discovery:deregister", "false" },
+                { "consul:host", "http://testhost:8500" }
             };
 
         [Fact]
