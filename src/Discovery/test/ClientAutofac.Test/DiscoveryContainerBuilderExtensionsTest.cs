@@ -128,9 +128,9 @@ namespace Steeltoe.Discovery.Client.Test
             // Arrange
             var appsettings = @"
 {
-    'spring': {
-        'application': {
-            'name': 'myName'
+    ""spring"": {
+        ""application"": {
+            ""name"": ""myName""
         },
     }
 }";
