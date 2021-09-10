@@ -12,7 +12,7 @@
   <ItemGroup>
     <AdditionalFiles Include="..\..\..\..\stylecop.json">
       <Link>stylecop.json</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AdditionalFiles>
   </ItemGroup>
   <ItemGroup>
