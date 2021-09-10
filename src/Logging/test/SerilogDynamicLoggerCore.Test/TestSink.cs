@@ -22,7 +22,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             return _currentSink ??= new TestSink();
         }
 
-        private readonly List<string> logs = new();
+        private readonly List<string> logs = new ();
 
         public void Emit(LogEvent logEvent)
         {

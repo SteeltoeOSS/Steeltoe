@@ -66,6 +66,14 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             return DoGetDelegateLogger(serilogOptions);
         }
 
+        private static ILoggerProvider GetDelegateLogger(IConfiguration configuration)
+        {
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(configuration);
+
+            return DoGetDelegateLogger(serilogOptions);
+        }
+
         private static ILoggerProvider DoGetDelegateLogger(SerilogOptions serilogOptions)
         {
             lock (_sync)
@@ -74,14 +82,6 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
             }
 
             return new Serilog.Extensions.Logging.SerilogLoggerProvider(_serilogger);
-        }
-
-        private static ILoggerProvider GetDelegateLogger(IConfiguration configuration)
-        {
-            var serilogOptions = new SerilogOptions();
-            serilogOptions.SetSerilogOptions(configuration);
-
-            return DoGetDelegateLogger(serilogOptions);
         }
 
         private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)

@@ -104,7 +104,6 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
                      logBuilder.AddSerilogDynamicConsole(loggerConfiguration, false);
                  });
-
         }
 
         /// <summary>
