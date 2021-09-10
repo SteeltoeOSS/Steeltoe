@@ -22,6 +22,7 @@ namespace Steeltoe.Management.EndpointWeb.Handler.Test
         public void GetRequestUri_HandlesPorts(string requestUri, string expectedResult, string xForwarded)
         {
             // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
             var request = new Mock<HttpRequestBase>();
             request.Setup(req => req.Url).Returns(new Uri(requestUri));
             request.Setup(req => req.Path).Returns("/somepath");
@@ -35,5 +36,27 @@ namespace Steeltoe.Management.EndpointWeb.Handler.Test
             // assert
             Assert.Equal(expectedResult, result);
         }
+
+        [Theory]
+        [InlineData("http://somehost:1234/somepath", "https://somehost/somepath", "https")]
+        [InlineData("http://somehost:8080/somepath", "http://somehost/somepath", "http")]
+        public void GetRequestUri_IgnoresPortsOnCF(string requestUri, string expectedResult, string xForwarded)
+        {
+            // arrange
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "notnull");
+            var request = new Mock<HttpRequestBase>();
+            request.Setup(req => req.Url).Returns(new Uri(requestUri));
+            request.Setup(req => req.Path).Returns("/somepath");
+            request.Setup(req => req.Headers).Returns(new NameValueCollection { { "X-Forwarded-Proto", xForwarded } });
+            var mockEndpoint = new Mock<ActuatorEndpoint>(new Mock<IActuatorHypermediaOptions>().Object, null, null).Object;
+            var handler = new ActuatorHypermediaHandler(mockEndpoint, null, null, null);
+
+            // act
+            var result = handler.GetRequestUri(request.Object);
+
+            // assert
+            Assert.Equal(expectedResult, result);
+        }
+
     }
 }
