@@ -33,27 +33,25 @@ namespace Steeltoe.Management.Endpoint
         {
             get
             {
-                Func<Type, bool> query = t => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(query).ToList();
-                types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(query));
+                static bool Query(Type t) => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
+                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(Query).ToList();
+                types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(Query));
                 return types.Select(t => new object[] { t });
             }
         }
 
-        public static IEnumerable<object[]> IEndpointImplementationsWithAuth
+        public static IEnumerable<object[]> IEndpointImplementationsForCurrentPlatform
         {
             get
             {
-                Func<Type, bool> query = t => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-                Func<Type, bool> supportedOnPlatform = t => !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump"))
+                static bool Query(Type t) => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
+                static bool SupportedOnPlatform(Type t) => !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump"))
                                                             || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows)
                                                             || (t.Name.StartsWith("HeapDump") && EndpointServiceCollectionExtensions.IsHeapDumpSupported());
-                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(query).Where(supportedOnPlatform).ToList();
-                types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(query).Where(supportedOnPlatform));
-                var auths = new bool[] { true, false };
-                return from t in types
-                       from a in auths
-                       select new object[] { t, a };
+                var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes()
+                                .Union(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes())
+                                .Where(Query).Where(SupportedOnPlatform).ToList();
+                return from t in types select new object[] { t };
             }
         }
 
@@ -67,50 +65,67 @@ namespace Steeltoe.Management.Endpoint
         }
 
         [Theory]
-        [MemberData(nameof(IEndpointImplementationsWithAuth))]
-        public async Task MapTestAuthSuccess(Type type, bool authSuccess)
+        [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+        public async Task MapTestAuthSuccess(Type type)
         {
             // Arrange
-            ServiceProvider provider = null;
-            Action<AuthorizationPolicyBuilder> policyAction = policy => policy.RequireClaim("scope", "invalidscope");
+            var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
+            await ActAndAssert(type, hostBuilder, HttpStatusCode.OK);
+        }
 
-            if (authSuccess)
-            {
-                policyAction = policy => policy.RequireClaim("scope", "actuators.read"); // Set up for success
-            }
+        [Theory]
+        [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+        public async Task MapTestAuthFail(Type type)
+        {
+            // Arrange
+            var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
+            await ActAndAssert(type, hostBuilder, HttpStatusCode.Unauthorized);
+        }
 
-            var hostBuilder = new HostBuilder().ConfigureWebHost(builder =>
-                    builder.UseTestServer()
-                    .ConfigureServices((context, s) =>
-                    {
-                        s.AddRouting();
-                        s.AddTraceActuator(context.Configuration, MediaTypeVersion.V1);
-                        s.AddThreadDumpActuator(context.Configuration, MediaTypeVersion.V1);
-                        s.AddCloudFoundryActuator(context.Configuration);
-                        s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
-                        s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
+        private static IHostBuilder GetHostBuilder(Type type, Action<AuthorizationPolicyBuilder> policyAction)
+            => new HostBuilder()
+                .AddDynamicLogging()
+                .ConfigureServices((context, s) =>
+                {
+                    s.AddTraceActuator(context.Configuration, MediaTypeVersion.V1);
+                    s.AddThreadDumpActuator(context.Configuration, MediaTypeVersion.V1);
+                    s.AddCloudFoundryActuator(context.Configuration);
+                    s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
+                    s.AddRouting();
+                    s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
-                        s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
-                        provider = s.BuildServiceProvider();
-                    })
-                    .Configure(a => a.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints => endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth"))));
+                    s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+                })
+                .ConfigureWebHost(builder =>
+                {
+                    builder
+                        .Configure(app =>
+                            app
+                                .UseRouting()
+                                .UseAuthentication()
+                                .UseAuthorization()
+                                .UseEndpoints(endpoints => endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth")))
+                        .UseTestServer();
+                });
 
-            // Act
-            var host = await hostBuilder.AddDynamicLogging().StartAsync();
+        private static IManagementOptions GetManagementContext(Type type, IServiceProvider services)
+            => type.IsAssignableFrom(typeof(CloudFoundryEndpoint))
+                ? services.GetRequiredService<CloudFoundryManagementOptions>()
+                : services.GetRequiredService<ActuatorManagementOptions>();
+
+        private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, HttpStatusCode expectedStatus)
+        {
+            var host = await hostBuilder.StartAsync();
+            var (middleware, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+            var options = host.Services.GetService(optionsType) as IEndpointOptions;
+            var path = options.GetContextPath(GetManagementContext(type, host.Services));
 
             // Assert
-            var (middleware, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
-            var options = provider.GetService(optionsType) as IEndpointOptions;
-            var mgmtContext = type.IsAssignableFrom(typeof(CloudFoundryEndpoint))
-                ? (IManagementOptions)provider.GetRequiredService<CloudFoundryManagementOptions>()
-                : (IManagementOptions)provider.GetRequiredService<ActuatorManagementOptions>();
-            var path = options.GetContextPath(mgmtContext);
             Assert.NotNull(path);
 
             var response = host.GetTestServer().CreateClient().GetAsync(path);
-            var expected = authSuccess ? HttpStatusCode.OK : HttpStatusCode.Unauthorized;
 
-            Assert.True(expected == response.Result.StatusCode, $"Expected {expected}, but got {response.Result.StatusCode} for {path} and type {type}");
+            Assert.True(expectedStatus == response.Result.StatusCode, $"Expected {expectedStatus}, but got {response.Result.StatusCode} for {path} and type {type}");
         }
     }
 }
