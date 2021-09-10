@@ -57,6 +57,5 @@ namespace Steeltoe.Management.EndpointWeb.Handler.Test
             // assert
             Assert.Equal(expectedResult, result);
         }
-
     }
 }
