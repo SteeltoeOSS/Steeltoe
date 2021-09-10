@@ -127,7 +127,7 @@ namespace Steeltoe.Management.Endpoint
                 var pattern = RoutePatternFactory.Parse(fullPath);
 
                 // only add middleware if the route hasn't already been mapped
-                if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ((RouteEndpoint)ep).RoutePattern.RawText == pattern.RawText)))
+                if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ep is RouteEndpoint endpoint && endpoint.RoutePattern.RawText == pattern.RawText)))
                 {
                     var pipeline = endpoints.CreateApplicationBuilder()
                         .UseMiddleware(middleware, mgmtOptions)

@@ -95,6 +95,7 @@ namespace Steeltoe.Management.Endpoint
                     s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
                         .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, options => { });
                     s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+                    s.AddServerSideBlazor();
                 })
                 .ConfigureWebHost(builder =>
                 {
@@ -104,7 +105,11 @@ namespace Steeltoe.Management.Endpoint
                                 .UseRouting()
                                 .UseAuthentication()
                                 .UseAuthorization()
-                                .UseEndpoints(endpoints => endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth")))
+                                .UseEndpoints(endpoints =>
+                                {
+                                    endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
+                                    endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth");
+                                }))
                         .UseTestServer();
                 });
 
