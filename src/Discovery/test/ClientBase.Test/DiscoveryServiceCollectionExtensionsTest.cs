@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.HealthChecks;
+using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.Utils.IO;
@@ -18,12 +19,14 @@ using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Kubernetes;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using Xunit;
@@ -118,16 +121,35 @@ namespace Steeltoe.Discovery.Client.Test
 
             // act
             var serviceProvider = services.BuildServiceProvider();
-            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>();
-            var handlerProvider = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+            var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+            var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+            var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+            var innerHandler = GetInnerHttpHandler(handler);
 
             // assert
             Assert.NotNull(discoveryClient);
-            Assert.NotNull(handlerProvider);
+            Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
+        }
+
+#pragma warning disable SA1202 // Elements should be ordered by access
+        private object GetInnerHttpHandler(object handler)
+        {
+            while (handler is not null)
+            {
+                handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
+                if (handler is HttpClientHandler h)
+                {
+                    break;
+                }
+            }
+
+            return handler;
         }
 
         [Fact]
         public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
+#pragma warning restore SA1202 // Elements should be ordered by access
         {
             // Arrange
             var appsettings = new Dictionary<string, string>() { { "spring:application:name", "myName" } };

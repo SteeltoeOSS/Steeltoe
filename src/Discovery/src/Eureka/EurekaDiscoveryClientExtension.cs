@@ -143,11 +143,24 @@ namespace Steeltoe.Discovery.Eureka
             var certOptions = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IConfigureOptions<CertificateOptions>));
             var existingHandler = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IHttpClientHandlerProvider));
 
-            if (certOptions is object && existingHandler is null)
+            if (existingHandler is IHttpClientHandlerProvider handlerProvider)
             {
-#pragma warning disable 618
-                services.AddSingleton<IHttpClientHandlerProvider, ClientCertificateHttpHandlerProvider>();
-#pragma warning restore 618
+                services
+                    .AddHttpClient<EurekaDiscoveryClient>("Eureka")
+                    .ConfigurePrimaryHttpMessageHandler(() => handlerProvider.GetHttpClientHandler());
+            }
+            else
+            {
+                if (certOptions is null)
+                {
+                    services.AddHttpClient<EurekaDiscoveryClient>("Eureka");
+                }
+                else
+                {
+                    services
+                        .AddHttpClient<EurekaDiscoveryClient>("Eureka")
+                        .ConfigurePrimaryHttpMessageHandler(services => new ClientCertificateHttpHandler(services.GetRequiredService<IOptionsMonitor<CertificateOptions>>()));
+                }
             }
         }
 

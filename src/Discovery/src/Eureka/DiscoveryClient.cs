@@ -42,25 +42,13 @@ namespace Steeltoe.Discovery.Eureka
 
         public InstanceStatus LastRemoteInstanceStatus { get; internal set; } = InstanceStatus.UNKNOWN;
 
-        public IEurekaHttpClient HttpClient
-        {
-            get
-            {
-                return _httpClient;
-            }
-        }
+        public IEurekaHttpClient HttpClient => _httpClient;
 
         public Applications Applications
         {
-            get
-            {
-                return _localRegionApps;
-            }
+            get => _localRegionApps;
 
-            internal set
-            {
-                _localRegionApps = value;
-            }
+            internal set => _localRegionApps = value;
         }
 
         private readonly IEurekaClientConfig _config;
@@ -266,26 +254,11 @@ namespace Steeltoe.Discovery.Eureka
             }
         }
 
-        public InstanceStatus GetInstanceRemoteStatus()
-        {
-            return InstanceStatus.UNKNOWN;
-        }
+        public InstanceStatus GetInstanceRemoteStatus() => InstanceStatus.UNKNOWN;
 
-        internal Timer HeartBeatTimer
-        {
-            get
-            {
-                return _heartBeatTimer;
-            }
-        }
+        internal Timer HeartBeatTimer => _heartBeatTimer;
 
-        internal Timer CacheRefreshTimer
-        {
-            get
-            {
-                return _cacheRefreshTimer;
-            }
-        }
+        internal Timer CacheRefreshTimer => _cacheRefreshTimer;
 
         internal async void Instance_StatusChangedEvent(object sender, StatusChangedArgs args)
         {

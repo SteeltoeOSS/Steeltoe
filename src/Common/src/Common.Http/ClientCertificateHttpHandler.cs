@@ -61,7 +61,7 @@ namespace Steeltoe.Common.Http
             try
             {
                 _lastValue = _certificateOptions.CurrentValue;
-                this.ClientCertificates.Add(_lastValue.Certificate);
+                ClientCertificates.Add(_lastValue.Certificate);
             }
             finally
             {

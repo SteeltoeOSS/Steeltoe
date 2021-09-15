@@ -6,11 +6,10 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using System;
 using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Http
 {
-    [Obsolete("Use CertificateProvidingHandler instead")]
+    [Obsolete("Use ClientCertificateHttpHandler directly instead")]
     public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
     {
         private readonly ClientCertificateHttpHandler _handler;
