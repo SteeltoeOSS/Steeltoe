@@ -24,7 +24,6 @@
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
     <SqlClientVersion>4.5.0</SqlClientVersion>
-    <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
     <StackExchangeVersion>2.0.513</StackExchangeVersion>
 
     <AutofacVersion>4.6.1</AutofacVersion>
@@ -57,7 +56,7 @@
     <StyleCopVersion>1.1.118</StyleCopVersion>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'netcoreapp2.1'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net461'">
     <AspNetVersion>5.2.4</AspNetVersion>
     <OwinVersion>4.0.0</OwinVersion>
     <OwinOAuthVersion>4.0.0</OwinOAuthVersion>
@@ -70,6 +69,7 @@
     <ExtensionsVersion>2.2.0</ExtensionsVersion>
     <HealthChecksVersion>2.2.0</HealthChecksVersion>
     <LoggingVersion>2.2.0</LoggingVersion>
+    <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'netstandard2.1'">
     <AspNetCoreVersion>3.1.0</AspNetCoreVersion>
@@ -82,15 +82,17 @@
     <ExtensionsVersion>3.1.0</ExtensionsVersion>
     <HealthChecksVersion>3.1.0</HealthChecksVersion>
     <LoggingVersion>3.1.0</LoggingVersion>
+    <MicrosoftExtensionsRedisVersion>3.1.0</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
-    <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
-    <EFCoreTestVersion>5.0.0</EFCoreTestVersion>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <AspNetCoreVersion>6.0.0-preview.7.21378.6</AspNetCoreVersion>
+    <EFCoreTestVersion>6.0.0-preview.7.21378.4</EFCoreTestVersion>
     <EF6Version>6.4.0</EF6Version>
-    <MySqlEFCoreVersion>5.0.0</MySqlEFCoreVersion>
-    <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
+    <MySqlEFCoreVersion>6.0.0-preview3</MySqlEFCoreVersion>
+    <NpgsqlEFCoreVersion>6.0.0-preview7</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
-    <ExtensionsVersion>5.0.0</ExtensionsVersion>
+    <PomeloEFCoreVersion>6.0.0-preview.5</PomeloEFCoreVersion>
+    <ExtensionsVersion>6.0.0-preview.7.21377.19</ExtensionsVersion>
+    <MicrosoftExtensionsRedisVersion>6.0.0-preview.7.21378.6</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
 </Project>

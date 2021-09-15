@@ -68,7 +68,6 @@ namespace Steeltoe.Discovery.Client.Test
             Assert.IsType<DiscoveryClientStartupFilter>(filter);
         }
 
-#if NETCOREAPP3_1 || NET5_0
         [Fact]
         public async Task AddServiceDiscovery_IHostBuilder_IStartupFilterFires()
         {
@@ -85,7 +84,6 @@ namespace Steeltoe.Discovery.Client.Test
             //   but debug through and you'll see it. Also the code coverage report should provide validation
             Assert.True(true);
         }
-#endif
 
         [Fact]
         public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
