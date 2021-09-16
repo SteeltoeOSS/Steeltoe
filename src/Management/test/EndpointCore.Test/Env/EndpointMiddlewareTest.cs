@@ -33,11 +33,7 @@ namespace Steeltoe.Management.Endpoint.Env.Test
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
-#if NETCOREAPP3_1 || NET5_0
         private readonly IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
-#else
-        private readonly Microsoft.Extensions.Hosting.IHostingEnvironment host = (Microsoft.Extensions.Hosting.IHostingEnvironment)HostingHelpers.GetHostingEnvironment();
-#endif
 
         [Fact]
         public async void HandleEnvRequestAsync_ReturnsExpected()

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NET5_0
+#if NET6_0
 using MySqlConnector;
 #else
 using MySql.Data.MySqlClient;
@@ -97,7 +97,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = new ConfigurationBuilder().Build();
 
             // Act and Assert
-#if NET5_0
+#if NET6_0
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
@@ -110,7 +110,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             Assert.NotNull(con as MySqlConnection);
         }
 
-#if NET5_0
+#if NET6_0
         // Run a MySQL server with Docker to match creds below with this command
         // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
         [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
@@ -181,7 +181,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act
-#if NET5_0
+#if NET6_0
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
@@ -218,7 +218,7 @@ namespace Steeltoe.CloudFoundry.Connector.MySql.EFCore.Test
             var config = builder.Build();
 
             // Act and Assert
-#if NET5_0
+#if NET6_0
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));

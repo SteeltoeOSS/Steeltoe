@@ -6,7 +6,7 @@
 using Newtonsoft.Json.Linq;
 #endif
 using System;
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET6_0
 using System.Text.Json;
 #endif
 using Xunit;
@@ -40,7 +40,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetExpTime_FindsTime()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET6_0
             var payload = JsonDocument.Parse(info).RootElement;
 #else
             var payload = JObject.Parse(info);
@@ -53,7 +53,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetIssueTime_FindsTime()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET6_0
             var payload = JsonDocument.Parse(info).RootElement;
 #else
             var payload = JObject.Parse(info);
@@ -66,7 +66,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         public void GetScopes_FindsScopes()
         {
             var info = TestHelpers.GetValidTokenInfoRequestResponse();
-#if NETCOREAPP3_1 || NET5_0
+#if NETCOREAPP3_1 || NET6_0
             var payload = JsonDocument.Parse(info).RootElement;
 #else
             var payload = JObject.Parse(info);

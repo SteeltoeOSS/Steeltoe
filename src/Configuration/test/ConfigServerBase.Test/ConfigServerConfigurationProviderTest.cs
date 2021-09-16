@@ -22,6 +22,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 {
     public class ConfigServerConfigurationProviderTest
     {
+        private readonly ConfigServerClientSettings _commonSettings = new () { Name = "myName" };
+
         [Fact]
         public void SettingsConstructor__ThrowsIfSettingsNull()
         {
@@ -399,14 +401,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment("testing");
-            using var server = new TestServer(builder);
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var ex = await Assert.ThrowsAsync<HttpRequestException>(() => provider.RemoteLoadAsync(settings.GetUris(), null));
@@ -423,15 +421,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 204 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var result = await provider.RemoteLoadAsync(settings.GetRawUris(), null);
@@ -467,16 +460,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             TestConfigServerStartup.Label = "testlabel";
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName",
-                Label = "label,testlabel"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.Label = "label,testlabel";
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.DoLoad();
@@ -510,15 +498,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var env = await provider.RemoteLoadAsync(settings.GetUris(), null);
@@ -547,15 +530,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888, http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri("http://localhost:8888");
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.Uri = "http://localhost:8888, http://localhost:8888";
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.LoadInternal();
@@ -572,15 +551,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888, http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri("http://localhost:8888");
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.Uri = "http://localhost:8888, http://localhost:8888";
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.LoadInternal();
@@ -597,15 +572,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.LoadInternal();
@@ -622,16 +592,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName",
-                FailFast = true
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.FailFast = true;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -641,20 +606,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         public void Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
         {
             // Arrange
+            var settings = _commonSettings;
+            settings.FailFast = true;
+            settings.Uri = "http://localhost:8888,http://localhost:8888";
             var envir = HostingHelpers.GetHostingEnvironment();
+            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 404, 200 };
-            var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888, http://localhost:8888 ",
-                Name = "myName",
-                FailFast = true
-            };
-            server.BaseAddress = new Uri("http://localhost:8888");
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -669,16 +630,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName",
-                FailFast = true
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.FailFast = true;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -692,16 +648,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888",
-                Name = "myName",
-                FailFast = true
-            };
-            server.BaseAddress = new Uri("http://localhost:8888");
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            settings.FailFast = true;
+            settings.Uri = "http://localhost:8888, http://localhost:8888, http://localhost:8888";
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -716,17 +668,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.ReturnStatus = new int[] { 500, 500, 500, 500, 500, 500 };
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
 
             var settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888",
                 Name = "myName",
                 FailFast = true,
                 RetryEnabled = true
             };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             var ex = Assert.Throws<ConfigServerException>(() => provider.LoadInternal());
@@ -757,15 +708,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.LoadInternal();
@@ -805,15 +751,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             TestConfigServerStartup.Reset();
             TestConfigServerStartup.Response = environment;
             var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
-            var server = new TestServer(builder);
-
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-            server.BaseAddress = new Uri(settings.Uri);
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            using var server = new TestServer(builder) { BaseAddress = new Uri(ConfigServerClientSettings.DEFAULT_URI) };
+            var settings = _commonSettings;
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             // Act and Assert
             provider.Load();
@@ -1040,7 +981,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888/",
                 Name = "foo",
                 Environment = "development",
                 Token = "MyVaultToken"
@@ -1062,7 +1002,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         {
             var settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888/",
                 Name = "foo",
                 Environment = "development",
                 DiscoveryEnabled = true
@@ -1082,7 +1021,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888/",
                 Name = "foo",
                 Environment = "development"
             };
@@ -1158,7 +1096,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             var settings = new ConfigServerClientSettings
             {
-                Uri = "http://localhost:8888/",
                 Name = "foo",
                 Environment = "development"
             };
@@ -1217,18 +1154,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
                 .UseStartup<TestConfigServerStartup>()
                 .UseEnvironment(hostingEnvironment.EnvironmentName);
 
-            var settings = new ConfigServerClientSettings
-            {
-                Uri = "http://localhost:8888",
-                Name = "myName"
-            };
-
-            var server = new TestServer(hostBuilder)
-            {
-                BaseAddress = new Uri(settings.Uri)
-            };
-
-            var provider = new ConfigServerConfigurationProvider(settings, server.CreateClient());
+            var settings = _commonSettings;
+            using var server = new TestServer(hostBuilder) { BaseAddress = new Uri(settings.Uri) };
+            using var client = server.CreateClient();
+            var provider = new ConfigServerConfigurationProvider(settings, client);
 
             var configurationBuilder = new ConfigurationBuilder();
 
