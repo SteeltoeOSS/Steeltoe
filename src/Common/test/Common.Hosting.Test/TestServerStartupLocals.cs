@@ -8,8 +8,8 @@ namespace Steeltoe.Common.Hosting.Test
     {
         public TestServerStartupLocals()
         {
-            ExpectedAddresses.Add("http://*:5000");
-            ExpectedAddresses.Add("https://*:5001");
+            ExpectedAddresses.Add("http://*:5001");
+            ExpectedAddresses.Add("https://*:5002");
         }
     }
 }
