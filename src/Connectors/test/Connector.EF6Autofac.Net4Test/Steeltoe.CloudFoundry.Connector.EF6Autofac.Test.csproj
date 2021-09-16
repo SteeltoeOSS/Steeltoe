@@ -19,5 +19,10 @@
 
   <ItemGroup>
     <PackageReference Include="MySql.Data.EntityFramework" Version="$(MySqlV8)" />
+    <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
+    <!-- with netcoreapp3.1/net5.0 returns "Warning NU1701 Package restored using '.NETFramework,Version=...' instead of the project target framework. This package may not be fully compatible with your project." -->
+    <PackageReference Include="Oracle.ManagedDataAccess.EntityFramework" Version="19.7.0" />
   </ItemGroup>
 </Project>

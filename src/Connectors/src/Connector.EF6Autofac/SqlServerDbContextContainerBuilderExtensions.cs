@@ -5,9 +5,12 @@
 using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.CloudFoundry.Connector.SqlServer;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 {
@@ -51,6 +54,10 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 
             var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
             var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, typeof(TContext));
+
+            var healthFactory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+            container.Register(c => new RelationalHealthContributor((IDbConnection)healthFactory.Create(null))).As<IHealthContributor>();
+
             return container.Register(c => factory.Create(null)).As<TContext>();
         }
     }

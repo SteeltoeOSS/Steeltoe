@@ -6,8 +6,11 @@ using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.Oracle;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 {
@@ -51,6 +54,16 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 
             var oracleConfig = new OracleProviderConnectorOptions(config);
             var factory = new OracleProviderConnectorFactory(info, oracleConfig, typeof(TContext));
+
+            try
+            {
+                var healthFactory = new OracleProviderConnectorFactory(info, oracleConfig, OracleTypeLocator.OracleConnection);
+                container.Register(c => new RelationalHealthContributor((IDbConnection)healthFactory.Create(null))).As<IHealthContributor>();
+            }
+            catch (ConnectorException)
+            {
+            }
+
             return container.Register(c => factory.Create(null)).As<TContext>();
         }
     }
