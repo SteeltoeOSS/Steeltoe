@@ -15,10 +15,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
 
             MinimumLevel MinimumLevel { get; set; }
 
-            [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+            [Obsolete("No longer needed with current implementation.")]
             IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
 
-            [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+            [Obsolete("No longer needed with current implementation.")]
             IEnumerable<string> FullnameExclusions { get; }
         }
     }
