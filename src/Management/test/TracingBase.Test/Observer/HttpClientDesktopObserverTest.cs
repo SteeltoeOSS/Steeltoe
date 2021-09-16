@@ -196,7 +196,9 @@ namespace Steeltoe.Management.Tracing.Observer.Test
 
         private HttpWebRequest GetHttpRequestMessage()
         {
+#pragma warning disable SYSLIB0014 // Type or member is obsolete
             var m = WebRequest.CreateHttp("http://localhost:5555/");
+#pragma warning restore SYSLIB0014 // Type or member is obsolete
             m.Method = HttpMethod.Get.Method;
             m.Headers.Add("TEST", "Header");
             return m;
