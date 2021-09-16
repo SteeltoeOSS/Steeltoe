@@ -503,9 +503,7 @@ namespace Steeltoe.Discovery.Client.Test
             var appsettings = new Dictionary<string, string>()
             {
                 { "spring:application:name", "myName" },
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:shouldFetchRegistry", "false" },
-                { "eureka:client:shouldRegisterWithEureka", "false" }
+                { "eureka:client:EurekaServer:ConnectTimeoutSeconds", "0" }
             };
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(appsettings)
@@ -519,12 +517,15 @@ namespace Steeltoe.Discovery.Client.Test
 
             // act
             var serviceProvider = services.BuildServiceProvider();
-            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>();
-            var handlerProvider = serviceProvider.GetService<IHttpClientHandlerProvider>();
+            var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
+            var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
+            var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+            var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
+            var innerHandler = GetInnerHttpHandler(handler);
 
             // assert
             Assert.NotNull(discoveryClient);
-            Assert.NotNull(handlerProvider);
+            Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
         }
 
         [Fact]
