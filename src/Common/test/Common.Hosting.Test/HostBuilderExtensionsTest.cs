@@ -64,6 +64,7 @@ namespace Steeltoe.Common.Hosting.Test
         public void UseCloudHosting_ReadsTyePorts()
         {
             // Arrange
+            Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
             Environment.SetEnvironmentVariable("PORT", "80;443");
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
@@ -191,7 +192,7 @@ namespace Steeltoe.Common.Hosting.Test
                 });
 
             // Act and Assert
-            hostBuilder.UseCloudHosting(5000, 5001);
+            hostBuilder.UseCloudHosting(5001, 5002);
             using var host = hostBuilder.Build();
             host.Start();
         }
