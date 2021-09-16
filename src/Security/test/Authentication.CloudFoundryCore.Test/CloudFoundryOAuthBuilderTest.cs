@@ -4,9 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,16 +12,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 {
     public class CloudFoundryOAuthBuilderTest
     {
+#if NET6_0
+        [Fact(Skip = "Un-skip in 6.0 RC1 - https://github.com/dotnet/aspnetcore/issues/34354")]
+#else
         [Fact]
+#endif
         public async Task ShouldKeepDefaultServiceUrlsIfAuthDomainNotPresent()
         {
             var expectedAuthoricationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
             var webApplicationFactory = new TestApplicationFactory<TestServerStartup>();
-#if NETCOREAPP3_1 || NET5_0
             var client = webApplicationFactory.CreateDefaultClient();
-#else
-            var client = webApplicationFactory.GetTestServer().CreateClient();
-#endif
             var result = await client.GetAsync("http://localhost/");
             var location = result.Headers.Location.ToString();
 
@@ -31,7 +29,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             Assert.StartsWith(expectedAuthoricationUrl, location, StringComparison.OrdinalIgnoreCase);
         }
 
+#if NET6_0
+        [Fact(Skip = "Un-skip in 6.0 RC1 - https://github.com/dotnet/aspnetcore/issues/34354")]
+#else
         [Fact]
+#endif
         public async Task ShouldAddAuthDomainToServiceUrlsIfPresent()
         {
             var authDomain = "http://this-config-server-url";
@@ -47,11 +49,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             var webApplicationFactory = new TestApplicationFactory<TestServerStartup>(configuration);
 
-#if NETCOREAPP3_1 || NET5_0
             var client = webApplicationFactory.CreateDefaultClient();
-#else
-            var client = webApplicationFactory.GetTestServer().CreateClient();
-#endif
             var result = await client.GetAsync("http://localhost/");
 
             var location = result.Headers.Location.ToString();

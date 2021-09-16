@@ -35,15 +35,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
         public void Configure(IApplicationBuilder app)
         {
             app.UseHystrixRequestContext();
-#if NETCOREAPP3_1 || NET5_0
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-#else
-            app.UseMvc();
-#endif
         }
     }
 }

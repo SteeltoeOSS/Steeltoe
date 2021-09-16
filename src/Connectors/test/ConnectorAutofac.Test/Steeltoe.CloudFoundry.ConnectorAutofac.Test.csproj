@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup Condition="! $(OS.Contains('Win'))">
-    <TargetFrameworks>netcoreapp2.1;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup Condition="$(OS.Contains('Win'))">
-    <TargetFrameworks>net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>net461</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -19,7 +19,6 @@
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
     <!--<PackageReference Include="MySql.Data" Version="$(MySqlV6)" />-->
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
-    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
   </ItemGroup>
 

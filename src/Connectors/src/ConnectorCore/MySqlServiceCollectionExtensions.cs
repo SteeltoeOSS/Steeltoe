@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Relational;
-using Steeltoe.CloudFoundry.Connector.Relational.MySql;
 using Steeltoe.CloudFoundry.Connector.Services;
 using Steeltoe.Common.HealthChecks;
 using System;

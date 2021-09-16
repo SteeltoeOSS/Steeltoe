@@ -46,6 +46,8 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
 
         public string ServiceName { get; set; }
 
+        public int ConnectionTimeout { get; set; } = 15;
+
         internal Dictionary<string, string> Options { get; set; } = new Dictionary<string, string>();
 
         public override string ToString()
@@ -55,7 +57,7 @@ namespace Steeltoe.CloudFoundry.Connector.Oracle
                 return ConnectionString;
             }
 
-            return string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", Username, Password, Server, Port, ServiceName);
+            return string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};Connection Timeout={5}", Username, Password, Server, Port, ServiceName, ConnectionTimeout);
         }
     }
 }

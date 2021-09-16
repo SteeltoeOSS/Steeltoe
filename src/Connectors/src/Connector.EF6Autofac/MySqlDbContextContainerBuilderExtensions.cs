@@ -6,8 +6,11 @@ using Autofac;
 using Autofac.Builder;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.CloudFoundry.Connector.MySql;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 {
@@ -51,6 +54,10 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac
 
             var mySqlConfig = new MySqlProviderConnectorOptions(config);
             var factory = new MySqlProviderConnectorFactory(info, mySqlConfig, typeof(TContext));
+
+            var healthFactory = new MySqlProviderConnectorFactory(info, mySqlConfig, MySqlTypeLocator.MySqlConnection);
+            container.Register(c => new RelationalHealthContributor((IDbConnection)healthFactory.Create(null))).As<IHealthContributor>();
+
             return container.Register(c => factory.Create(null)).As<TContext>();
         }
     }

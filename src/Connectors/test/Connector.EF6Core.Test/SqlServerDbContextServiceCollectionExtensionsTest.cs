@@ -4,7 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Test;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using System.Data.Entity;
@@ -73,8 +75,12 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6.Test
             // Act and Assert
             SqlServerDbContextServiceCollectionExtensions.AddDbContext<GoodSqlServerDbContext>(services, config);
 
-            var service = services.BuildServiceProvider().GetService<GoodSqlServerDbContext>();
+            var serviceProvider = services.BuildServiceProvider();
+            var service = serviceProvider.GetService<GoodSqlServerDbContext>();
+            var serviceHealth = serviceProvider.GetService<IHealthContributor>();
             Assert.NotNull(service);
+            Assert.NotNull(serviceHealth);
+            Assert.IsAssignableFrom<RelationalHealthContributor>(serviceHealth);
         }
 
         [Fact]

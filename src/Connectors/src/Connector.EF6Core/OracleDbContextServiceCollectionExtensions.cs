@@ -7,8 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CloudFoundry.Connector.Oracle;
 using Steeltoe.CloudFoundry.Connector.Oracle.EF6;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.EF6Core
 {
@@ -36,7 +39,7 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
             }
 
             var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
+            DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
             return services;
         }
@@ -69,17 +72,26 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Core
             }
 
             var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
+            DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime, ILogger logger = null)
         {
             var oracleConfig = new OracleProviderConnectorOptions(config);
 
             var factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            try
+            {
+                var healthFactory = new OracleProviderConnectorFactory(info, oracleConfig, OracleTypeLocator.OracleConnection);
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
+            }
+            catch (ConnectorException)
+            {
+                logger?.LogWarning("Failed to add a HealthContributor for the Oracle DbContext");
+            }
         }
     }
 }

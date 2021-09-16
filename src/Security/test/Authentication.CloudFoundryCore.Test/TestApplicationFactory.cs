@@ -23,7 +23,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             this.configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
         }
 
-#if NETCOREAPP3_1 || NET5_0
         protected override IHost CreateHost(IHostBuilder builder)
         {
             builder.UseContentRoot(Directory.GetCurrentDirectory());
@@ -45,19 +44,5 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
 
             return builder;
         }
-#else
-        public TestServer GetTestServer()
-        {
-            var webHostBuilder = new WebHostBuilder()
-                .ConfigureAppConfiguration(configurationBuilder =>
-                {
-                    configurationBuilder.AddInMemoryCollection(configuration);
-                })
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<TStartup>();
-
-            return new TestServer(webHostBuilder);
-        }
-#endif
     }
 }

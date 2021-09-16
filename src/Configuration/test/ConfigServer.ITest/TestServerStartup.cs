@@ -28,23 +28,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
         public void Configure(IApplicationBuilder app)
         {
             var config = app.ApplicationServices.GetServices<IConfiguration>();
-#if NETCOREAPP3_1 || NET5_0
             app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-#else
-            app.UseMvc(routes =>
-                {
-                    routes.MapRoute(
-                        name: "VerifyAsInjectedOptions",
-                        template: "{controller=Home}/{action=VerifyAsInjectedOptions}");
-                    routes.MapRoute(
-                        name: "Health",
-                        template: "{controller=Home}/{action=Health}");
-                });
-#endif
         }
     }
 }

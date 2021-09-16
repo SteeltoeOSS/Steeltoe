@@ -5,8 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.CloudFoundry.Connector.Relational;
 using Steeltoe.CloudFoundry.Connector.Services;
+using Steeltoe.Common.HealthChecks;
 using System;
+using System.Data;
 
 namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 {
@@ -78,6 +81,8 @@ namespace Steeltoe.CloudFoundry.Connector.SqlServer.EF6
 
             var factory = new SqlServerDbContextConnectorFactory(info, sqlServerConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            var healthFactory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalHealthContributor>>()), contextLifetime));
         }
     }
 }

@@ -4,6 +4,8 @@
 
 using Autofac;
 using Microsoft.Extensions.Configuration;
+using Steeltoe.CloudFoundry.Connector.Relational;
+using Steeltoe.Common.HealthChecks;
 using System;
 using Xunit;
 
@@ -44,10 +46,15 @@ namespace Steeltoe.CloudFoundry.Connector.EF6Autofac.Test
             _ = container.RegisterOracleDbContext<GoodOracleDbContextcs>(config);
             var services = container.Build();
             var dbConn = services.Resolve<GoodOracleDbContextcs>();
+            var health = services.ResolveOptional<IHealthContributor>();
 
             // assert
             Assert.NotNull(dbConn);
             Assert.IsType<GoodOracleDbContextcs>(dbConn);
+#if NET461
+            Assert.NotNull(health);
+            Assert.IsType<RelationalHealthContributor>(health);
+#endif
         }
     }
 }
