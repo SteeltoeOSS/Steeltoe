@@ -5,12 +5,18 @@
 using Microsoft.AspNetCore.Hosting;
 using Serilog.Events;
 using Serilog.Exceptions;
+using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class SerilogDynamicWebhostBuilderTest
     {
+        public SerilogDynamicWebhostBuilderTest()
+        {
+            SerilogDynamicProvider.ClearLogger();
+        }
+
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
@@ -26,15 +32,15 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
                     .MinimumLevel.Error()
                     .Enrich.WithExceptionDetails()
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .WriteTo.Sink(testSink, LogEventLevel.Error);
+                    .WriteTo.Sink(testSink);
                 })
                 .Build();
 
             // assert
             var logs = testSink.GetLogs();
             Assert.NotEmpty(logs);
-            Assert.Contains("error", logs);
             Assert.DoesNotContain("info", logs);
+            Assert.Contains("error", logs);
         }
     }
 }

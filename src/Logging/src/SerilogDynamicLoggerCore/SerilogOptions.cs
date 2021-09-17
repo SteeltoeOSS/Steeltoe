@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using Serilog.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,34 +18,74 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger
     {
         public string ConfigPath => "Serilog";
 
+        private Serilog.LoggerConfiguration _serilogConfiguration;
+
         /// <summary>
         /// Gets or sets the minimum level for the root logger (and the "Default").
         /// Limits the verbosity of all other overrides to this setting
         /// </summary>
         public MinimumLevel MinimumLevel { get; set; }
 
-        public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
-
-        public SerilogOptions(IConfiguration configuration)
+        public void SetSerilogOptions(IConfiguration configuration)
         {
             var section = configuration.GetSection(ConfigPath);
             section.Bind(this);
             if (MinimumLevel == null)
             {
+                var defaultLevel = LogEventLevel.Information;
+
+                var strMinLevel = section.GetValue<string>("MinimumLevel");
+                if (!string.IsNullOrEmpty(strMinLevel))
+                {
+                    Enum.TryParse(strMinLevel, out defaultLevel);
+                }
+
                 MinimumLevel = new MinimumLevel()
                 {
-                    Default = LogEventLevel.Verbose, // Set root to verbose to have sub loggers work at all levels
-                    Override = new Dictionary<string, LogEventLevel>()
+                    Default = defaultLevel,
                 };
             }
 
-            if (SubloggerConfigKeyExclusions == null)
-            {
-                SubloggerConfigKeyExclusions = new List<string> { "WriteTo", "MinimumLevel" };
-            }
+            MinimumLevel.Override ??= new Dictionary<string, LogEventLevel>();
+            _serilogConfiguration = new LoggerConfiguration().ReadFrom.Configuration(configuration).ClearLevels(MinimumLevel);
         }
 
-        public IEnumerable<string> FullnameExclusions => SubloggerConfigKeyExclusions?.Select(key => ConfigPath + ":" + key);
+        // Capture Serilog configuration provided programmatically using reflection
+        public void SetSerilogOptions(Serilog.LoggerConfiguration loggerConfiguration)
+        {
+#pragma warning disable S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
+            var minLevelProperty = loggerConfiguration.GetType().GetField("_minimumLevel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var minimumLevel = (LogEventLevel)minLevelProperty.GetValue(loggerConfiguration);
+
+            var overridesProperty = loggerConfiguration.GetType().GetField("_overrides", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+#pragma warning restore S3011 // Reflection should not be used to increase accessibility of classes, methods, or fields
+
+            var overrideSwitches = (Dictionary<string, Serilog.Core.LoggingLevelSwitch>)overridesProperty.GetValue(loggerConfiguration);
+
+            Dictionary<string, LogEventLevel> overrideLevels = new ();
+
+            foreach (var overrideSwitch in overrideSwitches)
+            {
+                overrideLevels.Add(overrideSwitch.Key, overrideSwitch.Value.MinimumLevel);
+            }
+
+            MinimumLevel = new MinimumLevel()
+            {
+                Default = minimumLevel,
+                Override = overrideLevels ?? new Dictionary<string, LogEventLevel>()
+            };
+
+            _serilogConfiguration = loggerConfiguration.ClearLevels(MinimumLevel);
+        }
+
+        public Serilog.LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
+
+        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+        public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+
+        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+        public IEnumerable<string> FullnameExclusions => new List<string>();
     }
 
 #pragma warning disable SA1402 // File may only contain a single class

@@ -5,7 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Serilog.Context;
+using Steeltoe.Common;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -16,6 +18,11 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
 {
     public class SerilogDynamicLoggerProviderTest
     {
+        public SerilogDynamicLoggerProviderTest()
+        {
+            SerilogDynamicProvider.ClearLogger();
+        }
+
         [Fact]
         public void Create_CreatesCorrectLogger()
         {
@@ -279,13 +286,10 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             using var unConsole = new ConsoleOutputBorrower();
             logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
 
-            // pause the thread to allow the logging to happen
-            Thread.Sleep(100);
-
             var logged = unConsole.ToString();
 
             // assert I
-            Assert.Contains(@"  Info {""Info1"": ""inf…"", ""Info2"": ""inf…""}", logged);
+            Assert.Contains(@"Info { Info1 = information1, Info2 = information2 }", logged);
         }
 
         [Fact]
@@ -368,7 +372,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
                 var logged4 = unConsole.ToString();
 
                 // assert IV
-                Assert.Contains("Critical message", logged4); // Serilog lowest level is Fatal == Critical
+                Assert.DoesNotContain("Critical message", logged4);
                 Assert.DoesNotContain("Error message", logged4);
                 Assert.DoesNotContain("Warning message", logged4);
                 Assert.DoesNotContain("Informational message", logged4);
@@ -408,7 +412,7 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             logger.LogTrace("Trace message");
         }
 
-        private IConfiguration GetConfiguration()
+        private IOptionsMonitor<SerilogOptions> GetConfiguration()
         {
             var appSettings = new Dictionary<string, string>
             {
@@ -422,14 +426,22 @@ namespace Steeltoe.Extensions.Logging.SerilogDynamicLogger.Test
             };
 
             var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-            return builder.Build();
+            var configuration = builder.Build();
+
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(configuration);
+            return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
         }
 
-        private IConfiguration GetConfigurationFromFile()
+        private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
         {
             var builder = new ConfigurationBuilder()
               .AddJsonFile("serilogSettings.json");
-            return builder.Build();
+            var configuration = builder.Build();
+
+            var serilogOptions = new SerilogOptions();
+            serilogOptions.SetSerilogOptions(configuration);
+            return new TestOptionsMonitor<SerilogOptions>(serilogOptions);
         }
     }
 }
