@@ -4,10 +4,13 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Oracle.EF6;
 using Steeltoe.Connector.Services;
 using System;
+using System.Data;
 
 namespace Steeltoe.Connector.EF6Core
 {
@@ -20,8 +23,9 @@ namespace Steeltoe.Connector.EF6Core
         /// <param name="services">Service Collection</param>
         /// <param name="config">Application Configuration</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -34,7 +38,7 @@ namespace Steeltoe.Connector.EF6Core
             }
 
             var info = config.GetSingletonServiceInfo<OracleServiceInfo>();
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
+            DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
             return services;
         }
@@ -47,8 +51,9 @@ namespace Steeltoe.Connector.EF6Core
         /// <param name="config">Application Configuration</param>
         /// <param name="serviceName">Name of service binding in Cloud Foundry</param>
         /// <param name="contextLifetime">Lifetime of the service to inject</param>
+        /// <param name="logFactory">logging factory</param>
         /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddDbContext<TContext>(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ILoggerFactory logFactory = null)
         {
             if (services == null)
             {
@@ -66,17 +71,26 @@ namespace Steeltoe.Connector.EF6Core
             }
 
             var info = config.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
-            DoAdd(services, config, info, typeof(TContext), contextLifetime);
+            DoAdd(services, config, info, typeof(TContext), contextLifetime, logFactory?.CreateLogger("OracleDbContextServiceCollectionExtensions"));
 
             return services;
         }
 
-        private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime)
+        private static void DoAdd(IServiceCollection services, IConfiguration config, OracleServiceInfo info, Type dbContextType, ServiceLifetime contextLifetime, ILogger logger = null)
         {
             var oracleConfig = new OracleProviderConnectorOptions(config);
 
             var factory = new OracleDbContextConnectorFactory(info, oracleConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            try
+            {
+                var healthFactory = new OracleProviderConnectorFactory(info, oracleConfig, OracleTypeLocator.OracleConnection);
+                services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), contextLifetime));
+            }
+            catch (TypeLoadException)
+            {
+                logger?.LogWarning("Failed to add a HealthContributor for the Oracle DbContext");
+            }
         }
     }
 }

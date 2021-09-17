@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.EF6Core;
 using System;
 using Xunit;
@@ -65,8 +66,16 @@ namespace Steeltoe.Connector.Oracle.EF6.Test
             // Act and Assert
             services.AddDbContext<GoodOracleDbContext>(config);
 
-            var service = services.BuildServiceProvider().GetService<GoodOracleDbContext>();
+            var serviceProvider = services.BuildServiceProvider();
+            var service = serviceProvider.GetService<GoodOracleDbContext>();
+            var serviceHealth = serviceProvider.GetService<IHealthContributor>();
             Assert.NotNull(service);
+#if NET461
+            Assert.NotNull(serviceHealth);
+            Assert.IsAssignableFrom<RelationalDbHealthContributor>(serviceHealth);
+#else
+            Assert.Null(serviceHealth);
+#endif
         }
     }
 }
