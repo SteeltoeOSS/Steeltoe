@@ -6,6 +6,7 @@ using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,6 +21,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
         protected KubernetesConfigSourceSettings Settings { get; set; }
 
         protected CancellationToken CancellationToken { get; set; }
+
+        protected ILogger Logger => Settings.LoggerFactory?.CreateLogger(this.GetType());
 
         internal KubernetesProviderBase(IKubernetes kubernetes, KubernetesConfigSourceSettings settings, CancellationToken token = default)
         {
@@ -38,6 +41,16 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             CancellationToken = token;
         }
 
+        internal void ProvideRuntimeReplacements(ILoggerFactory loggerFactory)
+        {
+            var lHash = Settings.LoggerFactory?.GetHashCode();
+            if (loggerFactory is not null)
+            {
+                Settings.LoggerFactory = loggerFactory;
+                Logger?.LogTrace("Replacing Bootstrapped loggerFactory with actual factory");
+            }
+        }
+
         protected void StartPolling(int interval)
         {
             Task.Factory.StartNew(
@@ -47,11 +60,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                     while (Polling)
                     {
                         Thread.Sleep(TimeSpan.FromSeconds(interval));
-                        Settings.Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
+                        Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
                         Load();
                         if (CancellationToken.IsCancellationRequested)
                         {
-                            Settings.Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
+                            Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
                             break;
                         }
                     }

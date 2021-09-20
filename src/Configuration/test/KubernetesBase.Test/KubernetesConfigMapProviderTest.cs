@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s;
+using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Moq;
 using RichardSzalay.MockHttp;
@@ -215,6 +216,21 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
 
             Assert.True(provider.TryGet("Test1:0:Test2", out var testValue2));
             Assert.Equal("Value1", testValue2);
+        }
+
+        [Fact]
+        public void KubernetesProviderGetsNewLoggerFactory()
+        {
+            // arrange
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, new HttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
+            var provider = new KubernetesConfigMapProvider(client, settings);
+            var originalLoggerFactory = settings.LoggerFactory;
+            var newFactory = new LoggerFactory();
+            provider.ProvideRuntimeReplacements(newFactory);
+
+            Assert.Equal(newFactory, settings.LoggerFactory);
+            Assert.NotEqual(originalLoggerFactory, settings.LoggerFactory);
         }
     }
 }
