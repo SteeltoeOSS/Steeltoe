@@ -43,7 +43,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         internal void ProvideRuntimeReplacements(ILoggerFactory loggerFactory)
         {
-            var lHash = Settings.LoggerFactory?.GetHashCode();
             if (loggerFactory is not null)
             {
                 Settings.LoggerFactory = loggerFactory;
