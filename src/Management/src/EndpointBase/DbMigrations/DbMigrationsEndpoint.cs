@@ -84,10 +84,9 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
                         .Where(type => !type.IsAbstract && type.AsType() != _dbContextType && _dbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
                         .Select(typeInfo => typeInfo.AsType())
                         .ToList();
-                var scope = _container.CreateScope().ServiceProvider;
                 foreach (var contextType in knownEfContexts)
                 {
-                    var dbContext = scope.GetService(contextType);
+                    var dbContext = _container.GetService(contextType);
                     if (dbContext == null)
                     {
                         continue;
