@@ -57,7 +57,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer
                 configurationBuilder.Add(new CloudFoundryConfigurationSource());
             }
 
-            configurationBuilder.Add(new ConfigServerConfigurationSource(defaultSettings, configurationBuilder.Sources, configurationBuilder.Properties, logFactory));
+            if (configurationBuilder is IConfiguration configuration)
+            {
+                configurationBuilder.Add(new ConfigServerConfigurationSource(defaultSettings, configuration, logFactory));
+            }
+            else
+            {
+                configurationBuilder.Add(new ConfigServerConfigurationSource(defaultSettings, configurationBuilder.Sources, configurationBuilder.Properties,
+                    logFactory));
+            }
+
             return configurationBuilder;
         }
     }
