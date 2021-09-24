@@ -25,9 +25,8 @@
     <MySqlConnectorVersion>0.49.3</MySqlConnectorVersion>
     <MySqlV8>8.0.23</MySqlV8>
     <NpgsqlVersion>4.0.0</NpgsqlVersion>
-    <SqlClientVersion>4.5.0</SqlClientVersion>
-    <MicrosoftExtensionsRedisVersion>2.2.0</MicrosoftExtensionsRedisVersion>
-    <StackExchangeVersion>2.0.513</StackExchangeVersion>
+    <SqlClientVersion>4.8.1</SqlClientVersion>
+    <StackExchangeVersion>2.0.593</StackExchangeVersion>
 
     <AutofacVersion>4.6.1</AutofacVersion>
     <BouncyCastleVersion>1.8.4</BouncyCastleVersion>
@@ -82,6 +81,7 @@
     <NpgsqlEFCoreVersion>3.1.0</NpgsqlEFCoreVersion>
     <PomeloEFCoreVersion>3.1.0</PomeloEFCoreVersion>
     <OracleEFCoreVersion>3.19.80</OracleEFCoreVersion>
+    <MicrosoftExtensionsRedisVersion>3.1.19</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net5.0'">
     <AspNetCoreVersion>5.0.0</AspNetCoreVersion>
@@ -90,6 +90,7 @@
     <MySqlEFCoreVersion>5.0.0</MySqlEFCoreVersion>
     <NpgsqlEFCoreVersion>5.0.0</NpgsqlEFCoreVersion>
     <OracleEFCoreVersion>5.21.1</OracleEFCoreVersion>
-    <PomeloEFCoreVersion>5.0.0-alpha.2</PomeloEFCoreVersion>
+    <PomeloEFCoreVersion>5.0.0</PomeloEFCoreVersion>
+    <MicrosoftExtensionsRedisVersion>5.0.1</MicrosoftExtensionsRedisVersion>
   </PropertyGroup>
 </Project>
