@@ -10,6 +10,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka
@@ -20,33 +21,22 @@ namespace Steeltoe.Discovery.Eureka
         {
             private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
 
-            protected override IEurekaClientConfig Config
-            {
-                get
-                {
-                    return _configOptions.CurrentValue;
-                }
-            }
+            protected override IEurekaClientConfig Config => _configOptions.CurrentValue;
 
-            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null)
+            public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
             {
                 _config = null;
                 _configOptions = config ?? throw new ArgumentNullException(nameof(config));
                 _handlerProvider = handlerProvider;
                 Initialize(new Dictionary<string, string>(), logFactory);
+                _httpClient = httpClient;
             }
         }
 
         private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
         private readonly IServiceInstance _thisInstance;
 
-        public override IEurekaClientConfig ClientConfig
-        {
-            get
-            {
-                return _configOptions.CurrentValue;
-            }
-        }
+        public override IEurekaClientConfig ClientConfig => _configOptions.CurrentValue;
 
         public EurekaDiscoveryClient(
             IOptionsMonitor<EurekaClientOptions> clientConfig,
@@ -54,7 +44,8 @@ namespace Steeltoe.Discovery.Eureka
             EurekaApplicationInfoManager appInfoManager,
             IEurekaHttpClient httpClient = null,
             ILoggerFactory logFactory = null,
-            IHttpClientHandlerProvider handlerProvider = null)
+            IHttpClientHandlerProvider handlerProvider = null,
+            HttpClient netHttpClient = null)
             : base(appInfoManager, logFactory)
         {
             _thisInstance = new ThisServiceInstance(instConfig);
@@ -63,27 +54,15 @@ namespace Steeltoe.Discovery.Eureka
             _httpClient = httpClient;
             if (_httpClient == null)
             {
-                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider);
+                _httpClient = new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
             }
 
             Initialize();
         }
 
-        public IList<string> Services
-        {
-            get
-            {
-                return GetServices();
-            }
-        }
+        public IList<string> Services => GetServices();
 
-        public string Description
-        {
-            get
-            {
-                return "Spring Cloud Eureka Client";
-            }
-        }
+        public string Description => "Spring Cloud Eureka Client";
 
         public IList<string> GetServices()
         {
@@ -121,10 +100,7 @@ namespace Steeltoe.Discovery.Eureka
             return instances;
         }
 
-        public IServiceInstance GetLocalServiceInstance()
-        {
-            return _thisInstance;
-        }
+        public IServiceInstance GetLocalServiceInstance() => _thisInstance;
 
         public override T.Task ShutdownAsync()
         {
