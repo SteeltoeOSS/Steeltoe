@@ -36,10 +36,10 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
 
         internal static readonly Type _dbContextType = Type.GetType("Microsoft.EntityFrameworkCore.DbContext, Microsoft.EntityFrameworkCore");
         internal static readonly Type _migrationsExtensionsType = Type.GetType("Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions,Microsoft.EntityFrameworkCore.Relational");
-        internal static readonly MethodInfo _getDatabase = _dbContextType.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
-        internal static readonly MethodInfo _getPendingMigrations = _migrationsExtensionsType.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
-        internal static readonly MethodInfo _getAppliedMigrations = _migrationsExtensionsType.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
-        internal static readonly MethodInfo _getMigrations = _migrationsExtensionsType.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
+        internal static readonly MethodInfo _getDatabase = _dbContextType?.GetProperty("Database", BindingFlags.Public | BindingFlags.Instance).GetMethod;
+        internal static readonly MethodInfo _getPendingMigrations = _migrationsExtensionsType?.GetMethod("GetPendingMigrations", BindingFlags.Static | BindingFlags.Public);
+        internal static readonly MethodInfo _getAppliedMigrations = _migrationsExtensionsType?.GetMethod("GetAppliedMigrations", BindingFlags.Static | BindingFlags.Public);
+        internal static readonly MethodInfo _getMigrations = _migrationsExtensionsType?.GetMethod("GetMigrations", BindingFlags.Static | BindingFlags.Public);
 
         private readonly IServiceProvider _container;
         private readonly DbMigrationsEndpointHelper _endpointHelper;
@@ -70,35 +70,42 @@ namespace Steeltoe.Management.EndpointBase.DbMigrations
         private Dictionary<string, DbMigrationsDescriptor> DoInvoke()
         {
             var result = new Dictionary<string, DbMigrationsDescriptor>();
-            var knownEfContexts = _endpointHelper.ScanRootAssembly
-                    .GetReferencedAssemblies()
-                    .Select(Assembly.Load)
-                    .SelectMany(x => x.DefinedTypes)
-                    .Union(_endpointHelper.ScanRootAssembly.DefinedTypes)
-                    .Where(type => !type.IsAbstract && type.AsType() != _dbContextType && _dbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
-                    .Select(typeInfo => typeInfo.AsType())
-                    .ToList();
-            foreach (var contextType in knownEfContexts)
+            if (_dbContextType is null)
             {
-                var dbContext = _container.GetService(contextType);
-                if (dbContext == null)
+                _logger?.LogCritical("DbMigrations endpoint invoked but no DbContext was found.");
+            }
+            else
+            {
+                var knownEfContexts = _endpointHelper.ScanRootAssembly
+                        .GetReferencedAssemblies()
+                        .Select(Assembly.Load)
+                        .SelectMany(x => x.DefinedTypes)
+                        .Union(_endpointHelper.ScanRootAssembly.DefinedTypes)
+                        .Where(type => !type.IsAbstract && type.AsType() != _dbContextType && _dbContextType.GetTypeInfo().IsAssignableFrom(type.AsType()))
+                        .Select(typeInfo => typeInfo.AsType())
+                        .ToList();
+                foreach (var contextType in knownEfContexts)
                 {
-                    continue;
-                }
+                    var dbContext = _container.GetService(contextType);
+                    if (dbContext == null)
+                    {
+                        continue;
+                    }
 
-                var descriptor = new DbMigrationsDescriptor();
-                var contextName = dbContext.GetType().Name;
-                result.Add(contextName, descriptor);
-                try
-                {
-                    descriptor.PendingMigrations = _endpointHelper.GetPendingMigrations(dbContext).ToList();
-                    descriptor.AppliedMigrations = _endpointHelper.GetAppliedMigrations(dbContext).ToList();
-                }
-                catch (DbException e) when (e.Message.Contains("exist"))
-                {
-                    // todo: maybe improve detection logic when database is new. hard to do generically across all providers
-                    _logger?.LogWarning("Encountered exception loading migrations: {exception}", e.Message);
-                    descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
+                    var descriptor = new DbMigrationsDescriptor();
+                    var contextName = dbContext.GetType().Name;
+                    result.Add(contextName, descriptor);
+                    try
+                    {
+                        descriptor.PendingMigrations = _endpointHelper.GetPendingMigrations(dbContext).ToList();
+                        descriptor.AppliedMigrations = _endpointHelper.GetAppliedMigrations(dbContext).ToList();
+                    }
+                    catch (DbException e) when (e.Message.Contains("exist"))
+                    {
+                        // todo: maybe improve detection logic when database is new. hard to do generically across all providers
+                        _logger?.LogWarning("Encountered exception loading migrations: {exception}", e.Message);
+                        descriptor.PendingMigrations = _endpointHelper.GetMigrations(dbContext).ToList();
+                    }
                 }
             }
 
