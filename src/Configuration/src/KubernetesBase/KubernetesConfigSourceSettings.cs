@@ -9,12 +9,12 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 {
     internal class KubernetesConfigSourceSettings
     {
-        internal KubernetesConfigSourceSettings(string @namespace, string name, ReloadSettings reloadSettings, ILogger logger = null)
+        internal KubernetesConfigSourceSettings(string @namespace, string name, ReloadSettings reloadSettings, ILoggerFactory loggerFactory = null)
         {
             Namespace = @namespace ?? "default";
             Name = name;
             ReloadSettings = reloadSettings;
-            Logger = logger;
+            LoggerFactory = loggerFactory;
         }
 
         internal string Name { get; set; }
@@ -23,6 +23,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
 
         internal ReloadSettings ReloadSettings { get; set; }
 
-        internal ILogger Logger { get; set; }
+        internal ILoggerFactory LoggerFactory { get; set; }
     }
 }
