@@ -1,14 +1,14 @@
 trigger:
   branches:
     include:
-    - main
+    - release/3.1
   paths:
     exclude:
     - README.md
     - project-docs/*
     - roadmaps/*
 pr:
-- main
+- release/3.1
 
 jobs:
 - job: Quick_Response
@@ -41,7 +41,7 @@ jobs:
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    PackageVersion: $[format('3.1.1-{0}', variables['Build.BuildId'])]
+    PackageVersion: $[format('3.1.2-{0}', variables['Build.BuildId'])]
   strategy:
     matrix:
       Linux:
