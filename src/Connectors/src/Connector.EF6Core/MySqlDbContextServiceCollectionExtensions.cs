@@ -4,8 +4,11 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
 using System;
+using System.Data;
 
 namespace Steeltoe.Connector.MySql.EF6
 {
@@ -75,6 +78,8 @@ namespace Steeltoe.Connector.MySql.EF6
 
             var factory = new MySqlDbContextConnectorFactory(info, mySqlConfig, dbContextType);
             services.Add(new ServiceDescriptor(dbContextType, factory.Create, contextLifetime));
+            var healthFactory = new MySqlProviderConnectorFactory(info, mySqlConfig, MySqlTypeLocator.MySqlConnection);
+            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)healthFactory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), contextLifetime));
         }
     }
 }
