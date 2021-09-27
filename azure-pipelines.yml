@@ -11,32 +11,7 @@ pr:
 - main
 
 jobs:
-- job: Quick_Response
-  timeoutInMinutes: 20
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - task: DotNetCoreCLI@2
-    displayName: dotnet restore
-    inputs:
-      command: restore
-      projects: src/Steeltoe.All.sln
-      feedsToUse: config
-      nugetConfigPath: nuget.config
-  - task: DotNetCoreCLI@2
-    displayName: dotnet build
-    inputs:
-      command: build
-      projects: src/Steeltoe.All.sln
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True'
-  - task: DotNetCoreCLI@2
-    displayName: dotnet test
-    inputs:
-      command: test
-      projects: src/Steeltoe.All.sln
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -v n -f net5.0 --filter "Category!=SkipOnLinux&Category!=Integration&FullyQualifiedName!~CircuitBreaker"'
 - job: Steeltoe_CI
-  dependsOn: ['Quick_Response']
   timeoutInMinutes: 90
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -73,6 +48,15 @@ jobs:
     env:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
+  - task: UseDotNet@2
+    displayName: Install .NET Core 3.1
+    inputs:
+      version: 3.1.x
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
+      includePreviewVersions: true
   - task: DotNetCoreCLI@2
     displayName: dotnet restore
     inputs:

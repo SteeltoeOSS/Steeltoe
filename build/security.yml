@@ -1,0 +1,17 @@
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/component-build.yml
+    - build/security.yml
+    - src/Security/*
+pr:
+- main
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Security
+      skipFilter: --filter "Category!=SkipOnLinux"
