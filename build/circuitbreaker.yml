@@ -16,8 +16,3 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: CircuitBreaker
-      coverletInclude: "[Steeltoe.CircuitBreaker*]*"
-  - template: templates/consolidate-coverage.yaml
-    parameters:
-      JobNames:
-      - CircuitBreaker_ubuntu

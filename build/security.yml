@@ -16,9 +16,4 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Security
-      coverletInclude: "[Steeltoe.Security*]*"
       skipFilter: --filter "Category!=SkipOnLinux"
-  - template: templates/consolidate-coverage.yaml
-    parameters:
-      JobNames:
-      - Security_ubuntu

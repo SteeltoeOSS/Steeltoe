@@ -16,14 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Management
-      coverletInclude: "[Steeltoe.Management*]*"
   - template: templates/component-build.yaml
     parameters:
       component: Management
       OS: windows
-      coverletInclude: "[Steeltoe.Management*]*"
-  - template: templates/consolidate-coverage.yaml
-    parameters:
-      JobNames:
-      - Management_ubuntu
-      - Management_windows

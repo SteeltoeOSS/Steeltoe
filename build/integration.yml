@@ -16,8 +16,3 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Integration
-      coverletInclude: "[Steeltoe.Integration*]*"
-  - template: templates/consolidate-coverage.yaml
-    parameters:
-      JobNames:
-      - Integration_ubuntu

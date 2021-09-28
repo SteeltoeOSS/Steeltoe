@@ -4,7 +4,6 @@ parameters:
   runRabbitMQ: false
   skipFilter: ''
   OS: ubuntu
-  coverletInclude: "[*]*"
 
 jobs:
 - job: ${{parameters.component}}_${{parameters.OS}}
@@ -48,8 +47,7 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: '--no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" /p:Include=${{parameters.coverletInclude}} /p:CoverletOutputFormat=opencover /p:DeterministicReport=true /p:UseSourceLink=true'
-
+      arguments: --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}}
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq
@@ -60,14 +58,3 @@ jobs:
       docker rm configserver
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Stop Config Server
-  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
-    condition: succeededOrFailed()
-    displayName: Consolidate coverage for this job
-    inputs:
-      reports: $(Agent.TempDirectory)/**/*opencover.xml
-      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
-      reporttypes: Cobertura
-  - publish: $(Build.ArtifactStagingDirectory)/CodeCoverage/$(Agent.JobName)
-    condition: succeededOrFailed()
-    displayName: Publish code coverage artifacts
-    artifact: coverageResults-$(Agent.JobName)
