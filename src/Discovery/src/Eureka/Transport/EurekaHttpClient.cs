@@ -26,7 +26,7 @@ namespace Steeltoe.Discovery.Eureka.Transport
     {
         protected internal string _serviceUrl;
 
-        protected object _lock = new object();
+        protected object _lock = new ();
         protected IList<string> _failingServiceUrls = new List<string>();
 
         protected IDictionary<string, string> _headers;
@@ -1034,8 +1034,8 @@ namespace Steeltoe.Discovery.Eureka.Transport
         }
 
         private int GetRetryCount(IEurekaClientConfig config)
-        {
-            return !(config is EurekaClientConfig clientConfig) ? DEFAULT_NUMBER_OF_RETRIES : clientConfig.EurekaServerRetryCount;
-        }
+            => config is EurekaClientConfig clientConfig
+                ? clientConfig.EurekaServerRetryCount
+                : DEFAULT_NUMBER_OF_RETRIES;
     }
 }

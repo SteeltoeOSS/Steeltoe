@@ -63,12 +63,13 @@ namespace Steeltoe.Connector.Oracle.Test
                 Port = 1234,
                 Username = "username",
                 Password = "password",
-                ServiceName = "orcl"
+                ServiceName = "orcl",
+                ConnectionTimeout = 10
             };
 
             var configurer = new OracleProviderConfigurer();
             var opts = configurer.Configure(null, config);
-            var connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};", config.Username, config.Password, config.Server, config.Port, config.ServiceName);
+            var connectionString = string.Format("User Id={0};Password={1};Data Source={2}:{3}/{4};Connection Timeout={5}", config.Username, config.Password, config.Server, config.Port, config.ServiceName, config.ConnectionTimeout);
             Assert.StartsWith(connectionString, opts);
         }
 
