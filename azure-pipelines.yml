@@ -8,14 +8,7 @@ trigger:
     - build/*
     - project-docs/*
     - roadmaps/*
-pr:
-- main
-  paths:
-    exclude:
-    - README.md
-    - build/*
-    - project-docs/*
-    - roadmaps/*
+pr: none
 
 jobs:
 - job: Steeltoe_CI
