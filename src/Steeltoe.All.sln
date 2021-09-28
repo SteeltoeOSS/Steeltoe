@@ -351,6 +351,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A78
 		..\build\management.yml = ..\build\management.yml
 		..\build\messaging.yml = ..\build\messaging.yml
 		..\build\security.yml = ..\build\security.yml
+		..\build\stream.yml = ..\build\stream.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{FC49CC5C-EFB6-4B08-AE63-05364EB27021}"

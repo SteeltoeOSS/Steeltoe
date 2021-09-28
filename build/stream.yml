@@ -7,10 +7,11 @@ pr:
     - '*'
     include:
     - build/templates/*
-    - build/circuitbreaker.yml
-    - src/CircuitBreaker/*
+    - build/stream.yml
+    - src/Stream/*
 
 jobs:
   - template: templates/component-build.yaml
     parameters:
-      component: CircuitBreaker
+      component: Stream
+      runRabbitMQ: true
