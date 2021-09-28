@@ -20,4 +20,4 @@ jobs:
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:
-      - Configuration_linux
+      - Configuration_ubuntu

@@ -19,4 +19,4 @@ jobs:
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:
-      - Connectors_linux
+      - Connectors_ubuntu

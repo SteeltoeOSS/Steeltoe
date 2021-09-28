@@ -19,4 +19,4 @@ jobs:
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:
-      - Common_linux
+      - Common_ubuntu

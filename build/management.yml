@@ -23,5 +23,5 @@ jobs:
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:
-      - Management_linux
+      - Management_ubuntu
       - Management_windows
