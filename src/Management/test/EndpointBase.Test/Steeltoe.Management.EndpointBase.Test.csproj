@@ -42,6 +42,5 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreTestVersion)" />
     <PackageReference Include="NSubstitute" Version="4.2.0" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
-    <PackageReference Include="System.Net.Http.Json" Version="$(SystemJsonVersion)" />
   </ItemGroup>
 </Project>
