@@ -4,7 +4,7 @@ trigger:
     - main
   paths:
     exclude:
-    - /*
+    - '*'
     include:
     - build/templates/component-build.yml
     - build/security.yml
@@ -16,6 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Security
+      coverletInclude: "[Steeltoe.Security*]*"
       skipFilter: --filter "Category!=SkipOnLinux"
   - template: templates/consolidate-coverage.yaml
     parameters:

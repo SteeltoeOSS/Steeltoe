@@ -4,7 +4,7 @@ trigger:
     - main
   paths:
     exclude:
-    - /*
+    - '*'
     include:
     - build/templates/component-build.yml
     - build/discovery.yml
@@ -16,6 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Discovery
+      coverletInclude: "[Steeltoe.Discovery*]*"
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:

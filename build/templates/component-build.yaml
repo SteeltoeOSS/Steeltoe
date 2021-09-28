@@ -4,6 +4,7 @@ parameters:
   runRabbitMQ: false
   skipFilter: ''
   OS: ubuntu
+  coverletInclude: "[*]*"
 
 jobs:
 - job: ${{parameters.component}}_${{parameters.OS}}
@@ -47,7 +48,8 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" --settings coverlet.runsettings
+      arguments: --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" /p:Include=${{parameters.coverletInclude}} /p:CoverletOutputFormat=opencover /p:DeterministicReport=true /p:UseSourceLink=true /p:ExcludeByAttribute="Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute"
+
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq

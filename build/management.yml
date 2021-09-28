@@ -4,7 +4,7 @@ trigger:
     - main
   paths:
     exclude:
-    - /*
+    - '*'
     include:
     - build/templates/component-build.yml
     - build/management.yml
@@ -16,10 +16,12 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Management
+      coverletInclude: "[Steeltoe.Management*]*"
   - template: templates/component-build.yaml
     parameters:
       component: Management
       OS: windows
+      coverletInclude: "[Steeltoe.Management*]*"
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:

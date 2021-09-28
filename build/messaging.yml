@@ -4,7 +4,7 @@ trigger:
     - main
   paths:
     exclude:
-    - /*
+    - '*'
     include:
     - build/templates/component-build.yml
     - build/messaging.yml
@@ -17,6 +17,7 @@ jobs:
     parameters:
       component: Messaging
       runRabbitMQ: true
+      coverletInclude: "[Steeltoe.Messaging*]*"
   - template: templates/consolidate-coverage.yaml
     parameters:
       JobNames:
