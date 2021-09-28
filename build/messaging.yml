@@ -3,6 +3,8 @@ trigger:
     include:
     - main
   paths:
+    exclude:
+    - /*
     include:
     - build/templates/component-build.yml
     - build/messaging.yml

@@ -47,7 +47,7 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: '--blame-hang-timeout 3m --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Agent.TempDirectory)'
   - task: PublishTestResults@2
     condition: succeededOrFailed()
     displayName: Publish test results
@@ -65,3 +65,15 @@ jobs:
       docker rm configserver
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Stop Config Server
+  - task: Palmmedia.reportgenerator.reportgenerator-build-release-task.reportgenerator@4
+    condition: succeededOrFailed()
+    displayName: Consolidate coverage for this job
+    inputs:
+      reports: $(Agent.TempDirectory)/**/*opencover.xml
+      targetdir: $(Build.ArtifactStagingDirectory)/CodeCoverage
+      reporttypes: Cobertura
+  - task: PublishCodeCoverageResults@1
+    condition: succeededOrFailed()
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: $(Build.ArtifactStagingDirectory)/CodeCoverage/cobertura.xml
