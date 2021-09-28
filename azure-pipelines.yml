@@ -10,6 +10,12 @@ trigger:
     - roadmaps/*
 pr:
 - main
+  paths:
+    exclude:
+    - README.md
+    - build/*
+    - project-docs/*
+    - roadmaps/*
 
 jobs:
 - job: Steeltoe_CI
