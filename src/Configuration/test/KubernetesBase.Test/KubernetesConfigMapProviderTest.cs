@@ -232,5 +232,21 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
             Assert.Equal(newFactory, settings.LoggerFactory);
             Assert.NotEqual(originalLoggerFactory, settings.LoggerFactory);
         }
+
+        [Fact]
+        public void KubernetesProviderGetsNewLogger()
+        {
+            // arrange
+            using var client = new k8s.Kubernetes(new KubernetesClientConfiguration { Host = "http://localhost" }, new HttpClient());
+            var settings = new KubernetesConfigSourceSettings("default", "testconfigmap", new ReloadSettings());
+            var provider = new KubernetesConfigMapProvider(client, settings);
+            settings.LoggerFactory ??= new LoggerFactory();
+            var firstLogger = settings.LoggerFactory.CreateLogger<KubernetesConfigMapProviderTest>();
+
+            provider.ProvideRuntimeReplacements(new LoggerFactory());
+            var secondLogger = settings.LoggerFactory.CreateLogger<KubernetesConfigMapProviderTest>();
+
+            Assert.NotEqual(firstLogger.GetHashCode(), secondLogger.GetHashCode());
+        }
     }
 }

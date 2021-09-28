@@ -205,7 +205,7 @@ namespace Steeltoe.Bootstrap.Autoconfig
         private static void WireKubernetesConfiguration(this IHostBuilder hostBuilder) =>
             hostBuilder
                 .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(loggerFactory: _loggerFactory))
-                .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesApplicationInstanceInfo())
+                .ConfigureServices(serviceCollection => serviceCollection.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>())
                 .Log(LogMessages.WireKubernetesConfiguration);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
