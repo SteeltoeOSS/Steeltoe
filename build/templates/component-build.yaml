@@ -48,7 +48,7 @@ jobs:
     inputs:
       command: test
       projects: $(SolutionFile)
-      arguments: --no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" /p:Include=${{parameters.coverletInclude}} /p:CoverletOutputFormat=opencover /p:DeterministicReport=true /p:UseSourceLink=true /p:ExcludeByAttribute="Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute"
+      arguments: '--no-build -c Release -maxcpucount:1 ${{parameters.skipFilter}} --collect "XPlat Code Coverage" /p:Include=${{parameters.coverletInclude}} /p:CoverletOutputFormat=opencover /p:DeterministicReport=true /p:UseSourceLink=true /p:ExcludeByAttribute="Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute"'
 
   - script: |
       docker kill rabbitmq

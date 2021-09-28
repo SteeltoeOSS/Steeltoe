@@ -6,7 +6,7 @@ trigger:
     exclude:
     - '*'
     include:
-    - build/templates/component-build.yml
+    - build/templates/*
     - build/integration.yml
     - src/Integration/*
 pr:
