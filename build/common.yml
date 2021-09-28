@@ -3,8 +3,6 @@ pr:
     include:
     - main
   paths:
-    exclude:
-    - '**/*'
     include:
     - build/templates/*
     - build/common.yml
