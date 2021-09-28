@@ -5,7 +5,8 @@ parameters:
 jobs:
 - job: Consolidate_Coverage
   dependsOn:
-  - ${{ each value in parameters.JobNames }}
+  - ${{ each value in parameters.JobNames }}:
+    - ${{ value }}
   pool:
     vmImage: ubuntu-latest
   steps:
