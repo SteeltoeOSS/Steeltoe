@@ -1,4 +1,4 @@
-trigger:
+pr:
   branches:
     include:
     - main
@@ -9,8 +9,6 @@ trigger:
     - build/templates/*
     - build/management.yml
     - src/Management/*
-pr:
-- main
 
 jobs:
   - template: templates/component-build.yaml
