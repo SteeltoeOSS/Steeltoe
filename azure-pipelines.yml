@@ -8,7 +8,6 @@ trigger:
     - build/*
     - project-docs/*
     - roadmaps/*
-pr: none
 
 jobs:
 - job: Steeltoe_CI
