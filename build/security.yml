@@ -13,3 +13,7 @@ jobs:
     parameters:
       component: Security
       skipFilter: --filter "Category!=SkipOnLinux"
+  - template: templates/component-build.yaml
+    parameters:
+      component: Security
+      OS: windows
