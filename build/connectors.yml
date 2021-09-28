@@ -16,3 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Connectors
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Connectors_linux

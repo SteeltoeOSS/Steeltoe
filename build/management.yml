@@ -20,3 +20,8 @@ jobs:
     parameters:
       component: Management
       OS: windows
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Management_linux
+      - Management_windows

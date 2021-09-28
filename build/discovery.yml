@@ -16,3 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Discovery
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Discovery_linux

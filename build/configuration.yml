@@ -17,3 +17,7 @@ jobs:
     parameters:
       component: Configuration
       runConfigServer: true
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Configuration_linux

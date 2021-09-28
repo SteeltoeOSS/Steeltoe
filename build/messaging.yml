@@ -17,3 +17,7 @@ jobs:
     parameters:
       component: Messaging
       runRabbitMQ: true
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Messaging_linux

@@ -339,12 +339,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_build", "_build", "{656A7881-FE4F-4EE0-81C8-DA1DE6CDF29E}"
 	ProjectSection(SolutionItems) = preProject
 		..\azure-pipelines.yml = ..\azure-pipelines.yml
-		..\codecov.yml = ..\codecov.yml
-		..\coverlet.runsettings = ..\coverlet.runsettings
 		..\build\circuitbreaker.yml = ..\build\circuitbreaker.yml
+		..\codecov.yml = ..\codecov.yml
 		..\build\common.yml = ..\build\common.yml
 		..\build\configuration.yml = ..\build\configuration.yml
 		..\build\connectors.yml = ..\build\connectors.yml
+		..\coverlet.runsettings = ..\coverlet.runsettings
 		..\build\discovery.yml = ..\build\discovery.yml
 		..\build\integration.yml = ..\build\integration.yml
 		..\build\logging.yml = ..\build\logging.yml
@@ -356,6 +356,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{FC49CC5C-EFB6-4B08-AE63-05364EB27021}"
 	ProjectSection(SolutionItems) = preProject
 		..\build\templates\component-build.yaml = ..\build\templates\component-build.yaml
+		..\build\templates\consolidate-coverage.yaml = ..\build\templates\consolidate-coverage.yaml
 	EndProjectSection
 EndProject
 Global

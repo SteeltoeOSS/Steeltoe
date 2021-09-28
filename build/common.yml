@@ -16,3 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: Common
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - Common_linux

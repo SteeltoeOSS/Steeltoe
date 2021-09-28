@@ -16,3 +16,7 @@ jobs:
   - template: templates/component-build.yaml
     parameters:
       component: CircuitBreaker
+  - template: templates/consolidate-coverage.yaml
+    parameters:
+      JobNames:
+      - CircuitBreaker_linux
