@@ -87,11 +87,18 @@ jobs:
     condition: eq(variables['integrationTests'], 'true')
     displayName: Start Docker services
   - task: DotNetCoreCLI@2
-    displayName: dotnet test
+    displayName: dotnet test 6.0
     inputs:
       command: test
       projects: src/Steeltoe.All.sln
-      arguments: '--blame-hang-timeout 3m --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
+      publishTestResults: false
+  - task: DotNetCoreCLI@2
+    displayName: dotnet test 3.1
+    inputs:
+      command: test
+      projects: src/Steeltoe.All.sln
+      arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
       docker kill configserver
