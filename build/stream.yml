@@ -13,3 +13,4 @@ jobs:
     parameters:
       component: Stream
       runRabbitMQ: true
+      skipFilter: --filter "Category!=SkipOnLinux"
