@@ -94,6 +94,7 @@ jobs:
       arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
+    condition: succeededOrFailed()
     displayName: dotnet test 3.1
     inputs:
       command: test
