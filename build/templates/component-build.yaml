@@ -43,17 +43,18 @@ jobs:
     condition: eq(${{parameters.runConfigServer}}, 'true')
     displayName: Start Config Server
   - task: DotNetCoreCLI@2
-    displayName: dotnet test 3.1
-    inputs:
-      command: test
-      projects: $(SolutionFile)
-      arguments: --blame-hang-timeout 5m --no-build -c Release -f netcoreapp3.1 -maxcpucount:1 ${{parameters.skipFilter}}
-  - task: DotNetCoreCLI@2
     displayName: dotnet test 6.0
     inputs:
       command: test
       projects: $(SolutionFile)
       arguments: --blame-hang-timeout 5m --no-build -c Release -f net6.0 -maxcpucount:1 ${{parameters.skipFilter}}
+  - task: DotNetCoreCLI@2
+    condition: succeededOrFailed()
+    displayName: dotnet test 3.1
+    inputs:
+      command: test
+      projects: $(SolutionFile)
+      arguments: --blame-hang-timeout 5m --no-build -c Release -f netcoreapp3.1 -maxcpucount:1 ${{parameters.skipFilter}}
   - script: |
       docker kill rabbitmq
       docker rm rabbitmq
