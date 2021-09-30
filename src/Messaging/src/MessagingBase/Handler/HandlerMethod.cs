@@ -193,7 +193,7 @@ namespace Steeltoe.Messaging.Handler
                     sb.Append("[" + i + "] [null]");
                 }
 
-                sb.Append("\n");
+                sb.Append('\n');
             }
 
             return text + "\n" +

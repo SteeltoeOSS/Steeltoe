@@ -86,7 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
             var sb = new StringBuilder();
             var foundEventTypes = new List<HystrixEventType>();
 
-            sb.Append(CommandKey.Name).Append("[");
+            sb.Append(CommandKey.Name).Append('[');
             foreach (var eventType in ALL_EVENT_TYPES)
             {
                 if (executionResult.Eventcounts.Contains(eventType))
@@ -102,7 +102,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric
                 var eventCount = executionResult.Eventcounts.GetCount(eventType);
                 if (eventCount > 1)
                 {
-                    sb.Append("x").Append(eventCount);
+                    sb.Append('x').Append(eventCount);
                 }
 
                 if (i < foundEventTypes.Count - 1)

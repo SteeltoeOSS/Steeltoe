@@ -1174,7 +1174,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             foreach (var q in queues)
             {
                 sb.Append(q.QueueName);
-                sb.Append(",");
+                sb.Append(',');
             }
 
             return sb.ToString(0, sb.Length - 1) + "]";

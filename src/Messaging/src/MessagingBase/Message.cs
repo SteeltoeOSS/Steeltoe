@@ -169,14 +169,14 @@ namespace Steeltoe.Messaging
             if (payload is byte[])
             {
                 var arr = (byte[])(object)payload;
-                sb.Append("byte[").Append(arr.Length).Append("]");
+                sb.Append("byte[").Append(arr.Length).Append(']');
             }
             else
             {
                 sb.Append(payload);
             }
 
-            sb.Append(", headers=").Append(headers).Append("]");
+            sb.Append(", headers=").Append(headers).Append(']');
             return sb.ToString();
         }
     }

@@ -64,7 +64,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 sb.Append("[]");
             }
 
-            sb.Append(")");
+            sb.Append(')');
             return sb.ToString();
         }
 

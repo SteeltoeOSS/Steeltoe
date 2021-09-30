@@ -47,7 +47,7 @@ namespace Steeltoe.Common.Transaction
             var result = GetDefinitionDescription();
             if (!string.IsNullOrEmpty(Qualifier))
             {
-                result.Append("; '").Append(Qualifier).Append("'");
+                result.Append("; '").Append(Qualifier).Append('\'');
             }
 
             return result;

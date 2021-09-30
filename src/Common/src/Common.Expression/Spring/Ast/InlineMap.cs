@@ -60,15 +60,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             {
                 if (c > 0)
                 {
-                    sb.Append(",");
+                    sb.Append(',');
                 }
 
                 sb.Append(GetChild(c++).ToStringAST());
-                sb.Append(":");
+                sb.Append(':');
                 sb.Append(GetChild(c).ToStringAST());
             }
 
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 

@@ -65,7 +65,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 sb.Append(kvp.Value.ToString());
             }
 
-            sb.Append("]");
+            sb.Append(']');
 
             return sb.ToString();
         }

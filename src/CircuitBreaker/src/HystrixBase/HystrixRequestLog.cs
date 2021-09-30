@@ -86,7 +86,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                         events.Sort();
 
                         // replicate functionality of Arrays.toString(events.toArray()) to append directly to existing StringBuilder
-                        builder.Append("[");
+                        builder.Append('[');
                         foreach (var ev in events)
                         {
                             switch (ev)
@@ -95,7 +95,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                                     var numEmissions = command.NumberEmissions;
                                     if (numEmissions > 1)
                                     {
-                                        builder.Append(ev).Append("x").Append(numEmissions).Append(", ");
+                                        builder.Append(ev).Append('x').Append(numEmissions).Append(", ");
                                     }
                                     else
                                     {
@@ -107,7 +107,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
                                     var numFallbackEmissions = command.NumberFallbackEmissions;
                                     if (numFallbackEmissions > 1)
                                     {
-                                        builder.Append(ev).Append("x").Append(numFallbackEmissions).Append(", ");
+                                        builder.Append(ev).Append('x').Append(numFallbackEmissions).Append(", ");
                                     }
                                     else
                                     {
@@ -187,12 +187,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 
                     builder.Append(displayString);
                     var totalExecutionTime = aggregatedCommandExecutionTime[displayString];
-                    builder.Append("[").Append(totalExecutionTime).Append("ms]");
+                    builder.Append('[').Append(totalExecutionTime).Append("ms]");
 
                     var count = aggregatedCommandsExecuted[displayString];
                     if (count > 1)
                     {
-                        builder.Append("x").Append(count);
+                        builder.Append('x').Append(count);
                     }
                 }
 

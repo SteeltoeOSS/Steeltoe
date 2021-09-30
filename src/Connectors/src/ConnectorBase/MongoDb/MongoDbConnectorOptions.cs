@@ -74,13 +74,13 @@ namespace Steeltoe.Connector.MongoDb
 
                 if (!string.IsNullOrEmpty(Database))
                 {
-                    sb.Append("/");
+                    sb.Append('/');
                     sb.Append(Database);
                 }
 
                 if (Options != null && Options.Any())
                 {
-                    sb.Append("?");
+                    sb.Append('?');
                     foreach (var o in Options)
                     {
                         AddKeyValue(sb, o.Key, o.Value);

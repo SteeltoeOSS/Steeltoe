@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                     var value = _children[i].GetValueInternal(state).Value;
                     if (i > 0 && (value == null || !value.ToString().StartsWith("$")))
                     {
-                        sb.Append(".");
+                        sb.Append('.');
                     }
 
                     sb.Append(value);
@@ -51,7 +51,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
                 {
                     if (i > 0)
                     {
-                        sb.Append(".");
+                        sb.Append('.');
                     }
 
                     sb.Append(GetChild(i).ToStringAST());

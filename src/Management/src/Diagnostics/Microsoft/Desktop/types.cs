@@ -251,7 +251,7 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             ClrType inner = ComponentType;
 
             builder.Append(inner != null ? inner.Name : GetElementTypeName(hint));
-            builder.Append("*");
+            builder.Append('*');
             _name = builder.ToString();
         }
 
@@ -521,12 +521,12 @@ namespace Microsoft.Diagnostics.Runtime.Desktop
             ClrType inner = ComponentType;
 
             builder.Append(inner != null ? inner.Name : GetElementTypeName(hint));
-            builder.Append("[");
+            builder.Append('[');
 
             for (int i = 0; i < _ranks - 1; ++i)
-                builder.Append(",");
+                builder.Append(',');
 
-            builder.Append("]");
+            builder.Append(']');
             _name = builder.ToString();
         }
 
