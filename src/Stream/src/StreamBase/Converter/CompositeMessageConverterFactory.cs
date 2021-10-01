@@ -20,24 +20,16 @@ namespace Steeltoe.Stream.Converter
 
         public CompositeMessageConverterFactory(IEnumerable<IMessageConverter> converters)
         {
-            if (converters == null)
-            {
-                _converters = new List<IMessageConverter>();
-            }
-            else
-            {
-                _converters = new List<IMessageConverter>(converters);
-            }
+            _converters = converters == null ? new List<IMessageConverter>() : new List<IMessageConverter>(converters);
 
             InitDefaultConverters();
 
-            var resolver = new DefaultContentTypeResolver();
-            resolver.DefaultMimeType = BindingOptions.DEFAULT_CONTENT_TYPE;
+            var resolver = new DefaultContentTypeResolver { DefaultMimeType = BindingOptions.DEFAULT_CONTENT_TYPE };
             foreach (var mc in _converters)
             {
-                if (mc is AbstractMessageConverter)
+                if (mc is AbstractMessageConverter converter)
                 {
-                    ((AbstractMessageConverter)mc).ContentTypeResolver = resolver;
+                    converter.ContentTypeResolver = resolver;
                 }
             }
         }
@@ -47,9 +39,9 @@ namespace Steeltoe.Stream.Converter
             var converters = new List<IMessageConverter>();
             foreach (var converter in _converters)
             {
-                if (converter is AbstractMessageConverter)
+                if (converter is AbstractMessageConverter abstractMessageConverter)
                 {
-                    foreach (var type in ((AbstractMessageConverter)converter).SupportedMimeTypes)
+                    foreach (var type in abstractMessageConverter.SupportedMimeTypes)
                     {
                         if (type.Includes(mimeType))
                         {
@@ -59,25 +51,15 @@ namespace Steeltoe.Stream.Converter
                 }
             }
 
-            if (converters.Count == 0)
+            return converters.Count switch
             {
-                throw new ConversionException("No message converter is registered for " + mimeType.ToString());
-            }
-
-            if (converters.Count > 1)
-            {
-                return new CompositeMessageConverter(converters);
-            }
-            else
-            {
-                return converters[0];
-            }
+                0 => throw new ConversionException("No message converter is registered for " + mimeType.ToString()),
+                > 1 => new CompositeMessageConverter(converters),
+                _ => converters[0],
+            };
         }
 
-        public ISmartMessageConverter MessageConverterForAllRegistered
-        {
-            get { return new CompositeMessageConverter(new List<IMessageConverter>(_converters)); }
-        }
+        public ISmartMessageConverter MessageConverterForAllRegistered => new CompositeMessageConverter(new List<IMessageConverter>(_converters));
 
         public IList<IMessageConverter> AllRegistered => _converters;
 

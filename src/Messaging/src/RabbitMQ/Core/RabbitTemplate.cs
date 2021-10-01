@@ -1075,12 +1075,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-            if (value is Exception && ThrowReceivedExceptions)
-            {
-                throw (Exception)value;
-            }
-
-            return value;
+            return value is Exception exception && ThrowReceivedExceptions
+                ? throw exception
+                : value;
         }
 
         public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken = default)
@@ -1151,12 +1148,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
                 var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-                if (value is Exception && ThrowReceivedExceptions)
+                return value switch
                 {
-                    throw (Exception)value;
-                }
-
-                return value;
+                    Exception exception when ThrowReceivedExceptions => throw exception,
+                    _ => value,
+                };
             }, cancellationToken);
         }
 
@@ -1222,7 +1218,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         {
             if (channel is IPublisherCallbackChannel publisherCallbackChannel)
             {
-                var key = channel is IChannelProxy ? ((IChannelProxy)channel).TargetChannel : channel;
+                var key = channel is IChannelProxy proxy
+                    ? proxy.TargetChannel
+                    : channel;
                 if (_publisherConfirmChannels.TryAdd(key, this))
                 {
                     publisherCallbackChannel.AddListener(this);
@@ -2023,9 +2021,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private void SetupConfirm(RC.IModel channel, IMessage message, CorrelationData correlationDataArg)
         {
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-            if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel)
+            if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel callbackChannel)
             {
-                var publisherCallbackChannel = (IPublisherCallbackChannel)channel;
+                var publisherCallbackChannel = callbackChannel;
                 var correlationData = CorrelationDataPostProcessor != null ? CorrelationDataPostProcessor.PostProcess(message, correlationDataArg) : correlationDataArg;
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
                 accessor.PublishSequenceNumber = nextPublishSeqNo;
@@ -2035,7 +2033,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     accessor.SetHeader(PublisherCallbackChannel.RETURNED_MESSAGE_CORRELATION_KEY, correlationData.Id);
                 }
             }
-            else if (channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
+            else if (channel is IChannelProxy proxy && proxy.IsConfirmSelected)
             {
                 var nextPublishSeqNo = channel.NextPublishSeqNo;
                 accessor.PublishSequenceNumber = nextPublishSeqNo;
@@ -2544,14 +2542,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
-        {
-            if (acks != null && nacks != null && channel is IChannelProxy && ((IChannelProxy)channel).IsConfirmSelected)
-            {
-                return new ConfirmListener(acks, nacks, channel);
-            }
-
-            return null;
-        }
+            => acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected
+                ? new ConfirmListener(acks, nacks, channel)
+                : null;
 
         private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, Connection.IConnection connection)
         {

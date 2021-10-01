@@ -45,9 +45,9 @@ namespace Steeltoe.Messaging.Support
                 var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>();
                 foreach (var interceptor in interceptors)
                 {
-                    if (interceptor is ITaskSchedulerChannelInterceptor)
+                    if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
                     {
-                        schedulerInterceptors.Add((ITaskSchedulerChannelInterceptor)interceptor);
+                        schedulerInterceptors.Add(interceptor1);
                     }
                 }
 
@@ -125,12 +125,14 @@ namespace Steeltoe.Messaging.Support
 
         private void UpdateInterceptorsFor(IChannelInterceptor interceptor)
         {
-            if (interceptor is ITaskSchedulerChannelInterceptor)
+            if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
             {
                 lock (_lock)
                 {
-                    var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>(_schedulerInterceptors);
-                    schedulerInterceptors.Add((ITaskSchedulerChannelInterceptor)interceptor);
+                    var schedulerInterceptors = new List<ITaskSchedulerChannelInterceptor>(_schedulerInterceptors)
+                    {
+                        interceptor1
+                    };
                     _schedulerInterceptors = schedulerInterceptors;
                 }
             }

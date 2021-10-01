@@ -160,12 +160,13 @@ namespace Steeltoe.Stream.Binder
             catch (Exception e)
             {
                 AckUtils.AutoNack(ackCallback);
-                if (e is MessageHandlingException && ((MessageHandlingException)e).FailedMessage.Equals(message))
+                switch (e)
                 {
-                    throw;
+                    case MessageHandlingException exception when exception.FailedMessage.Equals(message):
+                        throw;
+                    default:
+                        throw new MessageHandlingException(message, e);
                 }
-
-                throw new MessageHandlingException(message, e);
             }
             finally
             {

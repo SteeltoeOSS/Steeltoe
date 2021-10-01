@@ -743,23 +743,17 @@ namespace Steeltoe.Stream.Binder
                 _logger = logger;
             }
 
-            public override IDictionary<string, object> ExtendedInfo
-            {
-                get => DoGetExtendedInfo(_destination, _options);
-            }
+            public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
 
-            public override bool IsInput
-            {
-                get { return true; }
-            }
+            public override bool IsInput => true;
 
             protected override void AfterUnbind()
             {
                 try
                 {
-                    if (Endpoint is IDisposable)
+                    if (Endpoint is IDisposable disposable)
                     {
-                        ((IDisposable)Endpoint).Dispose();
+                        disposable.Dispose();
                     }
                 }
                 catch (Exception ex)
@@ -793,15 +787,9 @@ namespace Steeltoe.Stream.Binder
                 _destination = consumerDestination;
             }
 
-            public override IDictionary<string, object> ExtendedInfo
-            {
-                get => DoGetExtendedInfo(_destination, _options);
-            }
+            public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
 
-            public override bool IsInput
-            {
-                get { return true; }
-            }
+            public override bool IsInput => true;
 
             protected override void AfterUnbind()
             {
@@ -814,10 +802,7 @@ namespace Steeltoe.Stream.Binder
         {
             protected readonly ILogger _logger;
 
-            public EmbeddedHeadersChannelInterceptor(ILogger logger = null)
-            {
-                _logger = logger;
-            }
+            public EmbeddedHeadersChannelInterceptor(ILogger logger = null) => _logger = logger;
 
             public override IMessage PreSend(IMessage message, IMessageChannel channel)
             {

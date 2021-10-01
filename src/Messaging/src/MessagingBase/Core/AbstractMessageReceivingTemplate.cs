@@ -112,12 +112,9 @@ namespace Steeltoe.Messaging.Core
                     "Unable to convert payload [" + message.Payload + "] to type [" + typeof(T) + "] using converter [" + messageConverter + "]");
             }
 
-            if (value is Exception && ThrowReceivedExceptions)
-            {
-                throw (Exception)value;
-            }
-
-            return (T)value;
+            return value is Exception exception && ThrowReceivedExceptions
+                ? throw exception
+                : (T)value;
         }
     }
 }

@@ -368,22 +368,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         private Address EvaluateReplyTo(IMessage request, object source, object result, IExpression expression)
         {
-            Address replyTo;
             var value = expression.GetValue(EvalContext, new ReplyExpressionRoot(request, source, result));
-            if (!(value is string) && !(value is Address))
+            var replyTo = value switch
             {
-                throw new ArgumentException("response expression must evaluate to a String or Address");
-            }
-
-            if (value is string)
-            {
-                replyTo = new Address((string)value);
-            }
-            else
-            {
-                replyTo = (Address)value;
-            }
-
+                not string and not Address => throw new ArgumentException("response expression must evaluate to a String or Address"),
+                string sValue => new Address(sValue),
+                _ => (Address)value,
+            };
             return replyTo;
         }
 
@@ -419,7 +410,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         private void BasicAck(IMessage request, RC.IModel channel)
         {
             var tag = request.Headers.DeliveryTag();
-            var deliveryTag = tag.HasValue ? tag.Value : 0;
+            var deliveryTag = tag ?? 0;
             try
             {
                 channel.BasicAck(deliveryTag, false);

@@ -59,11 +59,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
         }
 
         public bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
-        {
-            var handler = GetReturnValueHandler(returnType);
-            return handler is IAsyncHandlerMethodReturnValueHandler &&
-                    ((IAsyncHandlerMethodReturnValueHandler)handler).IsAsyncReturnValue(returnValue, returnType);
-        }
+            => GetReturnValueHandler(returnType) is IAsyncHandlerMethodReturnValueHandler handler1 &&
+                    handler1.IsAsyncReturnValue(returnValue, returnType);
 
         private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
         {

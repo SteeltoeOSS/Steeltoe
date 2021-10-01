@@ -5,12 +5,9 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.Support;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Steeltoe.Integration.Rabbit.Support
 {
@@ -20,7 +17,7 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor context)
         {
-            var inputMessage = context == null ? null : context.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
+            var inputMessage = context?.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
             var headers = new Dictionary<string, object>();
             if (context != null)
             {
@@ -28,14 +25,9 @@ namespace Steeltoe.Integration.Rabbit.Support
                 headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] = context.GetAttribute(AMQP_RAW_MESSAGE);
             }
 
-            if (inputMessage is IMessage)
-            {
-                return new ErrorMessage(exception, headers, (IMessage)inputMessage);
-            }
-            else
-            {
-                return new ErrorMessage(exception, headers);
-            }
+            return inputMessage is IMessage message
+                ? new ErrorMessage(exception, headers, message)
+                : new ErrorMessage(exception, headers);
         }
     }
 }

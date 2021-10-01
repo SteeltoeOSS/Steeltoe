@@ -26,32 +26,18 @@ namespace Steeltoe.Integration.Support
                 throw new ArgumentNullException(nameof(message));
             }
 
-            if (message is MutableMessage)
-            {
-                _mutableMessage = (MutableMessage)message;
-            }
-            else
-            {
-                _mutableMessage = new MutableMessage(message.Payload, message.Headers);
-            }
+            _mutableMessage = message is MutableMessage mutableMessage
+                ? mutableMessage
+                : new MutableMessage(message.Payload, message.Headers);
 
             _headers = _mutableMessage.RawHeaders;
         }
 
-        public override object Payload
-        {
-            get { return _mutableMessage.Payload; }
-        }
+        public override object Payload => _mutableMessage.Payload;
 
-        public override IDictionary<string, object> Headers
-        {
-            get { return _headers; }
-        }
+        public override IDictionary<string, object> Headers => _headers;
 
-        public static MutableIntegrationMessageBuilder WithPayload(object payload)
-        {
-            return WithPayload(payload, true);
-        }
+        public static MutableIntegrationMessageBuilder WithPayload(object payload) => WithPayload(payload, true);
 
         public static MutableIntegrationMessageBuilder WithPayload(object payload, bool generateHeaders)
         {
@@ -221,10 +207,7 @@ namespace Steeltoe.Integration.Support
             }
         }
 
-        public override IMessage Build()
-        {
-            return _mutableMessage;
-        }
+        public override IMessage Build() => _mutableMessage;
 
         protected List<string> GetMatchingHeaderNames(string pattern, IDictionary<string, object> headers)
         {
@@ -244,9 +227,7 @@ namespace Steeltoe.Integration.Support
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuilder, IMessageBuilder<T>
-#pragma warning restore SA1402 // File may only contain a single type
     {
         private MutableIntegrationMessageBuilder(IMessage<T> message)
         {
@@ -255,27 +236,16 @@ namespace Steeltoe.Integration.Support
                 throw new ArgumentNullException(nameof(message));
             }
 
-            if (message is MutableMessage<T>)
-            {
-                _mutableMessage = (MutableMessage<T>)message;
-            }
-            else
-            {
-                _mutableMessage = new MutableMessage<T>(message.Payload, message.Headers);
-            }
+            _mutableMessage = message is MutableMessage<T> mutableMessage
+                ? mutableMessage
+                : new MutableMessage<T>(message.Payload, message.Headers);
 
             _headers = _mutableMessage.RawHeaders;
         }
 
-        public new T Payload
-        {
-            get { return (T)_mutableMessage.Payload; }
-        }
+        public new T Payload => (T)_mutableMessage.Payload;
 
-        public static MutableIntegrationMessageBuilder<T> WithPayload(T payload)
-        {
-            return WithPayload(payload, true);
-        }
+        public static MutableIntegrationMessageBuilder<T> WithPayload(T payload) => WithPayload(payload, true);
 
         public static MutableIntegrationMessageBuilder<T> WithPayload(T payload, bool generateHeaders)
         {

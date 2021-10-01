@@ -30,10 +30,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             _useDefaultResolution = useDefaultResolution;
         }
 
-        public bool SupportsParameter(ParameterInfo parameter)
-        {
-            return parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
-        }
+        public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
 
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
@@ -49,7 +46,6 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             {
                 if (ann == null || ann.Required)
                 {
-                    var paramName = GetParameterName(parameter);
                     throw new MethodArgumentNotValidException(message, parameter, "Payload value must not be empty");
                 }
                 else
@@ -86,28 +82,13 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
 
         protected virtual bool IsEmptyPayload(object payload)
         {
-            if (payload == null)
+            return payload switch
             {
-                return true;
-            }
-            else if (payload is byte[])
-            {
-                return ((byte[])payload).Length == 0;
-            }
-            else if (payload is string)
-            {
-                return string.IsNullOrEmpty((string)payload);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        private string GetParameterName(ParameterInfo param)
-        {
-            var paramName = param.Name;
-            return !string.IsNullOrEmpty(paramName) ? paramName : "Arg " + param.Position;
+                null => true,
+                byte[] => ((byte[])payload).Length == 0,
+                string sPayload => string.IsNullOrEmpty(sPayload),
+                _ => false
+            };
         }
     }
 }

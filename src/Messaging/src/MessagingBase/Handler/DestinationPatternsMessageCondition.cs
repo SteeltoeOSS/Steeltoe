@@ -154,28 +154,18 @@ namespace Steeltoe.Messaging.Handler
             }
         }
 
-        protected override IList GetContent()
-        {
-            return Patterns.ToList();
-        }
+        protected override IList GetContent() => Patterns.ToList();
 
-        protected override string GetToStringInfix()
-        {
-            return " || ";
-        }
+        protected override string GetToStringInfix() => " || ";
 
         private bool MatchPattern(string pattern, object destination)
-        {
-            return destination is IRoute ?
-                    _routeMatcher.Match(pattern, (IRoute)destination) :
-                    ((SimpleRouteMatcher)_routeMatcher).PathMatcher.Match(pattern, (string)destination);
-        }
+            => destination is IRoute route
+                ? _routeMatcher.Match(pattern, route)
+                : ((SimpleRouteMatcher)_routeMatcher).PathMatcher.Match(pattern, (string)destination);
 
         private IComparer<string> GetPatternComparer(object destination)
-        {
-            return destination is IRoute ?
-                _routeMatcher.GetPatternComparer((IRoute)destination) :
-                ((SimpleRouteMatcher)_routeMatcher).PathMatcher.GetPatternComparer((string)destination);
-        }
+            => destination is IRoute route
+                ? _routeMatcher.GetPatternComparer(route)
+                : ((SimpleRouteMatcher)_routeMatcher).PathMatcher.GetPatternComparer((string)destination);
     }
 }

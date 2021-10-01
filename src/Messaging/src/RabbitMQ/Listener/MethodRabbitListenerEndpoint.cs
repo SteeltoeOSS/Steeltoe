@@ -132,9 +132,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             {
                 var resolvedValue = ExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
                 var result = Resolver.Evaluate(resolvedValue, ExpressionContext);
-                if (result is string)
+                if (result is string strResult)
                 {
-                    return (string)result;
+                    return strResult;
                 }
             }
 

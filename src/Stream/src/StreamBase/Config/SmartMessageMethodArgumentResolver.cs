@@ -46,36 +46,21 @@ namespace Steeltoe.Stream.Config
         }
 
         protected override bool IsEmptyPayload(object payload)
-        {
-            if (payload == null)
-            {
-                return true;
-            }
-            else if (payload is byte[])
-            {
-                return ((byte[])payload).Length == 0;
-            }
-            else if (payload is string)
-            {
-                return string.IsNullOrEmpty((string)payload);
-            }
-            else
-            {
-                return false;
-            }
-        }
+            => payload switch
+                {
+                    null => true,
+                    byte[] v => v.Length == 0,
+                    string sPayload => string.IsNullOrEmpty(sPayload),
+                    _ => false
+                };
 
-        private bool ConversionNotRequired(Type a, Type b)
-        {
-            return b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
-        }
+        private bool ConversionNotRequired(Type a, Type b) => b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
 
         private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
         {
             object result = null;
-            if (_converter is ISmartMessageConverter)
+            if (_converter is ISmartMessageConverter smartConverter)
             {
-                var smartConverter = (ISmartMessageConverter)_converter;
                 result = smartConverter.FromMessage(message, targetPayloadType, parameter);
             }
             else if (_converter != null)

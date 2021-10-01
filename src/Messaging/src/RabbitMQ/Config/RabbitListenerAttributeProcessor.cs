@@ -275,26 +275,26 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             if (!string.IsNullOrEmpty(rabbitListener.ErrorHandler))
             {
                 var errorHandler = ResolveExpression(rabbitListener.ErrorHandler, typeof(IRabbitListenerErrorHandler), "ErrorHandler");
-                if (errorHandler is IRabbitListenerErrorHandler)
+                switch (errorHandler)
                 {
-                    endpoint.ErrorHandler = (IRabbitListenerErrorHandler)errorHandler;
-                }
-                else if (errorHandler is string errorHandlerName)
-                {
-                    if (ApplicationContext == null)
-                    {
-                        throw new InvalidOperationException("IApplicationContext must be set to resolve ErrorHandler by name");
-                    }
+                    case IRabbitListenerErrorHandler rabbitListenerErrorHandler:
+                        endpoint.ErrorHandler = rabbitListenerErrorHandler;
+                        break;
+                    case string errorHandlerName:
+                        if (ApplicationContext == null)
+                        {
+                            throw new InvalidOperationException("IApplicationContext must be set to resolve ErrorHandler by name");
+                        }
 
-                    endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
-                    if (endpoint.ErrorHandler == null)
-                    {
-                        throw new InvalidOperationException("Failed to resolve ErrorHandler by name using: " + errorHandlerName);
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException("ErrorHandler must resolve to a String or IRabbitListenerErrorHandler");
+                        endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
+                        if (endpoint.ErrorHandler == null)
+                        {
+                            throw new InvalidOperationException("Failed to resolve ErrorHandler by name using: " + errorHandlerName);
+                        }
+
+                        break;
+                    default:
+                        throw new InvalidOperationException("ErrorHandler must resolve to a String or IRabbitListenerErrorHandler");
                 }
             }
         }
@@ -324,13 +324,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             if (!string.IsNullOrEmpty(value))
             {
                 var resolved = ResolveExpression(value, typeof(bool), propertyName);
-                if (resolved is bool)
+                if (resolved is bool boolean)
                 {
-                    return (bool)resolved;
+                    return boolean;
                 }
                 else if (resolved is string resolvedString)
                 {
-                    if (bool.TryParse((string)resolvedString, out var result))
+                    if (bool.TryParse(resolvedString, out var result))
                     {
                         return result;
                     }
@@ -347,9 +347,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
             if (!string.IsNullOrEmpty(value))
             {
                 var resolved = ResolveExpression(value, typeof(int), propertyName);
-                if (resolved is int)
+                if (resolved is int resolvedInt)
                 {
-                    return (int)resolved;
+                    return resolvedInt;
                 }
                 else if (resolved is string resolvedString && int.TryParse((string)resolvedString, out var result))
                 {
@@ -364,7 +364,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         private string[] ResolveQueues(RabbitListenerAttribute rabbitListener)
         {
-            // var allQueues = ApplicationContext.GetServices<IQueue>();
+            // var allQueues = ApplicationContext.GetServices<IQueue>()
             var queues = rabbitListener.Queues;
 
             var result = new List<string>();
@@ -377,7 +377,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 }
             }
 
-            // var allBindings = ApplicationContext.GetServices<IBinding>();
+            // var allBindings = ApplicationContext.GetServices<IBinding>()
             var bindings = rabbitListener.Bindings;
             if (bindings.Length > 0)
             {
@@ -425,23 +425,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private void ResolveAsString(object resolvedValue, List<string> result, bool canBeQueue, string what)
         {
             var resolvedValueToUse = resolvedValue;
-            if (resolvedValue is string[])
+            if (resolvedValue is string[] v)
             {
-                resolvedValueToUse = new List<string>((string[])resolvedValue);
+                resolvedValueToUse = new List<string>(v);
             }
 
-            if (canBeQueue && resolvedValueToUse is Config.IQueue)
+            if (canBeQueue && resolvedValueToUse is IQueue queue)
             {
-                result.Add(((Config.IQueue)resolvedValueToUse).QueueName);
+                result.Add(queue.QueueName);
             }
             else if (resolvedValueToUse is string)
             {
                 var asString = resolvedValueToUse as string;
                 result.Add(asString);
             }
-            else if (resolvedValueToUse is IEnumerable)
+            else if (resolvedValueToUse is IEnumerable enumerable)
             {
-                foreach (var o in (IEnumerable)resolvedValueToUse)
+                foreach (var o in enumerable)
                 {
                     ResolveAsString(o, result, canBeQueue, what);
                 }

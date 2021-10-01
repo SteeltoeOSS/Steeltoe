@@ -942,28 +942,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [DeclareAnonymousQueue("fanout1")]
             [DeclareQueueBinding(Name = "fanout1.binding", ExchangeName = "test.metaFanout", QueueName = "#{@fanout1}")]
             [RabbitListener(Binding = "fanout1.binding")]
-            public void Handle1(string foo)
-            {
-                Latch.Signal();
-            }
+            public void Handle1(string foo) => Latch.Signal();
 
             [DeclareAnonymousQueue("fanout2")]
             [DeclareQueueBinding(Name = "fanout2.binding", ExchangeName = "test.metaFanout", QueueName = "#{@fanout2}")]
             [RabbitListener(Binding = "fanout2.binding")]
-            public void Handle2(string foo)
-            {
-                Latch.Signal();
-            }
+            public void Handle2(string foo) => Latch.Signal();
         }
 
         public class MyService
         {
             private readonly IApplicationContext _context;
 
-            public MyService(IApplicationContext context)
-            {
-                _context = context;
-            }
+            public MyService(IApplicationContext context) => _context = context;
 
             public bool? ChannelBoundOk { get; set; }
 
@@ -983,13 +974,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             public List<string> Batch3Strings { get; set; }
 
-            private RabbitTemplate TxRabbitTemplate
-            {
-                get
-                {
-                    return _context.GetRabbitTemplate("txRabbitTemplate");
-                }
-            }
+            private RabbitTemplate TxRabbitTemplate => _context.GetRabbitTemplate("txRabbitTemplate");
 
             [DeclareQueue(Name = "auto.declare", AutoDelete = "True", Admin = "rabbitAdmin")]
             [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
@@ -1003,17 +988,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             [DeclareQueue(Name = "${jjjj?test.simple.declare}", Durable = "True")]
             [RabbitListener("${jjjj?test.simple.declare}")]
-            public string HandleWithSimpleDeclare(string foo)
-            {
-                return foo.ToUpper() + Thread.CurrentThread.Name;
-            }
+            public string HandleWithSimpleDeclare(string foo) => foo.ToUpper() + Thread.CurrentThread.Name;
 
             [DeclareAnonymousQueue("myAnonymous")]
             [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575")]
-            public string HandleWithAnonymousQueueToDeclare(string data)
-            {
-                return "viaAnonymous:" + data;
-            }
+            public string HandleWithAnonymousQueueToDeclare(string data) => "viaAnonymous:" + data;
 
             [DeclareAnonymousQueue("anon1", AutoDelete = "True", Exclusive = "True", Durable = "True")]
             [DeclareExchange(Name = "auto.start", AutoDelete = "True", Delayed = "${no:prop?false}")]
@@ -1027,77 +1006,45 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = Config.ExchangeType.FANOUT)]
             [DeclareQueueBinding(Name = "auto.fanout.binding", QueueName = "auto.declare.fanout", ExchangeName = "auto.exch.fanout")]
             [RabbitListener(Binding = "auto.fanout.binding")]
-            public string HandleWithFanout(string foo)
-            {
-                return foo.ToUpper() + foo.ToUpper();
-            }
+            public string HandleWithFanout(string foo) => foo.ToUpper() + foo.ToUpper();
 
             [DeclareAnonymousQueue("anon2")]
             [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
             [DeclareQueueBinding(Name = "auto.exch.anon.rk", QueueName = "#{@anon2}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.rk")]
             [RabbitListener(Binding = "auto.exch.anon.rk")]
-            public string HandleWithDeclareAnon(string foo)
-            {
-                return foo.ToUpper();
-            }
+            public string HandleWithDeclareAnon(string foo) => foo.ToUpper();
 
             [DeclareAnonymousQueue("anon3", AutoDelete = "True", Exclusive = "True", Durable = "True")]
             [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
             [DeclareQueueBinding(Name = "auto.exch.anon.atts.rk", QueueName = "#{@anon3}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.atts.rk")]
             [RabbitListener(Binding = "auto.exch.anon.atts.rk")]
-            public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue)
-            {
-                return foo + ":" + queue;
-            }
+            public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue) => foo + ":" + queue;
 
             [RabbitListener("test.simple", Group = "testGroup")]
-            public string Capitalize(string foo)
-            {
-                return foo.ToUpper();
-            }
+            public string Capitalize(string foo) => foo.ToUpper();
 
             [RabbitListener("test.header", Group = "testGroup")]
-            public string CapitalizeWithHeader([Payload] string content, [Header] string prefix)
-            {
-                return prefix + content.ToUpper();
-            }
+            public string CapitalizeWithHeader([Payload] string content, [Header] string prefix) => prefix + content.ToUpper();
 
             [RabbitListener("test.simple.direct", Id = "direct", AutoStartup = "${no:property:here?False}", ContainerFactory = "directListenerContainerFactory")]
-            public string CapitalizeDirect1(string foo)
-            {
-                return foo.ToUpper() + foo + Thread.CurrentThread.Name;
-            }
+            public string CapitalizeDirect1(string foo) => foo.ToUpper() + foo + Thread.CurrentThread.Name;
 
             [RabbitListener("test.simple.direct2", Id = "directWithConcurrency", Concurrency = "${ffffx?3}", ContainerFactory = "directListenerContainerFactory")]
-            public string CapitalizeDirect2(string foo)
-            {
-                return foo.ToUpper() + foo + Thread.CurrentThread.Name;
-            }
+            public string CapitalizeDirect2(string foo) => foo.ToUpper() + foo + Thread.CurrentThread.Name;
 
             [RabbitListener("test.comma.1", "test.comma.2", "test,with,commas", "test.comma.3", "test.comma.4", Group = "commas")]
-            public string MultiQueuesConfig(string foo)
-            {
-                return foo.ToUpper() + foo;
-            }
+            public string MultiQueuesConfig(string foo) => foo.ToUpper() + foo;
 
             [RabbitListener("test.message")]
-            public string CapitalizeWithMessage(IMessage<string> message)
-            {
-                return message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
-            }
+            public string CapitalizeWithMessage(IMessage<string> message) => message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
 
             [RabbitListener("test.reply")]
             public IMessage Reply(string payload, [Header] string foo, [Header(RabbitMessageHeaders.CONSUMER_TAG)] string tag)
-            {
-                return RabbitMessageBuilder.WithPayload(payload).SetHeader("foo", foo).SetHeader("bar", tag).Build();
-            }
+                => RabbitMessageBuilder.WithPayload(payload).SetHeader("foo", foo).SetHeader("bar", tag).Build();
 
             [RabbitListener("test.sendTo")]
             [SendTo("${foo:bar?test.sendTo.reply}")]
-            public string CapitalizeAndSendTo(string foo)
-            {
-                return foo.ToUpper();
-            }
+            public string CapitalizeAndSendTo(string foo) => foo.ToUpper();
 
             [RabbitListener("test.sendTo.spel")]
             [SendTo("test.sendTo.reply.spel")]
@@ -1140,46 +1087,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             }
 
             [RabbitListener(Bindings = new string[] { "auto.headers1.binding", "auto.headers2.binding" })]
-            public string HandleWithHeadersExchange(string foo)
-            {
-                return foo.ToUpper();
-            }
+            public string HandleWithHeadersExchange(string foo) => foo.ToUpper();
 
             [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]
-            public string HandleWithDeadLetterDefaultExchange(string foo)
-            {
-                throw new RabbitRejectAndDontRequeueException("dlq");
-            }
+            public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDontRequeueException("dlq");
 
             [RabbitListener("test.return.exceptions", ReturnExceptions = "${some:prop?True}")]
-            public string AlwaysFails(string data)
-            {
-                throw new InvalidOperationException("return this");
-            }
+            public string AlwaysFails(string data) => throw new InvalidOperationException("return this");
 
             [RabbitListener("test.pojo.errors", ErrorHandler = "#{@alwaysBARHandler}")]
-            public string AlwaysFailsWithErrorHandler(string data)
-            {
-                throw new Exception("return this");
-            }
+            public string AlwaysFailsWithErrorHandler(string data) => throw new Exception("return this");
 
             [RabbitListener("test.pojo.errors2", ErrorHandler = "#{throwANewException}", ReturnExceptions = "True")]
-            public string AlwaysFailsWithErrorHandlerThrowAnother(string data)
-            {
-                throw new Exception("return this");
-            }
+            public string AlwaysFailsWithErrorHandlerThrowAnother(string data) => throw new Exception("return this");
 
             [RabbitListener("test.generic.list", ContainerFactory = "jsonListenerContainerFactory")]
             public List<JsonObject> GenericList(JsonObject input)
-            {
-                return new List<JsonObject>() { input };
-            }
+                => new() { input };
 
             [RabbitListener("test.generic.map", ContainerFactory = "jsonListenerContainerFactory")]
             public Dictionary<string, JsonObject> GenericMap(JsonObject input)
-            {
-                return new Dictionary<string, JsonObject>() { { "key", input } };
-            }
+                => new() { { "key", input } };
 
             [RabbitListener("test.messaging.message", ContainerFactory = "jsonListenerContainerFactory")]
             public IMessage<Bar> MessagingMessage(string input)
@@ -1194,18 +1122,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             [RabbitListener("test.amqp.message")]
             public IMessage<byte[]> AmqpMessage(string input)
-            {
-                return (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper()))
-                    .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
-                    .SetHeader("foo", "bar")
-                    .Build();
-            }
+                => (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain").SetHeader("foo", "bar").Build();
 
             [RabbitListener("test.bytes.to.string")]
-            public string BytesToString(string input)
-            {
-                return input.ToUpper();
-            }
+            public string BytesToString(string input) => input.ToUpper();
 
             [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "MANUAL")]
             public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
@@ -1260,10 +1180,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class MyServiceInterfaceImpl : IMyServiceInterface
         {
-            public string TestAnnotationInheritance(string foo)
-            {
-                return foo.ToUpper();
-            }
+            public string TestAnnotationInheritance(string foo) => foo.ToUpper();
         }
 
         [DeclareAnonymousQueue("TxClassLevel")]
@@ -1283,15 +1200,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class TxClassLevel : ITxClassLevel
         {
-            public string Foo(Bar bar)
-            {
-                return "BAR: " + bar.Field + bar.Field;
-            }
+            public string Foo(Bar bar) => "BAR: " + bar.Field + bar.Field;
 
-            public string Baz(Baz baz, string rk)
-            {
-                return "BAZ: " + baz.Field + baz.Field + ": " + rk;
-            }
+            public string Baz(Baz baz, string rk) => "BAZ: " + baz.Field + baz.Field + ": " + rk;
         }
 
         public class JsonObject
@@ -1302,15 +1213,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             {
             }
 
-            public JsonObject(string bar)
-            {
-                Bar = bar;
-            }
+            public JsonObject(string bar) => Bar = bar;
 
-            public override string ToString()
-            {
-                return "JsonObject [bar=" + Bar + "]";
-            }
+            public override string ToString() => "JsonObject [bar=" + Bar + "]";
         }
 
         public class Foo
@@ -1339,10 +1244,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             public string Bar { get; set; }
 
-            public override string ToString()
-            {
-                return "bar=" + Bar;
-            }
+            public override string ToString() => "bar=" + Bar;
         }
 
         [DeclareAnonymousQueue("multiListenerAnon")]
@@ -1377,20 +1279,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             [RabbitHandler]
             public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux)
-            {
-                return "QUX: " + qux.Field + ": " + rk;
-            }
+                => "QUX: " + qux.Field + ": " + rk;
 
             [RabbitHandler(true)]
-            public string DefaultHandler([Payload] object payload)
-            {
-                if (payload is Foo)
-                {
-                    return "FOO: " + ((Foo)payload).Field + " handled by default handler";
-                }
-
-                return payload.ToString() + " handled by default handler";
-            }
+            public string DefaultHandler([Payload] object payload) => payload is Foo foo
+                    ? "FOO: " + foo.Field + " handled by default handler"
+                    : payload.ToString() + " handled by default handler";
         }
 
         [RabbitListener("test.inheritance.class")]
@@ -1402,10 +1296,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class MyServiceInterfaceImpl2 : IMyServiceInterface2
         {
-            public string TestAnnotationInheritance(string foo)
-            {
-                return foo.ToUpper() + "BAR";
-            }
+            public string TestAnnotationInheritance(string foo) => foo.ToUpper() + "BAR";
         }
 
         [DeclareAnonymousQueue("multiListenerJson")]
@@ -1416,30 +1307,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             [RabbitHandler]
             [SendTo("sendTo.replies.spel")]
-            public string Bar(Bar bar, IMessage message)
-            {
-                return "BAR: " + bar.Field + message.Headers.Target().GetType().Name;
-            }
+            public string Bar(Bar bar, IMessage message) => "BAR: " + bar.Field + message.Headers.Target().GetType().Name;
 
             [RabbitHandler]
-            public string Baz(Baz baz)
-            {
-                return "BAZ: " + baz.Field;
-            }
+            public string Baz(Baz baz) => "BAZ: " + baz.Field;
 
             [RabbitHandler]
-            public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux)
-            {
-                return "QUX: " + qux.Field + ": " + rk;
-            }
+            public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux) => "QUX: " + qux.Field + ": " + rk;
         }
 
         public class DefaultReplyRecoveryCallback : IRecoveryCallback
         {
-            public object Recover(IRetryContext context)
-            {
-                return null;
-            }
+            public object Recover(IRetryContext context) => null;
         }
 
         public class ConditionalRejectingErrorHandler1 : ConditionalRejectingErrorHandler
@@ -1477,10 +1356,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             public string ServiceName { get; set; } = nameof(AlwaysBarListenerErrorHandler);
 
-            public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
-            {
-                return "BAR";
-            }
+            public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
         }
 
         public class UpcaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
@@ -1497,10 +1373,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
         public class ThrowANewExceptionErrorHandler : IRabbitListenerErrorHandler
         {
-            public ThrowANewExceptionErrorHandler(AtomicReference<RC.IModel> errorHandlerChannel)
-            {
-                ErrorHandlerChannel = errorHandlerChannel;
-            }
+            public ThrowANewExceptionErrorHandler(AtomicReference<RC.IModel> errorHandlerChannel) => ErrorHandlerChannel = errorHandlerChannel;
 
             public string ServiceName { get; set; } = "throwANewException";
 
@@ -1517,22 +1390,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         {
             public string TagPrefix { get; } = Guid.NewGuid().ToString();
 
-            private int increment = 0;
+            private int _increment = 0;
 
             public string ServiceName { get; set; }
 
-            public string CreateConsumerTag(string queue)
-            {
-                return TagPrefix + Interlocked.Increment(ref increment);
-            }
+            public string CreateConsumerTag(string queue) => TagPrefix + Interlocked.Increment(ref _increment);
         }
 
         public class MultiListenerMessagePostProcessor : IMessagePostProcessor
         {
-            public MultiListenerMessagePostProcessor(List<string> serviceMethodHeaders)
-            {
-                ServiceMethodHeaders = serviceMethodHeaders;
-            }
+            public MultiListenerMessagePostProcessor(List<string> serviceMethodHeaders) => ServiceMethodHeaders = serviceMethodHeaders;
 
             public List<string> ServiceMethodHeaders { get; }
 

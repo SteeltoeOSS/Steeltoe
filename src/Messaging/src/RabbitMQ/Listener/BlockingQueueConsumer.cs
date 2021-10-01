@@ -533,9 +533,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                     {
                         try
                         {
-                            if (Channel is IChannelProxy)
+                            if (Channel is IChannelProxy proxy)
                             {
-                                ((IChannelProxy)Channel).TargetChannel.Close();
+                                proxy.TargetChannel.Close();
                             }
                         }
                         catch (TimeoutException)

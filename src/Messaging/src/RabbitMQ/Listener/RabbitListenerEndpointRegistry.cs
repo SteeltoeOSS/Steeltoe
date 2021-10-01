@@ -129,11 +129,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             foreach (var listenerContainer in _listenerContainers.Values)
             {
-                if (listenerContainer is IDisposable)
+                if (listenerContainer is IDisposable disposable)
                 {
                     try
                     {
-                        ((IDisposable)listenerContainer).Dispose();
+                        disposable.Dispose();
                     }
                     catch (Exception ex)
                     {

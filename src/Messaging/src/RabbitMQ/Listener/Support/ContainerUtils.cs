@@ -34,9 +34,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Support
             return shouldRequeue;
         }
 
-        public static bool IsRejectManual(Exception exception)
-        {
-            return exception is RabbitRejectAndDontRequeueException && ((RabbitRejectAndDontRequeueException)exception).IsRejectManual;
-        }
+        public static bool IsRejectManual(Exception exception) => exception is RabbitRejectAndDontRequeueException rejectException && rejectException.IsRejectManual;
     }
 }

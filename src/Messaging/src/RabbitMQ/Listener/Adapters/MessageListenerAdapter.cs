@@ -76,15 +76,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             var delegateListener = Instance;
             if (delegateListener != this)
             {
-                if (delegateListener is IChannelAwareMessageListener)
+                switch (delegateListener)
                 {
-                    ((IChannelAwareMessageListener)delegateListener).OnMessage(message, channel);
-                    return;
-                }
-                else if (delegateListener is IMessageListener)
-                {
-                    ((IMessageListener)delegateListener).OnMessage(message);
-                    return;
+                    case IChannelAwareMessageListener listener:
+                        listener.OnMessage(message, channel);
+                        return;
+                    case IMessageListener:
+                        ((IMessageListener)delegateListener).OnMessage(message);
+                        return;
                 }
             }
 
@@ -112,14 +111,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         }
 
         protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
-        {
-            return BuildListenerArguments(extractedMessage);
-        }
+            => BuildListenerArguments(extractedMessage);
 
         protected virtual object[] BuildListenerArguments(object extractedMessage)
-        {
-            return new object[] { extractedMessage };
-        }
+            => new object[] { extractedMessage };
 
         protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
         {

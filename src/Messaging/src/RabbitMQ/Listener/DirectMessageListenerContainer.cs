@@ -900,14 +900,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 _connection = connection;
                 Queue = queue;
                 AckRequired = !_container.AcknowledgeMode.IsAutoAck() && !_container.AcknowledgeMode.IsManual();
-                if (channel is IChannelProxy)
-                {
-                    _targetChannel = ((IChannelProxy)channel).TargetChannel;
-                }
-                else
-                {
-                    _targetChannel = null;
-                }
+                _targetChannel = channel is IChannelProxy proxy ? proxy.TargetChannel : null;
 
                 _logger = logger;
                 TransactionManager = _container.TransactionManager;
@@ -949,17 +942,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
             public long AckTimeout { get; internal set; }
 
-            public bool TargetChanged
-            {
-                get
-                {
-                    return _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
-                }
-            }
+            public bool TargetChanged => _targetChannel != null && !_targetChannel.Equals(((IChannelProxy)Model).TargetChannel);
 
             public int IncrementAndGetEpoch()
             {
-                Epoch = Epoch + 1;
+                Epoch++;
                 return Epoch;
             }
 
@@ -1030,10 +1017,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 CancelConsumer("Consumer " + this + " canceled");
             }
 
-            public override string ToString()
-            {
-                return "SimpleConsumer [queue=" + Queue + ", consumerTag=" + ConsumerTag + " identity=" + GetHashCode() + "]";
-            }
+            public override string ToString() => "SimpleConsumer [queue=" + Queue + ", consumerTag=" + ConsumerTag + " identity=" + GetHashCode() + "]";
 
             internal void CancelConsumer(string eventMessage)
             {

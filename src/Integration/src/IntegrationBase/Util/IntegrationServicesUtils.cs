@@ -11,35 +11,18 @@ namespace Steeltoe.Integration.Util
     public static class IntegrationServicesUtils
     {
         public static T ExtractTypeIfPossible<T>(object targetObject)
-        {
-            if (targetObject == null)
-            {
-                return default;
-            }
-
-            if (targetObject is T)
-            {
-                return (T)targetObject;
-            }
-
-            return default;
-        }
+            => targetObject switch
+                {
+                    T t => t,
+                    _ => default
+                };
 
         public static Exception WrapInHandlingExceptionIfNecessary(IMessage message, string text, Exception ex)
-        {
-            if (!(ex is MessagingException) || ((MessagingException)ex).FailedMessage == null)
-            {
-                return new MessageHandlingException(message, text, ex);
-            }
-
-            return ex;
-        }
+            => ex is not MessagingException exception || exception.FailedMessage == null
+                ? new MessageHandlingException(message, text, ex)
+                : ex;
 
         public static IIntegrationServices GetIntegrationServices(IApplicationContext context)
-        {
-            var services = context?.GetService<IIntegrationServices>() ?? new IntegrationServices(context);
-
-            return services;
-        }
+            => context?.GetService<IIntegrationServices>() ?? new IntegrationServices(context);
     }
 }
