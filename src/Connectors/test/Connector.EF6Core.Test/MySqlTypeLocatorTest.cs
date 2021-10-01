@@ -14,10 +14,8 @@ namespace Steeltoe.Connector.EF6Core.MySql.Test
         {
             // arrange -- handled by including a compatible MySql NuGet package
 
-            // act
             var type = MySqlTypeLocator.MySqlConnection;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -28,10 +26,8 @@ namespace Steeltoe.Connector.EF6Core.MySql.Test
             var types = MySqlTypeLocator.Assemblies;
             MySqlTypeLocator.Assemblies = new string[] { "MySql.Data" };
 
-            // act
             var type = MySqlTypeLocator.MySqlConnection;
 
-            // assert
             Assert.NotNull(type);
             MySqlTypeLocator.Assemblies = types;
         }

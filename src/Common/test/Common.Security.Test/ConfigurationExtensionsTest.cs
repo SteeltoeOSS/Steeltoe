@@ -112,8 +112,6 @@ namespace Steeltoe.Common.Security.Test
         [Fact]
         public async Task AddCertificateFile_NotifiesOnChange()
         {
-            // arrange
-
             // TODO: investigate why test fails when using Sandbox
             // see: https://github.com/SteeltoeOSS/Steeltoe/issues/736
             /*
@@ -133,11 +131,9 @@ namespace Steeltoe.Common.Security.Test
             token.RegisterChangeCallback((o) => changeCalled = true, "state");
             Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
 
-            // act
             await File.WriteAllTextAsync(filename, "barfoo");
             await Task.Delay(2000);
 
-            // assert
             Assert.Equal("barfoo", await File.ReadAllTextAsync(config["certificate"]));
             Assert.True(changeCalled);
 

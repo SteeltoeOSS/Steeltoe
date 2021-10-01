@@ -24,16 +24,13 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         [Fact]
         public async Task ResolvesUri_TracksStats_WithProvidedLoadBalancer()
         {
-            // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new FakeLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandler() };
             var invoker = new HttpMessageInvoker(handler);
 
-            // act
             var result = await invoker.SendAsync(httpRequestMessage, default);
 
-            // assert
             Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());
             Assert.Single(loadBalancer.Stats);
         }
@@ -41,32 +38,26 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         [Fact]
         public async Task DoesntTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
         {
-            // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new BrokenLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandler() };
             var invoker = new HttpMessageInvoker(handler);
 
-            // act
             var result = await Assert.ThrowsAsync<Exception>(async () => await invoker.SendAsync(httpRequestMessage, default));
 
-            // assert
             Assert.Empty(loadBalancer.Stats);
         }
 
         [Fact]
         public async Task TracksStats_WhenRequestsGoWrong_WithProvidedLoadBalancer()
         {
-            // arrange
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
             var loadBalancer = new FakeLoadBalancer();
             var handler = new LoadBalancerDelegatingHandler(loadBalancer) { InnerHandler = new TestInnerDelegatingHandlerBrokenServer() };
             var invoker = new HttpMessageInvoker(handler);
 
-            // act
             var result = await invoker.SendAsync(httpRequestMessage, default);
 
-            // assert
             Assert.Single(loadBalancer.Stats);
             Assert.Equal(HttpStatusCode.InternalServerError, result.StatusCode);
             Assert.Equal("https://someresolvedhost/api", result.Headers.GetValues("requestUri").First());

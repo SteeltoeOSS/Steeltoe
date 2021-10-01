@@ -13,12 +13,10 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void Constructor_ThrowsIfTypeNull()
         {
-            // Arrange
             var config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
             Type dbContextType = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
         }
@@ -26,12 +24,10 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void Create_ThrowsIfNoValidConstructorFound()
         {
-            // Arrange
             var config = new SqlServerProviderConnectorOptions();
             SqlServerServiceInfo si = null;
             var dbContextType = typeof(BadSqlServerDbContext);
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));
             Assert.Contains("BadSqlServerDbContext", ex.Message);
         }

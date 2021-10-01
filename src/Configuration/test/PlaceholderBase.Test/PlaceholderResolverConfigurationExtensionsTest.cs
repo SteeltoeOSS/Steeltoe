@@ -18,30 +18,24 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ThrowsIfConfigBuilderNull()
         {
-            // Arrange
             IConfigurationBuilder configurationBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverConfigurationExtensions.AddPlaceholderResolver(configurationBuilder));
         }
 
         [Fact]
         public void AddPlaceholderResolver_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration configuration = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverConfigurationExtensions.AddPlaceholderResolver(configuration));
         }
 
         [Fact]
         public void AddPlaceholderResolver_AddsPlaceholderResolverSourceToList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
 
             PlaceholderResolverSource placeholderSource =
@@ -52,11 +46,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_WithLoggerFactorySucceeds()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var loggerFactory = new LoggerFactory();
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver(loggerFactory);
             var configuration = configurationBuilder.Build();
 
@@ -72,7 +64,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Trait("Category", "SkipOnMacOS")]
         public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""spring"": {
@@ -96,7 +87,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddJsonFile(fileName, false, false);
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
             var config = configurationBuilder.Build();
 
@@ -108,7 +98,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Trait("Category", "SkipOnMacOS")]
         public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
         {
-            // Arrange
             var appsettings = @"
 <settings>
     <spring>
@@ -131,7 +120,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddXmlFile(fileName, false, false);
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
             IConfigurationRoot config = configurationBuilder.Build();
 
@@ -143,7 +131,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Trait("Category", "SkipOnMacOS")]
         public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
         {
-            // Arrange
             var appsettings = @"
 [spring:bar]
     name=myName
@@ -159,7 +146,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddIniFile(fileName, false, false);
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
             IConfigurationRoot config = configurationBuilder.Build();
 
@@ -169,7 +155,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_CommandLineAppSettingsResolvesPlaceholders()
         {
-            // Arrange
             var appsettings = new string[]
                 {
                             "spring:bar:name=myName",
@@ -179,7 +164,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddCommandLine(appsettings);
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
             IConfigurationRoot config = configurationBuilder.Build();
 
@@ -239,7 +223,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             configurationBuilder.AddIniFile(inifileName, false, false);
             configurationBuilder.AddCommandLine(appsettingsLine);
 
-            // Act and Assert
             configurationBuilder.AddPlaceholderResolver();
             IConfigurationRoot config = configurationBuilder.Build();
 

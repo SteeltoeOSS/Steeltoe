@@ -20,11 +20,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void ConfigureConfigServerClientOptions_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
             Assert.Contains(nameof(services), ex.Message);
         }
@@ -32,11 +30,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void ConfigureConfigServerClientOptions_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.ConfigureConfigServerClientOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -44,11 +40,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
         {
-            // Arrange
             var services = new ServiceCollection();
             var environment = HostingHelpers.GetHostingEnvironment("Production");
 
-            // Act and Assert
             var builder = new ConfigurationBuilder().AddConfigServer(environment);
             var config = builder.Build();
             services.ConfigureConfigServerClientOptions(config);
@@ -84,11 +78,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
         [Fact]
         public void ConfigureConfigServerClientOptions_ConfiguresCloudFoundryOptions()
         {
-            // Arrange
             var services = new ServiceCollection();
             var environment = HostingHelpers.GetHostingEnvironment();
 
-            // Act and Assert
             var builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:config:timeout", "10" } }).AddConfigServer(environment);
             var config = builder.Build();
             services.ConfigureConfigServerClientOptions(config);

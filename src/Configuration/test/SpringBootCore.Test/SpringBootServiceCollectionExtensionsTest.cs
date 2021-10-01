@@ -20,11 +20,9 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void ConfigureSpringBoot_ThrowsIfNulls()
         {
-            // Arrange
             IHostBuilder builder = null;
             IWebHostBuilder webHostBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(builder));
             ex = Assert.Throws<ArgumentNullException>(() => SpringBootHostBuilderExtensions.AddSpringBootConfiguration(webHostBuilder));
         }
@@ -32,7 +30,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void WebHostConfiguresIConfiguration_Spring_Application_Json()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
             var hostBuilder = new WebHostBuilder()
@@ -43,7 +40,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             var services = TestServerStartup.ServiceProvider;
             var config = services.GetServices<IConfiguration>().SingleOrDefault();
 
-            // Act and Assert
             Assert.NotNull(config["foo:bar"]);
             Assert.Equal("value", config["foo:bar"]);
 
@@ -53,7 +49,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void WebHostConfiguresIConfiguration_CmdLine()
         {
-            // Arrange
             var hostBuilder = WebHost.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
                        .UseStartup<TestServerStartup>()
                        .AddSpringBootConfiguration();
@@ -63,7 +58,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             var services = TestServerStartup.ServiceProvider;
             var config = services.GetServices<IConfiguration>().SingleOrDefault();
 
-            // Act and Assert
             Assert.NotNull(config["spring:cloud:stream:bindings:input:destination"]);
             Assert.Equal("testDestination", config["spring:cloud:stream:bindings:input:destination"]);
 
@@ -74,7 +68,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void GenericHostConfiguresIConfiguration_Spring_Application_Json()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
             var hostBuilder = new HostBuilder()
@@ -82,7 +75,6 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
             var host = hostBuilder.Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
-            // Act and Assert
             Assert.NotNull(config["foo:bar"]);
             Assert.Equal("value", config["foo:bar"]);
 
@@ -92,14 +84,12 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void GenericHostConfiguresIConfiguration_CmdLine()
         {
-            // Arrange
             var hostBuilder = Host.CreateDefaultBuilder(new string[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
                        .AddSpringBootConfiguration();
 
             using var host = hostBuilder.Build();
             var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
-            // Act and Assert
             Assert.NotNull(config["spring:cloud:stream:bindings:input:destination"]);
             Assert.Equal("testDestination", config["spring:cloud:stream:bindings:input:destination"]);
 

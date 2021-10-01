@@ -14,14 +14,11 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureReturnsDefaults()
         {
-            // arrange
             var appSettings = new Dictionary<string, string>();
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-            // act
             var exp = new Exposure(config);
 
-            // assert
             Assert.Contains("health", exp.Include);
             Assert.Contains("info", exp.Include);
             Assert.Null(exp.Exclude);
@@ -30,7 +27,6 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureBindsToSteeltoeSettings()
         {
-            // arrange
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:actuator:exposure:include:0"] = "httptrace",
@@ -40,10 +36,8 @@ namespace Steeltoe.Management.EndpointBase.Test
             };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-            // act
             var exp = new Exposure(config);
 
-            // assert
             Assert.Contains("httptrace", exp.Include);
             Assert.Contains("dbmigrations", exp.Include);
             Assert.Contains("trace", exp.Exclude);
@@ -53,7 +47,6 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureBindsToSpringSettings()
         {
-            // arrange
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:web:exposure:include"] = "heapdump,env",
@@ -61,10 +54,8 @@ namespace Steeltoe.Management.EndpointBase.Test
             };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-            // act
             var exp = new Exposure(config);
 
-            // assert
             Assert.Contains("heapdump", exp.Include);
             Assert.Contains("env", exp.Include);
             Assert.Contains("dbmigrations", exp.Exclude);
@@ -74,17 +65,14 @@ namespace Steeltoe.Management.EndpointBase.Test
         [Fact]
         public void ExposureDoesntThrowOnInvalidSpringSettings()
         {
-            // arrange
             var appSettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:web:exposure:include"] = "heapdump;env"
             };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
-            // act
             var exp = new Exposure(config);
 
-            // assert
             Assert.Contains("heapdump;env", exp.Include);
             Assert.Null(exp.Exclude);
         }

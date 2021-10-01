@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -51,7 +49,6 @@ namespace Steeltoe.Connector.PostgreSql.Test
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;"
@@ -60,17 +57,14 @@ namespace Steeltoe.Connector.PostgreSql.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new PostgresProviderConnectorOptions(config);
 
-            // assert
             Assert.StartsWith(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Returned_BuildFromConfig()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["postgres:client:Host"] = "fake-db.host",
@@ -85,17 +79,14 @@ namespace Steeltoe.Connector.PostgreSql.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new PostgresProviderConnectorOptions(config);
 
-            // assert
             Assert.Equal(expected, sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -113,17 +104,14 @@ namespace Steeltoe.Connector.PostgreSql.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new PostgresProviderConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CloudFoundryConfig_Use_SearchPath()
         {
-            // arrange
             // simulate an appsettings file
             var appsettings = new Dictionary<string, string>()
             {
@@ -142,10 +130,8 @@ namespace Steeltoe.Connector.PostgreSql.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new PostgresProviderConnectorOptions(config);
 
-            // assert
             Assert.DoesNotContain(appsettings["postgres:client:ConnectionString"], sconfig.ToString());
             Assert.EndsWith($"Search Path={sconfig.SearchPath};", sconfig.ToString());
         }

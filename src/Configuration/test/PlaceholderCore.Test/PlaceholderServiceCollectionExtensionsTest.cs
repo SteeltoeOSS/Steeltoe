@@ -21,11 +21,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void ConfigurePlaceholderResolver_ThrowsIfNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverExtensions.ConfigurePlaceholderResolver(services, config));
             ex = Assert.Throws<ArgumentNullException>(() => PlaceholderResolverExtensions.ConfigurePlaceholderResolver(new ServiceCollection(), config));
         }
@@ -33,7 +31,6 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void ConfigurePlaceholderResolver_ConfiguresIConfiguration_ReplacesExisting()
         {
-            // Arrange
             var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },

@@ -14,12 +14,10 @@ namespace Steeltoe.Common.Security.Test
         [Fact]
         public void CertificatesIncludeParams()
         {
-            // arrange
             var orgId = Guid.NewGuid();
             var spaceId = Guid.NewGuid();
             var certWriter = new LocalCertificateWriter();
 
-            // act
             certWriter.Write(orgId, spaceId);
             var rootCertificate = new X509Certificate2(certWriter.RootCAPfxPath);
             var intermediateCert = new X509Certificate2(certWriter.IntermediatePfxPath);
@@ -27,7 +25,6 @@ namespace Steeltoe.Common.Security.Test
                 new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
                     .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"))));
 
-            // assert
             Assert.NotNull(rootCertificate);
             Assert.NotNull(intermediateCert);
             Assert.NotNull(clientCert);

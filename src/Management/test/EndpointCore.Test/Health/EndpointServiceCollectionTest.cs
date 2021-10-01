@@ -21,12 +21,10 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void AddHealthActuator_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
             IHealthAggregator aggregator = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
             Assert.Equal("services", ex.ParamName);
             var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHealthActuator());

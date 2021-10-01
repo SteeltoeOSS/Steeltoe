@@ -13,10 +13,8 @@ namespace Steeltoe.Security.DataProtection.Redis.Test
         [Fact]
         public void PersistKeysToRedis_ThowsForNulls()
         {
-            // Arrange
             IDataProtectionBuilder builder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisDataProtectionBuilderExtensions.PersistKeysToRedis(builder));
             Assert.Contains(nameof(builder), ex.Message);
         }

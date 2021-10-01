@@ -14,24 +14,19 @@ namespace Steeltoe.Connector.SqlServer.Test
         {
             // arrange -- handled by including System.Data.SqlClient
 
-            // act
             var type = SqlServerTypeLocator.SqlConnection;
 
-            // assert
             Assert.NotNull(type);
         }
 
         [Fact]
         public void Throws_When_ConnectionType_NotFound()
         {
-            // arrange
             var types = SqlServerTypeLocator.ConnectionTypeNames;
             SqlServerTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            // act
             var exception = Assert.Throws<TypeLoadException>(() => SqlServerTypeLocator.SqlConnection);
 
-            // assert
             Assert.Equal("Unable to find SqlConnection, are you missing a Microsoft SQL Server ADO.NET assembly?", exception.Message);
 
             // reset

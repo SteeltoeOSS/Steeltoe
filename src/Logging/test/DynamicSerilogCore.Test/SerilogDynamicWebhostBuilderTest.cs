@@ -55,10 +55,8 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
-            // arrange
             var testSink = new TestSink();
 
-            // act
             var host = new WebHostBuilder()
                 .UseStartup<Startup>()
                 .AddDynamicSerilog((context, loggerConfiguration) =>
@@ -73,7 +71,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 
             Thread.Sleep(1000);
 
-            // assert
             var logs = testSink.GetLogs();
 
             Assert.NotEmpty(logs);
@@ -84,7 +81,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied_via_Options()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 { "Serilog:Using:0", "Steeltoe.Extensions.Logging.DynamicSerilogCore.Test" },
@@ -93,7 +89,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 { "Serilog:WriteTo:Name", "TestSink" }
             };
 
-            // act
             var host = new WebHostBuilder()
                .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appsettings))
                .UseStartup<Startup>()

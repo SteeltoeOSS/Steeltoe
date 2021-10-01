@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.EF6Core.OracleDb.Test
         {
             // arrange -- handled by including a compatible NuGet package
 
-            // act
             var type = OracleTypeLocator.OracleConnection;
 
-            // assert
             Assert.NotNull(type);
         }
     }

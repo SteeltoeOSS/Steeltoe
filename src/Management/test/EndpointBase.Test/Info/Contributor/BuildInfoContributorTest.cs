@@ -12,15 +12,12 @@ namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
         [Fact]
         public void BuildAddsVersionInfo()
         {
-            // arrange
             var contributor = new BuildInfoContributor();
             var builder = new InfoBuilder();
 
-            // act
             contributor.Contribute(builder);
             var results = builder.Build();
 
-            // assert
             Assert.True(results.ContainsKey("applicationVersionInfo"));
             Assert.NotNull(results["applicationVersionInfo"]);
             Assert.True(results.ContainsKey("steeltoeVersionInfo"));

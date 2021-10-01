@@ -16,14 +16,11 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
         [Fact]
         public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
         {
-            // Arrange
             var hostBuilder = new HostBuilder().AddDynamicLogging();
 
-            // Act
             var host = hostBuilder.Build();
             var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            // Assert
             Assert.Single(loggerProviders);
             Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
         }
@@ -31,16 +28,13 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
         [Fact]
         public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
         {
-            // Arrange
             var hostBuilder = new HostBuilder()
                 .ConfigureLogging(ilb => ilb.AddConsole())
                 .AddDynamicLogging();
 
-            // Act
             var host = hostBuilder.Build();
             var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            // Assert
             Assert.Single(loggerProviders);
             Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
         }
@@ -48,16 +42,13 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
         [Fact]
         public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
         {
-            // Arrange
             var hostBuilder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(ilb => ilb.AddConsole())
                 .AddDynamicLogging();
 
-            // Act
             var host = hostBuilder.Build();
             var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            // Assert
             Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
             Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
         }

@@ -31,10 +31,8 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void Factory_ReturnsSameInstance()
         {
-            // Arrange
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var inst = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
             Assert.NotNull(inst);
             var inst2 = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);

@@ -14,12 +14,10 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics
         [Fact]
         public void AddMetricsActuatorServices_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -30,12 +28,10 @@ namespace Steeltoe.Management.Endpoint.Test.Metrics
         [Fact]
         public void AddPrometheusActuatorServices_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services, config));
             Assert.Contains(nameof(services), ex.Message);
 

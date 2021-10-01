@@ -130,7 +130,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfiguration_NoServiceInfo_ConfiguresEurekaDiscovery_Correctly()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""eureka"": {
@@ -254,10 +253,8 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void UpdateConfigurationComplainsAboutDefaultWhenWontWork()
         {
-            // arrange
             Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-            // act & assert
             var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, null, new EurekaClientOptions()));
             Assert.Contains(EurekaClientConfig.Default_ServerServiceUrl, exception.Message);
             Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);

@@ -16,7 +16,6 @@ namespace Steeltoe.Connector.Services.Test
         {
             string scheme = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(new Tags("foo"), scheme));
             Assert.Contains(nameof(scheme), ex.Message);
         }
@@ -27,7 +26,6 @@ namespace Steeltoe.Connector.Services.Test
             var scheme = "scheme";
             Tags tags = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(tags, scheme));
             Assert.Contains(nameof(tags), ex.Message);
         }

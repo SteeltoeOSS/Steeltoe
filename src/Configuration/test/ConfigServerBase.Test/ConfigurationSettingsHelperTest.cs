@@ -14,12 +14,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Initalize_ThrowsOnNulls()
         {
-            // Arrange
             string configPrefix = null;
             ConfigServerClientSettings settings = null;
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize(configPrefix, settings, config));
             Assert.Contains(nameof(configPrefix), ex.Message);
             ex = Assert.Throws<ArgumentNullException>(() => ConfigurationSettingsHelper.Initialize("foobar", settings, config));
@@ -31,12 +29,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Initialize_WithDefaultSettings()
         {
-            // Arrange
             var prefix = "spring:cloud:config";
             var settings = new ConfigServerClientSettings();
             IConfiguration config = new ConfigurationRoot(new List<IConfigurationProvider>());
 
-            // Act and Assert
             ConfigurationSettingsHelper.Initialize(prefix, settings, config);
             TestHelper.VerifyDefaults(settings);
         }

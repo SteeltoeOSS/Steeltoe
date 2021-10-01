@@ -15,7 +15,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Create_CanReturnRedisCache()
         {
-            // arrange
             var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
@@ -25,11 +24,9 @@ namespace Steeltoe.Connector.Redis.Test
             };
             var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
-            // act
             var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
             var cache = factory.Create(null);
 
-            // assert
             Assert.NotNull(cache);
             Assert.IsType<RedisCache>(cache);
         }
@@ -37,7 +34,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void Create_CanReturnConnectionMultiplexer()
         {
-            // arrange
             var config = new RedisCacheConnectorOptions()
             {
                 Host = "localhost",
@@ -49,11 +45,9 @@ namespace Steeltoe.Connector.Redis.Test
             };
             var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword");
 
-            // act
             var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), RedisTypeLocator.StackExchangeInitializer);
             var multi = factory.Create(null);
 
-            // assert
             Assert.NotNull(multi);
             Assert.IsType<ConnectionMultiplexer>(multi);
         }

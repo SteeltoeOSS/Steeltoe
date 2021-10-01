@@ -25,11 +25,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -40,11 +38,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -55,12 +51,10 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -68,11 +62,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_NoVCAPs_AddsIHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
 
             var service = services.BuildServiceProvider().GetService<IHealthContributor>();
@@ -82,11 +74,9 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -94,17 +84,14 @@ namespace Steeltoe.Connector.SqlServer.Test
         [Fact]
         public void AddSqlServerHealthContributor_AddsRelationalHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             SqlServerServiceCollectionExtensions.AddSqlServerHealthContributor(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
     }

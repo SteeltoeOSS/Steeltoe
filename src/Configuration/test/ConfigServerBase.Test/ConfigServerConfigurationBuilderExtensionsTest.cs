@@ -42,10 +42,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_ThrowsIfConfigBuilderNull()
         {
-            // Arrange
             IConfigurationBuilder configurationBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, new ConfigServerClientSettings()));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
         }
@@ -53,11 +51,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_ThrowsIfSettingsNull()
         {
-            // Arrange
             IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
             ConfigServerClientSettings defaultSettings = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ConfigServerConfigurationBuilderExtensions.AddConfigServer(configurationBuilder, defaultSettings));
             Assert.Contains(nameof(defaultSettings), ex.Message);
         }
@@ -65,11 +61,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var settings = new ConfigServerClientSettings() { Timeout = 10 };
 
-            // Act and Assert
             configurationBuilder
                 .AddPemFiles("instance.crt", "instance.key")
                 .AddConfigServer(settings);
@@ -83,11 +77,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_AddsConfigServerSourceToList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var settings = new ConfigServerClientSettings();
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(settings);
 
             var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
@@ -97,12 +89,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_WithLoggerFactorySucceeds()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
             var loggerFactory = new LoggerFactory();
             var settings = new ConfigServerClientSettings();
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(settings, loggerFactory);
 
             var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
@@ -114,7 +104,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_JsonAppSettingsConfiguresClient()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""spring"": {
@@ -153,7 +142,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddJsonFile(fileName);
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
 
@@ -183,7 +171,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_XmlAppSettingsConfiguresClient()
         {
-            // Arrange
             var appsettings = @"
 <settings>
     <spring>
@@ -210,7 +197,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddXmlFile(fileName);
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
 
@@ -232,7 +218,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_IniAppSettingsConfiguresClient()
         {
-            // Arrange
             var appsettings = @"
 [spring:cloud:config]
     uri=https://foo.com:9999
@@ -253,7 +238,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddIniFile(fileName);
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
 
@@ -263,7 +247,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             Assert.NotNull(configServerProvider);
             var settings = configServerProvider.Settings;
 
-            // Act and Assert
             Assert.False(settings.Enabled);
             Assert.False(settings.FailFast);
             Assert.Equal("https://foo.com:9999", settings.Uri);
@@ -277,7 +260,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
         {
-            // Arrange
             var appsettings = new string[]
                 {
                     "spring:cloud:config:enabled=false",
@@ -293,7 +275,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddCommandLine(appsettings);
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
             var configServerProvider =
@@ -315,7 +296,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_HandlesPlaceHolders()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""foo"": {
@@ -352,7 +332,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             var csettings = new ConfigServerClientSettings();
             configurationBuilder.AddJsonFile(fileName);
 
-            // Act and Assert
             configurationBuilder.AddConfigServer(csettings);
             var config = configurationBuilder.Build();
 
@@ -453,21 +432,18 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [InlineData(VCAPServicesAlt)]
         public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapservices)
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapservices);
             var settings = new ConfigServerClientSettings() { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
-            // Act
             configurationBuilder
                 .AddEnvironmentVariables()
                 .AddConfigServer(settings);
             var config = configurationBuilder.Build();
             var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-            // Assert
             Assert.NotNull(configServerProvider);
             Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
 
@@ -482,7 +458,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_PaysAttentionToSettings()
         {
-            // Arrange
             var configServerClientSettings = new ConfigServerClientSettings()
             {
                 Name = "testConfigName",
@@ -495,11 +470,9 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             };
             var builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 
-            // Act
             var config = builder.Build();
             var provider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
-            // Assert
             Assert.NotNull(provider);
             Assert.Equal("testConfigLabel", provider.Settings.Label);
             Assert.Equal("testConfigName", provider.Settings.Name);
@@ -511,27 +484,21 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void AddConfigServer_AddsCloudFoundryConfigurationSource()
         {
-            // arrange
             var configurationBuilder = new ConfigurationBuilder();
 
-            // act
             configurationBuilder.AddConfigServer();
 
-            // assert
             Assert.Single(configurationBuilder.Sources.OfType<CloudFoundryConfigurationSource>());
         }
 
         [Fact]
         public void AddConfigServer_Only_AddsOneCloudFoundryConfigurationSource()
         {
-            // arrange
             var configurationBuilder = new ConfigurationBuilder();
 
-            // act
             configurationBuilder.AddCloudFoundry(new CustomCloudFoundrySettingsReader());
             configurationBuilder.AddConfigServer();
 
-            // assert
             Assert.Single(configurationBuilder.Sources.Where(c => c.GetType() == typeof(CloudFoundryConfigurationSource)));
         }
     }

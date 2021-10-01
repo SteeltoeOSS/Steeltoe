@@ -19,10 +19,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryCertificateAuth_ChecksNulls()
         {
-            // arrange
             var sColl = new ServiceCollection();
 
-            // act & assert
             var servicesException = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddCloudFoundryCertificateAuth(null));
             Assert.Equal("services", servicesException.ParamName);
         }
@@ -30,17 +28,14 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void AddCloudFoundryCertificateAuth_AddsServices()
         {
-            // arrange
             var services = new ServiceCollection();
             var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddLogging();
 
-            // act
             services.AddCloudFoundryCertificateAuth();
             var provider = services.BuildServiceProvider();
 
-            // assert
             Assert.NotNull(provider.GetRequiredService<IOptions<CertificateOptions>>());
             Assert.NotNull(provider.GetRequiredService<ICertificateRotationService>());
             Assert.NotNull(provider.GetRequiredService<IAuthorizationHandler>());

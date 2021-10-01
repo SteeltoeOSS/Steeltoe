@@ -107,16 +107,13 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void InvokeWithInvalidGroupReturnsAllContributors()
         {
-            // arrange
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
             var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), provider);
             var context = Substitute.For<ISecurityContext>();
             context.GetRequestComponents().Returns(new string[] { "health", "iNvAlId" });
 
-            // act
             var result = ep.Invoke(context);
 
-            // assert
             Assert.Equal(6, result.Details.Keys.Count);
             Assert.Equal(2, result.Groups.Count());
         }
@@ -124,7 +121,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void InvokeWithLivenessGroupReturnsGroupResults()
         {
-            // arrange
             var appAvailability = new ApplicationAvailability();
             var contribs = new List<IHealthContributor>() { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceOptions(), provider);
@@ -132,10 +128,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             context.GetRequestComponents().Returns(new string[] { "cloudfoundryapplication", "health", "liVeness" });
             appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
-            // act
             var result = ep.Invoke(context);
 
-            // assert
             Assert.Equal(HealthStatus.UP, result.Status);
             Assert.Single(result.Details.Keys);
             Assert.Equal(2, result.Groups.Count());
@@ -144,7 +138,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void InvokeWithReadinessGroupReturnsGroupResults()
         {
-            // arrange
             var appAvailability = new ApplicationAvailability();
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceOptions(), provider);
@@ -152,10 +145,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
             appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-            // act
             var result = ep.Invoke(context);
 
-            // assert
             Assert.Equal(HealthStatus.UP, result.Status);
             Assert.Single(result.Details.Keys);
             Assert.Equal(2, result.Groups.Count());
@@ -164,7 +155,6 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void InvokeWithReadinessGroupReturnsGroupResults2()
         {
-            // arrange
             var appAvailability = new ApplicationAvailability();
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
             var ep = new HealthEndpointCore(options, aggregator, contribs, ServiceProviderWithMSFTHealth(), provider);
@@ -172,10 +162,8 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             context.GetRequestComponents().Returns(new string[] { "actuator", "health", "readiness" });
             appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-            // act
             var result = ep.Invoke(context);
 
-            // assert
             Assert.Equal(HealthStatus.UP, result.Status);
             Assert.Single(result.Details.Keys);
             Assert.Equal(2, result.Groups.Count());
@@ -184,17 +172,14 @@ namespace Steeltoe.Management.Endpoint.Health.Test
         [Fact]
         public void InvokeWithGroupFiltersMSFTResults()
         {
-            // arrange
             options.Groups.Add("msft", new HealthGroupOptions { Include = "up,privatememory" });
             var contribs = new List<IHealthContributor>() { new UnknownContributor(), new UpContributor() };
             var ep = new HealthEndpointCore(options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), provider);
             var context = Substitute.For<ISecurityContext>();
             context.GetRequestComponents().Returns(new string[] { "actuator", "health", "msft" });
 
-            // act
             var result = ep.Invoke(context);
 
-            // assert
             Assert.Equal(2, result.Details.Keys.Count);
             Assert.Contains("Up", result.Details.Keys);
             Assert.Contains("privatememory", result.Details.Keys);

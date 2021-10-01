@@ -18,12 +18,10 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void AddLoggersActuator_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services2, config));
@@ -33,7 +31,6 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
         [Fact]
         public void AddLoggersActuator_AddsCorrectServices()
         {
-            // arrange
             var services = new ServiceCollection();
             var appsettings = new Dictionary<string, string>()
             {
@@ -53,11 +50,9 @@ namespace Steeltoe.Management.Endpoint.Loggers.Test
             services.AddLoggersActuator(config);
             var serviceProvider = services.BuildServiceProvider();
 
-            // act
             var options = serviceProvider.GetService<ILoggersOptions>();
             var ep = serviceProvider.GetService<LoggersEndpoint>();
 
-            // assert
             Assert.NotNull(options);
             Assert.NotNull(ep);
         }

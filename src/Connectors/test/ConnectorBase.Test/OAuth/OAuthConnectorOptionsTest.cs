@@ -14,10 +14,8 @@ namespace Steeltoe.Connector.OAuth.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new OAuthConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -70,10 +68,8 @@ namespace Steeltoe.Connector.OAuth.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new OAuthConnectorOptions(config);
 
-            // assert
             Assert.False(sconfig.ValidateCertificates);
         }
 
@@ -89,10 +85,8 @@ namespace Steeltoe.Connector.OAuth.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new OAuthConnectorOptions(config);
 
-            // assert
             Assert.False(sconfig.ValidateCertificates);
         }
     }

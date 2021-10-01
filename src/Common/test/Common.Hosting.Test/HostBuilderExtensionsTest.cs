@@ -15,10 +15,8 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_Web_ThrowsIfHostBuilderNull()
         {
-            // Arrange
             IWebHostBuilder webHostBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => HostBuilderExtensions.UseCloudHosting(webHostBuilder));
             Assert.Contains(nameof(webHostBuilder), ex.Message);
         }
@@ -26,18 +24,15 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_Default8080()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting();
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:8080", addresses.Addresses);
         }
@@ -45,17 +40,14 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_MakeSureThePortIsSet()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", "42");
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting();
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:42", addresses.Addresses);
         }
@@ -63,18 +55,15 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_ReadsTyePorts()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", null);
             Environment.SetEnvironmentVariable("PORT", "80;443");
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting();
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:80", addresses.Addresses);
             Assert.Contains("https://*:443", addresses.Addresses);
@@ -83,18 +72,15 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_SeesTyePortsAndUsesAspNetCoreURL()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("ASPNETCORE_URLS", "http://*:80;https://*:443");
             Environment.SetEnvironmentVariable("PORT", "88;4443");
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting();
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:80", addresses.Addresses);
             Assert.Contains("https://*:443", addresses.Addresses);
@@ -103,17 +89,14 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_UsesServerPort()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("SERVER_PORT", "42");
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting();
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:42", addresses.Addresses);
 
@@ -123,18 +106,15 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_UsesLocalPortSettings()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new WebHostBuilder()
                                 .UseStartup<TestServerStartup>()
                                 .UseKestrel();
 
-            // Act
             hostBuilder.UseCloudHosting(5000, 5001);
             var server = hostBuilder.Build();
 
-            // Assert
             var addresses = server.ServerFeatures.Get<IServerAddressesFeature>();
             Assert.Contains("http://*:5000", addresses.Addresses);
             Assert.Contains("https://*:5001", addresses.Addresses);
@@ -143,7 +123,6 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_GenericHost_Default8080()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new HostBuilder()
@@ -153,7 +132,6 @@ namespace Steeltoe.Common.Hosting.Test
                     configure.UseKestrel();
                 });
 
-            // Act and Assert
             hostBuilder.UseCloudHosting();
             using var host = hostBuilder.Build();
             host.Start();
@@ -162,7 +140,6 @@ namespace Steeltoe.Common.Hosting.Test
         [Fact]
         public void UseCloudHosting_GenericHost_MakeSureThePortIsSet()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", "5042");
             var hostBuilder = new HostBuilder()
                 .ConfigureWebHost(configure =>
@@ -171,7 +148,6 @@ namespace Steeltoe.Common.Hosting.Test
                     configure.UseKestrel();
                 });
 
-            // Act and Assert
             hostBuilder.UseCloudHosting();
             using var host = hostBuilder.Build();
             host.Start();
@@ -183,7 +159,6 @@ namespace Steeltoe.Common.Hosting.Test
 #endif
         public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("PORT", null);
             Environment.SetEnvironmentVariable("SERVER_PORT", null);
             var hostBuilder = new HostBuilder()
@@ -193,7 +168,6 @@ namespace Steeltoe.Common.Hosting.Test
                     configure.UseKestrel();
                 });
 
-            // Act and Assert
             hostBuilder.UseCloudHosting(5001, 5002);
             using var host = hostBuilder.Build();
             host.Start();

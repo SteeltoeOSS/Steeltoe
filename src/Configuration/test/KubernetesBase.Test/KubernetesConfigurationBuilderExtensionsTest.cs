@@ -15,10 +15,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_ThrowsIfConfigBuilderNull()
         {
-            // Arrange
             IConfigurationBuilder configurationBuilder = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => KubernetesConfigurationBuilderExtensions.AddKubernetes(configurationBuilder));
             Assert.Contains(nameof(configurationBuilder), ex.Message);
         }
@@ -26,10 +24,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_Enabled_AddsConfigMapAndSecretsToSourcesList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder();
 
-            // Act and Assert
             configurationBuilder.AddKubernetes(FakeClientSetup);
 
             Assert.Contains(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapSource)));
@@ -39,10 +35,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_Disabled_DoesntAddConfigMapAndSecretsToSourcesList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:enabled", "false" } });
 
-            // Act and Assert
             configurationBuilder.AddKubernetes(FakeClientSetup);
 
             Assert.DoesNotContain(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapSource)));
@@ -52,10 +46,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_ConfigMapDisabled_DoesntAddConfigMapToSourcesList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:config:enabled", "false" } });
 
-            // Act and Assert
             configurationBuilder.AddKubernetes(FakeClientSetup);
 
             Assert.DoesNotContain(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapSource)));
@@ -65,10 +57,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test
         [Fact]
         public void AddKubernetes_SecretsDisabled_DoesntAddSecretsToSourcesList()
         {
-            // Arrange
             var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:secrets:enabled", "false" } });
 
-            // Act and Assert
             configurationBuilder.AddKubernetes(FakeClientSetup);
 
             Assert.Contains(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapSource)));

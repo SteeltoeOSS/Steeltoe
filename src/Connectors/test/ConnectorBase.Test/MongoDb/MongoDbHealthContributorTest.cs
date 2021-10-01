@@ -38,17 +38,14 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Not_Connected_Returns_Down_Status()
         {
-            // arrange
             var mongoDbConfig = new MongoDbConnectorOptions();
             var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
             var logrFactory = new LoggerFactory();
             var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
             var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Equal("Failed to open MongoDb connection!", status.Description);
         }
@@ -56,17 +53,14 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact(Skip = "Integration test - Requires local MongoDb server")]
         public void Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var mongoDbConfig = new MongoDbConnectorOptions();
             var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
             var logrFactory = new LoggerFactory();
             var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, mongoDbImplementationType);
             var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
         }
     }

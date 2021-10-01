@@ -37,7 +37,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void Not_Connected_Returns_Down_Status()
         {
-            // arrange
             _ = RabbitMQTypeLocator.IConnectionFactory;
             var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
             var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
@@ -46,10 +45,8 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
             var h = new RabbitMQHealthContributor(connFactory, logrFactory.CreateLogger<RabbitMQHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.DOWN, status.Status);
             Assert.Equal("Failed to open RabbitMQ connection!", status.Description);
         }
@@ -57,7 +54,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact(Skip = "Integration test - Requires local RMQ server")]
         public void Is_Connected_Returns_Up_Status()
         {
-            // arrange
             var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
             var rabbitMQConfig = new RabbitMQProviderConnectorOptions();
             var sInfo = new RabbitMQServiceInfo("MyId", "amqp://localhost:5672");
@@ -65,10 +61,8 @@ namespace Steeltoe.Connector.RabbitMQ.Test
             var connFactory = new RabbitMQProviderConnectorFactory(sInfo, rabbitMQConfig, rabbitMQImplementationType);
             var h = new RabbitMQHealthContributor(connFactory, logrFactory.CreateLogger<RabbitMQHealthContributor>());
 
-            // act
             var status = h.Health();
 
-            // assert
             Assert.Equal(HealthStatus.UP, status.Status);
             Assert.Contains("version", status.Details.Keys);
         }
@@ -76,7 +70,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         [Fact]
         public void ScenarioTesting()
         {
-            // arrange
             var mockConnection = new Mock<IConnection>();
             mockConnection.Setup(a => a.IsOpen).Returns(false);
             mockConnection.Setup(s => s.ServerProperties).Returns(new Dictionary<string, object> { { "version", Encoding.UTF8.GetBytes("test") } });

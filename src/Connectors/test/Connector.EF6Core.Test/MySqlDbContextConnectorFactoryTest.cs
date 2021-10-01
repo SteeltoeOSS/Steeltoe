@@ -13,12 +13,10 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         [Fact]
         public void Constructor_ThrowsIfTypeNull()
         {
-            // Arrange
             var config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
             Type dbContextType = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType));
             Assert.Contains(nameof(dbContextType), ex.Message);
         }
@@ -26,12 +24,10 @@ namespace Steeltoe.Connector.MySql.EF6.Test
         [Fact]
         public void Create_ThrowsIfNoValidConstructorFound()
         {
-            // Arrange
             var config = new MySqlProviderConnectorOptions();
             MySqlServiceInfo si = null;
             var dbContextType = typeof(BadMySqlDbContext);
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType).Create(null));
             Assert.Contains("BadMySqlDbContext", ex.Message);
         }

@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         [Fact]
         public void Constructor__ThrowsIfPrefixNull()
         {
-            // Act and Assert
+
             var ex = Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null, null));
         }
 

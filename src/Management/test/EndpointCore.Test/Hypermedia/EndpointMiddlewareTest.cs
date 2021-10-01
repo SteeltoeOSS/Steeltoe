@@ -84,7 +84,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var result = await client.GetAsync("http://localhost/actuator");
             var json = await result.Content.ReadAsStringAsync();
 
-            // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/actuator\",\"templated\":false},\"info\":{\"href\":\"http://localhost/actuator/info\",\"templated\":false}}}", json);
         }
 
@@ -106,7 +105,6 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
             var result = await client.GetAsync("http://localhost/");
             var json = await result.Content.ReadAsStringAsync();
 
-            // assert
             Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"self\":{\"href\":\"http://localhost/\",\"templated\":false},\"info\":{\"href\":\"http://localhost/info\",\"templated\":false}}}", json);
         }
 

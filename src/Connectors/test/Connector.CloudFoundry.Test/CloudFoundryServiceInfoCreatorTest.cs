@@ -22,10 +22,8 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceInfoCreator.Instance(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -33,10 +31,8 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void Constructor_ReturnsInstance()
         {
-            // Arrange
             IConfiguration config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var inst = CloudFoundryServiceInfoCreator.Instance(config);
             Assert.NotNull(inst);
         }
@@ -44,11 +40,9 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void Constructor_ReturnsNewInstance()
         {
-            // Arrange
             IConfiguration config = new ConfigurationBuilder().Build();
             IConfiguration config2 = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var inst = CloudFoundryServiceInfoCreator.Instance(config);
             Assert.NotNull(inst);
 
@@ -59,10 +53,8 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void BuildServiceInfoFactories_BuildsExpected()
         {
-            // Arrange
             IConfiguration config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var inst = CloudFoundryServiceInfoCreator.Instance(config);
             Assert.NotNull(inst);
             Assert.NotNull(inst.Factories);
@@ -88,7 +80,6 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
         {
-            // Arrange
             var environment2 = @"
                 {
                     ""p-mysql"": [{
@@ -216,7 +207,6 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
         {
-            // Arrange
             var environment2 = @"
                 {
                     ""p-mysql"": [{
@@ -301,7 +291,6 @@ namespace Steeltoe.Connector.CloudFoundry.Test
         [Fact]
         public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMonogoBinding_BuildsExpected()
         {
-            // Arrange
             var environment2 = @"
                 {
                     ""p-redis"": [{

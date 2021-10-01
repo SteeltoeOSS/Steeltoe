@@ -20,10 +20,8 @@ namespace Steeltoe.Connector.MySql.Test
         {
             // arrange -- handled by including a compatible MySql NuGet package
 
-            // act
             var type = MySqlTypeLocator.MySqlConnection;
 
-            // assert
             Assert.NotNull(type);
         }
 
@@ -34,10 +32,8 @@ namespace Steeltoe.Connector.MySql.Test
             var types = MySqlTypeLocator.ConnectionTypeNames;
             MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
 
-            // act
             var type = MySqlTypeLocator.MySqlConnection;
 
-            // assert
             Assert.NotNull(type);
             MySqlTypeLocator.ConnectionTypeNames = types;
         }
@@ -45,14 +41,11 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void Throws_When_ConnectionType_NotFound()
         {
-            // arrange
             var types = MySqlTypeLocator.ConnectionTypeNames;
             MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            // act
             var exception = Assert.Throws<TypeLoadException>(() => MySqlTypeLocator.MySqlConnection);
 
-            // assert
             Assert.Equal("Unable to find MySqlConnection, are you missing a MySql ADO.NET assembly?", exception.Message);
 
             // reset

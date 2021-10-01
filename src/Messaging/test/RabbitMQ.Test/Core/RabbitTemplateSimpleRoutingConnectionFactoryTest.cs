@@ -40,7 +40,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void ConvertSendAndReceiveShouldBindToRoutingConnectionFactoriesWithSimpleResourceHolder()
         {
-            // arrange
             static Mock<RC.IModel> SetupMocks(Mock<IConnectionFactory> cf)
             {
                 var connection = new Mock<Connection.IConnection>();

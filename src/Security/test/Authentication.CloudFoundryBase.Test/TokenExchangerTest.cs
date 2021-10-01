@@ -20,14 +20,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void GetTokenRequestMessage_ReturnsCorrectly()
         {
-            // arrange
             var opts = new AuthServerOptions { ClientId = "clientId", ClientSecret = "clientSecret" };
             var tEx = new TokenExchanger(opts);
 
-            // act
             var message = tEx.GetTokenRequestMessage(new List<KeyValuePair<string, string>>(), "redirectUri");
 
-            // assert
             Assert.NotNull(message);
             var content = message.Content as FormUrlEncodedContent;
             Assert.NotNull(content);
@@ -39,14 +36,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void AuthCodeTokenRequestParameters_ReturnsCorrectly()
         {
-            // arrange
             var opts = new AuthServerOptions { ClientId = "clientId", ClientSecret = "clientSecret", CallbackUrl = "redirect_uri" };
             var tEx = new TokenExchanger(opts);
 
-            // act
             var parameters = tEx.AuthCodeTokenRequestParameters("authcode");
 
-            // assert
             Assert.NotNull(parameters);
             Assert.Equal(opts.ClientId, parameters.First(i => i.Key == "client_id").Value);
             Assert.Equal(opts.ClientSecret, parameters.First(i => i.Key == "client_secret").Value);
@@ -58,14 +52,11 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void ClientCredentialsTokenRequestParameters_ReturnsCorrectly()
         {
-            // arrange
             var opts = new AuthServerOptions { ClientId = "clientId", ClientSecret = "clientSecret", CallbackUrl = "redirect_uri" };
             var tEx = new TokenExchanger(opts);
 
-            // act
             var parameters = tEx.ClientCredentialsTokenRequestParameters();
 
-            // assert
             Assert.NotNull(parameters);
             Assert.Equal(opts.ClientId, parameters.First(i => i.Key == "client_id").Value);
             Assert.Equal(opts.ClientSecret, parameters.First(i => i.Key == "client_secret").Value);
@@ -75,11 +66,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void CommonTokenRequestParamsHandlesScopes()
         {
-            // arrange
             var opts = new AuthServerOptions { AdditionalTokenScopes = "onescope", RequiredScopes = new string[] { "twoscope" } };
             var tEx = new TokenExchanger(opts);
 
-            // act
             var parameters = tEx.CommonTokenRequestParams();
             Assert.Equal("openid onescope twoscope", parameters.First(i => i.Key == CloudFoundryDefaults.ParamsScope).Value);
         }
@@ -87,24 +76,20 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public async Task ExchangeAuthCodeForClaimsIdentity_ExchangesCodeForIdentity()
         {
-            // arrange
             var options = new AuthServerOptions()
             {
                 AuthorizationUrl = "http://localhost/tokenUrl"
             };
             var exchanger = new TokenExchanger(options, GetMockHttpClient());
 
-            // act
             var identity = await exchanger.ExchangeAuthCodeForClaimsIdentity("goodCode");
 
-            // assert
             Assert.IsType<ClaimsIdentity>(identity);
         }
 
         [Fact]
         public async Task ExchangeAuthCodeForClaimsIdentity_ReturnsNullOnFailure()
         {
-            // arrange
             var options = new AuthServerOptions()
             {
                 AuthorizationUrl = "http://localhost/tokenUrl"
@@ -112,10 +97,8 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
             var httpClient = new object(); // TODO: replace with mock that does stuff
             var exchanger = new TokenExchanger(options, GetMockHttpClient());
 
-            // act
             var identity = await exchanger.ExchangeAuthCodeForClaimsIdentity("badCode");
 
-            // assert
             Assert.Null(identity);
         }
 
