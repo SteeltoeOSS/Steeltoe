@@ -1,0 +1,14 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/common.yml
+    - src/Common/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Common

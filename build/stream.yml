@@ -1,0 +1,16 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/stream.yml
+    - src/Stream/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Stream
+      runRabbitMQ: true
+      skipFilter: --filter "Category!=SkipOnLinux"

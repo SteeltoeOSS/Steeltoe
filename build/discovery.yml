@@ -1,0 +1,14 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/discovery.yml
+    - src/Discovery/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Discovery
