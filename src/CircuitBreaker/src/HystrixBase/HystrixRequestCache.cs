@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     public class HystrixRequestCache
     {
         // the String key must be: HystrixRequestCache.prefix + cacheKey
-        private static readonly ConcurrentDictionary<RequestCacheKey, HystrixRequestCache> Caches = new ConcurrentDictionary<RequestCacheKey, HystrixRequestCache>();
+        private static readonly ConcurrentDictionary<RequestCacheKey, HystrixRequestCache> Caches = new ();
 
         private class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
         {
@@ -24,7 +24,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
             }
         }
 
-        private static readonly HystrixRequestCacheVariable RequestVariableForCache = new HystrixRequestCacheVariable();
+        private static readonly HystrixRequestCacheVariable RequestVariableForCache = new ();
 
         public static HystrixRequestCache GetInstance(IHystrixCommandKey key)
         {

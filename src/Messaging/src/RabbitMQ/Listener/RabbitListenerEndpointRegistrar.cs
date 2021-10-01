@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
     {
         public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistrar);
 
-        private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new List<RabbitListenerEndpointDescriptor>();
+        private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new ();
 
         public RabbitListenerEndpointRegistrar(IMessageHandlerMethodFactory messageHandlerMethodFactory = null)
         {

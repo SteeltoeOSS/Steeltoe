@@ -22,12 +22,12 @@ namespace Steeltoe.Stream.Binder
 {
     public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
     {
-        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new AsyncLocal<IAttributeAccessor>();
+        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
 
         private readonly DirectChannel _dummyChannel;
         private readonly MessagingTemplate _messagingTemplate;
         private readonly ISmartMessageConverter _messageConverter;
-        private readonly List<IChannelInterceptor> _interceptors = new List<IChannelInterceptor>();
+        private readonly List<IChannelInterceptor> _interceptors = new ();
         private RetryTemplate _retryTemplate;
         private IRecoveryCallback _recoveryCallback;
         private int _running;

@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 {
     public class DelegatingDecompressingPostProcessor : IMessagePostProcessor, IOrdered
     {
-        private readonly Dictionary<string, IMessagePostProcessor> _decompressors = new Dictionary<string, IMessagePostProcessor>();
+        private readonly Dictionary<string, IMessagePostProcessor> _decompressors = new ();
 
         public DelegatingDecompressingPostProcessor()
         {

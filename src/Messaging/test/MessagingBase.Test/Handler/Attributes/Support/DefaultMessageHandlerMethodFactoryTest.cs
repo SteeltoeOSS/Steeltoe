@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 {
     public class DefaultMessageHandlerMethodFactoryTest
     {
-        private readonly SampleBean sample = new SampleBean();
+        private readonly SampleBean sample = new ();
 
         [Fact]
         public void CustomConversion()
@@ -142,7 +142,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 
         internal class SampleBean
         {
-            public readonly Dictionary<string, bool> Invocations = new Dictionary<string, bool>();
+            public readonly Dictionary<string, bool> Invocations = new ();
 
             public void SimpleString(string value)
             {

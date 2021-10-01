@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
     {
         public const string DEFAULT_SERVICE_NAME = "scFactory";
 
-        private readonly object _connectionMonitor = new object();
+        private readonly object _connectionMonitor = new ();
 
         public SingleConnectionFactory(ILoggerFactory loggerFactory = null)
             : this((string)null, loggerFactory)

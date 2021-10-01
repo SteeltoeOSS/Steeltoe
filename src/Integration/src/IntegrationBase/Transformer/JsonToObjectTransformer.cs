@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Transformer
 {
     public class JsonToObjectTransformer : AbstractTransformer
     {
-        private DefaultTypeMapper _defaultTypeMapper = new DefaultTypeMapper();
+        private DefaultTypeMapper _defaultTypeMapper = new ();
 
         public Type TargetType { get; set; }
 

@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Availability
     {
         public readonly string LivenessKey = "Liveness";
         public readonly string ReadinessKey = "Readiness";
-        private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new Dictionary<string, IAvailabilityState>();
+        private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new ();
         private readonly ILogger<ApplicationAvailability> _logger;
 
         public ApplicationAvailability(ILogger<ApplicationAvailability> logger = null) => _logger = logger;

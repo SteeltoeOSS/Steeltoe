@@ -16,7 +16,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
         private readonly ILogger<SpelCompiler> _logger;
 
         // Counter suffix for generated classes within this SpelCompiler instance
-        private readonly AtomicInteger _suffixId = new AtomicInteger(1);
+        private readonly AtomicInteger _suffixId = new(1);
 
         public static SpelCompiler GetCompiler(ILoggerFactory loggerFactory = null)
         {

@@ -35,7 +35,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private const double DECLARE_RETRY_MULTIPLIER = 2.0d;
         private const string DELAYED_MESSAGE_EXCHANGE = "x-delayed-message";
 
-        private readonly object _lifecycleMonitor = new object();
+        private readonly object _lifecycleMonitor = new ();
         private ILogger _logger;
         private int _initializing = 0;
 

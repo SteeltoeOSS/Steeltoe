@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public static class ConsumerChannelRegistry
     {
-        private static readonly AsyncLocal<ChannelHolder> _consumerChannel = new AsyncLocal<ChannelHolder>();
+        private static readonly AsyncLocal<ChannelHolder> _consumerChannel = new ();
 
         public static void RegisterConsumerChannel(RC.IModel channel, IConnectionFactory connectionFactory, ILogger logger = null)
         {

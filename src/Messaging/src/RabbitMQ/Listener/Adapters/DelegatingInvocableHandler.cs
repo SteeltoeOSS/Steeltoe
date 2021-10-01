@@ -20,11 +20,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 {
     public class DelegatingInvocableHandler
     {
-        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly SpelExpressionParser PARSER = new ();
         private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
 
-        private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new Dictionary<IInvocableHandlerMethod, IExpression>();
-        private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ConcurrentDictionary<Type, IInvocableHandlerMethod>();
+        private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new ();
+        private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ();
 
         public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver, IServiceExpressionContext context)
         : this(handlers, null, bean, resolver, context)

@@ -184,7 +184,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public int QueueCount => Queues.Count;
 
-        public HashSet<string> MissingQueues => new HashSet<string>();
+        public HashSet<string> MissingQueues => new ();
 
         public long LastRetryDeclaration { get; set; }
 

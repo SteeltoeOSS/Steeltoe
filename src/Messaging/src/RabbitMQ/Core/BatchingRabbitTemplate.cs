@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     public class BatchingRabbitTemplate : RabbitTemplate
     {
         private readonly IBatchingStrategy _batchingStrategy;
-        private readonly object _batchlock = new object();
+        private readonly object _batchlock = new ();
         private CancellationTokenSource _cancellationTokenSource;
         private Task _scheduledTask;
         private int _count;

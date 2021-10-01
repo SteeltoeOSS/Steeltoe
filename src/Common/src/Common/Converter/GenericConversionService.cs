@@ -13,9 +13,9 @@ namespace Steeltoe.Common.Converter
     {
         private static readonly IGenericConverter NO_OP_CONVERTER = new NoOpConverter("NO_OP");
         private static readonly IGenericConverter NO_MATCH = new NoOpConverter("NO_MATCH");
-        private readonly Converters _converters = new Converters();
+        private readonly Converters _converters = new ();
 
-        private readonly ConcurrentDictionary<ConverterCacheKey, IGenericConverter> _converterCache = new ConcurrentDictionary<ConverterCacheKey, IGenericConverter>();
+        private readonly ConcurrentDictionary<ConverterCacheKey, IGenericConverter> _converterCache = new ();
 
         public bool CanConvert(Type sourceType, Type targetType)
         {
@@ -255,7 +255,7 @@ namespace Steeltoe.Common.Converter
 
         private class ConvertersForPair
         {
-            private readonly LinkedList<IGenericConverter> _converters = new LinkedList<IGenericConverter>();
+            private readonly LinkedList<IGenericConverter> _converters = new ();
 
             public void Add(IGenericConverter converter)
             {
@@ -286,7 +286,7 @@ namespace Steeltoe.Common.Converter
         {
             private readonly ISet<IGenericConverter> _globalConverters = new HashSet<IGenericConverter>();
 
-            private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new Dictionary<(Type Source, Type Target), ConvertersForPair>();
+            private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new ();
 
             public void Add(IGenericConverter converter)
             {

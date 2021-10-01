@@ -16,8 +16,8 @@ namespace Steeltoe.Messaging.Support
     {
         public const int INDEFINITE_TIMEOUT = -1;
 
-        private object _lock = new object();
-        private List<IChannelInterceptor> _interceptors = new List<IChannelInterceptor>();
+        private object _lock = new ();
+        private List<IChannelInterceptor> _interceptors = new ();
 
         public AbstractMessageChannel(ILogger logger = null)
         {

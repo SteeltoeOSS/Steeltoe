@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Info
 {
     public class InfoBuilder : IInfoBuilder
     {
-        private readonly Dictionary<string, object> _info = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _info = new ();
 
         public Dictionary<string, object> Build()
         {

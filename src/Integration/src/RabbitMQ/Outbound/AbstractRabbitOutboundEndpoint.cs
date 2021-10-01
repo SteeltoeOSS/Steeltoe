@@ -28,7 +28,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 {
     public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
     {
-        private readonly object _lock = new object();
+        private readonly object _lock = new ();
         private readonly string _no_id = Guid.Empty.ToString();
         private readonly ILogger _logger;
 

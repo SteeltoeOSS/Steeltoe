@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
 {
     public class AttributeExceptionHandlerMethodResolverTest
     {
-        private AttributeExceptionHandlerMethodResolver resolver = new AttributeExceptionHandlerMethodResolver(typeof(ExceptionController));
+        private AttributeExceptionHandlerMethodResolver resolver = new(typeof(ExceptionController));
 
         [Fact]
         public void ResolveMethodFromAttribute()

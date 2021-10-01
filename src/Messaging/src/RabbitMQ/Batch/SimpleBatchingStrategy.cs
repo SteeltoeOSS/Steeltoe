@@ -17,8 +17,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
         private readonly int _batchSize;
         private readonly int _bufferLimit;
         private readonly long _timeout;
-        private readonly List<IMessage<byte[]>> _messages = new List<IMessage<byte[]>>();
-        private readonly List<MessageBatch> _empty = new List<MessageBatch>();
+        private readonly List<IMessage<byte[]>> _messages = new ();
+        private readonly List<MessageBatch> _empty = new ();
 
         private string _exchange;
         private string _routingKey;

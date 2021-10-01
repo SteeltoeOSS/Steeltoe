@@ -12,7 +12,7 @@ namespace Steeltoe.Common.LoadBalancer
 {
     public class RandomLoadBalancer : ILoadBalancer
     {
-        private static readonly Random _random = new Random();
+        private static readonly Random _random = new ();
         private readonly IServiceInstanceProvider _serviceInstanceProvider;
         private readonly IDistributedCache _distributedCache;
         private readonly DistributedCacheEntryOptions _cacheOptions;

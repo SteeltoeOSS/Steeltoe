@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class StandardEvaluationContext : IEvaluationContext
     {
-        private readonly ConcurrentDictionary<string, object> _variables = new ConcurrentDictionary<string, object>();
+        private readonly ConcurrentDictionary<string, object> _variables = new ();
 
         private ITypedValue _rootObject;
 

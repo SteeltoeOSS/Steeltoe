@@ -19,7 +19,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump
         private const int PdbHiddenLine = 0xFEEFEE;
         private readonly ILogger<ThreadDumper> _logger;
         private readonly IThreadDumpOptions _options;
-        private readonly Dictionary<PdbInfo, ISymUnmanagedReader> _pdbReaders = new Dictionary<PdbInfo, ISymUnmanagedReader>();
+        private readonly Dictionary<PdbInfo, ISymUnmanagedReader> _pdbReaders = new ();
 
         public ThreadDumper(IThreadDumpOptions options, ILogger<ThreadDumper> logger = null)
         {

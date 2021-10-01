@@ -15,8 +15,8 @@ namespace Steeltoe.Common.Expression.Internal.Contexts
         public static readonly string DEFAULT_EXPRESSION_PREFIX = "#{";
         public static readonly string DEFAULT_EXPRESSION_SUFFIX = "}";
 
-        private readonly ConcurrentDictionary<string, IExpression> _expressionCache = new ConcurrentDictionary<string, IExpression>();
-        private readonly ConcurrentDictionary<IServiceExpressionContext, IEvaluationContext> _evaluationCache = new ConcurrentDictionary<IServiceExpressionContext, IEvaluationContext>();
+        private readonly ConcurrentDictionary<string, IExpression> _expressionCache = new ();
+        private readonly ConcurrentDictionary<IServiceExpressionContext, IEvaluationContext> _evaluationCache = new ();
         private readonly IParserContext _serviceExpressionParserContext;
         private IExpressionParser _expressionParser;
         private string _expressionPrefix = DEFAULT_EXPRESSION_PREFIX;

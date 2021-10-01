@@ -171,7 +171,7 @@ namespace Steeltoe.Management.Endpoint
     /// </summary>
     public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
     {
-        private List<IEndpointConventionBuilder> _conventionBuilders = new List<IEndpointConventionBuilder>();
+        private List<IEndpointConventionBuilder> _conventionBuilders = new ();
 
         public void AddConventionBuilder(IEndpointConventionBuilder builder)
         {

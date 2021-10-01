@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources
         }
 
         private static readonly Lazy<HystrixMetricsEventSource> Instance
-            = new Lazy<HystrixMetricsEventSource>(() => new HystrixMetricsEventSource());
+            = new (() => new HystrixMetricsEventSource());
 
         private HystrixMetricsEventSource()
         {

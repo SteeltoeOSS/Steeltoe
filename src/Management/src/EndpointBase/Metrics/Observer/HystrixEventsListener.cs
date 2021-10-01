@@ -23,7 +23,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer
         };
 
         private readonly ILogger<EventSourceListener> _logger;
-        private readonly Dictionary<string, string> _cktBreakerLabels = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _cktBreakerLabels = new ();
 
         public HystrixEventsListener(IStats stats, ILogger<EventSourceListener> logger = null)
             : base(stats, logger)

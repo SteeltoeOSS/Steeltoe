@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
         internal readonly int _bucketSizeInMillseconds;
 
         internal readonly BucketCircularArray _buckets;
-        internal readonly CumulativeSum _cumulativeSum = new CumulativeSum();
+        internal readonly CumulativeSum _cumulativeSum = new ();
 
         private static readonly ITime Actual_time = new ActualTime();
         private readonly ITime _time;
@@ -152,7 +152,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
             }
         }
 
-        private readonly object _newBucketLock = new object();
+        private readonly object _newBucketLock = new ();
 
         /* package for testing */
         internal Bucket GetCurrentBucket()

@@ -168,11 +168,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
             sb.Append(GetChild(0).ToStringAST());
             for (var i = 1; i < ChildCount; i++)
             {
-                sb.Append(' ').Append(OperatorName).Append(' ');
+                sb.Append(" ").Append(OperatorName).Append(" ");
                 sb.Append(GetChild(i).ToStringAST());
             }
 
-            sb.Append(')');
+            sb.Append(")");
             return sb.ToString();
         }
 
@@ -341,8 +341,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         protected class DescriptorComparison
         {
-            protected static readonly DescriptorComparison NOT_NUMBERS = new DescriptorComparison(false, false, TypeDescriptor.V);
-            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new DescriptorComparison(true, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison NOT_NUMBERS = new(false, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new(true, false, TypeDescriptor.V);
 
             protected readonly bool _areNumbers;  // Were the two compared descriptor both for numbers?
 

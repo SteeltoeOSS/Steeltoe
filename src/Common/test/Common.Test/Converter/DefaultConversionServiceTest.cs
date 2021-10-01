@@ -23,7 +23,7 @@ namespace Steeltoe.Common.Converter.Test
         }
 
         // Static so only one is created for this battery of tests.. ensures internal cache is filled by all of the tests
-        private static readonly DefaultConversionService ConversionService = new DefaultConversionService();
+        private static readonly DefaultConversionService ConversionService = new ();
 
         [Fact]
         public void TestStringToCharacter()

@@ -19,12 +19,12 @@ namespace Steeltoe.Common.Availability
         /// <summary>
         /// The application is ready to receive traffic.
         /// </summary>
-        public static readonly ReadinessState AcceptingTraffic = new ReadinessState("ACCEPTING_TRAFFIC");
+        public static readonly ReadinessState AcceptingTraffic = new("ACCEPTING_TRAFFIC");
 
         /// <summary>
         /// The application is not willing to receive traffic.
         /// </summary>
-        public static readonly ReadinessState RefusingTraffic = new ReadinessState("REFUSING_TRAFFIC");
+        public static readonly ReadinessState RefusingTraffic = new("REFUSING_TRAFFIC");
 
         public override string ToString() => _value;
     }

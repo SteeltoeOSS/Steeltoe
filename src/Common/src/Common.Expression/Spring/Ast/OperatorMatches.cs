@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 {
     public class OperatorMatches : Operator
     {
-        private readonly ConcurrentDictionary<string, Regex> _patternCache = new ConcurrentDictionary<string, Regex>();
+        private readonly ConcurrentDictionary<string, Regex> _patternCache = new ();
 
         public OperatorMatches(int startPos, int endPos, params SpelNode[] operands)
         : base("matches", startPos, endPos, operands)

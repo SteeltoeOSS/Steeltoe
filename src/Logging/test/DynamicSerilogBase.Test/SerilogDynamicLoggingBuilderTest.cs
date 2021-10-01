@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
 {
     public class SerilogDynamicLoggingBuilderTest
     {
-        private static readonly Dictionary<string, string> Appsettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> Appsettings = new ()
         {
             { "Serilog:MinimumLevel:Default", "Verbose" },
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },

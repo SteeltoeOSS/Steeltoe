@@ -32,7 +32,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 #pragma warning disable IDE1006 // Naming Styles
         private const string TEST_PREFIX = "bindertest.";
 #pragma warning restore IDE1006 // Naming Styles
-        private static readonly string _bigExceptionMessage = new string('x', 10_000);
+        private static readonly string _bigExceptionMessage = new('x', 10_000);
         private bool _disposed = false;
 
         private RabbitTestBinder _testBinder;

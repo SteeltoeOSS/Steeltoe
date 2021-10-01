@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Channel.Test
 {
     public class DispatchingChannelErrorHandlingTest
     {
-        private readonly CountdownEvent latch = new CountdownEvent(1);
+        private readonly CountdownEvent latch = new(1);
 
         private IServiceCollection services;
 

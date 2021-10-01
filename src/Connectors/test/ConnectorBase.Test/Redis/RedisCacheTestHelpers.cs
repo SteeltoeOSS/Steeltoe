@@ -64,8 +64,8 @@ namespace Steeltoe.Connector.Redis.Test
                 }]
             }";
 
-        public static Dictionary<string, string> SingleServerAsDictionary = new Dictionary<string, string>
-            {
+        public static Dictionary<string, string> SingleServerAsDictionary = new ()
+        {
                 { "services:p-redis:0:name", "myRedisService" },
                 { "services:p-redis:0:tags:0", "redis" },
                 { "services:p-redis:0:credentials:host", "192.168.0.103" },

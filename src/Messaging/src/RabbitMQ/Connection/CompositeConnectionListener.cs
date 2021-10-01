@@ -10,10 +10,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 {
     public class CompositeConnectionListener : IConnectionListener
     {
-        private readonly object _lock = new object();
+        private readonly object _lock = new ();
         private readonly ILogger _logger;
 
-        private List<IConnectionListener> _connectionListeners = new List<IConnectionListener>();
+        private List<IConnectionListener> _connectionListeners = new ();
 
         public CompositeConnectionListener(ILogger logger = null)
         {

@@ -26,7 +26,7 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChannel>
     {
         protected readonly IProvisioningProvider _provisioningProvider;
-        protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new EmbeddedHeadersChannelInterceptor();
+        protected readonly EmbeddedHeadersChannelInterceptor _embeddedHeadersChannelInterceptor = new ();
         protected readonly string[] _headersToEmbed;
         protected bool _producerBindingExist;
         private readonly ILogger _logger;

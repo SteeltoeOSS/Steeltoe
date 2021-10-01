@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
 
         private readonly ILogger _logger;
-        private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ConcurrentDictionary<string, IMessageListenerContainer>();
+        private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
         private bool _isDisposed;
 
         public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)

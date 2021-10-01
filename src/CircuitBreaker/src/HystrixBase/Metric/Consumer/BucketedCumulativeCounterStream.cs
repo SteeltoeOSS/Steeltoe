@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     public abstract class BucketedCumulativeCounterStream<Event, Bucket, Output> : BucketedCounterStream<Event, Bucket, Output>
         where Event : IHystrixEvent
     {
-        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new AtomicBoolean(false);
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new(false);
         private readonly BehaviorSubject<Output> _counterSubject;
         private readonly IObservable<Output> _sourceStream;
 

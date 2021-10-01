@@ -38,11 +38,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
     {
         public const string DEFAULT_SERVICE_NAME = "rabbitTemplate";
 
-        internal readonly object _lock = new object();
-        internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ConcurrentDictionary<RC.IModel, RabbitTemplate>();
-        internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ConcurrentDictionary<string, PendingReply>();
-        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer>();
-        internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new AsyncLocal<RC.IModel>();
+        internal readonly object _lock = new ();
+        internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> _publisherConfirmChannels = new ();
+        internal readonly ConcurrentDictionary<string, PendingReply> _replyHolder = new ();
+        internal readonly Dictionary<Connection.IConnectionFactory, DirectReplyToMessageListenerContainer> _directReplyToContainers = new ();
+        internal readonly AsyncLocal<RC.IModel> _dedicatedChannels = new ();
         internal readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
         internal bool _evaluatedFastReplyTo;
         internal bool _usingFastReplyTo;
@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private const int DEFAULT_REPLY_TIMEOUT = 5000;
         private const int DEFAULT_CONSUME_TIMEOUT = 10000;
 
-        private static readonly SpelExpressionParser _parser = new SpelExpressionParser();
+        private static readonly SpelExpressionParser _parser = new ();
 
         private RabbitOptions _options;
         private int _activeTemplateCallbacks;
@@ -2623,7 +2623,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         #region Nested Types
         protected internal class PendingReply
         {
-            private readonly TaskCompletionSource<IMessage> _future = new TaskCompletionSource<IMessage>();
+            private readonly TaskCompletionSource<IMessage> _future = new ();
 
             public virtual string SavedReplyTo { get; set; }
 

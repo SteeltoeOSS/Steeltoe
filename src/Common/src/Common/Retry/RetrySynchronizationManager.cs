@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Retry
 {
     public static class RetrySynchronizationManager
     {
-        private static AsyncLocal<IRetryContext> _context = new AsyncLocal<IRetryContext>();
+        private static AsyncLocal<IRetryContext> _context = new ();
 
         public static IRetryContext GetContext()
         {

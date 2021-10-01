@@ -2107,8 +2107,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestCollapserTimer : ICollapserTimer
         {
-            public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ConcurrentDictionary<ATask, ATask>();
-            private readonly object _lock = new object();
+            public readonly ConcurrentDictionary<ATask, ATask> Tasks = new ();
+            private readonly object _lock = new ();
             private readonly ITestOutputHelper output;
 
             public TestCollapserTimer(ITestOutputHelper output)
@@ -2171,7 +2171,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             public volatile int Time = 0;
             public volatile int ExecutionCount = 0;
             private readonly int delay = 10;
-            private readonly object _lock = new object();
+            private readonly object _lock = new ();
             private readonly ITestOutputHelper output;
 
             public ATask(ITestOutputHelper output, TestTimerListener task)
@@ -2225,7 +2225,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         private class TestTimerListener : ITimerListener
         {
             public readonly ITimerListener ActualListener;
-            public readonly AtomicInteger Count = new AtomicInteger();
+            public readonly AtomicInteger Count = new ();
 
             public TestTimerListener(ITimerListener actual)
             {
@@ -2456,7 +2456,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestSubscriber<T> : ObserverBase<T>, IDisposable
         {
-            private readonly CountdownEvent latch = new CountdownEvent(1);
+            private readonly CountdownEvent latch = new(1);
             private readonly ITestOutputHelper output;
             private int completions = 0;
 

@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
 {
     public class CollapsedRequest<RequestResponseType, RequestArgumentType> : ICollapsedRequest<RequestResponseType, RequestArgumentType>
     {
-        private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new ConcurrentQueue<CancellationToken>();
+        private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new ();
         private RequestResponseType _response;
         private Exception _exception;
         private bool _complete;

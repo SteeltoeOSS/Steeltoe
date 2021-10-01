@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public HystrixCommandMetrics Metrics;
         public SemaphoreSlim FallbackSemaphore = null;
         public SemaphoreSlim ExecutionSemaphore = null;
-        public TestableExecutionHook ExecutionHook = new TestableExecutionHook();
+        public TestableExecutionHook ExecutionHook = new ();
 
         public TestCommandBuilder(ExecutionIsolationStrategy isolationStrategy)
         {

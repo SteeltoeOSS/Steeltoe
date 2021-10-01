@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Consul.Discovery
     /// </summary>
     public class TtlScheduler : IScheduler
     {
-        internal readonly ConcurrentDictionary<string, Timer> _serviceHeartbeats = new ConcurrentDictionary<string, Timer>(StringComparer.OrdinalIgnoreCase);
+        internal readonly ConcurrentDictionary<string, Timer> _serviceHeartbeats = new(StringComparer.OrdinalIgnoreCase);
 
         internal readonly IConsulClient _client;
 

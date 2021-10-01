@@ -14,9 +14,9 @@ namespace Steeltoe.Messaging.Converter
         public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = MessageHeaders.CONTENT_TYPE_ID;
         public const string DEFAULT_KEY_CLASSID_FIELD_NAME = MessageHeaders.KEY_TYPE_ID;
 
-        private readonly Dictionary<string, Type> _idClassMapping = new Dictionary<string, Type>();
+        private readonly Dictionary<string, Type> _idClassMapping = new ();
 
-        private readonly Dictionary<Type, string> _classIdMapping = new Dictionary<Type, string>();
+        private readonly Dictionary<Type, string> _classIdMapping = new ();
 
         public Dictionary<string, Type> IdClassMapping => _idClassMapping;
 

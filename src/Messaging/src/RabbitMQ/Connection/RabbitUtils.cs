@@ -30,7 +30,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
         public const ushort ConnectionClose_ClassId = 10;
         public const ushort ConnectionClose_MethodId = 50;
 
-        private static readonly AsyncLocal<bool?> _physicalCloseRequired = new AsyncLocal<bool?>();
+        private static readonly AsyncLocal<bool?> _physicalCloseRequired = new ();
 
         public static void CloseConnection(IConnection connection, ILogger logger = null)
         {

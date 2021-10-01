@@ -13,8 +13,8 @@ namespace Steeltoe.Discovery.Consul.Test
 {
     public class ConsulDiscoveryClientBuilderExtensionsTest
     {
-        private Dictionary<string, string> appsettings = new Dictionary<string, string>
-            {
+        private Dictionary<string, string> appsettings = new ()
+        {
                 { "spring:application:name", "myName" },
                 { "spring:cloud:inet:defaulthostname", "fromtest" },
                 { "spring:cloud:inet:skipReverseDnsLookup", "true" },

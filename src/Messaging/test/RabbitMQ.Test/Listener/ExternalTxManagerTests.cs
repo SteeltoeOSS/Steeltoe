@@ -128,7 +128,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             private volatile bool _committed;
             private volatile bool _rolledBack;
-            private volatile CountdownEvent _latch = new CountdownEvent(1);
+            private volatile CountdownEvent _latch = new(1);
 
             public bool Committed => _committed;
 

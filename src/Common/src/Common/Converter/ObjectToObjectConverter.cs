@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Converter
 {
     public class ObjectToObjectConverter : AbstractGenericConditionalConverter
     {
-        private static readonly ConcurrentDictionary<Type, MemberInfo> _conversionMemberCache = new ConcurrentDictionary<Type, MemberInfo>();
+        private static readonly ConcurrentDictionary<Type, MemberInfo> _conversionMemberCache = new ();
 
         public ObjectToObjectConverter()
             : base(GetConvertiblePairs())

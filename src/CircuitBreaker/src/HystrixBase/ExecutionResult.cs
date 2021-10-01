@@ -12,8 +12,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     {
         private static readonly IList<HystrixEventType> ALL_EVENT_TYPES = HystrixEventTypeHelper.Values;
         private static readonly int NUM_EVENT_TYPES = ALL_EVENT_TYPES.Count;
-        private static readonly BitArray EXCEPTION_PRODUCING_EVENTS = new BitArray(NUM_EVENT_TYPES);
-        private static readonly BitArray TERMINAL_EVENTS = new BitArray(NUM_EVENT_TYPES);
+        private static readonly BitArray EXCEPTION_PRODUCING_EVENTS = new(NUM_EVENT_TYPES);
+        private static readonly BitArray TERMINAL_EVENTS = new(NUM_EVENT_TYPES);
 
         static ExecutionResult()
         {

@@ -14,9 +14,9 @@ namespace Steeltoe.Stream.Binder
     public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
         where C : AbstractBinder<IMessageChannel>
     {
-        protected HashSet<string> _queues = new HashSet<string>();
+        protected HashSet<string> _queues = new ();
 
-        protected HashSet<string> _exchanges = new HashSet<string>();
+        protected HashSet<string> _exchanges = new ();
 
         private C _binder;
 

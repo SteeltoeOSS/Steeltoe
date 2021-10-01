@@ -68,7 +68,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
         {
             private readonly Type objectClass;
 
-            private readonly List<IPredicate<MethodInfo>> filters = new List<IPredicate<MethodInfo>>();
+            private readonly List<IPredicate<MethodInfo>> filters = new ();
 
             public Builder()
             {
@@ -279,7 +279,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         internal class ArgResolver
         {
-            private readonly List<IPredicate<ParameterInfo>> filters = new List<IPredicate<ParameterInfo>>();
+            private readonly List<IPredicate<ParameterInfo>> filters = new ();
 
             private readonly ResolvableMethod resolvable;
 

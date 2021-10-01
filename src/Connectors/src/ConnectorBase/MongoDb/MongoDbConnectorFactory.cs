@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.MongoDb
     {
         private readonly MongoDbServiceInfo _info;
         private readonly MongoDbConnectorOptions _config;
-        private readonly MongoDbProviderConfigurer _configurer = new MongoDbProviderConfigurer();
+        private readonly MongoDbProviderConfigurer _configurer = new ();
 
         public MongoDbConnectorFactory()
         {

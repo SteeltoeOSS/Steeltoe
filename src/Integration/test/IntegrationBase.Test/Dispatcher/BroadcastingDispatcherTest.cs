@@ -20,13 +20,13 @@ namespace Steeltoe.Integration.Dispatcher.Test
 {
     public class BroadcastingDispatcherTest
     {
-        private readonly Mock<IMessage> messageMock = new Mock<IMessage>();
+        private readonly Mock<IMessage> messageMock = new ();
 
-        private readonly Mock<IMessageHandler> targetMock1 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> targetMock1 = new ();
 
-        private readonly Mock<IMessageHandler> targetMock2 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> targetMock2 = new ();
 
-        private readonly Mock<IMessageHandler> targetMock3 = new Mock<IMessageHandler>();
+        private readonly Mock<IMessageHandler> targetMock3 = new ();
 
         private readonly IServiceProvider provider;
 

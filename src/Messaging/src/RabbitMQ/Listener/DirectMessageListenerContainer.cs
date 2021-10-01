@@ -27,12 +27,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
-        internal CountdownEvent _startedLatch = new CountdownEvent(1);
+        internal CountdownEvent _startedLatch = new(1);
 
-        protected internal readonly List<SimpleConsumer> _consumers = new List<SimpleConsumer>();
-        protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new Dictionary<string, List<SimpleConsumer>>();
-        protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ActiveObjectCounter<SimpleConsumer>();
-        protected internal readonly List<SimpleConsumer> _consumersToRestart = new List<SimpleConsumer>();
+        protected internal readonly List<SimpleConsumer> _consumers = new ();
+        protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new ();
+        protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ();
+        protected internal readonly List<SimpleConsumer> _consumersToRestart = new ();
         protected const int START_WAIT_TIME = 60;
         protected const int DEFAULT_MONITOR_INTERVAL = 10_000;
         protected const int DEFAULT_ACK_TIMEOUT = 20_000;
@@ -891,7 +891,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             private readonly Connection.IConnection _connection;
             private readonly RC.IModel _targetChannel;
             private readonly ILogger _logger;
-            private readonly object _lock = new object();
+            private readonly object _lock = new ();
 
             public SimpleConsumer(DirectMessageListenerContainer container, Connection.IConnection connection, RC.IModel channel, string queue, ILogger logger = null)
                 : base(channel)

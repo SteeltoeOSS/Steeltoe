@@ -17,9 +17,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
     public class RollingDistributionStream<Event> : RollingDistributionStreamBase
         where Event : IHystrixEvent
     {
-        private readonly BehaviorSubject<CachedValuesHistogram> _rollingDistribution = new BehaviorSubject<CachedValuesHistogram>(CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
+        private readonly BehaviorSubject<CachedValuesHistogram> _rollingDistribution = new(CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
         private readonly IObservable<CachedValuesHistogram> _rollingDistributionStream;
-        private readonly AtomicReference<IDisposable> _rollingDistributionSubscription = new AtomicReference<IDisposable>(null);
+        private readonly AtomicReference<IDisposable> _rollingDistributionSubscription = new(null);
 
         protected RollingDistributionStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<LongHistogram, Event, LongHistogram> addValuesToBucket)
         {

@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Util
 {
     public abstract class AbstractAttributeAccessor : IAttributeAccessor
     {
-        private readonly Dictionary<string, object> _attributes = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _attributes = new ();
 
         public virtual void SetAttribute(string name, object value)
         {

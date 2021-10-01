@@ -57,7 +57,7 @@ namespace Steeltoe.Stream.Binding
 
         private class TestBindable : IBindable
         {
-            private readonly List<IBinding> _bindings = new List<IBinding>();
+            private readonly List<IBinding> _bindings = new ();
 
             public TestBindable(params Mock<IBinding>[] bindings)
             {

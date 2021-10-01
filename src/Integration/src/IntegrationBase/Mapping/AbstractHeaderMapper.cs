@@ -16,7 +16,7 @@ namespace Steeltoe.Integration.Mapping
         public const string STANDARD_REPLY_HEADER_NAME_PATTERN = "STANDARD_REPLY_HEADERS";
         public const string NON_STANDARD_HEADER_NAME_PATTERN = "NON_STANDARD_HEADERS";
 
-        private readonly List<string> _transient_header_names = new List<string>() { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
+        private readonly List<string> _transient_header_names = new () { MessageHeaders.ID, MessageHeaders.TIMESTAMP };
 
         private readonly ILogger _logger;
 

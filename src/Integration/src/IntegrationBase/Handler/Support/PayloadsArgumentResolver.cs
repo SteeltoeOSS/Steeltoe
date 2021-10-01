@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Handler.Support
 {
     public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
     {
-        private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new Dictionary<ParameterInfo, IExpression>();
+        private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new ();
 
         public PayloadsArgumentResolver(IApplicationContext context)
             : base(context)

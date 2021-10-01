@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.Core
 {
     public class CachingDestinationResolverProxy<D> : IDestinationResolver<D>
     {
-        private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ConcurrentDictionary<string, D>();
+        private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ();
 
         private IDestinationResolver<D> _targetDestinationResolver;
 

@@ -12,9 +12,9 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public abstract class AbstractExceptionHandlerMethodResolver
     {
-        private readonly Dictionary<Type, MethodInfo> _mappedMethods = new Dictionary<Type, MethodInfo>();
+        private readonly Dictionary<Type, MethodInfo> _mappedMethods = new ();
 
-        private readonly ConcurrentDictionary<Type, MethodInfo> _exceptionLookupCache = new ConcurrentDictionary<Type, MethodInfo>();
+        private readonly ConcurrentDictionary<Type, MethodInfo> _exceptionLookupCache = new ();
 
         protected AbstractExceptionHandlerMethodResolver(IDictionary<Type, MethodInfo> mappedMethods)
         {

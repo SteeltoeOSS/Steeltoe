@@ -14,8 +14,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectReplyToMessageListenerContainer : DirectMessageListenerContainer
     {
-        internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> _inUseConsumerChannels = new ConcurrentDictionary<RC.IModel, SimpleConsumer>();
-        internal readonly ConcurrentDictionary<SimpleConsumer, long> _whenUsed = new ConcurrentDictionary<SimpleConsumer, long>();
+        internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> _inUseConsumerChannels = new ();
+        internal readonly ConcurrentDictionary<SimpleConsumer, long> _whenUsed = new ();
         private const int DEFAULT_IDLE = 60000;
         private int _consumerCount;
 

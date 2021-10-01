@@ -21,7 +21,7 @@ namespace Steeltoe.Integration.Handler
 
         private IMessageChannel _outputChannel;
 
-        private List<string> _notPropagatedHeaders = new List<string>();
+        private List<string> _notPropagatedHeaders = new ();
 
         private bool _noHeadersPropagation = false;
 

@@ -25,7 +25,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
     {
         private static IApplicationContext _applicationContext;
         private readonly RabbitAdmin _rabbitAdmin;
-        private readonly HashSet<string> _prefixes = new HashSet<string>();
+        private readonly HashSet<string> _prefixes = new ();
 
         public RabbitBindingsOptions BindingsOptions { get; }
 

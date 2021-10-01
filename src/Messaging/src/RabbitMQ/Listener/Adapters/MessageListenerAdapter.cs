@@ -19,7 +19,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
     public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
         public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
-        private readonly Dictionary<string, string> _queueOrTagToMethodName = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
 
         public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
 

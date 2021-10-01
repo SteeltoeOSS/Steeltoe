@@ -40,7 +40,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test
 
         private static readonly IHystrixCommandKey CommandKey = HystrixCommandKeyDefault.AsKey("COMMAND");
         private static readonly IHystrixThreadPoolKey ThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey("ThreadPool");
-        private readonly HystrixCommandCompletionStream commandStream = new HystrixCommandCompletionStream(CommandKey);
+        private readonly HystrixCommandCompletionStream commandStream = new(CommandKey);
         private readonly ITestOutputHelper output;
 
         public HystrixCommandCompletionStreamTest(ITestOutputHelper output)

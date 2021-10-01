@@ -6,9 +6,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
 {
     public class BooleanTypedValue : TypedValue
     {
-        public static readonly BooleanTypedValue TRUE = new BooleanTypedValue(true);
+        public static readonly BooleanTypedValue TRUE = new(true);
 
-        public static readonly BooleanTypedValue FALSE = new BooleanTypedValue(false);
+        public static readonly BooleanTypedValue FALSE = new(false);
 
         private BooleanTypedValue(bool b)
             : base(b)

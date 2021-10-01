@@ -13,7 +13,7 @@ namespace Steeltoe.Connector.Redis
     {
         private readonly RedisServiceInfo _info;
         private readonly RedisCacheConnectorOptions _config;
-        private readonly RedisCacheConfigurer _configurer = new RedisCacheConfigurer();
+        private readonly RedisCacheConfigurer _configurer = new ();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RedisServiceConnectorFactory"/> class.

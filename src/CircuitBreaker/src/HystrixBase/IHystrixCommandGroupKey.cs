@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
     // public class HystrixCommandGroupKeyDefault : HystrixKeyDefault<HystrixCommandGroupKeyDefault>, IHystrixCommandGroupKey
     public class HystrixCommandGroupKeyDefault : HystrixKeyDefault, IHystrixCommandGroupKey
     {
-        private static readonly ConcurrentDictionary<string, HystrixCommandGroupKeyDefault> Intern = new ConcurrentDictionary<string, HystrixCommandGroupKeyDefault>();
+        private static readonly ConcurrentDictionary<string, HystrixCommandGroupKeyDefault> Intern = new ();
 
         internal HystrixCommandGroupKeyDefault(string name)
             : base(name)

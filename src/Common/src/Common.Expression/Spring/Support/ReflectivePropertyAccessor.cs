@@ -14,9 +14,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
     public class ReflectivePropertyAccessor : IPropertyAccessor
     {
         private readonly bool _allowWrite;
-        private readonly ConcurrentDictionary<PropertyCacheKey, InvokerPair> _readerCache = new ConcurrentDictionary<PropertyCacheKey, InvokerPair>();
-        private readonly ConcurrentDictionary<PropertyCacheKey, MemberInfo> _writerCache = new ConcurrentDictionary<PropertyCacheKey, MemberInfo>();
-        private readonly ConcurrentDictionary<PropertyCacheKey, Type> _typeDescriptorCache = new ConcurrentDictionary<PropertyCacheKey, Type>();
+        private readonly ConcurrentDictionary<PropertyCacheKey, InvokerPair> _readerCache = new ();
+        private readonly ConcurrentDictionary<PropertyCacheKey, MemberInfo> _writerCache = new ();
+        private readonly ConcurrentDictionary<PropertyCacheKey, Type> _typeDescriptorCache = new ();
 
         public ReflectivePropertyAccessor()
         {

@@ -179,8 +179,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             public AcknowledgeMode ContainerAckMode { get; set; }
 
-            public ConcurrentQueue<string> Queue = new ConcurrentQueue<string>();
-            public CountdownEvent Latch = new CountdownEvent(1);
+            public ConcurrentQueue<string> Queue = new ();
+            public CountdownEvent Latch = new(1);
 
             public string HandleMessage(string input)
             {

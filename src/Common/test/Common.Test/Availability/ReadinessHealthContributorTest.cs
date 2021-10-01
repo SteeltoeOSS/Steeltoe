@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Availability.Test
 {
     public class ReadinessHealthContributorTest
     {
-        private readonly ApplicationAvailability availability = new ApplicationAvailability();
+        private readonly ApplicationAvailability availability = new ();
 
         [Fact]
         public void HandlesUnknown()

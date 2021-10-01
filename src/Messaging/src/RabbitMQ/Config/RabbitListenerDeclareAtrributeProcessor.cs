@@ -15,8 +15,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public static class RabbitListenerDeclareAtrributeProcessor
     {
-        private static readonly Dictionary<string, Queue> _queueDeclss = new Dictionary<string, Queue>();
-        private static readonly Dictionary<string, QueueBinding> _bindingDecls = new Dictionary<string, QueueBinding>();
+        private static readonly Dictionary<string, Queue> _queueDeclss = new ();
+        private static readonly Dictionary<string, QueueBinding> _bindingDecls = new ();
 
         internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
         {

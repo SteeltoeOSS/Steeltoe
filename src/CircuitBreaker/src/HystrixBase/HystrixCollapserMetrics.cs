@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public class HystrixCollapserMetrics : HystrixMetrics
     {
-        private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ConcurrentDictionary<string, HystrixCollapserMetrics>();
+        private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ();
 
         public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
         {

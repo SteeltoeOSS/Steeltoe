@@ -9,8 +9,8 @@ namespace Steeltoe.Messaging.Support
 {
     public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
     {
-        internal HashSet<IMessageHandler> _handlers = new HashSet<IMessageHandler>();
-        private object _lock = new object();
+        internal HashSet<IMessageHandler> _handlers = new ();
+        private object _lock = new ();
 
         public AbstractSubscribableChannel(ILogger logger = null)
             : base(logger)

@@ -221,7 +221,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
         private class VariableScope
         {
-            private readonly Dictionary<string, object> _vars = new Dictionary<string, object>();
+            private readonly Dictionary<string, object> _vars = new ();
 
             public VariableScope()
             {

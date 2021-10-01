@@ -9,7 +9,7 @@ namespace Steeltoe.Connector.Services
 {
     public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
     {
-        public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new Tags("hystrix-amqp");
+        public static readonly Tags HYSTRIX_RABBIT_SERVICE_TAGS = new("hystrix-amqp");
 
         private static readonly string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 

@@ -16,13 +16,13 @@ namespace Steeltoe.Management.Endpoint.Trace
 {
     public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     {
-        internal ConcurrentQueue<TraceResult> _queue = new ConcurrentQueue<TraceResult>();
+        internal ConcurrentQueue<TraceResult> _queue = new ();
 
         private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
         private const string OBSERVER_NAME = "TraceDiagnosticObserver";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-        private static readonly DateTime BaseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly ILogger<TraceDiagnosticObserver> _logger;
         private readonly ITraceOptions _options;
 

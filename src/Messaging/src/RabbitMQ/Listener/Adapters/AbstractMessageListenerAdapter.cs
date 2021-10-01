@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
 
         private const string DEFAULT_ENCODING = "UTF-8";
 
-        private static readonly SpelExpressionParser PARSER = new SpelExpressionParser();
+        private static readonly SpelExpressionParser PARSER = new ();
         private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
 
         protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)

@@ -12,8 +12,8 @@ namespace Steeltoe.Messaging.Converter
 {
     public class DefaultTypeMapperTest
     {
-        private readonly DefaultTypeMapper typeMapper = new DefaultTypeMapper();
-        private readonly MessageHeaders headers = new MessageHeaders();
+        private readonly DefaultTypeMapper typeMapper = new ();
+        private readonly MessageHeaders headers = new ();
 
         [Fact]
         public void GetAnObjectWhenClassIdNotPresent()

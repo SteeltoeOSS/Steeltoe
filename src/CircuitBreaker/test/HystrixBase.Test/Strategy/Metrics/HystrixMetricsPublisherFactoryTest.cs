@@ -118,8 +118,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class TestHystrixMetricsPublisher : HystrixMetricsPublisher
         {
-            public AtomicInteger CommandCounter = new AtomicInteger();
-            public AtomicInteger ThreadCounter = new AtomicInteger();
+            public AtomicInteger CommandCounter = new ();
+            public AtomicInteger ThreadCounter = new ();
 
             public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
             {
@@ -134,8 +134,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class TestCommandKey : HystrixCommandKeyDefault
         {
-            public static TestCommandKey TEST_A = new TestCommandKey("TEST_A");
-            public static TestCommandKey TEST_B = new TestCommandKey("TEST_B");
+            public static TestCommandKey TEST_A = new("TEST_A");
+            public static TestCommandKey TEST_B = new("TEST_B");
 
             public TestCommandKey(string name)
                 : base(name)
@@ -145,8 +145,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class TestThreadPoolKey : HystrixThreadPoolKeyDefault
         {
-            public static TestThreadPoolKey TEST_A = new TestThreadPoolKey("TEST_A");
-            public static TestThreadPoolKey TEST_B = new TestThreadPoolKey("TEST_B");
+            public static TestThreadPoolKey TEST_A = new("TEST_A");
+            public static TestThreadPoolKey TEST_B = new("TEST_B");
 
             public TestThreadPoolKey(string name)
                 : base(name)

@@ -11,7 +11,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
 {
     public class RollingCollapserBatchSizeDistributionStream : RollingDistributionStream<HystrixCollapserEvent>
     {
-        private static readonly ConcurrentDictionary<string, RollingCollapserBatchSizeDistributionStream> Streams = new ConcurrentDictionary<string, RollingCollapserBatchSizeDistributionStream>();
+        private static readonly ConcurrentDictionary<string, RollingCollapserBatchSizeDistributionStream> Streams = new ();
 
         private static Func<LongHistogram, HystrixCollapserEvent, LongHistogram> AddValuesToBucket { get; } = (initialDistribution, @event) =>
         {

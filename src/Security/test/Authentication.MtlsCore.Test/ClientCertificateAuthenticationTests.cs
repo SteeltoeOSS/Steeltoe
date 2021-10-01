@@ -609,7 +609,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             return server;
         }
 
-        private readonly CertificateAuthenticationEvents successfulValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents successfulValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {
@@ -625,7 +625,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             }
         };
 
-        private readonly CertificateAuthenticationEvents failedValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents failedValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {
@@ -634,7 +634,7 @@ namespace Steeltoe.Security.Authentication.MtlsCore.Test
             }
         };
 
-        private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new CertificateAuthenticationEvents()
+        private readonly CertificateAuthenticationEvents unprocessedValidationEvents = new ()
         {
             OnCertificateValidated = context =>
             {

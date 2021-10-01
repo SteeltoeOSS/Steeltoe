@@ -26,7 +26,7 @@ namespace Steeltoe.Common.Diagnostics
 
         private const int POLL_DELAY_MILLI = 15000;
 
-        private static readonly Lazy<DiagnosticsManager> AsSingleton = new Lazy<DiagnosticsManager>(() => new DiagnosticsManager());
+        private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
 
         public static DiagnosticsManager Instance => AsSingleton.Value;
 

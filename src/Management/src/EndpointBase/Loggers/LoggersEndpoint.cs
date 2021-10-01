@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Loggers
 {
     public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
     {
-        private static readonly List<string> Levels = new List<string>()
+        private static readonly List<string> Levels = new ()
         {
             LoggerLevels.MapLogLevel(LogLevel.None),
             LoggerLevels.MapLogLevel(LogLevel.Critical),

@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test
 
         private readonly object value;
 
-        private readonly List<ParameterInfo> resolvedParameters = new List<ParameterInfo>();
+        private readonly List<ParameterInfo> resolvedParameters = new ();
 
         public StubArgumentResolver(object value)
         : this(value.GetType(), value)

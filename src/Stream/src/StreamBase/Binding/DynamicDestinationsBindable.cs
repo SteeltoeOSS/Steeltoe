@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Binding
 {
     public class DynamicDestinationsBindable : AbstractBindable
     {
-        private readonly ConcurrentDictionary<string, IBinding> _outputBindings = new ConcurrentDictionary<string, IBinding>();
+        private readonly ConcurrentDictionary<string, IBinding> _outputBindings = new ();
 
         public DynamicDestinationsBindable()
             : base()

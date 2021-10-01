@@ -16,7 +16,7 @@ namespace Steeltoe.Extensions.Logging.Test
 {
     public class DynamicLoggingBuilderTest
     {
-        private static readonly Dictionary<string, string> Appsettings = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> Appsettings = new ()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:Console:LogLevel:Default"] = "Information",

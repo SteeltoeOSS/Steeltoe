@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public class LongAdder
     {
-        private readonly AtomicLong _value = new AtomicLong(0);
+        private readonly AtomicLong _value = new(0);
 
         public void Increment()
         {

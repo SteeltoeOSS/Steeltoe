@@ -36,9 +36,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public const bool DEFAULT_DEBATCHING_ENABLED = true;
         public const int DEFAULT_PREFETCH_COUNT = 250;
 
-        protected readonly object _consumersMonitor = new object();
-        protected readonly object _lock = new object();
-        protected readonly object _lifecycleMonitor = new object();
+        protected readonly object _consumersMonitor = new ();
+        protected readonly object _lock = new ();
+        protected readonly object _lifecycleMonitor = new ();
         protected readonly ILogger _logger;
         protected readonly ILoggerFactory _loggerFactory;
 

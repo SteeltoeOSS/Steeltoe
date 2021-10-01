@@ -9,7 +9,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
 {
     public class HystrixMetricsPublisherFactory
     {
-        private static HystrixMetricsPublisherFactory singleton = new HystrixMetricsPublisherFactory();
+        private static HystrixMetricsPublisherFactory singleton = new ();
 
         public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
         {

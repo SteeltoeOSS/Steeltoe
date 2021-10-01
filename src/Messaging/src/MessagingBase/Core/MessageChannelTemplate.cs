@@ -393,7 +393,7 @@ namespace Steeltoe.Messaging.Core
 
         private class TemporaryReplyChannel : IPollableChannel
         {
-            private readonly CountdownEvent _replyLatch = new CountdownEvent(1);
+            private readonly CountdownEvent _replyLatch = new(1);
 
             private readonly bool _throwExceptionOnLateReply;
 

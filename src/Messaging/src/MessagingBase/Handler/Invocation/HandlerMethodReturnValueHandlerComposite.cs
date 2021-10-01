@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.Handler.Invocation
 {
     public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
     {
-        private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new List<IHandlerMethodReturnValueHandler>();
+        private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new ();
 
         public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
         {

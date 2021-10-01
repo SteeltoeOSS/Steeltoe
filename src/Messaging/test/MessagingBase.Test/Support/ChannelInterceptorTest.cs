@@ -265,7 +265,7 @@ namespace Steeltoe.Messaging.Support.Test
 
         internal class TestMessageHandler : IMessageHandler
         {
-            private readonly List<IMessage> messages = new List<IMessage>();
+            private readonly List<IMessage> messages = new ();
 
             public List<IMessage> Messages
             {

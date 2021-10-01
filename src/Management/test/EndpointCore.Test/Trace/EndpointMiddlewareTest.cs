@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
 {
     public class EndpointMiddlewareTest : BaseTest
     {
-        private static readonly Dictionary<string, string> APP_SETTINGS = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> APP_SETTINGS = new ()
         {
             ["Logging:IncludeScopes"] = "false",
             ["Logging:LogLevel:Default"] = "Warning",

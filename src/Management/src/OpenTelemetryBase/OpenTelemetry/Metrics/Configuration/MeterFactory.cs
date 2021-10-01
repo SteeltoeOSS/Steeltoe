@@ -45,7 +45,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Configuration
             _defaultMeter = new MeterSdk(string.Empty, _metricProcessor);
         }
 
-        public static MeterFactory Create(MetricProcessor metricProcessor) => new MeterFactory(metricProcessor);
+        public static MeterFactory Create(MetricProcessor metricProcessor) => new(metricProcessor);
 
         public override Meter GetMeter(string name, string version = null)
         {
