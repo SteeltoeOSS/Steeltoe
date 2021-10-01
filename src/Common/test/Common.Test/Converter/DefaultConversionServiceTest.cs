@@ -363,7 +363,7 @@ namespace Steeltoe.Common.Converter.Test
         [Fact]
         public void ConvertEmptyArrayToString()
         {
-            var result = ConversionService.Convert<string>(new string[0]);
+            var result = ConversionService.Convert<string>(Array.Empty<string>());
             Assert.Equal(string.Empty, result);
         }
 
