@@ -6,6 +6,7 @@ using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Test;
 using Steeltoe.Messaging.Handler.Invocation.Test;
 using Steeltoe.Messaging.Support;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -32,7 +33,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
                 { "name", "value" }
             };
 
-            var message = MessageBuilder.WithPayload(new byte[0]).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
 
             var param = resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
             var result = resolver.ResolveArgument(param, message);
@@ -46,7 +47,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
         [Fact]
         public void ResolveArgumentNotFound()
         {
-            var message = MessageBuilder.WithPayload(new byte[0]).Build();
+            var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
             Assert.Throws<MessageHandlingException>(() => resolver.ResolveArgument(resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
         }
 

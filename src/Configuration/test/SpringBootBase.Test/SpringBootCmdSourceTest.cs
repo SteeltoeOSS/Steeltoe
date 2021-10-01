@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using Microsoft.Extensions.Logging;
+using System;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
@@ -15,7 +16,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         public void Constructors__InitializesDefaults()
         {
             var config = new ConfigurationBuilder()
-                            .AddCommandLine(new string[] { })
+                            .AddCommandLine(Array.Empty<string>())
                             .Build();
 
             var source = new SpringBootCmdSource(config);
@@ -27,7 +28,7 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         {
             // Arrange
             var config = new ConfigurationBuilder()
-                            .AddCommandLine(new string[] { })
+                            .AddCommandLine(Array.Empty<string>())
                             .Build();
 
             // Act and Assert
