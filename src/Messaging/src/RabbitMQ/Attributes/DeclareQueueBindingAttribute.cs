@@ -55,7 +55,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             }
         }
 
-        public string[] RoutingKeys { get; set; } = new string[0];
+        public string[] RoutingKeys { get; set; } = Array.Empty<string>();
 
         public string IgnoreDeclarationExceptions { get; set; } = "False";
 
@@ -79,6 +79,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             }
         }
 
-        public string[] Admins { get; set; } = new string[0];
+        public string[] Admins { get; set; } = Array.Empty<string>();
     }
 }

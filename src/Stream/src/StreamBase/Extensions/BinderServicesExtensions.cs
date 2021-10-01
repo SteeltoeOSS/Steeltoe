@@ -99,7 +99,7 @@ namespace Steeltoe.Stream.Extensions
             var constr = type.GetConstructor(new Type[] { typeof(IConfiguration) });
             if (constr == null)
             {
-                constr = type.GetConstructor(new Type[] { });
+                constr = type.GetConstructor(Array.Empty<Type>());
             }
 
             return constr;

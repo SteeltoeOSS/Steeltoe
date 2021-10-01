@@ -496,7 +496,7 @@ namespace Steeltoe.Stream.Binder
             method.MessageMethodArgumentResolvers = resolver;
             var constr = typeof(StreamListenerMessageHandler).GetConstructor(new Type[] { typeof(IApplicationContext), typeof(InvocableHandlerMethod), typeof(bool), typeof(string[]) });
 
-            var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, new string[0] });
+            var handler = (StreamListenerMessageHandler)constr.Invoke(new object[] { binder.ApplicationContext, method, false, Array.Empty<string>() });
 
             handler.OutputChannelName = channelName;
             return handler;

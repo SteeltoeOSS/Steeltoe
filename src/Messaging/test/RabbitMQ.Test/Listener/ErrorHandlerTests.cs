@@ -52,7 +52,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         private void DoTest(Exception cause)
         {
             var handler = new ConditionalRejectingErrorHandler();
-            handler.HandleError(new ListenerExecutionFailedException("test", cause, Message.Create(new byte[0])));
+            handler.HandleError(new ListenerExecutionFailedException("test", cause, Message.Create(Array.Empty<byte>())));
         }
     }
 }

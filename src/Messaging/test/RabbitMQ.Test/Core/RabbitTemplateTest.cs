@@ -110,7 +110,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             template.DoSendAndReceiveWithTemporary("foo", "bar", input, null, default);
 
             // used to hang here because of the SynchronousQueue and doSendAndReceive() already exited
-            consumer.Value.HandleBasicDeliver("foo", 1ul, false, "foo", "bar", new MockRabbitBasicProperties(), new byte[0]);
+            consumer.Value.HandleBasicDeliver("foo", 1ul, false, "foo", "bar", new MockRabbitBasicProperties(), Array.Empty<byte>());
         }
 
         [Fact]

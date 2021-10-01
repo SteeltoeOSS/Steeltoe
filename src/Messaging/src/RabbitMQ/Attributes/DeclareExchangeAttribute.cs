@@ -48,6 +48,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
             }
         }
 
-        public string[] Admins { get; set; } = new string[0];
+        public string[] Admins { get; set; } = Array.Empty<string>();
     }
 }
