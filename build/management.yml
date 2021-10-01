@@ -1,0 +1,18 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/management.yml
+    - src/Management/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Management
+  - template: templates/component-build.yaml
+    parameters:
+      component: Management
+      OS: windows

@@ -1,0 +1,15 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/messaging.yml
+    - src/Messaging/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Messaging
+      runRabbitMQ: true

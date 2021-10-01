@@ -7,6 +7,7 @@ using Steeltoe.Common.Utils.Diagnostics;
 using System;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Sdk;
 
 namespace Steeltoe.Common.Utils.Test.Diagnostics
 {
@@ -37,7 +38,15 @@ namespace Steeltoe.Common.Utils.Test.Diagnostics
 
             // Assert
             result.ExitCode.Should().NotBe(0);
-            result.Error.Should().Contain("Unknown option: --no-such-option");
+            try
+            {
+                result.Error.Should().Contain("Unknown option: --no-such-option");
+            }
+            catch (XunitException)
+            {
+                // message changes if .NET 6 sdk is installed
+                result.Error.Should().Contain("--no-such-option does not exist");
+            }
         }
 
         [Fact]

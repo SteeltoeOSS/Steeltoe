@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Bootstrap.Autoconfig</RootNamespace>
     <Description>Package for automatically configuring Steeltoe packages that have separately been added to a project.</Description>
     <PackageTags>Autoconfiguration;automatic configuration;application bootstrapping</PackageTags>

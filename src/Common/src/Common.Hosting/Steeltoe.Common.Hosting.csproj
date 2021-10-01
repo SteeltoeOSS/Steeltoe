@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>Steeltoe library for common hosting-related utilities</Description>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <AssemblyName>Steeltoe.Common.Hosting</AssemblyName>
     <PackageId>Steeltoe.Common.Hosting</PackageId>
     <PackageTags>NET Core;Cloud Hosting;</PackageTags>
