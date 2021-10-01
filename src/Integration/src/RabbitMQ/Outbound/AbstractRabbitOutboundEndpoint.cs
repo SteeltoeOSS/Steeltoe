@@ -271,7 +271,7 @@ namespace Steeltoe.Integration.Rabbit.Outbound
 
             if (correlationData == null)
             {
-                object correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
+                var correlation = requestMessage.Headers[RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION];
 
                 if (correlation is CorrelationData cdata)
                 {

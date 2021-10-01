@@ -120,7 +120,7 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry
 
                 var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-                if (result.TryGetValue(READ_SENSITIVE_DATA, out JsonElement perm))
+                if (result.TryGetValue(READ_SENSITIVE_DATA, out var perm))
                 {
                     var boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
                     permissions = boolResult ? Permissions.FULL : Permissions.RESTRICTED;

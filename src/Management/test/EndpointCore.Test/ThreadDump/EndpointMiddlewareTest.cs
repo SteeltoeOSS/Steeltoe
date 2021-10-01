@@ -43,7 +43,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test
                 var mgmtOptions = new ActuatorManagementOptions();
                 mgmtOptions.EndpointOptions.Add(opts);
 
-                ThreadDumper obs = new ThreadDumper(opts);
+                var obs = new ThreadDumper(opts);
                 var ep = new ThreadDumpEndpoint(opts, obs);
                 var middle = new ThreadDumpEndpointMiddleware(null, ep, mgmtOptions);
                 var context = CreateRequest("GET", "/dump");

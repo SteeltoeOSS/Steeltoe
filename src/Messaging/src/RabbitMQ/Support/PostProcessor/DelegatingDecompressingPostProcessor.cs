@@ -59,7 +59,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
             }
             else
             {
-                int colonAt = encoding.IndexOf(':');
+                var colonAt = encoding.IndexOf(':');
                 if (colonAt > 0)
                 {
                     encoding = encoding.Substring(0, colonAt);

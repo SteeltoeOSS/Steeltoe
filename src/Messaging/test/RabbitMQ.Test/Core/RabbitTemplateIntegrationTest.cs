@@ -1018,7 +1018,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                 var reply = template.SendAndReceive(string.Empty, ROUTE, message);
                 Assert.NotNull(reply);
                 Assert.Equal("gzip:utf-8", reply.Headers.ContentEncoding());
-                GUnzipPostProcessor unzipper = new GUnzipPostProcessor();
+                var unzipper = new GUnzipPostProcessor();
                 reply = unzipper.PostProcessMessage(reply);
                 Assert.Equal("FOO", Encoding.UTF8.GetString((byte[])reply.Payload));
             }

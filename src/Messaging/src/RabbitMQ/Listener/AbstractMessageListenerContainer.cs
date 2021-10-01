@@ -1140,7 +1140,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         {
             if (AfterReceivePostProcessors != null)
             {
-                IMessage postProcessed = message;
+                var postProcessed = message;
                 foreach (var processor in AfterReceivePostProcessors)
                 {
                     postProcessed = processor.PostProcessMessage(postProcessed);

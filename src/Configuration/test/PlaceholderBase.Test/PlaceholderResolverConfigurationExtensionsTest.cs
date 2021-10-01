@@ -38,7 +38,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             configurationBuilder.AddPlaceholderResolver();
 
-            PlaceholderResolverSource placeholderSource =
+            var placeholderSource =
                 configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
             Assert.NotNull(placeholderSource);
         }
@@ -52,7 +52,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             configurationBuilder.AddPlaceholderResolver(loggerFactory);
             var configuration = configurationBuilder.Build();
 
-            PlaceholderResolverProvider provider =
+            var provider =
                 configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
             Assert.NotNull(provider);
@@ -80,9 +80,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
 
             using var sandbox = new Sandbox();
             var path = sandbox.CreateFile("appsettings.json", appsettings);
-            string directory = Path.GetDirectoryName(path);
-            string fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var directory = Path.GetDirectoryName(path);
+            var fileName = Path.GetFileName(path);
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(fileName, false, false);
@@ -115,13 +115,13 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddXmlFile(fileName, false, false);
 
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -141,13 +141,13 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var path = sandbox.CreateFile("appsettings.json", appsettings);
             var directory = Path.GetDirectoryName(path);
             var fileName = Path.GetFileName(path);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddIniFile(fileName, false, false);
 
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -165,7 +165,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             configurationBuilder.AddCommandLine(appsettings);
 
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -215,7 +215,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             var inifileName = Path.GetFileName(inipath);
 
             var directory = Path.GetDirectoryName(jsonpath);
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.SetBasePath(directory);
 
             configurationBuilder.AddJsonFile(jsonfileName, false, false);
@@ -224,7 +224,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
             configurationBuilder.AddCommandLine(appsettingsLine);
 
             configurationBuilder.AddPlaceholderResolver();
-            IConfigurationRoot config = configurationBuilder.Build();
+            var config = configurationBuilder.Build();
 
             Assert.Equal("myName", config["spring:cloud:config:name"]);
         }
@@ -232,7 +232,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_ClearsSources()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },
@@ -255,7 +255,7 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void AddPlaceholderResolver_WithConfiguration_ReturnsNewConfiguration()
         {
-            Dictionary<string, string> settings = new Dictionary<string, string>()
+            var settings = new Dictionary<string, string>()
             {
                 { "key1", "value1" },
                 { "key2", "${key1?notfound}" },

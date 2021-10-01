@@ -46,7 +46,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
                 ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -77,7 +77,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
                 ["management:endpoints:health:claim:value"] = "claimvalue",
                 ["management:endpoints:health:role"] = "roleclaimvalue"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
@@ -94,7 +94,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test
             {
                 ["management:endpoints:health:role"] = "roleclaimvalue"
             };
-            ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            var configurationBuilder = new ConfigurationBuilder();
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 

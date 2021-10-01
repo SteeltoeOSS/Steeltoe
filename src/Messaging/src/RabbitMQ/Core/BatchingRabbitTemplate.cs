@@ -91,7 +91,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
                     // {
                     //    _cancellationTokenSource.Cancel(false);
                     // }
-                    MessageBatch? batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
+                    var batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
                     if (batch != null)
                     {
                         if (_scheduledTask != null)
@@ -134,7 +134,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
             lock (_batchlock)
             {
-                foreach (MessageBatch batch in _batchingStrategy.ReleaseBatches())
+                foreach (var batch in _batchingStrategy.ReleaseBatches())
                 {
                     if (cancellationToken.IsCancellationRequested)
                     {

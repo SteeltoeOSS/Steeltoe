@@ -389,7 +389,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         private void ResolveQueue(string queueExpression, List<string> results)
         {
-            string qRef = queueExpression;
+            var qRef = queueExpression;
             var queue = ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") as IQueue;
             if (queue == null)
             {
@@ -463,7 +463,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 
         private string Resolve(string value)
         {
-            string result = value;
+            var result = value;
             if (ApplicationContext != null)
             {
                 var config = ApplicationContext.Configuration;

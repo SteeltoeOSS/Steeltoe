@@ -39,7 +39,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var connectionFactory = new Mock<R.IConnectionFactory>();
             connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
-            CachingConnectionFactory ccf = new CachingConnectionFactory(connectionFactory.Object);
+            var ccf = new CachingConnectionFactory(connectionFactory.Object);
             var source = new RabbitMessageSource(context, ccf, "foo");
             source.RawMessageHeader = true;
             var received = source.Receive();
@@ -109,7 +109,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var connectionFactory = new Mock<R.IConnectionFactory>();
             connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
-            CachingConnectionFactory ccf = new CachingConnectionFactory(connectionFactory.Object);
+            var ccf = new CachingConnectionFactory(connectionFactory.Object);
             var source = new RabbitMessageSource(context, ccf, "foo");
             var received = source.Receive();
             Assert.NotNull(received);
@@ -136,7 +136,7 @@ namespace Steeltoe.Integration.Rabbit.Inbound
             var connectionFactory = new Mock<R.IConnectionFactory>();
             connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
-            CachingConnectionFactory ccf = new CachingConnectionFactory(connectionFactory.Object);
+            var ccf = new CachingConnectionFactory(connectionFactory.Object);
             var source = new RabbitMessageSource(context, ccf, "foo");
             var received = source.Receive();
             connection.Verify(c => c.CreateModel());

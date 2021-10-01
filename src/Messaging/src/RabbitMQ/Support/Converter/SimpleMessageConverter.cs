@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
 
         public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
         {
-            IMessage<byte[]> message = from as IMessage<byte[]>;
+            var message = from as IMessage<byte[]>;
             if (message == null)
             {
                 throw new MessageConversionException("Failed to convert non byte[] Message content" + from.GetType());

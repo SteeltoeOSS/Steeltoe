@@ -141,7 +141,7 @@ namespace Steeltoe.Stream.Binder
             var moduleOutputChannel1 = CreateBindableChannel("output1", producerBindingProperties);
 
             var moduleOutputChannel2 = CreateBindableChannel("output2", producerBindingProperties);
-            QueueChannel moduleInputChannel = new QueueChannel();
+            var moduleInputChannel = new QueueChannel();
             var producerBinding1 = binder.BindProducer($"foo{delimiter}xy", moduleOutputChannel1, producerBindingProperties.Producer);
             var producerBinding2 = binder.BindProducer($"foo{delimiter}yz", moduleOutputChannel2, producerBindingProperties.Producer);
             var consumerBinding1 = binder.BindConsumer($"foo{delimiter}xy", "testSendAndReceiveMultipleTopics", moduleInputChannel, consumerProperties);
@@ -388,7 +388,7 @@ namespace Steeltoe.Stream.Binder
 
         protected IMessage Receive(IPollableChannel channel, int additionalMultiplier)
         {
-            long startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             var receive = channel.Receive((int)(1000 * TimeoutMultiplier * additionalMultiplier));
             var elapsed = DateTimeOffset.Now.ToUnixTimeMilliseconds() - startTime;
             return receive;
@@ -512,7 +512,7 @@ namespace Steeltoe.Stream.Binder
             var selectors = applicationContext.GetServices<IPartitionSelectorStrategy>();
             var bindingServiceOptionsMonitor = new BindingServiceOptionsMonitor(bindingServiceProperties);
 
-            MessageConverterConfigurer messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
+            var messageConverterConfigurer = new MessageConverterConfigurer(applicationContext, bindingServiceOptionsMonitor, new CompositeMessageConverterFactory(), extractors, selectors);
 
             return messageConverterConfigurer;
         }

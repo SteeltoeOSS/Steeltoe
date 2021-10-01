@@ -35,7 +35,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources
 
             service.OnNext(GetTestData());
 
-            int i = 0;
+            var i = 0;
             while (i++ < 100
                 && listener.CommandEvents.Count <= 0
                 && listener.ThreadPoolEvents.Count <= 0

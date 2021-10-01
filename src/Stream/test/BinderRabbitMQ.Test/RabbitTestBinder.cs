@@ -123,7 +123,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 _rabbitAdmin.DeleteQueue(q + ".dlq");
 
                 // delete any partitioned queues
-                for (int i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     _rabbitAdmin.DeleteQueue(q + "-" + i);
                     _rabbitAdmin.DeleteQueue(q + "-" + i + ".dlq");

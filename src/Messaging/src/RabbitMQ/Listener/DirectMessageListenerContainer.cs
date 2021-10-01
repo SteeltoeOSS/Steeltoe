@@ -516,7 +516,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             _consumerMonitorTask = Task.Run(
                 async () =>
                 {
-                    bool shouldShutdown = false;
+                    var shouldShutdown = false;
                     while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested && !shouldShutdown)
                     {
                         var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();

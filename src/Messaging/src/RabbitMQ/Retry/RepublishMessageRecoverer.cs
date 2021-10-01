@@ -69,7 +69,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             var headers = RabbitHeaderAccessor.GetMutableAccessor(message);
 
             var exceptionMessage = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
-            List<string> processed = ProcessStackTrace(exception, exceptionMessage);
+            var processed = ProcessStackTrace(exception, exceptionMessage);
             var stackTraceAsString = processed[0];
             var truncatedExceptionMessage = processed[1];
             if (truncatedExceptionMessage != null)
@@ -127,7 +127,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             var stackTraceAsString = cause.StackTrace;
             if (MaxStackTraceLength < 0)
             {
-                int maxStackTraceLen = RabbitUtils.GetMaxFrame(ErrorTemplate.ConnectionFactory);
+                var maxStackTraceLen = RabbitUtils.GetMaxFrame(ErrorTemplate.ConnectionFactory);
                 if (maxStackTraceLen > 0)
                 {
                     maxStackTraceLen -= FrameMaxHeadroom;
@@ -154,7 +154,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                             + stackTraceAsString.Substring(start + exceptionMessage.Length);
                 }
 
-                int adjustedStackTraceLen = MaxStackTraceLength - truncatedExceptionMessage.Length;
+                var adjustedStackTraceLen = MaxStackTraceLength - truncatedExceptionMessage.Length;
                 if (adjustedStackTraceLen > 0)
                 {
                     if (stackTraceAsString.Length > adjustedStackTraceLen)
