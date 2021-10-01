@@ -14,7 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void ToStringForEmptyMessageBody()
         {
-            var message = Message.Create(new byte[0], new MessageHeaders());
+            var message = Message.Create(Array.Empty<byte>(), new MessageHeaders());
             Assert.NotNull(message.ToString());
         }
 
@@ -31,7 +31,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void ToStringForNullMessageProperties()
         {
-            var message = Message.Create(new byte[0], null);
+            var message = Message.Create(Array.Empty<byte>(), null);
             Assert.NotNull(message.ToString());
         }
 
