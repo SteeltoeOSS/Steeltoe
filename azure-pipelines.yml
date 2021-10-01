@@ -10,28 +10,13 @@ trigger:
     - roadmaps/*
 
 jobs:
-- job: Steeltoe_CI
-  timeoutInMinutes: 90
+- job: Steeltoe_Package
+  pool:
+    vmImage: windows-latest
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
     PackageVersion: $[format('3.2.0-{0}', variables['Build.BuildId'])]
-  strategy:
-    matrix:
-      Linux:
-        imageName: ubuntu-latest
-        skipFilter: '--filter "Category!=SkipOnLinux"'
-        sonarAnalyze: true
-        integrationTests: true
-      MacOS:
-        imageName: macOS-latest
-        skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
-      Windows:
-        imageName: windows-latest
-        skipFilter: '--filter "Category!=Integration"'
-        package: true
-  pool:
-    vmImage: $(imageName)
   steps:
   - pwsh: |
       if ($env:PackageVersionOverride) {
@@ -63,6 +48,75 @@ jobs:
       projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
+  - task: DotNetCoreCLI@2
+    displayName: dotnet build
+    inputs:
+      command: build
+      projects: src/Steeltoe.All.sln
+      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
+  - task: DotNetCoreCLI@2
+    condition: eq(variables['package'], 'true')
+    displayName: dotnet pack
+    inputs:
+      command: pack
+      feedsToUse: select
+      packagesToPack: src/Steeltoe.All.sln
+      packDirectory: $(Build.ArtifactStagingDirectory)/packages
+      versioningScheme: byEnvVar
+      versionEnvVar: PackageVersion
+      nobuild: true
+  - task: PowerShell@2
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), eq(variables['package'], 'true'))
+    displayName: Authenticode sign packages
+    inputs:
+      filePath: build/sign-packages.ps1
+    env:
+      SignClientUser: $(SignClientUser)
+      SignClientSecret: $(SignClientSecret)
+      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
+  - publish: $(Build.ArtifactStagingDirectory)/packages
+    condition: and(succeeded(), eq(variables['package'], 'true'))
+    displayName: Publish build artifacts
+    artifact: Packages
+- job: Steeltoe_CI
+  timeoutInMinutes: 90
+  variables:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    Projects: '**/*.csproj'
+  strategy:
+    matrix:
+      Linux:
+        imageName: ubuntu-latest
+        skipFilter: '--filter "Category!=SkipOnLinux"'
+        sonarAnalyze: true
+        integrationTests: true
+      MacOS:
+        imageName: macOS-latest
+        skipFilter: '--filter "Category!=Integration&Category!=SkipOnMacOS"'
+      Windows:
+        imageName: windows-latest
+        skipFilter: '--filter "Category!=Integration"'
+        package: true
+  pool:
+    vmImage: $(imageName)
+  steps:
+  - task: UseDotNet@2
+    displayName: Install .NET Core 3.1
+    inputs:
+      version: 3.1.x
+  - task: UseDotNet@2
+    displayName: Install .NET 6
+    inputs:
+      version: 6.0.x
+      includePreviewVersions: true
+  - task: DotNetCoreCLI@2
+    displayName: dotnet restore
+    inputs:
+      command: restore
+      projects: $(Projects)
+      feedsToUse: config
+      nugetConfigPath: nuget.config
   - task: SonarCloudPrepare@1
     condition: eq(variables['sonarAnalyze'], 'true')
     displayName: Prepare analysis on SonarCloud
@@ -79,8 +133,8 @@ jobs:
     displayName: dotnet build
     inputs:
       command: build
-      projects: src/Steeltoe.All.sln
-      arguments: '--no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)'
+      projects: $(Projects)
+      arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True
   - script: |
       docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main
       docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
@@ -90,7 +144,7 @@ jobs:
     displayName: dotnet test 6.0
     inputs:
       command: test
-      projects: src/Steeltoe.All.sln
+      projects: $(Projects)
       arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
@@ -98,7 +152,7 @@ jobs:
     displayName: dotnet test 3.1
     inputs:
       command: test
-      projects: src/Steeltoe.All.sln
+      projects: $(Projects)
       arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |
@@ -132,30 +186,6 @@ jobs:
   - task: SonarCloudPublish@1
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Publish quality gate result
-  - task: DotNetCoreCLI@2
-    condition: eq(variables['package'], 'true')
-    displayName: dotnet pack
-    inputs:
-      command: pack
-      feedsToUse: select
-      packagesToPack: src/Steeltoe.All.sln
-      packDirectory: $(Build.ArtifactStagingDirectory)/packages
-      versioningScheme: byEnvVar
-      versionEnvVar: PackageVersion
-      nobuild: true
-  - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), eq(variables['package'], 'true'))
-    displayName: Authenticode sign packages
-    inputs:
-      filePath: build/sign-packages.ps1
-    env:
-      SignClientUser: $(SignClientUser)
-      SignClientSecret: $(SignClientSecret)
-      ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
-  - publish: $(Build.ArtifactStagingDirectory)/packages
-    condition: and(succeeded(), eq(variables['package'], 'true'))
-    displayName: Publish build artifacts
-    artifact: Packages
   - bash: bash <(curl -s https://codecov.io/bash)
     displayName: Upload to codecov.io
     condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
