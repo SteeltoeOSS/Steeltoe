@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>Steeltoe Stream RabbitMQ Binder</Description>
-    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Stream.Binder.RabbitMQ</RootNamespace>
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud, RabbitMQ, Binder</PackageTags>
   </PropertyGroup>
@@ -10,7 +10,6 @@
   <Import Project="..\..\..\..\versions.props" />
   <Import Project="..\..\..\..\sharedproject.props" />
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Integration\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />
     <ProjectReference Include="..\StreamBase\Steeltoe.Stream.StreamBase.csproj" />

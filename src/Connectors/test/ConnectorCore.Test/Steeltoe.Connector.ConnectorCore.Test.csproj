@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0;</TargetFrameworks>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
@@ -29,7 +29,7 @@
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
 
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientVersion)" />
-    <PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />
+    <!--<PackageReference Include="StackExchange.Redis" Version="$(StackExchangeVersion)" />-->
     <PackageReference Include="System.Data.SqlClient" Version="$(SqlClientVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />
   </ItemGroup>

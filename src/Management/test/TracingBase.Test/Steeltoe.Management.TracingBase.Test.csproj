@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;net5.0;</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0;</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\versions.props" />
@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(AspNetCoreVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="$(ExtensionsVersion)" />
     <PackageReference Include="OpenTelemetry.Exporter.Zipkin" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
     <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="$(OpenTelemetryVersion)" PrivateAssets="all" />
   </ItemGroup>
