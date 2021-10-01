@@ -30,7 +30,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         {
             app.UseCloudFoundryCertificateAuth();
 
-            app.Use(async (context, next) =>
+            app.Run(async (context) =>
             {
                 var authorizationResult = await authorizationService.AuthorizeAsync(context.User, null, context.Request.Path.Value.Replace("/", string.Empty));
 

@@ -1,0 +1,14 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/integration.yml
+    - src/Integration/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Integration

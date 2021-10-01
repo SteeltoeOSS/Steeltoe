@@ -8,6 +8,7 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Test
 {
@@ -16,6 +17,7 @@ namespace Steeltoe.Management.Endpoint.Test
         public virtual void Dispose()
         {
             DiagnosticsManager.Instance.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public ILogger<T> GetLogger<T>()
@@ -36,7 +38,7 @@ namespace Steeltoe.Management.Endpoint.Test
             var options = new JsonSerializerOptions()
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
             options.Converters.Add(new HealthConverter());
             options.Converters.Add(new MetricsResponseConverter());

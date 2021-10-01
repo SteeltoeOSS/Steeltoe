@@ -1,0 +1,14 @@
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/templates/*
+    - build/logging.yml
+    - src/Logging/*
+
+jobs:
+  - template: templates/component-build.yaml
+    parameters:
+      component: Logging

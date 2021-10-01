@@ -2,7 +2,7 @@
   
   <PropertyGroup>
     <Description>Steeltoe Messaging Base</Description>
-    <TargetFrameworks>netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1</TargetFrameworks>
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
     <AssemblyName>Steeltoe.Messaging.MessagingBase</AssemblyName>
     <PackageId>Steeltoe.Messaging.MessagingBase</PackageId>
