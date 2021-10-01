@@ -81,7 +81,7 @@ namespace Steeltoe.Management.Endpoint.Mappings
                 sb.Append("[" + string.Join(" || ", routeDetails.Consumes) + "]");
             }
 
-            sb.Append("}");
+            sb.Append('}');
             return sb.ToString();
         }
 

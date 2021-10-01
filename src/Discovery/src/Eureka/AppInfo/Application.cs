@@ -31,10 +31,10 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
             foreach (var inst in Instances)
             {
                 sb.Append(inst.ToString());
-                sb.Append(",");
+                sb.Append(',');
             }
 
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
 

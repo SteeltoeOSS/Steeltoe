@@ -27,7 +27,7 @@ namespace Steeltoe.Management.Tracing
 
                 var sb = new StringBuilder(" [");
                 sb.Append(_options.Name);
-                sb.Append(",");
+                sb.Append(',');
 
                 var traceId = context.TraceId.ToHexString();
                 if (traceId.Length > 16 && _options.UseShortTraceIds)
@@ -36,10 +36,10 @@ namespace Steeltoe.Management.Tracing
                 }
 
                 sb.Append(traceId);
-                sb.Append(",");
+                sb.Append(',');
 
                 sb.Append(context.SpanId.ToHexString());
-                sb.Append(",");
+                sb.Append(',');
 
                 // TODO: Currently OTel doesnt support getting parentId from Active spans.
                 /*
@@ -48,7 +48,7 @@ namespace Steeltoe.Management.Tracing
                 //    sb.Append(currentSpan.ParentSpanId.ToLowerBase16());
                 //}
                 //
-                //sb.Append(",");
+                //sb.Append(',');
                 */
 
                 if (currentSpan.IsRecording)

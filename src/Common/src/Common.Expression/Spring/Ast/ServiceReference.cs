@@ -37,14 +37,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
         public override string ToStringAST()
         {
             var sb = new StringBuilder();
-            sb.Append("@");
+            sb.Append('@');
             if (!_serviceName.Contains("."))
             {
                 sb.Append(_serviceName);
             }
             else
             {
-                sb.Append("'").Append(_serviceName).Append("'");
+                sb.Append('\'').Append(_serviceName).Append('\'');
             }
 
             return sb.ToString();

@@ -135,7 +135,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         protected static string BucketToString(long[] eventCounts)
         {
             var sb = new StringBuilder();
-            sb.Append("[");
+            sb.Append('[');
             foreach (var eventType in HystrixEventTypeHelper.Values)
             {
                 if (eventCounts[(int)eventType] > 0)
@@ -144,7 +144,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
                 }
             }
 
-            sb.Append("]");
+            sb.Append(']');
             return sb.ToString();
         }
     }

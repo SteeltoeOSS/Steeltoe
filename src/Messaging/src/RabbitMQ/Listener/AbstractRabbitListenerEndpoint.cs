@@ -155,12 +155,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected virtual StringBuilder GetEndpointDescription()
         {
             var result = new StringBuilder();
-            return result.Append(GetType().Name).Append("[").Append(Id).
+            return result.Append(GetType().Name).Append('[').Append(Id).
                     Append("] queues=").Append(Queues).
                     Append("' | queueNames='").Append(QueueNames).
                     Append("' | exclusive='").Append(Exclusive).
                     Append("' | priority='").Append(Priority).
-                    Append("' | admin='").Append(Admin).Append("'");
+                    Append("' | admin='").Append(Admin).Append('\'');
         }
 
         private void SetupMessageListener(IMessageListenerContainer container)

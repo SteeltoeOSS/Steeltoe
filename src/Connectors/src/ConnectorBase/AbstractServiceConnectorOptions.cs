@@ -77,7 +77,7 @@ namespace Steeltoe.Connector
             sb.Append(part1);
             if (!string.IsNullOrEmpty(part2))
             {
-                sb.Append(":");
+                sb.Append(':');
                 sb.Append(part2);
             }
 

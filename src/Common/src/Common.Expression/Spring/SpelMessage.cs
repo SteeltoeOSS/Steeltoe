@@ -257,7 +257,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
             switch (_kind)
             {
                 case Kind.ERROR:
-                    formattedMessage.Append("E");
+                    formattedMessage.Append('E');
                     break;
             }
 

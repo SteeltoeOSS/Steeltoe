@@ -101,8 +101,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected override StringBuilder GetEndpointDescription()
         {
             return base.GetEndpointDescription()
-                    .Append(" | bean='").Append(Instance).Append("'")
-                    .Append(" | method='").Append(Method).Append("'");
+                    .Append(" | bean='").Append(Instance).Append('\'')
+                    .Append(" | method='").Append(Method).Append('\'');
         }
 
         private string GetDefaultReplyToAddress()
