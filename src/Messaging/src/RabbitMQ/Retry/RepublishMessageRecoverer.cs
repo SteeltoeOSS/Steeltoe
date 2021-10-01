@@ -101,7 +101,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
                 var routingKey = ErrorRoutingKey != null ? ErrorRoutingKey : PrefixedOriginalRoutingKey(message);
                 ErrorTemplate.Send(ErrorExchangeName, routingKey, message);
 
-                _logger?.LogWarning("Republishing failed message to exchange '(exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
+                _logger?.LogWarning("Republishing failed message to exchange '{exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
             }
             else
             {
