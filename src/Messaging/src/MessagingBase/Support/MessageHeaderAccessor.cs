@@ -105,8 +105,7 @@ namespace Steeltoe.Messaging.Support
 
             if (messageHeaderAccessor == null && accessorType == null)
             {
-                var msgHeaders = headers as MessageHeaders;
-                if (msgHeaders != null)
+                if (headers is MessageHeaders msgHeaders)
                 {
                     messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
                 }
@@ -378,8 +377,7 @@ namespace Steeltoe.Messaging.Support
 
         protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
         {
-            var asHeaders = messageHeaders as MessageHeaders;
-            if (asHeaders == null)
+            if (messageHeaders is not MessageHeaders asHeaders)
             {
                 throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
             }

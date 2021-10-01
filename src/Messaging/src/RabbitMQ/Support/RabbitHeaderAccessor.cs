@@ -35,8 +35,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 return accessorMessageHeaders.Accessor;
             }
 
-            var msgHeaders = messageHeaders as MessageHeaders;
-            if (msgHeaders != null)
+            if (messageHeaders is MessageHeaders msgHeaders)
             {
                 return new RabbitHeaderAccessor(msgHeaders);
             }
@@ -60,8 +59,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
             if (messageHeaderAccessor == null)
             {
-                var msgHeaders = headers as MessageHeaders;
-                if (msgHeaders != null)
+                if (headers is MessageHeaders msgHeaders)
                 {
                     messageHeaderAccessor = new RabbitHeaderAccessor(msgHeaders);
                 }
@@ -323,8 +321,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
         protected new RabbitHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
         {
-            var headers = messageHeaders as MessageHeaders;
-            if (headers == null)
+            if (messageHeaders is not MessageHeaders headers)
             {
                 throw new InvalidOperationException("Unable to create mutable accessor, message has no headers or headers are not of type MessageHeaders");
             }

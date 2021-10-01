@@ -88,8 +88,7 @@ namespace Steeltoe.Stream.Binder
 
         public Task Start()
         {
-            var asLifeCycle = Source as ILifecycle;
-            if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && asLifeCycle != null)
+            if (Interlocked.CompareExchange(ref _running, 1, 0) == 0 && Source is ILifecycle asLifeCycle)
             {
                 return asLifeCycle.Start();
             }
@@ -99,8 +98,7 @@ namespace Steeltoe.Stream.Binder
 
         public Task Stop()
         {
-            var asLifeCycle = Source as ILifecycle;
-            if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && asLifeCycle != null)
+            if (Interlocked.CompareExchange(ref _running, 0, 1) == 1 && Source is ILifecycle asLifeCycle)
             {
                 return asLifeCycle.Stop();
             }

@@ -37,8 +37,7 @@ namespace Steeltoe.Integration.Handler.Support
 
             if (_canProcessMessageList)
             {
-                var messages = value as ICollection<IMessage>;
-                if (messages == null)
+                if (value is not ICollection<IMessage> messages)
                 {
                     throw new InvalidOperationException("This Argument Resolver only supports messages with a payload of ICollection<IMessage>, payload is: " + value.GetType());
                 }

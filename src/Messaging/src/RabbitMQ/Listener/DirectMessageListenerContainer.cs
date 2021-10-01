@@ -330,8 +330,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         private void CheckListenerContainerAware()
         {
-            var listenerAware = MessageListener as IListenerContainerAware;
-            if (listenerAware != null)
+            if (MessageListener is IListenerContainerAware listenerAware)
             {
                 var expectedQueueNames = listenerAware.GetExpectedQueueNames();
                 var queueNames = GetQueueNames();

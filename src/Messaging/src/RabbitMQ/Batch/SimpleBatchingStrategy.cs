@@ -45,8 +45,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                 throw new ArgumentException("Cannot send with different routing keys in the same batch");
             }
 
-            var message = input as IMessage<byte[]>;
-            if (message == null)
+            if (input is not IMessage<byte[]> message)
             {
                 throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
             }
@@ -114,8 +113,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
 
         public void DeBatch(IMessage input, Action<IMessage> fragmentConsumer)
         {
-            var message = input as IMessage<byte[]>;
-            if (message == null)
+            if (input is not IMessage<byte[]> message)
             {
                 throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
             }

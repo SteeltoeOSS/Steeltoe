@@ -390,8 +390,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         private void ResolveQueue(string queueExpression, List<string> results)
         {
             var qRef = queueExpression;
-            var queue = ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") as IQueue;
-            if (queue == null)
+            if (ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") is not IQueue queue)
             {
                 qRef = Resolve(queueExpression);
                 queue = ApplicationContext.GetService<IQueue>(qRef);
@@ -409,8 +408,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
         {
             foreach (var bindingExpression in rabbitListener.Bindings)
             {
-                var binding = ResolveExpression(bindingExpression, typeof(IBinding), "Binding(s)") as IBinding;
-                if (binding == null)
+                if (ResolveExpression(bindingExpression, typeof(IBinding), "Binding(s)") is not IBinding binding)
                 {
                     var bindingName = Resolve(bindingExpression);
                     binding = ApplicationContext.GetService<IBinding>(bindingName);

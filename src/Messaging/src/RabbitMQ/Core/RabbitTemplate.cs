@@ -1740,8 +1740,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         protected virtual void SendToRabbit(RC.IModel channel, string exchange, string routingKey, bool mandatory, IMessage message)
         {
-            var body = message.Payload as byte[];
-            if (body == null)
+            if (message.Payload is not byte[] body)
             {
                 throw new InvalidOperationException("Unable to publish IMessage, payload must be a byte[]");
             }

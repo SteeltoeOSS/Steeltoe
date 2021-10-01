@@ -95,9 +95,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
                 if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null)
                 {
-                    var containerCollection =
-                        ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) as MessageListenerContainerCollection;
-                    if (containerCollection != null)
+                    if (ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
                     {
                         containerCollection.AddContainer(container);
                     }
