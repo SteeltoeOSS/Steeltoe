@@ -672,7 +672,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private void PublishDeclarationExceptionEvent(IDeclarable element, Exception exception)
         {
             var ev = new DeclarationExceptionEvent(this, element, exception);
-            this.LastDeclarationExceptionEvent = ev;
+            LastDeclarationExceptionEvent = ev;
 
             // if (this.applicationEventPublisher != null) {
             //          this.applicationEventPublisher.publishEvent(event);

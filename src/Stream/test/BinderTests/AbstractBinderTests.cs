@@ -216,7 +216,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendPojoReceivePojoWithStreamListenerDefaultContentType()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -247,7 +247,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendJsonReceivePojoWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -279,7 +279,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendJsonReceiveJsonWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStationString", typeof(string));
+            var handler = BuildStreamListener(GetType(), "EchoStationString", typeof(string));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();
@@ -310,7 +310,7 @@ namespace Steeltoe.Stream.Binder
         [Fact]
         public void TestSendPojoReceivePojoWithStreamListener()
         {
-            var handler = BuildStreamListener(this.GetType(), "EchoStation", typeof(Station));
+            var handler = BuildStreamListener(GetType(), "EchoStation", typeof(Station));
             var binder = GetBinder();
 
             var delimiter = GetDestinationNameDelimiter();

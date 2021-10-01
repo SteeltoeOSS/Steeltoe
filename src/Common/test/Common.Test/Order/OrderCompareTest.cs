@@ -51,7 +51,7 @@ namespace Steeltoe.Common.Test.Order
         {
             public StubOrdered(int order)
             {
-                this.Order = order;
+                Order = order;
             }
 
             public int Order { get; }

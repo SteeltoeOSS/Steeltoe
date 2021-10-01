@@ -1257,8 +1257,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
         [Fact]
         public void TestAutoBindDLQwithRepublish()
         {
-            this._maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
-            Assert.True(this._maxStackTraceSize > 0);
+            _maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
+            Assert.True(_maxStackTraceSize > 0);
 
             var rabbitBindingsOptions = new RabbitBindingsOptions();
             var binder = GetBinder(rabbitBindingsOptions);
@@ -1274,7 +1274,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             moduleInputChannel.ComponentName = "dlqPubTest";
             var exception = BigCause();
 
-            Assert.True(exception.StackTrace.Length > this._maxStackTraceSize);
+            Assert.True(exception.StackTrace.Length > _maxStackTraceSize);
             var dontRepublish = new AtomicBoolean();
             moduleInputChannel.Subscribe(new TestMessageHandler()
             {
@@ -1597,7 +1597,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
                 await Assert.ThrowsAsync<BinderException>(() =>
                 {
                     var consumerOptions = GetConsumerOptions("input", rabbitBindingsOptions);
-                    binding = binder.BindConsumer("input", "baddecls", this.CreateBindableChannel("input", GetDefaultBindingOptions()), consumerOptions);
+                    binding = binder.BindConsumer("input", "baddecls", CreateBindableChannel("input", GetDefaultBindingOptions()), consumerOptions);
                     throw new Exception("Expected exception");
                 });
             }

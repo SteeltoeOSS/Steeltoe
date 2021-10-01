@@ -186,7 +186,7 @@ namespace Steeltoe.Messaging.Support
 
             public ChannelInterceptorChain(AbstractMessageChannel channel)
             {
-                this._channel = channel;
+                _channel = channel;
                 _interceptors = channel._interceptors;
                 _sendInterceptorIndex = -1;
                 _receiveInterceptorIndex = -1;
@@ -206,7 +206,7 @@ namespace Steeltoe.Messaging.Support
                     if (resolvedMessage == null)
                     {
                         var name = interceptor.GetType().Name;
-                        this._channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
+                        _channel.Logger?.LogDebug("{name} returned null from PreSend, i.e. precluding the send.", name);
                         TriggerAfterSendCompletion(messageToUse, channel, false, null);
                         return null;
                     }
@@ -247,7 +247,7 @@ namespace Steeltoe.Messaging.Support
                     }
                     catch (Exception ex2)
                     {
-                        this._channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
+                        _channel.Logger?.LogError(ex2, "Exception from afterSendCompletion in {interceptor} ", interceptor);
                     }
                 }
             }
@@ -309,7 +309,7 @@ namespace Steeltoe.Messaging.Support
                     }
                     catch (Exception ex2)
                     {
-                        this._channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
+                        _channel.Logger?.LogError(ex2, "Exception from afterReceiveCompletion in: {interceptor} ", interceptor);
                     }
                 }
             }

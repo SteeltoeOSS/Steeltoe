@@ -43,7 +43,7 @@ namespace Steeltoe.Common.Util.Test
         {
             attributeAccessor.SetAttribute(NAME, VALUE);
             attributeAccessor.SetAttribute("abc", "123");
-            var attributeNames = this.attributeAccessor.AttributeNames;
+            var attributeNames = attributeAccessor.AttributeNames;
             Assert.Contains(NAME, attributeNames);
             Assert.Contains("abc", attributeNames);
         }

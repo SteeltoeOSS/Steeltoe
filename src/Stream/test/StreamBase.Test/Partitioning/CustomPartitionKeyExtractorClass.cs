@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionKeyExtractorClass()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -27,7 +27,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionKeyExtractorClassOne()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -42,7 +42,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionKeyExtractorClassTwo()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }

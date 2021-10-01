@@ -18,16 +18,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 
         public DelegatingDecompressingPostProcessor()
         {
-            this._decompressors.Add("gzip", new GUnzipPostProcessor());
-            this._decompressors.Add("zip", new UnzipPostProcessor());
-            this._decompressors.Add("deflate", new InflaterPostProcessor());
+            _decompressors.Add("gzip", new GUnzipPostProcessor());
+            _decompressors.Add("zip", new UnzipPostProcessor());
+            _decompressors.Add("deflate", new InflaterPostProcessor());
         }
 
         public int Order { get; set; }
 
         public void AddDecompressor(string contentEncoding, IMessagePostProcessor decompressor)
         {
-            this._decompressors[contentEncoding] = decompressor;
+            _decompressors[contentEncoding] = decompressor;
         }
 
         public IMessagePostProcessor RemoveDecompressor(string contentEncoding)
@@ -38,7 +38,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
 
         public void SetDecompressors(Dictionary<string, IMessagePostProcessor> decompressors)
         {
-            this._decompressors.Clear();
+            _decompressors.Clear();
             foreach (var d in decompressors)
             {
                 decompressors.Add(d.Key, d.Value);

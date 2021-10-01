@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.Handler.Attributes
         /// <param name="exceptions">the exceptions handled by this method</param>
         public MessageExceptionHandlerAttribute(params Type[] exceptions)
         {
-            this._exceptions = exceptions;
+            _exceptions = exceptions;
         }
 
         /// <summary>

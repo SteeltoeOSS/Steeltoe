@@ -73,7 +73,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         {
             // Check whether the delegate is a IMessageListener impl itself.
             // In that case, the adapter will simply act as a pass-through.
-            var delegateListener = this.Instance;
+            var delegateListener = Instance;
             if (delegateListener != this)
             {
                 if (delegateListener is IChannelAwareMessageListener)

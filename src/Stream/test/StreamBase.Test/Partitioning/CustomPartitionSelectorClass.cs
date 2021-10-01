@@ -10,7 +10,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionSelectorClass()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -26,7 +26,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionSelectorClassOne()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }
@@ -41,7 +41,7 @@ namespace Steeltoe.Stream.Partitioning
     {
         public CustomPartitionSelectorClassTwo()
         {
-            ServiceName = this.GetType().Name;
+            ServiceName = GetType().Name;
         }
 
         public string ServiceName { get; set; }

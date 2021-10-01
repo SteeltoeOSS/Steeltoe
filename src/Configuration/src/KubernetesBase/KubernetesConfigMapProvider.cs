@@ -137,7 +137,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
                 {
                     if (IsAppsettingsKey(data.Key))
                     {
-                        using var stream = this.GenerateStreamFromString(data.Value);
+                        using var stream = GenerateStreamFromString(data.Value);
                         var jsonConfiguration = ParseConfigMapFile(stream);
 
                         foreach (var jsonKey in jsonConfiguration.Keys)
@@ -184,7 +184,7 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             {
             }
 
-            public IDictionary<string, string> GetData() => this.Data;
+            public IDictionary<string, string> GetData() => Data;
         }
     }
 }

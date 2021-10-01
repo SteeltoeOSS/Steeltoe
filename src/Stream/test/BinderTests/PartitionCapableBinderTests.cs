@@ -284,7 +284,7 @@ namespace Steeltoe.Stream.Binder
         protected virtual void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)
         {
             var routingExpression = GetEndpointRouting(endpoint);
-            var delimiter = this.GetDestinationNameDelimiter();
+            var delimiter = GetDestinationNameDelimiter();
             var dest = GetExpectedRoutingBaseDestination($"part{delimiter}0", "test") + "-' + Headers['partition']";
             Assert.Contains(dest, routingExpression);
         }

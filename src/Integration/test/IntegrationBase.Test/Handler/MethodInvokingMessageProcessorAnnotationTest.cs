@@ -178,7 +178,7 @@ namespace Steeltoe.Integration.Handler
         [Fact]
         public void MultipleAnnotatedArgs()
         {
-            var message = this.GetMessage();
+            var message = GetMessage();
             var method = _testService.GetType().GetMethod("MultipleAnnotatedArguments");
             var context = GetDefaultContext();
             var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);

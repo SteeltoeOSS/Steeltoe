@@ -882,7 +882,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         [Fact]
         public void TestSymmetricalReceiveAndReply()
         {
-            var template = CreateSendAndReceiveRabbitTemplate(this.connectionFactory);
+            var template = CreateSendAndReceiveRabbitTemplate(connectionFactory);
             template.DefaultReceiveQueue = ROUTE;
             template.RoutingKey = ROUTE;
             template.ReplyAddress = REPLY_QUEUE_NAME;
@@ -1167,7 +1167,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
 
         private void SendAndReceiveFastGuts(bool tempQueue, bool setDirectReplyToExplicitly, bool expectUsedTemp)
         {
-            var template = CreateSendAndReceiveRabbitTemplate(this.connectionFactory);
+            var template = CreateSendAndReceiveRabbitTemplate(connectionFactory);
             try
             {
                 template.Execute(channel =>

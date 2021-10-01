@@ -107,7 +107,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             InvocationResult result = null;
             try
             {
-                if (this.Method == null)
+                if (Method == null)
                 {
                     var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                     accessor.TargetMethod = HandlerAdapter.GetMethodFor(message.Payload);

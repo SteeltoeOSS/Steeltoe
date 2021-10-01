@@ -104,8 +104,8 @@ namespace Steeltoe.Common.Util
 
             CheckToken(type);
             CheckToken(subtype);
-            this.Type = type.ToLowerInvariant();
-            this.Subtype = subtype.ToLowerInvariant();
+            Type = type.ToLowerInvariant();
+            Subtype = subtype.ToLowerInvariant();
             if (parameters.Count > 0)
             {
                 var map = new Dictionary<string, string>();
@@ -115,11 +115,11 @@ namespace Steeltoe.Common.Util
                     map.Add(p.Key, p.Value);
                 }
 
-                this.Parameters = map;  // Read only
+                Parameters = map;  // Read only
             }
             else
             {
-                this.Parameters = new Dictionary<string, string>();
+                Parameters = new Dictionary<string, string>();
             }
         }
 

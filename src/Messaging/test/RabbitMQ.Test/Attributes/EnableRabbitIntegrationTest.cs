@@ -142,7 +142,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void SimpleEndpoint()
         {
-            var template = this.context.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test.simple", "foo");
             Assert.Equal("FOO", reply);
 
@@ -193,7 +193,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
         [Fact]
         public void Commas()
         {
-            var template = this.context.GetRabbitTemplate();
+            var template = context.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<string>("test,with,commas", "foo");
             Assert.Equal("FOOfoo", reply);
             var commaContainers = context.GetService<IMessageListenerContainerCollection>("commas");

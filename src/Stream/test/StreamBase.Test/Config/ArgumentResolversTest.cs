@@ -20,21 +20,21 @@ namespace Steeltoe.Stream.Config
             var resolver = new SmartPayloadArgumentResolver(new TestMessageConverter());
             var payload = Encoding.UTF8.GetBytes("hello");
             var message = Message.Create(payload);
-            var parameter = this.GetType().GetMethod("ByteArray").GetParameters()[0];
+            var parameter = GetType().GetMethod("ByteArray").GetParameters()[0];
             var resolvedArgument = resolver.ResolveArgument(parameter, message);
             Assert.Same(payload, resolvedArgument);
 
-            parameter = this.GetType().GetMethod("Object").GetParameters()[0];
+            parameter = GetType().GetMethod("Object").GetParameters()[0];
             resolvedArgument = resolver.ResolveArgument(parameter, message);
             Assert.True(resolvedArgument is IMessage);
 
             var payload2 = new Dictionary<object, object>();
             var message2 = Message.Create(payload2);
-            parameter = this.GetType().GetMethod("Dict").GetParameters()[0];
+            parameter = GetType().GetMethod("Dict").GetParameters()[0];
             resolvedArgument = resolver.ResolveArgument(parameter, message2);
             Assert.Same(payload2, resolvedArgument);
 
-            parameter = this.GetType().GetMethod("Object").GetParameters()[0];
+            parameter = GetType().GetMethod("Object").GetParameters()[0];
             resolvedArgument = resolver.ResolveArgument(parameter, message2);
             Assert.True(resolvedArgument is IMessage);
         }

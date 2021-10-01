@@ -77,7 +77,7 @@ namespace Steeltoe.Discovery.Eureka
         {
             _appInfoManager = appInfoManager;
             _regularLogger = (ILogger)logFactory?.CreateLogger<DiscoveryClient>() ?? NullLogger.Instance;
-            _startupLogger = logFactory?.CreateLogger("Startup." + this.GetType().FullName) ?? NullLogger.Instance;
+            _startupLogger = logFactory?.CreateLogger("Startup." + GetType().FullName) ?? NullLogger.Instance;
         }
 
         public Application GetApplication(string appName)

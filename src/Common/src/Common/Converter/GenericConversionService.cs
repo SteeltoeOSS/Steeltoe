@@ -177,7 +177,7 @@ namespace Steeltoe.Common.Converter
 
             public NoOpConverter(string name)
             {
-                this._name = name;
+                _name = name;
             }
 
             public ISet<(Type Source, Type Target)> ConvertibleTypes
@@ -209,8 +209,8 @@ namespace Steeltoe.Common.Converter
 
             public ConverterCacheKey(Type sourceType, Type targetType)
             {
-                this._sourceType = sourceType;
-                this._targetType = targetType;
+                _sourceType = sourceType;
+                _targetType = targetType;
             }
 
             public override bool Equals(object other)

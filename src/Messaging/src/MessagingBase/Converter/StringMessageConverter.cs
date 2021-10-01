@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.Converter
                 throw new ArgumentNullException(nameof(defaultCharset));
             }
 
-            this._defaultCharset = defaultCharset;
+            _defaultCharset = defaultCharset;
         }
 
         public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;

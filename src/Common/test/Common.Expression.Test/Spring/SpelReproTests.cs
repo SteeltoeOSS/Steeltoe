@@ -2096,7 +2096,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public TestPropertyAccessor(string mapName)
             {
-                this._mapName = mapName;
+                _mapName = mapName;
             }
 
             public Dictionary<string, string> GetMap(object target)

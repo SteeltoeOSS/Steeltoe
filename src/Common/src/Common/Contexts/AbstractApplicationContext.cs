@@ -137,7 +137,7 @@ namespace Steeltoe.Common.Contexts
 
         public T GetService<T>()
         {
-            return (T)this.GetService(typeof(T));
+            return (T)GetService(typeof(T));
         }
 
         public object GetService(Type serviceType)

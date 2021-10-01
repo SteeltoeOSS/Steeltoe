@@ -490,13 +490,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
 
         private void HandleAck(object sender, BasicAckEventArgs args)
         {
-            _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", this.ToString(), args.DeliveryTag, args.Multiple);
+            _logger?.LogDebug("{channel} PC:Ack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
             ProcessAck(args.DeliveryTag, true, args.Multiple, true);
         }
 
         private void HandleNack(object sender, BasicNackEventArgs args)
         {
-            _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", this.ToString(), args.DeliveryTag, args.Multiple);
+            _logger?.LogDebug("{channel} PC:Nack: {deliveryTag}:{multiple}", ToString(), args.DeliveryTag, args.Multiple);
             ProcessAck(args.DeliveryTag, false, args.Multiple, true);
         }
 

@@ -55,7 +55,7 @@ namespace Steeltoe.Integration
 
             if (readOnlyHeaders.Count > 0)
             {
-                this._readOnlyHeaders = new HashSet<string>(readOnlyHeaders);
+                _readOnlyHeaders = new HashSet<string>(readOnlyHeaders);
             }
         }
 
