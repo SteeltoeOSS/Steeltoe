@@ -728,7 +728,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
 
             try
             {
-
                 provider.AddConfigServerClientSettings();
 
                 Assert.True(provider.TryGet("spring:cloud:config:access_token_uri", out var value));

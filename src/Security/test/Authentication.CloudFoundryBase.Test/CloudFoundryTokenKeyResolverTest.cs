@@ -16,7 +16,6 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
         [Fact]
         public void Constructor_ThrowsIfOptionsNull()
         {
-
             var ex = Assert.Throws<ArgumentException>(() => new CloudFoundryTokenKeyResolver(null, null, false));
         }
 
