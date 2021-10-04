@@ -132,12 +132,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
         protected internal virtual IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
         {
             var converter = MessageConverter;
-            if (converter != null && !(result is IMessage<byte[]>))
+            if (converter != null && result is not IMessage<byte[]>)
             {
                 result = converter.ToMessage(result, new MessageHeaders(), genericType);
             }
 
-            if (!(result is IMessage<byte[]>))
+            if (result is not IMessage<byte[]>)
             {
                 throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
             }

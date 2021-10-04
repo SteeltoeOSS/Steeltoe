@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal
 {
     public class TypedValue : ITypedValue
     {
-        public static readonly TypedValue NULL = new(null);
+        public static readonly TypedValue NULL = new (null);
 
         public TypedValue(object value)
         {
@@ -34,7 +34,7 @@ namespace Steeltoe.Common.Expression.Internal
                 return true;
             }
 
-            if (!(obj is TypedValue))
+            if (obj is not TypedValue)
             {
                 return false;
             }
@@ -46,14 +46,8 @@ namespace Steeltoe.Common.Expression.Internal
                             ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
         }
 
-        public override int GetHashCode()
-        {
-            return ObjectUtils.NullSafeHashCode(Value);
-        }
+        public override int GetHashCode() => ObjectUtils.NullSafeHashCode(Value);
 
-        public override string ToString()
-        {
-            return "TypedValue: '" + Value + "' of [" + TypeDescriptor + "]";
-        }
+        public override string ToString() => "TypedValue: '" + Value + "' of [" + TypeDescriptor + "]";
     }
 }

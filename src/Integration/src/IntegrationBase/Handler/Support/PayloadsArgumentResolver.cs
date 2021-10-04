@@ -24,15 +24,12 @@ namespace Steeltoe.Integration.Handler.Support
         {
         }
 
-        public bool SupportsParameter(ParameterInfo parameter)
-        {
-            return parameter.GetCustomAttribute<PayloadsAttribute>() != null;
-        }
+        public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadsAttribute>() != null;
 
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
             var payload = message.Payload;
-            if (!(payload is ICollection<IMessage>))
+            if (payload is not ICollection<IMessage>)
             {
                 throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
             }

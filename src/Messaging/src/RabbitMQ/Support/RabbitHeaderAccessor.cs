@@ -57,12 +57,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
             }
 
-            if (messageHeaderAccessor == null)
+            if (messageHeaderAccessor == null && headers is MessageHeaders msgHeaders)
             {
-                if (headers is MessageHeaders msgHeaders)
-                {
-                    messageHeaderAccessor = new RabbitHeaderAccessor(msgHeaders);
-                }
+                messageHeaderAccessor = new RabbitHeaderAccessor(msgHeaders);
             }
 
             return messageHeaderAccessor;
@@ -87,54 +84,51 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
         public string AppId
         {
-            get { return GetHeader(RabbitMessageHeaders.APP_ID) as string; }
-            set { SetHeader(RabbitMessageHeaders.APP_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.APP_ID) as string;
+            set => SetHeader(RabbitMessageHeaders.APP_ID, value);
         }
 
         public string ClusterId
         {
-            get { return GetHeader(RabbitMessageHeaders.CLUSTER_ID) as string; }
-            set { SetHeader(RabbitMessageHeaders.CLUSTER_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.CLUSTER_ID) as string;
+            set => SetHeader(RabbitMessageHeaders.CLUSTER_ID, value);
         }
 
         public string ConsumerQueue
         {
-            get { return GetHeader(RabbitMessageHeaders.CONSUMER_QUEUE) as string; }
-            set { SetHeader(RabbitMessageHeaders.CONSUMER_QUEUE, value); }
+            get => GetHeader(RabbitMessageHeaders.CONSUMER_QUEUE) as string;
+            set => SetHeader(RabbitMessageHeaders.CONSUMER_QUEUE, value);
         }
 
         public string ConsumerTag
         {
-            get { return GetHeader(RabbitMessageHeaders.CONSUMER_TAG) as string; }
-            set { SetHeader(RabbitMessageHeaders.CONSUMER_TAG, value); }
+            get => GetHeader(RabbitMessageHeaders.CONSUMER_TAG) as string;
+            set => SetHeader(RabbitMessageHeaders.CONSUMER_TAG, value);
         }
 
         public string ContentEncoding
         {
-            get { return GetHeader(RabbitMessageHeaders.CONTENT_ENCODING) as string; }
-            set { SetHeader(RabbitMessageHeaders.CONTENT_ENCODING, value); }
+            get => GetHeader(RabbitMessageHeaders.CONTENT_ENCODING) as string;
+            set => SetHeader(RabbitMessageHeaders.CONTENT_ENCODING, value);
         }
 
         public long? ContentLength
         {
-            get { return GetHeader(RabbitMessageHeaders.CONTENT_LENGTH) as long?; }
-            set { SetHeader(RabbitMessageHeaders.CONTENT_LENGTH, value); }
+            get => GetHeader(RabbitMessageHeaders.CONTENT_LENGTH) as long?;
+            set => SetHeader(RabbitMessageHeaders.CONTENT_LENGTH, value);
         }
 
         public bool IsContentLengthSet => ContentLength.HasValue;
 
         public string CorrelationId
         {
-            get { return GetHeader(RabbitMessageHeaders.CORRELATION_ID) as string; }
-            set { SetHeader(RabbitMessageHeaders.CORRELATION_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.CORRELATION_ID) as string;
+            set => SetHeader(RabbitMessageHeaders.CORRELATION_ID, value);
         }
 
         public int? Delay
         {
-            get
-            {
-                return GetHeader(X_DELAY) as int?;
-            }
+            get => GetHeader(X_DELAY) as int?;
 
             set
             {
@@ -151,94 +145,94 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
         public MessageDeliveryMode? DeliveryMode
         {
-            get { return GetHeader(RabbitMessageHeaders.DELIVERY_MODE) as MessageDeliveryMode?; }
-            set { SetHeader(RabbitMessageHeaders.DELIVERY_MODE, value); }
+            get => GetHeader(RabbitMessageHeaders.DELIVERY_MODE) as MessageDeliveryMode?;
+            set => SetHeader(RabbitMessageHeaders.DELIVERY_MODE, value);
         }
 
         public ulong? DeliveryTag
         {
-            get { return GetHeader(RabbitMessageHeaders.DELIVERY_TAG) as ulong?; }
-            set { SetHeader(RabbitMessageHeaders.DELIVERY_TAG, value); }
+            get => GetHeader(RabbitMessageHeaders.DELIVERY_TAG) as ulong?;
+            set => SetHeader(RabbitMessageHeaders.DELIVERY_TAG, value);
         }
 
         public bool IsDeliveryTagSet => DeliveryTag.HasValue;
 
         public string Expiration
         {
-            get { return GetHeader(RabbitMessageHeaders.EXPIRATION) as string; }
-            set { SetHeader(RabbitMessageHeaders.EXPIRATION, value); }
+            get => GetHeader(RabbitMessageHeaders.EXPIRATION) as string;
+            set => SetHeader(RabbitMessageHeaders.EXPIRATION, value);
         }
 
         public Type InferredArgumentType
         {
-            get { return GetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE) as Type; }
-            set { SetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE, value); }
+            get => GetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE) as Type;
+            set => SetHeader(Messaging.MessageHeaders.INFERRED_ARGUMENT_TYPE, value);
         }
 
         public uint? MessageCount
         {
-            get { return GetHeader(RabbitMessageHeaders.MESSAGE_COUNT) as uint?; }
-            set { SetHeader(RabbitMessageHeaders.MESSAGE_COUNT, value); }
+            get => GetHeader(RabbitMessageHeaders.MESSAGE_COUNT) as uint?;
+            set => SetHeader(RabbitMessageHeaders.MESSAGE_COUNT, value);
         }
 
         public string MessageId
         {
-            get { return GetHeader(Messaging.MessageHeaders.ID) as string; }
-            set { SetHeader(Messaging.MessageHeaders.ID, value); }
+            get => GetHeader(Messaging.MessageHeaders.ID) as string;
+            set => SetHeader(Messaging.MessageHeaders.ID, value);
         }
 
         public int? Priority
         {
-            get { return GetHeader(RabbitMessageHeaders.PRIORITY) as int?; }
-            set { SetHeader(RabbitMessageHeaders.PRIORITY, value); }
+            get => GetHeader(RabbitMessageHeaders.PRIORITY) as int?;
+            set => SetHeader(RabbitMessageHeaders.PRIORITY, value);
         }
 
         public ulong? PublishSequenceNumber
         {
-            get { return GetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER) as ulong?; }
-            set { SetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER, value); }
+            get => GetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER) as ulong?;
+            set => SetHeader(RabbitMessageHeaders.PUBLISH_SEQUENCE_NUMBER, value);
         }
 
         public int? ReceivedDelay
         {
-            get { return GetHeader(RabbitMessageHeaders.RECEIVED_DELAY) as int?; }
-            set { SetHeader(RabbitMessageHeaders.RECEIVED_DELAY, value); }
+            get => GetHeader(RabbitMessageHeaders.RECEIVED_DELAY) as int?;
+            set => SetHeader(RabbitMessageHeaders.RECEIVED_DELAY, value);
         }
 
         public MessageDeliveryMode? ReceivedDeliveryMode
         {
-            get { return GetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE) as MessageDeliveryMode?; }
-            set { SetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE, value); }
+            get => GetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE) as MessageDeliveryMode?;
+            set => SetHeader(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE, value);
         }
 
         public string ReceivedExchange
         {
-            get { return GetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE) as string; }
-            set { SetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE, value); }
+            get => GetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE) as string;
+            set => SetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE, value);
         }
 
         public string ReceivedRoutingKey
         {
-            get { return GetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY) as string; }
-            set { SetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY, value); }
+            get => GetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY) as string;
+            set => SetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY, value);
         }
 
         public string ReceivedUserId
         {
-            get { return GetHeader(RabbitMessageHeaders.RECEIVED_USER_ID) as string; }
-            set { SetHeader(RabbitMessageHeaders.RECEIVED_USER_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.RECEIVED_USER_ID) as string;
+            set => SetHeader(RabbitMessageHeaders.RECEIVED_USER_ID, value);
         }
 
         public bool? Redelivered
         {
-            get { return GetHeader(RabbitMessageHeaders.REDELIVERED) as bool?; }
-            set { SetHeader(RabbitMessageHeaders.REDELIVERED, value); }
+            get => GetHeader(RabbitMessageHeaders.REDELIVERED) as bool?;
+            set => SetHeader(RabbitMessageHeaders.REDELIVERED, value);
         }
 
         public string ReplyTo
         {
-            get { return GetHeader(RabbitMessageHeaders.REPLY_TO) as string; }
-            set { SetHeader(RabbitMessageHeaders.REPLY_TO, value); }
+            get => GetHeader(RabbitMessageHeaders.REPLY_TO) as string;
+            set => SetHeader(RabbitMessageHeaders.REPLY_TO, value);
         }
 
         public Address ReplyToAddress
@@ -254,70 +248,58 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
                 return null;
             }
 
-            set
-            {
-                ReplyTo = value.ToString();
-            }
+            set => ReplyTo = value.ToString();
         }
 
         public object Target
         {
-            get { return GetHeader(RabbitMessageHeaders.TARGET) as object; }
-            set { SetHeader(RabbitMessageHeaders.TARGET, value); }
+            get => GetHeader(RabbitMessageHeaders.TARGET) as object;
+            set => SetHeader(RabbitMessageHeaders.TARGET, value);
         }
 
         public MethodInfo TargetMethod
         {
-            get { return GetHeader(RabbitMessageHeaders.TARGET_METHOD) as MethodInfo; }
-            set { SetHeader(RabbitMessageHeaders.TARGET_METHOD, value); }
+            get => GetHeader(RabbitMessageHeaders.TARGET_METHOD) as MethodInfo;
+            set => SetHeader(RabbitMessageHeaders.TARGET_METHOD, value);
         }
 
         public new long? Timestamp
         {
-            get { return base.Timestamp; }
-            set { SetHeader(Messaging.MessageHeaders.TIMESTAMP, value); }
+            get => base.Timestamp;
+            set => SetHeader(Messaging.MessageHeaders.TIMESTAMP, value);
         }
 
         public string Type
         {
-            get { return GetHeader(RabbitMessageHeaders.TYPE) as string; }
-            set { SetHeader(RabbitMessageHeaders.TYPE, value); }
+            get => GetHeader(RabbitMessageHeaders.TYPE) as string;
+            set => SetHeader(RabbitMessageHeaders.TYPE, value);
         }
 
         public string UserId
         {
-            get { return GetHeader(RabbitMessageHeaders.USER_ID) as string; }
-            set { SetHeader(RabbitMessageHeaders.USER_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.USER_ID) as string;
+            set => SetHeader(RabbitMessageHeaders.USER_ID, value);
         }
 
         public bool? FinalRetryForMessageWithNoId
         {
-            get { return GetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID) as bool?; }
-            set { SetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID, value); }
+            get => GetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID) as bool?;
+            set => SetHeader(RabbitMessageHeaders.FINAL_RETRY_FOR_MESSAGE_WITH_NO_ID, value);
         }
 
         public bool IsFinalRetryForMessageWithNoId => FinalRetryForMessageWithNoId.HasValue;
 
         public bool? LastInBatch
         {
-            get { return GetHeader(RabbitMessageHeaders.LAST_IN_BATCH) as bool?; }
-            set { SetHeader(RabbitMessageHeaders.LAST_IN_BATCH, value); }
+            get => GetHeader(RabbitMessageHeaders.LAST_IN_BATCH) as bool?;
+            set => SetHeader(RabbitMessageHeaders.LAST_IN_BATCH, value);
         }
 
-        public List<Dictionary<string, object>> GetXDeathHeader()
-        {
-            return GetHeader(RabbitMessageHeaders.X_DEATH) as List<Dictionary<string, object>>;
-        }
+        public List<Dictionary<string, object>> GetXDeathHeader() => GetHeader(RabbitMessageHeaders.X_DEATH) as List<Dictionary<string, object>>;
 
-        public override IMessageHeaders ToMessageHeaders()
-        {
-            return Messaging.MessageHeaders.From(headers);
-        }
+        public override IMessageHeaders ToMessageHeaders() => Messaging.MessageHeaders.From(headers);
 
-        protected new RabbitHeaderAccessor CreateMutableAccessor(IMessage message)
-        {
-            return CreateMutableAccessor(message.Headers);
-        }
+        protected new RabbitHeaderAccessor CreateMutableAccessor(IMessage message) => CreateMutableAccessor(message.Headers);
 
         protected new RabbitHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
         {
@@ -329,15 +311,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             return new RabbitHeaderAccessor(headers);
         }
 
-        protected override bool IsReadOnly(string headerName)
-        {
-            return !headers.IsMutable;
-        }
+        protected override bool IsReadOnly(string headerName) => !headers.IsMutable;
 
         protected override void VerifyType(string headerName, object headerValue)
         {
             base.VerifyType(headerName, headerValue);
-            if (RabbitMessageHeaders.PRIORITY.Equals(headerName) && !(headerValue is int))
+            if (RabbitMessageHeaders.PRIORITY.Equals(headerName) && headerValue is not int)
             {
                 throw new ArgumentException("The '" + headerName + "' header value must be an Integer.");
             }
@@ -355,10 +334,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             {
             }
 
-            public new RabbitHeaderAccessor Accessor
-            {
-                get { return accessor as RabbitHeaderAccessor; }
-            }
+            public new RabbitHeaderAccessor Accessor => accessor as RabbitHeaderAccessor;
         }
     }
 }

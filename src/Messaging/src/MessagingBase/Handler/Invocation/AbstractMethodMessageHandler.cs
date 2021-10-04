@@ -19,8 +19,8 @@ namespace Steeltoe.Messaging.Handler.Invocation
         private readonly List<IHandlerMethodReturnValueHandler> _customReturnValueHandlers = new ();
         private readonly HandlerMethodArgumentResolverComposite _argumentResolvers = new ();
         private readonly HandlerMethodReturnValueHandlerComposite _returnValueHandlers = new ();
-        private readonly Dictionary<T, HandlerMethod> _handlerMethods = new(64);
-        private readonly Dictionary<string, List<T>> _destinationLookup = new(64);
+        private readonly Dictionary<T, HandlerMethod> _handlerMethods = new (64);
+        private readonly Dictionary<string, List<T>> _destinationLookup = new (64);
         private readonly ConcurrentDictionary<Type, AbstractExceptionHandlerMethodResolver> _exceptionHandlerCache = new ();
         private readonly ILogger _logger;
 

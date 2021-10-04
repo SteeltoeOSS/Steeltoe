@@ -16,7 +16,7 @@ namespace Steeltoe.Common.Util
 
         private const int CACHE_TURNOFF_THRESHOLD = 65536;
 
-        private static readonly Regex VARIABLE_PATTERN = new("\\{[^/]+?\\}", RegexOptions.Compiled);
+        private static readonly Regex VARIABLE_PATTERN = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
 
         private static readonly char[] WILDCARD_CHARS = { '*', '?', '{' };
 
@@ -739,7 +739,7 @@ namespace Steeltoe.Common.Util
         protected class AntPathStringMatcher
         {
             private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
-            private static readonly Regex GLOB_PATTERN = new("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
+            private static readonly Regex GLOB_PATTERN = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
             private readonly List<string> _variableNames = new ();
             private Regex _pattern;
 

@@ -28,11 +28,11 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard
 
         // Count of many times as the expression been interpreted - can trigger compilation
         // when certain limit reached
-        private readonly AtomicInteger _interpretedCount = new(0);
+        private readonly AtomicInteger _interpretedCount = new (0);
 
         // The number of times compilation was attempted and failed - enables us to eventually
         // give up trying to compile it when it just doesn't seem to be possible.
-        private readonly AtomicInteger _failedAttempts = new(0);
+        private readonly AtomicInteger _failedAttempts = new (0);
 
         // The default context is used if no override is supplied by the user
         private IEvaluationContext _evaluationContext;

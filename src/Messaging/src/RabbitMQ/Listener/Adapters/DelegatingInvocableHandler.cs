@@ -234,12 +234,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             {
                 var resolvedValue = ServiceExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
                 var newValue = Resolver.Evaluate(resolvedValue, ServiceExpressionContext);
-                if (!(newValue is string))
+                if (newValue is not string sValue)
                 {
                     throw new InvalidOperationException("Invalid SendToAttribute expression");
                 }
 
-                return (string)newValue;
+                return sValue;
             }
             else
             {

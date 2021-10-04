@@ -22,7 +22,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         public bool IsFatal(Exception exception)
         {
             var cause = exception.InnerException;
-            while (cause is MessagingException && !(cause is MessageConversionException) && !(cause is MethodArgumentResolutionException))
+            while (cause is MessagingException && cause is not MessageConversionException && cause is not MethodArgumentResolutionException)
             {
                 cause = cause.InnerException;
             }
@@ -43,12 +43,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
         protected virtual bool IsUserCauseFatal(Exception cause) => false;
 
         private bool IsCauseFatal(Exception cause)
-        {
-            return cause is MessageConversionException
+            => cause is MessageConversionException
                     || cause is MethodArgumentResolutionException
                     || cause is MissingMethodException
                     || cause is InvalidCastException
                     || IsUserCauseFatal(cause);
-        }
     }
 }

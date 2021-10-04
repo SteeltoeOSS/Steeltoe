@@ -341,8 +341,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast
 
         protected class DescriptorComparison
         {
-            protected static readonly DescriptorComparison NOT_NUMBERS = new(false, false, TypeDescriptor.V);
-            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new(true, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison NOT_NUMBERS = new (false, false, TypeDescriptor.V);
+            protected static readonly DescriptorComparison INCOMPATIBLE_NUMBERS = new (true, false, TypeDescriptor.V);
 
             protected readonly bool _areNumbers;  // Were the two compared descriptor both for numbers?
 

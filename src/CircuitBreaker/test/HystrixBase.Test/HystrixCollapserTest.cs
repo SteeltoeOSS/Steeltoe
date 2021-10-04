@@ -2456,7 +2456,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
 
         private class TestSubscriber<T> : ObserverBase<T>, IDisposable
         {
-            private readonly CountdownEvent latch = new(1);
+            private readonly CountdownEvent latch = new (1);
             private readonly ITestOutputHelper output;
             private int completions = 0;
 

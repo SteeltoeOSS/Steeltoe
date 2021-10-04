@@ -98,12 +98,9 @@ namespace Steeltoe.Messaging.Support
                 }
             }
 
-            if (messageHeaderAccessor == null && accessorType == null)
+            if (messageHeaderAccessor == null && accessorType == null && headers is MessageHeaders msgHeaders)
             {
-                if (headers is MessageHeaders msgHeaders)
-                {
-                    messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
-                }
+                messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
             }
 
             return messageHeaderAccessor;

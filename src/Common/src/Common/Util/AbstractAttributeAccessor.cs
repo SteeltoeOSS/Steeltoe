@@ -76,7 +76,7 @@ namespace Steeltoe.Common.Util
                 return true;
             }
 
-            if (!(other is AbstractAttributeAccessor))
+            if (other is not AbstractAttributeAccessor)
             {
                 return false;
             }

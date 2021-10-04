@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 namespace Steeltoe.Connector
 {
     public class ConnectorIOptions<T> : IOptions<T>
-        where T : class, new ()
+        where T : class, new()
     {
         public ConnectorIOptions(T value)
         {

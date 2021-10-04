@@ -360,7 +360,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
             return Consumers.Values.ToList<RC.DefaultBasicConsumer>();
         }
 
-        protected bool HasDelivery => !(Queue.Count == 0);
+        protected bool HasDelivery => Queue.Count != 0;
 
         protected bool Cancelled
         {

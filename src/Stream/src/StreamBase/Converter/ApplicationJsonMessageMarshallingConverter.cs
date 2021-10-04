@@ -44,6 +44,7 @@ namespace Steeltoe.Stream.Converter
             }
 
             object result;
+
             // if (result == null)
             // {
             if (message.Payload is byte[] v && targetClass.IsAssignableFrom(typeof(string)))

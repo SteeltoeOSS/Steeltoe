@@ -6,7 +6,6 @@ using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test
 {
-#pragma warning disable SA1402 // File may only contain a single class
     public class TestCommandBuilder
     {
         public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OWNER_ONE;
@@ -122,6 +121,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         public static IHystrixThreadPoolKey THREAD_POOL_ONE = new HystrixThreadPoolKeyDefault("THREAD_POOL_ONE");
         public static IHystrixThreadPoolKey THREAD_POOL_TWO = new HystrixThreadPoolKeyDefault("THREAD_POOL_TWO");
     }
-
-#pragma warning restore SA1402 // File may only contain a single class
 }

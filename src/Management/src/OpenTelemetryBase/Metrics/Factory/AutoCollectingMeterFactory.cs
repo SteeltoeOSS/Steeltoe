@@ -39,7 +39,7 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics.Factory
             }
         }
 
-        public static AutoCollectingMeterFactory Create(MetricProcessor processor) => new(processor, TimeSpan.MaxValue);
+        public static AutoCollectingMeterFactory Create(MetricProcessor processor) => new (processor, TimeSpan.MaxValue);
 
         public override Meter GetMeter(string name, string version = null)
         {

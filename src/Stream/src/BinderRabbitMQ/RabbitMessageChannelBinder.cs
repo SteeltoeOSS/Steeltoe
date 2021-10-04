@@ -50,7 +50,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
         private static readonly SimplePassthroughMessageConverter _passThoughConverter = new ();
         private static readonly IMessageHeadersConverter _inboundMessagePropertiesConverter = new DefaultBinderMessagePropertiesConverter();
         private static readonly RabbitMessageHeaderErrorMessageStrategy _errorMessageStrategy = new ();
-        private static readonly Regex _interceptorNeededPattern = new("(Payload|#root|#this)");
+        private static readonly Regex _interceptorNeededPattern = new ("(Payload|#root|#this)");
 
         public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
             : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
@@ -656,12 +656,12 @@ namespace Steeltoe.Stream.Binder.Rabbit
             private static bool ShouldRepublish(Exception exception)
             {
                 var cause = exception;
-                while (cause != null && !(cause is RabbitRejectAndDontRequeueException) && !(cause is ImmediateAcknowledgeException))
+                while (cause != null && cause is not RabbitRejectAndDontRequeueException && cause is not ImmediateAcknowledgeException)
                 {
                     cause = cause.InnerException;
                 }
 
-                return !(cause is ImmediateAcknowledgeException);
+                return cause is not ImmediateAcknowledgeException;
             }
         }
 

@@ -900,7 +900,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection
                 }
             }
 
-            if ((IsPublisherConfirms || IsPublisherReturns) && !(channel is PublisherCallbackChannel))
+            if ((IsPublisherConfirms || IsPublisherReturns) && channel is not PublisherCallbackChannel)
             {
                 channel = PublisherCallbackChannelFactory.CreateChannel(channel);
             }

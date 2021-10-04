@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
 {
     public class LongMaxUpdater
     {
-        private readonly AtomicLong _value = new(long.MinValue);
+        private readonly AtomicLong _value = new (long.MinValue);
 
         public void Update(long value)
         {

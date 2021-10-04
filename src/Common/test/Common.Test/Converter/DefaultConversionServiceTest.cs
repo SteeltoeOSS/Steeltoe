@@ -949,7 +949,7 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (!(o is ISBN))
+                if (o is not ISBN)
                 {
                     return false;
                 }
@@ -958,10 +958,7 @@ namespace Steeltoe.Common.Converter.Test
                 return value.Equals(isbn.value);
             }
 
-            public override int GetHashCode()
-            {
-                return value.GetHashCode();
-            }
+            public override int GetHashCode() => value.GetHashCode();
 
             public override string ToString()
             {
@@ -992,7 +989,7 @@ namespace Steeltoe.Common.Converter.Test
 
             public override bool Equals(object o)
             {
-                if (!(o is SSN))
+                if (o is not SSN)
                 {
                     return false;
                 }
@@ -1001,10 +998,7 @@ namespace Steeltoe.Common.Converter.Test
                 return value.Equals(ssn.value);
             }
 
-            public override int GetHashCode()
-            {
-                return value.GetHashCode();
-            }
+            public override int GetHashCode() => value.GetHashCode();
 
             public override string ToString()
             {

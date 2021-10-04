@@ -2,14 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
 using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Outbound;
-using Steeltoe.Integration.Rabbit.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -17,9 +14,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Stream.Binder.Rabbit.Config;
-using Steeltoe.Stream.Config;
 using System;
-using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using Xunit;
@@ -29,10 +24,8 @@ namespace Steeltoe.Stream.Binder.Rabbit
 {
     public partial class RabbitBinderTests : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
     {
-#pragma warning disable IDE1006 // Naming Styles
         private const string TEST_PREFIX = "bindertest.";
-#pragma warning restore IDE1006 // Naming Styles
-        private static readonly string _bigExceptionMessage = new('x', 10_000);
+        private static readonly string _bigExceptionMessage = new ('x', 10_000);
         private bool _disposed = false;
 
         private RabbitTestBinder _testBinder;

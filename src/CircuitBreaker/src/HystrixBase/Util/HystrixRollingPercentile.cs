@@ -26,7 +26,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util
          * This will get flipped each time a new bucket is created.
          */
         /* package for testing */
-        private volatile PercentileSnapshot _currentPercentileSnapshot = new(0);
+        private volatile PercentileSnapshot _currentPercentileSnapshot = new (0);
 
         public HystrixRollingPercentile(int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
             : this(Actual_time, timeInMilliseconds, numberOfBuckets, bucketDataLength, enabled)

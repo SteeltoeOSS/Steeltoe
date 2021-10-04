@@ -101,8 +101,8 @@ namespace Steeltoe.Integration.Rabbit.Support
 
         public static string[] OutboundReplyHeaders { get; } = new string[] { "*" };
 
-        public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new(InboundRequestHeaders, InboundReplyHeaders, logger);
+        public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new (InboundRequestHeaders, InboundReplyHeaders, logger);
 
-        public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new(OutboundRequestHeaders, OutboundReplyHeaders, logger);
+        public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new (OutboundRequestHeaders, OutboundReplyHeaders, logger);
     }
 }

@@ -205,9 +205,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix
         protected internal volatile ExecutionResult _executionResult = EMPTY; // state on shared execution
         protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
 
-        protected readonly AtomicCommandState commandState = new(CommandState.NOT_STARTED);
-        protected readonly AtomicThreadState threadState = new(ThreadState.NOT_USING_THREAD);
-        protected readonly AtomicTimedOutStatus isCommandTimedOut = new(TimedOutStatus.NOT_EXECUTED);
+        protected readonly AtomicCommandState commandState = new (CommandState.NOT_STARTED);
+        protected readonly AtomicThreadState threadState = new (ThreadState.NOT_USING_THREAD);
+        protected readonly AtomicTimedOutStatus isCommandTimedOut = new (TimedOutStatus.NOT_EXECUTED);
         protected readonly IHystrixCommandGroupKey commandGroup;
 
         protected HystrixCompletionSource tcs;

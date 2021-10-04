@@ -28,7 +28,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
         }
 
         private class OptionsWrapper<T> : IOptions<T>
-            where T : class, new ()
+            where T : class, new()
         {
             public T Value { get; set; }
         }

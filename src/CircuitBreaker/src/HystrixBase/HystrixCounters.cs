@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix
 {
     public static class HystrixCounters
     {
-        private static readonly AtomicInteger _concurrentThreadsExecuting = new(0);
+        private static readonly AtomicInteger _concurrentThreadsExecuting = new (0);
 
         internal static int IncrementGlobalConcurrentThreads()
         {

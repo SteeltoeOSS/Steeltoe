@@ -254,7 +254,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public bool CanRead(IEvaluationContext context, object target, string name)
             {
-                if (!(target is string))
+                if (target is not string)
                 {
                     throw new SystemException("Assertion Failed! target should be string");
                 }
@@ -264,7 +264,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring
 
             public bool CanWrite(IEvaluationContext context, object target, string name)
             {
-                if (!(target is string))
+                if (target is not string)
                 {
                     throw new SystemException("Assertion Failed! target should be string");
                 }

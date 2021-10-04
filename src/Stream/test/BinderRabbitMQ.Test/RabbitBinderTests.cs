@@ -481,7 +481,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var client = new Client();
             var bindings = await client.GetBindingsBySource("/", "propsUser2");
             var n = 0;
-            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            while (n++ < 100 && (bindings == null || !bindings.Any()))
             {
                 Thread.Sleep(100);
                 bindings = await client.GetBindingsBySource("/", "propsUser2");
@@ -558,7 +558,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var bindings = await client.GetBindingsBySource("/", "propsUser3");
 
             var n = 0;
-            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            while (n++ < 100 && (bindings == null || !bindings.Any()))
             {
                 Thread.Sleep(100);
                 bindings = await client.GetBindingsBySource("/", "propsUser3");
@@ -571,7 +571,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             bindings = await client.GetBindingsBySource("/", "customDLX");
             n = 0;
-            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            while (n++ < 100 && (bindings == null || !bindings.Any()))
             {
                 Thread.Sleep(100);
                 bindings = await client.GetBindingsBySource("/", "customDLX");
@@ -690,7 +690,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
             var bindings = await client.GetBindingsBySource("/", "propsHeader");
 
             var n = 0;
-            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            while (n++ < 100 && (bindings == null || !bindings.Any()))
             {
                 Thread.Sleep(100);
                 bindings = await client.GetBindingsBySource("/", "propsHeader");
@@ -705,7 +705,7 @@ namespace Steeltoe.Stream.Binder.Rabbit
 
             bindings = await client.GetBindingsBySource("/", "propsHeader.dlx");
             n = 0;
-            while (n++ < 100 && (bindings == null || bindings.Count() < 1))
+            while (n++ < 100 && (bindings == null || !bindings.Any()))
             {
                 Thread.Sleep(100);
                 bindings = await client.GetBindingsBySource("/", "propsHeader.dlx");

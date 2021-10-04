@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Consul;
 using System.Collections.Generic;
 using Xunit;
 
@@ -15,14 +14,14 @@ namespace Steeltoe.Discovery.Consul.Test
     {
         private Dictionary<string, string> appsettings = new ()
         {
-                { "spring:application:name", "myName" },
-                { "spring:cloud:inet:defaulthostname", "fromtest" },
-                { "spring:cloud:inet:skipReverseDnsLookup", "true" },
-                { "consul:discovery:useNetUtils", "true" },
-                { "consul:discovery:register", "false" },
-                { "consul:discovery:deregister", "false" },
-                { "consul:host", "http://testhost:8500" }
-            };
+            { "spring:application:name", "myName" },
+            { "spring:cloud:inet:defaulthostname", "fromtest" },
+            { "spring:cloud:inet:skipReverseDnsLookup", "true" },
+            { "consul:discovery:useNetUtils", "true" },
+            { "consul:discovery:register", "false" },
+            { "consul:discovery:deregister", "false" },
+            { "consul:host", "http://testhost:8500" }
+        };
 
         [Fact]
         public void UseConsulUsesConsul()

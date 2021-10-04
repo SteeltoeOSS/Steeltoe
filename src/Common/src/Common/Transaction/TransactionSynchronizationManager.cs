@@ -67,7 +67,7 @@ namespace Steeltoe.Common.Transaction
             map[key] = value;
 
             // Transparently suppress a ResourceHolder that was marked as void...
-            if (oldValue is IResourceHolder && ((IResourceHolder)oldValue).IsVoid)
+            if (oldValue is IResourceHolder holder && holder.IsVoid)
             {
                 oldValue = null;
             }
@@ -248,7 +248,7 @@ namespace Steeltoe.Common.Transaction
             }
 
             // Transparently suppress a ResourceHolder that was marked as void...
-            if (value is IResourceHolder && ((IResourceHolder)value).IsVoid)
+            if (value is IResourceHolder holder && holder.IsVoid)
             {
                 value = null;
             }
@@ -268,7 +268,7 @@ namespace Steeltoe.Common.Transaction
             map.TryGetValue(actualKey, out var value);
 
             // Transparently remove ResourceHolder that was marked as void...
-            if (value is IResourceHolder && ((IResourceHolder)value).IsVoid)
+            if (value is IResourceHolder holder && holder.IsVoid)
             {
                 map.Remove(actualKey);
 

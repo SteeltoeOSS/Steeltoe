@@ -36,7 +36,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery
 
         public bool IsSecure { get; }
 
-        public Uri Uri => new($"{GetScheme()}{Coln}{Dsl}{Host}{Coln}{Port}");
+        public Uri Uri => new ($"{GetScheme()}{Coln}{Dsl}{Host}{Coln}{Port}");
 
         public IDictionary<string, string> Metadata { get; }
 

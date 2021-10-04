@@ -242,7 +242,7 @@ namespace Steeltoe.Management.Endpoint.Metrics
 
         protected internal class MetricDictionary<T>
             : Dictionary<string, T>
-            where T : new ()
+            where T : new()
         {
             public MetricDictionary()
             {

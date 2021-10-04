@@ -853,7 +853,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, List<IMessage> data)
         {
-            if (!(exception is ListenerExecutionFailedException listnerExcep))
+            if (exception is not ListenerExecutionFailedException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, data.ToArray());
             }
@@ -863,7 +863,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual ListenerExecutionFailedException WrapToListenerExecutionFailedExceptionIfNeeded(Exception exception, IMessage message)
         {
-            if (!(exception is ListenerExecutionFailedException listnerExcep))
+            if (exception is not ListenerExecutionFailedException)
             {
                 return new ListenerExecutionFailedException("Listener threw exception", exception, message);
             }
@@ -1028,7 +1028,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         protected virtual void CheckMessageListener(object listener)
         {
-            if (!(listener is IMessageListener))
+            if (listener is not IMessageListener)
             {
                 throw new ArgumentException(
                     "Message listener needs to be of type [" + typeof(IMessageListener).Name + "] or [" + typeof(IChannelAwareMessageListener).Name + "]");

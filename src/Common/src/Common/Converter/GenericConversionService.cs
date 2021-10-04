@@ -33,10 +33,7 @@ namespace Steeltoe.Common.Converter
             return converter != null;
         }
 
-        public T Convert<T>(object source)
-        {
-            return (T)Convert(source, source.GetType(), typeof(T));
-        }
+        public T Convert<T>(object source) => (T)Convert(source, source.GetType(), typeof(T));
 
         public object Convert(object source, Type sourceType, Type targetType)
         {
@@ -132,10 +129,7 @@ namespace Steeltoe.Common.Converter
             return null;
         }
 
-        protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType)
-        {
-            return targetType.IsAssignableFrom(sourceType) ? NO_OP_CONVERTER : null;
-        }
+        protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType) => targetType.IsAssignableFrom(sourceType) ? NO_OP_CONVERTER : null;
 
         private object HandleResult(Type sourceType, Type targetType, object result)
         {
@@ -180,23 +174,11 @@ namespace Steeltoe.Common.Converter
                 _name = name;
             }
 
-            public ISet<(Type Source, Type Target)> ConvertibleTypes
-            {
-                get
-                {
-                    return null;
-                }
-            }
+            public ISet<(Type Source, Type Target)> ConvertibleTypes => null;
 
-            public object Convert(object source, Type sourceType, Type targetType)
-            {
-                return source;
-            }
+            public object Convert(object source, Type sourceType, Type targetType) => source;
 
-            public override string ToString()
-            {
-                return _name;
-            }
+            public override string ToString() => _name;
         }
 
 #pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
@@ -220,7 +202,7 @@ namespace Steeltoe.Common.Converter
                     return true;
                 }
 
-                if (!(other is ConverterCacheKey))
+                if (other is not ConverterCacheKey)
                 {
                     return false;
                 }
@@ -230,16 +212,9 @@ namespace Steeltoe.Common.Converter
                         _targetType.Equals(otherKey._targetType);
             }
 
-            public override int GetHashCode()
-            {
-                return (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
-            }
+            public override int GetHashCode() => (_sourceType.GetHashCode() * 29) + _targetType.GetHashCode();
 
-            public override string ToString()
-            {
-                return "ConverterCacheKey [sourceType = " + _sourceType +
-                        ", targetType = " + _targetType + "]";
-            }
+            public override string ToString() => "ConverterCacheKey [sourceType = " + _sourceType + ", targetType = " + _targetType + "]";
 
             public int CompareTo(ConverterCacheKey other)
             {
@@ -266,7 +241,7 @@ namespace Steeltoe.Common.Converter
             {
                 foreach (var converter in _converters)
                 {
-                    if (!(converter is IConditionalGenericConverter) ||
+                    if (converter is not IConditionalGenericConverter ||
                             ((IConditionalGenericConverter)converter).Matches(sourceType, targetType))
                     {
                         return converter;
@@ -276,10 +251,7 @@ namespace Steeltoe.Common.Converter
                 return null;
             }
 
-            public override string ToString()
-            {
-                return string.Join(",", _converters);
-            }
+            public override string ToString() => string.Join(",", _converters);
         }
 
         private class Converters
@@ -293,7 +265,7 @@ namespace Steeltoe.Common.Converter
                 var convertibleTypes = converter.ConvertibleTypes;
                 if (convertibleTypes == null)
                 {
-                    if (!(converter is IConditionalConverter))
+                    if (converter is not IConditionalConverter)
                     {
                         throw new InvalidOperationException("Only conditional converters may return null convertible types");
                     }

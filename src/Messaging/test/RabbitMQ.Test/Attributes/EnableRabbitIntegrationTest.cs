@@ -1103,11 +1103,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes
 
             [RabbitListener("test.generic.list", ContainerFactory = "jsonListenerContainerFactory")]
             public List<JsonObject> GenericList(JsonObject input)
-                => new() { input };
+                => new () { input };
 
             [RabbitListener("test.generic.map", ContainerFactory = "jsonListenerContainerFactory")]
             public Dictionary<string, JsonObject> GenericMap(JsonObject input)
-                => new() { { "key", input } };
+                => new () { { "key", input } };
 
             [RabbitListener("test.messaging.message", ContainerFactory = "jsonListenerContainerFactory")]
             public IMessage<Bar> MessagingMessage(string input)

@@ -143,7 +143,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo
                 return false;
             }
 
-            if (!(obj is InstanceInfo other))
+            if (obj is not InstanceInfo other)
             {
                 return false;
             }

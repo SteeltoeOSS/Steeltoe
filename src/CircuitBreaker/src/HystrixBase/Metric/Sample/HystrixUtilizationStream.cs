@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
     {
         private const int DataEmissionIntervalInMs = 500;
         private readonly IObservable<HystrixUtilization> _allUtilizationStream;
-        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new(false);
+        private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
 
         private static Func<long, HystrixUtilization> AllUtilization { get; } =
           (long timestamp) =>
@@ -43,7 +43,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample
 
         // The data emission interval is looked up on startup only
         private static readonly HystrixUtilizationStream Instance =
-                    new(DataEmissionIntervalInMs);
+                    new (DataEmissionIntervalInMs);
 
         public static HystrixUtilizationStream GetInstance()
         {

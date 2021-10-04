@@ -73,16 +73,10 @@ namespace Steeltoe.Common.Transaction
         }
 
         public override bool Equals(object other)
-        {
-            return this == other ||
-                (base.Equals(other) &&
-                (!(other is TransactionTemplate) || TransactionManager == ((TransactionTemplate)other).TransactionManager));
-        }
+            => this == other ||
+                (base.Equals(other) && (other is not TransactionTemplate || TransactionManager == ((TransactionTemplate)other).TransactionManager));
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
         private void RollbackOnException(ITransactionStatus status, Exception ex)
         {

@@ -5896,7 +5896,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
     internal class AsyncCacheableCommand : HystrixCommand<object>
     {
         private readonly string arg;
-        private readonly AtomicBoolean cancelled = new(false);
+        private readonly AtomicBoolean cancelled = new (false);
 
         public AsyncCacheableCommand(string arg)
          : base(new HystrixCommandOptions() { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })

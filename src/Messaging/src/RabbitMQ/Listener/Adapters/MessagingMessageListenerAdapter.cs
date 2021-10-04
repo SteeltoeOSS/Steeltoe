@@ -93,12 +93,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 }
             }
 
-            if (!(result is IMessage<byte[]>))
+            if (result is not IMessage<byte[]> mResult)
             {
                 throw new MessageConversionException("No MessageConverter specified - cannot handle message [" + result + "]");
             }
 
-            return (IMessage<byte[]>)result;
+            return mResult;
         }
 
         protected void InvokeHandlerAndProcessResult(IMessage amqpMessage, RC.IModel channel, IMessage message)

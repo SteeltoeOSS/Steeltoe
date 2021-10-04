@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support
             else if (typeof(MessageHeaderAccessor).IsAssignableFrom(paramType))
             {
                 var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
-                if (accessor != null && paramType.IsAssignableFrom(accessor.GetType()))
+                if (accessor != null && paramType.IsInstanceOfType(accessor))
                 {
                     return accessor;
                 }

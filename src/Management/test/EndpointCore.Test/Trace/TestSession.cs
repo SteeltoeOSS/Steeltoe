@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Trace.Test
     internal class TestSession : ISession
     {
         private readonly Dictionary<string, byte[]> _store
-                = new(StringComparer.OrdinalIgnoreCase);
+                = new (StringComparer.OrdinalIgnoreCase);
 
         public bool IsAvailable { get; } = true;
 

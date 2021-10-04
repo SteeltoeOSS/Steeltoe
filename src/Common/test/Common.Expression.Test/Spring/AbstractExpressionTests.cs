@@ -203,13 +203,13 @@ namespace Steeltoe.Common.Expression.Internal.Spring
                 sb.Append('}');
                 return sb.ToString();
             }
-            else if (value is IEnumerable && !(value is string))
+            else if (value is IEnumerable && value is not string)
             {
                 var enumerable = value as IEnumerable;
                 var sb = new StringBuilder("[");
                 foreach (var obj in enumerable)
                 {
-                    if (obj is IEnumerable && !(obj is string))
+                    if (obj is IEnumerable && obj is not string)
                     {
                         sb.Append(StringValueOf(obj));
                         sb.Append(',');

@@ -8,7 +8,7 @@ namespace Steeltoe.Connector.Services
 {
     public class RabbitMQServiceInfoFactory : ServiceInfoFactory
     {
-        public static readonly Tags RABBIT_SERVICE_TAGS = new("rabbit");
+        public static readonly Tags RABBIT_SERVICE_TAGS = new ("rabbit");
 
         private static readonly string[] _scheme = new string[] { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
 

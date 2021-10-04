@@ -93,12 +93,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
                 var container = CreateListenerContainer(endpoint, factory);
                 _listenerContainers.TryAdd(id, container);
 
-                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null)
+                if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null && ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
                 {
-                    if (ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
-                    {
-                        containerCollection.AddContainer(container);
-                    }
+                    containerCollection.AddContainer(container);
                 }
 
                 // if (this.contextRefreshed)

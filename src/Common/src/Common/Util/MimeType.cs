@@ -309,7 +309,7 @@ namespace Steeltoe.Common.Util
                 return true;
             }
 
-            if (!(other is MimeType))
+            if (other is not MimeType)
             {
                 return false;
             }

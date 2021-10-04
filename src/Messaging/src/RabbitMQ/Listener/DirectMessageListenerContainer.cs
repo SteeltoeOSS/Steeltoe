@@ -27,7 +27,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 {
     public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
-        internal CountdownEvent _startedLatch = new(1);
+        internal CountdownEvent _startedLatch = new (1);
 
         protected internal readonly List<SimpleConsumer> _consumers = new ();
         protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new ();

@@ -19,7 +19,7 @@ namespace Steeltoe.Integration.Handler
     {
         private static volatile int _concurrencyFailures = 0;
         private readonly TestService _testService = new ();
-        private readonly Employee _employee = new("oleg", "zhurakousky");
+        private readonly Employee _employee = new ("oleg", "zhurakousky");
 
         [Fact]
         public void OptionalHeader()

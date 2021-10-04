@@ -19,12 +19,12 @@ namespace Steeltoe.Common.Availability
         /// <summary>
         /// The application is running and its internal state is correct.
         /// </summary>
-        public static readonly LivenessState Correct = new("CORRECT");
+        public static readonly LivenessState Correct = new ("CORRECT");
 
         /// <summary>
         /// The application is running but its internal state is broken.
         /// </summary>
-        public static readonly LivenessState Broken = new("BROKEN");
+        public static readonly LivenessState Broken = new ("BROKEN");
 
         public override string ToString() => _value;
     }

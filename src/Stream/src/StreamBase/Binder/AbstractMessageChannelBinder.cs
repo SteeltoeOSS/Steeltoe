@@ -65,7 +65,7 @@ namespace Steeltoe.Stream.Binder
 
         protected override IBinding DoBindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
         {
-            if (!(outboundTarget is ISubscribableChannel))
+            if (outboundTarget is not ISubscribableChannel)
             {
                 throw new ArgumentException("Binding is supported only for ISubscribableChannel instances");
             }
@@ -362,7 +362,7 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (!(errorChannelObject is ISubscribableChannel))
+                if (errorChannelObject is not ISubscribableChannel)
                 {
                     throw new ArgumentException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }
@@ -385,7 +385,7 @@ namespace Steeltoe.Stream.Binder
             var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
             if (errorChannelObject != null)
             {
-                if (!(errorChannelObject is ISubscribableChannel))
+                if (errorChannelObject is not ISubscribableChannel)
                 {
                     throw new InvalidOperationException("Error channel '" + errorChannelName + "' must be a ISubscribableChannel");
                 }

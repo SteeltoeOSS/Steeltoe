@@ -1980,14 +1980,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         }
 
         private ISmartMessageConverter GetRequiredSmartMessageConverter()
-        {
-            if (!(GetRequiredMessageConverter() is ISmartMessageConverter converter))
-            {
-                throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
-            }
-
-            return converter;
-        }
+            => GetRequiredMessageConverter() is not ISmartMessageConverter converter
+                ? throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter")
+                : converter;
 
         private string GetRequiredQueue()
         {
@@ -2277,7 +2272,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
             }
             finally
             {
-                if (consumer != null && !(exception is ConsumerCancelledException) && channel.IsOpen)
+                if (consumer != null && exception is not ConsumerCancelledException && channel.IsOpen)
                 {
                     CancelConsumerQuietly(channel, consumer);
                 }
@@ -2301,12 +2296,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private bool SendReply<R, S>(Func<R, S> receiveAndReplyCallback, Func<IMessage, S, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
         {
             object receive = receiveMessage;
-            if (!typeof(R).IsAssignableFrom(receive.GetType()))
+            if (receive is not R)
             {
                 receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(R));
             }
 
-            if (!(receive is R messageAsR))
+            if (receive is not R messageAsR)
             {
                 throw new ArgumentException("'receiveAndReplyCallback' can't handle received object '" + receive.GetType() + "'");
             }
@@ -2586,7 +2581,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core
         private bool ShouldRethrow(RabbitException ex)
         {
             Exception cause = ex;
-            while (cause != null && !(cause is ShutdownSignalException) && !(cause is ProtocolException))
+            while (cause != null && cause is not ShutdownSignalException && cause is not ProtocolException)
             {
                 cause = cause.InnerException;
             }

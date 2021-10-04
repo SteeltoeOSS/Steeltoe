@@ -45,7 +45,7 @@ namespace Steeltoe.Common.Availability
         /// <param name="caller">Logged at trace level for tracking origin of state change</param>
         public void SetAvailabilityState(string stateKey, IAvailabilityState newState, string caller)
         {
-            if ((stateKey.Equals(LivenessKey) && !(newState is LivenessState)) || (stateKey.Equals(ReadinessKey) && !(newState is ReadinessState)))
+            if ((stateKey.Equals(LivenessKey) && newState is not LivenessState) || (stateKey.Equals(ReadinessKey) && newState is not ReadinessState))
             {
                 throw new InvalidOperationException($"{stateKey} state can only be of type {stateKey}State");
             }

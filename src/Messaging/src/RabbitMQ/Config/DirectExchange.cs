@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
 {
     public class DirectExchange : AbstractExchange, IDirectExchange
     {
-        public static readonly DirectExchange DEFAULT = new(string.Empty);
+        public static readonly DirectExchange DEFAULT = new (string.Empty);
 
         public DirectExchange(string name)
             : base(name)

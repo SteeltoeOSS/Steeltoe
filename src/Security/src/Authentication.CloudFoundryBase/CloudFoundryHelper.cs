@@ -12,7 +12,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry
 {
     public static class CloudFoundryHelper
     {
-        private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static List<string> GetScopes(JsonElement user)
         {

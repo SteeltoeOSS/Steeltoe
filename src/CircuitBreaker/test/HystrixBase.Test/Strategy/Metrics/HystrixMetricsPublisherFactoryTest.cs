@@ -134,8 +134,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class TestCommandKey : HystrixCommandKeyDefault
         {
-            public static TestCommandKey TEST_A = new("TEST_A");
-            public static TestCommandKey TEST_B = new("TEST_B");
+            public static TestCommandKey TEST_A = new ("TEST_A");
+            public static TestCommandKey TEST_B = new ("TEST_B");
 
             public TestCommandKey(string name)
                 : base(name)
@@ -145,8 +145,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics.Test
 
         private class TestThreadPoolKey : HystrixThreadPoolKeyDefault
         {
-            public static TestThreadPoolKey TEST_A = new("TEST_A");
-            public static TestThreadPoolKey TEST_B = new("TEST_B");
+            public static TestThreadPoolKey TEST_A = new ("TEST_A");
+            public static TestThreadPoolKey TEST_B = new ("TEST_B");
 
             public TestThreadPoolKey(string name)
                 : base(name)

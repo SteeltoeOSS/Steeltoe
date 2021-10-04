@@ -549,7 +549,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support
                     return true;
                 }
 
-                if (!(obj is PropertyCacheKey))
+                if (obj is not PropertyCacheKey)
                 {
                     return false;
                 }

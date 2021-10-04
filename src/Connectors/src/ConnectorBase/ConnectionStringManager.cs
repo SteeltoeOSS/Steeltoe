@@ -30,7 +30,7 @@ namespace Steeltoe.Connector
         /// <param name="serviceName">The name of a service binding</param>
         /// <returns><see cref="Connection"/></returns>
         public Connection Get<T>(string serviceName = null)
-            where T : IConnectionInfo, new ()
+            where T : IConnectionInfo, new()
         {
             return new T().Get(_configuration, serviceName);
         }

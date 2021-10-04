@@ -15,7 +15,7 @@ namespace Steeltoe.Integration.Support
 
         public static Exception WrapInDeliveryExceptionIfNecessary(IMessage message, string text, Exception e)
         {
-            if (!(e is MessagingException me))
+            if (e is not MessagingException me)
             {
                 return new MessageDeliveryException(message, text, e);
             }
@@ -30,7 +30,7 @@ namespace Steeltoe.Integration.Support
 
         public static Exception WrapInHandlingExceptionIfNecessary(IMessage message, string text, Exception e)
         {
-            if (!(e is MessagingException me))
+            if (e is not MessagingException me)
             {
                 return new MessageHandlingException(message, text, e);
             }

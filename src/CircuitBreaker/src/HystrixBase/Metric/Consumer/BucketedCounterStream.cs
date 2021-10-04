@@ -17,7 +17,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
         protected readonly int numBuckets;
         protected readonly int bucketSizeInMs;
         protected readonly IObservable<Bucket> bucketedStream;
-        protected readonly AtomicReference<IDisposable> subscription = new(null);
+        protected readonly AtomicReference<IDisposable> subscription = new (null);
 
         private readonly Func<IObservable<Event>, IObservable<Bucket>> _reduceBucketToSummary;
 

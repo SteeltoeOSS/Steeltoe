@@ -22,7 +22,7 @@ namespace Steeltoe.Management.Endpoint.Trace
         private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
         private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-        private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         private readonly ILogger<TraceDiagnosticObserver> _logger;
         private readonly ITraceOptions _options;
 
