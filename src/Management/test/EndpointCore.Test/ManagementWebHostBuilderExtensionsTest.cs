@@ -545,7 +545,6 @@ namespace Steeltoe.Management.Endpoint.Test
             var host = hostBuilder.Start();
 
             // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
-
             Assert.Single(host.Services.GetServices<IStartupFilter>());
             var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

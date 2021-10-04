@@ -12,7 +12,6 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_MySqlDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
             var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
             Assert.NotNull(type);
@@ -50,7 +49,6 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_PostgreSqlDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
             var type = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
             Assert.NotNull(type);
@@ -60,7 +58,6 @@ namespace Steeltoe.Connector.EFCore.Test
         public void Property_Can_Locate_SqlServerDbContextOptionsType()
         {
             // arrange -- handled by including a compatible EF Core NuGet package
-
             var type = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
             Assert.NotNull(type);

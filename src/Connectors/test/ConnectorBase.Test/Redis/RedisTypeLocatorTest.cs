@@ -13,7 +13,6 @@ namespace Steeltoe.Connector.Redis.Test
         public void Property_Can_Locate_ConnectionTypes()
         {
             // arrange -- handled by including a compatible Redis NuGet package
-
             var msftInterface = RedisTypeLocator.MicrosoftInterface;
             var msftImplement = RedisTypeLocator.MicrosoftImplementation;
             var msftOptions = RedisTypeLocator.MicrosoftOptions;

@@ -13,7 +13,6 @@ namespace Steeltoe.Connector.RabbitMQ.Test
         public void Property_Can_Locate_ConnectionTypes()
         {
             // arrange -- handled by including a compatible RabbitMQ NuGet package
-
             var interfaceType = RabbitMQTypeLocator.IConnectionFactory;
             var implementationType = RabbitMQTypeLocator.ConnectionFactory;
             var connectionType = RabbitMQTypeLocator.IConnection;

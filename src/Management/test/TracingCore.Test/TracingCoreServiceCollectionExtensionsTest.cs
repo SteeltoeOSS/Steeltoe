@@ -20,7 +20,6 @@ namespace Steeltoe.Management.Tracing.Test
         [Fact]
         public void AddDistributedTracingAspNetCore_ThrowsOnNulls()
         {
-
             var ex = Assert.Throws<ArgumentNullException>(() => TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(null));
             Assert.Equal("services", ex.ParamName);
         }

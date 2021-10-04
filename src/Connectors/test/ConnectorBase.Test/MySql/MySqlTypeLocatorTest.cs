@@ -19,7 +19,6 @@ namespace Steeltoe.Connector.MySql.Test
         public void Property_Can_Locate_ConnectionType()
         {
             // arrange -- handled by including a compatible MySql NuGet package
-
             var type = MySqlTypeLocator.MySqlConnection;
 
             Assert.NotNull(type);

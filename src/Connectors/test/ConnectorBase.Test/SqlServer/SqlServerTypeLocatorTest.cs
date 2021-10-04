@@ -13,7 +13,6 @@ namespace Steeltoe.Connector.SqlServer.Test
         public void Property_Can_Locate_ConnectionType()
         {
             // arrange -- handled by including System.Data.SqlClient
-
             var type = SqlServerTypeLocator.SqlConnection;
 
             Assert.NotNull(type);

@@ -13,7 +13,6 @@ namespace Steeltoe.Connector.PostgreSql.Test
         public void Property_Can_Locate_ConnectionType()
         {
             // arrange -- handled by including a compatible PostgreSql NuGet package
-
             var type = PostgreSqlTypeLocator.NpgsqlConnection;
 
             Assert.NotNull(type);

@@ -13,7 +13,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         public void Property_Can_Locate_ConnectionTypes()
         {
             // arrange -- handled by including a compatible MongoDB NuGet package
-
             var interfaceType = MongoDbTypeLocator.IMongoClient;
             var implementationType = MongoDbTypeLocator.MongoClient;
             var mongoUrlType = MongoDbTypeLocator.MongoUrl;
