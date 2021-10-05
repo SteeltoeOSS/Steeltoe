@@ -4411,7 +4411,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     internal class FlexibleTestHystrixCommand
     {
         public static int EXECUTE_VALUE = 1;
@@ -5959,5 +5958,4 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test
             return Delay;
         }
     }
-#pragma warning restore SA1402 // File may only contain a single class
 }

@@ -117,8 +117,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
             {
                 _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
                 var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
-
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -135,7 +133,6 @@ namespace Steeltoe.Security.DataProtection.CredHub
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
 
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -160,9 +157,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
-#pragma warning disable CS0618 // Type or member is obsolete
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } }).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
             }
             finally
@@ -187,9 +182,7 @@ namespace Steeltoe.Security.DataProtection.CredHub
             try
             {
                 _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/bulk-regenerate");
-#pragma warning disable CS0618 // Type or member is obsolete
                 var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string> { { "signed_by", certificateAuthority } }).ConfigureAwait(false);
-#pragma warning restore CS0618 // Type or member is obsolete
                 return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
             }
             finally

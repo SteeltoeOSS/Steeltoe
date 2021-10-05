@@ -22,7 +22,6 @@ namespace Steeltoe.Stream.Partitioning
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionKeyExtractorClassOne : IPartitionKeyExtractorStrategy
     {
         public CustomPartitionKeyExtractorClassOne()
@@ -52,5 +51,4 @@ namespace Steeltoe.Stream.Partitioning
             return message.Headers.Get<string>("key");
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

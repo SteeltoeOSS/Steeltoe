@@ -20,7 +20,7 @@ namespace Steeltoe.Messaging.Handler
         }
 
         public DestinationPatternsMessageCondition(string[] patterns, IPathMatcher matcher)
-        : this(patterns, new SimpleRouteMatcher(matcher != null ? matcher : new AntPathMatcher()))
+        : this(patterns, new SimpleRouteMatcher(matcher ?? new AntPathMatcher()))
         {
         }
 

@@ -325,7 +325,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             try
             {
                 dispatcher.Dispatch(messageMock.Object);
-                new Exception("Expected Exception");
+                throw new Exception("Expected Exception");
             }
             catch (MessageDispatchingException exception)
             {
@@ -340,7 +340,7 @@ namespace Steeltoe.Integration.Dispatcher.Test
             try
             {
                 dispatcher.Dispatch(messageMock.Object);
-                new Exception("Expected Exception");
+                throw new Exception("Expected Exception");
             }
             catch (MessageDispatchingException exception)
             {

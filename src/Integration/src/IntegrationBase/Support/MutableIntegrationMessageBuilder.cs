@@ -100,7 +100,7 @@ namespace Steeltoe.Integration.Support
             {
                 if (!string.IsNullOrEmpty(pattern))
                 {
-                    if (pattern.Contains("*"))
+                    if (pattern.Contains('*'))
                     {
                         headersToRemove.AddRange(GetMatchingHeaderNames(pattern, _headers));
                     }

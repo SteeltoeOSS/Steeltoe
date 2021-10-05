@@ -16,7 +16,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
             => exception switch
                 {
                     null => throw new ArgumentNullException(nameof(exception)),
-                    RabbitException => (RabbitException)exception,
+                    RabbitException rabbitException => rabbitException,
                     ChannelAllocationException => new RabbitResourceNotAvailableException(exception),
                     ProtocolException or ShutdownSignalException => new RabbitConnectException(exception),
                     ConnectFailureException or BrokerUnreachableException => new RabbitConnectException(exception),

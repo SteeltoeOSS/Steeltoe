@@ -106,15 +106,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener
 
         public virtual string ListenerId
         {
-            get
-            {
-                return _listenerid != null ? _listenerid : ServiceName;
-            }
+            get => _listenerid ?? ServiceName;
 
-            set
-            {
-                _listenerid = value;
-            }
+            set => _listenerid = value;
         }
 
         public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }

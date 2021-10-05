@@ -128,47 +128,47 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (BindingRoutingKey == null)
             {
-                BindingRoutingKey = defaultOptions != null ? defaultOptions.BindingRoutingKey : null;
+                BindingRoutingKey = defaultOptions?.BindingRoutingKey;
             }
 
             if (BindingRoutingKeyDelimiter == null)
             {
-                BindingRoutingKeyDelimiter = defaultOptions != null ? defaultOptions.BindingRoutingKeyDelimiter : null;
+                BindingRoutingKeyDelimiter = defaultOptions?.BindingRoutingKeyDelimiter;
             }
 
             if (!Ttl.HasValue)
             {
-                Ttl = defaultOptions != null ? defaultOptions.Ttl : null;
+                Ttl = defaultOptions?.Ttl;
             }
 
             if (!Expires.HasValue)
             {
-                Expires = defaultOptions != null ? defaultOptions.Expires : null;
+                Expires = defaultOptions?.Expires;
             }
 
             if (!MaxLength.HasValue)
             {
-                MaxLength = defaultOptions != null ? defaultOptions.MaxLength : null;
+                MaxLength = defaultOptions?.MaxLength;
             }
 
             if (!MaxLengthBytes.HasValue)
             {
-                MaxLengthBytes = defaultOptions != null ? defaultOptions.MaxLengthBytes : null;
+                MaxLengthBytes = defaultOptions?.MaxLengthBytes;
             }
 
             if (!MaxPriority.HasValue)
             {
-                MaxPriority = defaultOptions != null ? defaultOptions.MaxPriority : null;
+                MaxPriority = defaultOptions?.MaxPriority;
             }
 
             if (DeadLetterQueueName == null)
             {
-                DeadLetterQueueName = defaultOptions != null ? defaultOptions.DeadLetterQueueName : null;
+                DeadLetterQueueName = defaultOptions?.DeadLetterQueueName;
             }
 
             if (DeadLetterExchange == null)
             {
-                DeadLetterExchange = defaultOptions != null ? defaultOptions.DeadLetterExchange : null;
+                DeadLetterExchange = defaultOptions?.DeadLetterExchange;
             }
 
             if (DeadLetterExchangeType == null)
@@ -183,42 +183,42 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (DeadLetterRoutingKey == null)
             {
-                DeadLetterRoutingKey = defaultOptions != null ? defaultOptions.DeadLetterRoutingKey : null;
+                DeadLetterRoutingKey = defaultOptions?.DeadLetterRoutingKey;
             }
 
             if (!DlqTtl.HasValue)
             {
-                DlqTtl = defaultOptions != null ? defaultOptions.DlqTtl : null;
+                DlqTtl = defaultOptions?.DlqTtl;
             }
 
             if (!DlqExpires.HasValue)
             {
-                DlqExpires = defaultOptions != null ? defaultOptions.DlqExpires : null;
+                DlqExpires = defaultOptions?.DlqExpires;
             }
 
             if (!DlqMaxLength.HasValue)
             {
-                DlqMaxLength = defaultOptions != null ? defaultOptions.DlqMaxLength : null;
+                DlqMaxLength = defaultOptions?.DlqMaxLength;
             }
 
             if (!DlqMaxLengthBytes.HasValue)
             {
-                DlqMaxLengthBytes = defaultOptions != null ? defaultOptions.DlqMaxLengthBytes : null;
+                DlqMaxLengthBytes = defaultOptions?.DlqMaxLengthBytes;
             }
 
             if (!DlqMaxPriority.HasValue)
             {
-                DlqMaxPriority = defaultOptions != null ? defaultOptions.DlqMaxPriority : null;
+                DlqMaxPriority = defaultOptions?.DlqMaxPriority;
             }
 
             if (DlqDeadLetterExchange == null)
             {
-                DlqDeadLetterExchange = defaultOptions != null ? defaultOptions.DlqDeadLetterExchange : null;
+                DlqDeadLetterExchange = defaultOptions?.DlqDeadLetterExchange;
             }
 
             if (DlqDeadLetterRoutingKey == null)
             {
-                DlqDeadLetterRoutingKey = defaultOptions != null ? defaultOptions.DlqDeadLetterRoutingKey : null;
+                DlqDeadLetterRoutingKey = defaultOptions?.DlqDeadLetterRoutingKey;
             }
 
             if (!AutoBindDlq.HasValue)
@@ -243,12 +243,12 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config
 
             if (OverflowBehavior == null)
             {
-                OverflowBehavior = defaultOptions != null ? defaultOptions.OverflowBehavior : null;
+                OverflowBehavior = defaultOptions?.OverflowBehavior;
             }
 
             if (DlqOverflowBehavior == null)
             {
-                DlqOverflowBehavior = defaultOptions != null ? defaultOptions.DlqOverflowBehavior : null;
+                DlqOverflowBehavior = defaultOptions?.DlqOverflowBehavior;
             }
 
             if (!SingleActiveConsumer.HasValue)

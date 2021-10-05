@@ -144,7 +144,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                     body[i] = slice[i];
                 }
 
-                index = index + length;
+                index += length;
 
                 accessor.ContentLength = length;
 
@@ -200,7 +200,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Batch
                     slice[i] = message.Payload[i];
                 }
 
-                index = index + message.Payload.Length;
+                index += message.Payload.Length;
             }
 
             accessor.SetHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4);

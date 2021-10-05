@@ -21,7 +21,6 @@ namespace Steeltoe.Stream.Partitioning
         }
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
     {
         public CustomPartitionSelectorClassOne()
@@ -51,5 +50,4 @@ namespace Steeltoe.Stream.Partitioning
             return int.Parse((string)key);
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

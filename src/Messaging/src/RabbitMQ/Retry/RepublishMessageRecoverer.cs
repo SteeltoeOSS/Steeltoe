@@ -98,7 +98,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
 
             if (ErrorExchangeName != null)
             {
-                var routingKey = ErrorRoutingKey != null ? ErrorRoutingKey : PrefixedOriginalRoutingKey(message);
+                var routingKey = ErrorRoutingKey ?? PrefixedOriginalRoutingKey(message);
                 ErrorTemplate.Send(ErrorExchangeName, routingKey, message);
 
                 _logger?.LogWarning("Republishing failed message to exchange '{exchange}' with routing key '{routingKey}'", ErrorExchangeName, routingKey);
@@ -112,15 +112,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry
             }
         }
 
-        protected virtual Dictionary<string, object> AddAdditionalHeaders(IMessage message, Exception cause)
-        {
-            return null;
-        }
+        protected virtual Dictionary<string, object> AddAdditionalHeaders(IMessage message, Exception cause) => null;
 
-        private string PrefixedOriginalRoutingKey(IMessage message)
-        {
-            return ErrorRoutingKeyPrefix + message.Headers.ReceivedRoutingKey();
-        }
+        private string PrefixedOriginalRoutingKey(IMessage message) => ErrorRoutingKeyPrefix + message.Headers.ReceivedRoutingKey();
 
         private List<string> ProcessStackTrace(Exception cause, string exceptionMessage)
         {

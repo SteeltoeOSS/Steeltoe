@@ -303,45 +303,21 @@ namespace Steeltoe.Integration.Handler
         {
             public ISet<string> _ids = new HashSet<string>();
 
-            public System.Collections.IDictionary MapOnly(System.Collections.IDictionary map)
-            {
-                return map;
-            }
+            public System.Collections.IDictionary MapOnly(System.Collections.IDictionary map) => map;
 
-            public string PayloadAnnotationFirstName([Payload("Fname")] string fname)
-            {
-                return fname;
-            }
+            public string PayloadAnnotationFirstName([Payload("Fname")] string fname) => fname;
 
-            public string PayloadAnnotationFullName([Payload("Fname")] string first, [Payload("Lname")] string last)
-            {
-                return first + " " + last;
-            }
+            public string PayloadAnnotationFullName([Payload("Fname")] string first, [Payload("Lname")] string last) => first + " " + last;
 
-            public string PayloadArgAndHeaderArg([Payload("Fname")] string fname, [Header] string day)
-            {
-                return fname + day;
-            }
+            public string PayloadArgAndHeaderArg([Payload("Fname")] string fname, [Header] string day) => fname + day;
 
-            public int? OptionalHeader([Header(Required = false)] int? num)
-            {
-                return num;
-            }
+            public int? OptionalHeader([Header(Required = false)] int? num) => num;
 
-            public int RequiredHeader([Header(Name = "num", Required = true)] int num)
-            {
-                return num;
-            }
+            public int RequiredHeader([Header(Name = "num", Required = true)] int num) => num;
 
-            public string HeadersWithExpressions([Header("emp.Fname")] string firstName, [Header("emp.Lname.ToUpper()")] string lastName)
-            {
-                return lastName + ", " + firstName;
-            }
+            public string HeadersWithExpressions([Header("emp.Fname")] string firstName, [Header("emp.Lname.ToUpper()")] string lastName) => lastName + ", " + firstName;
 
-            public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num)
-            {
-                return (prop == null ? "null" : prop) + num;
-            }
+            public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num) => (prop ?? "null") + num;
 
             // public Properties propertiesPayload(Properties properties)
             // {
@@ -358,15 +334,9 @@ namespace Steeltoe.Integration.Handler
             //    headers.put("payload", payload);
             //    return headers;
             // }
-            public System.Collections.IDictionary MapPayload(System.Collections.IDictionary map)
-            {
-                return map;
-            }
+            public System.Collections.IDictionary MapPayload(System.Collections.IDictionary map) => map;
 
-            public IDictionary<string, object> MapHeaders([Headers] IDictionary<string, object> map)
-            {
-                return map;
-            }
+            public IDictionary<string, object> MapHeaders([Headers] IDictionary<string, object> map) => map;
 
             public object MapHeadersAndPayload(System.Collections.IDictionary headers, object payload)
             {
@@ -381,30 +351,16 @@ namespace Steeltoe.Integration.Handler
                 return map;
             }
 
-            public int IntegerMethod(int i)
-            {
-                return i;
-            }
+            public int IntegerMethod(int i) => i;
 
-            public string HeaderAnnotationWithExpression([Header("day")] string value)
-            {
-                return value;
-            }
+            public string HeaderAnnotationWithExpression([Header("day")] string value) => value;
 
             public object[] MultipleAnnotatedArguments([Header("day")] string argA, [Header("month")] string argB, [Payload] Employee payloadArg, [Payload("Fname")] string value, [Headers] IDictionary<string, object> headers)
-            {
-                return new object[] { argA, argB, payloadArg, value, headers };
-            }
+                => new object[] { argA, argB, payloadArg, value, headers };
 
-            public string IrrelevantAnnotation([Bogus] string value)
-            {
-                return value;
-            }
+            public string IrrelevantAnnotation([Bogus] string value) => value;
 
-            public string HeaderNameWithHyphen([Header("foo-bar")] string foobar)
-            {
-                return foobar.ToUpper();
-            }
+            public string HeaderNameWithHyphen([Header("foo-bar")] string foobar) => foobar.ToUpper();
 
             public string HeaderId(string payload, [Header("id")] string id)
             {

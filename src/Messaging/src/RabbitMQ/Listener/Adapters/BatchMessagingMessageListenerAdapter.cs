@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
             ILogger logger = null)
             : base(context, bean, method, returnExceptions, errorHandler, true, logger)
         {
-            BatchingStrategy = batchingStrategy == null ? new SimpleBatchingStrategy(0, 0, 0L) : batchingStrategy;
+            BatchingStrategy = batchingStrategy ?? new SimpleBatchingStrategy(0, 0, 0L);
         }
 
         private IBatchingStrategy BatchingStrategy { get; }

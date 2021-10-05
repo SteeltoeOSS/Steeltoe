@@ -83,9 +83,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog
         public IEnumerable<string> FullnameExclusions => new List<string>();
     }
 
-#pragma warning disable SA1402 // File may only contain a single class
     public class MinimumLevel
-#pragma warning restore SA1402 // File may only contain a single class
     {
         public LogEventLevel Default { get; set; }
 

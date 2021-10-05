@@ -68,7 +68,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump.Test
                 await middle.HandleHeapDumpRequestAsync(context);
                 context.Response.Body.Seek(0, SeekOrigin.Begin);
                 var buffer = new byte[1024];
-                await context.Response.Body.ReadAsync(buffer, 0, 1024);
+                await context.Response.Body.ReadAsync(buffer, default);
                 Assert.NotEqual(0, buffer[0]);
             }
             else

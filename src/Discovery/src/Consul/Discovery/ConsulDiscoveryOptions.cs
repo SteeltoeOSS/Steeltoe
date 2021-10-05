@@ -23,10 +23,8 @@ namespace Steeltoe.Discovery.Consul.Discovery
         {
             if (!UseNetUtils)
             {
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
                 _hostName = DnsTools.ResolveHostName();
                 IpAddress = DnsTools.ResolveHostAddress(_hostName);
-#pragma warning restore S1699 // Constructors should only call non-overridable methods
             }
         }
 

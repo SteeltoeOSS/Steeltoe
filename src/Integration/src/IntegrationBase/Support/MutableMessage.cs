@@ -86,9 +86,7 @@ namespace Steeltoe.Integration.Support
         protected internal IDictionary<string, object> RawHeaders => _headers.RawHeaders;
     }
 
-#pragma warning disable SA1402 // File may only contain a single type
     public class MutableMessage<T> : MutableMessage, IMessage<T>
-#pragma warning restore SA1402 // File may only contain a single type
     {
         public MutableMessage(T payload)
             : this(payload, (Dictionary<string, object>)null)

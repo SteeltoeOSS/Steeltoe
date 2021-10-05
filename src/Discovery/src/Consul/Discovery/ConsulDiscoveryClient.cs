@@ -89,10 +89,8 @@ namespace Steeltoe.Discovery.Consul.Discovery
             return _thisServiceInstance;
         }
 
-#pragma warning disable S4136 // Method overloads should be grouped together
         /// <inheritdoc/>
         public IList<IServiceInstance> GetInstances(string serviceId)
-#pragma warning restore S4136 // Method overloads should be grouped together
         {
             return GetInstances(serviceId, QueryOptions.Default);
         }

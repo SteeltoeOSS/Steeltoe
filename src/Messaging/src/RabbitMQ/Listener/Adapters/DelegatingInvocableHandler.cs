@@ -139,7 +139,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
                 }
             }
 
-            return result != null ? result : DefaultHandler;
+            return result ?? DefaultHandler;
         }
 
         protected bool MatchHandlerMethod(Type payloadClass, IInvocableHandlerMethod handler)

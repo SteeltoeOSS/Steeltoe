@@ -487,7 +487,7 @@ namespace Steeltoe.Messaging.Support
 
                 if (Id == null)
                 {
-                    var idGenerator = accessor.IdGenerator != null ? accessor.IdGenerator : IdGenerator;
+                    var idGenerator = accessor.IdGenerator ?? IdGenerator;
                     var id = idGenerator.GenerateId().ToString();
                     if (id != ID_VALUE_NONE)
                     {
