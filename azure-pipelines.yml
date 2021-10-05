@@ -55,7 +55,6 @@ jobs:
       projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True /p:VersionPrefix=$(VersionPrefix) /p:VersionSuffix=$(VersionSuffix)
   - task: DotNetCoreCLI@2
-    condition: eq(variables['package'], 'true')
     displayName: dotnet pack
     inputs:
       command: pack
@@ -66,7 +65,7 @@ jobs:
       versionEnvVar: PackageVersion
       nobuild: true
   - task: PowerShell@2
-    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), eq(variables['package'], 'true'))
+    condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
     displayName: Authenticode sign packages
     inputs:
       filePath: build/sign-packages.ps1
@@ -75,15 +74,14 @@ jobs:
       SignClientSecret: $(SignClientSecret)
       ArtifactDirectory: $(Build.ArtifactStagingDirectory)/packages
   - publish: $(Build.ArtifactStagingDirectory)/packages
-    condition: and(succeeded(), eq(variables['package'], 'true'))
+    condition: succeeded()
     displayName: Publish build artifacts
     artifact: Packages
 - job: Steeltoe_CI
-  timeoutInMinutes: 90
+  timeoutInMinutes: 60
   variables:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
-    Projects: '**/*.csproj'
   strategy:
     matrix:
       Linux:
@@ -114,7 +112,7 @@ jobs:
     displayName: dotnet restore
     inputs:
       command: restore
-      projects: $(Projects)
+      projects: src/Steeltoe.All.sln
       feedsToUse: config
       nugetConfigPath: nuget.config
   - task: SonarCloudPrepare@1
@@ -133,7 +131,7 @@ jobs:
     displayName: dotnet build
     inputs:
       command: build
-      projects: $(Projects)
+      projects: src/Steeltoe.All.sln
       arguments: --no-restore -c $(buildConfiguration) -v n /p:TreatWarningsAsErrors=True
   - script: |
       docker run -d --name configserver -p 8888:8888 steeltoeoss/config-server --spring.cloud.config.server.git.default-label=main
@@ -144,7 +142,7 @@ jobs:
     displayName: dotnet test 6.0
     inputs:
       command: test
-      projects: $(Projects)
+      projects: '**/*.csproj'
       arguments: '--blame-hang-timeout 3m -f net6.0 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - task: DotNetCoreCLI@2
@@ -152,7 +150,7 @@ jobs:
     displayName: dotnet test 3.1
     inputs:
       command: test
-      projects: $(Projects)
+      projects: '**/*.csproj'
       arguments: '--blame-hang-timeout 3m -f netcoreapp3.1 --no-build -c $(buildConfiguration) -maxcpucount:1 $(skipFilter) --collect "XPlat Code Coverage" --settings coverlet.runsettings --logger trx --results-directory $(Build.SourcesDirectory)'
       publishTestResults: false
   - script: |

@@ -21,7 +21,7 @@ using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core
 {
-    public class RabbitAdmin : IRabbitAdmin, IConnectionListener, IServiceNameAware
+    public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         public const string DEFAULT_SERVICE_NAME = "rabbitAdmin";
 

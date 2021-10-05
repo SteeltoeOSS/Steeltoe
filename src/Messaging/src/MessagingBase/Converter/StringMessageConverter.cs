@@ -32,17 +32,14 @@ namespace Steeltoe.Messaging.Converter
 
         public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        protected override bool Supports(Type clazz)
-        {
-            return typeof(string) == clazz;
-        }
+        protected override bool Supports(Type clazz) => typeof(string) == clazz;
 
         protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
         {
             var charset = GetContentTypeCharset(GetMimeType(message.Headers));
             var payload = message.Payload;
 
-            return payload is string ? payload : new string(charset.GetChars((byte[])(object)payload));
+            return payload is string ? payload : new string(charset.GetChars((byte[])payload));
         }
 
         protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)

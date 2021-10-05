@@ -42,23 +42,17 @@ namespace Steeltoe.Integration.Support
             _headers = headers;
         }
 
-        public IMessageHeaders Headers
-        {
-            get { return _headers; }
-        }
+        public IMessageHeaders Headers => _headers;
 
-        public object Payload
-        {
-            get { return _payload; }
-        }
+        public object Payload => _payload;
 
         public override string ToString()
         {
             var sb = new StringBuilder(GetType().Name);
             sb.Append(" [payload=");
-            if (_payload is byte[])
+            if (_payload is byte[] v)
             {
-                sb.Append("byte[").Append(((byte[])(object)_payload).Length).Append(']');
+                sb.Append("byte[").Append(v.Length).Append(']');
             }
             else
             {
@@ -69,10 +63,7 @@ namespace Steeltoe.Integration.Support
             return sb.ToString();
         }
 
-        public override int GetHashCode()
-        {
-            return (_headers.GetHashCode() * 23) + ObjectUtils.NullSafeHashCode(_payload);
-        }
+        public override int GetHashCode() => (_headers.GetHashCode() * 23) + ObjectUtils.NullSafeHashCode(_payload);
 
         public override bool Equals(object obj)
         {
@@ -92,10 +83,7 @@ namespace Steeltoe.Integration.Support
             return false;
         }
 
-        protected internal IDictionary<string, object> RawHeaders
-        {
-            get { return _headers.RawHeaders; }
-        }
+        protected internal IDictionary<string, object> RawHeaders => _headers.RawHeaders;
     }
 
 #pragma warning disable SA1402 // File may only contain a single type
@@ -117,15 +105,9 @@ namespace Steeltoe.Integration.Support
         {
         }
 
-        public new T Payload
-        {
-            get { return (T)_payload; }
-        }
+        public new T Payload => (T)_payload;
 
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        public override int GetHashCode() => base.GetHashCode();
 
         public override bool Equals(object obj)
         {

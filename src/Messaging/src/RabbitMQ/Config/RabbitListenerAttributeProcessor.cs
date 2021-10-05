@@ -351,7 +351,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config
                 {
                     return resolvedInt;
                 }
-                else if (resolved is string resolvedString && int.TryParse((string)resolvedString, out var result))
+                else if (resolved is string resolvedString && int.TryParse(resolvedString, out var result))
                 {
                     return result;
                 }

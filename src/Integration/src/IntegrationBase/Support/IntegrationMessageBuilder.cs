@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Integration.Support
 {
-#pragma warning disable SA1402 // File may only contain a single type
     public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageBuilder<T>
     {
         internal IntegrationMessageBuilder(T payload, IMessage<T> originalMessage)
@@ -17,10 +16,7 @@ namespace Steeltoe.Integration.Support
         {
         }
 
-        public new T Payload
-        {
-            get { return (T)base.Payload; }
-        }
+        public new T Payload => (T)base.Payload;
 
         public static IntegrationMessageBuilder<T> FromMessage(IMessage<T> message)
         {
@@ -87,9 +83,9 @@ namespace Steeltoe.Integration.Support
                 return (IMessage<T>)_originalMessage;
             }
 
-            if (_payload is Exception)
+            if (_payload is Exception exception)
             {
-                return (IMessage<T>)new ErrorMessage((Exception)(object)_payload, _headerAccessor.ToDictionary());
+                return (IMessage<T>)new ErrorMessage(exception, _headerAccessor.ToDictionary());
             }
 
             return Message.Create<T>((T)_payload, _headerAccessor.ToDictionary());
@@ -181,15 +177,9 @@ namespace Steeltoe.Integration.Support
         {
         }
 
-        public override object Payload
-        {
-            get { return _payload; }
-        }
+        public override object Payload => _payload;
 
-        public override IDictionary<string, object> Headers
-        {
-            get { return _headerAccessor.ToDictionary(); }
-        }
+        public override IDictionary<string, object> Headers => _headerAccessor.ToDictionary();
 
         public static IntegrationMessageBuilder FromMessage(IMessage message)
         {
@@ -257,25 +247,13 @@ namespace Steeltoe.Integration.Support
             return this;
         }
 
-        protected override List<List<object>> SequenceDetails
-        {
-            get { return (List<List<object>>)_headerAccessor.GetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS); }
-        }
+        protected override List<List<object>> SequenceDetails => (List<List<object>>)_headerAccessor.GetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS);
 
-        protected override object CorrelationId
-        {
-            get { return _headerAccessor.GetCorrelationId(); }
-        }
+        protected override object CorrelationId => _headerAccessor.GetCorrelationId();
 
-        protected override object SequenceNumber
-        {
-            get { return _headerAccessor.GetSequenceNumber(); }
-        }
+        protected override object SequenceNumber => _headerAccessor.GetSequenceNumber();
 
-        protected override object SequenceSize
-        {
-            get { return _headerAccessor.GetSequenceSize(); }
-        }
+        protected override object SequenceSize => _headerAccessor.GetSequenceSize();
 
         public IMessageBuilder ReadOnlyHeaders(IList<string> readOnlyHeaders)
         {
@@ -292,13 +270,12 @@ namespace Steeltoe.Integration.Support
                 return _originalMessage;
             }
 
-            if (_payload is Exception)
+            if (_payload is Exception exception)
             {
-                return (IMessage)new ErrorMessage((Exception)(object)_payload, _headerAccessor.ToDictionary());
+                return new ErrorMessage(exception, _headerAccessor.ToDictionary());
             }
 
             return Message.Create(_payload, _headerAccessor.ToDictionary(), _payload.GetType());
         }
     }
-#pragma warning restore SA1402 // File may only contain a single type
 }

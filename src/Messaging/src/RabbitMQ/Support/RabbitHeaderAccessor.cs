@@ -253,7 +253,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Support
 
         public object Target
         {
-            get => GetHeader(RabbitMessageHeaders.TARGET) as object;
+            get => GetHeader(RabbitMessageHeaders.TARGET);
             set => SetHeader(RabbitMessageHeaders.TARGET, value);
         }
 

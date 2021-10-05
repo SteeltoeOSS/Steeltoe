@@ -67,8 +67,6 @@ namespace Steeltoe.Integration.Handler
         public virtual IList<string> NotPropagatedHeaders
         {
             get => new List<string>(_notPropagatedHeaders);
-
-#pragma warning disable S4275 // Getters and setters should access the expected fields
             set => UpdateNotPropagatedHeaders(value, false);
         }
 
