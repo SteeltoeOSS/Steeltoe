@@ -26,12 +26,10 @@ namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
         [Fact]
         public void Build__ReturnsProvider()
         {
-            // Arrange
             var config = new ConfigurationBuilder()
                             .AddCommandLine(Array.Empty<string>())
                             .Build();
 
-            // Act and Assert
             var source = new SpringBootCmdSource(config);
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<SpringBootCmdProvider>(provider);

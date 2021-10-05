@@ -39,7 +39,6 @@ namespace Steeltoe.Common.Test
         [Fact]
         public void ConstructorReadsApplicationConfiguration()
         {
-            // Arrange
             var configJson = @"
             {
                 ""Application"" : {

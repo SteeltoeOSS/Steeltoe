@@ -13,7 +13,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithNoVcapServicesConfiguration()
         {
-            // Arrange
             var builder = new ConfigurationBuilder();
             var config = builder.Build();
 
@@ -28,7 +27,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithSingleServiceConfiguration()
         {
-            // Arrange
             var configJson = @"
                 {
                     ""vcap"": {
@@ -82,7 +80,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithComplexSingleServiceConfiguration()
         {
-            // Arrange
             var configJson = @"
                 {
                     ""vcap"": {
@@ -181,7 +178,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithMultipleSameServicesConfiguration()
         {
-            // Arrange
             var configJson = @"
                 {
                     ""vcap"": {
@@ -250,7 +246,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithIConfigurationRootBinds()
         {
-            // Arrange
             var configJson = @"
 {
     ""vcap"": {
@@ -307,7 +302,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Constructor_WithIConfigurationBinds()
         {
-            // Arrange
             var configJson = @"
                 {
                     ""vcap"": {

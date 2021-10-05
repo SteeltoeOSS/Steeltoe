@@ -14,30 +14,21 @@ namespace Steeltoe.Common.Utils.Test.IO
         [Fact]
         public void TempFileRemovesItself()
         {
-            // Arrange
             var tempFile = new TempFile();
 
-            // Act
-
-            // Assert
             File.Exists(tempFile.FullPath).Should().BeTrue();
 
-            // Act
             tempFile.Dispose();
 
-            // Assert
             File.Exists(tempFile.FullPath).Should().BeFalse();
         }
 
         [Fact]
         public void TempFileCanSetPrefix()
         {
-            // Arrange
             const string prefix = "MyPrefix-";
             using var tempFile = new TempFile(prefix);
 
-            // Act
-            // Assert
             tempFile.Name.Should().StartWith(prefix);
         }
     }

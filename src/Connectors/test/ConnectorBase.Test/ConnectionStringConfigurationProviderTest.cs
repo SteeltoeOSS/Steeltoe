@@ -18,7 +18,6 @@ namespace Steeltoe.Connector.Test
         [Fact]
         public void ConstructorThrowsOnNullProviders()
         {
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConnectionStringConfigurationProvider(null));
             Assert.Equal("providers", ex.ParamName);
         }

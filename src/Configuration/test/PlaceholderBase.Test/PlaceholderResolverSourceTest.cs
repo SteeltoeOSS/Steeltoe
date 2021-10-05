@@ -16,10 +16,8 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Constructor_ThrowsIfNulls()
         {
-            // Arrange
             IList<IConfigurationSource> sources = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new PlaceholderResolverSource(sources));
         }
 
@@ -41,11 +39,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test
         [Fact]
         public void Build_ReturnsProvider()
         {
-            // Arrange
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
 
-            // Act and Assert
             var source = new PlaceholderResolverSource(sources, null);
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<PlaceholderResolverProvider>(provider);

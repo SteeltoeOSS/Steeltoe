@@ -103,7 +103,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void GetConfigServerInstancesCatchesDiscoveryExceptions()
         {
-            // arrange
             var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
             var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
             var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
@@ -111,7 +110,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
             // act - the test discovery client throws on GetInstances()
             var result = service.GetConfigServerInstances();
 
-            // assert
             Assert.Empty(result);
         }
 

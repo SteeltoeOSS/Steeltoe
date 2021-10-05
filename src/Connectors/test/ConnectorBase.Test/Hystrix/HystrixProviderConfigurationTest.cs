@@ -14,10 +14,8 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }

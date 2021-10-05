@@ -21,7 +21,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Load_VCAP_APPLICATION_ChangesDataDictionary()
         {
-            // Arrange
             var environment = @"
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
@@ -47,7 +46,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", environment);
             var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
-            // Act and Assert
             provider.Load();
             var dict = provider.Properties;
             Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", dict["vcap:application:application_id"]);
@@ -88,7 +86,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
             var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
-            // Act and Assert
             provider.Load();
             var dict = provider.Properties;
             Assert.Equal("elephantsql-c6c60", dict["vcap:services:elephantsql:0:name"]);
@@ -164,7 +161,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
             var provider = new CloudFoundryConfigurationProvider(new CloudFoundryEnvironmentSettingsReader());
 
-            // Act and Assert
             provider.Load();
             var dict = provider.Properties;
             Assert.Equal("myConfigServer", dict["vcap:services:p-config-server:0:name"]);
@@ -180,7 +176,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
         {
-            // Arrange
             var environment = @"
                 {
                     ""name"": ""my-app"",
@@ -194,7 +189,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
 
             var configuration = configurationBuilder.Build();
 
-            // Act
             VcapApp options = null;
 
             using var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(250));
@@ -213,7 +207,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                 options = configuration.GetSection("vcap:application").Get<VcapApp>();
             }
 
-            // Assert
             Assert.Equal("my-app", options.Name);
             Assert.Equal("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca", options.Version);
         }

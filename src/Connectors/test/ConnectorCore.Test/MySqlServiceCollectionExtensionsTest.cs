@@ -25,11 +25,9 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -40,11 +38,9 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -55,12 +51,10 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -68,11 +62,9 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_NoVCAPs_AddsIHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config);
 
             var service = services.BuildServiceProvider().GetService<IHealthContributor>();
@@ -82,11 +74,9 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -94,7 +84,6 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_MultipleMySqlServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -104,7 +93,6 @@ namespace Steeltoe.Connector.MySql.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -112,17 +100,14 @@ namespace Steeltoe.Connector.MySql.Test
         [Fact]
         public void AddMySqlHealthContributor_AddsRelationalHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             MySqlServiceCollectionExtensions.AddMySqlHealthContributor(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
     }

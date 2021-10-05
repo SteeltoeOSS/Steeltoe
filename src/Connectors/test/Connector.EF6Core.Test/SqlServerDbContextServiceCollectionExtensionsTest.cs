@@ -22,11 +22,9 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -37,11 +35,9 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -52,12 +48,10 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -65,11 +59,9 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             services.AddDbContext<GoodSqlServerDbContext>(config);
 
             var serviceProvider = services.BuildServiceProvider();
@@ -83,11 +75,9 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config, "foobar"));
             Assert.Contains("foobar", ex.Message);
         }
@@ -95,7 +85,6 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -105,7 +94,6 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodSqlServerDbContext>(config));
             Assert.Contains("Multiple", ex.Message);
         }
@@ -113,7 +101,6 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
         [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
@@ -122,7 +109,6 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             services.AddDbContext<GoodSqlServerDbContext>(config);
             services.AddDbContext<Good2SqlServerDbContext>(config);
 

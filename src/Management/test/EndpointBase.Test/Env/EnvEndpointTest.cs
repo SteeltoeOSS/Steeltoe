@@ -192,7 +192,6 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void GetPropertySources_ReturnsExpected_WithPlaceholders()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -214,11 +213,9 @@ namespace Steeltoe.Management.Endpoint.Env.Test
 
                 var endpoint = tc.GetService<IEnvEndpoint>();
 
-                // act
                 var result = endpoint.GetPropertySources(tc.Configuration);
                 var testProp = tc.Configuration["appsManagerBase"];
 
-                // assert
                 Assert.NotNull(result);
                 Assert.Equal(2, result.Count);
                 Assert.NotNull(testProp);

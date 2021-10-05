@@ -14,32 +14,22 @@ namespace Steeltoe.Common.Utils.Test.IO
         [Fact]
         public void TempDirectoryRemovesItself()
         {
-            // Arrange
             var tempDir = new TempDirectory();
 
-            // Act
-
-            // Assert
             Directory.Exists(tempDir.FullPath).Should().BeTrue();
 
-            // Act
             File.Create(Path.Join(tempDir.FullPath, "foo")).Dispose();
             tempDir.Dispose();
 
-            // Assert
             Directory.Exists(tempDir.FullPath).Should().BeFalse();
         }
 
         [Fact]
         public void TempDirectoryCanSetPrefix()
         {
-            // Arrange
             const string prefix = "MyPrefix-";
             using var tempDir = new TempDirectory(prefix);
 
-            // Act
-
-            // Assert
             tempDir.Name.Should().StartWith(prefix);
         }
     }

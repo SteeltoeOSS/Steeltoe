@@ -29,7 +29,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["Logging:IncludeScopes"] = "false",
@@ -45,10 +44,8 @@ namespace Steeltoe.Extensions.Logging.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
@@ -57,7 +54,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void DynamicLevelSetting_WorksWith_ConsoleFilters()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -67,10 +63,8 @@ namespace Steeltoe.Extensions.Logging.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
@@ -87,7 +81,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddConsole_Works_WithAddConfiguration()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -96,10 +89,8 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddConsole();
                 }).BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
@@ -108,7 +99,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_Works_WithAddConfiguration()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -117,10 +107,8 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
@@ -129,7 +117,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void DynamicLevelSetting_ParmLessAddDynamic_NotBrokenByAddConfiguration()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -139,10 +126,8 @@ namespace Steeltoe.Extensions.Logging.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Warning), "Warning level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
@@ -157,7 +142,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_WithIDynamicMessageProcessor_CallsProcessMessage()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
@@ -167,10 +151,8 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
-            // assert
             Assert.NotNull(logger);
 
             logger.LogInformation("This is a test");
@@ -183,7 +165,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -193,10 +174,8 @@ namespace Steeltoe.Extensions.Logging.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
 
-            // assert
             Assert.NotNull(options);
             Assert.NotNull(options.CurrentValue);
             Assert.True(options.CurrentValue.DisableColors);
@@ -205,7 +184,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_AddsAllLoggerProviders()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
@@ -215,11 +193,9 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var dlogProvider = services.GetService<IDynamicLoggerProvider>();
             var logProviders = services.GetServices<ILoggerProvider>();
 
-            // assert
             Assert.NotNull(dlogProvider);
             Assert.NotEmpty(logProviders);
             Assert.Single(logProviders);
@@ -229,7 +205,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
@@ -239,11 +214,9 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var dlogProvider = services.GetService<IDynamicLoggerProvider>();
             var logProviders = services.GetServices<ILoggerProvider>();
 
-            // assert
             services.Dispose();
             dlogProvider.Dispose();
         }
@@ -251,7 +224,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_DoesntSetColorLocal()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
             var services = new ServiceCollection()
                 .AddLogging(builder =>
@@ -260,10 +232,8 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 
-            // assert
             Assert.NotNull(options);
             Assert.False(options.Value.DisableColors);
         }
@@ -271,7 +241,6 @@ namespace Steeltoe.Extensions.Logging.Test
         [Fact]
         public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
         {
-            // arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
             var services = new ServiceCollection()
@@ -281,10 +250,8 @@ namespace Steeltoe.Extensions.Logging.Test
                     builder.AddDynamicConsole();
                 }).BuildServiceProvider();
 
-            // act
             var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 
-            // assert
             Assert.NotNull(options);
             Assert.True(options.Value.DisableColors);
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);

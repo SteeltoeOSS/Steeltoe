@@ -14,12 +14,10 @@ namespace Steeltoe.Management.Endpoint.Test.ThreadDump
         [Fact]
         public void AddThreadDumpActuatorServices_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddThreadDumpActuatorServices(services, config, MediaTypeVersion.V2));
             Assert.Contains(nameof(services), ex.Message);
 

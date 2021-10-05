@@ -39,7 +39,6 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void Constructor_ConfiguresEurekaDiscovery_Correctly()
         {
-            // Arrange
             var appsettings = @"
                 {
                     ""eureka"": {

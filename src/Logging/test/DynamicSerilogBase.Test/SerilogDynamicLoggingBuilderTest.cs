@@ -30,7 +30,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void OnlyApplicableFilters_AreApplied()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["Serilog:MinimumLevel:Default"] = "Information"
@@ -45,10 +44,8 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug level should NOT be enabled");
@@ -57,7 +54,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void DynamicLevelSetting_WorksWith_ConsoleFilters()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
@@ -67,10 +63,8 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                 })
                 .BuildServiceProvider();
 
-            // act
             var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
 
-            // assert
             Assert.NotNull(logger);
             Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
             Assert.False(logger.IsEnabled(LogLevel.Error), "Error level should NOT be enabled");
@@ -91,7 +85,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection();
             var provider = services
@@ -109,7 +102,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void AddDynamicConsole_AddsAllLoggerProviders()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
@@ -118,11 +110,9 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                     builder.AddDynamicSerilog();
                 }).BuildServiceProvider();
 
-            // act
             var dlogProvider = services.GetService<IDynamicLoggerProvider>();
             var logProviders = services.GetServices<ILoggerProvider>();
 
-            // assert
             Assert.NotNull(dlogProvider);
             Assert.NotEmpty(logProviders);
             Assert.Single(logProviders);
@@ -132,7 +122,6 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
@@ -141,11 +130,9 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
                     builder.AddDynamicSerilog();
                 }).BuildServiceProvider();
 
-            // act
             var dlogProvider = services.GetService<IDynamicLoggerProvider>();
             var logProviders = services.GetServices<ILoggerProvider>();
 
-            // assert
             services.Dispose();
             dlogProvider.Dispose();
         }
@@ -153,18 +140,15 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
         [Fact]
         public void AddDynamicConsole_WithConfigurationParam_AddsServices()
         {
-            // arrange
             var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
             var services = new ServiceCollection()
                 .AddSingleton<IConfiguration>(configuration)
                 .AddLogging(builder => builder.AddDynamicSerilog())
                 .BuildServiceProvider();
 
-            // act
             var dlogProvider = services.GetService<IDynamicLoggerProvider>();
             var logProviders = services.GetServices<ILoggerProvider>();
 
-            // assert
             Assert.NotNull(dlogProvider);
             Assert.NotEmpty(logProviders);
             Assert.Single(logProviders);

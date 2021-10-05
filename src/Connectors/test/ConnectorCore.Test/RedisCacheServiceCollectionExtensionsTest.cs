@@ -26,11 +26,9 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -44,12 +42,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             var connectionConfig = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -63,12 +59,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -76,15 +70,12 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_NoVCAPs_AddsDistributedCache()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
             var service = services.BuildServiceProvider().GetService<IDistributedCache>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<RedisCache>(service);
         }
@@ -92,24 +83,20 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_AddsRedisHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddDistributedRedisCache_DoesntAddRedisHealthContributor_WhenCommunityHealthCheckExists()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -119,18 +106,15 @@ namespace Steeltoe.Connector.Redis.Test
             var ci = cm.Get<RedisConnectionInfo>();
             services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
-            // Assert
             Assert.Null(healthContributor);
         }
 
         [Fact]
         public void AddDistributedRedisCache_AddsRedisHealthContributor_WhenCommunityHealthCheckExistsAndForced()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
@@ -140,22 +124,18 @@ namespace Steeltoe.Connector.Redis.Test
             var ci = cm.Get<RedisConnectionInfo>();
             services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, addSteeltoeHealthChecks: true);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddDistributedRedisCache_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 
@@ -166,7 +146,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddDistributedRedisCache_MultipleRedisServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -176,7 +155,6 @@ namespace Steeltoe.Connector.Redis.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddDistributedRedisCache(services, config));
             Assert.Contains("Multiple", ex.Message);
 
@@ -187,11 +165,9 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
             Assert.Contains(nameof(services), ex.Message);
 
@@ -205,12 +181,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             var connectionConfig = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -224,12 +198,10 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, serviceName));
             Assert.Contains(nameof(serviceName), ex.Message);
         }
@@ -237,7 +209,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_NoVCAPs_AddsConnectionMultiplexer()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["redis:client:host"] = "127.0.0.1",
@@ -254,14 +225,12 @@ namespace Steeltoe.Connector.Redis.Test
             IServiceCollection services = new ServiceCollection();
             IServiceCollection services2 = new ServiceCollection();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services2, config, config, null);
             var service2 = services2.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
             Assert.Contains("password=pass,word", (service as ConnectionMultiplexer).Configuration);
@@ -273,24 +242,20 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_AddsRedisHealthContributor()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var builder = new ConfigurationBuilder();
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
-            // Assert
             Assert.NotNull(healthContributor);
         }
 
         [Fact]
         public void AddRedisConnectionMultiplexer_WithVCAPs_AddsRedisConnectionMultiplexer()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
             var appsettings = new Dictionary<string, string>()
@@ -304,11 +269,9 @@ namespace Steeltoe.Connector.Redis.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
             Assert.Contains("192.168.0.103", service.Configuration);
@@ -319,7 +282,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_WithAzureVCAPs_AddsRedisConnectionMultiplexer()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBroker);
             var appsettings = new Dictionary<string, string>()
@@ -332,11 +294,9 @@ namespace Steeltoe.Connector.Redis.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
             Assert.Contains("cbe9d9a0-6502-438d-87ec-f26f1974e378.redis.cache.windows.net", service.Configuration);
@@ -347,7 +307,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_WithEnterpriseVCAPs_AddsRedisConnectionMultiplexer()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVCAP);
             var appsettings = new Dictionary<string, string>()
@@ -361,11 +320,9 @@ namespace Steeltoe.Connector.Redis.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
             Assert.Contains("redis-1076.redis-enterprise.system.cloudyazure.io", service.Configuration);
@@ -376,7 +333,6 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_WithSecureAzureVCAPs_AddsRedisConnectionMultiplexer()
         {
-            // Arrange
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP_AzureBrokerSecure);
             var appsettings = new Dictionary<string, string>() { ["redis:client:AbortOnConnectFail"] = "false" };
@@ -386,11 +342,9 @@ namespace Steeltoe.Connector.Redis.Test
             builder.AddInMemoryCollection(appsettings);
             var config = builder.Build();
 
-            // Act
             RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config);
             var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
 
-            // Assert
             Assert.NotNull(service);
             Assert.IsType<ConnectionMultiplexer>(service);
             Assert.Contains("9b67c347-03b8-4956-aa2a-858ac30aced5.redis.cache.windows.net", service.Configuration);
@@ -402,11 +356,9 @@ namespace Steeltoe.Connector.Redis.Test
         [Fact]
         public void AddRedisConnectionMultiplexer_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex = Assert.Throws<ConnectorException>(() => RedisCacheServiceCollectionExtensions.AddRedisConnectionMultiplexer(services, config, "foobar"));
             Assert.Contains("foobar", ex.Message);
 

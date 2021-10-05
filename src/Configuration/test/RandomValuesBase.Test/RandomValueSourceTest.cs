@@ -29,10 +29,8 @@ namespace Steeltoe.Extensions.Configuration.RandomValue.Test
         [Fact]
         public void Build__ReturnsProvider()
         {
-            // Arrange
             ILoggerFactory factory = new LoggerFactory();
 
-            // Act and Assert
             var source = new RandomValueSource();
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<RandomValueProvider>(provider);

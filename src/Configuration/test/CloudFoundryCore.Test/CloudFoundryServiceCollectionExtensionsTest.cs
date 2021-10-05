@@ -16,11 +16,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryOptions_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
             Assert.Contains(nameof(services), ex.Message);
         }
@@ -28,11 +26,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryOptions_ThrowsIfConfigurtionNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -40,11 +36,9 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryOptions_ConfiguresCloudFoundryOptions()
         {
-            // Arrange
             var services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", @"{ ""cf_api"": ""https://api.run.pcfone.io"", ""limits"": { ""fds"": 16384 }, ""application_name"": ""foo"", ""application_uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""name"": ""foo"", ""space_name"": ""playground"", ""space_id"": ""f03f2ab0-cf33-416b-999c-fb01c1247753"", ""organization_id"": ""d7afe5cb-2d42-487b-a415-f47c0665f1ba"", ""organization_name"": ""pivot-thess"", ""uris"": [ ""foo-unexpected-serval-iy.apps.pcfone.io"" ], ""users"": null, ""application_id"": ""f69a6624-7669-43e3-a3c8-34d23a17e3db"" }");
 
-            // Act and Assert
             var builder = new ConfigurationBuilder().AddCloudFoundry();
             var config = builder.Build();
             CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryOptions(services, config);
@@ -61,33 +55,27 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryService_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
         }
 
         [Fact]
         public void ConfigureCloudFoundryService_ThrowsIfConfigurtionNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             Assert.Throws<ArgumentNullException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "foobar"));
         }
 
         [Fact]
         public void ConfigureCloudFoundryService_BadServiceName()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, null));
             Assert.Throws<ArgumentException>(() => CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, string.Empty));
         }
@@ -95,7 +83,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryService_ConfiguresService()
         {
-            // Arrange
             var configJson = @"
                 {
                   ""vcap"": {
@@ -146,7 +133,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var services = new ServiceCollection();
             services.AddOptions();
 
-            // Act and Assert
             CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryService<MySqlServiceOption>(services, config, "mySql2");
 
             var serviceProvider = services.BuildServiceProvider();
@@ -166,7 +152,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         [Fact]
         public void ConfigureCloudFoundryServices_ConfiguresServices()
         {
-            // Arrange
             var configJson = @"
                 {
                     ""vcap"": {
@@ -217,7 +202,6 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
             var services = new ServiceCollection();
             services.AddOptions();
 
-            // Act and Assert
             CloudFoundryServiceCollectionExtensions.ConfigureCloudFoundryServices<MySqlServiceOption>(services, config, "p-mysql");
 
             var serviceProvider = services.BuildServiceProvider();

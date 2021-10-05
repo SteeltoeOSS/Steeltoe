@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -49,7 +47,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Constructor_BindsOptions()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mongodb:client:options:someKey"] = "someValue",
@@ -62,10 +59,8 @@ namespace Steeltoe.Connector.MongoDb.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MongoDbConnectorOptions(config);
 
-            // assert
             Assert.Equal("someValue", sconfig.Options["someKey"]);
             Assert.Equal("someOtherValue", sconfig.Options["someOtherKey"]);
             Assert.Equal("stillAnotherValue", sconfig.Options["stillAnotherKey"]);
@@ -75,7 +70,6 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Options_Included_InConnectionString()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mongodb:client:options:someKey"] = "someValue",
@@ -86,17 +80,14 @@ namespace Steeltoe.Connector.MongoDb.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MongoDbConnectorOptions(config);
 
-            // assert
             Assert.Equal("mongodb://localhost:27017?someKey=someValue&someOtherKey=someOtherValue", sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Returned_AsConfigured()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -105,17 +96,14 @@ namespace Steeltoe.Connector.MongoDb.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MongoDbConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_OverriddenByVCAP()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -132,17 +120,14 @@ namespace Steeltoe.Connector.MongoDb.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MongoDbConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_EnterpriseMongoInCloudFoundryConfig()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["mongodb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -159,10 +144,8 @@ namespace Steeltoe.Connector.MongoDb.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new MongoDbConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["mongodb:client:ConnectionString"], sconfig.ToString());
 
             // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,

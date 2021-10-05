@@ -13,11 +13,9 @@ namespace Steeltoe.Connector.MongoDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             MongoDbConnectorOptions config = null;
             MongoDbServiceInfo si = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorFactory(si, config, MongoDbTypeLocator.MongoClient));
             Assert.Contains(nameof(config), ex.Message);
         }

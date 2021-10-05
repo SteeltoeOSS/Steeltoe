@@ -22,11 +22,9 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_ThrowsIfServiceCollectionNull()
         {
-            // Arrange
             IServiceCollection services = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
@@ -41,11 +39,9 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_ThrowsIfConfigurationNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
@@ -60,12 +56,10 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_ThrowsIfServiceNameNull()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             IConfigurationRoot config = null;
             string serviceName = null;
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ArgumentNullException>(
                     () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, serviceName));
@@ -75,11 +69,9 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_NoVCAPs_AddsConfiguredConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
 
             var service = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();
@@ -89,11 +81,9 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
                     () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config, "foobar"));
@@ -103,7 +93,6 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_MultipleHystrixServices_ThrowsConnectorException()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
@@ -216,7 +205,6 @@ namespace Steeltoe.Connector.Hystrix.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -226,7 +214,6 @@ namespace Steeltoe.Connector.Hystrix.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             var ex =
                 Assert.Throws<ConnectorException>(
                     () => HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config));
@@ -236,7 +223,6 @@ namespace Steeltoe.Connector.Hystrix.Test
         [Fact]
         public void AddHystrixConnection_WithVCAPs_AddsHystrixConnectionFactory()
         {
-            // Arrange
             var env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
@@ -295,7 +281,6 @@ namespace Steeltoe.Connector.Hystrix.Test
                     }]
                 }";
 
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -305,7 +290,6 @@ namespace Steeltoe.Connector.Hystrix.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
             HystrixProviderServiceCollectionExtensions.AddHystrixConnection(services, config);
 
             var hystrixService = services.BuildServiceProvider().GetService<HystrixConnectionFactory>();

@@ -17,25 +17,21 @@ namespace Steeltoe.Discovery.Eureka.Test
         [Fact]
         public void ClientEnabledByDefault()
         {
-            // arrange
             var services = new ServiceCollection();
             var ext = new EurekaDiscoveryClientExtension();
             var appSettings = new Dictionary<string, string> { { "eureka:client:serviceurl", "http://testhost/eureka" } };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             ext.ConfigureEurekaServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
         {
-            // arrange
             var services = new ServiceCollection();
             var ext = new EurekaDiscoveryClientExtension();
             var appSettings = new Dictionary<string, string>
@@ -45,19 +41,16 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             ext.ConfigureEurekaServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-            // assert
             Assert.False(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientFavorsEurekaClientEnabled()
         {
-            // arrange
             var services = new ServiceCollection();
             var ext = new EurekaDiscoveryClientExtension();
             var appSettings = new Dictionary<string, string>
@@ -68,12 +61,10 @@ namespace Steeltoe.Discovery.Eureka.Test
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             ext.ConfigureEurekaServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
     }

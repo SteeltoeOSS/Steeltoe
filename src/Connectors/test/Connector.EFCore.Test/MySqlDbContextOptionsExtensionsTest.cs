@@ -30,12 +30,10 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void UseMySql_ThrowsIfDbContextOptionsBuilderNull()
         {
-            // Arrange
             DbContextOptionsBuilder optionsBuilder = null;
             DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config));
             Assert.Contains(nameof(optionsBuilder), ex.Message);
 
@@ -52,12 +50,10 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void UseMySql_ThrowsIfConfigurationNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config));
             Assert.Contains(nameof(config), ex.Message);
 
@@ -74,13 +70,11 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void UseMySql_ThrowsIfServiceNameNull()
         {
-            // Arrange
             var optionsBuilder = new DbContextOptionsBuilder();
             var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
             var config = new ConfigurationBuilder().Build();
             string serviceName = null;
 
-            // Act and Assert
             var ex2 = Assert.Throws<ArgumentException>(() => MySqlDbContextOptionsExtensions.UseMySql(optionsBuilder, config, serviceName));
             Assert.Contains(nameof(serviceName), ex2.Message);
 
@@ -91,11 +85,9 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act and Assert
 #if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else
@@ -115,11 +107,9 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
         public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
 
-            // Act and Assert
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
             var service = services.BuildServiceProvider().GetService<GoodDbContext>();
@@ -133,14 +123,11 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             var config = new ConfigurationBuilder().Build();
 
-            // Act
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "foobar"));
 
-            // Assert
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("foobar", ex.Message);
         }
@@ -148,7 +135,6 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void AddDbContext_MultipleMySqlServices_ThrowsConnectorException()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -158,10 +144,8 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
-            // Assert
             var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
             Assert.Contains("Multiple", ex.Message);
         }
@@ -169,7 +153,6 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void AddDbContext_MultipleMySqlServices_AddWithName_Adds()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
 
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
@@ -179,14 +162,12 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act
 #if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
 #else
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
-            // Assert
             var built = services.BuildServiceProvider();
             var service = built.GetService<GoodDbContext>();
             Assert.NotNull(service);
@@ -207,7 +188,6 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
         [Fact]
         public void AddDbContexts_WithVCAPs_AddsDbContexts()
         {
-            // Arrange
             IServiceCollection services = new ServiceCollection();
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
@@ -216,7 +196,6 @@ namespace Steeltoe.Connector.MySql.EFCore.Test
             builder.AddCloudFoundry();
             var config = builder.Build();
 
-            // Act and Assert
 #if NETCOREAPP3_1
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else

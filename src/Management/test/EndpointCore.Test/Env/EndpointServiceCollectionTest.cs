@@ -18,12 +18,10 @@ namespace Steeltoe.Management.Endpoint.Env.Test
         [Fact]
         public void AddEnvActuator_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddEnvActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddEnvActuator(services2, config));

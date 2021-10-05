@@ -67,7 +67,6 @@ namespace Steeltoe.Management.Endpoint
         [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
         public async Task MapTestAuthSuccess(Type type)
         {
-            // Arrange
             var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
             await ActAndAssert(type, hostBuilder, true);
         }
@@ -76,7 +75,6 @@ namespace Steeltoe.Management.Endpoint
         [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
         public async Task MapTestAuthFail(Type type)
         {
-            // Arrange
             var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
             await ActAndAssert(type, hostBuilder, false);
         }
@@ -124,7 +122,6 @@ namespace Steeltoe.Management.Endpoint
             var options = host.Services.GetService(optionsType) as IEndpointOptions;
             var path = options.GetContextPath(GetManagementContext(type, host.Services));
 
-            // Assert
             Assert.NotNull(path);
 
             using var server = host.GetTestServer();

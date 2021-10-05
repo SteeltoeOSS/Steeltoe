@@ -16,40 +16,33 @@ namespace Steeltoe.Discovery.Kubernetes.Test
         [Fact]
         public void ClientEnabledByDefault()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // act
             KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
         {
-            // arrange
             var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
-            // assert
             Assert.False(clientOptions.Value.Enabled);
         }
 
         [Fact]
         public void ClientFavorsKubernetesDiscoveryEnabled()
         {
-            // arrange
             var services = new ServiceCollection();
             var appSettings = new Dictionary<string, string>
             {
@@ -58,12 +51,10 @@ namespace Steeltoe.Discovery.Kubernetes.Test
             };
             services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            // act
             KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
             var provider = services.BuildServiceProvider();
             var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
-            // assert
             Assert.True(clientOptions.Value.Enabled);
         }
     }

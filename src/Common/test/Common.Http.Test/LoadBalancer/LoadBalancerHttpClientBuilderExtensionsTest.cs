@@ -24,16 +24,13 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         [Fact]
         public void AddRandomLoadBalancer_AddsRandomLoadBalancerToServices()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
-            // act
             services.AddHttpClient("test").AddRandomLoadBalancer();
             var serviceProvider = services.BuildServiceProvider();
             var serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RandomLoadBalancer)));
 
-            // assert
             Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
             Assert.NotNull(serviceEntryInCollection);
             Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
@@ -49,16 +46,13 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         [Fact]
         public void AddRoundRobinLoadBalancer_AddsRoundRobinLoadBalancerToServices()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
-            // act
             services.AddHttpClient("test").AddRoundRobinLoadBalancer();
             var serviceProvider = services.BuildServiceProvider();
             var serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RoundRobinLoadBalancer)));
 
-            // assert
             Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
             Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
         }
@@ -73,43 +67,35 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
         [Fact]
         public void AddLoadBalancerT_DoesntAddT_ToServices()
         {
-            // arrange
             var services = new ServiceCollection();
 
-            // act
             services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
             var serviceProvider = services.BuildServiceProvider();
 
-            // assert
             Assert.Empty(serviceProvider.GetServices<FakeLoadBalancer>());
         }
 
         [Fact]
         public void AddLoadBalancerT_CanBeUsedWithAnHttpClient()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddSingleton(typeof(FakeLoadBalancer));
 
-            // act
             services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
             var serviceProvider = services.BuildServiceProvider();
             var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
             var client = factory.CreateClient("test");
 
-            // assert
             Assert.NotNull(client);
         }
 
         [Fact]
         public void CanAddMultipleLoadBalancers()
         {
-            // arrange
             var services = new ServiceCollection();
             services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
             services.AddSingleton(typeof(FakeLoadBalancer));
 
-            // act
             services.AddHttpClient("testRandom").AddRandomLoadBalancer();
             services.AddHttpClient("testRandom2").AddRandomLoadBalancer();
             services.AddHttpClient("testRoundRobin").AddRoundRobinLoadBalancer();
@@ -124,7 +110,6 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test
             var fakeLBClient = factory.CreateClient("testFake");
             var fakeLBClient2 = factory.CreateClient("testFake2");
 
-            // assert
             Assert.NotNull(randomLBClient);
             Assert.NotNull(randomLBClient2);
             Assert.NotNull(roundRobinLBClient);

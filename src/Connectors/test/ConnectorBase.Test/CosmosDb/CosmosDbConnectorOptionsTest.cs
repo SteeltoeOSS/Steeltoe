@@ -15,10 +15,8 @@ namespace Steeltoe.Connector.CosmosDb.Test
         [Fact]
         public void Constructor_ThrowsIfConfigNull()
         {
-            // Arrange
             IConfiguration config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new CosmosDbConnectorOptions(config));
             Assert.Contains(nameof(config), ex.Message);
         }
@@ -54,7 +52,6 @@ namespace Steeltoe.Connector.CosmosDb.Test
             Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
             Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
 
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -63,17 +60,14 @@ namespace Steeltoe.Connector.CosmosDb.Test
             configurationBuilder.AddInMemoryCollection(appsettings);
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new CosmosDbConnectorOptions(config);
 
-            // assert
             Assert.Equal(appsettings["cosmosdb:client:ConnectionString"], sconfig.ToString());
         }
 
         [Fact]
         public void ConnectionString_Overridden_By_CosmosDbInCloudFoundryConfig()
         {
-            // arrange
             var appsettings = new Dictionary<string, string>()
             {
                 ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
@@ -89,10 +83,8 @@ namespace Steeltoe.Connector.CosmosDb.Test
             configurationBuilder.AddCloudFoundry();
             var config = configurationBuilder.Build();
 
-            // act
             var sconfig = new CosmosDbConnectorOptions(config);
 
-            // assert
             Assert.NotEqual(appsettings["cosmosdb:client:ConnectionString"], sconfig.ToString());
 
             // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,

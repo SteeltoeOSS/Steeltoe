@@ -16,12 +16,10 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test
         [Fact]
         public void AddCloudFoundryActuator_ThrowsOnNulls()
         {
-            // Arrange
             IServiceCollection services = null;
             IServiceCollection services2 = new ServiceCollection();
             IConfigurationRoot config = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHypermediaActuator(services, config));
             Assert.Contains(nameof(services), ex.Message);
             var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHypermediaActuator(services2, config));

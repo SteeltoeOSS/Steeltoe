@@ -17,7 +17,6 @@ namespace Steeltoe.Discovery.ClientBase.Test
         [Fact]
         public void NoOpDiscoveryClient_LooksForOtherClients()
         {
-            // Arrange
             var appsettings = new Dictionary<string, string>()
             {
                 { "spring:application:name", "myName" },
@@ -30,10 +29,8 @@ namespace Steeltoe.Discovery.ClientBase.Test
             var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
             var logger = new Mock<ILogger<NoOpDiscoveryClient>>();
 
-            // Act
             var client = new NoOpDiscoveryClient(config, logger.Object);
 
-            // assert
             VerifyLogEntered(logger, LogLevel.Warning, "Found configuration values for TestClient, try adding a NuGet reference that enables TestClient to work with Steeltoe Discovery");
             foreach (var c in new List<string> { "Consul", "Eureka", "Kubernetes" })
             {

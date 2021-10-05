@@ -16,10 +16,8 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Constructors__ThrowsIfNulls()
         {
-            // Arrange
             ConfigServerClientSettings settings = null;
 
-            // Act and Assert
             var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
             ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, (IConfiguration)null, null));
             ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null, null));
@@ -57,13 +55,11 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
         [Fact]
         public void Build__ReturnsProvider()
         {
-            // Arrange
             var settings = new ConfigServerClientSettings();
             var memSource = new MemoryConfigurationSource();
             IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
             ILoggerFactory factory = new LoggerFactory();
 
-            // Act and Assert
             var source = new ConfigServerConfigurationSource(settings, sources, null);
             var provider = source.Build(new ConfigurationBuilder());
             Assert.IsType<ConfigServerConfigurationProvider>(provider);

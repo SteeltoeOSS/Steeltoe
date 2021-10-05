@@ -24,17 +24,14 @@ namespace Steeltoe.Common.Kubernetes.Test
         [Fact]
         public void AddKubernetesApplicationInstanceInfo_ReplacesExistingAppInfo()
         {
-            // arrange
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
             serviceCollection.RegisterDefaultApplicationInstanceInfo();
             Assert.NotNull(serviceCollection.BuildServiceProvider().GetService<IApplicationInstanceInfo>());
 
-            // act
             serviceCollection.AddKubernetesApplicationInstanceInfo();
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            // assert
             var appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
             Assert.Single(appInfos);
             Assert.NotNull(appInfos.FirstOrDefault());
@@ -53,15 +50,12 @@ namespace Steeltoe.Common.Kubernetes.Test
         [Obsolete]
         public void GetKubernetesApplicationOptions_ReturnsAndAddsOptions()
         {
-            // arrange
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // act
             var options = serviceCollection.GetKubernetesApplicationOptions();
             var appInfos = serviceCollection.BuildServiceProvider().GetServices<IApplicationInstanceInfo>();
 
-            // assert
             Assert.NotNull(options);
             Assert.Single(appInfos);
             Assert.IsType<KubernetesApplicationOptions>(options);
@@ -78,17 +72,14 @@ namespace Steeltoe.Common.Kubernetes.Test
         [Fact]
         public void AddKubernetesClient_AddsKubernetesOptionsAndClient()
         {
-            // arrange
             var serviceCollection = new ServiceCollection();
             serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            // act
             serviceCollection.AddKubernetesClient();
             var serviceProvider = serviceCollection.BuildServiceProvider();
             var client = serviceProvider.GetService<IKubernetes>();
             var appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
 
-            // assert
             Assert.NotNull(client);
             Assert.Single(appInfos);
             Assert.IsType<KubernetesApplicationOptions>(appInfos.First());
