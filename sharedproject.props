@@ -26,12 +26,14 @@
     <LangVersion>latest</LangVersion>
     <EnablePreviewFeatures>false</EnablePreviewFeatures>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+  <PropertyGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition="'$(BUILD_PACKAGES)' == 'true'">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="$(SourceLinkGitHubVersion)" PrivateAssets="All"/>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
