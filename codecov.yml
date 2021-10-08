@@ -1,7 +1,0 @@
-codecov:
-  ci:
-    - dev.azure.com
-
-ignore:
-  - "src/Management/src/Diagnostics/Microsoft"
-  - "test/.*"

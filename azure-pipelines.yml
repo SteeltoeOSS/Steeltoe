@@ -185,9 +185,6 @@ jobs:
   - task: SonarCloudPublish@1
     condition: and(succeededOrFailed(), eq(variables['sonarAnalyze'], 'true'))
     displayName: Publish quality gate result
-  - bash: bash <(curl -s https://codecov.io/bash)
-    displayName: Upload to codecov.io
-    condition: and(succeeded(), or(eq(variables['Agent.OS'], 'Windows_NT'), eq(variables['integrationTests'], 'true')))
 - job: Wrap_up
   dependsOn:
   - Steeltoe_CI
